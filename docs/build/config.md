@@ -1,4 +1,5 @@
-### Config file example:
+### Config file example
+
 ```ini
 [sc-memory]
 # Maximum number of segments. By default: 65536

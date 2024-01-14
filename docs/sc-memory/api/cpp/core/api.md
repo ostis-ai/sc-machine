@@ -351,6 +351,34 @@ ScAddrVector const & linkAddrs1
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 ```
 
+### **ScException**
+
+To declare your own exceptions inherit from class `ScException`.
+
+```cpp
+class MyException final : public ScException
+{
+public:
+  explicit MyException(std::string const & msg) 
+    : ScException("MyException: " + msg)
+  {}
+};
+```
+
+To throw exceptions use `SC_THROW_EXCEPTION(exceptionName, message);`.
+
+```cpp
+SC_THROW_EXCEPTION(MyException, "It is my exception.");
+```
+
+Throw exception for a non-implemented part of code.
+
+```cpp
+SC_NOT_IMPLEMENTED("This code is not implemented.");
+```
+
+## **Extended API**
+
 Described methods are part of Core C++ API of sc-memory. You can see and use Extended C++ API of sc-memory:
 
 - [ScHelper C++ API](../extended/helper-api.md) to manipulate with system identifiers of sc-elements; 
