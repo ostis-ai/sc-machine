@@ -31,12 +31,12 @@ nav:
   - Tools:
       - Knowledge Base Builder: sc-tools/sc-builder.md
       - Knowledge Base repo file: sc-tools/kb-repo-file.md
-      - Websocket server: sc-tools/sc-server.md
-      - Meta programming: sc-tools/cpp-meta.md
+      - Websocket Server: sc-tools/sc-server.md
+      - Meta Programming: sc-tools/cpp-meta.md
   - Development:
-      - Git Workflow: dev/git-workflow.md
-      - Codestyle: dev/codestyle.md
-      - Dev container: dev/devcontainer.md
+      - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
+      - Codestyle Guide: dev/codestyle.md
+      - Dev Container: dev/devcontainer.md
   - License: license.md
   - Changelog: changelog.md
   - Thirdparty: thirdparty.md

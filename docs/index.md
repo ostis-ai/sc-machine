@@ -22,9 +22,9 @@
 - **Tools**
     * [Knowledge Base builder](sc-tools/sc-builder.md) - *description of options of sc-builder for knowledge base sources*
     * [Knowledge Base repo file](sc-tools/kb-repo-file.md) - *description of configuration of knowledge base sources*
-    * [Websocket server](sc-tools/sc-server.md) - *description of options of sc-server for communication with sc-memory through network*
+    * [Websocket Server](sc-tools/sc-server.md) - *description of options of sc-server for communication with sc-memory through network*
     * [Meta Programming](sc-tools/cpp-meta.md) - *documentation of meta programming language*
 - **Development**
-    * [Git Workflow](dev/git-workflow.md) - *guide for those who wants to make contribution into sc-machine*
-    * [Codestyle](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
-    * [Dev container](dev/devcontainer.md) - *guide for those who wants to develop sc-machine via docker*
+    * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
+    * [Codestyle Guide](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
+    * [Dev Container](dev/devcontainer.md) - *guide for those who wants to develop sc-machine via docker*
