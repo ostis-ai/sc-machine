@@ -20,8 +20,8 @@ namespace utils
 {
 ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
     ScMemoryContext * ms_context,
-    const ScAddrVector & addrVector,
-    const ScType & setType)
+    ScAddrVector const & addrVector,
+    ScType const & setType)
 {
   ScAddr set = ms_context->CreateNode(setType);
   if (addrVector.empty())
@@ -43,8 +43,8 @@ ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
 
 ScAddr GenerationUtils::wrapInOrientedSet(
     ScMemoryContext * ms_context,
-    const ScAddrVector & addrVector,
-    const ScType & setType)
+    ScAddrVector const & addrVector,
+    ScType const & setType)
 {
   const size_t maxRrelCountExceeded = 10;
   SC_ASSERT(addrVector.size() < maxRrelCountExceeded, ("Not create numerated set with more than 10 elements"));
@@ -60,17 +60,17 @@ ScAddr GenerationUtils::wrapInOrientedSet(
   return set;
 }
 
-ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, const ScAddrVector & addrVector, const ScType & setType)
+ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, ScAddrVector const & addrVector, ScType const & setType)
 {
   ScAddr set = ms_context->CreateNode(setType);
-  std::for_each(addrVector.begin(), addrVector.end(), [&ms_context, &set](const auto & element) {
+  std::for_each(addrVector.begin(), addrVector.end(), [&ms_context, &set](auto const & element) {
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
   });
 
   return set;
 }
 
-void GenerationUtils::addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddrVector & elements)
+void GenerationUtils::addToSet(ScMemoryContext * ms_context, ScAddr const & set, ScAddrVector const & elements)
 {
   for (auto const & element : elements)
   {
@@ -78,7 +78,7 @@ void GenerationUtils::addToSet(ScMemoryContext * ms_context, const ScAddr & set,
   }
 }
 
-bool GenerationUtils::addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddr & element)
+bool GenerationUtils::addToSet(ScMemoryContext * ms_context, ScAddr const & set, ScAddr const & element)
 {
   if (!ms_context->HelperCheckEdge(set, element, ScType::EdgeAccessConstPosPerm))
   {

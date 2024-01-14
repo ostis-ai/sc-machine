@@ -25,7 +25,7 @@ public:
     , m_context(context)
   {
     // check if it is valid
-    for (const auto & triple : m_triples)
+    for (auto const & triple : m_triples)
     {
       auto values = triple->GetValues();
       if (values[1].IsFixed())
@@ -57,7 +57,7 @@ public:
     size_t resultIdx = 0;
     bool isError = false;
 
-    for (const auto & item : m_triples)
+    for (auto const & item : m_triples)
     {
       auto const & values = item->GetValues();
 

@@ -66,6 +66,7 @@ try
   Builder builder;
   return builder.Run(params, formedMemoryParams) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
 catch (utils::ScException const & ex)
 {
   SC_LOG_ERROR(ex.Message());

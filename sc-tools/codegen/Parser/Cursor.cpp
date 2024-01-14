@@ -2,7 +2,7 @@
 
 #include "MetaUtils.hpp"
 
-Cursor::Cursor(const CXCursor & handle)
+Cursor::Cursor(CXCursor const & handle)
   : m_handle(handle)
 {
   CXSourceLocation loc = clang_getCursorLocation(m_handle);

@@ -93,8 +93,9 @@ sc_memory_context * _sc_memory_context_new(sc_memory_context_manager * manager)
     goto error;
 
   index = (manager->last_context_id + 1) % G_MAXUINT32;
-  while (index == 0 ||
-         (index != manager->last_context_id && sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(index))))
+  while (
+      index == 0
+      || (index != manager->last_context_id && sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(index))))
     index = (index + 1) % G_MAXUINT32;
 
   if (index != manager->last_context_id)

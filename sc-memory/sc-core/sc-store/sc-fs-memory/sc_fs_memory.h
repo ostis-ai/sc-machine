@@ -140,7 +140,7 @@ sc_fs_memory_status sc_fs_memory_get_link_hashes_by_string(
  * @returns SC_TRUE, if such sc-link hashes exist.
  */
 sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
-    const sc_char * substring,
+    sc_char const * substring,
     sc_uint32 substring_size,
     sc_uint32 max_length_to_search_as_prefix,
     sc_list ** link_hashes);
@@ -153,7 +153,7 @@ sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
  * @returns SC_TRUE, if such sc-strings exist.
  */
 sc_fs_memory_status sc_fs_memory_get_strings_by_substring(
-    const sc_char * substring,
+    sc_char const * substring,
     sc_uint32 string_size,
     sc_uint32 max_length_to_search_as_prefix,
     sc_list ** strings);

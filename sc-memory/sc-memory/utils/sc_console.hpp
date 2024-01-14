@@ -146,6 +146,7 @@ public:
     {
       ScConsole::HideCursor();
     }
+
     ~CursorHideGuard()
     {
       ScConsole::ShowCursor();
@@ -156,7 +157,7 @@ public:
 namespace impl
 {
 std::string const & GetANSIColor(ScConsole::Color c);
-}
+}  // namespace impl
 
 template <>
 inline ScConsole::Output & ScConsole::Output::operator<< <ScConsole::Color>(ScConsole::Color v)

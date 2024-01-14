@@ -42,7 +42,7 @@ void displayDiagnostics(CXTranslationUnit tu)
 
 }  // namespace impl
 
-ReflectionParser::ReflectionParser(const ReflectionOptions & options)
+ReflectionParser::ReflectionParser(ReflectionOptions const & options)
   : m_options(options)
   , m_index(nullptr)
   , m_translationUnit(nullptr)
@@ -169,7 +169,7 @@ bool ReflectionParser::ProcessFile(std::string const & fileName, bool inProcessM
   m_currentFile = fileName;
   m_index = clang_createIndex(true, false);
 
-  std::vector<const char *> arguments;
+  std::vector<char const *> arguments;
 
   for (auto & argument : m_options.arguments)
   {
@@ -277,7 +277,7 @@ bool ReflectionParser::ContainsModule() const
   return false;
 }
 
-void ReflectionParser::buildClasses(const Cursor & cursor, Namespace & currentNamespace)
+void ReflectionParser::buildClasses(Cursor const & cursor, Namespace & currentNamespace)
 {
   for (auto & child : cursor.GetChildren())
   {

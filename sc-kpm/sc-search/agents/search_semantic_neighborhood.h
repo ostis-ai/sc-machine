@@ -12,11 +12,11 @@
 /*!
  * Function that implements sc-agent to search full semantic neighborhood of specified sc-element
  */
-sc_result agent_search_full_semantic_neighborhood(const sc_event * event, sc_addr arg);
+sc_result agent_search_full_semantic_neighborhood(sc_event const * event, sc_addr arg);
 
 /*!
  * Function that implements sc-agent to search all link of given relation, which are connected with given element
  */
-sc_result agent_search_links_of_relation_connected_with_element(const sc_event * event, sc_addr arg);
+sc_result agent_search_links_of_relation_connected_with_element(sc_event const * event, sc_addr arg);
 
 #endif

@@ -36,7 +36,7 @@ public:
   explicit uiSc2SCnJsonTranslator();
   virtual ~uiSc2SCnJsonTranslator();
 
-  static sc_result ui_translate_sc2scn(const sc_event * event, sc_addr arg);
+  static sc_result ui_translate_sc2scn(sc_event const * event, sc_addr arg);
 
 protected:
   //! @copydoc uiTranslateFromSc::runImpl
@@ -117,7 +117,7 @@ private:
   //! Store structure elements if keyword is struct to remove them from keyword childrens
   ScStructureElementInfo::ScStructureElementInfoList structureElements;
   //! Max level of full discripted node
-  const int maxLevel = 2;
+  int const maxLevel = 2;
 };
 
 #endif  // _uiSc2SCnJsonTranslator_h_

@@ -7,7 +7,7 @@
 #include "uiPrecompiled.h"
 #include "uiTypes.h"
 
-bool operator<(const sc_addr & addr1, const sc_addr & addr2)
+bool operator<(sc_addr const & addr1, sc_addr const & addr2)
 {
   if (addr1.seg != addr2.seg)
     return addr1.seg < addr2.seg;
@@ -15,12 +15,12 @@ bool operator<(const sc_addr & addr1, const sc_addr & addr2)
   return addr1.offset < addr2.offset;
 }
 
-bool operator==(const sc_addr & addr1, const sc_addr & addr2)
+bool operator==(sc_addr const & addr1, sc_addr const & addr2)
 {
   return (addr1.seg == addr2.seg) && (addr1.offset == addr2.offset);
 }
 
-bool operator!=(const sc_addr & addr1, const sc_addr & addr2)
+bool operator!=(sc_addr const & addr1, sc_addr const & addr2)
 {
   return (addr1.seg != addr2.seg) || (addr1.offset != addr2.offset);
 }

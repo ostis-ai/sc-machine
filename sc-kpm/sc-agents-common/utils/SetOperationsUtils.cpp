@@ -9,11 +9,11 @@
 
 namespace utils
 {
-ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, const ScAddrVector & sets, const ScType & resultType)
+ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, ScAddrVector const & sets, ScType const & resultType)
 {
   ScAddr resultSet = context->CreateNode(resultType);
 
-  for (const auto & set : sets)
+  for (auto const & set : sets)
   {
     ScIterator3Ptr firstIter3 = context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
 
@@ -33,12 +33,12 @@ ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, const ScAddrVect
 
 ScAddr SetOperationsUtils::intersectSets(
     ScMemoryContext * context,
-    const ScAddrVector & sets,
-    const ScType & resultType)
+    ScAddrVector const & sets,
+    ScType const & resultType)
 {
   ScAddr resultSet = context->CreateNode(resultType);
 
-  for (const auto & set : sets)
+  for (auto const & set : sets)
   {
     ScIterator3Ptr firstIter3 = context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
     while (firstIter3->Next())
@@ -49,7 +49,7 @@ ScAddr SetOperationsUtils::intersectSets(
 
       if (!context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
       {
-        for (const auto & otherSet : sets)
+        for (auto const & otherSet : sets)
         {
           if (otherSet == set)
           {
@@ -76,9 +76,9 @@ ScAddr SetOperationsUtils::intersectSets(
 
 ScAddr SetOperationsUtils::complementSets(
     ScMemoryContext * context,
-    const ScAddr & firstSet,
-    const ScAddr & secondSet,
-    const ScType & resultType)
+    ScAddr const & firstSet,
+    ScAddr const & secondSet,
+    ScType const & resultType)
 {
   SC_CHECK_PARAM(firstSet, "Invalid first set address passed to `compareSets`");
   SC_CHECK_PARAM(secondSet, "Invalid second set address passed to `compareSets`");
@@ -90,8 +90,8 @@ ScAddr SetOperationsUtils::complementSets(
   {
     ScAddr element = secondIter3->Get(2);
 
-    if (!context->HelperCheckEdge(firstSet, element, ScType::EdgeAccessConstPosPerm) &&
-        !context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
+    if (!context->HelperCheckEdge(firstSet, element, ScType::EdgeAccessConstPosPerm)
+        && !context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
     {
       context->CreateEdge(ScType::EdgeAccessConstPosPerm, resultSet, element);
     }
@@ -100,7 +100,7 @@ ScAddr SetOperationsUtils::complementSets(
   return resultSet;
 }
 
-bool SetOperationsUtils::compareSets(ScMemoryContext * context, const ScAddr & firstSet, const ScAddr & secondSet)
+bool SetOperationsUtils::compareSets(ScMemoryContext * context, ScAddr const & firstSet, ScAddr const & secondSet)
 {
   SC_CHECK_PARAM(firstSet, "Invalid first set address passed to `compareSets`");
   SC_CHECK_PARAM(secondSet, "Invalid second set address passed to `compareSets`");

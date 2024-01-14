@@ -5,7 +5,6 @@
  */
 
 #include "sc_log.hpp"
-#include "../sc_debug.hpp"
 #include "sc_lock.hpp"
 
 #include <ctime>
@@ -48,7 +47,6 @@ ScLog::ScLog()
   m_mode = Type::Info;
   m_output_mode = OutputType::Console;
 
-  SC_ASSERT(!ms_instance, ("ScLog instance is not valid"));
   ms_instance = this;
 }
 
@@ -67,7 +65,6 @@ ScLog::ScLog(std::string const & logType, std::string const & logFile, std::stri
     Initialize(logFile);
   }
 
-  SC_ASSERT(!ms_instance, ("ScLog instance is not valid"));
   ms_instance = this;
 }
 
@@ -135,14 +132,14 @@ void ScLog::SetMuted(bool value)
   m_isMuted = value;
 }
 
-void ScLog::SetFileName(const std::string & file_name)
+void ScLog::SetFileName(std::string const & file_name)
 {
   Shutdown();
   Initialize(file_name);
 }
 
 template <size_t N>
-int ScLog::FindEnumElement(const std::string (&elements)[N], const std::string & externalValue)
+int ScLog::FindEnumElement(const std::string (&elements)[N], std::string const & externalValue)
 {
   size_t size = N;
   int index = -1;

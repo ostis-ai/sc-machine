@@ -62,13 +62,13 @@ sc_result sc_ext_initialize(
     sc_addr const init_memory_generated_structure)
 {
   GDir * ext_dir = null_ptr;
-  const sc_char * file_name = null_ptr;
+  sc_char const * file_name = null_ptr;
   fModuleFunc func = null_ptr;
 
 #if SC_IS_PLATFORM_MAC
-  const gchar * moduleSuffix = "dylib";
+  gchar const * moduleSuffix = "dylib";
 #else
-  const gchar * moduleSuffix = G_MODULE_SUFFIX;
+  gchar const * moduleSuffix = G_MODULE_SUFFIX;
 #endif
 
   // doesn't need to initialize extensions
@@ -104,7 +104,7 @@ sc_result sc_ext_initialize(
       gboolean shouldSkip = SC_TRUE;
       while (enabled_list[i] != null_ptr)
       {
-        const sc_char * name = enabled_list[i];
+        sc_char const * name = enabled_list[i];
         if (g_str_has_prefix(file_name, name) && g_str_has_suffix(file_name, moduleSuffix))
         {
           shouldSkip = (strlen(file_name) != (strlen(name) + strlen(moduleSuffix) + 1));
@@ -131,8 +131,8 @@ sc_result sc_ext_initialize(
     // skip non module files
     if (g_str_has_suffix(file_name, moduleSuffix) == SC_TRUE)
     {
-      if (g_module_symbol(mi->ptr, "sc_module_initialize_with_init_memory_generated_structure", (gpointer *)&func) ==
-          SC_TRUE)
+      if (g_module_symbol(mi->ptr, "sc_module_initialize_with_init_memory_generated_structure", (gpointer *)&func)
+          == SC_TRUE)
       {
         mi->init_func_type = "sc_module_initialize_with_init_memory_generated_structure";
       }

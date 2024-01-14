@@ -32,6 +32,7 @@ int getch()
   struct termios oldt
   {
   }, newt{};
+
   int ch;
   tcgetattr(STDIN_FILENO, &oldt);
   newt = oldt;
@@ -59,9 +60,11 @@ int kbhit()
   newt.c_cc[VTIME] = 1;  // minimum characters to wait for
   tcsetattr(STDIN_FILENO, TCSANOW, &newt);
   ioctl(0, FIONREAD, &cnt);  // Read count
+
   struct timeval tv
   {
   };
+
   tv.tv_sec = 0;
   tv.tv_usec = 100;
   select(STDIN_FILENO + 1, nullptr, nullptr, nullptr, &tv);  // A small time delay
@@ -451,7 +454,7 @@ void ScConsole::SetString(std::string const & str)
   auto len = static_cast<unsigned int>(str.size());
 
 #if SC_IS_PLATFORM_WIN32 && !defined(SC_CONSOLE_USE_ANSI)
-  const char * const s = str.data();
+  char const * const s = str.data();
 
   HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
   DWORD numberOfCharsWritten;
@@ -496,6 +499,7 @@ int ScConsole::GetRowsNum()
   struct winsize ts
   {
   };
+
   ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
   return ts.ws_row;
 #  else   // TIOCGSIZE
@@ -525,6 +529,7 @@ int ScConsole::GetColsNum()
   struct winsize ts
   {
   };
+
   ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
   return ts.ws_col;
 #  else   // TIOCGSIZE

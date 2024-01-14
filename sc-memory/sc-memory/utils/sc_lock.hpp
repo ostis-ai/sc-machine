@@ -27,7 +27,7 @@ public:
   _SC_EXTERN bool IsLocked() const;
 
 private:
-  volatile int m_locked;
+  int volatile m_locked;
 };
 
 struct ScLockScope
@@ -37,6 +37,7 @@ struct ScLockScope
   {
     m_lock.Lock();
   }
+
   ~ScLockScope()
   {
     m_lock.Unlock();

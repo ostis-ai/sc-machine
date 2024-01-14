@@ -65,7 +65,7 @@ void uiSc2ScsTranslator::runImpl()
   auto const itEnd = mEdges.cend();
   for (auto it = mEdges.cbegin(); it != itEnd; ++it)
   {
-    const sc_addr & arc_addr = it->first;
+    sc_addr const & arc_addr = it->first;
     sc_type arc_type = it->second;
 
     // skip non arc objects
@@ -127,7 +127,7 @@ void uiSc2ScsTranslator::runImpl()
   mOutputData = result.dump();
 }
 
-bool uiSc2ScsTranslator::getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf)
+bool uiSc2ScsTranslator::getIdentifier(sc_addr const & addr, sc_addr const & lang_addr, String & idtf)
 {
   auto it = mIdentifiers.find(addr);
   if (it != mIdentifiers.end())
@@ -147,7 +147,7 @@ bool uiSc2ScsTranslator::getIdentifier(const sc_addr & addr, const sc_addr & lan
 }
 
 // -------------------------------------------------------
-sc_result uiSc2ScsTranslator::ui_translate_sc2scs(const sc_event * event, sc_addr arg)
+sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event const * event, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

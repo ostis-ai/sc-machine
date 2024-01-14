@@ -7,11 +7,11 @@ class Cursor;
 
 namespace utils
 {
-void ToString(const CXString & str, std::string & output);
+void ToString(CXString const & str, std::string & output);
 
 std::string GetQualifiedName(std::string const & displayName, Namespace const & currentNamespace);
 
 std::string GetQualifiedName(Cursor const & cursor, Namespace const & currentNamespace);
 
-void FatalError(const std::string & error);
+void FatalError(std::string const & error);
 }  // namespace utils

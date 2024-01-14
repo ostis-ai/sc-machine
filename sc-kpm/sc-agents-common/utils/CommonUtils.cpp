@@ -16,7 +16,7 @@ using namespace scAgentsCommon;
 
 namespace utils
 {
-bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & element, ScType scType)
+bool CommonUtils::checkType(ScMemoryContext * ms_context, ScAddr const & element, ScType scType)
 {
   SC_CHECK_PARAM(element, "Invalid element address passed to `checkType`");
 
@@ -24,7 +24,7 @@ bool CommonUtils::checkType(ScMemoryContext * ms_context, const ScAddr & element
   return (elementType & scType) == scType;
 }
 
-std::string CommonUtils::getLinkContent(ScMemoryContext * ms_context, const ScAddr & scLink)
+std::string CommonUtils::getLinkContent(ScMemoryContext * ms_context, ScAddr const & scLink)
 {
   SC_CHECK_PARAM(scLink, "Invalid link address passed to `getLinkContent`");
 
@@ -44,9 +44,9 @@ std::string CommonUtils::getLinkContent(ScMemoryContext * ms_context, const ScAd
 
 std::string CommonUtils::getIdtf(
     ScMemoryContext * ms_context,
-    const ScAddr & node,
-    const ScAddr & idtfRelation,
-    const ScAddrVector & linkClasses)
+    ScAddr const & node,
+    ScAddr const & idtfRelation,
+    ScAddrVector const & linkClasses)
 {
   std::string value;
   ScAddr scLink;
@@ -55,10 +55,10 @@ std::string CommonUtils::getIdtf(
   else
   {
     ScAddrVector scLinks = IteratorUtils::getAllByOutRelation(ms_context, node, idtfRelation);
-    for (const ScAddr & link : scLinks)
+    for (ScAddr const & link : scLinks)
     {
       scLink = link;
-      for (const ScAddr & classAddr : linkClasses)
+      for (ScAddr const & classAddr : linkClasses)
       {
         if (!ms_context->HelperCheckEdge(classAddr, link, ScType::EdgeAccessConstPosPerm))
         {
@@ -79,8 +79,8 @@ std::string CommonUtils::getIdtf(
 
 std::string CommonUtils::getMainIdtf(
     ScMemoryContext * ms_context,
-    const ScAddr & node,
-    const ScAddrVector & linkClasses)
+    ScAddr const & node,
+    ScAddrVector const & linkClasses)
 {
   ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
   return getIdtf(ms_context, node, mainIdtfNode, linkClasses);
@@ -88,10 +88,10 @@ std::string CommonUtils::getMainIdtf(
 
 void CommonUtils::setIdtf(
     ScMemoryContext * ms_context,
-    const ScAddr & node,
-    const ScAddr & relation,
-    const std::string & identifier,
-    const ScAddrVector & linkClasses)
+    ScAddr const & node,
+    ScAddr const & relation,
+    std::string const & identifier,
+    ScAddrVector const & linkClasses)
 {
   ScAddr link = ms_context->CreateLink();
   ScStreamPtr identifierStream = ScStreamConverter::StreamFromString(identifier);
@@ -106,15 +106,15 @@ void CommonUtils::setIdtf(
 
 void CommonUtils::setMainIdtf(
     ScMemoryContext * ms_context,
-    const ScAddr & node,
-    const std::string & identifier,
-    const ScAddrVector & linkClasses)
+    ScAddr const & node,
+    std::string const & identifier,
+    ScAddrVector const & linkClasses)
 {
   ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
   setIdtf(ms_context, node, mainIdtfNode, identifier, linkClasses);
 }
 
-size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set)
+size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, ScAddr const & set)
 {
   SC_CHECK_PARAM(set, "Invalid set address passed to `getSetPower`");
 
@@ -125,7 +125,7 @@ size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, const ScAddr & set
   return power;
 }
 
-bool CommonUtils::isEmpty(ScMemoryContext * ms_context, const ScAddr & set)
+bool CommonUtils::isEmpty(ScMemoryContext * ms_context, ScAddr const & set)
 {
   SC_CHECK_PARAM(set, "Invalid set address to `isEmpty`");
 

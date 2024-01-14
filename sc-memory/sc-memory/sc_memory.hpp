@@ -112,6 +112,7 @@ public:
   {
     return m_context;
   }
+
   _SC_EXTERN sc_memory_context const * GetRealContext() const
   {
     return m_context;

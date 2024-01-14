@@ -23,7 +23,7 @@ typedef struct _sc_version
  * If version @p a and @p b equal, then returns 0.
  * @note This function ignores suffixes
  */
-_SC_EXTERN sc_int32 sc_version_compare(sc_version const * a, const sc_version * b);
+_SC_EXTERN sc_int32 sc_version_compare(sc_version const * a, sc_version const * b);
 
 /*! Returns newly-allocated string that represents version.
  * The returned string should be freed with sc_version_string_free when no longer needed.

@@ -20,34 +20,34 @@ class IteratorUtils
 public:
   static ScAddr getRoleRelation(ScMemoryContext * ms_context, size_t const & index);
 
-  static ScAddr getAnyFromSet(ScMemoryContext * ms_context, const ScAddr & set);
+  static ScAddr getAnyFromSet(ScMemoryContext * ms_context, ScAddr const & set);
 
   static ScAddr getNextFromSet(
       ScMemoryContext * ms_context,
-      const ScAddr & set,
-      const ScAddr & previous,
-      const ScAddr & sequenceRelation = scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
+      ScAddr const & set,
+      ScAddr const & previous,
+      ScAddr const & sequenceRelation = scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
 
-  static ScAddrVector getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType);
+  static ScAddrVector getAllWithType(ScMemoryContext * ms_context, ScAddr const & set, ScType scType);
 
   static ScAddrVector getAllByRelation(
       ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & relation,
+      ScAddr const & node,
+      ScAddr const & relation,
       bool isBeginNode = true);
 
-  static ScAddrVector getAllByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
+  static ScAddrVector getAllByInRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation);
 
-  static ScAddr getAnyByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
+  static ScAddr getAnyByInRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation);
 
-  static ScAddrVector getAllByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
+  static ScAddrVector getAllByOutRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation);
 
-  static ScAddr getAnyByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation);
+  static ScAddr getAnyByOutRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation);
 
   static ScIterator5Ptr getIterator5(
       ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & relation,
+      ScAddr const & node,
+      ScAddr const & relation,
       bool nodeIsStart = true);
 };
 

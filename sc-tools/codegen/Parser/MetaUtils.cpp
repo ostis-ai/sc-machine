@@ -10,7 +10,7 @@
 
 namespace utils
 {
-void ToString(const CXString & str, std::string & output)
+void ToString(CXString const & str, std::string & output)
 {
   auto cstr = clang_getCString(str);
 
@@ -19,7 +19,7 @@ void ToString(const CXString & str, std::string & output)
   clang_disposeString(str);
 }
 
-std::string GetQualifiedName(const std::string & displayName, const Namespace & currentNamespace)
+std::string GetQualifiedName(std::string const & displayName, Namespace const & currentNamespace)
 {
   auto name = boost::algorithm::join(currentNamespace, "::");
 
@@ -31,12 +31,12 @@ std::string GetQualifiedName(const std::string & displayName, const Namespace & 
   return name;
 }
 
-std::string GetQualifiedName(const Cursor & cursor, const Namespace & currentNamespace)
+std::string GetQualifiedName(Cursor const & cursor, Namespace const & currentNamespace)
 {
   return GetQualifiedName(cursor.GetSpelling(), currentNamespace);
 }
 
-void FatalError(const std::string & error)
+void FatalError(std::string const & error)
 {
   std::cerr << "Error: " << error << std::endl;
 

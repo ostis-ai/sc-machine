@@ -13,7 +13,7 @@
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
 
-sc_result agent_search_all_const_pos_output_arc(const sc_event * event, sc_addr arg)
+sc_result agent_search_all_const_pos_output_arc(sc_event const * event, sc_addr arg)
 {
   sc_addr question, answer;
   sc_iterator3 *it1, *it2;
@@ -24,7 +24,8 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event * event, sc_addr 
 
   // check question type
   if (sc_helper_check_arc(
-          s_default_ctx, keynode_question_all_output_const_pos_arc, question, sc_type_arc_pos_const_perm) == SC_FALSE)
+          s_default_ctx, keynode_question_all_output_const_pos_arc, question, sc_type_arc_pos_const_perm)
+      == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
@@ -40,8 +41,8 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event * event, sc_addr 
     it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
-      if (sys_off == SC_TRUE &&
-          (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+      if (sys_off == SC_TRUE
+          && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
         continue;
 
       appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
@@ -61,7 +62,7 @@ sc_result agent_search_all_const_pos_output_arc(const sc_event * event, sc_addr 
 }
 
 // ---------------------------------------------
-sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event * event, sc_addr arg)
+sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event const * event, sc_addr arg)
 {
   sc_addr question, answer;
   sc_iterator3 *it1, *it2, *it3;
@@ -72,8 +73,8 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event * event,
 
   // check question type
   if (sc_helper_check_arc(
-          s_default_ctx, keynode_question_all_output_const_pos_arc_with_rel, question, sc_type_arc_pos_const_perm) ==
-      SC_FALSE)
+          s_default_ctx, keynode_question_all_output_const_pos_arc_with_rel, question, sc_type_arc_pos_const_perm)
+      == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
@@ -89,16 +90,16 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(const sc_event * event,
     it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, 0);
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
-      if (sys_off == SC_TRUE &&
-          (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+      if (sys_off == SC_TRUE
+          && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
         continue;
 
       // iterate relations
       it3 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
       while (sc_iterator3_next(it3) == SC_TRUE)
       {
-        if (sys_off == SC_TRUE &&
-            (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
+        if (sys_off == SC_TRUE
+            && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
           continue;
 
         appendIntoAnswer(answer, sc_iterator3_value(it3, 0));

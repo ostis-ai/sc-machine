@@ -9,6 +9,6 @@
 
 #include "sc-core/sc_memory_headers.h"
 
-sc_result agent_erase_elements(const sc_event * event, sc_addr arg);
+sc_result agent_erase_elements(sc_event const * event, sc_addr arg);
 
 #endif

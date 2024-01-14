@@ -31,6 +31,7 @@ typedef enum
 struct _sc_iterator_param
 {
   sc_bool is_type;
+
   union
   {
     sc_addr addr;

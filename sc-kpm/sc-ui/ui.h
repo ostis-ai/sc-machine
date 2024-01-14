@@ -14,10 +14,10 @@ extern "C"
 
 extern "C"
 {
-  // --------------- Module ----------------
-  _SC_EXT_EXTERN sc_result
-  sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure);
-  _SC_EXT_EXTERN sc_result sc_module_shutdown();
+// --------------- Module ----------------
+_SC_EXT_EXTERN sc_result
+sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure);
+_SC_EXT_EXTERN sc_result sc_module_shutdown();
 }
 
 #endif

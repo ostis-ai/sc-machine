@@ -20,6 +20,7 @@ public:
     for (sc_int i = 1; i < argc; ++i)
       m_tokens.emplace_back(argv[i]);
   }
+
   std::pair<std::string, std::string> operator[](std::vector<std::string> const & options) const
   {
     for (auto const & item : options)

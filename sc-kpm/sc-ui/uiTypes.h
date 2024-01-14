@@ -26,7 +26,7 @@ typedef std::stringstream StringStream;
 
 struct _sc_addr_hash
 {
-  auto operator()(const sc_addr & addr) const -> size_t
+  auto operator()(sc_addr const & addr) const -> size_t
   {
     return SC_ADDR_LOCAL_TO_INT(addr);
   }
@@ -46,9 +46,9 @@ typedef std::unordered_set<sc_addr, _sc_addr_hash> tScAddrSet;
 typedef nlohmann::json ScJson;
 
 // --- operators ---
-bool operator<(const sc_addr & addr1, const sc_addr & addr2);
-bool operator==(const sc_addr & addr1, const sc_addr & addr2);
-bool operator!=(const sc_addr & addr1, const sc_addr & addr2);
+bool operator<(sc_addr const & addr1, sc_addr const & addr2);
+bool operator==(sc_addr const & addr1, sc_addr const & addr2);
+bool operator!=(sc_addr const & addr1, sc_addr const & addr2);
 
 extern sc_memory_context * s_default_ctx;
 

@@ -147,8 +147,8 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
   *el = null_ptr;
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
-  if (storage == null_ptr || addr.seg == 0 || addr.offset == 0 || addr.seg > storage->max_segments_count ||
-      addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
+  if (storage == null_ptr || addr.seg == 0 || addr.offset == 0 || addr.seg > storage->max_segments_count
+      || addr.offset > SC_SEGMENT_ELEMENTS_COUNT)
     goto error;
 
   sc_segment * segment = storage->segments[addr.seg - 1];
@@ -212,8 +212,9 @@ sc_segment * _sc_storage_get_last_not_engaged_segment()
       storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
       segment->elements[0].flags.access_levels = 0;
     }
-  } while (segment != null_ptr &&
-           (segment->last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT && segment->last_released_offset == 0));
+  }
+  while (segment != null_ptr
+         && (segment->last_engaged_offset + 1 == SC_SEGMENT_ELEMENTS_COUNT && segment->last_released_offset == 0));
 
   return segment;
 }
@@ -433,8 +434,8 @@ void sc_storage_end_new_process()
     goto end;
 
   sc_segment * segment = sc_hash_table_get(storage->processes_segments_table, thread);
-  if (segment != null_ptr &&
-      (segment->last_engaged_offset + 1 != SC_SEGMENT_ELEMENTS_COUNT || segment->last_released_offset != 0))
+  if (segment != null_ptr
+      && (segment->last_engaged_offset + 1 != SC_SEGMENT_ELEMENTS_COUNT || segment->last_released_offset != 0))
   {
     sc_monitor_acquire_write(&storage->segments_monitor);
 
@@ -541,8 +542,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
     sc_element * element;
     result = sc_storage_get_element_by_addr(addr, &element);
-    if (result != SC_RESULT_OK ||
-        (element->flags.access_levels & SC_ACCESS_LVL_REQUEST_DELETION) == SC_ACCESS_LVL_REQUEST_DELETION)
+    if (result != SC_RESULT_OK
+        || (element->flags.access_levels & SC_ACCESS_LVL_REQUEST_DELETION) == SC_ACCESS_LVL_REQUEST_DELETION)
     {
       sc_monitor_release_write(monitor);
       continue;
@@ -1089,8 +1090,8 @@ sc_result sc_storage_set_link_content(
     goto error;
   }
 
-  if (sc_fs_memory_link_string_ext(SC_ADDR_LOCAL_TO_INT(addr), string, string_size, is_searchable_string) !=
-      SC_FS_MEMORY_OK)
+  if (sc_fs_memory_link_string_ext(SC_ADDR_LOCAL_TO_INT(addr), string, string_size, is_searchable_string)
+      != SC_FS_MEMORY_OK)
   {
     result = SC_RESULT_ERROR_FILE_MEMORY_IO;
     goto error;

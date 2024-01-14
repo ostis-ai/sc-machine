@@ -50,7 +50,7 @@ protected:
     auto const & aliases = parser.GetAliases();
     for (auto const & it : aliases)
     {
-      const auto & parsedElement = parser.GetParsedElement(it.second);
+      auto const & parsedElement = parser.GetParsedElement(it.second);
       if (!parsedElement.GetType().IsEdge())
       {
         ResolveElement(parsedElement);
@@ -85,8 +85,8 @@ protected:
     }
 
     parser.ForEachParsedElement([this](scs::ParsedElement const & el) {
-      if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end() && !el.GetType().IsEdge() &&
-          !scs::TypeResolver::IsKeynodeType(el.GetIdtf()))
+      if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end() && !el.GetType().IsEdge()
+          && !scs::TypeResolver::IsKeynodeType(el.GetIdtf()))
       {
         ResolveElement(el);
       }
@@ -361,7 +361,7 @@ bool SCsHelper::GenerateBySCsText(std::string const & scsText, ScAddr const & ou
   return result;
 }
 
-void SCsHelper::GenerateBySCsTextLazy(const std::string & scsText, ScAddr const & outputStructure)
+void SCsHelper::GenerateBySCsTextLazy(std::string const & scsText, ScAddr const & outputStructure)
 {
   ScMemoryContextEventsPendingGuard guard(m_ctx);
 

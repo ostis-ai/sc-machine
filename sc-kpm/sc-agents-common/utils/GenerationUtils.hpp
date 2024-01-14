@@ -19,22 +19,22 @@ class GenerationUtils
 public:
   static ScAddr wrapInOrientedSetBySequenceRelation(
       ScMemoryContext * ms_context,
-      const ScAddrVector & addrVector,
-      const ScType & setType = ScType::NodeConst);
+      ScAddrVector const & addrVector,
+      ScType const & setType = ScType::NodeConst);
 
   static ScAddr wrapInOrientedSet(
       ScMemoryContext * ms_context,
-      const ScAddrVector & addrVector,
-      const ScType & setType = ScType::NodeConst);
+      ScAddrVector const & addrVector,
+      ScType const & setType = ScType::NodeConst);
 
   static ScAddr wrapInSet(
       ScMemoryContext * ms_context,
-      const ScAddrVector & addrVector,
-      const ScType & setType = ScType::NodeConst);
+      ScAddrVector const & addrVector,
+      ScType const & setType = ScType::NodeConst);
 
-  static void addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddrVector & elements);
+  static void addToSet(ScMemoryContext * ms_context, ScAddr const & set, ScAddrVector const & elements);
 
-  static bool addToSet(ScMemoryContext * ms_context, const ScAddr & set, const ScAddr & element);
+  static bool addToSet(ScMemoryContext * ms_context, ScAddr const & set, ScAddr const & element);
 
   static bool addSetToOutline(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & outline);
 

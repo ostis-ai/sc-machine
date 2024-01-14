@@ -12,16 +12,16 @@
 /*!
  * Function, that implements sc-agent to search decomposition of specified sc-element
  */
-sc_result agent_search_decomposition(const sc_event * event, sc_addr arg);
+sc_result agent_search_decomposition(sc_event const * event, sc_addr arg);
 
 /*!
  * Function, that implements sc-agent to search all subclasses of specified sc-element in all quasybinary relations
  */
-sc_result agent_search_all_subclasses_in_quasybinary_relation(const sc_event * event, sc_addr arg);
+sc_result agent_search_all_subclasses_in_quasybinary_relation(sc_event const * event, sc_addr arg);
 
 /*!
  * Function, that implements sc-agent to search all superclasses of specified sc-element in all quasybinary relations
  */
-sc_result agent_search_all_superclasses_in_quasybinary_relation(const sc_event * event, sc_addr arg);
+sc_result agent_search_all_superclasses_in_quasybinary_relation(sc_event const * event, sc_addr arg);
 
 #endif

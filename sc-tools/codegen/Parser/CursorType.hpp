@@ -9,7 +9,7 @@ class Cursor;
 class CursorType
 {
 public:
-  CursorType(const CXType & handle);
+  CursorType(CXType const & handle);
 
   std::string GetDisplayName(void) const;
 

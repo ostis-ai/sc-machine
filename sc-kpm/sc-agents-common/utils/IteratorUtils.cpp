@@ -17,7 +17,7 @@ std::map<size_t, ScAddr> orderRelationsMap;
 
 namespace utils
 {
-ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t & index)
+ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, size_t const & index)
 {
   size_t minRrelCountExceeded = 1;
   if (index < minRrelCountExceeded)
@@ -39,7 +39,7 @@ ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, const size_t
   return ms_context->HelperResolveSystemIdtf("rrel_" + std::to_string(index), ScType::NodeConstRole);
 }
 
-ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, const ScAddr & set)
+ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, ScAddr const & set)
 {
   SC_CHECK_PARAM(set, "Invalid set address passed to `getAnyFromSet`");
 
@@ -53,9 +53,9 @@ ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, const ScAddr &
 
 ScAddr IteratorUtils::getNextFromSet(
     ScMemoryContext * ms_context,
-    const ScAddr & set,
-    const ScAddr & previous,
-    const ScAddr & sequenceRelation)
+    ScAddr const & set,
+    ScAddr const & previous,
+    ScAddr const & sequenceRelation)
 {
   SC_CHECK_PARAM(set, "Invalid set address passed to `getNextFromSet`");
   SC_CHECK_PARAM(previous, "Invalid previous element address passed to `getNextFromSet`");
@@ -77,7 +77,7 @@ ScAddr IteratorUtils::getNextFromSet(
   return nextElement;
 }
 
-ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const ScAddr & set, ScType scType)
+ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, ScAddr const & set, ScType scType)
 {
   SC_CHECK_PARAM(set, "Invalid set address passed to `getAllWithType`");
 
@@ -92,8 +92,8 @@ ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, const S
 
 ScAddrVector IteratorUtils::getAllByRelation(
     ScMemoryContext * ms_context,
-    const ScAddr & node,
-    const ScAddr & relation,
+    ScAddr const & node,
+    ScAddr const & relation,
     bool isBeginNode)
 {
   SC_CHECK_PARAM(node, "Invalid node address passed to `getAllByRelation`");
@@ -110,13 +110,13 @@ ScAddrVector IteratorUtils::getAllByRelation(
 
 ScAddrVector IteratorUtils::getAllByInRelation(
     ScMemoryContext * ms_context,
-    const ScAddr & node,
-    const ScAddr & relation)
+    ScAddr const & node,
+    ScAddr const & relation)
 {
   return getAllByRelation(ms_context, node, relation, false);
 }
 
-ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
+ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation)
 {
   SC_CHECK_PARAM(node, "Invalid node address passed to `getAnyByInRelation`");
   SC_CHECK_PARAM(relation, "Invalid relation address passed to `getAnyByInRelation`");
@@ -131,13 +131,13 @@ ScAddr IteratorUtils::getAnyByInRelation(ScMemoryContext * ms_context, const ScA
 
 ScAddrVector IteratorUtils::getAllByOutRelation(
     ScMemoryContext * ms_context,
-    const ScAddr & node,
-    const ScAddr & relation)
+    ScAddr const & node,
+    ScAddr const & relation)
 {
   return getAllByRelation(ms_context, node, relation, true);
 }
 
-ScAddr IteratorUtils::getAnyByOutRelation(ScMemoryContext * ms_context, const ScAddr & node, const ScAddr & relation)
+ScAddr IteratorUtils::getAnyByOutRelation(ScMemoryContext * ms_context, ScAddr const & node, ScAddr const & relation)
 {
   SC_CHECK_PARAM(node, "Invalid node address passed to `getAnyByOutRelation`");
   SC_CHECK_PARAM(relation, "Invalid relation address passed to `getAnyByOutRelation`");

@@ -93,42 +93,52 @@ inline ScStreamPtr ScStreamMakeRead(std::string const & value)
 {
   return ScStreamConverter::StreamFromString(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(uint8_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(uint16_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(uint32_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(uint64_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(int8_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(int16_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(int32_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(int64_t const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(float const & value)
 {
   return ScStreamMakeReadT(value);
 }
+
 inline ScStreamPtr ScStreamMakeRead(double const & value)
 {
   return ScStreamMakeReadT(value);

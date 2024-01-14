@@ -22,8 +22,8 @@ public:
   _SC_EXTERN ScException(std::string description, std::string msg);
   _SC_EXTERN ~ScException() noexcept override;
 
-  _SC_EXTERN const sc_char * Description() const noexcept;
-  _SC_EXTERN const sc_char * Message() const noexcept;
+  _SC_EXTERN sc_char const * Description() const noexcept;
+  _SC_EXTERN sc_char const * Message() const noexcept;
 
 private:
   std::string m_description;

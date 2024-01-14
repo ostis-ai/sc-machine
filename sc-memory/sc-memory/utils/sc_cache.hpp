@@ -28,8 +28,8 @@ public:
   {
     SC_ASSERT(logCacheSize > 0 && logCacheSize < 32, (logCacheSize));
     static_assert(
-        (std::is_same<KeyT, uint32_t>::value || std::is_same<KeyT, uint64_t>::value ||
-         std::is_same<KeyT, std::string>::value),
+        (std::is_same<KeyT, uint32_t>::value || std::is_same<KeyT, uint64_t>::value
+         || std::is_same<KeyT, std::string>::value),
         "");
 
     m_cache.reset(new Data[uint64_t(1) << logCacheSize]);
@@ -131,6 +131,7 @@ private:
       , m_Value()
     {
     }
+
     KeyT m_Key;
     ValueT m_Value;
   };

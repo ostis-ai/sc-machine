@@ -146,8 +146,8 @@ typedef sc_uint16 sc_type;
 #  define sc_type_permanency_mask (sc_type)(sc_type_arc_perm | sc_type_arc_temp)
 #  define sc_type_node_mask \
     (sc_type)( \
-        sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | \
-        sc_type_node_abstract | sc_type_node_material)
+        sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class \
+        | sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
 // access levels
@@ -168,11 +168,11 @@ typedef sc_uint16 sc_type;
 #  define sc_access_lvl_make_min sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MIN_VALUE)
 
 #  define sc_access_lvl_min(a, b) \
-    (sc_min(((a)&SC_ACCESS_LVL_RMASK), ((b)&SC_ACCESS_LVL_RMASK)) | \
-     sc_min(((a)&SC_ACCESS_LVL_WMASK), ((b)&SC_ACCESS_LVL_WMASK)))
+    (sc_min(((a)&SC_ACCESS_LVL_RMASK), ((b)&SC_ACCESS_LVL_RMASK)) \
+     | sc_min(((a)&SC_ACCESS_LVL_WMASK), ((b)&SC_ACCESS_LVL_WMASK)))
 #  define sc_access_lvl_max(a, b) \
-    (sc_max(((a)&SC_ACCESS_LVL_RMASK), ((b)&SC_ACCESS_LVL_RMASK)) | \
-     sc_max(((a)&SC_ACCESS_LVL_WMASK), ((b)&SC_ACCESS_LVL_WMASK)))
+    (sc_max(((a)&SC_ACCESS_LVL_RMASK), ((b)&SC_ACCESS_LVL_RMASK)) \
+     | sc_max(((a)&SC_ACCESS_LVL_WMASK), ((b)&SC_ACCESS_LVL_WMASK)))
 #  define sc_access_lvl_check_read(c, e) (sc_access_lvl_get_read(c) >= sc_access_lvl_get_read(e))
 #  define sc_access_lvl_check_write(c, e) (sc_access_lvl_get_write(c) >= sc_access_lvl_get_write(e))
 

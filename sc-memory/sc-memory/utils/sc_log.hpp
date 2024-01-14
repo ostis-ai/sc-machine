@@ -9,7 +9,7 @@
 
 #include <sstream>
 #include <fstream>
-#include "string"
+#include <string>
 
 namespace utils
 {
@@ -66,7 +66,7 @@ private:
   bool Initialize(std::string const & logFile);
 
   template <size_t N>
-  static int FindEnumElement(const std::string (&elements)[N], const std::string & externalValue);
+  static int FindEnumElement(const std::string (&elements)[N], std::string const & externalValue);
 };
 
 #define SC_LOG_COLOR(__type, __msg, __color) \
@@ -83,10 +83,5 @@ private:
 #define SC_LOG_WARNING(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Warning, __msg, ScConsole::Color::Yellow)})
 #define SC_LOG_ERROR(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Error, __msg, ScConsole::Color::Red)})
 #define SC_LOG_INFO_COLOR(__msg, __color) ({SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, __color)})
-
-#define SC_LOG_INIT(__msg) ({ SC_LOG_INFO("[init] " << __msg); })
-#define SC_LOG_SHUTDOWN(__msg) ({ SC_LOG_INFO("[shutdown] " << __msg); })
-#define SC_LOG_LOAD(__msg) ({ SC_LOG_INFO("[load] " << __msg); })
-#define SC_LOG_UNLOAD(__msg) ({ SC_LOG_INFO("[unload] " << __msg); })
 
 }  // namespace utils

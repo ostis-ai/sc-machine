@@ -96,7 +96,7 @@ void StringUtils::SplitString(std::string const & str, char delim, std::vector<s
 
 std::string StringUtils::NormalizeFilePath(std::string const & init, bool makeLowerCase)
 {
-  const char * bufferSrc = init.c_str();
+  char const * bufferSrc = init.c_str();
   int pathLen = (int)init.size();
   int indexSrc = 0;
   int indexDst = 0;
@@ -134,8 +134,8 @@ std::string StringUtils::NormalizeFilePath(std::string const & init, bool makeLo
 
       // check if there is a directory to skip of type "..\"
       else if (
-          (bufferSrc[indexSrc] == '.') && (bufferSrc[indexSrc + 1] == '.') &&
-          ((bufferSrc[indexSrc + 2] == '\\') || (bufferSrc[indexSrc + 2] == '/')))
+          (bufferSrc[indexSrc] == '.') && (bufferSrc[indexSrc + 1] == '.')
+          && ((bufferSrc[indexSrc + 2] == '\\') || (bufferSrc[indexSrc + 2] == '/')))
       {
         if (indexDst > metaPathArea)
         {
@@ -143,7 +143,8 @@ std::string StringUtils::NormalizeFilePath(std::string const & init, bool makeLo
           do
           {
             --indexDst;
-          } while ((indexDst > metaPathArea) && (bufferDst[indexDst - 1] != '/'));
+          }
+          while ((indexDst > metaPathArea) && (bufferDst[indexDst - 1] != '/'));
           indexSrc += 3;
           continue;
         }

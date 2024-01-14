@@ -14,41 +14,41 @@ namespace utils
 class CommonUtils
 {
 public:
-  static bool checkType(ScMemoryContext * ms_context, const ScAddr & element, ScType scType);
+  static bool checkType(ScMemoryContext * ms_context, ScAddr const & element, ScType scType);
 
   SC_DEPRECATED(
       0.9.0,
       "Use bool GetLinkContent(ScAddr const & addr, TContentType & typedContent) instead of. It will be removed in "
       "sc-machine 0.10.0.")
-  static std::string getLinkContent(ScMemoryContext * ms_context, const ScAddr & scLink);
+  static std::string getLinkContent(ScMemoryContext * ms_context, ScAddr const & scLink);
 
   static std::string getIdtf(
       ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & idtfRelation,
-      const ScAddrVector & linkClasses = {});
+      ScAddr const & node,
+      ScAddr const & idtfRelation,
+      ScAddrVector const & linkClasses = {});
 
   static std::string getMainIdtf(
       ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddrVector & linkClasses = {});
+      ScAddr const & node,
+      ScAddrVector const & linkClasses = {});
 
   static void setIdtf(
       ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const ScAddr & relation,
-      const std::string & identifier,
-      const ScAddrVector & linkClasses = {});
+      ScAddr const & node,
+      ScAddr const & relation,
+      std::string const & identifier,
+      ScAddrVector const & linkClasses = {});
 
   static void setMainIdtf(
       ScMemoryContext * ms_context,
-      const ScAddr & node,
-      const std::string & identifier,
-      const ScAddrVector & linkClasses = {});
+      ScAddr const & node,
+      std::string const & identifier,
+      ScAddrVector const & linkClasses = {});
 
-  static size_t getSetPower(ScMemoryContext * ms_context, const ScAddr & set);
+  static size_t getSetPower(ScMemoryContext * ms_context, ScAddr const & set);
 
-  static bool isEmpty(ScMemoryContext * ms_context, const ScAddr & set);
+  static bool isEmpty(ScMemoryContext * ms_context, ScAddr const & set);
 
   static std::string getAddrHashString(ScAddr const & scAddr);
 };

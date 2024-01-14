@@ -51,8 +51,8 @@ SC_AGENT_IMPLEMENTATION(GetDecompositionAgent)
   {
     decompositionAddr = scAgentsCommon::CoreKeynodes::nrel_section_decomposition;
     SC_LOG_WARNING(
-        "GetDecompositionAgent: decomposition relation node not found. By default, " +
-        ms_context->HelperGetSystemIdtf(decompositionAddr) + " is used.");
+        "GetDecompositionAgent: decomposition relation node not found. By default, "
+        + ms_context->HelperGetSystemIdtf(decompositionAddr) + " is used.");
   }
 
   ScAddr answerLink = m_memoryCtx.CreateLink();

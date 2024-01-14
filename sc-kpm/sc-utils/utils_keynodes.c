@@ -12,7 +12,7 @@
 sc_addr keynode_question_erase_elements;
 sc_addr keynode_init_memory_generated_structure;
 
-const char keynode_question_erase_elements_str[] = "question_erase_elements";
+char const keynode_question_erase_elements_str[] = "question_erase_elements";
 
 sc_result utils_keynodes_initialize(sc_addr const init_memory_generated_structure)
 {

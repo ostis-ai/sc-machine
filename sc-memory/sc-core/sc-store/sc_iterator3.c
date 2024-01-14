@@ -11,7 +11,7 @@
 
 #include "sc-base/sc_allocator.h"
 
-sc_iterator3 * sc_iterator3_f_a_a_new(const sc_memory_context * ctx, sc_addr el, sc_type arc_type, sc_type end_type)
+sc_iterator3 * sc_iterator3_f_a_a_new(sc_memory_context const * ctx, sc_addr el, sc_type arc_type, sc_type end_type)
 {
   sc_iterator_param p1, p2, p3;
 
@@ -27,7 +27,7 @@ sc_iterator3 * sc_iterator3_f_a_a_new(const sc_memory_context * ctx, sc_addr el,
   return sc_iterator3_new(ctx, sc_iterator3_f_a_a, p1, p2, p3);
 }
 
-sc_iterator3 * sc_iterator3_a_a_f_new(const sc_memory_context * ctx, sc_type beg_type, sc_type arc_type, sc_addr el)
+sc_iterator3 * sc_iterator3_a_a_f_new(sc_memory_context const * ctx, sc_type beg_type, sc_type arc_type, sc_addr el)
 {
   sc_iterator_param p1, p2, p3;
 
@@ -43,7 +43,7 @@ sc_iterator3 * sc_iterator3_a_a_f_new(const sc_memory_context * ctx, sc_type beg
   return sc_iterator3_new(ctx, sc_iterator3_a_a_f, p1, p2, p3);
 }
 
-sc_iterator3 * sc_iterator3_f_a_f_new(const sc_memory_context * ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end)
+sc_iterator3 * sc_iterator3_f_a_f_new(sc_memory_context const * ctx, sc_addr el_beg, sc_type arc_type, sc_addr el_end)
 {
   sc_iterator_param p1, p2, p3;
 
@@ -581,8 +581,8 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
   sc_addr arc_begin;
   if ((el->flags.type & sc_type_edge_common) == sc_type_edge_common)
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin) &&
-        SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin)
+        && SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.end))
       goto error;
 
     arc_begin = _sc_iterator3_get_other_edge_incident_element(el, it->results[0]);
@@ -623,8 +623,8 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
   sc_addr arc_begin;
   if ((el->flags.type & sc_type_edge_common) == sc_type_edge_common)
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.begin) &&
-        SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.begin)
+        && SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
       goto error;
 
     arc_begin = _sc_iterator3_get_other_edge_incident_element(el, it->results[2]);
@@ -665,12 +665,12 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
 
   if ((el->flags.type & sc_type_edge_common) == sc_type_edge_common)
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin) &&
-        SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.begin)
+        && SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, el->arc.end))
       goto error;
 
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.begin) &&
-        SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.begin)
+        && SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, el->arc.end))
       goto error;
   }
   else

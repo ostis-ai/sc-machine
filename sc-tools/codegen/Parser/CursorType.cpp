@@ -3,7 +3,7 @@
 
 #include "MetaUtils.hpp"
 
-CursorType::CursorType(const CXType & handle)
+CursorType::CursorType(CXType const & handle)
   : m_handle(handle)
 {
 }
