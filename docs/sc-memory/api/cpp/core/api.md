@@ -377,6 +377,25 @@ Throw exception for a non-implemented part of code.
 SC_NOT_IMPLEMENTED("This code is not implemented.");
 ```
 
+### **ScLogger**
+
+There are some standard macros which you can use for logging your code. They are encapsulate the class `ScLogger` to
+prevent unappropriated access to it and provide metaprogramming during message logging.
+
+| Macro                  | Message prefix | Message color                 | Log levels                  |
+|------------------------|----------------|-------------------------------|-----------------------------|
+| `SC_LOG_DEBUG(msg);`   | `[Debug]`      | `ScConsole::Color::Grey`      | Debug                       |
+| `SC_LOG_INFO(msg);`    | `[Info]`       | `ScConsole::Color::LightBlue` | Debug, Info                 |
+| `SC_LOG_WARNING(msg);` | `[Warning]`    | `ScConsole::Color::Yellow`    | Debug, Info, Warning        |
+| `SC_LOG_ERROR(msg);`   | `[Error]`      | `ScConsole::Color::Red`       | Debug, Info, Warning, Error |
+
+Now you can not add log levels. But if you want to use another prefixes or colors in logging you can use
+`SC_LOG_INFO_COLOR(msg, color);`. It prints colored info message. Look color constants in `ScConsole::Color`.
+
+Log level can be configured in config file `sc-machine.ini`. Change parameter `log_level` in group `[sc-memory]` by one
+from the list `[Debug, Info, Warning, Error]`. See [Config file example](../../../../build/config.md) to
+learn more about groups and their parameters.
+
 ## **Extended API**
 
 Described methods are part of Core C++ API of sc-memory. You can see and use Extended C++ API of sc-memory:
