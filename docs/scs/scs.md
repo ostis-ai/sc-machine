@@ -845,8 +845,8 @@ nrel_y <- sc_node_norole_relation;;
 
 ### **What SCs-code level is recommended to use?**
 
-The first levels of SCs-code have minimal syntax, so it is simple to handle sc.s-text of these levels. But last levels of
-SCs-code allow you to make sc.s-text it more compact, but these levels of SCs-code have more complicated syntax.
+The first levels of SCs-code have minimal syntax, so it is simple to handle sc.s-text of these levels. But the last levels of
+SCs-code allow you to make sc.s-text more compact, but these levels of SCs-code have more complicated syntax.
 
 ### **Can I combine different levels in one SCs file?**
 
