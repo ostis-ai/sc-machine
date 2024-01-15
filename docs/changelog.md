@@ -16,8 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Update contributing codestyle guide
-- Update .clang-format to 18.0.0
 - Full md docs for sc-memory API on C++ with examples
 - ScTemplate replacement presence check using varAddr
 - Iterator5 AAAAF
@@ -32,6 +30,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clarify context manager for sc-memory
 - Common secured interface for sc-memory
 - GetDecompositionAgent
+
+### Changed
+
+- Refactor all code by .clang-format 18.0.0
+- Replace hyphens by underscores in files
+- Replace underscores by hyphens in folders
+- Update codestyle guide
+- Update contributing guide
+- Update .clang-format to 18.0.0
 
 ### Fixed
 
