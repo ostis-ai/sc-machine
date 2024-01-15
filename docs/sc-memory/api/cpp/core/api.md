@@ -400,8 +400,8 @@ learn more about groups and their parameters.
 
 Described methods are part of Core C++ API of sc-memory. You can see and use Extended C++ API of sc-memory:
 
-- [ScHelper C++ API](../extended/helper-api.md) to manipulate with system identifiers of sc-elements; 
-- [ScTemplate C++ API](../extended/template-api.md), providing functionality for creating, manipulating and retrieving 
+- [ScHelper C++ API](../extended/helper_api.md) to manipulate with system identifiers of sc-elements; 
+- [ScTemplate C++ API](../extended/template_api.md), providing functionality for creating, manipulating and retrieving 
 large graph structures.
 
 ## **Frequently Asked Questions**
