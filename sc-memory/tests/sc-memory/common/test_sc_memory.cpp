@@ -19,8 +19,8 @@ void checkConnectionInStruct(
     EXPECT_TRUE(checkEdge);
     if (checkEdge == SC_FALSE)
       SC_LOG_ERROR(
-          "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s" +
-          m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to struct");
+          "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s"
+          + m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to struct");
   }
 }
 
@@ -193,7 +193,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
         allKeynodes.begin(),
         allKeynodes.end(),
         [context, keynodeAddr, initMemoryGeneratedStructure](ScAddr otherKeynodeAddr) {
-          checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
+      checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
         });
   }
 }

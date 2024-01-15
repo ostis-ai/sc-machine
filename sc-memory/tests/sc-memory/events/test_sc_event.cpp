@@ -28,9 +28,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
 
   size_t count = 10;
 
-  ScEventAddOutputEdge evt(ctx, node,
-    [node, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &)
-  {
+  ScEventAddOutputEdge evt(ctx, node, [node, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &) {
     bool result = false;
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -44,9 +42,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
     return result;
   });
 
-  ScEventAddOutputEdge evt2(ctx, node2,
-    [node3, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &)
-  {
+  ScEventAddOutputEdge evt2(ctx, node2, [node3, node2, count](ScAddr const & addr, ScAddr const &, ScAddr const &) {
     bool result = false;
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -60,9 +56,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
     return result;
   });
 
-  ScEventAddOutputEdge evt3(ctx, node3,
-  [](ScAddr const & addr, ScAddr const &, ScAddr const &)
-  {
+  ScEventAddOutputEdge evt3(ctx, node3, [](ScAddr const & addr, ScAddr const &, ScAddr const &) {
     bool result = false;
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -83,17 +77,15 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
 
 namespace
 {
-const double kTestTimeout = 5.0;
+double const kTestTimeout = 5.0;
 
-template<typename EventClassT, typename PrepareF, typename EmitF>
+template <typename EventClassT, typename PrepareF, typename EmitF>
 void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepare, EmitF emit)
 {
   prepare();
 
-  volatile bool isDone = false;
-  auto const callback =
-      [&isDone](ScAddr const &, ScAddr const &, ScAddr const &)
-  {
+  bool volatile isDone = false;
+  auto const callback = [&isDone](ScAddr const &, ScAddr const &, ScAddr const &) {
     isDone = true;
     return true;
   };
@@ -109,19 +101,17 @@ void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepar
   EXPECT_TRUE(isDone);
 }
 
-} // namespace
+}  // namespace
 
 TEST_F(ScEventTest, AddInputEdge)
 {
   ScAddr addr;
-  auto const CreateNode = [this, &addr]()
-  {
+  auto const CreateNode = [this, &addr]() {
     addr = m_ctx->CreateNode(ScType::Unknown);
     EXPECT_TRUE(addr.IsValid());
   };
 
-  auto const emitEvent = [this, &addr]()
-  {
+  auto const emitEvent = [this, &addr]() {
     ScAddr const addr2 = m_ctx->CreateNode(ScType::Unknown);
     EXPECT_TRUE(addr2.IsValid());
 
@@ -135,14 +125,12 @@ TEST_F(ScEventTest, AddInputEdge)
 TEST_F(ScEventTest, AddOutputEdge)
 {
   ScAddr addr;
-  auto const CreateNode = [this, &addr]()
-  {
+  auto const CreateNode = [this, &addr]() {
     addr = m_ctx->CreateNode(ScType::Unknown);
     EXPECT_TRUE(addr.IsValid());
   };
 
-  auto const emitEvent = [this, &addr]()
-  {
+  auto const emitEvent = [this, &addr]() {
     ScAddr const addr2 = m_ctx->CreateNode(ScType::Unknown);
     EXPECT_TRUE(addr2.IsValid());
 
@@ -164,9 +152,9 @@ TEST_F(ScEventTest, RemoveInputEdge)
   ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
   EXPECT_TRUE(edge.IsValid());
 
-  auto const prepare = []() {};
-  auto const emitEvent = [this, &edge]()
-  {
+  auto const prepare = []() {
+  };
+  auto const emitEvent = [this, &edge]() {
     EXPECT_TRUE(m_ctx->EraseElement(edge));
   };
 
@@ -184,9 +172,9 @@ TEST_F(ScEventTest, RemoveOutputEdge)
   ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccess, addr, addr2);
   EXPECT_TRUE(edge.IsValid());
 
-  auto const prepare = []() {};
-  auto const emitEvent = [this, &edge]()
-  {
+  auto const prepare = []() {
+  };
+  auto const emitEvent = [this, &edge]() {
     EXPECT_TRUE(m_ctx->EraseElement(edge));
   };
 
@@ -198,9 +186,9 @@ TEST_F(ScEventTest, ContentChanged)
   ScAddr const addr = m_ctx->CreateLink();
   EXPECT_TRUE(addr.IsValid());
 
-  auto const prepare = []() {};
-  auto const emitEvent = [this, &addr]()
-  {
+  auto const prepare = []() {
+  };
+  auto const emitEvent = [this, &addr]() {
     std::string const value("test");
     ScStreamPtr stream = ScStreamMakeRead(value);
     EXPECT_TRUE(m_ctx->SetLinkContent(addr, stream));
@@ -214,9 +202,9 @@ TEST_F(ScEventTest, EraseElement)
   ScAddr const addr = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(addr.IsValid());
 
-  auto const prepare = []() {};
-  auto const emitEvent = [this, &addr]()
-  {
+  auto const prepare = []() {
+  };
+  auto const emitEvent = [this, &addr]() {
     EXPECT_TRUE(m_ctx->EraseElement(addr));
   };
 
@@ -228,11 +216,8 @@ TEST_F(ScEventTest, destroy_order)
   ScAddr const node = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(node.IsValid());
 
-  auto * evt = new ScEventAddOutputEdge(*m_ctx, node,
-    [](ScAddr const &, ScAddr const &, ScAddr const &)
-  {
-    return true;
-  });
+  auto * evt =
+      new ScEventAddOutputEdge(*m_ctx, node, [](ScAddr const &, ScAddr const &, ScAddr const &) { return true; });
 
   m_ctx.reset();
 
@@ -245,9 +230,7 @@ TEST_F(ScEventTest, events_lock)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventAddOutputEdge evt(*m_ctx, node,
-    [](ScAddr const & addr, ScAddr const &, ScAddr const &)
-  {
+  ScEventAddOutputEdge evt(*m_ctx, node, [](ScAddr const & addr, ScAddr const &, ScAddr const &) {
     bool result = false;
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -268,14 +251,12 @@ TEST_F(ScEventTest, parallel_create_edges)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventAddOutputEdge evt(*m_ctx, node,
-    [](ScAddr const & addr, ScAddr const &, ScAddr const & target)
-  {
+  ScEventAddOutputEdge evt(*m_ctx, node, [](ScAddr const & addr, ScAddr const &, ScAddr const & target) {
     bool result = false;
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
     while (it->Next())
-     result = true;
+      result = true;
 
     for (size_t i = 0; i < 10000; i++)
       localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, addr, target);
@@ -294,13 +275,11 @@ TEST_F(ScEventTest, parallel_create_remove_edges)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventAddOutputEdge evt(*m_ctx, node,
-    [](ScAddr const & addr, ScAddr const &, ScAddr const & target)
-  {
+  ScEventAddOutputEdge evt(*m_ctx, node, [](ScAddr const & addr, ScAddr const &, ScAddr const & target) {
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
     while (it->Next())
-     localCtx.EraseElement(it->Get(1));
+      localCtx.EraseElement(it->Get(1));
 
     return SC_RESULT_OK;
   });
@@ -314,9 +293,7 @@ TEST_F(ScEventTest, parallel_create_remove_edges2)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventAddOutputEdge evt(*m_ctx, node,
-  [](ScAddr const & addr, ScAddr const & edge, ScAddr const & target)
-  {
+  ScEventAddOutputEdge evt(*m_ctx, node, [](ScAddr const & addr, ScAddr const & edge, ScAddr const & target) {
     ScMemoryContext localCtx(sc_access_lvl_make_min);
     localCtx.EraseElement(edge);
 
@@ -348,31 +325,23 @@ TEST_F(ScEventTest, pend_events)
   ScTemplate templ;
   for (auto const & a : elements)
   {
-    templ.Quintuple(
-      set1,
-      ScType::EdgeDCommonVar,
-      a >> "_el",
-      ScType::EdgeAccessVarPosPerm,
-      rel);
+    templ.Quintuple(set1, ScType::EdgeDCommonVar, a >> "_el", ScType::EdgeAccessVarPosPerm, rel);
   }
 
   std::atomic_uint eventsCount(0);
   std::atomic_uint passedCount(0);
 
-  ScEventAddOutputEdge evt(*m_ctx, set1,
-    [&passedCount, &eventsCount, &set1, &elements, &rel](ScAddr const &, ScAddr const &, ScAddr const &)
-  {
+  ScEventAddOutputEdge evt(
+      *m_ctx,
+      set1,
+      [&passedCount, &eventsCount, &set1, &elements, &rel](ScAddr const &, ScAddr const &, ScAddr const &) {
     std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
     size_t step = 100;
     size_t testNum = el_num / step - 1;
     for (size_t i = 0; i < testNum; ++i)
     {
       checkTempl->Quintuple(
-        set1,
-        ScType::EdgeDCommonVar,
-        elements[i * step] >> "_el",
-        ScType::EdgeAccessVarPosPerm,
-        rel);
+          set1, ScType::EdgeDCommonVar, elements[i * step] >> "_el", ScType::EdgeAccessVarPosPerm, rel);
     }
 
     ScMemoryContext localCtx(sc_access_lvl_make_min);
@@ -386,7 +355,7 @@ TEST_F(ScEventTest, pend_events)
     eventsCount.fetch_add(1);
 
     return true;
-  });
+      });
 
   ScTemplateGenResult genResult;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));

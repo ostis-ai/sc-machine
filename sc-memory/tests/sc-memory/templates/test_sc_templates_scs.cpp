@@ -28,10 +28,7 @@ TEST_F(ScTemplateSCsTest, BuildFail)
 TEST_F(ScTemplateSCsTest, GenBuildSearch)
 {
   ScTemplate genTempl;
-  genTempl.Triple(
-    ScType::NodeVar >> "_a",
-    ScType::EdgeAccessVarPosPerm >> "_edge",
-    ScType::NodeVarTuple >> "b");
+  genTempl.Triple(ScType::NodeVar >> "_a", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVarTuple >> "b");
 
   ScTemplateGenResult genResult;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, genResult));
@@ -70,10 +67,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
 
   // check
   ScTemplate searchTempl;
-  searchTempl.Triple(
-    cAddr >> "c1",
-    ScType::EdgeDCommonVar >> "_edge",
-    ScType::NodeVarAbstract >> "_b1");
+  searchTempl.Triple(cAddr >> "c1", ScType::EdgeDCommonVar >> "_edge", ScType::NodeVarAbstract >> "_b1");
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));

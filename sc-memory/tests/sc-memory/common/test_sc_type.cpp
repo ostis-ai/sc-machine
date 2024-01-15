@@ -4,7 +4,6 @@
 
 #include "sc_test.hpp"
 
-
 TEST(ScTypeTest, nodes)
 {
   EXPECT_TRUE(ScType::Node.IsNode());

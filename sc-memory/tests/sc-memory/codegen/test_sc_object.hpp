@@ -22,10 +22,12 @@ class TestObject : public ScObject
 
 public:
   /// TODO: autogenerate code to call _initInternal
-  TestObject() { Init(); } /// TEST
+  TestObject()
+  {
+    Init();
+  }  /// TEST
 
 public:
-
   SC_PROPERTY(Keynode("test_keynode1"))
   ScAddr mTestKeynode1;
 
@@ -45,5 +47,5 @@ public:
   SC_PROPERTY(Template("test_template2"))
   static ScTemplate mTestTemplate2;
 };
-}
-}
+}  // namespace n2
+}  // namespace n1

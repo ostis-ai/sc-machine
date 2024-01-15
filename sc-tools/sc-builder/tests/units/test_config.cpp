@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include <gtest/gtest.h>
 
@@ -53,7 +53,8 @@ TEST(ScBuilder, RunStop)
   EXPECT_EQ(scParams.at("log_file"), scMemoryParams.log_file);
   EXPECT_EQ(scParams.at("log_level"), scMemoryParams.log_level);
   EXPECT_EQ(
-      scParams.at("init_memory_generated_upload") == "true" ? true : false, scMemoryParams.init_memory_generated_upload);
+      scParams.at("init_memory_generated_upload") == "true" ? true : false,
+      scMemoryParams.init_memory_generated_upload);
   EXPECT_EQ(scParams.at("init_memory_generated_structure"), scMemoryParams.init_memory_generated_structure);
 }
 

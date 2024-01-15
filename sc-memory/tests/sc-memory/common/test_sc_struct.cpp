@@ -41,16 +41,12 @@ TEST_F(ScStructTest, common)
 
   EXPECT_TRUE(st.Append(addr1, attrAddr));
   ScIterator5Ptr iter5 = m_ctx->Iterator5(
-      structAddr,
-      ScType::EdgeAccessConstPosPerm,
-      ScType::Unknown,
-      ScType::EdgeAccessConstPosPerm,
-      attrAddr);
+      structAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
 
   bool found = false;
   while (iter5->Next())
   {
-    EXPECT_FALSE(found);	// one time
+    EXPECT_FALSE(found);  // one time
     EXPECT_EQ(iter5->Get(0), structAddr);
     EXPECT_EQ(iter5->Get(2), addr1);
     EXPECT_EQ(iter5->Get(4), attrAddr);

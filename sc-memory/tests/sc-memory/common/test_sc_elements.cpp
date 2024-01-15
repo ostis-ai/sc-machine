@@ -10,7 +10,6 @@ extern "C"
 
 #include "sc_test.hpp"
 
-
 TEST_F(ScMemoryTest, Elements)
 {
   ScMemoryContext ctx(sc_access_lvl_make_min, "elements");
@@ -95,7 +94,8 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_THROW(ctx.GetElementInputArcsCount(edge), utils::ExceptionInvalidParams);
 
   EXPECT_FALSE(ctx.EraseElement(ScAddr::Empty));
-  EXPECT_THROW(ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAddr::Empty, ScAddr::Empty), utils::ExceptionInvalidParams);
+  EXPECT_THROW(
+      ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScAddr::Empty, ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetEdgeSource(ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetEdgeTarget(ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetEdgeInfo(ScAddr::Empty, sourceAddr, targetAddr), utils::ExceptionInvalidParams);
@@ -335,7 +335,9 @@ TEST(SmallScMemoryTest, FullMemory)
       addrs.push_back(edge);
     }
   }
-  catch (...) {}
+  catch (...)
+  {
+  }
 
   count = addrs.size();
   for (size_t i = 0; i < count; ++i)
@@ -403,7 +405,9 @@ TEST(SmallScMemoryTest, FullMemory2)
       tempAddrs.push_back(edge);
     }
   }
-  catch (...) {}
+  catch (...)
+  {
+  }
   sc_storage_end_new_process();
 
   sc_storage_start_new_process();

@@ -4,6 +4,10 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/common
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test ${GLIB2_INCLUDE_DIRS}
 )
 
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-memory-common-tests)
+endif()
+
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/containers
     NAME sc-memory-containers-tests
     DEPENDS sc-memory sc-core ${GLIB2_LIBRARIES}
@@ -35,6 +39,10 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/agents
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
 
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-memory-agents-tests)
+endif()
+
 sc_codegen(sc-memory-agents-tests ${CMAKE_CURRENT_LIST_DIR}/agents)
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/events
@@ -43,11 +51,19 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/events
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
 
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-memory-events-tests)
+endif()
+
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/scs
     NAME sc-memory-scs-tests
     DEPENDS sc-memory
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
+
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-memory-scs-tests)
+endif()
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/templates
     NAME sc-memory-template-tests
@@ -55,10 +71,18 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/templates
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
 
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-memory-template-tests)
+endif()
+
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/codegen
     NAME sc-memory-codegen-tests
     DEPENDS sc-memory
     INCLUDES ${SC_MEMORY_SRC} ${CMAKE_CURRENT_LIST_DIR}/_test
 )
+
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-memory-codegen-tests)
+endif()
 
 sc_codegen(sc-memory-codegen-tests ${CMAKE_CURRENT_LIST_DIR}/codegen)

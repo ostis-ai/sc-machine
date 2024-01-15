@@ -36,7 +36,6 @@ private:
   utils::ScLock m_lock;
 };
 
-
 class ATestAction : public ScAgentAction
 {
   SC_CLASS(Agent, CmdClass("command_1"))
@@ -45,7 +44,6 @@ class ATestAction : public ScAgentAction
 public:
   static TestWaiter msWaiter;
 };
-
 
 class ATestAddInputEdge : public ScAgent
 {
@@ -59,20 +57,17 @@ public:
   static TestWaiter msWaiter;
 };
 
-
 class ATestAddOutputEdge : public ScAgent
 {
   SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::AddOutputEdge))
   SC_GENERATED_BODY()
 
 public:
-
   SC_PROPERTY(Keynode("ATestAddOutputEdge"), ForceCreate)
   static ScAddr msAgentKeynode;
 
   static TestWaiter msWaiter;
 };
-
 
 class ATestRemoveInputEdge : public ScAgent
 {
@@ -86,7 +81,6 @@ public:
   static TestWaiter msWaiter;
 };
 
-
 class ATestRemoveOutputEdge : public ScAgent
 {
   SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::RemoveOutputEdge))
@@ -99,7 +93,6 @@ public:
   static TestWaiter msWaiter;
 };
 
-
 class ATestRemoveElement : public ScAgent
 {
   SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::EraseElement))
@@ -111,7 +104,6 @@ public:
 
   static TestWaiter msWaiter;
 };
-
 
 class ATestContentChanged : public ScAgent
 {

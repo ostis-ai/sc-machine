@@ -18,34 +18,33 @@ TEST_F(ScTemplateRegressionTest, Issue224)
   {
     std::vector<ScAddr> contourItems;
     {
-      auto testCreateNode = [this, &contourItems](ScType const & type)
-      {
+      auto testCreateNode = [this, &contourItems](ScType const & type) {
         ScAddr const addr = m_ctx->CreateNode(type);
         EXPECT_TRUE(addr.IsValid());
         contourItems.push_back(addr);
         return addr;
       };
 
-      auto testCreateNodeIdtf = [this, &contourItems](ScType const & type, std::string const & idtf)
-      {
+      auto testCreateNodeIdtf = [this, &contourItems](ScType const & type, std::string const & idtf) {
         ScAddr const addr = m_ctx->HelperResolveSystemIdtf(idtf, type);
         EXPECT_TRUE(addr.IsValid());
         contourItems.push_back(addr);
         return addr;
       };
 
-      auto testCreateEdge = [this, &contourItems](ScType const & type, ScAddr const & src, ScAddr const & trg)
-      {
+      auto testCreateEdge = [this, &contourItems](ScType const & type, ScAddr const & src, ScAddr const & trg) {
         ScAddr const edge = m_ctx->CreateEdge(type, src, trg);
         EXPECT_TRUE(edge.IsValid());
         contourItems.push_back(edge);
         return edge;
       };
 
-      auto testCreateEdgeAttrs = [&testCreateEdge](ScType const & type,
-          ScAddr const & src, ScAddr const & trg,
-          ScType const & attrsEdgeType, std::vector<ScAddr> const & attrNodes)
-      {
+      auto testCreateEdgeAttrs = [&testCreateEdge](
+                                     ScType const & type,
+                                     ScAddr const & src,
+                                     ScAddr const & trg,
+                                     ScType const & attrsEdgeType,
+                                     std::vector<ScAddr> const & attrNodes) {
         ScAddr const edge = testCreateEdge(type, src, trg);
         for (ScAddr const & addr : attrNodes)
           testCreateEdge(attrsEdgeType, addr, edge);
@@ -94,7 +93,8 @@ TEST_F(ScTemplateRegressionTest, Issue224)
       ScAddr const searchElStr3Addr = testCreateNodeIdtf(ScType::NodeConstClass, "searchElStr3");
       ScAddr const genElStr3Addr = testCreateNodeIdtf(ScType::NodeConstClass, "geElStr3");
       ScAddr const returnAddr = testCreateNodeIdtf(ScType::NodeConstClass, "return");
-      ScAddr const nrel_decompoisition_of_actionAddr = testCreateNodeIdtf(ScType::NodeVarNoRole, "nrel_decomposition_of_action");
+      ScAddr const nrel_decompoisition_of_actionAddr =
+          testCreateNodeIdtf(ScType::NodeVarNoRole, "nrel_decomposition_of_action");
       ScAddr const nrel_thenAddr = testCreateNodeIdtf(ScType::NodeConstNoRole, "nrel_then");
       ScAddr const nrel_elseAddr = testCreateNodeIdtf(ScType::NodeConstNoRole, "nrel_else");
       ScAddr const nrel_gotoAddr = testCreateNodeIdtf(ScType::NodeConstNoRole, "nrel_goto");
@@ -102,160 +102,129 @@ TEST_F(ScTemplateRegressionTest, Issue224)
       {
         // scp_process _-> ..process_instance;;
         ScAddr const __procInstanceAddr = testCreateNode(ScType::NodeVar);
-        testCreateEdge(
-              ScType::EdgeAccessVarPosPerm,
-              scpProcessAddr,
-              __procInstanceAddr);
+        testCreateEdge(ScType::EdgeAccessVarPosPerm, scpProcessAddr, __procInstanceAddr);
 
         // ..process_instance _-> rrel_1:: rrel_in:: _set1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              __procInstanceAddr,
-              _set1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_1Addr, rrel_inAddr });
+            ScType::EdgeAccessVarPosPerm,
+            __procInstanceAddr,
+            _set1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_1Addr, rrel_inAddr});
 
         // ..process_instance _-> rrel_1:: rrel_in::_element1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              __procInstanceAddr,
-              _element1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_1Addr, rrel_inAddr });
+            ScType::EdgeAccessVarPosPerm,
+            __procInstanceAddr,
+            _element1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_1Addr, rrel_inAddr});
 
         // ..process_instance _<= nrel_decomposition_of_action:: ..proc_decomp_instance;;
         ScAddr const __procDecompInstanceAddr = testCreateNode(ScType::NodeVar);
         testCreateEdgeAttrs(
-              ScType::EdgeDCommonVar,
-              __procDecompInstanceAddr,
-              __procInstanceAddr,
-              ScType::EdgeAccessVarPosPerm,
-              { nrel_decompoisition_of_actionAddr });
+            ScType::EdgeDCommonVar,
+            __procDecompInstanceAddr,
+            __procInstanceAddr,
+            ScType::EdgeAccessVarPosPerm,
+            {nrel_decompoisition_of_actionAddr});
 
         // ..proc_decomp_instance _-> rrel_1:: _operator1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              __procDecompInstanceAddr,
-              _operator1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_1Addr });
+            ScType::EdgeAccessVarPosPerm,
+            __procDecompInstanceAddr,
+            _operator1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_1Addr});
 
         // ..proc_decomp_instance _->_operator2;;
-        testCreateEdge(
-              ScType::EdgeAccessVarPosPerm,
-              __procDecompInstanceAddr,
-              _operator2Addr);
+        testCreateEdge(ScType::EdgeAccessVarPosPerm, __procDecompInstanceAddr, _operator2Addr);
 
         // ..proc_decomp_instance _-> _operator3;;
-        testCreateEdge(
-              ScType::EdgeAccessVarPosPerm,
-              __procDecompInstanceAddr,
-              _operator3Addr);
+        testCreateEdge(ScType::EdgeAccessVarPosPerm, __procDecompInstanceAddr, _operator3Addr);
 
         // _operator1 _<- searchElStr3;;
-        testCreateEdge(
-              ScType::EdgeAccessVarPosPerm,
-              searchElStr3Addr,
-              _operator1Addr);
+        testCreateEdge(ScType::EdgeAccessVarPosPerm, searchElStr3Addr, _operator1Addr);
 
         // _operator1 _-> rrel_1:: rrel_fixed:: rrel_scp_var:: _set1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              _operator1Addr,
-              _set1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr });
+            ScType::EdgeAccessVarPosPerm,
+            _operator1Addr,
+            _set1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator1 _-> rrel_2:: rrel_assign:: rrel_arc_const_pos_perm:: rrel_scp_var:: _arc1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              _operator1Addr,
-              _arc1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr });
+            ScType::EdgeAccessVarPosPerm,
+            _operator1Addr,
+            _arc1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr});
 
         // _operator1 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              _operator1Addr,
-              _element1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr });
+            ScType::EdgeAccessVarPosPerm,
+            _operator1Addr,
+            _element1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator1 _=> nrel_then:: _operator3;;
         testCreateEdgeAttrs(
-              ScType::EdgeDCommonVar,
-              _operator1Addr,
-              _operator3Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { nrel_thenAddr });
+            ScType::EdgeDCommonVar, _operator1Addr, _operator3Addr, ScType::EdgeAccessVarPosPerm, {nrel_thenAddr});
 
         // _operator1 _=> nrel_else:: _operator2;;
         testCreateEdgeAttrs(
-              ScType::EdgeDCommonVar,
-              _operator1Addr,
-              _operator2Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { nrel_elseAddr });
+            ScType::EdgeDCommonVar, _operator1Addr, _operator2Addr, ScType::EdgeAccessVarPosPerm, {nrel_elseAddr});
 
         // _operator2 _<- genElStr3;;
-        testCreateEdge(
-              ScType::EdgeAccessVarPosPerm,
-              genElStr3Addr,
-              _operator2Addr);
+        testCreateEdge(ScType::EdgeAccessVarPosPerm, genElStr3Addr, _operator2Addr);
 
         // _operator2 _-> rrel_1:: rrel_fixed:: rrel_scp_var:: _set1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              _operator2Addr,
-              _set1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr });
+            ScType::EdgeAccessVarPosPerm,
+            _operator2Addr,
+            _set1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator2 _-> rrel_2:: rrel_assign:: rrel_arc_const_pos_perm:: rrel_scp_var:: _arc1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              _operator2Addr,
-              _arc1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_2Addr, rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr });
+            ScType::EdgeAccessVarPosPerm,
+            _operator2Addr,
+            _arc1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_2Addr, rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr});
 
         // _operator2 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              _operator2Addr,
-              _element1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr });
+            ScType::EdgeAccessVarPosPerm,
+            _operator2Addr,
+            _element1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator2 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testCreateEdgeAttrs(
-              ScType::EdgeAccessVarPosPerm,
-              _operator2Addr,
-              _element1Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr });
+            ScType::EdgeAccessVarPosPerm,
+            _operator2Addr,
+            _element1Addr,
+            ScType::EdgeAccessVarPosPerm,
+            {rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator2 _=> nrel_goto:: _operator3;;
         testCreateEdgeAttrs(
-              ScType::EdgeDCommonVar,
-              _operator2Addr,
-              _operator3Addr,
-              ScType::EdgeAccessVarPosPerm,
-              { nrel_gotoAddr });
+            ScType::EdgeDCommonVar, _operator2Addr, _operator3Addr, ScType::EdgeAccessVarPosPerm, {nrel_gotoAddr});
 
         // _operator3 _<- return;;
-        testCreateEdge(
-              ScType::EdgeAccessVarPosPerm,
-              returnAddr,
-              _operator3Addr);
+        testCreateEdge(ScType::EdgeAccessVarPosPerm, returnAddr, _operator3Addr);
       }
     }
 
     // check helperBuildTemplate by random shuffles of contour items (to test order they returned by iterators)
     {
-      auto shuffle = [&contourItems](int iterationsNum)
-      {
+      auto shuffle = [&contourItems](int iterationsNum) {
         std::random_device rand_dev;
         std::mt19937 mt_rand(rand_dev());
         std::uniform_int_distribution<int> unif(0, static_cast<int>(contourItems.size() - 1));
@@ -274,7 +243,8 @@ TEST_F(ScTemplateRegressionTest, Issue224)
       for (size_t i = 0; i < testNum; ++i)
       {
         shuffle(1);
-        ScAddr const structAddr = m_ctx->HelperResolveSystemIdtf("test_program" + std::to_string(i), ScType::NodeConstStruct);
+        ScAddr const structAddr =
+            m_ctx->HelperResolveSystemIdtf("test_program" + std::to_string(i), ScType::NodeConstStruct);
         EXPECT_TRUE(structAddr.IsValid());
         ScStruct contour(*m_ctx, structAddr);
 
@@ -314,18 +284,8 @@ TEST_F(ScTemplateRegressionTest, Issue251)
   // create template for a search
   ScTemplate templ;
 
-  templ.Quintuple(
-    kAddr,
-    ScType::EdgeDCommonVar,
-    ScType::Link >> "_link",
-    ScType::EdgeAccessVarPosPerm,
-    relAddr
-  );
-  templ.Triple(
-    tAddr,
-    ScType::EdgeAccessVarPosPerm,
-    "_link"
-  );
+  templ.Quintuple(kAddr, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, relAddr);
+  templ.Triple(tAddr, ScType::EdgeAccessVarPosPerm, "_link");
 
   ScTemplateSearchResult res;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));

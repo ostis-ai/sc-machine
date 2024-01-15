@@ -9,20 +9,18 @@ using ScKeynodesTest = ScMemoryTest;
 
 TEST_F(ScKeynodesTest, binary_types)
 {
-  ScAddr keynodes[] =
-  {
-    ScKeynodes::kBinaryDouble,
-    ScKeynodes::kBinaryFloat,
-    ScKeynodes::kBinaryInt8,
-    ScKeynodes::kBinaryInt16,
-    ScKeynodes::kBinaryInt32,
-    ScKeynodes::kBinaryInt64,
-    ScKeynodes::kBinaryUInt8,
-    ScKeynodes::kBinaryUInt16,
-    ScKeynodes::kBinaryUInt32,
-    ScKeynodes::kBinaryUInt64,
-    ScKeynodes::kBinaryString
-  };
+  ScAddr keynodes[] = {
+      ScKeynodes::kBinaryDouble,
+      ScKeynodes::kBinaryFloat,
+      ScKeynodes::kBinaryInt8,
+      ScKeynodes::kBinaryInt16,
+      ScKeynodes::kBinaryInt32,
+      ScKeynodes::kBinaryInt64,
+      ScKeynodes::kBinaryUInt8,
+      ScKeynodes::kBinaryUInt16,
+      ScKeynodes::kBinaryUInt32,
+      ScKeynodes::kBinaryUInt64,
+      ScKeynodes::kBinaryString};
 
   for (ScAddr a : keynodes)
     EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::kBinaryType, a, ScType::EdgeAccessConstPosPerm));

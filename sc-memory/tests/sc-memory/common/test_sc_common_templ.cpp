@@ -16,11 +16,7 @@ TEST_F(ScCommonTemplTest, ResolveRelationTuple)
   {
     ScTemplate templ;
     templ.Quintuple(
-      ScType::NodeVarTuple >> "_tuple",
-      ScType::EdgeDCommonVar,
-      el,
-      ScType::EdgeAccessVarPosPerm,
-      relAddr);
+        ScType::NodeVarTuple >> "_tuple", ScType::EdgeDCommonVar, el, ScType::EdgeAccessVarPosPerm, relAddr);
 
     ScTemplateSearchResult res;
     EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
@@ -41,12 +37,7 @@ TEST_F(ScCommonTemplTest, SetRelationValue)
   ScAddr const linkAddr1 = sc::SetRelationValue(*m_ctx, el, relAddr1, value1);
 
   ScTemplate templ;
-  templ.Quintuple(
-    el,
-    ScType::EdgeDCommonVar,
-    ScType::Link >> "_link",
-    ScType::EdgeAccessVarPosPerm,
-    relAddr1);
+  templ.Quintuple(el, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, relAddr1);
 
   ScLink link(*m_ctx, linkAddr1);
 

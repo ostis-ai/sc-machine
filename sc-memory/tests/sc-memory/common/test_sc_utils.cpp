@@ -7,11 +7,10 @@
 TEST(ScStringUtils, Base64)
 {
   std::string const & testString = "OSTIS Technology";
-  std::string const & encodedString
-      = ScBase64::Encode(reinterpret_cast<sc_uchar const *>(testString.c_str()), testString.size());
+  std::string const & encodedString =
+      ScBase64::Encode(reinterpret_cast<sc_uchar const *>(testString.c_str()), testString.size());
 
-  std::string const & decodedString =
-      ScBase64::Decode(encodedString);
+  std::string const & decodedString = ScBase64::Decode(encodedString);
 
   EXPECT_EQ(testString, decodedString);
 }
@@ -83,7 +82,6 @@ TEST(StringUtils, ParseNumbers)
     EXPECT_TRUE(utils::StringUtils::ParseNumber("32", resultInt32));
     EXPECT_EQ(resultInt32, 32);
   }
-
 
   {
     int64_t resultInt64;

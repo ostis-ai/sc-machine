@@ -10,7 +10,7 @@ TEST(ScStreamTest, common)
   for (uint32_t i = 0; i < length; ++i)
     buff[i] = rand() % 256;
 
-  ScStream stream((sc_char*)buff, length, SC_STREAM_FLAG_READ);
+  ScStream stream((sc_char *)buff, length, SC_STREAM_FLAG_READ);
 
   EXPECT_TRUE(stream.IsValid());
   EXPECT_TRUE(stream.HasFlag(SC_STREAM_FLAG_READ));
@@ -24,7 +24,7 @@ TEST(ScStreamTest, common)
   {
     unsigned char c;
     size_t readBytes;
-    EXPECT_TRUE(stream.Read((sc_char*)&c, sizeof(c), readBytes));
+    EXPECT_TRUE(stream.Read((sc_char *)&c, sizeof(c), readBytes));
     EXPECT_EQ(c, buff[i]);
   }
 
@@ -38,10 +38,9 @@ TEST(ScStreamTest, common)
     sc_uint32 pos = rand() % length;
     EXPECT_TRUE(stream.Seek(SC_STREAM_SEEK_SET, pos));
 
-
     unsigned char c;
     size_t readBytes;
-    EXPECT_TRUE(stream.Read((sc_char*)&c, sizeof(c), readBytes));
+    EXPECT_TRUE(stream.Read((sc_char *)&c, sizeof(c), readBytes));
     EXPECT_EQ(c, buff[pos]);
   }
 }

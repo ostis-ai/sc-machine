@@ -53,14 +53,10 @@ TEST_F(ScIterator5Test, smoke)
   EXPECT_TRUE(m_ctx->IsElement(m_attrEdge));
 }
 
-TEST_F(ScIterator5Test, a_a_f_a_a)
+TEST_F(ScIterator5Test, AAFAA)
 {
   ScIterator5Ptr const iter5 = m_ctx->Iterator5(
-    ScType::Node,
-    ScType::EdgeAccessConstPosPerm,
-    m_target,
-    ScType::EdgeAccessConstPosPerm,
-    ScType::Node);
+      ScType::Node, ScType::EdgeAccessConstPosPerm, m_target, ScType::EdgeAccessConstPosPerm, ScType::Node);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -79,14 +75,10 @@ TEST_F(ScIterator5Test, a_a_f_a_a)
   EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
-TEST_F(ScIterator5Test, a_a_f_a_f)
+TEST_F(ScIterator5Test, AAFAA2)
 {
-  ScIterator5Ptr const iter5 = m_ctx->Iterator5(
-    ScType::Node,
-    ScType::EdgeAccessConstPosPerm,
-    m_target,
-    ScType::EdgeAccessConstPosPerm,
-    m_attr);
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(sc_type_node, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, sc_type_node);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -105,14 +97,10 @@ TEST_F(ScIterator5Test, a_a_f_a_f)
   EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
-TEST_F(ScIterator5Test, f_a_a_a_a)
+TEST_F(ScIterator5Test, AAFAF)
 {
-  ScIterator5Ptr const iter5 = m_ctx->Iterator5(
-    m_source,
-    ScType::EdgeAccessConstPosPerm,
-    ScType::Node,
-    ScType::EdgeAccessConstPosPerm,
-    ScType::Node);
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(ScType::Node, ScType::EdgeAccessConstPosPerm, m_target, ScType::EdgeAccessConstPosPerm, m_attr);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -131,14 +119,10 @@ TEST_F(ScIterator5Test, f_a_a_a_a)
   EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
-TEST_F(ScIterator5Test, f_a_a_a_f)
+TEST_F(ScIterator5Test, AAFAF2)
 {
-  ScIterator5Ptr const iter5 = m_ctx->Iterator5(
-    m_source,
-    ScType::EdgeAccessConstPosPerm,
-    ScType::Node,
-    ScType::EdgeAccessConstPosPerm,
-    m_attr);
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(sc_type_node, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, m_attr);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -157,14 +141,10 @@ TEST_F(ScIterator5Test, f_a_a_a_f)
   EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
-TEST_F(ScIterator5Test, f_a_f_a_a)
+TEST_F(ScIterator5Test, FAAAA)
 {
   ScIterator5Ptr const iter5 = m_ctx->Iterator5(
-    m_source,
-    ScType::EdgeAccessConstPosPerm,
-    m_target,
-    ScType::EdgeAccessConstPosPerm,
-    ScType::Node);
+      m_source, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, ScType::Node);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -183,14 +163,10 @@ TEST_F(ScIterator5Test, f_a_f_a_a)
   EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
-TEST_F(ScIterator5Test, f_a_f_a_f)
+TEST_F(ScIterator5Test, FAAAA2)
 {
-  ScIterator5Ptr const iter5 = m_ctx->Iterator5(
-    m_source,
-    ScType::EdgeAccessConstPosPerm,
-    m_target,
-    ScType::EdgeAccessConstPosPerm,
-    m_attr);
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(m_source, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -209,14 +185,164 @@ TEST_F(ScIterator5Test, f_a_f_a_f)
   EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
 }
 
-TEST_F(ScIterator5Test, a_a_a_a_f)
+TEST_F(ScIterator5Test, FAAAF)
+{
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(m_source, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, m_attr);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
+TEST_F(ScIterator5Test, FAAAF2)
+{
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(m_source, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, m_attr);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
+TEST_F(ScIterator5Test, FAFAA)
 {
   ScIterator5Ptr const iter5 = m_ctx->Iterator5(
-      ScType::Node,
-      ScType::EdgeAccessConstPosPerm,
-      ScType::NodeVar,
-      ScType::EdgeAccessConstPosPerm,
-      m_attr);
+      m_source, ScType::EdgeAccessConstPosPerm, m_target, ScType::EdgeAccessConstPosPerm, ScType::Node);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
+TEST_F(ScIterator5Test, FAFAA2)
+{
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(m_source, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, sc_type_node);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
+TEST_F(ScIterator5Test, FAFAF)
+{
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(m_source, ScType::EdgeAccessConstPosPerm, m_target, ScType::EdgeAccessConstPosPerm, m_attr);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
+TEST_F(ScIterator5Test, FAFAF2)
+{
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(m_source, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, m_attr);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
+TEST_F(ScIterator5Test, AAAAF)
+{
+  ScIterator5Ptr const iter5 = m_ctx->Iterator5(
+      ScType::Node, ScType::EdgeAccessConstPosPerm, ScType::NodeVar, ScType::EdgeAccessConstPosPerm, m_attr);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
+TEST_F(ScIterator5Test, AAAAF2)
+{
+  ScIterator5Ptr const iter5 =
+      m_ctx->Iterator5(sc_type_node, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, m_attr);
 
   EXPECT_TRUE(iter5->Next());
 

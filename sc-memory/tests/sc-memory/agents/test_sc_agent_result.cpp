@@ -14,7 +14,7 @@ ScAddr ATestResultOk::ms_keynodeTestResultOk;
 // TODO: test for ScAgentAction::GetResultCodeAddr return results
 SC_AGENT_ACTION_IMPLEMENTATION(ATestResultOk)
 {
-return SC_RESULT_OK;
+  return SC_RESULT_OK;
 }
 
 TEST_F(ScAgentTest, ATestResultOk)
@@ -30,19 +30,15 @@ TEST_F(ScAgentTest, ATestResultOk)
 
     ScAddr const cmdAddr = ctx.CreateNode(ScType::NodeConst);
     EXPECT_TRUE(cmdAddr.IsValid());
-    ScAddr const edge = ctx.CreateEdge(
-          ScType::EdgeAccessConstPosPerm,
-          ATestResultOk::ms_keynodeTestResultOk,
-          cmdAddr);
+    ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, ATestResultOk::ms_keynodeTestResultOk, cmdAddr);
 
     EXPECT_TRUE(edge.IsValid());
 
     ScWaitActionFinished waiter(ctx, cmdAddr);
-    EXPECT_TRUE(waiter.Wait(5000, [&cmdAddr]()
-                            {
-                              ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
-                              ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
-                            }));
+    EXPECT_TRUE(waiter.Wait(5000, [&cmdAddr]() {
+      ScMemoryContext ctxLocal(sc_access_lvl_make_min, "ATestResultOk_init");
+      ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
+    }));
 
     // check result
     EXPECT_EQ(ScAgentAction::GetCommandResultCode(ctx, cmdAddr), SC_RESULT_OK);
@@ -56,8 +52,7 @@ TEST_F(ScAgentTest, AgentResult_Codes)
 {
   ScAgentInit(true);
 
-  auto const CheckValue = [](sc_result resCode)
-  {
+  auto const CheckValue = [](sc_result resCode) {
     ScAddr const & addr = ScKeynodes::GetResultCodeAddr(resCode);
     sc_result const res = ScKeynodes::GetResultCodeByAddr(addr);
     EXPECT_EQ(resCode, res);

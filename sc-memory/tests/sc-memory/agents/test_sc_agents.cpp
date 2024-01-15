@@ -18,8 +18,7 @@ ScAddr CreateKeynode(ScMemoryContext & ctx, std::string const & name)
   return node;
 }
 
-} // namespace
-
+}  // namespace
 
 TEST_F(ScAgentTest, ATestAction)
 {

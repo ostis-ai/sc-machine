@@ -7,7 +7,8 @@
 
 #include <algorithm>
 
-template <typename Type> void TestType(ScMemoryContext & ctx, Type const & value)
+template <typename Type>
+void TestType(ScMemoryContext & ctx, Type const & value)
 {
   ScAddr const linkAddr = ctx.CreateLink();
   EXPECT_TRUE(linkAddr.IsValid());
@@ -336,30 +337,30 @@ TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
   EXPECT_TRUE(str == link3.GetAsString());
 
   auto strings = ctx.FindLinksContentsByContentSubstring("cont", 4);
-  EXPECT_TRUE(strings.size() == 1); // found by prefix substring
+  EXPECT_TRUE(strings.size() == 1);  // found by prefix substring
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") == strings.end());
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
-  
+
   strings = ctx.FindLinksContentsByContentSubstring("cont", 3);
-  EXPECT_TRUE(strings.size() == 2); // found by substring, not prefix
+  EXPECT_TRUE(strings.size() == 2);  // found by substring, not prefix
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") != strings.end());
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
   strings = ctx.FindLinksContentsByContentSubstring("cont", 5);
-  EXPECT_TRUE(strings.size() == 1); // found by prefix substring
+  EXPECT_TRUE(strings.size() == 1);  // found by prefix substring
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") == strings.end());
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
   strings = ctx.FindLinksContentsByContentSubstring("25", 2);
-  EXPECT_TRUE(strings.empty()); // found by prefix substring
+  EXPECT_TRUE(strings.empty());  // found by prefix substring
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") == strings.end());
-  
+
   strings = ctx.FindLinksContentsByContentSubstring("25", 1);
-  EXPECT_TRUE(strings.size() == 1); // found by substring, not prefix
+  EXPECT_TRUE(strings.size() == 1);  // found by substring, not prefix
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
-  
+
   strings = ctx.FindLinksContentsByContentSubstring("25", 3);
-  EXPECT_TRUE(strings.empty()); // found by prefix substring
+  EXPECT_TRUE(strings.empty());  // found by prefix substring
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") == strings.end());
 
   ctx.Destroy();
