@@ -11,7 +11,7 @@
 #include "sc-memory/utils/sc_exec.hpp"
 
 #define PYTHON_INTERPRETER "python3"
-#define GWF_TRANSLATOR_SCRIPT SC_PREPARE_BUILD_SCRIPTS_PATH "/kb_scripts/gwf_to_scs.py"
+#define GWF_TRANSLATOR_SCRIPT SC_PREPARE_BUILD_SCRIPTS_PATH "/kb-scripts/gwf_to_scs.py"
 #define GWF_TRANSLATOR_ERRORS_LOG SC_PREPARE_BUILD_SCRIPTS_PATH "/prepare_kb.log"
 #define GWF_TRANSLATOR_INPUT_FILE_PARAM "--input="
 #define GWF_TRANSLATOR_ERRORS_LOG_PARAM "--errors_file="
