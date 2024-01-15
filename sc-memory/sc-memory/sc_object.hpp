@@ -20,11 +20,11 @@ protected:
   explicit ScObject();
   virtual ~ScObject();
 
-  ScObject(ScObject const & other);
+  ScObject(ScObject const & other) = delete;
   ScObject & operator=(ScObject const & other);
 
 public:
-  /// TODO: Need mechanism to call that function automaticaly after object construction
+  /// TODO: Need mechanism to call that function automatically after object construction
   bool Init();
 
 private:

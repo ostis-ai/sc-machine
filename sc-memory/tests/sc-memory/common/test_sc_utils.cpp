@@ -15,6 +15,55 @@ TEST(ScStringUtils, Base64)
   EXPECT_EQ(testString, decodedString);
 }
 
+TEST(StringUtils, ToUpperCase)
+{
+  std::string testString = "sTring 123";
+  utils::StringUtils::ToUpperCase(testString);
+  EXPECT_EQ(testString, "STRING 123");
+}
+
+TEST(StringUtils, ToLowerCase)
+{
+  std::string testString = "sTring 123";
+  utils::StringUtils::ToLowerCase(testString);
+  EXPECT_EQ(testString, "string 123");
+}
+
+TEST(StringUtils, StartsWith)
+{
+  std::string const & testString = "sTring 123";
+  EXPECT_FALSE(utils::StringUtils::StartsWith(testString, "sTr"));
+  EXPECT_TRUE(utils::StringUtils::StartsWith(testString, "sTr", false));
+
+  EXPECT_TRUE(utils::StringUtils::StartsWith(testString, "st"));
+  EXPECT_FALSE(utils::StringUtils::StartsWith(testString, "st", false));
+
+  EXPECT_FALSE(utils::StringUtils::StartsWith(testString, "st 12345678956"));
+  EXPECT_FALSE(utils::StringUtils::StartsWith(testString, "st 12345678956", false));
+}
+
+TEST(StringUtils, EndsWith)
+{
+  std::string const & testString = "sTring 123 sTr";
+  EXPECT_FALSE(utils::StringUtils::EndsWith(testString, "sTr"));
+  EXPECT_TRUE(utils::StringUtils::EndsWith(testString, "sTr", false));
+
+  EXPECT_FALSE(utils::StringUtils::EndsWith(testString, "st"));
+  EXPECT_FALSE(utils::StringUtils::EndsWith(testString, "st", false));
+
+  EXPECT_FALSE(utils::StringUtils::EndsWith(testString, "st 1234567895645"));
+  EXPECT_FALSE(utils::StringUtils::EndsWith(testString, "st 1234567895645", false));
+}
+
+TEST(StringUtils, ReplaceAll)
+{
+  std::string testString = "stringstr string string";
+  testString = utils::StringUtils::ReplaceAll(testString, "string", "str");
+  EXPECT_EQ(testString, "strstr str str");
+  testString = utils::StringUtils::ReplaceAll(testString, "str", "1");
+  EXPECT_EQ(testString, "11 1 1");
+}
+
 TEST(StringUtils, Trim)
 {
   std::string trimLeft = "  value";

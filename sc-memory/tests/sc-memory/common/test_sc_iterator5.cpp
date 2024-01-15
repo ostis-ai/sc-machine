@@ -53,6 +53,36 @@ TEST_F(ScIterator5Test, smoke)
   EXPECT_TRUE(m_ctx->IsElement(m_attrEdge));
 }
 
+TEST_F(ScIterator5Test, InvalidIndex)
+{
+  ScIterator5Ptr const iter5 = m_ctx->Iterator5(
+      ScType::Node, ScType::EdgeAccessConstPosPerm, m_target, ScType::EdgeAccessConstPosPerm, ScType::Node);
+
+  EXPECT_TRUE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), m_source);
+  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(2), m_target);
+  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(4), m_attr);
+  EXPECT_THROW(iter5->Get(5), utils::ExceptionInvalidParams);
+
+  ScAddrQuintuple quintuple = iter5->Get();
+  EXPECT_EQ(quintuple[0], m_source);
+  EXPECT_EQ(quintuple[1], m_edge);
+  EXPECT_EQ(quintuple[2], m_target);
+  EXPECT_EQ(quintuple[3], m_attrEdge);
+  EXPECT_EQ(quintuple[4], m_attr);
+
+  EXPECT_FALSE(iter5->Next());
+
+  EXPECT_EQ(iter5->Get(0), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(1), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(2), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(3), ScAddr::Empty);
+  EXPECT_EQ(iter5->Get(4), ScAddr::Empty);
+}
+
 TEST_F(ScIterator5Test, AAFAA)
 {
   ScIterator5Ptr const iter5 = m_ctx->Iterator5(

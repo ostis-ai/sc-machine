@@ -14,10 +14,6 @@ ScObject::ScObject()
 
 ScObject::~ScObject() = default;
 
-ScObject::ScObject(ScObject const & other)
-{
-}
-
 ScObject & ScObject::operator=(ScObject const & other)
 {
   return *this;

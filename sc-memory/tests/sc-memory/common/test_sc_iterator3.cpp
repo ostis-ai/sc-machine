@@ -52,6 +52,11 @@ TEST_F(ScIterator3Test, InvalidIndex)
   EXPECT_EQ(iter3->Get(2), m_target);
   EXPECT_THROW(iter3->Get(3), utils::ExceptionInvalidParams);
 
+  ScAddrTriple triple = iter3->Get();
+  EXPECT_EQ(triple[0], m_source);
+  EXPECT_EQ(triple[1], m_edge);
+  EXPECT_EQ(triple[2], m_target);
+
   EXPECT_FALSE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), ScAddr::Empty);

@@ -19,7 +19,6 @@ parsers:
 
 ignore:
   - "sc-kpm"
-  - "*/utils/sc_console.*"
-  - "*/utils/sc_message.*"
-  - "*/utils/sc_progress.*"
+  - "sc-memory/sc-memory/utils/sc_console.cpp"
+  - "sc-memory/sc-memory/utils/sc_message.cpp"
   - "*/tests/*"

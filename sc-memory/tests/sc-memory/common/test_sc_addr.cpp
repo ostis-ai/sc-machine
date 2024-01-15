@@ -8,9 +8,12 @@ TEST(ScAddrTest, Hash)
   a.offset = 123;
   a.seg = 654;
 
-  ScAddr const addr1(a);
+  ScAddr addr1(a);
   auto const hash = addr1.Hash();
   ScAddr const addr2(hash);
 
   EXPECT_EQ(addr1, addr2);
+
+  addr1.Reset();
+  EXPECT_EQ(addr1, ScAddr::Empty);
 }
