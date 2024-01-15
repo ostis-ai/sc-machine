@@ -131,4 +131,3 @@ TEST_F(ScTemplateSearchInStructTest, SearchInStruct)
     }
   }
 }
-

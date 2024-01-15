@@ -11,7 +11,7 @@
 #include "sc-memory/sc_utils.hpp"
 #include "../../src/gwf_translator.hpp"
 
-#define TEST_CORRECT_GWF SC_BUILDER_KB "/test_templates/test_template_1.gwf"
+#define TEST_CORRECT_GWF SC_BUILDER_KB "/test-templates/test_template_1.gwf"
 #define TEST_INCORRECT_GWF SC_BUILDER_TEST_REPOS "/kb/example.gwf"
 
 TEST_F(ScBuilderTest, CorrectGWF)

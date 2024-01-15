@@ -528,4 +528,3 @@ TEST_F(ScLoopTest, FFF)
   EXPECT_EQ(iter3->Get(1), ScAddr::Empty);
   EXPECT_EQ(iter3->Get(2), ScAddr::Empty);
 }
-
