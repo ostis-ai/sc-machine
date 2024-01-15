@@ -27,13 +27,13 @@ std::vector<ScMemoryJsonPayload> ScMemoryJsonHandler::ParseRequestMessage(std::s
   if (messageJson.is_null())
     return requestData;
 
-  requestData = {messageJson["type"], messageJson["payload"], messageJson["id"]};
+  if (!messageJson.contains("payload"))
+    return requestData;
 
-  for (auto const & item : requestData)
-  {
-    if (item.is_null())
-      return {};
-  }
+  if (!messageJson.contains("id"))
+    return requestData;
+
+  requestData = {messageJson["type"], messageJson["payload"], messageJson["id"]};
 
   return requestData;
 }

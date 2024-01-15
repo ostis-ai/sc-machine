@@ -112,7 +112,7 @@ protected:
     if (ScMemoryJsonPayload::accept(msg->get_payload()))
     {
       ScMemoryJsonPayload const & payload = ScMemoryJsonPayload::parse(msg->get_payload());
-      return payload["type"].get<std::string>();
+      return payload.contains("type") ? payload["type"].get<std::string>() : "";
     }
 
     return "";
