@@ -103,8 +103,8 @@ void TEST_N_CONNECTIONS(std::unique_ptr<ScServer> const & server, size_t const a
 
   std::chrono::duration<double, std::milli> elapsed = end - start;
   std::cout << "Elapsed "
-            << elapsed.count() - WAIT_BETWEEN_CONNECT_DISCONNECT -
-                   2. * (double)CONNECTIONS * WAIT_BETWEEN_CLIENTS_CONNECT
+            << elapsed.count() - WAIT_BETWEEN_CONNECT_DISCONNECT
+                   - 2. * (double)CONNECTIONS * WAIT_BETWEEN_CLIENTS_CONNECT
             << " ms\n";
 }
 
