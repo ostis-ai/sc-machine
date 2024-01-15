@@ -19,6 +19,7 @@ parsers:
 
 ignore:
   - "sc-kpm"
+  - "sc-tools/codegen"
   - "sc-memory/sc-memory/utils/sc_console.cpp"
   - "sc-memory/sc-memory/utils/sc_message.cpp"
   - "*/tests/*"
