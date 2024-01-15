@@ -1092,8 +1092,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_terms
   arguments[2] = *link_hashes;
   sc_dictionary_fs_memory_status const status = sc_dictionary_visit_down_nodes(
       string_offsets_terms_dictionary, _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets, arguments);
-  sc_dictionary_destroy(string_offsets_terms_dictionary, _sc_dictionary_fs_memory_node_clear) ? SC_FS_MEMORY_OK
-                                                                                              : SC_FS_MEMORY_READ_ERROR;
+  sc_dictionary_destroy(string_offsets_terms_dictionary, _sc_dictionary_fs_memory_node_clear);
   return status;
 }
 

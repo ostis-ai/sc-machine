@@ -30,7 +30,7 @@ namespace pattern {
                      ParseTree *patternTree);
     ParseTreePattern(ParseTreePattern const&) = default;
     virtual ~ParseTreePattern();
-    ParseTreePattern& operator=(ParseTreePattern const&) = default;
+    ParseTreePattern& operator=(ParseTreePattern const&) = delete;
 
     /// <summary>
     /// Match a specific parse tree against this tree pattern.
@@ -89,10 +89,10 @@ namespace pattern {
     virtual ParseTree* getPatternTree() const;
 
   private:
-    const int patternRuleIndex;
+    int patternRuleIndex;
 
     /// This is the backing field for <seealso cref="#getPattern()"/>.
-    const std::string _pattern;
+    std::string _pattern;
 
     /// This is the backing field for <seealso cref="#getPatternTree()"/>.
     ParseTree *_patternTree;
