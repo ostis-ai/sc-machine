@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Update contributing codestyle guide
+- Update .clang-format to 18.0.0
 - Full md docs for sc-memory API on C++ with examples
 - ScTemplate replacement presence check using varAddr
 - Iterator5 AAAAF
