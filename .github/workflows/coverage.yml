@@ -17,7 +17,7 @@ jobs:
       matrix:
         config:
           - {
-            name: "Coverage for sc-dictionary fs-storage",
+            name: "Coverage C++",
             os: ubuntu-latest,
             file_memory: "Dictionary",
             build_type: "Debug",

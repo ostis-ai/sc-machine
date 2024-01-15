@@ -17,7 +17,7 @@ jobs:
       matrix:
         config:
           - {
-            name: "Sanitizer for sc-dictionary fs-storage - address",
+            name: "Sanitizer - address",
             os: ubuntu-latest,
             file_memory: "Dictionary",
             sanitizer: "address",

@@ -15,7 +15,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Run the Docker image
+      - name: Run Docker image
         run: |
           mkdir kb
           DOCKER_BUILDKIT=1 docker build . -t ostis/sc-machine:latest
