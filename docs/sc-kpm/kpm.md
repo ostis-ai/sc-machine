@@ -10,20 +10,64 @@ It is an agent that get decomposition of subject domain in JSON format
 
 **Parameters:**
 
-1. `subjDomain` - subject domain node;
-1. `level` - link that stores decomposition level (unnecessary parameter, by default value of `level` parameter is `1`);
-1. `lang` - language node;
-1. `relation of decomposition` - relation node by which an entity is decomposed.
+* `subjDomain` - subject domain node;
+* `level` - link that stores decomposition level (unnecessary parameter, by default value of `level` parameter is `1`);
+* `lang` - language node;
+* `relation of decomposition` - relation node by which an entity is decomposed.
 
 **Example:**
 
 Example of an input structure:
 
-<img src="images/GetDecompositionAgentInput.png"/></img>
+<scg src="../images/get-decomposition-agent/input.gwf"/></scg>
 
 Example of an output structure:
 
-<img src="images/GetDecompositionAgentOutput.png"></img>
+<scg src="../images/get-decomposition-agent/output.gwf"></scg>
+
+Link result:
+
+```json
+{
+   <main_entity_addr>: {
+      "decomposition": {
+            <entity_1_addr>: {
+               "decomposition": null,
+               "idtf": "Entity 1",
+               "position": 0
+            },
+            <entity_2_addr>: {
+               "decomposition": null,
+               "idtf": "Entity 2",
+               "position": 1
+            },
+            <entity_3_addr>: {
+               "decomposition": null,
+               "idtf": "Entity 3",
+               "position": 2
+            },
+            <entity_4_addr>: {
+               "decomposition": {
+                  <entity_4_1_addr>: {
+                     "decomposition": null,
+                     "idtf": "Entity 4.1",
+                     "position": 0
+                  },
+                  <entity_4_2_addr>: {
+                     "decomposition": null,
+                     "idtf": "Entity 4.2",
+                     "position": 1
+                  },
+               },
+               "idtf": "Entity 4",
+               "position": 3
+            },
+      },
+      "idtf": "Main Entity",
+      "position": 0
+   }
+}
+```
 
 **Result:**
 

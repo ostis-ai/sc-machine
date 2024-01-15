@@ -19,6 +19,8 @@
         * [TypeScript Core API](https://github.com/ostis-ai/ts-sc-client) - *documentation of TypeScript core API for creating, retrieving and erasing sc-elements and sc-events in sc-memory*
     * [Sc-element types](scs/sc-element-types.md) - *detailed description of supported element types*
     * [SCs-code](scs/scs.md) - *documentation on SCs Language with examples*
+- **Utils**
+    * [Agents](sc-kpm/kpm.md) - *detailed description of common sc-agents*
 - **Tools**
     * [Knowledge Base builder](sc-tools/sc-builder.md) - *description of options of sc-builder for knowledge base sources*
     * [Knowledge Base repo file](sc-tools/kb-repo-file.md) - *description of configuration of knowledge base sources*

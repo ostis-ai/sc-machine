@@ -28,6 +28,8 @@ nav:
           - TypeScript Core API: https://github.com/ostis-ai/ts-sc-client
       - Sc-element types: scs/sc-element-types.md
       - SCs-code: scs/scs.md
+  - Utils:
+      - Agents: sc-kpm/kpm.md
   - Tools:
       - Knowledge Base Builder: sc-tools/sc-builder.md
       - Knowledge Base repo file: sc-tools/kb-repo-file.md
