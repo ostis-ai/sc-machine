@@ -10,8 +10,6 @@ To initialize your repo do:
 ```sh
 git clone git@github.com:yourlogin/sc-machine.git
 cd sc-machine
-git config --global user.name "Your Name"
-git config --global user.email youremail@example.com
 git remote add upstream git@github.com:ostis-ai/sc-machine.git
 ```
 

@@ -11,7 +11,8 @@ All code should conform to C++17 standard. Here's a summary of the key rules spe
 * File names are lowercase with underscores, like `sc_memory.cpp`.
 * Directory names are lowercase with hyphen, like `sc-memory/`.
 * We use `#pragma once` instead of the `#define` Guard in header files.
-* Include categories are specified with priorities, such as `gtest/gmock`, `sc-memory`, `sc_*` and others.
+* Include categories are specified with priorities. There are two main categories: external libraries and internal 
+libraries. External libraries have the highest priority.
 * Includes are sorted and grouped by directory, there should be newlines between different directories.
 * Order of directories in includes: `current_dir/current_file.hpp`, other includes from the same dir, includes from other dirs sorted by name.
 
@@ -32,6 +33,9 @@ All code should conform to C++17 standard. Here's a summary of the key rules spe
 ```
 
 * Don't use `using namespace std` or other namespaces globally. You can use them locally in test cpp files or functions.
+
+!!! note
+    Unfortunately, sources of `sc-kpm` does not comply these rules. But you must comply these rules!
 
 ### Indentation and Spacing
 
@@ -120,7 +124,8 @@ public:
   // Constructor with initializer list
   MyClass(sc_uint32 x, sc_uint32 y)
     : memberX(x)
-    , memberY(y) {
+    , memberY(y) 
+  {
     // Constructor body
   }
 
@@ -249,7 +254,7 @@ for (sc_uint32 i = 0; i < 10; ++i)
 ```cpp
 // It is correct style.
 std::string multilineString = "This is a long string that "
-                             "spans multiple lines.";
+                              "spans multiple lines.";
 ```
 
 * Always break functions declarations and calls.

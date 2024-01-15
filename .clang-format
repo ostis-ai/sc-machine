@@ -85,7 +85,7 @@ IncludeCategories:
   - Regex:           '^<sc-memory/*.*'
     Priority:        21
 
-  - Regex:           '^"sc_*.*'
+  - Regex:           '^"sc-*.*'
     Priority:        31
 
   - Regex:           '.*'
