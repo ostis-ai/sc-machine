@@ -108,7 +108,7 @@ sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
 }
 
 sc_fs_memory_status sc_fs_memory_get_strings_by_substring(
-    const sc_char * substring,
+    sc_char const * substring,
     const sc_uint32 substring_size,
     sc_uint32 const max_length_to_search_as_prefix,
     sc_list ** strings)
@@ -153,9 +153,9 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
   if (is_no_deprecated_segments)
   {
     if (sc_io_channel_read_chars(
-            segments_channel, (sc_char *)&storage->segments_count, sizeof(sc_addr_seg), &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        read_bytes != sizeof(sc_addr_seg))
+            segments_channel, (sc_char *)&storage->segments_count, sizeof(sc_addr_seg), &read_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || read_bytes != sizeof(sc_addr_seg))
     {
       storage->segments_count = 0;
       sc_fs_memory_error("Error while attribute `storage->segments_count` reading");
@@ -167,8 +167,9 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
             (sc_char *)&storage->last_not_engaged_segment_num,
             sizeof(sc_addr_seg),
             &read_bytes,
-            null_ptr) != SC_FS_IO_STATUS_NORMAL ||
-        read_bytes != sizeof(sc_addr_seg))
+            null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || read_bytes != sizeof(sc_addr_seg))
     {
       storage->last_not_engaged_segment_num = 0;
       sc_fs_memory_error("Error while attribute `storage->last_not_engaged_segment_num` reading");
@@ -180,8 +181,9 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
             (sc_char *)&storage->last_released_segment_num,
             sizeof(sc_addr_seg),
             &read_bytes,
-            null_ptr) != SC_FS_IO_STATUS_NORMAL ||
-        read_bytes != sizeof(sc_addr_seg))
+            null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || read_bytes != sizeof(sc_addr_seg))
     {
       storage->last_released_segment_num = 0;
       sc_fs_memory_error("Error while attribute `storage->last_released_segment_num` reading");
@@ -207,10 +209,9 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
 
     for (sc_addr_seg j = 0; j < SC_SEGMENT_ELEMENTS_COUNT; ++j)
     {
-      if (sc_io_channel_read_chars(
-              segments_channel, (sc_char *)&seg->elements[j], element_size, &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          read_bytes != element_size)
+      if (sc_io_channel_read_chars(segments_channel, (sc_char *)&seg->elements[j], element_size, &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || read_bytes != element_size)
       {
         storage->segments_count = num;
         sc_fs_memory_error("Error while sc-element %d in sc-segment %d reading", j, i);
@@ -228,18 +229,18 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
     if (is_no_deprecated_segments)
     {
       if (sc_io_channel_read_chars(
-              segments_channel, (sc_char *)&seg->last_engaged_offset, sizeof(sc_addr_offset), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          read_bytes != sizeof(sc_addr_offset))
+              segments_channel, (sc_char *)&seg->last_engaged_offset, sizeof(sc_addr_offset), &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || read_bytes != sizeof(sc_addr_offset))
       {
         sc_fs_memory_error("Error while sc-segment %d reading", i);
         goto error;
       }
 
       if (sc_io_channel_read_chars(
-              segments_channel, (sc_char *)&seg->last_released_offset, sizeof(sc_addr_offset), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          read_bytes != sizeof(sc_addr_offset))
+              segments_channel, (sc_char *)&seg->last_released_offset, sizeof(sc_addr_offset), &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || read_bytes != sizeof(sc_addr_offset))
       {
         sc_fs_memory_error("Error while sc-segment %d reading", i);
         goto error;
@@ -297,9 +298,9 @@ sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
 
   sc_uint64 written_bytes;
   if (sc_io_channel_write_chars(
-          segments_channel, (sc_char *)&storage->segments_count, sizeof(sc_addr_seg), &written_bytes, null_ptr) !=
-          SC_FS_IO_STATUS_NORMAL ||
-      written_bytes != sizeof(sc_addr_seg))
+          segments_channel, (sc_char *)&storage->segments_count, sizeof(sc_addr_seg), &written_bytes, null_ptr)
+          != SC_FS_IO_STATUS_NORMAL
+      || written_bytes != sizeof(sc_addr_seg))
   {
     sc_fs_memory_error("Error while attribute `storage->segments_count` writing");
     goto error;
@@ -310,8 +311,9 @@ sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
           (sc_char *)&storage->last_not_engaged_segment_num,
           sizeof(sc_addr_seg),
           &written_bytes,
-          null_ptr) != SC_FS_IO_STATUS_NORMAL ||
-      written_bytes != sizeof(sc_addr_seg))
+          null_ptr)
+          != SC_FS_IO_STATUS_NORMAL
+      || written_bytes != sizeof(sc_addr_seg))
   {
     sc_fs_memory_error("Error while attribute `storage->last_not_engaged_segment_num` writing");
     goto error;
@@ -322,8 +324,9 @@ sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
           (sc_char *)&storage->last_released_segment_num,
           sizeof(sc_addr_seg),
           &written_bytes,
-          null_ptr) != SC_FS_IO_STATUS_NORMAL ||
-      written_bytes != sizeof(sc_addr_seg))
+          null_ptr)
+          != SC_FS_IO_STATUS_NORMAL
+      || written_bytes != sizeof(sc_addr_seg))
   {
     sc_fs_memory_error("Error while attribute `storage->last_released_segment_num` writing");
     goto error;
@@ -341,9 +344,9 @@ sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
     sc_monitor_acquire_read(&segment->monitor);
 
     if (sc_io_channel_write_chars(
-            segments_channel, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        written_bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
+            segments_channel, (sc_char *)segment->elements, SC_SEG_ELEMENTS_SIZE_BYTE, &written_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || written_bytes != SC_SEG_ELEMENTS_SIZE_BYTE)
     {
       sc_fs_memory_error("Error while attribute `segment->elements` writing");
       goto segment_save_error;
@@ -354,8 +357,9 @@ sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
             (sc_char *)&segment->last_engaged_offset,
             sizeof(sc_addr_offset),
             &written_bytes,
-            null_ptr) != SC_FS_IO_STATUS_NORMAL ||
-        written_bytes != sizeof(sc_addr_offset))
+            null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || written_bytes != sizeof(sc_addr_offset))
     {
       sc_fs_memory_error("Error while attribute `segment->last_engaged_offset` writing");
       goto segment_save_error;
@@ -366,8 +370,9 @@ sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage)
             (sc_char *)&segment->last_released_offset,
             sizeof(sc_addr_offset),
             &written_bytes,
-            null_ptr) != SC_FS_IO_STATUS_NORMAL ||
-        written_bytes != sizeof(sc_addr_offset))
+            null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || written_bytes != sizeof(sc_addr_offset))
     {
       sc_fs_memory_error("Error while attribute `segment->last_released_offset` writing");
       goto segment_save_error;

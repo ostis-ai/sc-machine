@@ -151,8 +151,8 @@ sc_bool ui_translate_get_identifier(sc_addr el, sc_addr lang_addr, String & idtf
   sc_char buffer[32];
 
   idtf = "";
-  if (ui_get_main_identifier_link(s_default_ctx, el, lang_addr, &idtf_addr) == SC_RESULT_OK ||
-      sc_helper_get_system_identifier_link(s_default_ctx, el, &idtf_addr) == SC_RESULT_OK)
+  if (ui_get_main_identifier_link(s_default_ctx, el, lang_addr, &idtf_addr) == SC_RESULT_OK
+      || sc_helper_get_system_identifier_link(s_default_ctx, el, &idtf_addr) == SC_RESULT_OK)
   {
     if (sc_memory_get_link_content(s_default_ctx, idtf_addr, &idtf_stream) == SC_RESULT_OK)
     {

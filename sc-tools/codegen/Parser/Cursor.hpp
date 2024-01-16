@@ -10,7 +10,7 @@ public:
   typedef std::vector<Cursor> List;
   typedef CXCursorVisitor Visitor;
 
-  Cursor(const CXCursor & handle);
+  Cursor(CXCursor const & handle);
 
   CXCursorKind GetKind(void) const;
 

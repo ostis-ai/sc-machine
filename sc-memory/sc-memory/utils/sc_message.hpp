@@ -169,11 +169,13 @@ inline std::string Message()
 {
   return std::string();
 }
+
 template <typename T>
 std::string Message(T const & t)
 {
   return DebugPrint(t);
 }
+
 template <typename T, typename... ARGS>
 std::string Message(T const & t, ARGS const &... others)
 {

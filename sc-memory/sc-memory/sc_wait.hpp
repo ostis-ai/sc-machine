@@ -89,16 +89,16 @@ template <typename EventClassT>
 class ScWaitEvent : public ScWait
 {
 public:
-  ScWaitEvent(const ScMemoryContext & ctx, const ScAddr & addr)
+  ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr)
     : m_event(
-          ctx,
-          addr,
-          std::bind(
-              &ScWaitEvent<EventClassT>::OnEvent,
-              this,
-              std::placeholders::_1,
-              std::placeholders::_2,
-              std::placeholders::_3))
+        ctx,
+        addr,
+        std::bind(
+            &ScWaitEvent<EventClassT>::OnEvent,
+            this,
+            std::placeholders::_1,
+            std::placeholders::_2,
+            std::placeholders::_3))
   {
   }
 
@@ -132,7 +132,7 @@ class ScWaitCondition final : public ScWaitEvent<EventClassT>
 public:
   using DelegateCheckFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
-  ScWaitCondition(const ScMemoryContext & ctx, const ScAddr & addr, DelegateCheckFunc func)
+  ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func)
     : ScWaitEvent<EventClassT>(ctx, addr)
     , m_checkFunc(std::move(func))
   {

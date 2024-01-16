@@ -31,6 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Common secured interface for sc-memory
 - GetDecompositionAgent
 
+### Changed
+
+- Refactor all code by .clang-format 18.0.0
+- Replace hyphens by underscores in files
+- Replace underscores by hyphens in folders
+- Update codestyle guide
+- Update contributing guide
+- Update .clang-format to 18.0.0
+
 ### Fixed
 
 - Script scg.min.js styles handling for sc.g-element types of KBE >0.4.0

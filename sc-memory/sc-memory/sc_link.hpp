@@ -43,6 +43,7 @@ public:
 
   template <typename Type>
   inline ScAddr const & Type2Addr() const;
+
   template <typename Type>
   inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
@@ -139,56 +140,67 @@ inline ScAddr const & ScLink::Type2Addr<std::string>() const
 {
   return ScKeynodes::kBinaryString;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<float>() const
 {
   return ScKeynodes::kBinaryFloat;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<double>() const
 {
   return ScKeynodes::kBinaryDouble;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<int8_t>() const
 {
   return ScKeynodes::kBinaryInt8;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<int16_t>() const
 {
   return ScKeynodes::kBinaryInt16;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<int32_t>() const
 {
   return ScKeynodes::kBinaryInt32;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<int64_t>() const
 {
   return ScKeynodes::kBinaryInt64;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint8_t>() const
 {
   return ScKeynodes::kBinaryUInt8;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint16_t>() const
 {
   return ScKeynodes::kBinaryUInt16;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint32_t>() const
 {
   return ScKeynodes::kBinaryUInt32;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint64_t>() const
 {
   return ScKeynodes::kBinaryUInt64;
 }
+
 template <>
 inline ScAddr const & ScLink::Type2Addr<ScStreamPtr>() const
 {

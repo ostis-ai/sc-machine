@@ -784,31 +784,31 @@ nrel_basic_sequence
 
 There are a list of element type keynodes, that can be used to specify type of sc-element:
 
-| Keynode                           | Equal sc-type                  | Equal sc.g-element
-| --------------------------------- |--------------------------------| --------------
-| sc_node                           | ScType::NodeConst              | ![sc.g-edge](images/scg/scg_node_const.png)
-| sc_link                           | ScType::LinkConst              | ![sc.g-edge](images/scg/scg_link_const.png)
-| sc_edge_dcommon                   | ScType::EdgeDCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common_orient.png)
-| sc_edge_ucommon                   | ScType::EdgeUCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common.png)
-| sc_edge_main                      | ScType::EdgeAccessConstPosPerm | ![sc.g-edge](images/scg/scg_edge_const_pos_perm.png)
-| sc_edge_access                    | ScType::EdgeAccess             | ![sc.g-edge](images/scg/scg_edge_access.png)
-| sc_node_tuple                     | ScType::NodeTuple              | ![sc.g-edge](images/scg/scg_node_const_tuple.png) ![sc.g-edge](images/scg/scg_node_var_tuple.png)
-| sc_node_struct                    | ScType::NodeStruct             | ![sc.g-edge](images/scg/scg_node_const_struct.png) ![sc.g-edge](images/scg/scg_node_var_struct.png)
-| sc_node_role_relation             | ScType::NodeRole               | ![sc.g-edge](images/scg/scg_node_const_role.png) ![sc.g-edge](images/scg/scg_node_var_role.png)
-| sc_node_norole_relation           | ScType::NodeNoRole             | ![sc.g-edge](images/scg/scg_node_const_norole.png) ![sc.g-edge](images/scg/scg_node_var_norole.png)
-| sc_node_class                     | ScType::NodeClass              | ![sc.g-edge](images/scg/scg_node_const_class.png) ![sc.g-edge](images/scg/scg_node_var_class.png)
-| sc_node_material                  | ScType::NodeMaterial           | ![sc.g-edge](images/scg/scg_node_const_material.png) ![sc.g-edge](images/scg/scg_node_var_material.png)
+| Keynode                 | Equal sc-type                  | Equal sc.g-element                                                                                      |
+|-------------------------|--------------------------------|---------------------------------------------------------------------------------------------------------|
+| sc_node                 | ScType::NodeConst              | ![sc.g-edge](images/scg/scg_node_const.png)                                                             |
+| sc_link                 | ScType::LinkConst              | ![sc.g-edge](images/scg/scg_link_const.png)                                                             |
+| sc_edge_dcommon         | ScType::EdgeDCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common_orient.png)                                               |
+| sc_edge_ucommon         | ScType::EdgeUCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common.png)                                                      |
+| sc_edge_main            | ScType::EdgeAccessConstPosPerm | ![sc.g-edge](images/scg/scg_edge_const_pos_perm.png)                                                    |
+| sc_edge_access          | ScType::EdgeAccess             | ![sc.g-edge](images/scg/scg_edge_access.png)                                                            |
+| sc_node_tuple           | ScType::NodeTuple              | ![sc.g-edge](images/scg/scg_node_const_tuple.png) ![sc.g-edge](images/scg/scg_node_var_tuple.png)       |
+| sc_node_struct          | ScType::NodeStruct             | ![sc.g-edge](images/scg/scg_node_const_struct.png) ![sc.g-edge](images/scg/scg_node_var_struct.png)     |
+| sc_node_role_relation   | ScType::NodeRole               | ![sc.g-edge](images/scg/scg_node_const_role.png) ![sc.g-edge](images/scg/scg_node_var_role.png)         |
+| sc_node_norole_relation | ScType::NodeNoRole             | ![sc.g-edge](images/scg/scg_node_const_norole.png) ![sc.g-edge](images/scg/scg_node_var_norole.png)     |
+| sc_node_class           | ScType::NodeClass              | ![sc.g-edge](images/scg/scg_node_const_class.png) ![sc.g-edge](images/scg/scg_node_var_class.png)       |
+| sc_node_material        | ScType::NodeMaterial           | ![sc.g-edge](images/scg/scg_node_const_material.png) ![sc.g-edge](images/scg/scg_node_var_material.png) |
 
 There are old keynodes, that used for backward compatibility:
 
-| Keynode                   | Equal sc-type                  | New keynode |
-| ------------------------- |--------------------------------| ----------- |
-| sc_arc_main               | ScType::EdgeAccessConstPosPerm | sc_edge_main |
-| sc_edge                   | ScType::EdgeUCommonConst       | sc_edge_ucommon |
-| sc_arc_common             | ScType::EdgeDCommonConst       | sc_edge_dcommon |
-| sc_arc_access             | ScType::EdgeAccess             | sc_edge_access |
-| sc_node_not_relation      | ScType::NodeConstClass         | sc_node_class |
-| sc_node_not_binary_tuple  | ScType::NodeConstTuple         | sc_node_tuple |
+| Keynode                  | Equal sc-type                  | New keynode     |
+|--------------------------|--------------------------------|-----------------|
+| sc_arc_main              | ScType::EdgeAccessConstPosPerm | sc_edge_main    |
+| sc_edge                  | ScType::EdgeUCommonConst       | sc_edge_ucommon |
+| sc_arc_common            | ScType::EdgeDCommonConst       | sc_edge_dcommon |
+| sc_arc_access            | ScType::EdgeAccess             | sc_edge_access  |
+| sc_node_not_relation     | ScType::NodeConstClass         | sc_node_class   |
+| sc_node_not_binary_tuple | ScType::NodeConstTuple         | sc_node_tuple   |
 
 There is an example of usage:
 
@@ -845,8 +845,8 @@ nrel_y <- sc_node_norole_relation;;
 
 ### **What SCs-code level is recommended to use?**
 
-The first levels of SCs-code have minimal syntax, so it is simple to handle sc.s-text of these levels. But last levels of
-SCs-code allow you to make sc.s-text it more compact, but these levels of SCs-code have more complicated syntax.
+The first levels of SCs-code have minimal syntax, so it is simple to handle sc.s-text of these levels. But the last levels of
+SCs-code allow you to make sc.s-text more compact, but these levels of SCs-code have more complicated syntax.
 
 ### **Can I combine different levels in one SCs file?**
 

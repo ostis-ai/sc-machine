@@ -10,7 +10,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-BaseClass::BaseClass(const Cursor & cursor)
+BaseClass::BaseClass(Cursor const & cursor)
   : name(cursor.GetType().GetCanonicalType().GetDisplayName())
 {
 }
@@ -20,7 +20,7 @@ bool BaseClass::IsNative() const
   return (name == Classes::Object || name == Classes::Agent || name == Classes::AgentAction || name == Classes::Module);
 }
 
-Class::Class(const Cursor & cursor, const Namespace & currentNamespace)
+Class::Class(Cursor const & cursor, Namespace const & currentNamespace)
   : LanguageType(cursor, currentNamespace)
   , m_name(cursor.GetDisplayName())
   , m_qualifiedName(cursor.GetType().GetDisplayName())
@@ -204,7 +204,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     {
       EMIT_ERROR("Invalid base class for Agent " << m_displayName);
     }
-    const bool isActionAgent = IsActionAgent();
+    bool const isActionAgent = IsActionAgent();
 
     std::string listenAddr;
     std::string eventType;

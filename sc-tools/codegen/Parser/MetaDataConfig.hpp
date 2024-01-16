@@ -1,12 +1,12 @@
 #pragma once
 
-const auto kMetaEnable = "Enable";
-const auto kMetaDisable = "Disable";
+auto const kMetaEnable = "Enable";
+auto const kMetaDisable = "Disable";
 
-const auto kMetaDisplayName = "DisplayName";
+auto const kMetaDisplayName = "DisplayName";
 
-const auto kMetaDisablePtrType = "DisablePtrType";
-const auto kMetaDisableConstPtrType = "DisableConstPtrType";
+auto const kMetaDisablePtrType = "DisablePtrType";
+auto const kMetaDisableConstPtrType = "DisableConstPtrType";
 
-const auto kMetaExplicitGetter = "Getter";
-const auto kMetaExplicitSetter = "Setter";
+auto const kMetaExplicitGetter = "Getter";
+auto const kMetaExplicitSetter = "Setter";

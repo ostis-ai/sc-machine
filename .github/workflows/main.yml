@@ -9,7 +9,7 @@ on:
 
 jobs:
   run_tests:
-    name: ${{ matrix.os }}, ${{ matrix.build_type }}, ${{ matrix.file_memory }}, ${{ matrix.config.cxx }}
+    name: ${{ matrix.os }}, ${{ matrix.build_type }}, ${{ matrix.config.cxx }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -45,11 +45,11 @@ jobs:
           BUILD_TYPE: ${{ matrix.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: none
-        run: scripts/ci/make-tests.sh
+        run: scripts/ci/make_tests.sh
 
       - name: Run tests
         id: run_tests
-        run: scripts/ci/run-tests.sh
+        run: scripts/ci/run_tests.sh
 
       - name: Run sc-server
         id: run_sc_server

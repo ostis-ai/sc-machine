@@ -23,7 +23,7 @@ public:
    * @param format_addr sc-addr of output format
    * @param lang_addr sc-addr of user language
    */
-  void translate(const sc_addr & input_addr, const sc_addr & format_addr, const sc_addr & lang_addr);
+  void translate(sc_addr const & input_addr, sc_addr const & format_addr, sc_addr const & lang_addr);
 
 protected:
   //! Collect objects that need to be translated
@@ -33,11 +33,11 @@ protected:
   virtual void runImpl() = 0;
 
   //! Check if sc-element need to be translated
-  bool isNeedToTranslate(const sc_addr & addr) const;
+  bool isNeedToTranslate(sc_addr const & addr) const;
 
 public:
   //! Build id from specified sc-addr
-  static String buildId(const sc_addr & addr);
+  static String buildId(sc_addr const & addr);
 
 protected:
   //! Sc-addr of input construction

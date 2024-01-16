@@ -17,7 +17,7 @@ uiTranslateFromSc::~uiTranslateFromSc()
 {
 }
 
-void uiTranslateFromSc::translate(const sc_addr & input_addr, const sc_addr & format_addr, const sc_addr & lang_addr)
+void uiTranslateFromSc::translate(sc_addr const & input_addr, sc_addr const & format_addr, sc_addr const & lang_addr)
 {
   mInputConstructionAddr = input_addr;
   mOutputFormatAddr = format_addr;
@@ -68,12 +68,12 @@ void uiTranslateFromSc::collectObjects()
   sc_iterator3_free(it);
 }
 
-bool uiTranslateFromSc::isNeedToTranslate(const sc_addr & addr) const
+bool uiTranslateFromSc::isNeedToTranslate(sc_addr const & addr) const
 {
   return mEdges.find(addr) != mEdges.end();
 }
 
-String uiTranslateFromSc::buildId(const sc_addr & addr)
+String uiTranslateFromSc::buildId(sc_addr const & addr)
 {
   auto v = SC_ADDR_LOCAL_TO_INT(addr);
   StringStream ss;

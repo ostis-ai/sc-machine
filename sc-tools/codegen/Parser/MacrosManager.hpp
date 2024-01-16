@@ -59,8 +59,8 @@ struct MacrosInfo
 
   bool operator==(MacrosInfo const & other) const
   {
-    return (m_name == other.m_name) && (m_fileName == other.m_fileName) && (m_line == other.m_line) &&
-           (m_column == other.m_column) && (m_type == other.m_type);
+    return (m_name == other.m_name) && (m_fileName == other.m_fileName) && (m_line == other.m_line)
+           && (m_column == other.m_column) && (m_type == other.m_type);
   }
 
   static bool RequestProcess(std::string const & name)

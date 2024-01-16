@@ -20,7 +20,7 @@
 sc_bool sc_dictionary_initialize(
     sc_dictionary ** dictionary,
     sc_uint8 children_size,
-    void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *))
+    void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 const *))
 {
   *dictionary = sc_mem_new(sc_dictionary, 1);
   (*dictionary)->size = children_size;
@@ -213,7 +213,7 @@ sc_dictionary_node * sc_dictionary_append_to_node(sc_dictionary * dictionary, sc
 
 sc_dictionary_node * sc_dictionary_append(
     sc_dictionary * dictionary,
-    const sc_char * string,
+    sc_char const * string,
     sc_uint32 size,
     void * value)
 {
@@ -238,8 +238,8 @@ sc_dictionary_node const * sc_dictionary_get_last_node_from_node(
   while (i < string_size)
   {
     sc_dictionary_node * next = _sc_dictionary_get_next_node(dictionary, node, string[i]);
-    if (SC_DICTIONARY_NODE_IS_VALID(next) &&
-        (sc_str_has_prefix(string + i, next->offset) || sc_str_cmp(string + i, next->offset)))
+    if (SC_DICTIONARY_NODE_IS_VALID(next)
+        && (sc_str_has_prefix(string + i, next->offset) || sc_str_cmp(string + i, next->offset)))
     {
       node = next;
       i += node->offset_size;
@@ -250,8 +250,8 @@ sc_dictionary_node const * sc_dictionary_get_last_node_from_node(
 
   // check suffixes matching
   sc_dictionary_node const * result_node = null_ptr;
-  if (i == string_size &&
-      (node->offset == null_ptr || sc_str_cmp(node->offset, string + (string_size - node->offset_size))))
+  if (i == string_size
+      && (node->offset == null_ptr || sc_str_cmp(node->offset, string + (string_size - node->offset_size))))
     result_node = node;
 
   sc_monitor_release_read(&dictionary->monitor);
@@ -259,17 +259,17 @@ sc_dictionary_node const * sc_dictionary_get_last_node_from_node(
   return result_node;
 }
 
-sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size)
+sc_bool sc_dictionary_has(sc_dictionary * dictionary, sc_char const * string, sc_uint32 string_size)
 {
-  const sc_dictionary_node * last =
+  sc_dictionary_node const * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, string, string_size);
 
   return SC_DICTIONARY_NODE_IS_VALID(last);
 }
 
-void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
+void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * string, const sc_uint32 string_size)
 {
-  const sc_dictionary_node * last =
+  sc_dictionary_node const * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, string, string_size);
 
   if (SC_DICTIONARY_NODE_IS_VALID(last))
@@ -278,7 +278,7 @@ void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * str
   return null_ptr;
 }
 
-void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, const sc_uint32 string_size)
+void * sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * string, const sc_uint32 string_size)
 {
   return _sc_dictionary_get_by_key(dictionary, string, string_size);
 }
@@ -296,8 +296,8 @@ sc_bool _sc_dictionary_get_by_key_prefix(
   while (i < string_size)
   {
     sc_dictionary_node * next = _sc_dictionary_get_next_node(dictionary, node, string[i]);
-    if (SC_DICTIONARY_NODE_IS_VALID(next) &&
-        (sc_str_has_prefix(string + i, next->offset) || sc_str_cmp(string + i, next->offset)))
+    if (SC_DICTIONARY_NODE_IS_VALID(next)
+        && (sc_str_has_prefix(string + i, next->offset) || sc_str_cmp(string + i, next->offset)))
     {
       node = next;
       i += node->offset_size;
@@ -335,7 +335,7 @@ sc_bool _sc_dictionary_get_by_key_prefix(
 
 sc_bool sc_dictionary_get_by_key_prefix(
     sc_dictionary * dictionary,
-    const sc_char * string,
+    sc_char const * string,
     const sc_uint32 string_size,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)

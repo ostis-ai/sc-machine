@@ -251,7 +251,7 @@ then it's would have an empty value):
   <tr>
     <td><strong>ScEventAddOutputEdge</strong></td>
     <td>
-      <scg src="../images/sc-events/sc-event-output-edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_output_edge.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between listening sc-element with <code>listenAddr</code> and some sc-element with <code>otherAddr</code> is created.
       <hr/>
@@ -277,7 +277,7 @@ ScEventAddOutputEdge event(context, addr, callback);
   <tr>
     <td><strong>ScEventAddInputEdge</strong></td>
     <td>
-      <scg src="../images/sc-events/sc-event-input-edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_input_edge.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between some sc-element with <code>otherAddr</code> and listening sc-element with <code>listenAddr</code> is created.
       <hr/>
@@ -303,7 +303,7 @@ ScEventAddInputEdge event(context, addr, callback);
   <tr>
     <td><strong>ScEventRemoveOutputEdge</strong></td>
     <td>
-      <scg src="../images/sc-events/sc-event-output-edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_output_edge.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between listening sc-element with <code>listenAddr</code> and some sc-element with <code>otherAddr</code> is erased.
       <hr/>
@@ -329,7 +329,7 @@ ScEventRemoveOutputEdge event(context, addr, callback);
   <tr>
     <td><strong>ScEventRemoveInputEdge</strong></td>
     <td>
-      <scg src="../images/sc-events/sc-event-input-edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_input_edge.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between some sc-element with <code>otherAddr</code> and listening sc-element with <code>listenAddr</code> is erased.
       <hr/>
@@ -378,7 +378,7 @@ ScEventEraseElement event(context, addr, callback);
   <tr>
     <td><strong>ScEventContentChanged</strong></td>
     <td>
-      <scg src="../images/sc-events/sc-event-content.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_content.gwf"></scg>
       <br/>
       Callback calls when content of listening sc-link with <code>listenAddr</code> is changed.
       <hr/>

@@ -118,6 +118,7 @@ try
 
   return StopServer(server) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
 catch (utils::ScException const & e)
 {
   SC_LOG_ERROR(e.Description());

@@ -96,7 +96,7 @@ sc_bool sc_stream_file_eof(sc_stream const * stream)
   return SC_TRUE;
 }
 
-sc_stream * sc_stream_file_new(const sc_char * file_name, sc_uint8 flags)
+sc_stream * sc_stream_file_new(sc_char const * file_name, sc_uint8 flags)
 {
   if (file_name == null_ptr)
     return null_ptr;

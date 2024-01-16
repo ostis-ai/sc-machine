@@ -53,24 +53,29 @@ public:
   {
     return (m_realType & sc_type_arc_mask) != 0;
   }
+
   inline bool IsNode() const
   {
     return (m_realType & sc_type_node) != 0;
   }
+
   inline bool IsLink() const
   {
     return (m_realType & sc_type_link) != 0;
   }
+
   inline bool IsConst() const
   {
     return (m_realType & sc_type_const) != 0;
   }
+
   inline bool IsVar() const
   {
     return (m_realType & sc_type_var) != 0;
   }
 
   SC_DEPRECATED(0.4.0, "Use !IsUnknown() instead")
+
   inline bool IsValid() const
   {
     return !IsUnknown();
@@ -115,10 +120,12 @@ public:
   {
     return (m_realType == other.m_realType);
   }
+
   inline bool operator!=(ScType const & other)
   {
     return (m_realType != other.m_realType);
   }
+
   inline RealType BitAnd(RealType const & inMask) const
   {
     return (m_realType & inMask);
@@ -128,6 +135,7 @@ public:
   {
     return ScType(m_realType | other.m_realType);
   }
+
   inline ScType operator&(ScType const & other)
   {
     return ScType(m_realType & other.m_realType);

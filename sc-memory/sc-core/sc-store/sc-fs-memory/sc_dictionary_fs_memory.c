@@ -331,18 +331,18 @@ sc_dictionary_fs_memory_status _sc_dictionary_node_fs_memory_get_string_offset_b
     {
       sc_uint64 other_string_size;
       if (sc_io_channel_read_chars(
-              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_uint64) != read_bytes)
+              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || sizeof(sc_uint64) != read_bytes)
         goto error;
 
       if (other_string_size != string_size)
         continue;
 
       sc_char other_string[other_string_size + 1];
-      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          other_string_size != read_bytes)
+      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || other_string_size != read_bytes)
         goto error;
       other_string[other_string_size] = '\0';
 
@@ -414,9 +414,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
     sc_io_channel_seek(strings_channel, normalized_string_offset, SC_FS_IO_SEEK_SET, null_ptr);
 
     sc_uint64 written_bytes = 0;
-    if (sc_io_channel_write_chars(strings_channel, &string_size, sizeof(string_size), &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(string_size) != written_bytes)
+    if (sc_io_channel_write_chars(strings_channel, &string_size, sizeof(string_size), &written_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(string_size) != written_bytes)
     {
       sc_fs_memory_error("Error while attribute `size` writing");
       goto error;
@@ -424,9 +424,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_write_string(
 
     memory->last_string_offset += written_bytes;
 
-    if (sc_io_channel_write_chars(strings_channel, string, string_size, &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        string_size != written_bytes)
+    if (sc_io_channel_write_chars(strings_channel, string, string_size, &written_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || string_size != written_bytes)
     {
       sc_fs_memory_error("Error while attribute `string` writing");
       goto error;
@@ -574,18 +574,17 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_read_string_by_offset(
   sc_io_channel_seek(strings_channel, normalized_string_offset, SC_FS_IO_SEEK_SET, null_ptr);
   {
     sc_uint64 string_size;
-    if (sc_io_channel_read_chars(strings_channel, (sc_char *)&string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != read_bytes)
+    if (sc_io_channel_read_chars(strings_channel, (sc_char *)&string_size, sizeof(sc_uint64), &read_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_uint64) != read_bytes)
     {
       *string = null_ptr;
       goto error;
     }
 
     *string = sc_mem_new(sc_char, string_size + 1);
-    if (sc_io_channel_read_chars(strings_channel, *string, string_size, &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        string_size != read_bytes)
+    if (sc_io_channel_read_chars(strings_channel, *string, string_size, &read_bytes, null_ptr) != SC_FS_IO_STATUS_NORMAL
+        || string_size != read_bytes)
     {
       sc_mem_free(*string);
       *string = null_ptr;
@@ -699,9 +698,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
     {
       sc_uint64 other_string_size;
       if (sc_io_channel_read_chars(
-              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_uint64) != read_bytes)
+              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || sizeof(sc_uint64) != read_bytes)
         goto error;
 
       // optimize needed string search
@@ -712,16 +711,17 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
       }
 
       sc_char other_string[other_string_size + 1];
-      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          other_string_size != read_bytes)
+      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || other_string_size != read_bytes)
         goto error;
 
       other_string[other_string_size] = '\0';
 
-      if ((is_substring && ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE) ||
-                            (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE))) ||
-          (!is_substring && sc_str_cmp(string, other_string) == SC_FALSE))
+      if ((is_substring
+           && ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE)
+               || (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE)))
+          || (!is_substring && sc_str_cmp(string, other_string) == SC_FALSE))
       {
         go_to_next = SC_TRUE;
         goto cont;
@@ -912,9 +912,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
     {
       sc_uint64 other_string_size;
       if (sc_io_channel_read_chars(
-              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_uint64) != read_bytes)
+              strings_channel, (sc_char *)&other_string_size, sizeof(sc_uint64), &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || sizeof(sc_uint64) != read_bytes)
         goto error;
 
       if (other_string_size < string_size)
@@ -924,16 +924,16 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
       }
 
       sc_char * other_string = sc_mem_new(sc_char, other_string_size + 1);
-      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          other_string_size != read_bytes)
+      if (sc_io_channel_read_chars(strings_channel, other_string, other_string_size, &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || other_string_size != read_bytes)
       {
         sc_mem_free(other_string);
         goto error;
       }
 
-      if ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE) ||
-          (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE))
+      if ((to_search_as_prefix && sc_str_has_prefix(other_string, string) == SC_FALSE)
+          || (!to_search_as_prefix && sc_str_find(other_string, string) == SC_FALSE))
       {
         sc_mem_free(other_string);
         go_to_next = SC_TRUE;
@@ -1092,8 +1092,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_terms
   arguments[2] = *link_hashes;
   sc_dictionary_fs_memory_status const status = sc_dictionary_visit_down_nodes(
       string_offsets_terms_dictionary, _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets, arguments);
-  sc_dictionary_destroy(string_offsets_terms_dictionary, _sc_dictionary_fs_memory_node_clear) ? SC_FS_MEMORY_OK
-                                                                                              : SC_FS_MEMORY_READ_ERROR;
+  sc_dictionary_destroy(string_offsets_terms_dictionary, _sc_dictionary_fs_memory_node_clear);
   return status;
 }
 
@@ -1194,31 +1193,30 @@ void _sc_dictionary_fs_memory_read_terms_string_offsets(sc_dictionary_fs_memory 
   while (SC_TRUE)
   {
     sc_uint64 term_size;
-    if (sc_io_channel_read_chars(channel, (sc_char *)&term_size, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != read_bytes)
+    if (sc_io_channel_read_chars(channel, (sc_char *)&term_size, sizeof(sc_uint64), &read_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_uint64) != read_bytes)
       break;
 
     // allocate term in stack memory
     sc_char term[term_size + 1];
-    if (sc_io_channel_read_chars(channel, (sc_char *)term, term_size, &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        term_size != read_bytes)
+    if (sc_io_channel_read_chars(channel, (sc_char *)term, term_size, &read_bytes, null_ptr) != SC_FS_IO_STATUS_NORMAL
+        || term_size != read_bytes)
       break;
     term[term_size] = '\0';
 
     sc_uint64 term_offset_count;
-    if (sc_io_channel_read_chars(channel, (sc_char *)&term_offset_count, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != read_bytes)
+    if (sc_io_channel_read_chars(channel, (sc_char *)&term_offset_count, sizeof(sc_uint64), &read_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_uint64) != read_bytes)
       break;
 
     for (sc_uint64 i = 0; i < term_offset_count; ++i)
     {
       sc_uint64 string_offset;
-      if (sc_io_channel_read_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_uint64) != read_bytes)
+      if (sc_io_channel_read_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || sizeof(sc_uint64) != read_bytes)
         break;
 
       _sc_dictionary_fs_memory_append(memory->terms_string_offsets_dictionary, term, term_size, (void *)string_offset);
@@ -1239,9 +1237,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_load_terms_offsets(sc_di
 
   sc_uint64 read_bytes = 0;
   if (sc_io_channel_read_chars(
-          terms_offsets_channel, (sc_char *)&memory->last_string_offset, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-          SC_FS_IO_STATUS_NORMAL ||
-      sizeof(sc_uint64) != read_bytes)
+          terms_offsets_channel, (sc_char *)&memory->last_string_offset, sizeof(sc_uint64), &read_bytes, null_ptr)
+          != SC_FS_IO_STATUS_NORMAL
+      || sizeof(sc_uint64) != read_bytes)
   {
     sc_io_channel_shutdown(terms_offsets_channel, SC_TRUE, null_ptr);
     memory->last_string_offset = 0;
@@ -1262,23 +1260,23 @@ void _sc_dictionary_fs_memory_read_string_offsets_link_hashes(sc_dictionary_fs_m
   while (SC_TRUE)
   {
     sc_uint64 string_offset;
-    if (sc_io_channel_read_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != read_bytes)
+    if (sc_io_channel_read_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &read_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_uint64) != read_bytes)
       break;
 
     sc_uint64 link_hashes_count;
-    if (sc_io_channel_read_chars(channel, (sc_char *)&link_hashes_count, sizeof(sc_uint64), &read_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != read_bytes)
+    if (sc_io_channel_read_chars(channel, (sc_char *)&link_hashes_count, sizeof(sc_uint64), &read_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_uint64) != read_bytes)
       break;
 
     for (sc_uint64 i = 0; i < link_hashes_count; ++i)
     {
       sc_addr_hash link_hash;
-      if (sc_io_channel_read_chars(channel, (sc_char *)&link_hash, sizeof(sc_addr_hash), &read_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_addr_hash) != read_bytes)
+      if (sc_io_channel_read_chars(channel, (sc_char *)&link_hash, sizeof(sc_addr_hash), &read_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || sizeof(sc_addr_hash) != read_bytes)
         break;
 
       _sc_dictionary_fs_memory_append_link_string_unique(memory, link_hash, string_offset);
@@ -1333,24 +1331,23 @@ sc_fs_memory_status _sc_dictionary_fs_memory_load_deprecated_dictionaries(sc_dic
   while (SC_TRUE)
   {
     sc_uint8 hashes_size = 0;
-    if (sc_io_channel_read_chars(channel, (sc_char *)&hashes_size, sizeof(hashes_size), &read_bytes, null_ptr) !=
-        SC_FS_IO_STATUS_NORMAL)
+    if (sc_io_channel_read_chars(channel, (sc_char *)&hashes_size, sizeof(hashes_size), &read_bytes, null_ptr)
+        != SC_FS_IO_STATUS_NORMAL)
       break;
 
     sc_addr_hash * hashes = sc_mem_new(sc_addr_hash, hashes_size);
-    if (sc_io_channel_read_chars(
-            channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &read_bytes, null_ptr) !=
-        SC_FS_IO_STATUS_NORMAL)
+    if (sc_io_channel_read_chars(channel, (sc_char *)hashes, sizeof(sc_addr_hash) * hashes_size, &read_bytes, null_ptr)
+        != SC_FS_IO_STATUS_NORMAL)
       break;
 
     sc_uint32 string_size = 0;
-    if (sc_io_channel_read_chars(channel, (sc_char *)&string_size, sizeof(string_size), &read_bytes, null_ptr) !=
-        SC_FS_IO_STATUS_NORMAL)
+    if (sc_io_channel_read_chars(channel, (sc_char *)&string_size, sizeof(string_size), &read_bytes, null_ptr)
+        != SC_FS_IO_STATUS_NORMAL)
       break;
 
     sc_char * string = sc_mem_new(sc_char, string_size + 1);
-    if (sc_io_channel_read_chars(channel, (sc_char *)string, string_size, &read_bytes, null_ptr) !=
-        SC_FS_IO_STATUS_NORMAL)
+    if (sc_io_channel_read_chars(channel, (sc_char *)string, string_size, &read_bytes, null_ptr)
+        != SC_FS_IO_STATUS_NORMAL)
       break;
 
     sc_uint8 i;
@@ -1414,17 +1411,17 @@ sc_bool _sc_dictionary_fs_memory_write_term_string_offsets(sc_dictionary_node * 
   {
     sc_char * term = sc_iterator_get(data_it);
     sc_uint64 const term_size = sc_str_len(term);
-    if (sc_io_channel_write_chars(channel, (sc_char *)&term_size, sizeof(sc_uint64), &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != written_bytes)
+    if (sc_io_channel_write_chars(channel, (sc_char *)&term_size, sizeof(sc_uint64), &written_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_uint64) != written_bytes)
     {
       sc_fs_memory_error("Error while attribute `term_size` writing");
       goto error;
     }
 
-    if (sc_io_channel_write_chars(channel, (sc_char *)term, term_size, &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        term_size != written_bytes)
+    if (sc_io_channel_write_chars(channel, (sc_char *)term, term_size, &written_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || term_size != written_bytes)
     {
       sc_mem_free(term);
       sc_fs_memory_error("Error while attribute `term` writing");
@@ -1433,9 +1430,9 @@ sc_bool _sc_dictionary_fs_memory_write_term_string_offsets(sc_dictionary_node * 
 
     sc_uint64 const string_offsets_count = list->size - 1;
     if (sc_io_channel_write_chars(
-            channel, (sc_char *)&string_offsets_count, sizeof(sc_uint64), &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_uint64) != written_bytes)
+            channel, (sc_char *)&string_offsets_count, sizeof(sc_uint64), &written_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_uint64) != written_bytes)
     {
       sc_mem_free(term);
       sc_fs_memory_error("Error while attribute `string_offsets_count` writing");
@@ -1445,10 +1442,9 @@ sc_bool _sc_dictionary_fs_memory_write_term_string_offsets(sc_dictionary_node * 
     while (sc_iterator_next(data_it))
     {
       sc_uint64 const string_offset = (sc_uint64)sc_iterator_get(data_it);
-      if (sc_io_channel_write_chars(
-              channel, (sc_char *)&string_offset, sizeof(string_offset), &written_bytes, null_ptr) !=
-              SC_FS_IO_STATUS_NORMAL ||
-          sizeof(sc_uint64) != written_bytes)
+      if (sc_io_channel_write_chars(channel, (sc_char *)&string_offset, sizeof(string_offset), &written_bytes, null_ptr)
+              != SC_FS_IO_STATUS_NORMAL
+          || sizeof(sc_uint64) != written_bytes)
       {
         sc_mem_free(term);
         sc_fs_memory_error("Error while attribute `string_offset` writing");
@@ -1474,9 +1470,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_save_term_string_offsets
 
   sc_uint64 written_bytes = 0;
   if (sc_io_channel_write_chars(
-          channel, (sc_char *)&memory->last_string_offset, sizeof(sc_uint64), &written_bytes, null_ptr) !=
-          SC_FS_IO_STATUS_NORMAL ||
-      sizeof(sc_uint64) != written_bytes)
+          channel, (sc_char *)&memory->last_string_offset, sizeof(sc_uint64), &written_bytes, null_ptr)
+          != SC_FS_IO_STATUS_NORMAL
+      || sizeof(sc_uint64) != written_bytes)
   {
     sc_fs_memory_error("Error while attribute `last_string_offset` writing");
     sc_io_channel_shutdown(channel, SC_TRUE, null_ptr);
@@ -1509,18 +1505,18 @@ sc_bool _sc_dictionary_fs_memory_write_string_offsets_link_hashes(sc_dictionary_
 
   sc_uint64 written_bytes = 0;
   sc_uint64 const string_offset = content->string_offset - 1;
-  if (sc_io_channel_write_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &written_bytes, null_ptr) !=
-          SC_FS_IO_STATUS_NORMAL ||
-      sizeof(sc_uint64) != written_bytes)
+  if (sc_io_channel_write_chars(channel, (sc_char *)&string_offset, sizeof(sc_uint64), &written_bytes, null_ptr)
+          != SC_FS_IO_STATUS_NORMAL
+      || sizeof(sc_uint64) != written_bytes)
   {
     sc_fs_memory_error("Error while attribute `string_offset` writing");
     goto error;
   }
 
   sc_uint64 const link_hashes_count = content->link_hashes->size;
-  if (sc_io_channel_write_chars(channel, (sc_char *)&link_hashes_count, sizeof(sc_uint64), &written_bytes, null_ptr) !=
-          SC_FS_IO_STATUS_NORMAL ||
-      sizeof(sc_uint64) != written_bytes)
+  if (sc_io_channel_write_chars(channel, (sc_char *)&link_hashes_count, sizeof(sc_uint64), &written_bytes, null_ptr)
+          != SC_FS_IO_STATUS_NORMAL
+      || sizeof(sc_uint64) != written_bytes)
   {
     sc_fs_memory_error("Error while attribute `link_hashes_count` writing");
     goto error;
@@ -1529,9 +1525,9 @@ sc_bool _sc_dictionary_fs_memory_write_string_offsets_link_hashes(sc_dictionary_
   while (sc_iterator_next(data_it))
   {
     sc_addr_hash const link_hash = (sc_uint64)sc_iterator_get(data_it);
-    if (sc_io_channel_write_chars(channel, (sc_char *)&link_hash, sizeof(sc_addr_hash), &written_bytes, null_ptr) !=
-            SC_FS_IO_STATUS_NORMAL ||
-        sizeof(sc_addr_hash) != written_bytes)
+    if (sc_io_channel_write_chars(channel, (sc_char *)&link_hash, sizeof(sc_addr_hash), &written_bytes, null_ptr)
+            != SC_FS_IO_STATUS_NORMAL
+        || sizeof(sc_addr_hash) != written_bytes)
     {
       sc_fs_memory_error("Error while attribute `link_hash` writing");
       goto error;

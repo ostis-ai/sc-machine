@@ -16,21 +16,21 @@ class SetOperationsUtils
 public:
   static ScAddr uniteSets(
       ScMemoryContext * context,
-      const ScAddrVector & sets,
-      const ScType & resultType = ScType::NodeConst);
+      ScAddrVector const & sets,
+      ScType const & resultType = ScType::NodeConst);
 
   static ScAddr intersectSets(
       ScMemoryContext * context,
-      const ScAddrVector & sets,
-      const ScType & resultType = ScType::NodeConst);
+      ScAddrVector const & sets,
+      ScType const & resultType = ScType::NodeConst);
 
   static ScAddr complementSets(
       ScMemoryContext * context,
-      const ScAddr & firstSet,
-      const ScAddr & secondSet,
-      const ScType & resultType = ScType::NodeConst);
+      ScAddr const & firstSet,
+      ScAddr const & secondSet,
+      ScType const & resultType = ScType::NodeConst);
 
-  static bool compareSets(ScMemoryContext * context, const ScAddr & firstSet, const ScAddr & secondSet);
+  static bool compareSets(ScMemoryContext * context, ScAddr const & firstSet, ScAddr const & secondSet);
 };
 
 }  // namespace utils

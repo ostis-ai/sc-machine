@@ -53,7 +53,7 @@ protected:
 };
 
 using ScAddrTriple = std::array<ScAddr, 3>;
-using ScAddrFiver = std::array<ScAddr, 5>;
+using ScAddrQuintuple = std::array<ScAddr, 5>;
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
 class TIterator3 : public TIteratorBase<sc_iterator3, 3>
@@ -168,7 +168,7 @@ public:
         "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
   }
 
-  _SC_EXTERN ScAddrFiver Get() const override
+  _SC_EXTERN ScAddrQuintuple Get() const override
   {
     CHECK_ITERATOR;
 

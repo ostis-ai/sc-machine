@@ -17,7 +17,7 @@ jobs:
       matrix:
         config:
           - {
-            name: "Sanitizer for sc-dictionary fs-storage - address",
+            name: "Sanitizer - address",
             os: ubuntu-latest,
             file_memory: "Dictionary",
             sanitizer: "address",
@@ -49,8 +49,8 @@ jobs:
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
-        run: scripts/ci/make-tests.sh
+        run: scripts/ci/make_tests.sh
 
       - name: Run tests
         id: run_tests
-        run: scripts/ci/run-tests.sh
+        run: scripts/ci/run_tests.sh

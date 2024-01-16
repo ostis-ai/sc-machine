@@ -49,8 +49,6 @@ void Translator::Clean(ScMemoryContext & ctx)
   ScTemplateSearchResult res;
   if (ctx.HelperSearchTemplate(templ, res))
   {
-    res.ForEach([&ctx](ScTemplateSearchResultItem const & item) {
-      ctx.EraseElement(item["_link"]);
-    });
+    res.ForEach([&ctx](ScTemplateSearchResultItem const & item) { ctx.EraseElement(item["_link"]); });
   }
 }

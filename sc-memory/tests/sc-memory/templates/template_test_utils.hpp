@@ -21,7 +21,7 @@ struct TestTemplParams
   {
   }
 
-  bool operator () (ScTemplateItem param1, ScTemplateItem param2, ScTemplateItem param3)
+  bool operator()(ScTemplateItem param1, ScTemplateItem param2, ScTemplateItem param3)
   {
     bool catched = false;
     try
@@ -45,7 +45,6 @@ private:
   ScMemoryContext & m_ctx;
 };
 
-
 inline bool HasAddr(ScAddrVector const & v, ScAddr const & addr)
 {
   return std::find(v.begin(), v.end(), addr) != v.end();
@@ -67,4 +66,4 @@ protected:
   }
 };
 
-} // namespace
+}  // namespace

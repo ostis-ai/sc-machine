@@ -48,8 +48,8 @@ uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
       mStructureElementsInfo.begin(),
       mStructureElementsInfo.end(),
       [](std::pair<sc_addr, ScStructureElementInfo *> pair) {
-        delete pair.second;
-        pair.second = nullptr;
+    delete pair.second;
+    pair.second = nullptr;
       });
 }
 
@@ -160,9 +160,13 @@ void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
       // get the key elements of the structure
       ScStructureElementInfo::ScStructureElementInfoList keynodes;
       std::for_each(elInfo->outputArcs.cbegin(), elInfo->outputArcs.cend(), [&keynodes](ScStructureElementInfo * arc) {
-        if (std::find_if(arc->inputArcs.cbegin(), arc->inputArcs.cend(), [](ScStructureElementInfo * modifierArc) {
-              return modifierArc->sourceInfo->addr == keynode_rrel_key_sc_element;
-            }) != arc->inputArcs.cend())
+        if (std::find_if(
+                arc->inputArcs.cbegin(),
+                arc->inputArcs.cend(),
+                [](ScStructureElementInfo * modifierArc) {
+          return modifierArc->sourceInfo->addr == keynode_rrel_key_sc_element;
+                })
+            != arc->inputArcs.cend())
         {
           keynodes.insert(arc->targetInfo);
         }
@@ -231,8 +235,8 @@ ScStructureElementInfo * uiSc2SCnJsonTranslator::FindStructureKeyword(
 
   auto result = std::max_element(
       elements.begin(), elements.end(), [](ScStructureElementInfo * left, ScStructureElementInfo * right) {
-        return (left->outputArcs.size() + left->inputArcs.size()) <
-               (right->outputArcs.size() + right->inputArcs.size());
+        return (left->outputArcs.size() + left->inputArcs.size())
+               < (right->outputArcs.size() + right->inputArcs.size());
       });
   if (result != elements.end())
     return *result;
@@ -361,8 +365,8 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByDirection(
       auto result = std::find_if(children.begin(), children.end(), [modifierAddr](ScJson const & c) {
         auto const & modifiers = c[ScnTranslatorConstants::MODIFIERS.data()];
         return (
-            !modifiers.is_null() && modifiers[0].contains(ScnTranslatorConstants::ADDR.data()) &&
-            modifierAddr == modifiers[0][ScnTranslatorConstants::ADDR.data()]);
+            !modifiers.is_null() && modifiers[0].contains(ScnTranslatorConstants::ADDR.data())
+            && modifierAddr == modifiers[0][ScnTranslatorConstants::ADDR.data()]);
       });
       // if such element is found then merge children
       if (result == children.end())
@@ -395,8 +399,8 @@ void uiSc2SCnJsonTranslator::ParseLinkedNodesScnJson(ScJson & children, int leve
     if (!modifiers.is_null() && modifiers[0].contains(ScnTranslatorConstants::ADDR.data()))
     {
       sc_addr_hash modifier_addr_hash = modifiers[0][ScnTranslatorConstants::ADDR.data()].get<sc_addr_hash>();
-      if (modifier_addr_hash == SC_ADDR_LOCAL_TO_INT(keynode_nrel_sc_text_translation) ||
-          modifier_addr_hash == SC_ADDR_LOCAL_TO_INT(keynode_rrel_key_sc_element))
+      if (modifier_addr_hash == SC_ADDR_LOCAL_TO_INT(keynode_nrel_sc_text_translation)
+          || modifier_addr_hash == SC_ADDR_LOCAL_TO_INT(keynode_rrel_key_sc_element))
       {
         --level;
       }
@@ -501,9 +505,12 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByModifier(
   std::for_each(
       elInfo->outputArcs.cbegin(), elInfo->outputArcs.cend(), [modifierAddr, &filtered](ScStructureElementInfo * el) {
         if (std::find_if(
-                el->inputArcs.cbegin(), el->inputArcs.cend(), [modifierAddr](ScStructureElementInfo * modifierArc) {
-                  return modifierArc->sourceInfo->addr == modifierAddr;
-                }) != el->inputArcs.cend())
+                el->inputArcs.cbegin(),
+                el->inputArcs.cend(),
+                [modifierAddr](ScStructureElementInfo * modifierArc) {
+      return modifierArc->sourceInfo->addr == modifierAddr;
+                })
+            != el->inputArcs.cend())
         {
           filtered.insert(el);
         }
@@ -520,15 +527,16 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByModifier(
       elInfo->inputArcs.cbegin(),
       elInfo->inputArcs.cend(),
       [modifierAddr, &filtered](ScStructureElementInfo * modifierArc) {
-        if (std::find_if(
-                modifierArc->inputArcs.cbegin(),
-                modifierArc->inputArcs.cend(),
-                [modifierAddr](ScStructureElementInfo * modifierArc) {
-                  return modifierArc->sourceInfo->addr == modifierAddr;
-                }) != modifierArc->inputArcs.cend())
-        {
-          filtered.insert(modifierArc);
-        }
+    if (std::find_if(
+            modifierArc->inputArcs.cbegin(),
+            modifierArc->inputArcs.cend(),
+            [modifierAddr](ScStructureElementInfo * modifierArc) {
+      return modifierArc->sourceInfo->addr == modifierAddr;
+            })
+        != modifierArc->inputArcs.cend())
+    {
+      filtered.insert(modifierArc);
+    }
       });
   fullChild = ScJson();
   UpdateChildArcs(filtered, isStruct, fullChild, ScnTranslatorConstants::LEFT.data());
@@ -678,7 +686,7 @@ sc_addr uiSc2SCnJsonTranslator::GetNextElementArc(sc_addr elementArc)
 }
 
 // -------------------------------------
-sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(const sc_event * event, sc_addr arg)
+sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event const * event, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

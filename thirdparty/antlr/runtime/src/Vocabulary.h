@@ -16,7 +16,7 @@ namespace dfa {
   public:
     Vocabulary(Vocabulary const&) = default;
     virtual ~Vocabulary();
-    Vocabulary& operator=(Vocabulary const&) = default;
+    Vocabulary& operator=(Vocabulary const&) = delete;
 
     /// Gets an empty <seealso cref="Vocabulary"/> instance.
     ///

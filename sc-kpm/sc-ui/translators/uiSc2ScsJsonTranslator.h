@@ -19,14 +19,14 @@ public:
   explicit uiSc2ScsTranslator();
   virtual ~uiSc2ScsTranslator();
 
-  static sc_result ui_translate_sc2scs(const sc_event * event, sc_addr arg);
+  static sc_result ui_translate_sc2scs(sc_event const * event, sc_addr arg);
 
 protected:
   //! @copydoc uiTranslateFromSc::runImpl
   void runImpl();
 
   //! Get main or system identifier for specified sc-addr
-  bool getIdentifier(const sc_addr & addr, const sc_addr & lang_addr, String & idtf);
+  bool getIdentifier(sc_addr const & addr, sc_addr const & lang_addr, String & idtf);
 
 protected:
   //! Map of resolved system identifiers

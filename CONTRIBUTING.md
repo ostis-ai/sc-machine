@@ -1,5 +1,41 @@
 This page describes rules to contribute changes and features by Pull Requests creating.
 
+## Initialize
+
+To initialize your repo do:
+
+* Make fork from `https://github.com/ostis-ai/sc-machine`.
+* Clone your fork to your machine and prepare (see [Readme](https://github.com/ostis-ai/sc-machine)).
+
+```sh
+git clone git@github.com:yourlogin/sc-machine.git
+cd sc-machine
+git remote add upstream git@github.com:ostis-ai/sc-machine.git
+```
+
+* To update your `main` from `upstream` use:
+
+```sh
+git fetch upstream
+git checkout upstream/main
+```
+
+* Use `git rebase` instead of `merge`. [More documentation about this command](https://git-scm.com/docs/git-rebase)
+just try to apply your commits (from current branch to commits in specified branch). To rebase your branch to main use:
+
+```sh
+git checkout <yourbranch>
+git rebase upstream/main
+```
+
+* If you have any problems, then redo:
+
+```sh
+git rebase --abort
+```
+
+* Or ask in [Element](https://app.element.io/index.html#/room/#ostis_tech_support:matrix.org).
+
 ## Commits message format
 
 Each commit message should be formed as: `[tag1]...[tagN] Message text (#issue)`.
@@ -69,7 +105,7 @@ All commit, that not applies to this rules, should be split by this rules. Anoth
 
 Each pull request with many changes, that not possible to review (excluding codestyle, rename changes), will be rejected.
 
-_**All commit, that not applies to this rules, should be split by this rules. Another way they will be rejected with Pull request.**_
+_**All commit, that not applies to these rules, should be split by these rules. Another way they will be rejected with Pull request.**_
 
 ### Pull Request Preparation
 

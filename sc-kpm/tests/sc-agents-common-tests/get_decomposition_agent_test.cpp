@@ -33,7 +33,7 @@ void checkSuccessfulDecomposition(ScMemoryContext &, std::string const &);
 ScsLoader loader;
 const std::string TEST_FILES_DIR_PATH = SC_KPM_TEST_SRC_PATH "/test-structures/";
 
-const int WAIT_TIME = 5000;
+int const WAIT_TIME = 5000;
 
 using GetDecompositionTest = ScMemoryTest;
 

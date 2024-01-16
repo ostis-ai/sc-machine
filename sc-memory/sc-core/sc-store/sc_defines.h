@@ -58,7 +58,7 @@
     __attribute__((deprecated(__Message " Update you code to the newest API version " #__Version " or later.")))
 
 #  define SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN \
-    _Pragma("CLANG diagnostic push") _Pragma("CLANG diagnostic ignored \"-Wdeprecated-declarations\"")
+    _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 
 #  define SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END _Pragma("CLANG diagnostic pop")
 

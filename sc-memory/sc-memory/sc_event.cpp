@@ -51,8 +51,8 @@ sc_event_type ConvertEventType(ScEvent::Type type)
 }  // namespace
 
 ScEvent::ScEvent(
-    const ScMemoryContext & ctx,
-    const ScAddr & addr,
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
     Type eventType,
     ScEvent::DelegateFunc func /*= DelegateFunc()*/)
 {

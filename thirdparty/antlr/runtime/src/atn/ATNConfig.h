@@ -38,7 +38,7 @@ namespace atn {
     ATNState * state;
 
     /// What alt (or lexer rule) is predicted by this configuration.
-    const size_t alt;
+    size_t alt;
 
     /// The stack of invoking states leading to the rule/states associated
     /// with this config.  We track only those contexts pushed during

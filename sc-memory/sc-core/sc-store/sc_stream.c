@@ -24,7 +24,7 @@ sc_result sc_stream_free(sc_stream * stream)
   return SC_RESULT_OK;
 }
 
-sc_result sc_stream_read_data(const sc_stream * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * read_bytes)
+sc_result sc_stream_read_data(sc_stream const * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * read_bytes)
 {
   sc_assert(stream != null_ptr);
 
@@ -37,7 +37,7 @@ sc_result sc_stream_read_data(const sc_stream * stream, sc_char * data, sc_uint3
   return stream->read_func(stream, data, data_len, read_bytes);
 }
 
-sc_result sc_stream_write_data(const sc_stream * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * written_bytes)
+sc_result sc_stream_write_data(sc_stream const * stream, sc_char * data, sc_uint32 data_len, sc_uint32 * written_bytes)
 {
   sc_assert(stream != null_ptr);
 
@@ -50,7 +50,7 @@ sc_result sc_stream_write_data(const sc_stream * stream, sc_char * data, sc_uint
   return stream->write_func(stream, data, data_len, written_bytes);
 }
 
-sc_result sc_stream_seek(const sc_stream * stream, sc_stream_seek_origin seek_origin, sc_uint32 offset)
+sc_result sc_stream_seek(sc_stream const * stream, sc_stream_seek_origin seek_origin, sc_uint32 offset)
 {
   sc_assert(stream != null_ptr);
 
@@ -63,7 +63,7 @@ sc_result sc_stream_seek(const sc_stream * stream, sc_stream_seek_origin seek_or
   return stream->seek_func(stream, seek_origin, offset);
 }
 
-sc_bool sc_stream_eof(const sc_stream * stream)
+sc_bool sc_stream_eof(sc_stream const * stream)
 {
   sc_assert(stream != null_ptr);
 
@@ -73,7 +73,7 @@ sc_bool sc_stream_eof(const sc_stream * stream)
   return stream->eof_func(stream);
 }
 
-sc_result sc_stream_get_length(const sc_stream * stream, sc_uint32 * length)
+sc_result sc_stream_get_length(sc_stream const * stream, sc_uint32 * length)
 {
   sc_assert(stream != null_ptr);
 
@@ -104,7 +104,7 @@ sc_result sc_stream_get_length(const sc_stream * stream, sc_uint32 * length)
   return res;
 }
 
-sc_result sc_stream_get_position(const sc_stream * stream, sc_uint32 * position)
+sc_result sc_stream_get_position(sc_stream const * stream, sc_uint32 * position)
 {
   sc_assert(stream != null_ptr);
 
@@ -117,13 +117,13 @@ sc_result sc_stream_get_position(const sc_stream * stream, sc_uint32 * position)
   return stream->tell_func(stream, position);
 }
 
-sc_bool sc_stream_check_flag(const sc_stream * stream, sc_uint8 flag)
+sc_bool sc_stream_check_flag(sc_stream const * stream, sc_uint8 flag)
 {
   sc_assert(stream != null_ptr);
   return (stream->flags & flag) ? SC_TRUE : SC_FALSE;
 }
 
-sc_bool sc_stream_get_data(const sc_stream * stream, sc_char ** data, sc_uint32 * size)
+sc_bool sc_stream_get_data(sc_stream const * stream, sc_char ** data, sc_uint32 * size)
 {
   sc_assert(stream != null_ptr);
   sc_stream_seek(stream, SC_STREAM_SEEK_SET, 0);

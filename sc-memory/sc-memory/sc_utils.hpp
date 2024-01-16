@@ -75,10 +75,12 @@ public:
   {
     return static_cast<void *>(m_data);
   }
+
   void const * CData() const
   {
     return static_cast<void const *>(m_data);
   }
+
   size_t Size() const
   {
     return m_size;
@@ -157,46 +159,55 @@ inline int8_t toNumber<int8_t>(std::string const & value)
 {
   return int8_t(std::stol(value));
 }
+
 template <>
 inline int16_t toNumber<int16_t>(std::string const & value)
 {
   return int16_t(std::stol(value));
 }
+
 template <>
 inline int32_t toNumber<int32_t>(std::string const & value)
 {
   return int32_t(std::stol(value));
 }
+
 template <>
 inline int64_t toNumber<int64_t>(std::string const & value)
 {
   return int64_t(std::stoll(value));
 }
+
 template <>
 inline uint8_t toNumber<uint8_t>(std::string const & value)
 {
   return uint8_t(std::stoul(value));
 }
+
 template <>
 inline uint16_t toNumber<uint16_t>(std::string const & value)
 {
   return uint16_t(std::stoul(value));
 }
+
 template <>
 inline uint32_t toNumber<uint32_t>(std::string const & value)
 {
   return uint32_t(std::stoul(value));
 }
+
 template <>
 inline uint64_t toNumber<uint64_t>(std::string const & value)
 {
   return uint64_t(std::stoull(value));
 }
+
 template <>
 inline float toNumber<float>(std::string const & value)
 {
   return std::stof(value);
 }
+
 template <>
 inline double toNumber<double>(std::string const & value)
 {
@@ -231,6 +242,7 @@ public:
       std::string const & source,
       std::string const & replaceWhat,
       std::string const & replaceWithWhat);
+
   template <typename T>
   static bool ParseNumber(std::string const & value, T & outValue)
   {

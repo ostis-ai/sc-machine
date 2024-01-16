@@ -234,6 +234,7 @@ public:
   }
 
   SC_DEPRECATED(0.9.0, "Don't use this method, it is dangerous. It will be removed in 0.10.0.")
+
   _SC_EXTERN ScTemplateItemsToParams GetAll() const
   {
     return m_templateItemsToParams;
@@ -402,7 +403,7 @@ protected:
   Result FromScTemplate(
       ScMemoryContext & ctx,
       ScAddr const & scTemplateAddr,
-      const ScTemplateParams & params = ScTemplateParams()) noexcept(false);
+      ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
   Result FromScs(ScMemoryContext & ctx, std::string const & scsText) noexcept(false);
   // End: calls by memory context
 
@@ -453,9 +454,9 @@ public:
 
   ScTemplateResultItem(ScTemplateResultItem const & otherItem)
     : ScTemplateResultItem(
-          otherItem.m_context,
-          otherItem.m_replacementConstruction,
-          otherItem.m_templateItemsNamesToReplacementItemPositions)
+        otherItem.m_context,
+        otherItem.m_replacementConstruction,
+        otherItem.m_templateItemsNamesToReplacementItemPositions)
   {
   }
 
@@ -597,6 +598,7 @@ public:
   }
 
   SC_DEPRECATED(0.9.0, "Don't use this method, it is dangerous. It will be removed in 0.10.0.")
+
   inline ScTemplate::ScTemplateItemsToReplacementsItemsPositions const & GetReplacements() const noexcept
   {
     return m_templateItemsNamesToReplacementItemPositions;

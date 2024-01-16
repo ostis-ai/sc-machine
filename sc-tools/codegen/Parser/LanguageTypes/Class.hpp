@@ -13,7 +13,7 @@
 
 struct BaseClass
 {
-  BaseClass(const Cursor & cursor);
+  BaseClass(Cursor const & cursor);
 
   bool IsNative() const;
 
@@ -30,7 +30,7 @@ class Class : public LanguageType
   friend class Field;
 
 public:
-  Class(const Cursor & cursor, const Namespace & currentNamespace);
+  Class(Cursor const & cursor, Namespace const & currentNamespace);
 
   bool ShouldGenerate(void) const;
   bool IsAgent() const;

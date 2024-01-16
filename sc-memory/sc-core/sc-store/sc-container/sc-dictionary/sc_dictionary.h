@@ -29,7 +29,7 @@ typedef struct _sc_dictionary
 {
   sc_dictionary_node * root;  // sc-dictionary tree root node
   sc_uint8 size;              // default sc-dictionary node children size
-  void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *);
+  void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 const *);
   sc_monitor monitor;
 } sc_dictionary;
 
@@ -42,7 +42,7 @@ typedef struct _sc_dictionary
 sc_bool sc_dictionary_initialize(
     sc_dictionary ** dictionary,
     sc_uint8 children_size,
-    void (*char_to_int)(sc_char, sc_uint8 *, const sc_uint8 *));
+    void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 const *));
 
 /*! Destroys a sc-dictionary
  * @param dictionary A sc-dictionary pointer to destroy
@@ -61,7 +61,7 @@ sc_bool sc_dictionary_destroy(sc_dictionary * dictionary, void (*node_clear)(sc_
  */
 sc_dictionary_node * sc_dictionary_append(
     sc_dictionary * dictionary,
-    const sc_char * string,
+    sc_char const * string,
     sc_uint32 string_size,
     void * data);
 
@@ -72,7 +72,7 @@ sc_dictionary_node * sc_dictionary_append(
  * @param string_size A verifiable string size
  * @returns Returns SC_TRUE, if string starts in sc-dictionary node; otherwise return SC_FALSE.
  */
-sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
+sc_bool sc_dictionary_has(sc_dictionary * dictionary, sc_char const * string, sc_uint32 string_size);
 
 /*! Gets data from a terminal sc-dictionary node where string ends.
  * @param dictionary A sc-dictionary pointer
@@ -80,7 +80,7 @@ sc_bool sc_dictionary_has(sc_dictionary * dictionary, const sc_char * string, sc
  * @param string_size A string size
  * @returns Returns Data from a sc-dictionary node where string ends
  */
-void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * string, sc_uint32 string_size);
+void * sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * string, sc_uint32 string_size);
 
 /*! Visit data in sc-dictionary nodes where key prefix ends.
  * @param dictionary A sc-dictionary pointer
@@ -92,7 +92,7 @@ void * sc_dictionary_get_by_key(sc_dictionary * dictionary, const sc_char * stri
  */
 sc_bool sc_dictionary_get_by_key_prefix(
     sc_dictionary * dictionary,
-    const sc_char * string,
+    sc_char const * string,
     sc_uint32 string_size,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest);

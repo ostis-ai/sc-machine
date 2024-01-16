@@ -159,7 +159,7 @@ void sc_helper_shutdown()
   _destroy_keynodes_str();
 }
 
-sc_result sc_helper_check_system_identifier(const sc_char * data)
+sc_result sc_helper_check_system_identifier(sc_char const * data)
 {
   regex_t regex;
   regcomp(&regex, REGEX_SYSTEM_IDTF, REG_EXTENDED);
@@ -262,7 +262,7 @@ error:
   return result;
 }
 
-sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, const sc_char * data, sc_uint32 len)
+sc_result sc_helper_set_system_identifier(sc_memory_context * ctx, sc_addr addr, sc_char const * data, sc_uint32 len)
 {
   return sc_helper_set_system_identifier_ext(ctx, addr, data, len, null_ptr);
 }

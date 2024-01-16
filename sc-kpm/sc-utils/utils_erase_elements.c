@@ -11,10 +11,11 @@
 #include "../sc-search/search_keynodes.h"
 #include "../sc-search/search_utils.h"
 #include "sc-core/sc-store/sc-base/sc_message.h"
+
 /*!
  *  Erase sc-elements from memory if they dont belong to init memory structure
  */
-sc_result agent_erase_elements(const sc_event * event, sc_addr arg)
+sc_result agent_erase_elements(sc_event const * event, sc_addr arg)
 {
   sc_addr question_addr;
 
@@ -25,7 +26,8 @@ sc_result agent_erase_elements(const sc_event * event, sc_addr arg)
   }
 
   if (sc_helper_check_arc(
-          s_erase_elements_ctx, keynode_question_erase_elements, question_addr, sc_type_arc_pos_const_perm) == SC_FALSE)
+          s_erase_elements_ctx, keynode_question_erase_elements, question_addr, sc_type_arc_pos_const_perm)
+      == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   sc_iterator5 * get_set_it = sc_iterator5_f_a_a_a_f_new(

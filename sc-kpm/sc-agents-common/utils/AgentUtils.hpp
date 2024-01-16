@@ -16,14 +16,14 @@ class AgentUtils
 public:
   static bool applyAction(
       ScMemoryContext * ms_context,
-      const ScAddr & actionClass,
-      const ScAddrVector & params,
-      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME);
+      ScAddr const & actionClass,
+      ScAddrVector const & params,
+      sc_uint32 const & waitTime = DEFAULT_WAIT_TIME);
 
   static bool applyAction(
       ScMemoryContext * ms_context,
-      const ScAddr & actionNode,
-      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME,
+      ScAddr const & actionNode,
+      sc_uint32 const & waitTime = DEFAULT_WAIT_TIME,
       ScAddr onEventClassAddr = ScAddr::Empty);
 
   SC_DEPRECATED(
@@ -33,15 +33,15 @@ public:
       "const sc_uint32 & waitTime) instead of. It will be removed in sc-machine 0.10.0.")
   static ScAddr getActionResultIfExists(
       ScMemoryContext * ms_context,
-      const ScAddr & actionClass,
-      const ScAddrVector & params,
-      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME);
+      ScAddr const & actionClass,
+      ScAddrVector const & params,
+      sc_uint32 const & waitTime = DEFAULT_WAIT_TIME);
 
   static ScAddr applyActionAndGetResultIfExists(
       ScMemoryContext * ms_context,
-      const ScAddr & actionClass,
-      const ScAddrVector & params,
-      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME);
+      ScAddr const & actionClass,
+      ScAddrVector const & params,
+      sc_uint32 const & waitTime = DEFAULT_WAIT_TIME);
 
   SC_DEPRECATED(
       0.9.0,
@@ -50,32 +50,32 @@ public:
       "It will be removed in sc-machine 0.10.0.")
   static ScAddr getActionResultIfExists(
       ScMemoryContext * ms_context,
-      const ScAddr & actionNode,
-      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME);
+      ScAddr const & actionNode,
+      sc_uint32 const & waitTime = DEFAULT_WAIT_TIME);
 
   static ScAddr applyActionAndGetResultIfExists(
       ScMemoryContext * ms_context,
-      const ScAddr & actionNode,
-      const sc_uint32 & waitTime = DEFAULT_WAIT_TIME);
+      ScAddr const & actionNode,
+      sc_uint32 const & waitTime = DEFAULT_WAIT_TIME);
 
-  static ScAddr formActionNode(ScMemoryContext * ms_context, const ScAddr & actionClass, const ScAddrVector & params);
+  static ScAddr formActionNode(ScMemoryContext * ms_context, ScAddr const & actionClass, ScAddrVector const & params);
 
-  static ScAddr initAction(ScMemoryContext * ms_context, const ScAddr & questionClass, const ScAddrVector & params);
+  static ScAddr initAction(ScMemoryContext * ms_context, ScAddr const & questionClass, ScAddrVector const & params);
 
   static ScAddr createQuestionNode(ScMemoryContext * ms_context);
 
   static void assignParamsToQuestionNode(
       ScMemoryContext * ms_context,
-      const ScAddr & questionNode,
-      const ScAddrVector & params);
+      ScAddr const & questionNode,
+      ScAddrVector const & params);
 
   static void finishAgentWork(
       ScMemoryContext * ms_context,
-      const ScAddr & questionNode,
-      const ScAddrVector & answerElements,
+      ScAddr const & questionNode,
+      ScAddrVector const & answerElements,
       bool isSuccess = true);
 
-  static void finishAgentWork(ScMemoryContext * ms_context, const ScAddr & questionNode, bool isSuccess = true);
+  static void finishAgentWork(ScMemoryContext * ms_context, ScAddr const & questionNode, bool isSuccess = true);
 
 private:
   static sc_uint32 const DEFAULT_WAIT_TIME;

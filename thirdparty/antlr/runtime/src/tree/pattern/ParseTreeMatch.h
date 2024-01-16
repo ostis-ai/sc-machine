@@ -45,7 +45,7 @@ namespace pattern {
                    const std::map<std::string, std::vector<ParseTree *>> &labels, ParseTree *mismatchedNode);
     ParseTreeMatch(ParseTreeMatch const&) = default;
     virtual ~ParseTreeMatch();
-    ParseTreeMatch& operator=(ParseTreeMatch const&) = default;
+    ParseTreeMatch& operator=(ParseTreeMatch const&) = delete;
 
     /// <summary>
     /// Get the last node associated with a specific {@code label}.

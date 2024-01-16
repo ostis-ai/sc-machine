@@ -228,8 +228,8 @@ void ScServer::UpdateMemoryStatistics()
 
   Timer(
       [&PrintStatistics]() {
-        SC_LOG_INFO("Dump sc-memory statistics");
-        PrintStatistics();
+    SC_LOG_INFO("Dump sc-memory statistics");
+    PrintStatistics();
       },
       m_updateStatisticsPeriod);
 }
@@ -238,8 +238,8 @@ void ScServer::SaveMemory()
 {
   Timer(
       [this]() {
-        SC_LOG_INFO("Save memory by period");
-        m_context->Save();
+    SC_LOG_INFO("Save memory by period");
+    m_context->Save();
       },
       m_saveMemoryPeriod);
 }
