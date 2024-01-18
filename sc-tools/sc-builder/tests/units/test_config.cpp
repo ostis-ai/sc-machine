@@ -46,7 +46,6 @@ TEST(ScBuilder, RunStop)
   sc_memory_params const scMemoryParams = memoryConfig.GetParams();
 
   EXPECT_EQ((sc_uint32)std::stoi(scParams.at("max_loaded_segments")), scMemoryParams.max_loaded_segments);
-  EXPECT_EQ((sc_uint8)std::stoi(scParams.at("max_threads")), scMemoryParams.max_threads);
   EXPECT_EQ((sc_uint32)std::stoi(scParams.at("save_period")), scMemoryParams.save_period);
   EXPECT_EQ((sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.update_period);
   EXPECT_EQ(scParams.at("log_type"), scMemoryParams.log_type);

@@ -4,8 +4,6 @@
 [sc-memory]
 # Maximum number of segments. By default: 65536
 max_loaded_segments = 1000
-# Maximum number of threads that can be used to access to sc-memory. By default: 32
-max_threads = 32
 # Maximum number of threads that can be used in events and agents handler. By default: core number of device processor
 max_events_and_agents_threads = 32
 
