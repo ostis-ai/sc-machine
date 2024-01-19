@@ -10,7 +10,9 @@
 #include "sc-store/sc_types.h"
 #include "sc_memory_version.h"
 
+#define DEFAULT_DUMP_MEMORY SC_TRUE
 #define DEFAULT_DUMP_MEMORY_PERIOD 32000
+#define DEFAULT_DUMP_MEMORY_STATISTICS SC_TRUE
 #define DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD 16000
 #define DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS 32
 #define DEFAULT_MIN_EVENTS_AND_AGENTS_THREADS 1
@@ -31,7 +33,8 @@ typedef struct
 {
   sc_version version;  ///< Version information for the sc-machine.
 
-  sc_bool clear;                  ///< Boolean indicating whether to clear existing data during initialization.
+  ///< Boolean indicating whether to clear existing data during initialization. By default, it is SC_FALSE.
+  sc_bool clear;
   sc_char const * repo_path;      ///< Path to the binaries directory.
   sc_char const * ext_path;       ///< Path to the extensions directory.
   sc_char const ** enabled_exts;  ///< Array of enabled extensions.
@@ -39,16 +42,20 @@ typedef struct
   sc_uint32 max_loaded_segments;            ///< Maximum number of loaded segments.
   sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for events and agents processing.
 
-  sc_uint32 save_period;  ///< Period (in seconds) for automatic saving of the sc-memory state (deprecated in 0.9.0).
-  sc_uint32
-      update_period;  ///< Period (in seconds) for dumping statistics of the sc-memory state (deprecated in 0.9.0).
+  sc_uint32 save_period;    ///< Period (in seconds) for automatic saving of sc-memory state (deprecated in 0.9.0).
+  sc_uint32 update_period;  ///< Period (in seconds) for dumping statistics of sc-memory state (deprecated in 0.9.0).
 
-  sc_uint32 dump_memory_period;             ///< Period (in seconds) for automatic saving of the sc-memory state.
-  sc_uint32 dump_memory_statistics_period;  ///< Period (in seconds) for dumping statistics of the sc-memory state.
+  ///< Boolean indicating whether automatic saving of sc-memory state. By default, it is SC_TRUE.
+  sc_bool dump_memory;
+  sc_uint32 dump_memory_period;  ///< Period (in seconds) for automatic saving of sc-memory state.
+
+  ///< Boolean indicating whether automatic dumping statistics of sc-memory state. By default, it is SC_TRUE.
+  sc_bool dump_memory_statistics;
+  sc_uint32 dump_memory_statistics_period;  ///< Period (in seconds) for dumping statistics of sc-memory state.
 
   sc_char const * log_type;   ///< Type of logging (e.g., "Console", "File").
   sc_char const * log_file;   ///< Path to the log file (if log_type is "File").
-  sc_char const * log_level;  ///< Log level (e.g., "Error", "Info", "Debug").
+  sc_char const * log_level;  ///< Log level (e.g., "Error", "Warning", "Info", "Debug").
 
   sc_char const * init_memory_generated_structure;  ///< Initial sc-memory generated structure system identifier.
   sc_bool init_memory_generated_upload;  ///< Boolean indicating whether to upload the initial generated structure.

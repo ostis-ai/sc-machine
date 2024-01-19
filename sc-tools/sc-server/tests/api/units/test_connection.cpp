@@ -118,7 +118,7 @@ TEST_F(ScServerTest, OneThousandConnections)  // 2583.39 ms
   TEST_N_CONNECTIONS(m_server, 1000);
 }
 
-TEST(ScServer, RunStopSaveUpdateStatistics)
+TEST(ScServer, RunStopDumpMemoryAndDumpMemoryStatistics)
 {
   ScOptions options{1, nullptr};
 

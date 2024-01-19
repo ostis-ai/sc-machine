@@ -125,6 +125,7 @@ public:
     m_memoryParams.max_events_and_agents_threads =
         GetIntByKey("max_events_and_agents_threads", DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
 
+    m_memoryParams.dump_memory = GetBoolByKey("dump_memory", DEFAULT_DUMP_MEMORY);
     if (HasKey("save_period"))
     {
       SC_LOG_WARNING(
@@ -137,6 +138,7 @@ public:
       m_memoryParams.save_period = m_memoryParams.dump_memory_period =
           GetIntByKey("dump_memory_period", DEFAULT_DUMP_MEMORY_PERIOD);
 
+    m_memoryParams.dump_memory_statistics = GetBoolByKey("dump_memory", DEFAULT_DUMP_MEMORY_STATISTICS);
     if (HasKey("update_period"))
     {
       SC_LOG_WARNING(

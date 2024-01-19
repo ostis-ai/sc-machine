@@ -16,7 +16,10 @@ void sc_memory_params_clear(sc_memory_params * params)
   params->ext_path = (sc_char const *)null_ptr;
   params->enabled_exts = (sc_char const **)null_ptr;
 
-  params->save_period = params->dump_memory_period = DEFAULT_DUMP_MEMORY_PERIOD;                          // seconds
+  params->dump_memory = SC_TRUE;
+  params->save_period = params->dump_memory_period = DEFAULT_DUMP_MEMORY_PERIOD;  // seconds
+
+  params->dump_memory_statistics = SC_TRUE;
   params->update_period = params->dump_memory_statistics_period = DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD;  // seconds
 
   params->log_type = DEFAULT_LOG_TYPE;
