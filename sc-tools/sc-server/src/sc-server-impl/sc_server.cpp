@@ -21,8 +21,8 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
   ResetLogger();
   LogMessage(ScServerErrorLevel::info, "Initialize sc-server");
 
-  m_updateStatisticsPeriod = params.update_period;
-  m_saveMemoryPeriod = params.save_period;
+  m_updateStatisticsPeriod = params.dump_memory_statistics_period;
+  m_saveMemoryPeriod = params.dump_memory_period;
 
   {
     LogMessage(ScServerErrorLevel::info, "Socket data:");

@@ -40,8 +40,8 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
   sc_message("\tSc-segment elements count: %d", SC_SEGMENT_ELEMENTS_COUNT);
   sc_message("\tSc-storage size: %zd", sizeof(sc_storage));
   sc_message("\tMax segments count: %d", storage->max_segments_count);
-  sc_message("\tSave period: %d", params->save_period);
-  sc_message("\tUpdate period: %d", params->update_period);
+  sc_message("\tDump memory period: %d", params->dump_memory_period);
+  sc_message("\tDump memory statistics period: %d", params->dump_memory_statistics_period);
   sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
 
   storage->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);

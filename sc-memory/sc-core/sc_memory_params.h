@@ -10,8 +10,8 @@
 #include "sc-store/sc_types.h"
 #include "sc_memory_version.h"
 
-#define DEFAULT_SAVE_PERIOD 32000
-#define DEFAULT_UPDATE_PERIOD 16000
+#define DEFAULT_DUMP_MEMORY_PERIOD 32000
+#define DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD 16000
 #define DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS 32
 #define DEFAULT_MIN_EVENTS_AND_AGENTS_THREADS 1
 #define DEFAULT_MAX_LOADED_SEGMENTS 1000
@@ -39,8 +39,12 @@ typedef struct
   sc_uint32 max_loaded_segments;            ///< Maximum number of loaded segments.
   sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for events and agents processing.
 
-  sc_uint32 save_period;    ///< Period (in seconds) for automatic saving of the sc-memory state.
-  sc_uint32 update_period;  ///< Period (in seconds) for dumping statistics of the sc-memory state.
+  sc_uint32 save_period;  ///< Period (in seconds) for automatic saving of the sc-memory state (deprecated in 0.9.0).
+  sc_uint32
+      update_period;  ///< Period (in seconds) for dumping statistics of the sc-memory state (deprecated in 0.9.0).
+
+  sc_uint32 dump_memory_period;             ///< Period (in seconds) for automatic saving of the sc-memory state.
+  sc_uint32 dump_memory_statistics_period;  ///< Period (in seconds) for dumping statistics of the sc-memory state.
 
   sc_char const * log_type;   ///< Type of logging (e.g., "Console", "File").
   sc_char const * log_file;   ///< Path to the log file (if log_type is "File").

@@ -125,8 +125,29 @@ public:
     m_memoryParams.max_events_and_agents_threads =
         GetIntByKey("max_events_and_agents_threads", DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
 
-    m_memoryParams.save_period = GetIntByKey("save_period", DEFAULT_SAVE_PERIOD);
-    m_memoryParams.update_period = GetIntByKey("update_period", DEFAULT_UPDATE_PERIOD);
+    if (HasKey("save_period"))
+    {
+      SC_LOG_WARNING(
+          "Option `save_period` is deprecated in sc-machine 0.9.0. It will be removed in sc-machine 0.10.0. Use option "
+          "`dump_memory_period` instead of.");
+      m_memoryParams.save_period = m_memoryParams.dump_memory_period =
+          GetIntByKey("save_period", DEFAULT_DUMP_MEMORY_PERIOD);
+    }
+    if (HasKey("dump_memory_period"))
+      m_memoryParams.save_period = m_memoryParams.dump_memory_period =
+          GetIntByKey("dump_memory_period", DEFAULT_DUMP_MEMORY_PERIOD);
+
+    if (HasKey("update_period"))
+    {
+      SC_LOG_WARNING(
+          "Option `update_period` is deprecated in sc-machine 0.9.0. It will be removed in sc-machine 0.10.0. Use "
+          "option `dump_memory_statistics_period` instead of.");
+      m_memoryParams.update_period = m_memoryParams.dump_memory_statistics_period =
+          GetIntByKey("update_period", DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD);
+    }
+    if (HasKey("dump_memory_statistics_period"))
+      m_memoryParams.update_period = m_memoryParams.dump_memory_statistics_period =
+          GetIntByKey("dump_memory_statistics_period", DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD);
 
     m_memoryParams.log_type = GetStringByKey("log_type", DEFAULT_LOG_TYPE);
     m_memoryParams.log_file = GetStringByKey("log_file", DEFAULT_LOG_FILE);

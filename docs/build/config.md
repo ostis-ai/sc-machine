@@ -8,9 +8,15 @@ max_loaded_segments = 1000
 max_events_and_agents_threads = 32
 
 # Period (in seconds) to save sc-memory statistics
-save_period = 3600
+# it is deprecated option in sc-machine 0.9.0
+save_period = 3600 
+# it is equal to `save_period`
+dump_memory_period = 3600
 # Period (in seconds) to update sc-memory statistics
+# it is deprecated option in sc-machine 0.9.0
 update_period = 1800
+# it is equal to `update_period`
+dump_memory_statistics_period = 1800
 
 # Path to compiled knowledge base folder (kb.bin should be inside this folder)
 repo_path = /path/to/kb.bin
