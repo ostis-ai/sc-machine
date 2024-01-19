@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Config option `limit_max_threads_by_max_physical_cores` in `[sc-memory]` to limit max threads by max physical threads
+- Config options `dump_memory` and `dump_memory_statistics` in `[sc-memory]` for enabling sc-memory dumps
 - Full md docs for sc-memory API on C++ with examples
 - ScTemplate replacement presence check using varAddr
 - Iterator5 AAAAF
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Optimize and move sc-memory dumps from sc-server to sc-memory
 - Refactor all code by .clang-format 18.0.0
 - Replace hyphens by underscores in files
 - Replace underscores by hyphens in folders
@@ -65,11 +68,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Active waiting during sc-events deletion
 - List items semicolons for sc.s-contours
 - Internal sentences after sc.s-contour assignment
-- The success of finishing the action is marked first and only then that it was finished
+- Success of finishing the action is marked first and only then that it was finished
 - Finish agent wait time
 
 ### Deprecated
 
+- Config option `sync_actions` in `[sc-server]`, add option `parallel_actions` instead of
+- Config option `update_period` in `[sc-memory]`, add option `dump_memory_statistics_period` instead of
+- Config option `save_period` in `[sc-memory]`, add option `dump_memory_period` instead of
 - Method `getLinkContent` in sc-utils 
 
 ### Removed
