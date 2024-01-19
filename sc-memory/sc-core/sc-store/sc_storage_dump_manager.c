@@ -6,70 +6,75 @@
 
 #include "sc_storage_dump_manager.h"
 
+#include <unistd.h>
+
 #include "sc_storage.h"
 #include "../sc_memory_private.h"
 
 #include "sc-base/sc_allocator.h"
 
+typedef void (*sc_timed_callback)();
+typedef pthread_t sc_timer;
+
+typedef struct
+{
+  sc_bool dump;
+  sc_uint32 dump_period;
+  sc_timed_callback timed_dump_callback;
+  sc_timer dump_timer;
+} sc_dump_info;
+
 struct _sc_storage_dump_manager
 {
-  sc_bool dump_memory;
-  sc_uint32 dump_memory_period;
-  timer_t dump_memory_timer;
-  sc_bool dump_memory_statistics;
-  sc_uint32 dump_memory_statistics_period;
-  timer_t dump_memory_statistics_timer;
+  sc_dump_info dump_memory_info;
+  sc_dump_info dump_memory_statistics_info;
 };
 
-timer_t _sc_storage_dump_manager_create_timer(
-    void (*callback_function)(sc_int32, siginfo_t *, void *),
-    sc_uint32 period)
+void * _sc_timer_check_periodic(void * arg)
 {
-  timer_t timer;
-  struct sigevent sev;
+  sc_dump_info * dump_info = arg;
 
-  // Set up the signal handler
-  struct sigaction sa;
-  sa.sa_flags = SA_SIGINFO;
-  sa.sa_sigaction = callback_function;
-  sigemptyset(&sa.sa_mask);
-  sigaction(SIGALRM, &sa, NULL);
+  while (dump_info->dump)
+  {
+    for (sc_uint32 i = 0; i < dump_info->dump_period && dump_info->dump; ++i)
+      sleep(1);
 
-  // Set up the timer
-  sev.sigev_notify = SIGEV_SIGNAL;
-  sev.sigev_signo = SIGALRM;
-  sev.sigev_value.sival_ptr = &timer;
-  timer_create(CLOCK_REALTIME, &sev, &timer);
+    if (!dump_info->dump)
+      break;
 
-  // Set the timer to call the callback function in `period` seconds
-  struct itimerspec its;
-  its.it_value.tv_sec = period;
-  its.it_value.tv_nsec = 0;
-  its.it_interval.tv_sec = period;
-  its.it_interval.tv_nsec = 0;
-  timer_settime(timer, 0, &its, NULL);
+    dump_info->timed_dump_callback();
+  }
 
+  pthread_exit(null_ptr);
+}
+
+sc_timer _sc_storage_dump_manager_create_timer(sc_dump_info * dump_info)
+{
+  sc_timer timer;
+  if (pthread_create(&timer, null_ptr, _sc_timer_check_periodic, dump_info) != 0)
+  {
+    sc_memory_error("Error");
+  }
   return timer;
 }
 
-void _sc_storage_dump_manager_delete_timer(timer_t timer)
+void _sc_storage_dump_manager_delete_timer(sc_timer timer)
 {
-  timer_delete(timer);
+  pthread_join(timer, null_ptr);
 }
 
-void _sc_storage_dump_timer(sc_int32 signum, siginfo_t * siginfo, void * result)
+void _sc_storage_dump_timer()
 {
   sc_memory_info("Dump sc-memory by period");
   sc_storage_save(null_ptr);
 }
 
-void _sc_storage_dump_statistics_timer(sc_int32 signum, siginfo_t * siginfo, void * result)
+void _sc_storage_dump_statistics_timer()
 {
   sc_memory_info("Dump sc-memory statistics by period");
   sc_stat statistics;
   sc_storage_get_elements_stat(&statistics);
 
-  sc_memory_info("Dump sc-memory statistics by period");
   sc_uint64 const allElements = statistics.node_count + statistics.link_count + statistics.arc_count;
   sc_message("Nodes: %llu (%f)", statistics.node_count, (sc_float)statistics.node_count / (sc_float)allElements * 100);
   sc_message("Links: %llu (%f)", statistics.link_count, (sc_float)statistics.link_count / (sc_float)allElements * 100);
@@ -80,44 +85,50 @@ void _sc_storage_dump_statistics_timer(sc_int32 signum, siginfo_t * siginfo, voi
 void sc_storage_dump_manager_initialize(sc_storage_dump_manager ** manager, sc_memory_params const * params)
 {
   *manager = sc_mem_new(sc_storage_dump_manager, 1);
-  (*manager)->dump_memory = params->dump_memory;
-  (*manager)->dump_memory_period = params->dump_memory_period;
-  (*manager)->dump_memory_statistics = params->dump_memory_statistics;
-  (*manager)->dump_memory_statistics_period = params->dump_memory_statistics_period;
+  (*manager)->dump_memory_info = (sc_dump_info){
+      .dump = params->dump_memory,
+      .dump_period = params->dump_memory_period,
+      .timed_dump_callback = _sc_storage_dump_timer};
+  (*manager)->dump_memory_statistics_info = (sc_dump_info){
+      .dump = params->dump_memory_statistics,
+      .dump_period = params->dump_memory_statistics_period,
+      .timed_dump_callback = _sc_storage_dump_statistics_timer};
 
   sc_memory_info("Initialize dump manager");
   sc_memory_info("Sc-memory dump manager configuration");
-  sc_message("\tDump memory: %s", params->dump_memory ? "On" : "Off");
-  sc_message("\tDump memory period: %d seconds", params->dump_memory_period);
+  sc_message("\tDump memory: %s", (*manager)->dump_memory_info.dump ? "On" : "Off");
+  sc_message("\tDump memory period: %d seconds", (*manager)->dump_memory_info.dump_period);
   sc_message("\tDump memory statistics: %s", params->dump_memory_statistics ? "On" : "Off");
   sc_message("\tDump memory statistics period: %d seconds", params->dump_memory_statistics_period);
 
-  if ((*manager)->dump_memory == SC_TRUE)
+  if ((*manager)->dump_memory_info.dump == SC_TRUE)
   {
     sc_memory_info("Set timer for sc-memory dumps");
-    (*manager)->dump_memory_timer =
-        _sc_storage_dump_manager_create_timer(_sc_storage_dump_timer, (*manager)->dump_memory_period);
+    (*manager)->dump_memory_info.dump_timer = _sc_storage_dump_manager_create_timer(&(*manager)->dump_memory_info);
   }
 
-  if ((*manager)->dump_memory_statistics == SC_TRUE)
+  if ((*manager)->dump_memory_statistics_info.dump == SC_TRUE)
   {
     sc_memory_info("Set timer for sc-memory statistics dumps");
-    (*manager)->dump_memory_statistics_timer = _sc_storage_dump_manager_create_timer(
-        _sc_storage_dump_statistics_timer, (*manager)->dump_memory_statistics_period);
+    (*manager)->dump_memory_statistics_info.dump_timer =
+        _sc_storage_dump_manager_create_timer(&(*manager)->dump_memory_statistics_info);
   }
 }
 
 void sc_storage_dump_manager_shutdown(sc_storage_dump_manager * manager)
 {
-  if (manager->dump_memory == SC_TRUE)
+  if (manager->dump_memory_info.dump == SC_TRUE)
   {
+    manager->dump_memory_info.dump = SC_FALSE;
     sc_memory_info("Unset timer for sc-memory dumps");
-    _sc_storage_dump_manager_delete_timer(manager->dump_memory_timer);
+    _sc_storage_dump_manager_delete_timer(manager->dump_memory_info.dump_timer);
   }
 
-  if (manager->dump_memory_statistics_period == SC_TRUE)
+  if (manager->dump_memory_statistics_info.dump == SC_TRUE)
   {
+    manager->dump_memory_statistics_info.dump = SC_FALSE;
     sc_memory_info("Unset timer for sc-memory statistics dumps");
-    _sc_storage_dump_manager_delete_timer(manager->dump_memory_statistics_timer);
+    _sc_storage_dump_manager_delete_timer(manager->dump_memory_statistics_info.dump_timer);
   }
+  sc_mem_free(manager);
 }
