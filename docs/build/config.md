@@ -40,12 +40,12 @@ search_by_substring = true
 host = 127.0.0.1
 port = 8090
 
+# Sc-server mode to call parallely all input actions
+parallel_actions = true
+
 # Sc-server log file
 log_file = /path/to/sc-machine/log/sc-server.log
 # Sc-server log file
 log_level = Info # it can be 'Debug' or 'Error' also
-
-# Sc-server mode to synchronize all actions in it
-sync_actions = 0
 ```
 **Note: If you use relative paths they will be resolved based on config file location.**

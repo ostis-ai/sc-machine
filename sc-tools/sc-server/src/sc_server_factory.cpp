@@ -11,10 +11,21 @@ std::shared_ptr<ScServer> ScServerFactory::ConfigureScServer(
     ScParams const & serverParams,
     sc_memory_params memoryParams)
 {
+  sc_bool parallelActions = SC_TRUE;
+  if (serverParams.count("sync_actions"))
+  {
+    SC_LOG_WARNING(
+        "Option `sync_actions` is deprecated in sc-machine 0.9.0. It will be removed in sc-machine 0.10.0. Use option "
+        "`parallel_actions` instead of.");
+    parallelActions = serverParams.at("sync_actions") == "0";
+  }
+  if (serverParams.count("parallel_actions"))
+    parallelActions = serverParams.at("parallel_actions") == "true";
+
   std::unique_ptr<ScServer> server = std::unique_ptr<ScServer>(new ScServerImpl(
       serverParams.count("host") ? serverParams.at("host") : "127.0.0.1",
       serverParams.count("port") ? std::stoi(serverParams.at("port")) : 8090,
-      serverParams.count("sync_actions") ? std::stoi(serverParams.at("sync_actions")) : SC_FALSE,
+      parallelActions,
       memoryParams));
 
   return server;
