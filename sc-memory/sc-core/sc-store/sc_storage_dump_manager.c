@@ -51,10 +51,7 @@ void * _sc_timer_check_periodic(void * arg)
 sc_timer _sc_storage_dump_manager_create_timer(sc_dump_info * dump_info)
 {
   sc_timer timer;
-  if (pthread_create(&timer, null_ptr, _sc_timer_check_periodic, dump_info) != 0)
-  {
-    sc_memory_error("Error");
-  }
+  pthread_create(&timer, null_ptr, _sc_timer_check_periodic, dump_info);
   return timer;
 }
 

@@ -2,10 +2,11 @@
 
 ```ini
 [sc-memory]
-# Maximum number of segments. By default, it is 65536.
+# Maximum number of segments. By default, it is 1000.
+# Remember, that one sc-segment size is 3932144 bytes. 1000 segments size is 4 GB.
 max_loaded_segments = 1000
 
-# If it is equal to `true` then sc-memory use minimum between physical cores number and `max_events_and_agents_threads`/
+# If it is equal to `true` then sc-memory use minimum between physical cores number and `max_events_and_agents_threads`.
 limit_max_threads_by_max_physical_cores = true
 # Maximum number of threads that can be used in events and agents handler. By default, it is 32 if 
 `limit_max_threads_by_max_physical_cores` is `true` or otherwise it is core number of device processor.

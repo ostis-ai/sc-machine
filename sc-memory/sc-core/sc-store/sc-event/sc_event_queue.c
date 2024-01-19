@@ -111,7 +111,7 @@ void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, 
     sc_memory_info("Sc-event managers configuration:");
     sc_message(
         "\tLimit max threads by max physical cores: %s",
-        (*manager)->limit_max_threads_by_max_physical_cores ? "Yes" : "No");
+        (*manager)->limit_max_threads_by_max_physical_cores ? "On" : "Off");
     sc_message("\tMax events and agents threads: %d", (*manager)->max_events_and_agents_threads);
   }
 
