@@ -55,13 +55,16 @@ try
   ScConfig config{configPath, {"repo_path", "log_file", "input_path"}, {"extensions_path"}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
-  sc_memory_params const & formedMemoryParams = memoryConfig.GetParams();
+  sc_memory_params formedMemoryParams = memoryConfig.GetParams();
   if (params.m_inputPath.empty())
     params.m_inputPath = config["sc-builder"]["input_path"];
 
   params.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
   if (formedMemoryParams.init_memory_generated_structure != nullptr)
     params.m_resultStructureSystemIdtf = formedMemoryParams.init_memory_generated_structure;
+
+  formedMemoryParams.dump_memory = SC_FALSE;
+  formedMemoryParams.dump_memory_statistics = SC_FALSE;
 
   Builder builder;
   return builder.Run(params, formedMemoryParams) ? EXIT_SUCCESS : EXIT_FAILURE;
