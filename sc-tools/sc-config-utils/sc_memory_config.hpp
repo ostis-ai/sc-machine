@@ -122,6 +122,9 @@ public:
     m_memoryParams.enabled_exts = nullptr;
 
     m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
+
+    m_memoryParams.limit_max_threads_by_max_physical_cores =
+        GetBoolByKey("limit_max_threads_by_max_physical_cores", DEFAULT_LIMIT_MAX_THREADS_BY_MAX_PHYSICAL_CORES);
     m_memoryParams.max_events_and_agents_threads =
         GetIntByKey("max_events_and_agents_threads", DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
 

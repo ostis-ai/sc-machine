@@ -10,13 +10,14 @@
 #include "sc-store/sc_types.h"
 #include "sc_memory_version.h"
 
+#define DEFAULT_MAX_LOADED_SEGMENTS 1000
+#define DEFAULT_LIMIT_MAX_THREADS_BY_MAX_PHYSICAL_CORES SC_TRUE
+#define DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS 32
+#define DEFAULT_MIN_EVENTS_AND_AGENTS_THREADS 1
 #define DEFAULT_DUMP_MEMORY SC_TRUE
 #define DEFAULT_DUMP_MEMORY_PERIOD 32000
 #define DEFAULT_DUMP_MEMORY_STATISTICS SC_TRUE
 #define DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD 16000
-#define DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS 32
-#define DEFAULT_MIN_EVENTS_AND_AGENTS_THREADS 1
-#define DEFAULT_MAX_LOADED_SEGMENTS 1000
 #define DEFAULT_LOG_TYPE "Console"
 #define DEFAULT_LOG_FILE ""
 #define DEFAULT_LOG_LEVEL "Info"
@@ -39,7 +40,10 @@ typedef struct
   sc_char const * ext_path;       ///< Path to the extensions directory.
   sc_char const ** enabled_exts;  ///< Array of enabled extensions.
 
-  sc_uint32 max_loaded_segments;            ///< Maximum number of loaded segments.
+  sc_uint32 max_loaded_segments;  ///< Maximum number of loaded segments.
+
+  ///< Boolean indicating whether sc-memory limit `max_events_and_agents_threads` by maximum physical core number.
+  sc_bool limit_max_threads_by_max_physical_cores;
   sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for events and agents processing.
 
   sc_uint32 save_period;    ///< Period (in seconds) for automatic saving of sc-memory state (deprecated in 0.9.0).

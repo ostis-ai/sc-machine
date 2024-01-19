@@ -86,7 +86,7 @@ void sc_storage_dump_manager_initialize(sc_storage_dump_manager ** manager, sc_m
   (*manager)->dump_memory_statistics_period = params->dump_memory_statistics_period;
 
   sc_memory_info("Initialize dump manager");
-  sc_memory_info("Dump manager");
+  sc_memory_info("Sc-memory dump manager configuration");
   sc_message("\tDump memory: %s", params->dump_memory ? "On" : "Off");
   sc_message("\tDump memory period: %d seconds", params->dump_memory_period);
   sc_message("\tDump memory statistics: %s", params->dump_memory_statistics ? "On" : "Off");

@@ -11,9 +11,9 @@
 
 #include "../sc_storage.h"
 #include "../sc_storage_private.h"
+#include "../../sc_memory_private.h"
 
 #include "../sc-base/sc_allocator.h"
-#include "../sc-base/sc_message.h"
 
 /*! Structure representing data for a worker in the event emission pool.
  * @note This structure holds information required for processing events in a worker thread.
@@ -97,15 +97,22 @@ destroy:
   _sc_event_emission_pool_worker_data_destroy(work_data);
 }
 
-void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, sc_uint32 max_events_and_agents_threads)
+void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, sc_memory_params const * params)
 {
   *manager = sc_mem_new(sc_event_emission_manager, 1);
   sc_queue_init(&(*manager)->deletable_events);
 
-  max_events_and_agents_threads = sc_boundary(max_events_and_agents_threads, 1, g_get_num_processors());
+  (*manager)->limit_max_threads_by_max_physical_cores = params->limit_max_threads_by_max_physical_cores;
+  (*manager)->max_events_and_agents_threads =
+      (*manager)->limit_max_threads_by_max_physical_cores
+          ? sc_boundary(params->max_events_and_agents_threads, 1, g_get_num_processors())
+          : sc_max(1, params->max_events_and_agents_threads);
   {
-    sc_message("[sc-events] Configuration:");
-    sc_message("\tMax events and agents threads: %d", max_events_and_agents_threads);
+    sc_memory_info("Sc-event managers configuration:");
+    sc_message(
+        "\tLimit max threads by max physical cores: %s",
+        (*manager)->limit_max_threads_by_max_physical_cores ? "Yes" : "No");
+    sc_message("\tMax events and agents threads: %d", (*manager)->max_events_and_agents_threads);
   }
 
   (*manager)->running = SC_TRUE;
@@ -113,7 +120,11 @@ void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, 
 
   sc_monitor_init(&(*manager)->pool_monitor);
   (*manager)->thread_pool = g_thread_pool_new(
-      _sc_event_emission_pool_worker, *manager, (sc_int32)max_events_and_agents_threads, SC_FALSE, null_ptr);
+      _sc_event_emission_pool_worker,
+      *manager,
+      (sc_int32)(*manager)->max_events_and_agents_threads,
+      SC_FALSE,
+      null_ptr);
 }
 
 void sc_event_emission_manager_stop(sc_event_emission_manager * manager)
