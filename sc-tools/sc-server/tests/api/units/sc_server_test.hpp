@@ -38,6 +38,9 @@ protected:
     sc_memory_params params;
     sc_memory_params_clear(&params);
 
+    params.dump_memory = SC_FALSE;
+    params.dump_memory_statistics = SC_FALSE;
+
     params.clear = SC_FALSE;
     params.repo_path = SC_SERVER_REPO_PATH;
 
