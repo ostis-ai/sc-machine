@@ -5,7 +5,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <filesystem>
 
 #include "sc_server_test.hpp"
 #include "../../sc_client.hpp"
@@ -116,38 +115,4 @@ TEST_F(ScServerTest, OneHundredConnections)  // 206.55 ms
 TEST_F(ScServerTest, OneThousandConnections)  // 2583.39 ms
 {
   TEST_N_CONNECTIONS(m_server, 1000);
-}
-
-TEST(ScServer, RunStopDumpMemoryAndDumpMemoryStatistics)
-{
-  ScOptions options{1, nullptr};
-
-  std::string configFile = SC_SERVER_INI;
-
-  ScParams serverParams{options, {}};
-
-  ScConfig config{configFile, {}};
-  auto serverConfig = config["sc-server"];
-  for (auto const & key : *serverConfig)
-    serverParams.insert({key, serverConfig[key]});
-
-  ScParams memoryParams{options, {}};
-  memoryParams.insert({"repo_path", SC_SERVER_REPO_PATH});
-
-  ScMemoryConfig memoryConfig{config, memoryParams};
-
-  auto server = std::unique_ptr<ScServer>(new ScServerImpl(
-      serverParams.at("host"),
-      std::stoi(serverParams.at("port")),
-      std::stoi(serverParams.at("sync_actions")),
-      memoryConfig.GetParams()));
-
-  server->Run();
-
-  auto const & previousScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
-  sleep(10);
-  auto const & currentScMemorySaveTime = std::filesystem::last_write_time(SC_SERVER_REPO_PATH "/segments.scdb");
-  EXPECT_NE(previousScMemorySaveTime, currentScMemorySaveTime);
-
-  server->Stop();
 }

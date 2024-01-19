@@ -55,11 +55,6 @@ protected:
   std::string m_hostName;
   ScServerPort m_port;
 
-  sc_bool m_dumpMemory;
-  size_t m_dumpMemoryPeriod;
-  sc_bool m_dumpMemoryStatistics;
-  size_t m_dumpMemoryStatisticsPeriod;
-
   sc_bool m_memoryState;
   ScMemoryContext * m_context;
 
@@ -71,12 +66,6 @@ protected:
 
   virtual void AfterInitialize() = 0;
 
-  void Timer(std::function<void()> const & callback, size_t callTime);
-
-  void DumpMemoryStatistics();
-
-  void DumpMemory();
-
   virtual void OnOpen(ScServerConnectionHandle const & hdl) = 0;
 
   virtual void OnClose(ScServerConnectionHandle const & hdl) = 0;
@@ -84,9 +73,6 @@ protected:
   virtual void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) = 0;
 
 private:
-  std::thread m_dumpMemoryStatisticsTimerThread;
-  std::thread m_dumpMemoryTimerThread;
-
   std::thread m_ioThread;
   std::thread m_actionsThread;
 };

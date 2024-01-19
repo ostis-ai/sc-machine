@@ -21,11 +21,6 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
   ResetLogger();
   LogMessage(ScServerErrorLevel::info, "Initialize sc-server");
 
-  m_dumpMemory = params.dump_memory;
-  m_dumpMemoryPeriod = params.dump_memory_period;
-  m_dumpMemoryStatistics = params.dump_memory_statistics;
-  m_dumpMemoryStatisticsPeriod = params.dump_memory_statistics_period;
-
   {
     LogMessage(ScServerErrorLevel::info, "Socket data:");
     LogMessage(ScServerErrorLevel::info, "\tHost name: " + m_hostName);
@@ -50,17 +45,6 @@ void ScServer::Run()
 
   m_instance->listen({boost::asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
   m_instance->start_accept();
-
-  if (m_dumpMemory)
-  {
-    LogMessage(ScServerErrorLevel::info, "Start timer for memory dumping");
-    m_dumpMemoryTimerThread = std::thread(&ScServer::DumpMemory, &*this);
-  }
-  if (m_dumpMemoryStatistics)
-  {
-    LogMessage(ScServerErrorLevel::info, "Start timer for memory statistics dumping");
-    m_dumpMemoryStatisticsTimerThread = std::thread(&ScServer::DumpMemoryStatistics, &*this);
-  }
 
   LogMessage(ScServerErrorLevel::info, "Start actions processing");
   m_actionsThread = std::thread(&ScServer::EmitActions, &*this);
@@ -108,12 +92,6 @@ void ScServer::Stop()
     m_instance->stop();
     m_ioThread.join();
   }
-
-  if (m_dumpMemoryStatisticsTimerThread.joinable())
-    m_dumpMemoryStatisticsTimerThread.join();
-
-  if (m_dumpMemoryTimerThread.joinable())
-    m_dumpMemoryTimerThread.join();
 
   LogMessage(ScServerErrorLevel::info, "All inner processes stopped");
   LogMessage(ScServerErrorLevel::info, "Sc-server stopped");
@@ -199,56 +177,4 @@ void ScServer::CloseConnection(
 ScServer::~ScServer()
 {
   Shutdown();
-}
-
-void ScServer::Timer(std::function<void()> const & callback, size_t callTime)
-{
-  size_t currentTime = 0;
-  size_t delta = 1;
-  while (m_isServerRun)
-  {
-    if (currentTime >= callTime)
-    {
-      callback();
-      currentTime = 0;
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(delta * 1000));
-    currentTime += delta;
-  }
-}
-
-void ScServer::DumpMemoryStatistics()
-{
-  auto const PrintLine = [](std::string const & name, uint32_t num, float percent) {
-    SC_LOG_INFO(name << ": " << num << " (" << percent << "%)");
-  };
-
-  auto const PrintStatistics = [this, PrintLine]() {
-    ScMemoryContext::ScMemoryStatistics const & stats = m_context->CalculateStat();
-
-    SC_LOG_INFO("Statistics");
-    size_t const allElements = stats.GetAllNum();
-    PrintLine("Nodes", stats.m_nodesNum, float(stats.m_nodesNum) / float(allElements) * 100);
-    PrintLine("Edges", stats.m_edgesNum, float(stats.m_edgesNum) / float(allElements) * 100);
-    PrintLine("Links", stats.m_linksNum, float(stats.m_linksNum) / float(allElements) * 100);
-    SC_LOG_INFO("Total: " << allElements);
-  };
-
-  Timer(
-      [&PrintStatistics]() {
-    SC_LOG_INFO("Dump sc-memory statistics by period");
-    PrintStatistics();
-      },
-      m_dumpMemoryStatisticsPeriod);
-}
-
-void ScServer::DumpMemory()
-{
-  Timer(
-      [this]() {
-    SC_LOG_INFO("Dump sc-memory by period");
-    m_context->Save();
-      },
-      m_dumpMemoryPeriod);
 }

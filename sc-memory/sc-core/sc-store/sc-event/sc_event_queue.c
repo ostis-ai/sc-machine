@@ -5,13 +5,15 @@
  */
 
 #include "sc_event_queue.h"
+
 #include "../sc_event.h"
 #include "sc_event_private.h"
 
-#include "../sc-base/sc_allocator.h"
-#include "../sc-base/sc_message.h"
 #include "../sc_storage.h"
 #include "../sc_storage_private.h"
+
+#include "../sc-base/sc_allocator.h"
+#include "../sc-base/sc_message.h"
 
 /*! Structure representing data for a worker in the event emission pool.
  * @note This structure holds information required for processing events in a worker thread.

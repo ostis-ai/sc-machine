@@ -5,18 +5,19 @@
  */
 
 #include "sc_storage.h"
-#include "sc_storage_private.h"
 
 #include "sc_segment.h"
 #include "sc_element.h"
+
 #include "sc-fs-memory/sc_fs_memory.h"
-#include "sc-event/sc_event_private.h"
+
+#include "sc_event.h"
+#include "sc_storage_private.h"
 #include "../sc_memory_private.h"
 
 #include "sc_stream_memory.h"
 #include "sc-base/sc_allocator.h"
 #include "sc-container/sc-string/sc_string.h"
-#include "sc-base/sc_assert_utils.h"
 
 sc_storage * storage;
 
@@ -40,8 +41,6 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
   sc_message("\tSc-segment elements count: %d", SC_SEGMENT_ELEMENTS_COUNT);
   sc_message("\tSc-storage size: %zd", sizeof(sc_storage));
   sc_message("\tMax segments count: %d", storage->max_segments_count);
-  sc_message("\tDump memory period: %d", params->dump_memory_period);
-  sc_message("\tDump memory statistics period: %d", params->dump_memory_statistics_period);
   sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
 
   storage->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
@@ -54,6 +53,8 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
     result = sc_fs_memory_load(storage) == SC_FS_MEMORY_OK;
     sc_monitor_release_write(&storage->segments_monitor);
   }
+
+  sc_storage_dump_manager_initialize(&storage->dump_manager, params);
 
   sc_event_registration_manager_initialize(&storage->events_registration_manager);
   sc_event_emission_manager_initialize(&storage->events_emission_manager, params->max_events_and_agents_threads);
@@ -71,6 +72,8 @@ sc_result sc_storage_shutdown(sc_bool save_state)
   storage->events_emission_manager = null_ptr;
   sc_event_registration_manager_shutdown(storage->events_registration_manager);
   storage->events_registration_manager = null_ptr;
+
+  sc_storage_dump_manager_shutdown(storage->dump_manager);
 
   if (save_state == SC_TRUE)
   {

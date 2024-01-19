@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <filesystem>
+
 #include "sc-memory/sc_memory.hpp"
 
 extern "C"
@@ -529,6 +531,81 @@ TEST(SmallScMemoryTest, DistributedMemory)
   sc_storage_end_new_process();
 
   ctx.Destroy();
+  ScMemory::LogMute();
+  ScMemory::Shutdown();
+  ScMemory::LogUnmute();
+}
+
+TEST(ScMemoryDumper, DumpMemory)
+{
+  sc_memory_params params;
+  sc_memory_params_clear(&params);
+
+  params.clear = SC_TRUE;
+  params.repo_path = "repo";
+  params.log_level = "Debug";
+
+  params.dump_memory = SC_TRUE;
+  params.dump_memory_period = 4;
+  params.dump_memory_statistics = SC_FALSE;
+
+  params.max_loaded_segments = 1;
+
+  ScMemory::LogMute();
+  ScMemory::Initialize(params);
+  ScMemory::LogUnmute();
+
+  ScMemoryContext ctx(sc_access_lvl_make_min);
+  ctx.Save();
+  ctx.Destroy();
+
+  auto previousScMemorySaveTime = std::filesystem::last_write_time("repo/segments.scdb");
+  sleep(10);
+  auto currentScMemorySaveTime = std::filesystem::last_write_time("repo/segments.scdb");
+  EXPECT_NE(previousScMemorySaveTime, currentScMemorySaveTime);
+  previousScMemorySaveTime = currentScMemorySaveTime;
+  sleep(10);
+  currentScMemorySaveTime = std::filesystem::last_write_time("repo/segments.scdb");
+  EXPECT_NE(previousScMemorySaveTime, currentScMemorySaveTime);
+  previousScMemorySaveTime = currentScMemorySaveTime;
+  sleep(10);
+  currentScMemorySaveTime = std::filesystem::last_write_time("repo/segments.scdb");
+  EXPECT_NE(previousScMemorySaveTime, currentScMemorySaveTime);
+
+  ScMemory::LogMute();
+  ScMemory::Shutdown();
+  ScMemory::LogUnmute();
+}
+
+TEST(ScMemoryDumper, DumpMemoryStatistics)
+{
+  sc_memory_params params;
+  sc_memory_params_clear(&params);
+
+  params.clear = SC_TRUE;
+  params.repo_path = "repo";
+  params.log_level = "Debug";
+
+  params.dump_memory = SC_FALSE;
+  params.dump_memory_period = 4;
+  params.dump_memory_statistics = SC_TRUE;
+  params.dump_memory_statistics_period = 4;
+
+  params.max_loaded_segments = 1;
+
+  ScMemory::LogMute();
+  ScMemory::Initialize(params);
+  ScMemory::LogUnmute();
+
+  ScMemoryContext ctx(sc_access_lvl_make_min);
+  ctx.Save();
+  ctx.Destroy();
+
+  auto const & previousScMemorySaveTime = std::filesystem::last_write_time("repo/segments.scdb");
+  sleep(10);
+  auto const & currentScMemorySaveTime = std::filesystem::last_write_time("repo/segments.scdb");
+  EXPECT_EQ(previousScMemorySaveTime, currentScMemorySaveTime);
+
   ScMemory::LogMute();
   ScMemory::Shutdown();
   ScMemory::LogUnmute();
