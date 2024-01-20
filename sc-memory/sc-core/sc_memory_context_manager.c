@@ -19,23 +19,23 @@
  */
 struct _sc_memory_context_manager
 {
-  sc_hash_table * context_hash_table;                ///< Hash table storing memory contexts based on user addresses.
-  sc_uint32 context_count;                           ///< Number of currently active memory contexts.
-  sc_monitor context_monitor;                        ///< Monitor for synchronizing access to the context manager.
-  sc_addr concept_authentication_request_user_addr;  ///< sc_addr representing the concept node for authenticated users.
-  sc_addr concept_authenticated_user_addr;           ///< sc_addr representing the concept node for action subjects.
+  sc_hash_table * context_hash_table;                 ///< Hash table storing memory contexts based on user addresses.
+  sc_uint32 context_count;                            ///< Number of currently active memory contexts.
+  sc_monitor context_monitor;                         ///< Monitor for synchronizing access to the context manager.
+  sc_addr concept_authentication_request_user_addr;   ///< sc-address representing concept node for authenticated users.
+  sc_addr concept_authenticated_user_addr;            ///< sc-address representing concept node for action subjects.
   sc_hash_table * authenticated_users_access_levels;  ///< Hash table storing access levels for authenticated users.
   sc_event * on_authentication_request_user_subscription;    ///< Event subscription for authenticated user events.
   sc_event * on_unauthentication_request_user_subscription;  ///< Event subscription for unauthenticated user events.
   sc_bool user_mode;  ///< Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
 };
 
-/*! Structure representing parameters for emitting an event.
- * @note This structure holds the parameters required for emitting an event in a memory context.
+/*! Structure representing parameters for emitting a sc-event.
+ * @note This structure holds the parameters required for emitting a sc-event in a memory context.
  */
 struct _sc_event_emit_params
 {
-  sc_addr subscription_addr;  ///< sc_addr representing the subscription associated with the event.
+  sc_addr subscription_addr;  ///< sc-address representing the subscription associated with the event.
   sc_event_type type;         ///< Type of the event to be emitted.
   sc_addr edge_addr;          ///< sc-address representing the edge associated with the event.
   sc_addr other_addr;         ///< sc-address representing the other element associated with the event.
@@ -73,11 +73,11 @@ struct _sc_event_emit_params
 
 /*! Function that creates a memory context for an authenticated user with specified parameters.
  * @param event Pointer to the sc_event triggering the context creation.
- * @param arc_addr Unused parameter (placeholder for sc_addr of the sc_type_arc_pos_const_temp type).
- * @param user_addr sc_addr representing the authenticated user for whom the context is created.
- * @returns Returns an sc_result code indicating the success or failure of the operation (SC_RESULT_OK on success).
- * @note This function is called in response to an sc_event and is responsible for creating a new memory context
- * for an authenticated user and establishing a connection between the user and the context.
+ * @param arc_addr sc-address representing created sc-arc to the authenticated user.
+ * @param user_addr sc-address representing the authenticated user for whom the context is created.
+ * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to a sc-event and is responsible for creating a new memory context
+ * for an authenticated user and establishing a connection between user and the context.
  */
 sc_result _sc_memory_context_manager_on_authentication_request_user(
     sc_event const * event,
@@ -109,11 +109,11 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 
 /*! Function that handles the removal of authentication for a user and its associated memory context.
  * @param event Pointer to the sc_event triggering the context removal.
- * @param arc_addr Unused parameter (placeholder for sc_addr of the sc_type_arc_pos_const_temp type).
- * @param user_addr sc_addr representing the user whose authentication is being revoked.
- * @returns Returns an sc_result code indicating the success or failure of the operation (SC_RESULT_OK on success).
- * @note This function is called in response to an sc_event and is responsible for removing authentication
- * for a user and its associated memory context.
+ * @param arc_addr sc-address representing removed sc-arc to the authenticated user..
+ * @param user_addr sc-address representing the user whose authentication is being revoked.
+ * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to a sc-event and is responsible for removing authentication
+ * for user and its associated memory context.
  */
 sc_result _sc_memory_context_manager_on_unauthentication_request_user(
     sc_event const * event,
