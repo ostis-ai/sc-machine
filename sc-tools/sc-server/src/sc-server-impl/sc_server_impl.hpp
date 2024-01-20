@@ -18,8 +18,6 @@ using ScServerActions = std::queue<ScServerAction *>;
 class ScServerImpl : public ScServer
 {
 public:
-  explicit ScServerImpl(sc_memory_params const & params);
-
   explicit ScServerImpl(
       std::string const & host,
       ScServerPort port,

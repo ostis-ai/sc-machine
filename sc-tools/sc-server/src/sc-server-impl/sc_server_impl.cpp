@@ -15,14 +15,6 @@ extern "C"
 #include "sc-core/sc-store/sc-base/sc_thread.h"
 }
 
-#define DEFAULT_HOST "127.0.0.1"
-#define DEFAULT_PORT 8090
-
-ScServerImpl::ScServerImpl(sc_memory_params const & params)
-  : ScServerImpl(DEFAULT_HOST, DEFAULT_PORT, SC_TRUE, params)
-{
-}
-
 ScServerImpl::ScServerImpl(
     std::string const & host,
     ScServerPort port,
