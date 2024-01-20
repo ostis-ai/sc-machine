@@ -9,8 +9,9 @@
 
 #include "sc_file_system.h"
 #include "sc_dictionary_fs_memory_private.h"
-#include "../sc_storage_private.h"
+
 #include "../sc_segment.h"
+#include "../sc_storage_private.h"
 
 #include "sc_io.h"
 

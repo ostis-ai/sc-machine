@@ -46,9 +46,14 @@ TEST(ScBuilder, RunStop)
   sc_memory_params const scMemoryParams = memoryConfig.GetParams();
 
   EXPECT_EQ((sc_uint32)std::stoi(scParams.at("max_loaded_segments")), scMemoryParams.max_loaded_segments);
-  EXPECT_EQ((sc_uint8)std::stoi(scParams.at("max_threads")), scMemoryParams.max_threads);
-  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("save_period")), scMemoryParams.save_period);
-  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.update_period);
+  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("dump_memory_period")), scMemoryParams.dump_memory_period);
+  EXPECT_EQ(
+      (sc_uint32)std::stoi(scParams.at("dump_memory_statistics_period")), scMemoryParams.dump_memory_statistics_period);
+  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("save_period")), scMemoryParams.dump_memory_period);
+  EXPECT_EQ(
+      (sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.dump_memory_statistics_period);
+  EXPECT_EQ(scMemoryParams.dump_memory_period, scMemoryParams.save_period);
+  EXPECT_EQ(scMemoryParams.dump_memory_statistics_period, scMemoryParams.update_period);
   EXPECT_EQ(scParams.at("log_type"), scMemoryParams.log_type);
   EXPECT_EQ(scParams.at("log_file"), scMemoryParams.log_file);
   EXPECT_EQ(scParams.at("log_level"), scMemoryParams.log_level);

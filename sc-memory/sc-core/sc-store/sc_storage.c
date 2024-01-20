@@ -5,18 +5,19 @@
  */
 
 #include "sc_storage.h"
-#include "sc_storage_private.h"
 
 #include "sc_segment.h"
 #include "sc_element.h"
+
 #include "sc-fs-memory/sc_fs_memory.h"
-#include "sc-event/sc_event_private.h"
+
+#include "sc_event.h"
+#include "sc_storage_private.h"
 #include "../sc_memory_private.h"
 
 #include "sc_stream_memory.h"
 #include "sc-base/sc_allocator.h"
 #include "sc-container/sc-string/sc_string.h"
-#include "sc-base/sc_assert_utils.h"
 
 sc_storage * storage;
 
@@ -34,16 +35,13 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
   sc_monitor_init(&storage->segments_monitor);
   _sc_monitor_global_init(&storage->addr_monitors_table);
 
-  sc_memory_info("Configuration:");
+  sc_memory_info("Sc-memory configuration:");
+  sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
   sc_message("\tSc-element size: %zd", sizeof(sc_element));
   sc_message("\tSc-segment size: %zd", sizeof(sc_segment));
   sc_message("\tSc-segment elements count: %d", SC_SEGMENT_ELEMENTS_COUNT);
   sc_message("\tSc-storage size: %zd", sizeof(sc_storage));
   sc_message("\tMax segments count: %d", storage->max_segments_count);
-  sc_message("\tMax threads count: %d", params->max_threads);
-  sc_message("\tSave period: %d", params->save_period);
-  sc_message("\tUpdate period: %d", params->update_period);
-  sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
 
   storage->processes_segments_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
   sc_monitor_init(&storage->processes_monitor);
@@ -56,8 +54,10 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
     sc_monitor_release_write(&storage->segments_monitor);
   }
 
+  sc_storage_dump_manager_initialize(&storage->dump_manager, params);
+
   sc_event_registration_manager_initialize(&storage->events_registration_manager);
-  sc_event_emission_manager_initialize(&storage->events_emission_manager, params->max_events_and_agents_threads);
+  sc_event_emission_manager_initialize(&storage->events_emission_manager, params);
 
   return result;
 }
@@ -72,6 +72,8 @@ sc_result sc_storage_shutdown(sc_bool save_state)
   storage->events_emission_manager = null_ptr;
   sc_event_registration_manager_shutdown(storage->events_registration_manager);
   storage->events_registration_manager = null_ptr;
+
+  sc_storage_dump_manager_shutdown(storage->dump_manager);
 
   if (save_state == SC_TRUE)
   {

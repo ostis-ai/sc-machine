@@ -7,6 +7,8 @@
 #ifndef _sc_event_queue_h_
 #define _sc_event_queue_h_
 
+#include "../../sc_memory_params.h"
+
 #include "../sc_types.h"
 #include "../sc-base/sc_mutex.h"
 #include "../sc-container/sc-hash-table/sc_hash_table.h"
@@ -17,21 +19,22 @@
  */
 typedef struct
 {
-  sc_queue * deletable_events;  ///< Queue of events that need to be deleted after sc-memory shutdown.
-  sc_bool running;              ///< Flag indicating whether the event emission manager is running.
-  sc_monitor destroy_monitor;   ///< Monitor for synchronizing access to the destruction process.
-  GThreadPool * thread_pool;    ///< Thread pool used for worker threads processing events.
-  sc_monitor pool_monitor;      ///< Monitor for synchronizing access to the thread pool.
+  ///< Boolean indicating whether sc-memory limit `max_events_and_agents_threads` by maximum physical core number.
+  sc_bool limit_max_threads_by_max_physical_cores;
+  sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for processing events and agents.
+  sc_queue * deletable_events;              ///< Queue of events that need to be deleted after sc-memory shutdown.
+  sc_bool running;                          ///< Flag indicating whether the event emission manager is running.
+  sc_monitor destroy_monitor;               ///< Monitor for synchronizing access to the destruction process.
+  GThreadPool * thread_pool;                ///< Thread pool used for worker threads processing events.
+  sc_monitor pool_monitor;                  ///< Monitor for synchronizing access to the thread pool.
 } sc_event_emission_manager;
 
 /*! Function that initializes an sc-event emission manager.
  * @param manager Pointer to the sc_event_emission_manager to be initialized.
- * @param max_events_and_agents_threads Maximum number of threads for processing events and agents.
+ * @param params Pointer to the sc-memory params.
  * @note This function initializes the event emission manager, creating a thread pool and necessary monitors.
  */
-void sc_event_emission_manager_initialize(
-    sc_event_emission_manager ** manager,
-    sc_uint32 max_events_and_agents_threads);
+void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, sc_memory_params const * params);
 
 /*! Function that stops an sc-event emission manager.
  * @param manager Pointer to the sc_event_emission_manager to be stopped.

@@ -15,21 +15,13 @@ extern "C"
 #include "sc-core/sc-store/sc-base/sc_thread.h"
 }
 
-#define DEFAULT_HOST "127.0.0.1"
-#define DEFAULT_PORT 8090
-
-ScServerImpl::ScServerImpl(sc_memory_params const & params)
-  : ScServerImpl(DEFAULT_HOST, DEFAULT_PORT, SC_FALSE, params)
-{
-}
-
 ScServerImpl::ScServerImpl(
     std::string const & host,
     ScServerPort port,
-    sc_bool syncActions,
+    sc_bool parallelActions,
     sc_memory_params const & params)
   : ScServer(host, port, params)
-  , m_syncActions(syncActions)
+  , m_parallelActions(parallelActions)
   , m_actionsRun(SC_TRUE)
   , m_actions(new ScServerActions())
 {
@@ -107,7 +99,7 @@ void ScServerImpl::OnClose(ScServerConnectionHandle const & hdl)
 
 void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
 {
-  if (m_syncActions == SC_TRUE)
+  if (m_parallelActions == SC_FALSE)
   {
     {
       ScServerLock guard(m_actionLock);

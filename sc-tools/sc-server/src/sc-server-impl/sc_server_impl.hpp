@@ -18,12 +18,10 @@ using ScServerActions = std::queue<ScServerAction *>;
 class ScServerImpl : public ScServer
 {
 public:
-  explicit ScServerImpl(sc_memory_params const & params);
-
   explicit ScServerImpl(
       std::string const & host,
       ScServerPort port,
-      sc_bool syncActions,
+      sc_bool parallelActions,
       sc_memory_params const & params);
 
   void EmitActions() override;
@@ -36,7 +34,7 @@ protected:
   ScServerMutex m_actionLock;
   ScServerMutex m_connectionLock;
   ScServerCondVar m_actionCond;
-  sc_bool m_syncActions;
+  sc_bool m_parallelActions;
 
   std::atomic<sc_bool> m_actionsRun;
 

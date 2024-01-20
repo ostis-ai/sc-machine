@@ -7,6 +7,11 @@
 #ifndef _sc_storage_private_h_
 #define _sc_storage_private_h_
 
+#include "sc_storage_dump_manager.h"
+#include "sc-event/sc_event_private.h"
+
+#include "sc-base/sc_monitor.h"
+
 struct _sc_storage
 {
   sc_segment ** segments;
@@ -18,6 +23,7 @@ struct _sc_storage
   sc_monitor_table addr_monitors_table;
   sc_hash_table * processes_segments_table;
   sc_monitor processes_monitor;
+  sc_storage_dump_manager * dump_manager;
   sc_event_emission_manager * events_emission_manager;
   sc_event_registration_manager * events_registration_manager;
 };

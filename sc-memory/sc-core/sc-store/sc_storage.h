@@ -21,16 +21,10 @@
 #ifndef _sc_storage_h_
 #define _sc_storage_h_
 
-#include "sc_defines.h"
-#include "sc-event/sc_event_queue.h"
-#include "sc_event.h"
 #include "../sc_memory_params.h"
 
-#include "sc_types.h"
 #include "sc_stream.h"
-
 #include "sc-container/sc-list/sc_list.h"
-#include "sc-base/sc_monitor.h"
 
 typedef struct _sc_storage sc_storage;
 
