@@ -74,29 +74,3 @@ sc_char * sc_config_get_value_string(sc_config * config, sc_char const * group, 
   g_free(hash_key);
   return (sc_char *)res;
 }
-
-sc_int sc_config_get_value_int(sc_config * config, sc_char const * group, sc_char const * key)
-{
-  sc_char const * str_value = sc_config_get_value_string(config, group, key);
-  if (str_value == null_ptr)
-    return 0;
-
-  return atoi(str_value);
-}
-
-float sc_config_get_value_float(sc_config * config, sc_char const * group, sc_char const * key)
-{
-  return (float)sc_config_get_value_int(config, group, key);
-}
-
-sc_bool sc_config_get_value_boolean(sc_config * config, sc_char const * group, sc_char const * key)
-{
-  sc_char const * str_value = sc_config_get_value_string(config, group, key);
-  if (str_value == null_ptr)
-    return SC_FALSE;
-
-  if (g_str_equal(str_value, "true") || g_str_equal(str_value, "True") || g_str_equal(str_value, "1"))
-    return SC_TRUE;
-
-  return SC_FALSE;
-}
