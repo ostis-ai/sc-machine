@@ -148,7 +148,12 @@ bool ScAgentAction::InitiateCommandWait(
     uint32_t waitTimeOutMS /* = 5000 */)
 {
   ScWaitActionFinished waiter(ctx, cmdAddr);
-  return waiter.Wait(waitTimeOutMS, [&]() { ScAgentAction::InitiateCommand(ctx, cmdAddr); });
+  return waiter.Wait(
+      waitTimeOutMS,
+      [&]()
+      {
+        ScAgentAction::InitiateCommand(ctx, cmdAddr);
+      });
 }
 
 ScAddr ScAgentAction::GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr)

@@ -17,8 +17,8 @@ AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortEnumsOnASingleLine: false
 AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
-AllowShortLambdasOnASingleLine: Inline
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
@@ -42,7 +42,7 @@ BraceWrapping:
   AfterExternBlock: true
   BeforeCatch:     true
   BeforeElse:      true
-  BeforeLambdaBody: false
+  BeforeLambdaBody: true
   BeforeWhile:     true
   IndentBraces:    false
   SplitEmptyFunction: true

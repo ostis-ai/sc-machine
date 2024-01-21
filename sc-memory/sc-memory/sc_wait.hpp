@@ -71,15 +71,11 @@ public:
       uint32_t timeout_ms = 5000,
       DelegateFunc const & initializationFunction = []() -> void {})
   {
-    if (m_waitStartDelegate)
-      m_waitStartDelegate();
-
     return m_impl.Wait(timeout_ms, initializationFunction);
   }
 
 private:
   Impl m_impl;
-  DelegateFunc m_waitStartDelegate;
 };
 
 /* Class implements event wait logic.
@@ -102,9 +98,7 @@ public:
   {
   }
 
-  virtual ~ScWaitEvent()
-  {
-  }
+  virtual ~ScWaitEvent() {}
 
 protected:
   bool OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)

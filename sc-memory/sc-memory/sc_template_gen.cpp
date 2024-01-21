@@ -32,7 +32,8 @@ public:
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
 
-      auto checkEdge = [](ScTemplateItem const & value) {
+      auto checkEdge = [](ScTemplateItem const & value)
+      {
         if (value.IsAssign() && (!value.IsType() || value.m_typeValue.IsEdge()))
           SC_THROW_EXCEPTION(
               utils::ExceptionInvalidParams, "You can't use edges as a source/target element in triple for generation");

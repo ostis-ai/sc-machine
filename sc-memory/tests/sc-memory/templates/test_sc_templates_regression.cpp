@@ -18,21 +18,24 @@ TEST_F(ScTemplateRegressionTest, Issue224)
   {
     std::vector<ScAddr> contourItems;
     {
-      auto testCreateNode = [this, &contourItems](ScType const & type) {
+      auto testCreateNode = [this, &contourItems](ScType const & type)
+      {
         ScAddr const addr = m_ctx->CreateNode(type);
         EXPECT_TRUE(addr.IsValid());
         contourItems.push_back(addr);
         return addr;
       };
 
-      auto testCreateNodeIdtf = [this, &contourItems](ScType const & type, std::string const & idtf) {
+      auto testCreateNodeIdtf = [this, &contourItems](ScType const & type, std::string const & idtf)
+      {
         ScAddr const addr = m_ctx->HelperResolveSystemIdtf(idtf, type);
         EXPECT_TRUE(addr.IsValid());
         contourItems.push_back(addr);
         return addr;
       };
 
-      auto testCreateEdge = [this, &contourItems](ScType const & type, ScAddr const & src, ScAddr const & trg) {
+      auto testCreateEdge = [this, &contourItems](ScType const & type, ScAddr const & src, ScAddr const & trg)
+      {
         ScAddr const edge = m_ctx->CreateEdge(type, src, trg);
         EXPECT_TRUE(edge.IsValid());
         contourItems.push_back(edge);
@@ -44,7 +47,8 @@ TEST_F(ScTemplateRegressionTest, Issue224)
                                      ScAddr const & src,
                                      ScAddr const & trg,
                                      ScType const & attrsEdgeType,
-                                     std::vector<ScAddr> const & attrNodes) {
+                                     std::vector<ScAddr> const & attrNodes)
+      {
         ScAddr const edge = testCreateEdge(type, src, trg);
         for (ScAddr const & addr : attrNodes)
           testCreateEdge(attrsEdgeType, addr, edge);
@@ -224,7 +228,8 @@ TEST_F(ScTemplateRegressionTest, Issue224)
 
     // check helperBuildTemplate by random shuffles of contour items (to test order they returned by iterators)
     {
-      auto shuffle = [&contourItems](int iterationsNum) {
+      auto shuffle = [&contourItems](int iterationsNum)
+      {
         std::random_device rand_dev;
         std::mt19937 mt_rand(rand_dev());
         std::uniform_int_distribution<int> unif(0, static_cast<int>(contourItems.size() - 1));

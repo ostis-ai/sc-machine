@@ -73,9 +73,7 @@ public:
     Destroy();
   }
 
-  TIterator3(TIterator3 const & other)
-  {
-  }
+  TIterator3(TIterator3 const & other) {}
 
   TIterator3 & operator=(TIterator3 const & other)
   {

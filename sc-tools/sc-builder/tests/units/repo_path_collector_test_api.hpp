@@ -18,7 +18,5 @@ protected:
     collector = ScRepoPathCollector();
   }
 
-  void TearDown() override
-  {
-  }
+  void TearDown() override {}
 };

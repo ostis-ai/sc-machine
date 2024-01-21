@@ -88,7 +88,8 @@ Cursor::List Cursor::GetChildren(void) const
 {
   List children;
 
-  auto visitor = [](CXCursor cursor, CXCursor parent, CXClientData data) {
+  auto visitor = [](CXCursor cursor, CXCursor parent, CXClientData data)
+  {
     auto container = static_cast<List *>(data);
 
     container->emplace_back(cursor);

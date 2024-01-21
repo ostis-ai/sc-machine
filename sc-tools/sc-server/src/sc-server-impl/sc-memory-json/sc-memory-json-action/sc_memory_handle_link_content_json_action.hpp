@@ -22,7 +22,8 @@ public:
   {
     ScMemoryJsonPayload responsePayload;
 
-    auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom) {
+    auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom)
+    {
       std::string const & type = atom["command"].get<std::string>();
 
       if (type == "set")

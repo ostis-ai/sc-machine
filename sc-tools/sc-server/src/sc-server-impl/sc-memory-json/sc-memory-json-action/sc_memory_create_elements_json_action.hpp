@@ -20,7 +20,8 @@ public:
   {
     ScMemoryJsonPayload responsePayload;
 
-    auto const & resolveAddr = [&responsePayload](ScMemoryJsonPayload const & json) -> ScAddr {
+    auto const & resolveAddr = [&responsePayload](ScMemoryJsonPayload const & json) -> ScAddr
+    {
       ScMemoryJsonPayload const & sub = json["value"];
       if (json["type"].get<std::string>() == "ref")
         return ScAddr(responsePayload[sub.get<size_t>()].get<size_t>());

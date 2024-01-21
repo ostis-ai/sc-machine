@@ -62,7 +62,8 @@ protected:
 
   ScTemplate * MakeTemplate(ScMemoryJsonPayload const & triples)
   {
-    auto const & convertItemToParam = [](ScMemoryJsonPayload paramItem) -> ScTemplateItemValue {
+    auto const & convertItemToParam = [](ScMemoryJsonPayload paramItem) -> ScTemplateItemValue
+    {
       std::string const & paramType = paramItem["type"].get<std::string>();
       auto const & paramValue = paramItem["value"];
 

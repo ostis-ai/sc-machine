@@ -13,13 +13,9 @@
 
 #ifdef __SC_REFLECTION_PARSER__
 #  define SC_BODY_INTERNAL(...) \
-    __attribute__((annotate(#__VA_ARGS__))) void __null_body() \
-    { \
-    }
+    __attribute__((annotate(#__VA_ARGS__))) void __null_body() {}
 #  define SC_CLASS_INTERNAL(...) \
-    __attribute__((annotate(#__VA_ARGS__))) void __null_meta() \
-    { \
-    }
+    __attribute__((annotate(#__VA_ARGS__))) void __null_meta() {}
 
 #  define SC_CLASS(...) SC_CLASS_INTERNAL(__VA_ARGS__)
 #  define SC_GENERATED_BODY(...) SC_BODY_INTERNAL(GenBody())

@@ -262,7 +262,8 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
     d.m_image = searchRes[i]["_image"];
   }
 
-  auto compare = [](TestData const & a, TestData const & b) {
+  auto compare = [](TestData const & a, TestData const & b)
+  {
     return (a.m_app.Hash() < b.m_app.Hash());
   };
   std::sort(data.begin(), data.end(), compare);
@@ -330,7 +331,8 @@ TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
     d.m_classEdge2 = searchRes[i]["_class_edge2"];
   }
 
-  auto compare = [](TestData const & a, TestData const & b) {
+  auto compare = [](TestData const & a, TestData const & b)
+  {
     return (a.m_addr.Hash() < b.m_addr.Hash());
   };
   std::sort(data.begin(), data.end(), compare);

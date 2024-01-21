@@ -135,7 +135,8 @@ TEST(ScBuilder, BuilderConfig)
   ScAddr const & resultStructure = fiver.addr1;
   EXPECT_TRUE(resultStructure.IsValid());
 
-  auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr) {
+  auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr)
+  {
     EXPECT_TRUE(context->HelperCheckEdge(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
   };
 

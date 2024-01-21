@@ -83,11 +83,13 @@ bool AgentUtils::applyAction(
   if (!onEventClassAddr.IsValid())
     onEventClassAddr = scAgentsCommon::CoreKeynodes::question_initiated;
 
-  auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) {
+  auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  {
     return otherAddr == scAgentsCommon::CoreKeynodes::question_finished;
   };
 
-  auto initialize = [ms_context, onEventClassAddr, actionNode]() {
+  auto initialize = [ms_context, onEventClassAddr, actionNode]()
+  {
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, onEventClassAddr, actionNode);
   };
 

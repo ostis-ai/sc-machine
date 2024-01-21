@@ -11,13 +11,9 @@
 #include "uiTranslators.h"
 #include "uiUtils.h"
 
-uiSc2SCgJsonTranslator::uiSc2SCgJsonTranslator()
-{
-}
+uiSc2SCgJsonTranslator::uiSc2SCgJsonTranslator() {}
 
-uiSc2SCgJsonTranslator::~uiSc2SCgJsonTranslator()
-{
-}
+uiSc2SCgJsonTranslator::~uiSc2SCgJsonTranslator() {}
 
 void uiSc2SCgJsonTranslator::runImpl()
 {

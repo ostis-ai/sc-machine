@@ -30,6 +30,8 @@ TEST_F(ScAgentTest, action_emit)
 
   SC_AGENT_REGISTER(ATestActionEmit);
 
+  EXPECT_TRUE(ScAgentAction::GetNrelResultAddr().IsValid());
+
   testInitLock.Lock();
   ScAddr const cmd = ScAgentAction::CreateCommand(
       *m_ctx,
@@ -38,9 +40,12 @@ TEST_F(ScAgentTest, action_emit)
 
   EXPECT_TRUE(cmd.IsValid());
 
-  ScWaitActionFinished waiter(*m_ctx, cmd);
-  waiter.Wait(5000, [&]() { ScAgentAction::InitiateCommand(*m_ctx, cmd); });
+  EXPECT_TRUE(ScAgentAction::InitiateCommandWait(*m_ctx, cmd));
+  EXPECT_EQ(ScAgentAction::GetCommandResultCode(*m_ctx, ScAddr::Empty), SC_RESULT_UNKNOWN);
   EXPECT_EQ(ScAgentAction::GetCommandResultCode(*m_ctx, cmd), SC_RESULT_OK);
+  EXPECT_FALSE(ScAgentAction::IsCommandInitiated(*m_ctx, cmd));
+  EXPECT_FALSE(ScAgentAction::IsCommandInProgress(*m_ctx, cmd));
+  EXPECT_TRUE(ScAgentAction::IsCommandFishined(*m_ctx, cmd));
 
   SC_AGENT_UNREGISTER(ATestActionEmit);
 }

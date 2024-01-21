@@ -84,13 +84,15 @@ protected:
       }
     }
 
-    parser.ForEachParsedElement([this](scs::ParsedElement const & el) {
-      if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end() && !el.GetType().IsEdge()
-          && !scs::TypeResolver::IsKeynodeType(el.GetIdtf()))
-      {
-        ResolveElement(el);
-      }
-    });
+    parser.ForEachParsedElement(
+        [this](scs::ParsedElement const & el)
+        {
+          if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end() && !el.GetType().IsEdge()
+              && !scs::TypeResolver::IsKeynodeType(el.GetIdtf()))
+          {
+            ResolveElement(el);
+          }
+        });
   }
 
 private:

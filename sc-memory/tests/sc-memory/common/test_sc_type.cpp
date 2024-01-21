@@ -101,6 +101,16 @@ TEST(ScTypeTest, extend)
   EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::NodeMaterial));
   EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::NodeConstMaterial));
 
+  EXPECT_FALSE(ScType::Node.CanExtendTo(ScType::EdgeAccess));
+  EXPECT_FALSE(ScType::NodeAbstract.CanExtendTo(ScType::NodeConstMaterial));
+
+  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::Link));
+  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkConst));
+  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkVar));
+  EXPECT_FALSE(ScType::Link.CanExtendTo(ScType::LinkClass));
+
+  EXPECT_FALSE(ScType::Link.CanExtendTo(ScType::Node));
+
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::Node));
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::NodeConst));
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeAccessConstFuzPerm));
@@ -109,9 +119,9 @@ TEST(ScTypeTest, extend)
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeUCommon));
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeDCommon));
 
-  EXPECT_FALSE(ScType::Node.CanExtendTo(ScType::EdgeAccess));
-  EXPECT_FALSE(ScType::NodeAbstract.CanExtendTo(ScType::NodeConstMaterial));
-  EXPECT_FALSE(ScType::Link.CanExtendTo(ScType::Node));
+  EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeAccessConstPosPerm));
+  EXPECT_FALSE(ScType::EdgeDCommon.CanExtendTo(ScType::EdgeDCommonConst));
+
   EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeDCommon));
   EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeUCommon));
   EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::Link));

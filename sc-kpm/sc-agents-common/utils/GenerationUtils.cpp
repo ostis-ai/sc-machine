@@ -63,9 +63,13 @@ ScAddr GenerationUtils::wrapInOrientedSet(
 ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, ScAddrVector const & addrVector, ScType const & setType)
 {
   ScAddr set = ms_context->CreateNode(setType);
-  std::for_each(addrVector.begin(), addrVector.end(), [&ms_context, &set](auto const & element) {
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
-  });
+  std::for_each(
+      addrVector.begin(),
+      addrVector.end(),
+      [&ms_context, &set](auto const & element)
+      {
+        ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
+      });
 
   return set;
 }
