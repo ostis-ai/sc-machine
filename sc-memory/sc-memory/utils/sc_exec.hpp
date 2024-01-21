@@ -26,7 +26,13 @@ public:
 
     if (!content.empty())
     {
-      std::for_each(content.cbegin(), --content.cend(), [&stream](auto const & item) { stream << item << " "; });
+      std::for_each(
+          content.cbegin(),
+          --content.cend(),
+          [&stream](auto const & item)
+          {
+            stream << item << " ";
+          });
       stream << *--content.cend();
     }
 

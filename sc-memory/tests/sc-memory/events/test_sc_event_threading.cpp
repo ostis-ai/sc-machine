@@ -41,7 +41,8 @@ TEST_F(ScEventTest, threading_smoke)
       ScEvent::Type::EraseElement,
       ScEvent::Type::ContentChanged};
 
-  auto const randNode = [&nodes]() {
+  auto const randNode = [&nodes]()
+  {
     return nodes[std::rand() % nodes.size()];
   };
 
@@ -53,9 +54,10 @@ TEST_F(ScEventTest, threading_smoke)
         *m_ctx,
         randNode(),
         eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
-        [&](ScAddr const &, ScAddr const &, ScAddr const &) {
-      evtCount++;
-      return true;
+        [&](ScAddr const &, ScAddr const &, ScAddr const &)
+        {
+          evtCount++;
+          return true;
         });
   }
 

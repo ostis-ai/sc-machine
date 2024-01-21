@@ -14,6 +14,7 @@ void TestType(ScMemoryContext & ctx, Type const & value)
   EXPECT_TRUE(linkAddr.IsValid());
 
   ScLink link(ctx, linkAddr);
+  EXPECT_TRUE(link.IsValid());
   EXPECT_FALSE(link.IsType<Type>());
 
   EXPECT_TRUE(link.Set(value));
@@ -97,6 +98,12 @@ TEST_F(ScLinkTest, as_string)
 
   EXPECT_TRUE(link.Set<uint64_t>(7600000000));
   EXPECT_EQ(link.GetAsString(), "7600000000");
+
+  EXPECT_TRUE(link.Set<float>(3.14));
+  EXPECT_EQ(link.GetAsString(), "3.140000");
+
+  EXPECT_TRUE(link.Set<double>(3.14));
+  EXPECT_EQ(link.GetAsString(), "3.140000");
 }
 
 TEST_F(ScLinkTest, operations)

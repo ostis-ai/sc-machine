@@ -178,7 +178,8 @@ public:
     if (selfConstType != 0 && selfConstType != extConstType)
       return false;
 
-    auto const CheckMask = [&extType](RealType const & mask) {
+    auto const CheckMask = [&extType](RealType const & mask)
+    {
       return extType.m_realType == (extType.m_realType & mask);
     };
 

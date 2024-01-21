@@ -87,7 +87,8 @@ ScAddr Builder::ResolveOutputStructure()
   m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
   ScAddr const & outputStructure = fiver.addr1;
 
-  auto const & AddElementToStructure = [this, &outputStructure](ScAddr const & addr) {
+  auto const & AddElementToStructure = [this, &outputStructure](ScAddr const & addr)
+  {
     if (!m_ctx->HelperCheckEdge(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
     {
       m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
@@ -125,7 +126,8 @@ void Builder::DumpStatistics()
 
   auto const allCount = stats.GetAllNum();
 
-  auto const printLine = [](std::string const & name, uint32_t num, float percent) {
+  auto const printLine = [](std::string const & name, uint32_t num, float percent)
+  {
     ScConsole::PrintLine() << ScConsole::Color::LightBlue << name << ": " << ScConsole::Color::White << num << "("
                            << percent << "%)";
   };

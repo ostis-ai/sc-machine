@@ -55,7 +55,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
                                 ScServerConnectionHandle const & handle,
                                 ScAddr const & addr,
                                 ScAddr const & edgeAddr,
-                                ScAddr const & otherAddr) -> sc_bool {
+                                ScAddr const & otherAddr) -> sc_bool
+  {
     ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
     ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
     sc_bool const event = SC_TRUE;

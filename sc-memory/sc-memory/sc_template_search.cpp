@@ -69,8 +69,8 @@ private:
   void SetUpDependenciesBetweenTriples()
   {
     auto const & AddDependenceFromTripleItemToOtherTriple =
-        [this](
-            ScTemplateTriple const * triple, ScTemplateItem const & tripleItem, ScTemplateTriple const * otherTriple) {
+        [this](ScTemplateTriple const * triple, ScTemplateItem const & tripleItem, ScTemplateTriple const * otherTriple)
+    {
       std::string const & key = GetKey(triple, tripleItem);
 
       auto const & found = m_templateItemsNamesToDependedTemplateTriples.find(key);
@@ -86,7 +86,8 @@ private:
                                                       ScTemplateTriple const * otherTriple,
                                                       ScTemplateItem const & otherTripleItem1,
                                                       ScTemplateItem const & otherTripleItem2,
-                                                      ScTemplateItem const & otherTripleItem3) {
+                                                      ScTemplateItem const & otherTripleItem3)
+    {
       // don't set up dependency with self
       if (triple->m_index == otherTriple->m_index)
         return;
@@ -129,18 +130,21 @@ private:
    */
   void RemoveCycledDependenciesBetweenTriples()
   {
-    auto const & CheckIfItemIsNodeVarStruct = [this](ScTemplateItem const & item) -> bool {
+    auto const & CheckIfItemIsNodeVarStruct = [this](ScTemplateItem const & item) -> bool
+    {
       auto const & found = m_template.m_templateItemsNamesToTypes.find(item.m_name);
       return found != m_template.m_templateItemsNamesToTypes.cend() && found->second == ScType::NodeVarStruct;
     };
 
     auto const & faeTriples = m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplateTripleType::FAE];
     auto const & CheckIfItemIsFixedAndOtherEdgeItemIsEdge =
-        [&faeTriples](size_t const tripleIdx, ScTemplateItem const & item) -> bool {
+        [&faeTriples](size_t const tripleIdx, ScTemplateItem const & item) -> bool
+    {
       return item.IsAddr() && faeTriples.find(tripleIdx) != faeTriples.cend();
     };
 
-    auto const & UpdateCycledTriples = [this](ScTemplateTriple const * triple, ScTemplateItem const & item) {
+    auto const & UpdateCycledTriples = [this](ScTemplateTriple const * triple, ScTemplateItem const & item)
+    {
       std::string const & key = GetKey(triple, item);
 
       auto const & dependedTriples = m_templateItemsNamesToDependedTemplateTriples.find(key);
@@ -207,7 +211,8 @@ private:
                                                           ScTemplateItem const & item,
                                                           ScTemplateTriple const * triple,
                                                           ScTemplateItem const & previousItem,
-                                                          bool & isFound) {
+                                                          bool & isFound)
+    {
       // no iterate back by the same item name
       if (!item.m_name.empty() && item.m_name == previousItem.m_name)
         return;
@@ -431,7 +436,8 @@ private:
     auto const & tripleValues = templateTriple->GetValues();
     auto const & otherTripleValues = otherTemplateTriple->GetValues();
 
-    auto const & IsTriplesItemsEqual = [this](ScTemplateItem const & item, ScTemplateItem const & otherItem) -> bool {
+    auto const & IsTriplesItemsEqual = [this](ScTemplateItem const & item, ScTemplateItem const & otherItem) -> bool
+    {
       bool isEqual = item.m_typeValue == otherItem.m_typeValue;
       if (!isEqual)
       {
@@ -490,7 +496,8 @@ private:
       ScTemplateSearchResult & result) const
   {
     auto const & GetItemAddrInReplacements = [&replacementConstruction,
-                                              &result](ScTemplateItem const & item) -> ScAddr const & {
+                                              &result](ScTemplateItem const & item) -> ScAddr const &
+    {
       auto const & it = result.m_templateItemsNamesToReplacementItemsPositions.find(item.m_name);
       if (it != result.m_templateItemsNamesToReplacementItemsPositions.cend())
       {
@@ -550,7 +557,8 @@ private:
     ScAddr const & addr2 = ResolveAddr(item2, replacementConstruction, result);
     ScAddr const & addr3 = ResolveAddr(item3, replacementConstruction, result);
 
-    auto const & PrepareType = [this](ScTemplateItem const & item) -> ScType {
+    auto const & PrepareType = [this](ScTemplateItem const & item) -> ScType
+    {
       ScType type = item.m_typeValue;
       if (!item.m_name.empty())
       {
@@ -642,9 +650,10 @@ private:
         isFinished = std::all_of(
             equalTemplateTriples.begin(),
             equalTemplateTriples.end(),
-            [this, replacementConstructionIdx](size_t const idx) {
-          return m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].find(idx)
-                 != m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].cend();
+            [this, replacementConstructionIdx](size_t const idx)
+            {
+              return m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].find(idx)
+                     != m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].cend();
             });
 
         if (!isFinished)
@@ -923,8 +932,8 @@ private:
       ScTemplateSearchResult & result)
   {
     auto const & UpdateResultByItem =
-        [&result](
-            ScTemplateItem const & item, ScAddr const & addr, size_t const elementNum, ScAddrVector & resultAddrs) {
+        [&result](ScTemplateItem const & item, ScAddr const & addr, size_t const elementNum, ScAddrVector & resultAddrs)
+    {
       resultAddrs[elementNum] = addr;
 
       if (item.m_name.empty())

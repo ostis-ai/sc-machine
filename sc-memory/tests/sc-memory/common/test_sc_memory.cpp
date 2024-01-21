@@ -192,8 +192,9 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
     std::for_each(
         allKeynodes.begin(),
         allKeynodes.end(),
-        [context, keynodeAddr, initMemoryGeneratedStructure](ScAddr otherKeynodeAddr) {
-      checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
+        [context, keynodeAddr, initMemoryGeneratedStructure](ScAddr otherKeynodeAddr)
+        {
+          checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
         });
   }
 }

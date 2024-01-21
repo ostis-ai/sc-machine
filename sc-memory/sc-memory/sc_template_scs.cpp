@@ -39,7 +39,8 @@ protected:
     ScTemplate::Result result(true);
 
     auto const MakeTemplItem = [&passed, &keynodes, &result](
-                                   scs::ParsedElement const & el, ScTemplateItem & outValue) -> bool {
+                                   scs::ParsedElement const & el, ScTemplateItem & outValue) -> bool
+    {
       std::string const & idtf = el.GetIdtf();
       bool const isUnnamed = scs::TypeResolver::IsUnnamed(idtf);
       bool const isPassed = passed.find(idtf) != passed.cend();

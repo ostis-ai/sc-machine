@@ -2,13 +2,9 @@
 
 #include <iostream>
 
-MacrosManager::MacrosManager()
-{
-}
+MacrosManager::MacrosManager() {}
 
-MacrosManager::~MacrosManager()
-{
-}
+MacrosManager::~MacrosManager() {}
 
 bool MacrosManager::AddMacros(MacrosInfo const & inMacros)
 {

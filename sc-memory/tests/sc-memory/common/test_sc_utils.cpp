@@ -163,6 +163,11 @@ TEST(StringUtils, ParseNumbers)
   }
 }
 
+TEST(Utils, RanInt)
+{
+  utils::Random::Int();
+}
+
 TEST(StringUtils, Progress)
 {
   utils::ScProgress progress("Start", 10, 1);

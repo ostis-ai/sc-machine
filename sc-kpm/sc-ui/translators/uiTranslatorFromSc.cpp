@@ -9,13 +9,9 @@
 
 constexpr size_t MAX_TRIPLES_COUNT = 1000;
 
-uiTranslateFromSc::uiTranslateFromSc()
-{
-}
+uiTranslateFromSc::uiTranslateFromSc() {}
 
-uiTranslateFromSc::~uiTranslateFromSc()
-{
-}
+uiTranslateFromSc::~uiTranslateFromSc() {}
 
 void uiTranslateFromSc::translate(sc_addr const & input_addr, sc_addr const & format_addr, sc_addr const & lang_addr)
 {

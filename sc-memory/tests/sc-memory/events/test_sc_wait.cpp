@@ -70,7 +70,12 @@ TEST_F(ScWaitTest, valid)
 {
   WaitTestData data(m_addr);
   ScWaitEvent<ScEventAddInputEdge> waiter(*m_ctx, m_addr);
-  EXPECT_TRUE(waiter.Wait(5000, [&data]() { EmitEvent(data); }));
+  EXPECT_TRUE(waiter.Wait(
+      5000,
+      [&data]()
+      {
+        EmitEvent(data);
+      }));
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -83,9 +88,19 @@ TEST_F(ScWaitTest, CondValid)
 {
   WaitTestData data(m_addr);
   ScWaitCondition<ScEventAddInputEdge> waiter(
-      *m_ctx, m_addr, [](ScAddr const &, ScAddr const &, ScAddr const &) { return true; });
+      *m_ctx,
+      m_addr,
+      [](ScAddr const &, ScAddr const &, ScAddr const &)
+      {
+        return true;
+      });
 
-  EXPECT_TRUE(waiter.Wait(5000, [&data]() { EmitEvent(data); }));
+  EXPECT_TRUE(waiter.Wait(
+      5000,
+      [&data]()
+      {
+        EmitEvent(data);
+      }));
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -94,9 +109,19 @@ TEST_F(ScWaitTest, CondValidFalse)
   WaitTestData data(m_addr);
 
   ScWaitCondition<ScEventAddInputEdge> waiter(
-      *m_ctx, m_addr, [](ScAddr const &, ScAddr const &, ScAddr const &) { return false; });
+      *m_ctx,
+      m_addr,
+      [](ScAddr const &, ScAddr const &, ScAddr const &)
+      {
+        return false;
+      });
 
-  EXPECT_FALSE(waiter.Wait(2000, [&data]() { EmitEvent(data); }));
+  EXPECT_FALSE(waiter.Wait(
+      2000,
+      [&data]()
+      {
+        EmitEvent(data);
+      }));
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -106,7 +131,12 @@ TEST_F(ScWaitTest, ActionFinishedViaWaitStartDelegate)
 
   ScWaitActionFinished waiter(*m_ctx, m_addr);
 
-  EXPECT_TRUE(waiter.Wait(5000, [&data]() { EmitEvent(data); }));
+  EXPECT_TRUE(waiter.Wait(
+      5000,
+      [&data]()
+      {
+        EmitEvent(data);
+      }));
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -116,6 +146,11 @@ TEST_F(ScWaitTest, ActionFinished)
 
   ScWaitActionFinished waiter(*m_ctx, m_addr);
 
-  EXPECT_TRUE(waiter.Wait(5000, [&data]() { EmitEvent(data); }));
+  EXPECT_TRUE(waiter.Wait(
+      5000,
+      [&data]()
+      {
+        EmitEvent(data);
+      }));
   EXPECT_TRUE(data.m_isDone);
 }

@@ -129,7 +129,8 @@ void ScRepoPathCollector::CollectBuildSources(
     Sources const & excludedSources,
     Sources & buildSources)
 {
-  auto const & IsExcludedPath = [&excludedSources](std::string const & filePath) -> bool {
+  auto const & IsExcludedPath = [&excludedSources](std::string const & filePath) -> bool
+  {
     return excludedSources.find(filePath) != excludedSources.cend();
   };
 

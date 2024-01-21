@@ -28,7 +28,8 @@ TEST_F(ScTemplateBuildTest, DoubleAttributes)
   ScAddr const edge3 = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, addr4, edge1);
   EXPECT_TRUE(edge3.IsValid());
 
-  auto const testOrder = [this](std::vector<ScAddr> const & addrs) {
+  auto const testOrder = [this](std::vector<ScAddr> const & addrs)
+  {
     ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
     ScStruct st(*m_ctx, structAddr);
 
@@ -62,7 +63,8 @@ TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
   ScAddr const edge2 = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, edge1, addr3);
   EXPECT_TRUE(edge2.IsValid());
 
-  auto const testOrder = [this](std::vector<ScAddr> const & addrs) {
+  auto const testOrder = [this](std::vector<ScAddr> const & addrs)
+  {
     ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
     ScStruct st(*m_ctx, structAddr);
 

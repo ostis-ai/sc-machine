@@ -12,13 +12,9 @@
 #include "uiUtils.h"
 
 // --------------------
-uiSc2ScsTranslator::uiSc2ScsTranslator()
-{
-}
+uiSc2ScsTranslator::uiSc2ScsTranslator() {}
 
-uiSc2ScsTranslator::~uiSc2ScsTranslator()
-{
-}
+uiSc2ScsTranslator::~uiSc2ScsTranslator() {}
 
 void uiSc2ScsTranslator::runImpl()
 {

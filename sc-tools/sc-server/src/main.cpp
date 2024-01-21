@@ -107,7 +107,8 @@ try
   }
 
   std::atomic_bool isRun = {!options.Has({"test", "t"})};
-  utils::ScSignalHandler::m_onTerminate = [&isRun]() {
+  utils::ScSignalHandler::m_onTerminate = [&isRun]()
+  {
     isRun = SC_FALSE;
   };
 
