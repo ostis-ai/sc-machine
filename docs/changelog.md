@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Separate setups for sc-server and sc-builder from main.cpp and test
 - Script scg.min.js styles handling for sc.g-element types of KBE >0.4.0
 - Sc.g-elements images in docs
 - Support recursive curl braces in SCs-code level 2
@@ -80,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- `sc::ResolveRelationTuple` and `sc::SetRelationValue`
 - Deprecated sc-utils in 0.6.0, 0.7.0 and 0.8.0
 - Deprecated make_all.sh
 - Runtime asserts usage in sc-storage
