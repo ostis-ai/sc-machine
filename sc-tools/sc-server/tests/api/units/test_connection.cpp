@@ -8,12 +8,34 @@
 
 #include "sc_server_test.hpp"
 #include "../../sc_client.hpp"
+#include "../../../src/sc_server_setup.hpp"
 
 #include "sc_options.hpp"
 #include "sc-config/sc_config.hpp"
 #include "sc_memory_config.hpp"
 
-TEST(ScServer, RunStop)
+TEST(ScServer, RunMain)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-server", "-c", SC_SERVER_INI, "-t"};
+  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScServer, InvalidRunMain)
+{
+  sc_uint32 const argsNumber = 1;
+  sc_char const * args[argsNumber] = {"sc-server"};
+  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, RunMainHelp)
+{
+  sc_uint32 const argsNumber = 2;
+  sc_char const * args[argsNumber] = {"sc-server", "--help"};
+  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScServer, RunStopServer)
 {
   ScOptions options{1, nullptr};
 
