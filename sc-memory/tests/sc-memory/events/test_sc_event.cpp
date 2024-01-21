@@ -335,26 +335,26 @@ TEST_F(ScEventTest, pend_events)
       *m_ctx,
       set1,
       [&passedCount, &eventsCount, &set1, &elements, &rel](ScAddr const &, ScAddr const &, ScAddr const &) {
-    std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
-    size_t step = 100;
-    size_t testNum = el_num / step - 1;
-    for (size_t i = 0; i < testNum; ++i)
-    {
-      checkTempl->Quintuple(
-          set1, ScType::EdgeDCommonVar, elements[i * step] >> "_el", ScType::EdgeAccessVarPosPerm, rel);
-    }
+        std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
+        size_t step = 100;
+        size_t testNum = el_num / step - 1;
+        for (size_t i = 0; i < testNum; ++i)
+        {
+          checkTempl->Quintuple(
+              set1, ScType::EdgeDCommonVar, elements[i * step] >> "_el", ScType::EdgeAccessVarPosPerm, rel);
+        }
 
-    ScMemoryContext localCtx(sc_access_lvl_make_min);
+        ScMemoryContext localCtx(sc_access_lvl_make_min);
 
-    ScTemplateSearchResult res;
-    EXPECT_TRUE(localCtx.HelperSearchTemplate(*checkTempl, res));
+        ScTemplateSearchResult res;
+        EXPECT_TRUE(localCtx.HelperSearchTemplate(*checkTempl, res));
 
-    if (res.Size() == 1)
-      passedCount.fetch_add(1);
+        if (res.Size() == 1)
+          passedCount.fetch_add(1);
 
-    eventsCount.fetch_add(1);
+        eventsCount.fetch_add(1);
 
-    return true;
+        return true;
       });
 
   ScTemplateGenResult genResult;

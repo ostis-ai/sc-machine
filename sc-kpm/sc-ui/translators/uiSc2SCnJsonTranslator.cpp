@@ -48,8 +48,8 @@ uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
       mStructureElementsInfo.begin(),
       mStructureElementsInfo.end(),
       [](std::pair<sc_addr, ScStructureElementInfo *> pair) {
-    delete pair.second;
-    pair.second = nullptr;
+        delete pair.second;
+        pair.second = nullptr;
       });
 }
 
@@ -164,7 +164,7 @@ void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
                 arc->inputArcs.cbegin(),
                 arc->inputArcs.cend(),
                 [](ScStructureElementInfo * modifierArc) {
-          return modifierArc->sourceInfo->addr == keynode_rrel_key_sc_element;
+                  return modifierArc->sourceInfo->addr == keynode_rrel_key_sc_element;
                 })
             != arc->inputArcs.cend())
         {
@@ -508,7 +508,7 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByModifier(
                 el->inputArcs.cbegin(),
                 el->inputArcs.cend(),
                 [modifierAddr](ScStructureElementInfo * modifierArc) {
-      return modifierArc->sourceInfo->addr == modifierAddr;
+                  return modifierArc->sourceInfo->addr == modifierAddr;
                 })
             != el->inputArcs.cend())
         {
@@ -527,16 +527,16 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByModifier(
       elInfo->inputArcs.cbegin(),
       elInfo->inputArcs.cend(),
       [modifierAddr, &filtered](ScStructureElementInfo * modifierArc) {
-    if (std::find_if(
-            modifierArc->inputArcs.cbegin(),
-            modifierArc->inputArcs.cend(),
-            [modifierAddr](ScStructureElementInfo * modifierArc) {
-      return modifierArc->sourceInfo->addr == modifierAddr;
-            })
-        != modifierArc->inputArcs.cend())
-    {
-      filtered.insert(modifierArc);
-    }
+        if (std::find_if(
+                modifierArc->inputArcs.cbegin(),
+                modifierArc->inputArcs.cend(),
+                [modifierAddr](ScStructureElementInfo * modifierArc) {
+                  return modifierArc->sourceInfo->addr == modifierAddr;
+                })
+            != modifierArc->inputArcs.cend())
+        {
+          filtered.insert(modifierArc);
+        }
       });
   fullChild = ScJson();
   UpdateChildArcs(filtered, isStruct, fullChild, ScnTranslatorConstants::LEFT.data());

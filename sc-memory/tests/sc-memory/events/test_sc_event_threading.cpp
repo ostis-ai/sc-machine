@@ -54,8 +54,8 @@ TEST_F(ScEventTest, threading_smoke)
         randNode(),
         eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
         [&](ScAddr const &, ScAddr const &, ScAddr const &) {
-      evtCount++;
-      return true;
+          evtCount++;
+          return true;
         });
   }
 

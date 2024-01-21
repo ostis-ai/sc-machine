@@ -193,7 +193,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
         allKeynodes.begin(),
         allKeynodes.end(),
         [context, keynodeAddr, initMemoryGeneratedStructure](ScAddr otherKeynodeAddr) {
-      checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
+          checkConnectionInStruct(context, keynodeAddr, otherKeynodeAddr, initMemoryGeneratedStructure);
         });
   }
 }

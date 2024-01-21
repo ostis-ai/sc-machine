@@ -71,14 +71,14 @@ private:
     auto const & AddDependenceFromTripleItemToOtherTriple =
         [this](
             ScTemplateTriple const * triple, ScTemplateItem const & tripleItem, ScTemplateTriple const * otherTriple) {
-      std::string const & key = GetKey(triple, tripleItem);
+          std::string const & key = GetKey(triple, tripleItem);
 
-      auto const & found = m_templateItemsNamesToDependedTemplateTriples.find(key);
-      if (found == m_templateItemsNamesToDependedTemplateTriples.cend())
-        m_templateItemsNamesToDependedTemplateTriples.insert({key, {otherTriple->m_index}});
-      else
-        found->second.insert(otherTriple->m_index);
-    };
+          auto const & found = m_templateItemsNamesToDependedTemplateTriples.find(key);
+          if (found == m_templateItemsNamesToDependedTemplateTriples.cend())
+            m_templateItemsNamesToDependedTemplateTriples.insert({key, {otherTriple->m_index}});
+          else
+            found->second.insert(otherTriple->m_index);
+        };
 
     auto const & TryAddDependenceBetweenTriples = [&AddDependenceFromTripleItemToOtherTriple](
                                                       ScTemplateTriple const * triple,
@@ -643,8 +643,8 @@ private:
             equalTemplateTriples.begin(),
             equalTemplateTriples.end(),
             [this, replacementConstructionIdx](size_t const idx) {
-          return m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].find(idx)
-                 != m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].cend();
+              return m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].find(idx)
+                     != m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].cend();
             });
 
         if (!isFinished)
@@ -925,13 +925,13 @@ private:
     auto const & UpdateResultByItem =
         [&result](
             ScTemplateItem const & item, ScAddr const & addr, size_t const elementNum, ScAddrVector & resultAddrs) {
-      resultAddrs[elementNum] = addr;
+          resultAddrs[elementNum] = addr;
 
-      if (item.m_name.empty())
-        return;
+          if (item.m_name.empty())
+            return;
 
-      result.m_templateItemsNamesToReplacementItemsPositions[item.m_name] = elementNum;
-    };
+          result.m_templateItemsNamesToReplacementItemsPositions[item.m_name] = elementNum;
+        };
 
     m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].insert(templateTriple->m_index);
     m_usedEdgesInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);

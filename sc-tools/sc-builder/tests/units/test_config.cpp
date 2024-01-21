@@ -50,8 +50,7 @@ TEST(ScBuilder, RunStop)
   EXPECT_EQ(
       (sc_uint32)std::stoi(scParams.at("dump_memory_statistics_period")), scMemoryParams.dump_memory_statistics_period);
   EXPECT_EQ((sc_uint32)std::stoi(scParams.at("save_period")), scMemoryParams.dump_memory_period);
-  EXPECT_EQ(
-      (sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.dump_memory_statistics_period);
+  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.dump_memory_statistics_period);
   EXPECT_EQ(scMemoryParams.dump_memory_period, scMemoryParams.save_period);
   EXPECT_EQ(scMemoryParams.dump_memory_statistics_period, scMemoryParams.update_period);
   EXPECT_EQ(scParams.at("log_type"), scMemoryParams.log_type);
