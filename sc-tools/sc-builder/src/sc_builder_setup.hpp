@@ -4,9 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_builder_setup.hpp"
+#include "sc_memory_config.hpp"
 
-sc_int main(sc_int argc, sc_char * argv[])
-{
-  return BuildAndRunBuilder(argc, argv);
-}
+void PrintStartMessage();
+
+sc_int BuildAndRunBuilder(sc_int argc, sc_char * argv[]);

@@ -9,11 +9,34 @@
 #include "builder_test.hpp"
 
 #include "../../src/builder.hpp"
+#include "../../src/sc_builder_setup.hpp"
 
 #include "sc_options.hpp"
 #include "sc_memory_config.hpp"
 
-TEST(ScBuilder, RunStop)
+TEST(ScBuilder, RunMain)
+{
+  sc_uint32 const argsNumber = 8;
+  sc_char const * args[argsNumber] = {
+      "sc-builder", "-c", SC_BUILDER_INI, "-i", SC_BUILDER_KB, "-o", SC_BUILDER_REPO_PATH, "--clear"};
+  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, InvalidRunMain)
+{
+  sc_uint32 const argsNumber = 1;
+  sc_char const * args[argsNumber] = {"sc-builder"};
+  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, RunMainHelp)
+{
+  sc_uint32 const argsNumber = 2;
+  sc_char const * args[argsNumber] = {"sc-builder", "--help"};
+  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunStopBuilder)
 {
   ScOptions options{1, nullptr};
 
