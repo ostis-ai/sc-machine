@@ -16,9 +16,18 @@
 
 TEST(ScBuilder, RunMain)
 {
-  sc_uint32 const argsNumber = 8;
+  sc_uint32 const argsNumber = 10;
   sc_char const * args[argsNumber] = {
-      "sc-builder", "-c", SC_BUILDER_INI, "-i", SC_BUILDER_KB, "-o", SC_BUILDER_REPO_PATH, "--clear"};
+      "sc-builder",
+      "-c",
+      SC_BUILDER_INI,
+      "-i",
+      SC_BUILDER_KB,
+      "-o",
+      SC_BUILDER_REPO_PATH,
+      "--enabled_ext",
+      "",
+      "--clear"};
   EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 

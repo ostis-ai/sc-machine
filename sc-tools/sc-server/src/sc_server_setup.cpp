@@ -46,11 +46,13 @@ sc_bool RunServer(ScParams const & serverParams, ScMemoryConfig & memoryConfig, 
     server->ResetLogger();
     server->LogMessage(ScServerErrorLevel::error, e.Message());
   }
+  // LCOV_EXCL_START
   catch (std::exception const & e)
   {
     server->ResetLogger();
     server->LogMessage(ScServerErrorLevel::error, e.what());
   }
+  // LCOV_EXCL_STOP
 
   return status;
 }
@@ -64,10 +66,12 @@ sc_bool StopServer(std::shared_ptr<ScServer> const & server)
     server->Stop();
     status = SC_TRUE;
   }
+  // LCOV_EXCL_START
   catch (std::exception const & e)
   {
     server->LogMessage(ScServerErrorLevel::error, e.what());
   }
+  // LCOV_EXCL_STOP
   return status;
 }
 
@@ -106,6 +110,7 @@ try
   }
 
   std::atomic_bool isRun = {!options.Has({"test", "t"})};
+  // LCOV_EXCL_START
   utils::ScSignalHandler::m_onTerminate = [&isRun]()
   {
     isRun = SC_FALSE;
@@ -115,12 +120,16 @@ try
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
+  // LCOV_EXCL_STOP
 
   return StopServer(server) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
+// LCOV_EXCL_START
 catch (utils::ScException const & e)
 {
   SC_LOG_ERROR(e.Description());
   return EXIT_FAILURE;
 }
+
+// LCOV_EXCL_STOP

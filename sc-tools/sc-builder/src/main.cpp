@@ -6,7 +6,10 @@
 
 #include "sc_builder_setup.hpp"
 
+// LCOV_EXCL_START
 sc_int main(sc_int argc, sc_char * argv[])
 {
   return BuildAndRunBuilder(argc, argv);
 }
+
+// LCOV_EXCL_STOP
