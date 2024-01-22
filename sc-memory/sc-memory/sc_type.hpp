@@ -74,13 +74,6 @@ public:
     return (m_realType & sc_type_var) != 0;
   }
 
-  SC_DEPRECATED(0.4.0, "Use !IsUnknown() instead")
-
-  inline bool IsValid() const
-  {
-    return !IsUnknown();
-  }
-
   inline bool IsUnknown() const
   {
     return (m_realType == 0);
@@ -102,7 +95,7 @@ public:
   {
     /// TODO: metavar
     // if (isVar())
-    return ScType((m_realType & ~sc_type_var) | sc_type_const);  // copied from asConst for maximum perfomance
+    return ScType((m_realType & ~sc_type_var) | sc_type_const);  // copied from asConst for maximum performance
   }
 
   inline sc_type operator*() const

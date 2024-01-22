@@ -41,22 +41,4 @@ void sc_config_shutdown(sc_config * config);
 
 _SC_EXTERN sc_char * sc_config_get_value_string(sc_config * config, sc_char const * group, sc_char const * key);
 
-/*!
- * Returns the value associated with the key as an integer, or 0 if the key was not found or could not be parsed.
- * @see sc_config_get_value_string
- */
-_SC_EXTERN sc_int sc_config_get_value_int(sc_config * config, sc_char const * group, sc_char const * key);
-
-/*!
- * Returns the value associated with the key as a boolean, or SC_FALSE if the key was not found or could not be parsed.
- * @see sc_config_get_value_string
- */
-_SC_EXTERN sc_bool sc_config_get_value_boolean(sc_config * config, sc_char const * group, sc_char const * key);
-
-/*!
- * Returns the value associated with the key as a float, or 0.0 if the key was not found or could not be parsed.
- * @see sc_config_get_value_string
- */
-_SC_EXTERN float sc_config_get_value_float(sc_config * config, sc_char const * group, sc_char const * key);
-
 #endif

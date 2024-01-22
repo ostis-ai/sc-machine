@@ -4,12 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_server_setup.hpp"
+#include "sc_memory_config.hpp"
 
-// LCOV_EXCL_START
-sc_int main(sc_int argc, sc_char * argv[])
-{
-  BuildAndRunServer(argc, argv);
-}
+void PrintStartMessage();
 
-// LCOV_EXCL_STOP
+sc_int BuildAndRunBuilder(sc_int argc, sc_char * argv[]);

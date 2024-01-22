@@ -15,8 +15,8 @@ add_executable(sc-builder
 
 add_library(sc-builder-lib SHARED ${SOURCES})
 include_directories(${SC_MEMORY_SRC} ${SC_CONFIG_UTILS_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-builder-lib sc-memory)
-target_link_libraries(sc-builder sc-builder-lib sc-config-utils)
+target_link_libraries(sc-builder-lib sc-memory sc-config-utils)
+target_link_libraries(sc-builder sc-builder-lib)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-builder)
