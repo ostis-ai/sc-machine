@@ -6,14 +6,14 @@
 
 #pragma once
 
-extern "C"
-{
-#include "sc-core/sc_memory.h"
-}
-
 #include <cstdint>
 #include <list>
 #include <vector>
+
+extern "C"
+{
+#include "sc-core/sc-store/sc_types.h"
+}
 
 using ScRealAddr = sc_addr;
 

@@ -31,6 +31,7 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->init_memory_generated_structure = (sc_char const *)null_ptr;
   params->init_memory_generated_upload = SC_FALSE;
+  params->user_mode = SC_FALSE;
 
   params->max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
   params->max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;

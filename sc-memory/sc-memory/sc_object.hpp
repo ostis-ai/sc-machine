@@ -8,6 +8,7 @@
 
 #include "sc_defines.hpp"
 #include "sc_addr.hpp"
+#include "sc_memory.hpp"
 
 /**
  * Base class for all objects that has meta data.
@@ -28,11 +29,13 @@ public:
   bool Init();
 
 private:
-  /** This method override genarates by code generator, and initialize all
+  /** This method override generates by code generator, and initialize all
    *  meta data for this object, insert created object in output structure.
    *  It calls from ScObject constructors
    */
   virtual bool _InitInternal(ScAddr const & outputStructure = ScAddr::Empty) = 0;
+
+  virtual bool _InitInternal(ScMemoryContext & context, ScAddr const & outputStructure = ScAddr::Empty) = 0;
 
 private:
   bool m_isInitialized : 1;

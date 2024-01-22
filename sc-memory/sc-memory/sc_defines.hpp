@@ -28,6 +28,10 @@
 #  define SC_GENERATED_BODY_ITEMS(v) SC_COMBINE(ScFileID, _, __LINE__, v)
 #  define SC_GENERATED_BODY_INIT() \
   public: \
+    static bool InitGlobal(ScMemoryContext & context, ScAddr const & outputStructure = ScAddr::Empty) \
+    { \
+      return _InitStaticInternal(context, outputStructure); \
+    } \
     static bool InitGlobal(ScAddr const & outputStructure = ScAddr::Empty) \
     { \
       return _InitStaticInternal(outputStructure); \

@@ -8,6 +8,8 @@
 
 #include <utility>
 
+#include "sc-memory/sc_keynodes.hpp"
+
 #include "sc_server_action.hpp"
 #include "sc_server.hpp"
 #include "sc-memory-json/sc_memory_json_payload.hpp"
@@ -18,27 +20,33 @@
 class ScServerMessageAction : public ScServerAction
 {
 public:
-  ScServerMessageAction(ScServer * server, ScServerConnectionHandle hdl, ScServerMessage msg)
-    : ScServerAction(std::move(hdl))
+  ScServerMessageAction(ScServer * server, ScServerSessionId const & sessionId, ScServerMessage msg)
+    : ScServerAction(sessionId)
     , m_server(server)
     , m_msg(std::move(msg))
   {
-    m_actionsHandler = new ScMemoryJsonActionsHandler(server);
-    m_eventsHandler = new ScMemoryJsonEventsHandler(server);
+    ScMemoryContext * sessionCtx = m_server->GetSessionContext(sessionId);
+    m_actionsHandler = new ScMemoryJsonActionsHandler(server, sessionCtx);
+    m_eventsHandler = new ScMemoryJsonEventsHandler(server, sessionCtx);
+  }
+
+  void HandleEmit()
+  {
+    std::string const & messageType = GetMessageType(m_msg);
+
+    if (IsHealthCheck(messageType))
+      OnHealthCheck(m_sessionId, m_msg);
+    else if (IsEvent(messageType))
+      OnEvent(m_sessionId, m_msg);
+    else
+      OnAction(m_sessionId, m_msg);
   }
 
   void Emit() override
   {
     try
     {
-      std::string messageType = GetMessageType(m_msg);
-
-      if (IsHealthCheck(messageType))
-        OnHealthCheck(m_hdl, m_msg);
-      else if (IsEvent(messageType))
-        OnEvent(m_hdl, m_msg);
-      else
-        OnAction(m_hdl, m_msg);
+      HandleEmit();
     }
     catch (ScServerException const & e)
     {
@@ -50,30 +58,32 @@ public:
     }
   }
 
-  void OnAction(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  void OnAction(ScServerSessionId const & sessionId, ScServerMessage const & msg)
   {
     m_server->LogMessage(ScServerErrorLevel::debug, "[request] " + msg->get_payload());
-    auto const & responseText = m_actionsHandler->Handle(hdl, msg->get_payload());
+    auto const & responseText = m_actionsHandler->Handle(sessionId, msg->get_payload());
 
     m_server->LogMessage(ScServerErrorLevel::debug, "[response] " + responseText);
-    m_server->Send(hdl, responseText, ScServerMessageType::text);
+    m_server->Send(sessionId, responseText, ScServerMessageType::text);
   }
 
-  void OnEvent(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  void OnEvent(ScServerSessionId const & sessionId, ScServerMessage const & msg)
   {
     m_server->LogMessage(ScServerErrorLevel::debug, "[event] " + msg->get_payload());
-    auto const & responseText = m_eventsHandler->Handle(hdl, msg->get_payload());
+    auto const & responseText = m_eventsHandler->Handle(sessionId, msg->get_payload());
 
     m_server->LogMessage(ScServerErrorLevel::debug, "[event response] " + responseText);
-    m_server->Send(hdl, responseText, ScServerMessageType::text);
+    m_server->Send(sessionId, responseText, ScServerMessageType::text);
   }
 
-  void OnHealthCheck(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  void OnHealthCheck(ScServerSessionId const & sessionId, ScServerMessage const & msg)
   {
+    SC_UNUSED(msg);
+
     ScMemoryJsonPayload response;
     try
     {
-      auto * context = new ScMemoryContext(sc_access_lvl_make_max);
+      auto * context = new ScMemoryContext(ScKeynodes::kMySelf);
 
       ScAddr const & tempAddr = context->CreateNode(ScType::NodeConst);
       context->EraseElement(tempAddr);
@@ -90,8 +100,8 @@ public:
       m_server->LogMessage(ScServerErrorLevel::info, "I've died...");
     }
 
-    m_server->Send(hdl, response.dump(), ScServerMessageType::text);
-    m_server->CloseConnection(hdl, websocketpp::close::status::normal, "Status checked");
+    m_server->Send(sessionId, response.dump(), ScServerMessageType::text);
+    m_server->CloseConnection(sessionId, websocketpp::close::status::normal, "Status checked");
   }
 
   ~ScServerMessageAction() override

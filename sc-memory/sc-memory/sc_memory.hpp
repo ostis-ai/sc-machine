@@ -79,8 +79,8 @@ public:
   _SC_EXTERN static void LogMute();
   _SC_EXTERN static void LogUnmute();
 
-private:
-  static sc_memory_context * ms_globalContext;
+protected:
+  static ScMemoryContext * ms_globalContext;
 };
 
 //! Class used to work with memory. It provides functions to create/retrieve/erase sc-elements
@@ -100,20 +100,30 @@ public:
   };
 
 public:
-  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string name = "");
+  SC_DEPRECATED(
+      0.10.0,
+      "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
+      "This function will be deleted in 0.11.0")
+  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
+  SC_DEPRECATED(
+      0.10.0,
+      "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
+      "This function will be deleted in 0.11.0")
   _SC_EXTERN explicit ScMemoryContext(std::string const & name);
+  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr = ScAddr::Empty);
+  _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context);
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
   ScMemoryContext(ScMemoryContext const & other) = delete;
   ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
 
-  _SC_EXTERN sc_memory_context const * operator*() const
+  _SC_EXTERN sc_memory_context * operator*() const
   {
     return m_context;
   }
 
-  _SC_EXTERN sc_memory_context const * GetRealContext() const
+  _SC_EXTERN sc_memory_context * GetRealContext() const
   {
     return m_context;
   }
@@ -126,11 +136,6 @@ public:
 
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
-
-  _SC_EXTERN std::string const & GetName() const
-  {
-    return m_name;
-  }
 
   /*!
    * @brief Checks if the sc-memory context is valid.

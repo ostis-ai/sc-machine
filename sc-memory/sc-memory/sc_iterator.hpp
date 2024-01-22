@@ -94,7 +94,13 @@ public:
   {
     CHECK_ITERATOR;
 
-    return sc_iterator3_next(m_iterator) == SC_TRUE;
+    sc_result result;
+    sc_bool const status = sc_iterator3_next_ext(m_iterator, &result);
+    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
+
+    return status == SC_TRUE;
   }
 
   _SC_EXTERN ScAddr Get(size_t index) const override
@@ -143,7 +149,7 @@ public:
     if (m_iterator)
     {
       sc_iterator5_free(m_iterator);
-      m_iterator = 0;
+      m_iterator = nullptr;
     }
   }
 
@@ -151,7 +157,13 @@ public:
   {
     CHECK_ITERATOR;
 
-    return sc_iterator5_next(m_iterator) == SC_TRUE;
+    sc_result result;
+    sc_bool status = sc_iterator5_next_ext(m_iterator, &result);
+    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState, "Unable to iterate next fiver due sc-memory context is not authorized");
+
+    return status == SC_TRUE;
   }
 
   _SC_EXTERN ScAddr Get(size_t index) const override

@@ -70,7 +70,7 @@ void Field::GenerateTemplateBuildCode(
   std::string vName = displayName + "_Addr_";
   outCode << "ScAddr " << vName << "; ";
   GenerateResolveKeynodeCode(sysIdtf, vName, "", outCode);
-  outCode << " if (result) { result = result && ctx.HelperBuildTemplate(" << displayName << ", " << vName << "); }";
+  outCode << " if (result) { result = result && context.HelperBuildTemplate(" << displayName << ", " << vName << "); }";
 }
 
 void Field::GenerateResolveKeynodeCode(
@@ -79,7 +79,7 @@ void Field::GenerateResolveKeynodeCode(
     std::string const & forceCreation,
     std::stringstream & outCode)
 {
-  outCode << "ctx.HelperResolveSystemIdtf(\"" << sysIdtf << "\"";
+  outCode << "context.HelperResolveSystemIdtf(\"" << sysIdtf << "\"";
   if (!forceCreation.empty())
   {
     outCode << ", " << forceCreation;
@@ -92,7 +92,7 @@ void Field::GenerateResolveKeynodeCode(
   // Add addrs from ScSystemIdentifierQuintuple to output structure except addr5. Addr5 = nrel_system_identifier
   for (size_t i = 1; i <= 4; i++)
   {
-    outCode << "ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, fiver.addr" << i << ");";
+    outCode << "context.CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, fiver.addr" << i << ");";
   }
   outCode << "};";
 }

@@ -18,6 +18,10 @@ typedef struct _sc_event_registration_manager sc_event_registration_manager;
  * - sc-addr of another end of added/remove edge
  * So it can be empty.
  */
+typedef sc_result (
+    *sc_event_callback_with_user)(sc_event const * event, sc_addr user_addr, sc_addr arg, sc_addr other_el);
+
+/// Backward compatibility
 typedef sc_result (*sc_event_callback_ext)(sc_event const * event, sc_addr arg, sc_addr other_el);
 
 /// Backward compatibility
@@ -29,7 +33,6 @@ typedef sc_result (*sc_event_delete_function)(sc_event const * event);
 /*! Initializes the sc-event registration manager.
  * @param manager Pointer to the sc-event registration manager.
  */
-
 void sc_event_registration_manager_initialize(sc_event_registration_manager ** manager);
 
 /*! Shuts down the sc-event registration manager.
@@ -69,6 +72,14 @@ _SC_EXTERN sc_event * sc_event_new_ex(
     sc_event_type type,
     sc_pointer data,
     sc_event_callback_ext callback,
+    sc_event_delete_function delete_callback);
+
+_SC_EXTERN sc_event * sc_event_with_user_new(
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type type,
+    sc_pointer data,
+    sc_event_callback_with_user callback,
     sc_event_delete_function delete_callback);
 
 /*! Destroys the specified sc-event.

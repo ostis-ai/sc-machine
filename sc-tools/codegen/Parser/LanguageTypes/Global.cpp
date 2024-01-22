@@ -69,8 +69,6 @@ bool Global::isSetterAccessible() const
   {
     if (m_parent)
       return m_hasExplicitSetter || m_accessModifier == CX_CXXPublic;
-
-    return true;
   }
 
   return false;

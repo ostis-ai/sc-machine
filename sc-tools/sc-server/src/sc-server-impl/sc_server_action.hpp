@@ -11,8 +11,8 @@
 class ScServerAction
 {
 public:
-  explicit ScServerAction(ScServerConnectionHandle hdl)
-    : m_hdl(std::move(hdl))
+  explicit ScServerAction(ScServerSessionId sessionId)
+    : m_sessionId(std::move(sessionId))
   {
   }
 
@@ -21,5 +21,5 @@ public:
   virtual ~ScServerAction() = default;
 
 protected:
-  ScServerConnectionHandle m_hdl;
+  ScServerSessionId m_sessionId;
 };

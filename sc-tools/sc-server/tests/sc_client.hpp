@@ -57,7 +57,7 @@ public:
     return !code;
   }
 
-  void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+  void OnMessage(ScServerSessionId const & sessionId, ScServerMessage const & msg)
   {
     m_currentPayload = ScMemoryJsonPayload::parse(msg->get_payload());
     m_isNewMessage = SC_TRUE;

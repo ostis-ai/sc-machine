@@ -5,52 +5,180 @@
  */
 
 #include "sc_memory_context_manager.h"
+#include "sc_memory_context_private.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 
 #include "sc_memory.h"
 #include "sc_memory_private.h"
 #include "sc-store/sc-event/sc_event_private.h"
+#include "sc_helper.h"
 
+/*! Structure representing a memory context manager.
+ * @note This structure manages memory contexts and user authentications in the sc-memory.
+ */
 struct _sc_memory_context_manager
 {
-  sc_hash_table * context_hash_table;
-  sc_uint32 last_context_id;
-  sc_uint32 context_count;
-  sc_monitor context_monitor;
+  sc_hash_table * context_hash_table;                 ///< Hash table storing memory contexts based on user addresses.
+  sc_uint32 context_count;                            ///< Number of currently active memory contexts.
+  sc_monitor context_monitor;                         ///< Monitor for synchronizing access to the context manager.
+  sc_addr concept_authentication_request_user_addr;   ///< sc-address representing concept node for authenticated users.
+  sc_addr concept_authenticated_user_addr;            ///< sc-address representing concept node for action subjects.
+  sc_hash_table * authenticated_users_access_levels;  ///< Hash table storing access levels for authenticated users.
+  sc_event * on_authentication_request_user_subscription;    ///< Event subscription for authenticated user events.
+  sc_event * on_unauthentication_request_user_subscription;  ///< Event subscription for unauthenticated user events.
+  sc_bool user_mode;  ///< Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
 };
 
+/*! Structure representing parameters for emitting a sc-event.
+ * @note This structure holds the parameters required for emitting a sc-event in a memory context.
+ */
 struct _sc_event_emit_params
 {
-  sc_addr subscription_addr;
-  sc_access_levels subscription_addr_access;
-  sc_event_type type;
-  sc_addr edge_addr;
-  sc_addr other_addr;
-};
-
-struct _sc_memory_context
-{
-  sc_uint32 id;
-  sc_access_levels access_levels;
-  sc_uint8 flags;
-  sc_hash_table_list * pend_events;
-  sc_monitor monitor;
+  sc_addr subscription_addr;  ///< sc-address representing the subscription associated with the event.
+  sc_event_type type;         ///< Type of the event to be emitted.
+  sc_addr edge_addr;          ///< sc-address representing the edge associated with the event.
+  sc_addr other_addr;         ///< sc-address representing the other element associated with the event.
 };
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
 
-void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager)
+#define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
+#define SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED 0x1
+
+#define sc_context_add_context_access_levels(_access_levels, _adding_levels) _access_levels |= _adding_levels
+
+#define sc_context_remove_context_access_levels(_access_levels, _adding_levels) _access_levels &= ~_adding_levels
+
+#define sc_context_check_context_access_levels(_access_levels, _checking_levels) \
+  ((_access_levels) & (_checking_levels)) == _checking_levels
+
+#define _sc_context_add_user_access_levels(_user_addr, _adding_levels) \
+  sc_access_levels levels = (sc_uint64)sc_hash_table_get( \
+      manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+  levels |= (_adding_levels); \
+  sc_hash_table_insert( \
+      manager->authenticated_users_access_levels, \
+      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
+      GINT_TO_POINTER(levels))
+
+#define _sc_context_remove_user_access_levels(_user_addr, _adding_levels) \
+  sc_access_levels levels = (sc_uint64)sc_hash_table_get( \
+      manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+  levels &= ~(_adding_levels); \
+  sc_hash_table_insert( \
+      manager->authenticated_users_access_levels, \
+      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
+      GINT_TO_POINTER(levels))
+
+/*! Function that creates a memory context for an authenticated user with specified parameters.
+ * @param event Pointer to the sc_event triggering the context creation.
+ * @param arc_addr sc-address representing created sc-arc to the authenticated user.
+ * @param user_addr sc-address representing the authenticated user for whom the context is created.
+ * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to a sc-event and is responsible for creating a new memory context
+ * for an authenticated user and establishing a connection between user and the context.
+ */
+sc_result _sc_memory_context_manager_on_authentication_request_user(
+    sc_event const * event,
+    sc_addr arc_addr,
+    sc_addr user_addr)
+{
+  sc_unused(&arc_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+  {
+    _sc_context_add_user_access_levels(user_addr, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+    sc_memory_arc_new(
+        s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_authenticated_user_addr, user_addr);
+
+    return SC_RESULT_OK;
+  }
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  sc_context_add_context_access_levels(ctx->access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+  sc_monitor_release_write(&ctx->monitor);
+
+  sc_memory_arc_new(
+      s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_authenticated_user_addr, user_addr);
+
+  return SC_RESULT_OK;
+}
+
+/*! Function that handles the removal of authentication for a user and its associated memory context.
+ * @param event Pointer to the sc_event triggering the context removal.
+ * @param arc_addr sc-address representing removed sc-arc to the authenticated user..
+ * @param user_addr sc-address representing the user whose authentication is being revoked.
+ * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to a sc-event and is responsible for removing authentication
+ * for user and its associated memory context.
+ */
+sc_result _sc_memory_context_manager_on_unauthentication_request_user(
+    sc_event const * event,
+    sc_addr arc_addr,
+    sc_addr user_addr)
+{
+  sc_unused(&arc_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+  {
+    _sc_context_remove_user_access_levels(user_addr, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+    return SC_RESULT_OK;
+  }
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  sc_context_remove_context_access_levels(ctx->access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+  sc_monitor_release_write(&ctx->monitor);
+
+  return SC_RESULT_OK;
+}
+
+void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr myself_addr, sc_bool user_mode)
 {
   sc_memory_info("Initialize context manager");
 
   *manager = sc_mem_new(sc_memory_context_manager, 1);
   (*manager)->context_hash_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
-  (*manager)->last_context_id = 0;
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
+  (*manager)->user_mode = user_mode;
+  (*manager)->authenticated_users_access_levels = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
 
-  s_memory_default_ctx = sc_memory_context_new(sc_access_lvl_make_min);
+  s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
+  s_memory_default_ctx->access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
+}
+
+void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
+{
+  sc_helper_resolve_system_identifier(
+      s_memory_default_ctx, "concept_authentication_request_user", &manager->concept_authentication_request_user_addr);
+  sc_helper_resolve_system_identifier(
+      s_memory_default_ctx, "concept_authenticated_user", &manager->concept_authenticated_user_addr);
+
+  manager->on_authentication_request_user_subscription = sc_event_new_ex(
+      s_memory_default_ctx,
+      manager->concept_authentication_request_user_addr,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_authentication_request_user,
+      null_ptr);
+  manager->on_unauthentication_request_user_subscription = sc_event_new_ex(
+      s_memory_default_ctx,
+      manager->concept_authentication_request_user_addr,
+      SC_EVENT_REMOVE_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_unauthentication_request_user,
+      null_ptr);
+}
+
+void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager)
+{
+  sc_event_destroy(manager->on_authentication_request_user_subscription);
+  sc_event_destroy(manager->on_unauthentication_request_user_subscription);
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
@@ -76,47 +204,37 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
 
   sc_monitor_destroy(&manager->context_monitor);
 
+  sc_hash_table_destroy(manager->authenticated_users_access_levels);
+
   sc_mem_free(manager);
 }
 
-sc_memory_context * _sc_memory_context_new(sc_memory_context_manager * manager)
+sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr user_addr)
 {
-  sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
-  sc_uint32 index;
+  if (manager == null_ptr)
+    return null_ptr;
 
-  // setup concurrency id
+  sc_memory_context * ctx = sc_mem_new(sc_memory_context, 1);
+
   sc_monitor_acquire_write(&manager->context_monitor);
-  if (manager->context_count >= G_MAXUINT32)
-    goto error;
 
   if (manager->context_hash_table == null_ptr)
     goto error;
 
-  index = (manager->last_context_id + 1) % G_MAXUINT32;
-  while (
-      index == 0
-      || (index != manager->last_context_id && sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(index))))
-    index = (index + 1) % G_MAXUINT32;
+  sc_monitor_init(&ctx->monitor);
+  ctx->user_addr = user_addr;
+  ctx->ref_count = 0;
+  ctx->access_levels = (sc_uint64)sc_hash_table_get(
+      manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
 
-  if (index != manager->last_context_id)
-  {
-    ctx->id = index;
-    sc_monitor_init(&ctx->monitor);
-
-    manager->last_context_id = index;
-    sc_hash_table_insert(manager->context_hash_table, GINT_TO_POINTER(ctx->id), (sc_pointer)ctx);
-  }
-  else
-    goto error;
-
+  sc_hash_table_insert(
+      manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
   ++manager->context_count;
   goto result;
 
 error:
-{
   sc_mem_free(ctx);
   ctx = null_ptr;
-}
 
 result:
   sc_monitor_release_write(&manager->context_monitor);
@@ -124,16 +242,41 @@ result:
   return ctx;
 }
 
-sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_access_levels levels)
+sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * manager, sc_addr user_addr)
 {
   if (manager == null_ptr)
     return null_ptr;
 
-  sc_memory_context * ctx = _sc_memory_context_new(manager);
-  if (ctx == null_ptr)
+  sc_memory_context * ctx = null_ptr;
+
+  sc_monitor_acquire_read(&manager->context_monitor);
+
+  if (manager->context_hash_table == null_ptr)
+    goto error;
+
+  ctx = sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(user_addr)));
+
+error:
+  sc_monitor_release_read(&manager->context_monitor);
+
+  return ctx;
+}
+
+sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr user_addr)
+{
+  if (manager == null_ptr)
     return null_ptr;
 
-  ctx->access_levels = levels;
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    ctx = _sc_memory_context_new_impl(manager, user_addr);
+
+  if (ctx == null_ptr)
+    return ctx;
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  ++ctx->ref_count;
+  sc_monitor_release_write(&ctx->monitor);
 
   return ctx;
 }
@@ -148,18 +291,34 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
   if (manager->context_hash_table == null_ptr)
     goto error;
 
-  sc_memory_context * context = sc_hash_table_get(manager->context_hash_table, GINT_TO_POINTER(ctx->id));
-  if (context == null_ptr)
+  sc_monitor_acquire_write(&ctx->monitor);
+  sc_uint32 ref_count = --ctx->ref_count;
+  sc_monitor_release_write(&ctx->monitor);
+
+  if (ref_count > 0)
     goto error;
 
   sc_monitor_destroy(&ctx->monitor);
-  sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(ctx->id));
+  sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
   --manager->context_count;
 
+  sc_mem_free(ctx);
 error:
   sc_monitor_release_write(&manager->context_monitor);
+}
 
-  sc_mem_free(ctx);
+sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager, sc_memory_context const * ctx)
+{
+  if (manager->user_mode == SC_FALSE)
+    return SC_TRUE;
+
+  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
+  sc_access_levels access_levels = ctx->access_levels;
+  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+
+  sc_bool is_authenticated =
+      sc_context_check_context_access_levels(access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+  return is_authenticated;
 }
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
@@ -180,7 +339,6 @@ void _sc_memory_context_pend_event(
   sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
   params->type = type;
   params->subscription_addr = element;
-  params->subscription_addr_access = sc_access_lvl_make_max;
   params->edge_addr = edge;
   params->other_addr = other_element;
 
@@ -202,11 +360,10 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
     sc_event_emit_impl(
         ctx,
         evt_params->subscription_addr,
-        evt_params->subscription_addr_access,
+        ctx->access_levels,
         evt_params->type,
         evt_params->edge_addr,
         evt_params->other_addr);
-
     sc_mem_free(evt_params);
 
     ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
@@ -223,7 +380,7 @@ void _sc_memory_context_pending_begin(sc_memory_context * ctx)
 void _sc_memory_context_pending_end(sc_memory_context * ctx)
 {
   sc_monitor_acquire_write(&ctx->monitor);
-  ctx->flags = ctx->flags & (~SC_CONTEXT_FLAG_PENDING_EVENTS);
+  ctx->flags &= ~SC_CONTEXT_FLAG_PENDING_EVENTS;
   _sc_memory_context_emit_events(ctx);
   sc_monitor_release_write(&ctx->monitor);
 }

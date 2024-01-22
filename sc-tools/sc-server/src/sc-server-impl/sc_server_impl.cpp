@@ -25,6 +25,7 @@ ScServerImpl::ScServerImpl(
   , m_actionsRun(SC_TRUE)
   , m_actions(new ScServerActions())
 {
+  ScMemoryJsonActionsHandler::InitializeActionClasses();
 }
 
 void ScServerImpl::Initialize()
@@ -79,31 +80,38 @@ sc_bool ScServerImpl::IsWorkable()
   return m_actions->empty() == SC_FALSE;
 }
 
-void ScServerImpl::OnOpen(ScServerConnectionHandle const & hdl)
+void ScServerImpl::OnOpen(ScServerSessionId const & sessionId)
 {
+  auto session = m_instance->get_con_from_hdl(sessionId);
+  std::string const & resourceData = session->get_resource();
+
+  auto * action = new ScServerConnectAction(this, sessionId, resourceData);
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerConnectAction(this, hdl));
+    m_actions->push(action);
   }
   m_actionCond.notify_one();
 }
 
-void ScServerImpl::OnClose(ScServerConnectionHandle const & hdl)
+void ScServerImpl::OnClose(ScServerSessionId const & sessionId)
 {
+  auto * action = new ScServerDisconnectAction(this, sessionId);
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerDisconnectAction(this, hdl));
+    m_actions->push(action);
   }
   m_actionCond.notify_one();
 }
 
-void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg)
+void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessage const & msg)
 {
+  auto * action = new ScServerMessageAction(this, sessionId, msg);
+
   if (m_parallelActions == SC_FALSE)
   {
     {
       ScServerLock guard(m_actionLock);
-      m_actions->push(new ScServerMessageAction(this, hdl, msg));
+      m_actions->push(action);
     }
     m_actionCond.notify_one();
   }
@@ -111,22 +119,23 @@ void ScServerImpl::OnMessage(ScServerConnectionHandle const & hdl, ScServerMessa
   {
     sc_storage_start_new_process();
 
-    ScServerMessageAction(this, hdl, msg).Emit();
+    action->Emit();
 
     sc_storage_end_new_process();
   }
 }
 
-void ScServerImpl::OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg)
+void ScServerImpl::OnEvent(ScServerSessionId const & sessionId, std::string const & msg)
 {
   {
     ScServerLock guard(m_actionLock);
-    m_actions->push(new ScServerEventCallbackAction(this, hdl, msg));
+    m_actions->push(new ScServerEventCallbackAction(this, sessionId, msg));
   }
   m_actionCond.notify_one();
 }
 
 ScServerImpl::~ScServerImpl()
 {
+  ScMemoryJsonActionsHandler::ClearActionClasses();
   delete m_actions;
 }

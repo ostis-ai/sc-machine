@@ -53,7 +53,7 @@ public:
 
   void InitContext()
   {
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "sc_server_bench_test");
+    m_ctx = std::make_unique<ScMemoryContext>();
   }
 
   void DestroyContext()

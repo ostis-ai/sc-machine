@@ -5,9 +5,12 @@
  */
 
 #include "sc_iterator.h"
+
 #include "sc_element.h"
 #include "sc_storage.h"
 #include "sc_storage_private.h"
+#include "../sc_memory_context_manager.h"
+#include "../sc_memory_context_private.h"
 
 #include "sc-base/sc_allocator.h"
 
@@ -694,61 +697,73 @@ error:
 
 sc_bool sc_iterator3_next(sc_iterator3 * it)
 {
-  sc_bool result = SC_FALSE;
+  sc_result result;
+  return sc_iterator3_next_ext(it, &result);
+}
+
+sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
+{
+  *result = SC_RESULT_OK;
+  sc_bool status = SC_FALSE;
   if (it == null_ptr)
-    return result;
+    return status;
 
   if (it->finished == SC_TRUE)
   {
     it->results[0] = SC_ADDR_EMPTY;
     it->results[1] = SC_ADDR_EMPTY;
     it->results[2] = SC_ADDR_EMPTY;
+    return status;
+  }
 
-    return result;
+  if (_sc_memory_context_is_authenticated(sc_memory_get_context_manager(), it->ctx) == SC_FALSE)
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
+    return status;
   }
 
   switch (it->type)
   {
   case sc_iterator3_f_a_a:
-    result = _sc_iterator3_f_a_a_next(it);
+    status = _sc_iterator3_f_a_a_next(it);
     break;
 
   case sc_iterator3_f_a_f:
-    result = _sc_iterator3_f_a_f_next(it);
+    status = _sc_iterator3_f_a_f_next(it);
     break;
 
   case sc_iterator3_a_a_f:
-    result = _sc_iterator3_a_a_f_next(it);
+    status = _sc_iterator3_a_a_f_next(it);
     break;
 
   case sc_iterator3_a_f_a:
-    result = _sc_iterator3_a_f_a_next(it);
+    status = _sc_iterator3_a_f_a_next(it);
     break;
 
   case sc_iterator3_f_f_a:
-    result = _sc_iterator3_f_f_a_next(it);
+    status = _sc_iterator3_f_f_a_next(it);
     break;
 
   case sc_iterator3_a_f_f:
-    result = _sc_iterator3_a_f_f_next(it);
+    status = _sc_iterator3_a_f_f_next(it);
     break;
 
   case sc_iterator3_f_f_f:
-    result = _sc_iterator3_f_f_f_next(it);
+    status = _sc_iterator3_f_f_f_next(it);
     break;
 
   default:
     break;
   }
 
-  if (result == SC_FALSE)
+  if (status == SC_FALSE)
   {
     it->results[0] = SC_ADDR_EMPTY;
     it->results[1] = SC_ADDR_EMPTY;
     it->results[2] = SC_ADDR_EMPTY;
   }
 
-  return result;
+  return status;
 }
 
 sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint index)

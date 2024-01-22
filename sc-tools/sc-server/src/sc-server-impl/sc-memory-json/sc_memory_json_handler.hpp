@@ -23,7 +23,7 @@ public:
 
   virtual ~ScMemoryJsonHandler() = default;
 
-  virtual std::string Handle(ScServerConnectionHandle const & hdl, std::string const & requestMessage);
+  virtual std::string Handle(ScServerSessionId const & sessionId, std::string const & requestMessage);
 
 protected:
   ScServer * m_server;
@@ -33,13 +33,13 @@ protected:
   ScMemoryJsonPayload JsonifyRequestMessage(std::string const & requestMessage);
 
   virtual ScMemoryJsonPayload ResponseRequestMessage(
-      ScServerConnectionHandle const & hdl,
+      ScServerSessionId const & sessionId,
       size_t requestId,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload);
 
   virtual ScMemoryJsonPayload HandleRequestPayload(
-      ScServerConnectionHandle const & hdl,
+      ScServerSessionId const & sessionId,
       std::string const & requestType,
       ScMemoryJsonPayload const & requestPayload,
       ScMemoryJsonPayload & errorsPayload,

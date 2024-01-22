@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_keynodes.hpp"
 
 class ScMemoryTest : public testing::Test
 {
@@ -10,7 +11,7 @@ protected:
   virtual void SetUp()
   {
     ScMemoryTest::Initialize();
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
+    m_ctx = std::make_unique<ScMemoryContext>();
   }
 
   virtual void TearDown()
@@ -21,7 +22,7 @@ protected:
     ScMemoryTest::Shutdown();
   }
 
-  void Initialize(sc_uint32 max_events_and_agents_threads = DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS, std::string const & result_structure = "")
+  void Initialize(std::string const & result_structure = "")
   {
     sc_memory_params params;
     sc_memory_params_clear(&params);
@@ -33,10 +34,27 @@ protected:
     params.repo_path = "repo";
     params.log_level = "Debug";
 
-    params.max_events_and_agents_threads = max_events_and_agents_threads;
-
     params.init_memory_generated_upload = !result_structure.empty();
     params.init_memory_generated_structure = result_structure.c_str();
+
+    ScMemory::LogMute();
+    ScMemory::Initialize(params);
+    ScMemory::LogUnmute();
+  }
+
+  void InitializeWithUserMode()
+  {
+    sc_memory_params params;
+    sc_memory_params_clear(&params);
+
+    params.dump_memory = SC_FALSE;
+    params.dump_memory_statistics = SC_FALSE;
+
+    params.clear = SC_TRUE;
+    params.repo_path = "repo";
+    params.log_level = "Debug";
+
+    params.user_mode = SC_TRUE;
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
@@ -58,16 +76,16 @@ class ScMemoryTestWithInitMemoryGeneratedStructure : public ScMemoryTest
 {
   virtual void SetUp()
   {
-    ScMemoryTestWithInitMemoryGeneratedStructure::Initialize(DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS, "result_structure");
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
+    ScMemoryTestWithInitMemoryGeneratedStructure::Initialize("result_structure");
+    m_ctx = std::make_unique<ScMemoryContext>();
   }
 };
 
-class ScSingleThreadedMemoryTest : public ScMemoryTest
+class ScMemoryTestWithUserMode : public ScMemoryTest
 {
   virtual void SetUp()
   {
-    ScSingleThreadedMemoryTest::Initialize(DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS);
-    m_ctx = std::make_unique<ScMemoryContext>(sc_access_lvl_make_min, "test");
+    ScMemoryTestWithUserMode::InitializeWithUserMode();
+    m_ctx = std::make_unique<ScMemoryContext>(ScKeynodes::kMySelf);
   }
 };

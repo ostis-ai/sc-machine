@@ -52,7 +52,7 @@ SC_AGENT_IMPLEMENTATION(GetDecompositionAgent)
     decompositionAddr = scAgentsCommon::CoreKeynodes::nrel_section_decomposition;
     SC_LOG_WARNING(
         "GetDecompositionAgent: decomposition relation node not found. By default, "
-        + ms_context->HelperGetSystemIdtf(decompositionAddr) + " is used.");
+        + m_memoryCtx.HelperGetSystemIdtf(decompositionAddr) + " is used.");
   }
 
   ScAddr answerLink = m_memoryCtx.CreateLink();
@@ -83,7 +83,7 @@ bool GetDecompositionAgent::checkActionClass(ScAddr const & actionNode)
 
 ScAddrVector GetDecompositionAgent::getDecomposition(ScAddr const & subjDomainAddr, ScAddr const & decompositionAddr)
 {
-  SC_LOG_DEBUG("GetDecompositionAgent: main section is " + ms_context->HelperGetSystemIdtf(subjDomainAddr) + ".");
+  SC_LOG_DEBUG("GetDecompositionAgent: main section is " + m_memoryCtx.HelperGetSystemIdtf(subjDomainAddr) + ".");
   ScAddrVector decomposition;
 
   ScTemplate decompositionTemplate;
@@ -100,21 +100,21 @@ ScAddrVector GetDecompositionAgent::getDecomposition(ScAddr const & subjDomainAd
       ScType::EdgeAccessVarPosPerm,
       scAgentsCommon::CoreKeynodes::rrel_1);
   ScTemplateSearchResult result;
-  ms_context->HelperSearchTemplate(decompositionTemplate, result);
+  m_memoryCtx.HelperSearchTemplate(decompositionTemplate, result);
   if (!result.IsEmpty())
   {
     ScAddr tupleNode = result[0][ScSearchAliases::DECOMPOSITION_TUPLE];
     ScAddr subSection = result[0][ScSearchAliases::SECTION_NODE];
-    SC_LOG_DEBUG("GetDecompositionAgent: subsection is " + ms_context->HelperGetSystemIdtf(subSection) + ".");
+    SC_LOG_DEBUG("GetDecompositionAgent: subsection is " + m_memoryCtx.HelperGetSystemIdtf(subSection) + ".");
     decomposition.push_back(subSection);
 
-    ScAddr nextSubSection = utils::IteratorUtils::getNextFromSet(ms_context.get(), tupleNode, subSection);
-    while (ms_context->IsElement(nextSubSection))
+    ScAddr nextSubSection = utils::IteratorUtils::getNextFromSet(&m_memoryCtx, tupleNode, subSection);
+    while (m_memoryCtx.IsElement(nextSubSection))
     {
       decomposition.push_back(nextSubSection);
       subSection = nextSubSection;
-      SC_LOG_DEBUG("GetDecompositionAgent: subsection is " + ms_context->HelperGetSystemIdtf(subSection) + ".");
-      nextSubSection = utils::IteratorUtils::getNextFromSet(ms_context.get(), tupleNode, subSection);
+      SC_LOG_DEBUG("GetDecompositionAgent: subsection is " + m_memoryCtx.HelperGetSystemIdtf(subSection) + ".");
+      nextSubSection = utils::IteratorUtils::getNextFromSet(&m_memoryCtx, tupleNode, subSection);
     }
   }
   return decomposition;

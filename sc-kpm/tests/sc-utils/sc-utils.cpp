@@ -12,7 +12,7 @@ extern "C"
 
 TEST_F(ScMemoryTest, erase_elements_success)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
 
@@ -37,14 +37,12 @@ TEST_F(ScMemoryTest, erase_elements_success)
   EXPECT_FALSE(sc_iterator3_next(it));
   sc_iterator3_free(it);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, erase_elements_from_init_struct)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
 
@@ -70,14 +68,12 @@ TEST_F(ScMemoryTest, erase_elements_from_init_struct)
   EXPECT_FALSE(sc_iterator3_next(it));
   sc_iterator3_free(it);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, erase_elements_self_erase)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
 
@@ -99,14 +95,12 @@ TEST_F(ScMemoryTest, erase_elements_self_erase)
   EXPECT_TRUE(sc_iterator3_next(it));
   sc_iterator3_free(it);
 
-  sc_memory_context_free(context);
-
   sc_module_shutdown();
 }
 
 TEST_F(ScMemoryTest, erase_elements_erase_keynode)
 {
-  sc_memory_context * context = sc_memory_context_new(sc_access_lvl_make_min);
+  sc_memory_context * context = m_ctx->GetRealContext();
 
   sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
 
@@ -129,8 +123,6 @@ TEST_F(ScMemoryTest, erase_elements_erase_keynode)
   sc_iterator3 * it = sc_iterator3_f_a_a_new(context, setAddr, 0, 0);
   EXPECT_FALSE(sc_iterator3_next(it));
   sc_iterator3_free(it);
-
-  sc_memory_context_free(context);
 
   sc_module_shutdown();
 }

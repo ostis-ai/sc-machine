@@ -13,6 +13,8 @@
 #    define null_ptr ((void *)0)
 #  endif
 
+#  define sc_unused(object) (void)object
+
 // base types
 typedef signed char sc_int8;
 typedef unsigned char sc_uint8;
@@ -136,6 +138,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_node_material (sc_type)(0x2000)
 
 #  define sc_type_arc_pos_const_perm (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
+#  define sc_type_arc_pos_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp)
 #  define sc_type_arc_pos_var_perm (sc_type)(sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm)
 
 // type mask
@@ -150,31 +153,16 @@ typedef sc_uint16 sc_type;
         | sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
-// access levels
-#  define SC_ACCESS_LVL_MAX_VALUE 15
-#  define SC_ACCESS_LVL_MIN_VALUE 0
-
 #  define SC_ACCESS_LVL_REQUEST_DELETION 0x1
 #  define SC_ACCESS_LVL_ELEMENT_EXIST 0x2
-#  define SC_ACCESS_LVL_RMASK 0xf0
-#  define SC_ACCESS_LVL_WMASK 0x0f
 
-#  define sc_access_lvl_get_read(levels) ((levels & SC_ACCESS_LVL_RMASK) >> 4)
-#  define sc_access_lvl_get_write(levels) (levels & SC_ACCESS_LVL_WMASK)
+#  define SC_ACCESS_LVL_MAX_VALUE 15
+#  define SC_ACCESS_LVL_MIN_VALUE 0
 
 #  define sc_access_lvl_make(read, write) (sc_uint8)((write) | ((read) << 4))
 
 #  define sc_access_lvl_make_max sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE)
 #  define sc_access_lvl_make_min sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MIN_VALUE)
-
-#  define sc_access_lvl_min(a, b) \
-    (sc_min(((a)&SC_ACCESS_LVL_RMASK), ((b)&SC_ACCESS_LVL_RMASK)) \
-     | sc_min(((a)&SC_ACCESS_LVL_WMASK), ((b)&SC_ACCESS_LVL_WMASK)))
-#  define sc_access_lvl_max(a, b) \
-    (sc_max(((a)&SC_ACCESS_LVL_RMASK), ((b)&SC_ACCESS_LVL_RMASK)) \
-     | sc_max(((a)&SC_ACCESS_LVL_WMASK), ((b)&SC_ACCESS_LVL_WMASK)))
-#  define sc_access_lvl_check_read(c, e) (sc_access_lvl_get_read(c) >= sc_access_lvl_get_read(e))
-#  define sc_access_lvl_check_write(c, e) (sc_access_lvl_get_write(c) >= sc_access_lvl_get_write(e))
 
 // results
 enum _sc_result
@@ -197,6 +185,7 @@ enum _sc_result
   SC_RESULT_ERROR_STREAM_IO,
   SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER,
   SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED,
   SC_RESULT_UNKNOWN,  // result unknown
 
   // add atomic types before

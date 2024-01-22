@@ -25,7 +25,7 @@ class ScAgent : public ScObject
   SC_GENERATED_BODY()
 
 public:
-  _SC_EXTERN explicit ScAgent(char const * name, sc_uint8 accessLvl = sc_access_lvl_make_max);
+  _SC_EXTERN explicit ScAgent(ScAddr const & userAddr);
   _SC_EXTERN virtual ~ScAgent();
 
 protected:
@@ -51,10 +51,7 @@ public:
     Finished
   };
 
-  _SC_EXTERN explicit ScAgentAction(
-      ScAddr const & cmdClassAddr,
-      char const * name,
-      sc_uint8 accessLvl = sc_access_lvl_make_max);
+  _SC_EXTERN explicit ScAgentAction(ScAddr const & cmdClassAddr, ScAddr const & userAddr);
   _SC_EXTERN virtual ~ScAgentAction();
 
 protected:
@@ -80,7 +77,7 @@ public:
    * For each parameter from params would be added attribute rrel_<i + 1>, where
    * i is an index of parameter in vector. Maximum size of params is 10.
    * Returns ScAddr of created command instance. If addr is not valid, then
-   * command doesn't created
+   * command isn't created
    */
   static _SC_EXTERN ScAddr
   CreateCommand(ScMemoryContext & ctx, ScAddr const & cmdClassAddr, ScAddrVector const & params);
@@ -106,7 +103,7 @@ public:
   static _SC_EXTERN ScAddr GetCommandResultAddr(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 
   /* Returns result code of specified command
-   * If command still haven't result (possible not finished), then return
+   * If command still hasn't result (possible not finished), then return
    * SC_RESULT_UNKNOWN. Be attentive, SC_RESULT_UNKNOWN is not a guarantee, that
    * process isn't finished. It could be finished with that result.
    */
@@ -121,15 +118,15 @@ public:
    */
   static _SC_EXTERN State GetCommandState(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 
-  /* Reutrns true, if specified command included into set of finished commands
+  /* Returns true, if specified command included into set of finished commands
    */
-  static _SC_EXTERN bool IsCommandFishined(ScMemoryContext & ctx, ScAddr const & cmdAddr);
+  static _SC_EXTERN bool IsCommandFinished(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 
-  /* Reutrns true, if specified command included into set of initiated commands
+  /* Returns true, if specified command included into set of initiated commands
    */
   static _SC_EXTERN bool IsCommandInitiated(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 
-  /* Reutrns true, if specified command included into set of in-progress commands
+  /* Returns true, if specified command included into set of in-progress commands
    */
   static _SC_EXTERN bool IsCommandInProgress(ScMemoryContext & ctx, ScAddr const & cmdAddr);
 

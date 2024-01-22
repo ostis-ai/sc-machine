@@ -134,9 +134,24 @@ _SC_EXTERN void sc_iterator3_free(sc_iterator3 * it);
 /*! Go to next iterator result
  * @param it Pointer to iterator that we need to go next result
  * @return Return SC_TRUE, if iterator moved to new results; otherwise return SC_FALSE.
- * example: while(sc_iterator_next(it)) { <your code> }
+ * @code
+ * while(sc_iterator_next(it)) { <your code> }
+ * @endcode
  */
 _SC_EXTERN sc_bool sc_iterator3_next(sc_iterator3 * it);
+
+/*! Go to next iterator result
+ * @param it Pointer to iterator that we need to go next result
+ * @param result Pointer to error caused during search
+ * @return Return SC_TRUE, if iterator moved to new results; otherwise return SC_FALSE.
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
+ * @code
+ * sc_result result;
+ * while(sc_iterator_next(it, &result)) { <your code> }
+ * @endcode
+ */
+_SC_EXTERN sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result);
 
 /*! Get iterator value
  * @param it Pointer to iterator for getting value

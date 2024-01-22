@@ -6,7 +6,6 @@
 
 #include "sc_agent.hpp"
 
-#include "../sc_debug.hpp"
 #include "../sc_wait.hpp"
 
 namespace
@@ -27,16 +26,16 @@ bool ScAgentInit(bool force /* = false */)
   return gInitializeResult;
 }
 
-ScAgent::ScAgent(char const * name, sc_uint8 accessLvl)
-  : m_memoryCtx(accessLvl, name)
+ScAgent::ScAgent(ScAddr const & userAddr)
+  : m_memoryCtx(userAddr)
 {
 }
 
 ScAgent::~ScAgent() = default;
 
 // ---------------------------
-ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, char const * name, sc_uint8 accessLvl)
-  : ScAgent(name, accessLvl)
+ScAgentAction::ScAgentAction(ScAddr const & cmdClassAddr, ScAddr const & userAddr)
+  : ScAgent(userAddr)
   , m_cmdClassAddr(cmdClassAddr)
 
 {
@@ -57,9 +56,7 @@ sc_result ScAgentAction::Run(ScAddr const & listenAddr, ScAddr const & edgeAddr,
       m_memoryCtx.EraseElement(edgeAddr);
       ScAddr progressAddr =
           m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosTemp, ScKeynodes::kCommandProgressedAddr, cmdAddr);
-      assert(progressAddr.IsValid());
       ScAddr resultAddr = m_memoryCtx.CreateNode(ScType::NodeConstStruct);
-      assert(resultAddr.IsValid());
 
       sc_result const resCode = RunImpl(cmdAddr, resultAddr);
 
@@ -218,7 +215,7 @@ ScAgentAction::State ScAgentAction::GetCommandState(ScMemoryContext & ctx, ScAdd
   return State::Unknown;
 }
 
-bool ScAgentAction::IsCommandFishined(ScMemoryContext & ctx, ScAddr const & cmdAddr)
+bool ScAgentAction::IsCommandFinished(ScMemoryContext & ctx, ScAddr const & cmdAddr)
 {
   return GetCommandState(ctx, cmdAddr) == State::Finished;
 }

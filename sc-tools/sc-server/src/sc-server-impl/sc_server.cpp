@@ -6,7 +6,7 @@
 
 #include "sc_server.hpp"
 
-#include <utility>
+#include "sc-memory/sc_keynodes.hpp"
 
 ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
   : m_hostName(std::move(hostName))
@@ -15,7 +15,7 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
 {
   m_memoryState = ScMemory::Initialize(params);
   if (m_memoryState)
-    m_context = new ScMemoryContext("sc-server");
+    m_context = new ScMemoryContext(ScKeynodes::kMySelf);
 
   m_instance = new ScServerCore();
   ResetLogger();
@@ -27,7 +27,7 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
     LogMessage(ScServerErrorLevel::info, "\tPort: " + std::to_string(m_port));
   }
 
-  m_connections = new ScServerConnections();
+  m_connections = new ScServerSessionContexts();
   LogMessage(ScServerErrorLevel::info, "Sc-server initialized");
 }
 
@@ -81,7 +81,7 @@ void ScServer::Stop()
     {
       try
       {
-        m_instance->close(it, websocketpp::close::status::normal, "Sc-server is finishing work");
+        m_instance->close(it.first, websocketpp::close::status::normal, "Sc-server is finishing work");
       }
       catch (std::exception const & ex)
       {
@@ -120,14 +120,26 @@ std::string ScServer::GetUri()
   return "ws://" + m_hostName + ":" + std::to_string(m_port);
 }
 
-ScServerConnections * ScServer::GetConnections()
+void ScServer::AddSessionContext(ScServerSessionId const & sessionId, ScMemoryContext * sessionCtx)
 {
-  return m_connections;
+  m_connections->insert({sessionId, sessionCtx});
 }
 
-void ScServer::Send(ScServerConnectionHandle const & hdl, std::string const & message, ScServerMessageType type)
+ScMemoryContext * ScServer::PopSessionContext(ScServerSessionId const & sessionId)
 {
-  m_instance->send(hdl, message, type);
+  ScMemoryContext * sessionCtx = m_connections->at(sessionId);
+  m_connections->erase(sessionId);
+  return sessionCtx;
+}
+
+ScMemoryContext * ScServer::GetSessionContext(ScServerSessionId const & sessionId)
+{
+  return m_connections->at(sessionId);
+}
+
+void ScServer::Send(ScServerSessionId const & sessionId, std::string const & message, ScServerMessageType type)
+{
+  m_instance->send(sessionId, message, type);
 }
 
 void ScServer::SetChannels(ScServerLogLevel channels)
@@ -167,11 +179,11 @@ void ScServer::LogMessage(ScServerLogLevel channel, std::string const & message)
 }
 
 void ScServer::CloseConnection(
-    ScServerConnectionHandle const & hdl,
+    ScServerSessionId const & sessionId,
     ScServerCloseCode const code,
     std::string const & reason)
 {
-  m_instance->close(hdl, code, reason);
+  m_instance->close(sessionId, code, reason);
 }
 
 ScServer::~ScServer()

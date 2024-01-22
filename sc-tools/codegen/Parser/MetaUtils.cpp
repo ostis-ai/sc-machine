@@ -2,7 +2,6 @@
 
 #include "Cursor.hpp"
 #include "CursorType.hpp"
-#include "Types.hpp"
 
 #include <iostream>
 

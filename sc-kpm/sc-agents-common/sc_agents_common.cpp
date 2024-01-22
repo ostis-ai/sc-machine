@@ -18,8 +18,7 @@ sc_result SCAgentsCommonModule::InitializeImpl()
   if (!CoreKeynodes::InitGlobal())
     return SC_RESULT_ERROR;
 
-  ScMemoryContext ctx(sc_access_lvl_make_min, "scAgentsCommon");
-  SC_AGENT_REGISTER(scSearch::GetDecompositionAgent)
+  SC_AGENT_REGISTER(scSearch::GetDecompositionAgent);
 
   return SC_RESULT_OK;
 }

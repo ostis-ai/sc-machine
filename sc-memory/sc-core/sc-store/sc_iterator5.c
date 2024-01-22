@@ -6,6 +6,9 @@
 
 #include "sc_iterator.h"
 
+#include "../sc_memory_context_manager.h"
+#include "../sc_memory_context_private.h"
+
 #include "sc-base/sc_allocator.h"
 
 sc_iterator5 * sc_iterator5_new(
@@ -595,9 +598,22 @@ sc_bool _sc_iterator5_a_a_a_a_f_next(sc_iterator5 * it)
 
 sc_bool sc_iterator5_next(sc_iterator5 * it)
 {
+  sc_result result;
+  return sc_iterator5_next_ext(it, &result);
+}
+
+sc_bool sc_iterator5_next_ext(sc_iterator5 * it, sc_result * result)
+{
+  *result = SC_RESULT_OK;
   sc_bool status = SC_FALSE;
   if (it == null_ptr)
     return status;
+
+  if (_sc_memory_context_is_authenticated(sc_memory_get_context_manager(), it->ctx) == SC_FALSE)
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
+    return status;
+  }
 
   switch (it->type)
   {

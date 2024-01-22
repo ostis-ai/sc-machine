@@ -45,7 +45,7 @@ TEST_F(ScAgentTest, action_emit)
   EXPECT_EQ(ScAgentAction::GetCommandResultCode(*m_ctx, cmd), SC_RESULT_OK);
   EXPECT_FALSE(ScAgentAction::IsCommandInitiated(*m_ctx, cmd));
   EXPECT_FALSE(ScAgentAction::IsCommandInProgress(*m_ctx, cmd));
-  EXPECT_TRUE(ScAgentAction::IsCommandFishined(*m_ctx, cmd));
+  EXPECT_TRUE(ScAgentAction::IsCommandFinished(*m_ctx, cmd));
 
   SC_AGENT_UNREGISTER(ATestActionEmit);
 }

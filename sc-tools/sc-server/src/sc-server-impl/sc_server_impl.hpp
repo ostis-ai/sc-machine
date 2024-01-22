@@ -37,18 +37,17 @@ protected:
   sc_bool m_parallelActions;
 
   std::atomic<sc_bool> m_actionsRun;
-
   ScServerActions * m_actions;
 
   void Initialize() override;
 
   void AfterInitialize() override;
 
-  void OnOpen(ScServerConnectionHandle const & hdl) override;
+  void OnOpen(ScServerSessionId const & sessionId) override;
 
-  void OnClose(ScServerConnectionHandle const & hdl) override;
+  void OnClose(ScServerSessionId const & sessionId) override;
 
-  void OnMessage(ScServerConnectionHandle const & hdl, ScServerMessage const & msg) override;
+  void OnMessage(ScServerSessionId const & sessionId, ScServerMessage const & msg) override;
 
-  void OnEvent(ScServerConnectionHandle const & hdl, std::string const & msg) override;
+  void OnEvent(ScServerSessionId const & sessionId, std::string const & msg) override;
 };
