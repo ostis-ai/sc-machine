@@ -96,7 +96,7 @@ public:
 
     sc_result result;
     sc_bool const status = sc_iterator3_next_ext(m_iterator, &result);
-    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED)
+    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
 
@@ -159,7 +159,7 @@ public:
 
     sc_result result;
     sc_bool status = sc_iterator5_next_ext(m_iterator, &result);
-    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED)
+    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState, "Unable to iterate next fiver due sc-memory context is not authorized");
 

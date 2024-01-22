@@ -611,7 +611,7 @@ sc_bool sc_iterator5_next_ext(sc_iterator5 * it, sc_result * result)
 
   if (_sc_memory_context_is_authenticated(sc_memory_get_context_manager(), it->ctx) == SC_FALSE)
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED;
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
     return status;
   }
 

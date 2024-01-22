@@ -11,7 +11,7 @@ protected:
   virtual void SetUp()
   {
     ScMemoryTest::Initialize();
-    m_ctx = std::make_unique<ScMemoryContext>("test");
+    m_ctx = std::make_unique<ScMemoryContext>();
   }
 
   virtual void TearDown()
@@ -46,6 +46,9 @@ protected:
   {
     sc_memory_params params;
     sc_memory_params_clear(&params);
+
+    params.dump_memory = SC_FALSE;
+    params.dump_memory_statistics = SC_FALSE;
 
     params.clear = SC_TRUE;
     params.repo_path = "repo";

@@ -28,7 +28,7 @@ TEST(ScServer, InvalidRunMain)
   EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_FAILURE);
 }
 
-TEST(ScBuilder, RunMainHelp)
+TEST(ScServer, RunMainHelp)
 {
   sc_uint32 const argsNumber = 2;
   sc_char const * args[argsNumber] = {"sc-server", "--help"};
