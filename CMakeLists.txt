@@ -6,7 +6,7 @@ cmake_policy(SET CMP0048 NEW)
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
-project_version(SC_MACHINE "0.8.0-Fusion")
+project_version(SC_MACHINE "0.9.0-Unlock")
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 # CMAKE_BINARY_DIR is a path to the top level of the build tree (i.e to the "build" folder). Placing a "bin" folder nearby
