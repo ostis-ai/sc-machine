@@ -556,7 +556,7 @@ TEST(ScMemoryDumper, DumpMemory)
   ScMemory::Initialize(params);
   ScMemory::LogUnmute();
 
-  ScMemoryContext ctx(sc_access_lvl_make_min);
+  ScMemoryContext ctx;
   ctx.Save();
   ctx.Destroy();
 
@@ -598,7 +598,7 @@ TEST(ScMemoryDumper, DumpMemoryStatistics)
   ScMemory::Initialize(params);
   ScMemory::LogUnmute();
 
-  ScMemoryContext ctx(sc_access_lvl_make_min);
+  ScMemoryContext ctx;
   ctx.Save();
   ctx.Destroy();
 

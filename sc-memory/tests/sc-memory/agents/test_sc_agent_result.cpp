@@ -42,10 +42,6 @@ TEST_F(ScAgentTest, ATestResultOk)
           ScMemoryContext ctxLocal;
           ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
         }));
-    EXPECT_TRUE(waiter.Wait(5000, [&cmdAddr]() {
-      ScMemoryContext ctxLocal;
-      ScAgentAction::InitiateCommand(ctxLocal, cmdAddr);
-    }));
 
     // check result
     EXPECT_EQ(ScAgentAction::GetCommandResultCode(ctx, cmdAddr), SC_RESULT_OK);

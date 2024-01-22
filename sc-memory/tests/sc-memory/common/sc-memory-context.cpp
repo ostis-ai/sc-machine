@@ -78,19 +78,20 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedBefore)
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
-    ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
-    EXPECT_TRUE(userContext.IsElement(testNodeAddr));
+      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
+        EXPECT_TRUE(userContext.IsElement(testNodeAddr));
 
-    ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
-    EXPECT_TRUE(userContext.IsElement(testLinkAddr));
+        ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
+        EXPECT_TRUE(userContext.IsElement(testLinkAddr));
 
-    ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
-    EXPECT_TRUE(userContext.IsElement(testArcAddr));
+        ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
+        EXPECT_TRUE(userContext.IsElement(testArcAddr));
 
-    isAuthenticated = true;
+        isAuthenticated = true;
 
-    return true;
+        return true;
       });
 
   ScAddr const & conceptAuthenticationRequestUserAddr =
@@ -109,20 +110,21 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedAfter)
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
-    ScMemoryContext userContext{userAddr};
-    ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
-    EXPECT_TRUE(userContext.IsElement(testNodeAddr));
+      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        ScMemoryContext userContext{userAddr};
+        ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
+        EXPECT_TRUE(userContext.IsElement(testNodeAddr));
 
-    ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
-    EXPECT_TRUE(userContext.IsElement(testLinkAddr));
+        ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
+        EXPECT_TRUE(userContext.IsElement(testLinkAddr));
 
-    ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
-    EXPECT_TRUE(userContext.IsElement(testArcAddr));
+        ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
+        EXPECT_TRUE(userContext.IsElement(testArcAddr));
 
-    isChecked = true;
+        isChecked = true;
 
-    return true;
+        return true;
       });
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
@@ -142,20 +144,21 @@ TEST_F(ScMemoryTestWithUserMode, SeveralCreateElementsByAuthenticatedUserCreated
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
-    ScMemoryContext userContext{userAddr};
-    ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
-    EXPECT_TRUE(userContext.IsElement(testNodeAddr));
+      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        ScMemoryContext userContext{userAddr};
+        ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
+        EXPECT_TRUE(userContext.IsElement(testNodeAddr));
 
-    ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
-    EXPECT_TRUE(userContext.IsElement(testLinkAddr));
+        ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
+        EXPECT_TRUE(userContext.IsElement(testLinkAddr));
 
-    ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
-    EXPECT_TRUE(userContext.IsElement(testArcAddr));
+        ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
+        EXPECT_TRUE(userContext.IsElement(testArcAddr));
 
-    isChecked = true;
+        isChecked = true;
 
-    return true;
+        return true;
       });
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
@@ -201,19 +204,20 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedBeforeA
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
-    ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
-    EXPECT_TRUE(userContext.IsElement(testNodeAddr));
+      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        ScAddr const & testNodeAddr = userContext.CreateNode(ScType::NodeConst);
+        EXPECT_TRUE(userContext.IsElement(testNodeAddr));
 
-    ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
-    EXPECT_TRUE(userContext.IsElement(testLinkAddr));
+        ScAddr const & testLinkAddr = userContext.CreateLink(ScType::LinkConst);
+        EXPECT_TRUE(userContext.IsElement(testLinkAddr));
 
-    ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
-    EXPECT_TRUE(userContext.IsElement(testArcAddr));
+        ScAddr const & testArcAddr = userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, testNodeAddr, testLinkAddr);
+        EXPECT_TRUE(userContext.IsElement(testArcAddr));
 
-    isAuthenticated = true;
+        isAuthenticated = true;
 
-    return true;
+        return true;
       });
 
   ScAddr const & conceptAuthenticationRequestUserAddr =
@@ -227,14 +231,16 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedBeforeA
   ScEventRemoveOutputEdge event2(
       *m_ctx,
       conceptAuthenticationRequestUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) {
-    EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
-    EXPECT_THROW(userContext.CreateLink(ScType::LinkConst), utils::ExceptionInvalidState);
-    EXPECT_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, addr, userAddr), utils::ExceptionInvalidState);
+      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
+        EXPECT_THROW(userContext.CreateLink(ScType::LinkConst), utils::ExceptionInvalidState);
+        EXPECT_THROW(
+            userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, addr, userAddr), utils::ExceptionInvalidState);
 
-    isAuthenticated = false;
+        isAuthenticated = false;
 
-    return true;
+        return true;
       });
 
   m_ctx->EraseElement(authEdgeAddr);
