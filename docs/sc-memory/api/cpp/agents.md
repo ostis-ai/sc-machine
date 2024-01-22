@@ -13,7 +13,7 @@ performed logically by developer.
 
 ## **ScModule**
 
-It is a dynamic library. It implements specified module class. To create module you need to do next steps:
+It is a dynamic library. It implements specified module class. To create module you need to do the next steps:
 
 1. Create directory for your module in project using sc-machine. For example, `my-module`.
 2. Go to created directory.
@@ -403,8 +403,8 @@ ScEventContentChanged evt(context, addr, callback);
 
 ## **ScWait**
 
-This type of objects is used to wait until some event emits. It usually used, when one of an `ScAgent` wants to wait result
-of another one. There are next kind of `ScWait` objects:
+This type of objects is used to wait until some event emits. It is usually used, when one of an `ScAgent` wants to wait 
+result of another one. There are next kind of `ScWait` objects:
 
 * `ScWait`- lock run flow until simple event emits. You can see the list of these events in the Class properties table (
   ScEvent property);
