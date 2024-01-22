@@ -27,6 +27,10 @@ struct _sc_memory_context_manager
   sc_hash_table * authenticated_users_access_levels;  ///< Hash table storing access levels for authenticated users.
   sc_event * on_authentication_request_user_subscription;    ///< Event subscription for authenticated user events.
   sc_event * on_unauthentication_request_user_subscription;  ///< Event subscription for unauthenticated user events.
+  sc_addr nrel_user_action_class_addr;
+  sc_hash_table * basic_action_classes;
+  sc_event * on_new_user_action_class;
+  sc_event * on_remove_user_action_class;
   sc_bool user_mode;  ///< Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
 };
 
@@ -43,9 +47,6 @@ struct _sc_event_emit_params
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
 
-#define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
-#define SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED 0x1
-
 #define sc_context_add_context_access_levels(_access_levels, _adding_levels) _access_levels |= _adding_levels
 
 #define sc_context_remove_context_access_levels(_access_levels, _adding_levels) _access_levels &= ~_adding_levels
@@ -54,22 +55,22 @@ struct _sc_event_emit_params
   ((_access_levels) & (_checking_levels)) == _checking_levels
 
 #define _sc_context_add_user_access_levels(_user_addr, _adding_levels) \
-  sc_access_levels levels = (sc_uint64)sc_hash_table_get( \
+  sc_access_levels _levels = (sc_uint64)sc_hash_table_get( \
       manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
-  levels |= (_adding_levels); \
+  _levels |= (_adding_levels); \
   sc_hash_table_insert( \
       manager->authenticated_users_access_levels, \
       GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
-      GINT_TO_POINTER(levels))
+      GINT_TO_POINTER(_levels))
 
 #define _sc_context_remove_user_access_levels(_user_addr, _adding_levels) \
-  sc_access_levels levels = (sc_uint64)sc_hash_table_get( \
+  sc_access_levels _levels = (sc_uint64)sc_hash_table_get( \
       manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
-  levels &= ~(_adding_levels); \
+  _levels &= ~(_adding_levels); \
   sc_hash_table_insert( \
       manager->authenticated_users_access_levels, \
       GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
-      GINT_TO_POINTER(levels))
+      GINT_TO_POINTER(_levels))
 
 /*! Function that creates a memory context for an authenticated user with specified parameters.
  * @param event Pointer to the sc_event triggering the context creation.
@@ -137,6 +138,74 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   return SC_RESULT_OK;
 }
 
+#define sc_context_manager_add_basic_action_class_access_levels(_action_class_system_idtf, _access_levels) \
+  ({ \
+    sc_addr _action_class_addr; \
+    sc_helper_resolve_system_identifier(s_memory_default_ctx, _action_class_system_idtf, &_action_class_addr); \
+    sc_hash_table_insert( \
+        manager->basic_action_classes, \
+        GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_action_class_addr)), \
+        GINT_TO_POINTER(_access_levels)); \
+  })
+
+#define sc_context_manager_get_basic_action_class_access_levels(_action_class_addr) \
+  (sc_uint64) \
+      sc_hash_table_get(manager->basic_action_classes, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_action_class_addr)))
+
+sc_result _sc_memory_context_manager_on_new_user_action_class(
+    sc_event const * event,
+    sc_addr arc_addr,
+    sc_addr arc_to_action_class_addr)
+{
+  sc_unused(&arc_addr);
+
+  sc_addr user_addr, action_class_addr;
+  sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+  {
+    _sc_context_add_user_access_levels(user_addr, levels);
+    return SC_RESULT_OK;
+  }
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  sc_context_add_context_access_levels(ctx->access_levels, levels);
+  sc_monitor_release_write(&ctx->monitor);
+
+  return SC_RESULT_OK;
+}
+
+sc_result _sc_memory_context_manager_on_remove_user_action_class(
+    sc_event const * event,
+    sc_addr arc_addr,
+    sc_addr arc_to_action_class_addr)
+{
+  sc_unused(&arc_addr);
+
+  sc_addr user_addr, action_class_addr;
+  sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+  {
+    _sc_context_remove_user_access_levels(user_addr, levels);
+    return SC_RESULT_OK;
+  }
+
+  sc_monitor_acquire_write(&ctx->monitor);
+  sc_context_remove_context_access_levels(ctx->access_levels, levels);
+  sc_monitor_release_write(&ctx->monitor);
+
+  return SC_RESULT_OK;
+}
+
 void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr myself_addr, sc_bool user_mode)
 {
   sc_memory_info("Initialize context manager");
@@ -147,6 +216,7 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   sc_monitor_init(&(*manager)->context_monitor);
   (*manager)->user_mode = user_mode;
   (*manager)->authenticated_users_access_levels = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  (*manager)->basic_action_classes = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
 
   s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
   s_memory_default_ctx->access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
@@ -173,12 +243,38 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       manager,
       _sc_memory_context_manager_on_unauthentication_request_user,
       null_ptr);
+
+  sc_helper_resolve_system_identifier(
+      s_memory_default_ctx, "nrel_user_action_class", &manager->nrel_user_action_class_addr);
+
+  sc_context_manager_add_basic_action_class_access_levels("read_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_READ);
+  sc_context_manager_add_basic_action_class_access_levels("write_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_WRITE);
+  sc_context_manager_add_basic_action_class_access_levels("delete_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_DELETE);
+
+  manager->on_new_user_action_class = sc_event_new_ex(
+      s_memory_default_ctx,
+      manager->nrel_user_action_class_addr,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_new_user_action_class,
+      null_ptr);
+
+  manager->on_remove_user_action_class = sc_event_new_ex(
+      s_memory_default_ctx,
+      manager->nrel_user_action_class_addr,
+      SC_EVENT_REMOVE_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_remove_user_action_class,
+      null_ptr);
 }
 
 void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager)
 {
   sc_event_destroy(manager->on_authentication_request_user_subscription);
   sc_event_destroy(manager->on_unauthentication_request_user_subscription);
+
+  sc_event_destroy(manager->on_new_user_action_class);
+  sc_event_destroy(manager->on_remove_user_action_class);
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
@@ -205,6 +301,7 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
   sc_monitor_destroy(&manager->context_monitor);
 
   sc_hash_table_destroy(manager->authenticated_users_access_levels);
+  sc_hash_table_destroy(manager->basic_action_classes);
 
   sc_mem_free(manager);
 }
@@ -318,6 +415,22 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
 
   sc_bool is_authenticated =
       sc_context_check_context_access_levels(access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+  return is_authenticated;
+}
+
+sc_bool _sc_memory_context_check_action_class(
+    sc_memory_context_manager * manager,
+    sc_memory_context const * ctx,
+    sc_access_levels action_class_access_levels)
+{
+  if (manager->user_mode == SC_FALSE)
+    return SC_TRUE;
+
+  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
+  sc_access_levels access_levels = ctx->access_levels;
+  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+
+  sc_bool is_authenticated = sc_context_check_context_access_levels(access_levels, action_class_access_levels);
   return is_authenticated;
 }
 

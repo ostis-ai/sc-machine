@@ -615,6 +615,13 @@ sc_bool sc_iterator5_next_ext(sc_iterator5 * it, sc_result * result)
     return status;
   }
 
+  if (_sc_memory_context_check_action_class(sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+      == SC_FALSE)
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return status;
+  }
+
   switch (it->type)
   {
   case sc_iterator5_f_a_a_a_f:

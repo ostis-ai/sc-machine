@@ -18,6 +18,12 @@ typedef struct _sc_event_emit_params sc_event_emit_params;
 
 extern sc_memory_context * s_memory_default_ctx;
 
+#define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
+#define SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED 0x1
+#define SC_CONTEXT_ACCESS_LEVEL_READ 0x2
+#define SC_CONTEXT_ACCESS_LEVEL_WRITE 0x4
+#define SC_CONTEXT_ACCESS_LEVEL_DELETE 0x8
+
 /*! Function that initializes the memory context manager with specified parameters.
  * @param manager Pointer to a pointer that will store the newly created memory context manager.
  * @param myself_addr sc_addr representing the identity of the system.
@@ -92,6 +98,11 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
  * @note This function checks if a memory context is authorized based on the access levels.
  */
 sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager, sc_memory_context const * ctx);
+
+sc_bool _sc_memory_context_check_action_class(
+    sc_memory_context_manager * manager,
+    sc_memory_context const * ctx,
+    sc_access_levels action_class_access_levels);
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx);
 
