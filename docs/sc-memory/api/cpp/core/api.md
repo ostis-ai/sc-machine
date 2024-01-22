@@ -167,7 +167,7 @@ The image below shows numeration of sc-elements in 3-element (left) and 5-elemen
 <scg src="../images/iterators_scheme.gwf">**Iterators element numeration**</scg>
 
 For both of them you have two approaches.
-First approach to use simple while loop. It suitable, when you need to break this loop depending on logic:
+First approach is to use simple while loop. It is suitable, when you need to break this loop depending on logic:
 
 ### **ScIterator3**
 
@@ -212,7 +212,7 @@ while (it5->Next())
 }
 ```
 
-Second approach allows you to iterate 3-element and 5-element constructions with less code, and suitable when
+Second approach allows you to iterate 3-element and 5-element constructions with less code, and it is suitable when
 you need to iterate all results.
 
 !!! note
@@ -435,4 +435,4 @@ myFunc(ScAddr::Empty);
 ### **Why `SC_TRUE` and `SC_FALSE` are used instead of `true` and `false`?**
 
 We try to override standard types. In the future, it allows you to replace types. For example, you have `sc_char` that
-override `char` and you want to use more symbols using `wchar_t` instead of. To do it you can replace `char` by `wchar_t`.
+override `char` and you want to use more symbols using `wchar_t` instead. To do it you can replace `char` by `wchar_t`.
