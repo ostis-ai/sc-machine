@@ -33,6 +33,8 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
   EXPECT_THROW(userContext.GetEdgeInfo(edgeAddr, nodeAddr1, nodeAddr2), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetElementType(userAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.SetElementSubtype(userAddr, ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.Save(), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.CalculateStat(), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleLinkContentByUnauthenticatedUser)
@@ -73,6 +75,10 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedBefore)
   ScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
+  ScAddr const & nrelUserActionClassAddr = m_ctx->HelperFindBySystemIdtf("nrel_user_action_class");
+  ScAddr const & writeActionInScMemoryAddr = m_ctx->HelperFindBySystemIdtf("write_action_in_sc_memory");
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, userAddr, writeActionInScMemoryAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, nrelUserActionClassAddr, edgeAddr);
 
   std::atomic_bool isAuthenticated = false;
   ScEventAddOutputEdge event(
@@ -100,6 +106,7 @@ TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedBefore)
 
   while (!isAuthenticated.load())
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  EXPECT_TRUE(isAuthenticated.load());
 }
 
 TEST_F(ScMemoryTestWithUserMode, CreateElementsByAuthenticatedUserCreatedAfter)
