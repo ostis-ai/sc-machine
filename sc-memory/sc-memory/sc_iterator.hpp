@@ -16,7 +16,7 @@ extern "C"
 
 namespace
 {
-#define CHECK_ITERATOR SC_CHECK(IsValid(), "Used iterator is invalid. Make sure that it's initialized");
+#define CHECK_ITERATOR SC_CHECK(IsValid(), "Used iterator is invalid. Make sure that it's initialized")
 }  // namespace
 
 class ScMemoryContext;
@@ -100,6 +100,11 @@ public:
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
 
+    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Unable to iterate next triple due sc-memory context hasn't read access levels");
+
     return status == SC_TRUE;
   }
 
@@ -162,6 +167,11 @@ public:
     if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState, "Unable to iterate next fiver due sc-memory context is not authorized");
+
+    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Unable to iterate next triple due sc-memory context hasn't read access levels");
 
     return status == SC_TRUE;
   }

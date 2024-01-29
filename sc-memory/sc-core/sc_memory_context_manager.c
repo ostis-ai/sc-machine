@@ -249,7 +249,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
 
   sc_context_manager_add_basic_action_class_access_levels("read_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_READ);
   sc_context_manager_add_basic_action_class_access_levels("write_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_WRITE);
-  sc_context_manager_add_basic_action_class_access_levels("delete_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_DELETE);
+  sc_context_manager_add_basic_action_class_access_levels("erase_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_DELETE);
 
   manager->on_new_user_action_class = sc_event_new_ex(
       s_memory_default_ctx,

@@ -292,6 +292,11 @@ sc_result sc_helper_set_system_identifier_ext(
     result = SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER;
     goto error;
   }
+  if (result != SC_RESULT_NO)
+  {
+    sc_stream_free(stream);
+    goto error;
+  }
 
   // if there are no elements with specified system identifier, then we can use it
   idtf_addr = sc_memory_link_new(ctx);

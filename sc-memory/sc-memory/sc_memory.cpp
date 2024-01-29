@@ -566,6 +566,10 @@ bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & st
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Not able to set content due sc-memory context is not authorized");
 
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to set content due sc-memory context hasn't erase access levels");
+
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to set content due sc-memory context hasn't write access levels");
@@ -839,10 +843,20 @@ bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr co
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to set system identifier due sc-memory context is not authorized");
 
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to set system identifier due sc-memory context hasn't read access levels");
+
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to set system identifier due sc-memory context hasn't write access levels");
+
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to set system identifier due sc-memory context hasn't erase access levels");
 
   default:
     break;
