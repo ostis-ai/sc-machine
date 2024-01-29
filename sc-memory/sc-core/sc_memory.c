@@ -233,7 +233,7 @@ sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
   if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_DELETE) == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_DELETE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS;
 
   return sc_storage_element_free(ctx, addr);
 }
@@ -386,7 +386,7 @@ sc_result sc_memory_set_link_content_ext(
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
   if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_DELETE) == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_DELETE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS;
 
   if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;

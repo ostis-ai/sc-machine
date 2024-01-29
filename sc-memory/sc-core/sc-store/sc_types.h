@@ -188,7 +188,7 @@ enum _sc_result
   SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED,
   SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS,
   SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS,
-  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_DELETE_ACCESS_LEVELS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS,
   SC_RESULT_UNKNOWN,  // result unknown
 
   // add atomic types before
@@ -219,7 +219,7 @@ struct _sc_stat
 
 typedef struct _sc_arc sc_arc;
 typedef struct _sc_arc_info sc_arc_info;
-typedef sc_uint8 sc_access_levels;
+typedef sc_uint16 sc_access_levels;
 typedef struct _sc_element_flags sc_element_flags;
 typedef struct _sc_memory_context sc_memory_context;
 typedef struct _sc_element sc_element;
