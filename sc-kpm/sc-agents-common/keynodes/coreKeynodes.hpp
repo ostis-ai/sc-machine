@@ -9,7 +9,7 @@
 #include <sc-memory/sc_addr.hpp>
 #include <sc-memory/sc_object.hpp>
 
-#include "coreKeynodes.generated.hpp"
+#include "../generated/coreKeynodes.generated.hpp"
 
 namespace scAgentsCommon
 {
@@ -106,4 +106,5 @@ public:
   SC_PROPERTY(Keynode("nrel_section_decomposition"), ForceCreate)
   static ScAddr nrel_section_decomposition;
 };
-};  // namespace scAgentsCommon
+
+}  // namespace scAgentsCommon
