@@ -139,6 +139,7 @@ typedef sc_uint16 sc_type;
 
 #  define sc_type_arc_pos_const_perm (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 #  define sc_type_arc_pos_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp)
+#  define sc_type_arc_neg_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp)
 #  define sc_type_arc_pos_var_perm (sc_type)(sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm)
 
 // type mask
@@ -152,6 +153,8 @@ typedef sc_uint16 sc_type;
         sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class \
         | sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
+
+#  define sc_type_check(_type, _other_type) ((_type & _other_type) == _other_type)
 
 #  define SC_ACCESS_LVL_REQUEST_DELETION 0x1
 #  define SC_ACCESS_LVL_ELEMENT_EXIST 0x2
