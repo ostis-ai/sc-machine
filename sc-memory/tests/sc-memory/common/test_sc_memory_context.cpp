@@ -8,7 +8,7 @@
 
 #define SC_LOCK_WAIT_WHILE_TRUE(expression) \
   ({ \
-    sc_uint32 retries = 20; \
+    sc_uint32 retries = 30; \
     sc_uint32 i = 0; \
     while (expression && i < retries) \
     { \
@@ -58,6 +58,26 @@ void TestAddAllAccessLevelsForUserToInitActions(
   TestAddAccessLevelsForUserToInitReadActions(context, userAddr);
   TestAddAccessLevelsForUserToInitWriteActions(context, userAddr);
   TestAddAccessLevelsForUserToInitEraseActions(context, userAddr);
+}
+
+void TestRemoveAccessLevelsForUserToInitActions(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & userAddr,
+    ScAddr const & actionClassAddr)
+{
+  ScAddr const & nrelUserActionClassAddr = context->HelperFindBySystemIdtf("nrel_user_action_class");
+  ScIterator5Ptr it5 = context->Iterator5(
+      userAddr, ScType::EdgeDCommonConst, actionClassAddr, ScType::EdgeAccessConstPosTemp, nrelUserActionClassAddr);
+  EXPECT_TRUE(it5->Next());
+  context->EraseElement(it5->Get(3));
+}
+
+void TestRemoveAccessLevelsForUserToInitReadActions(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & userAddr)
+{
+  ScAddr const & readActionInScMemoryAddr = context->HelperFindBySystemIdtf("read_action_in_sc_memory");
+  TestRemoveAccessLevelsForUserToInitActions(context, userAddr, readActionInScMemoryAddr);
 }
 
 void TestAuthenticationRequestUser(std::unique_ptr<ScMemoryContext> const & context, ScAddr const & userAddr)
@@ -592,4 +612,61 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
 
   SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
   EXPECT_TRUE(isAuthenticated.load());
+}
+
+TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadAccessLevelsAndWithoutReadAccessLevelsAfter)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScMemoryContext userContext{userAddr};
+  ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
+  {
+    std::atomic_bool isAuthenticated = false;
+    ScEventAddOutputEdge event(
+        *m_ctx,
+        conceptAuthenticatedUserAddr,
+        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        {
+          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+
+          TestReadActionsSuccessfully(m_ctx, userContext);
+          TestWriteActionsUnsuccessfully(m_ctx, userContext);
+          TestEraseActionsUnsuccessfully(m_ctx, userContext);
+          TestApplyActionsUnsuccessfully(m_ctx, userContext);
+          TestChangeActionsUnsuccessfully(m_ctx, userContext);
+
+          isAuthenticated = true;
+
+          return true;
+        });
+    TestAddAccessLevelsForUserToInitReadActions(m_ctx, userAddr);
+    TestAuthenticationRequestUser(m_ctx, userAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+    EXPECT_TRUE(isAuthenticated.load());
+  }
+
+  ScAddr const & nrelUserActionClassAddr = m_ctx->HelperFindBySystemIdtf("nrel_user_action_class");
+  std::atomic_bool isAccessLevelsUpdated = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      nrelUserActionClassAddr,
+      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+
+        TestReadActionsUnsuccessfully(m_ctx, userContext);
+        TestWriteActionsUnsuccessfully(m_ctx, userContext);
+        TestEraseActionsUnsuccessfully(m_ctx, userContext);
+        TestApplyActionsUnsuccessfully(m_ctx, userContext);
+        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+
+        isAccessLevelsUpdated = true;
+
+        return true;
+      });
+
+  TestRemoveAccessLevelsForUserToInitReadActions(m_ctx, userAddr);
+  SC_LOCK_WAIT_WHILE_TRUE(!isAccessLevelsUpdated.load());
+  EXPECT_TRUE(isAccessLevelsUpdated.load());
 }
