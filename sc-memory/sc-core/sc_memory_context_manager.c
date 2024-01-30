@@ -19,12 +19,13 @@
  */
 struct _sc_memory_context_manager
 {
-  sc_hash_table * context_hash_table;                 ///< Hash table storing memory contexts based on user addresses.
-  sc_uint32 context_count;                            ///< Number of currently active memory contexts.
-  sc_monitor context_monitor;                         ///< Monitor for synchronizing access to the context manager.
-  sc_addr concept_authentication_request_user_addr;   ///< sc-address representing concept node for authenticated users.
-  sc_addr concept_authenticated_user_addr;            ///< sc-address representing concept node for action subjects.
-  sc_hash_table * authenticated_users_access_levels;  ///< Hash table storing access levels for authenticated users.
+  sc_hash_table * context_hash_table;                ///< Hash table storing memory contexts based on user addresses.
+  sc_uint32 context_count;                           ///< Number of currently active memory contexts.
+  sc_monitor context_monitor;                        ///< Monitor for synchronizing access to the context manager.
+  sc_addr concept_authentication_request_user_addr;  ///< sc-address representing concept node for authenticated users.
+  sc_addr concept_authenticated_user_addr;           ///< sc-address representing concept node for action subjects.
+  sc_hash_table * user_access_levels;                ///< Hash table storing access levels for authenticated users.
+  sc_monitor user_access_levels_monitor;
   sc_event * on_authentication_request_user_subscription;    ///< Event subscription for authenticated user events.
   sc_event * on_unauthentication_request_user_subscription;  ///< Event subscription for unauthenticated user events.
   sc_addr nrel_user_action_class_addr;
@@ -47,30 +48,36 @@ struct _sc_event_emit_params
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
 
-#define sc_context_add_context_access_levels(_access_levels, _adding_levels) _access_levels |= _adding_levels
+#define sc_context_add_context_access_levels(_context, _adding_levels) \
+  sc_monitor_acquire_write(&_context->monitor); \
+  _context->access_levels |= _adding_levels; \
+  sc_monitor_release_write(&_context->monitor)
 
-#define sc_context_remove_context_access_levels(_access_levels, _adding_levels) _access_levels &= ~_adding_levels
+#define sc_context_remove_context_access_levels(_context, _adding_levels) \
+  sc_monitor_acquire_write(&_context->monitor); \
+  _context->access_levels &= ~_adding_levels; \
+  sc_monitor_release_write(&_context->monitor)
 
 #define sc_context_check_context_access_levels(_access_levels, _checking_levels) \
   ((_access_levels) & (_checking_levels)) == _checking_levels
 
 #define _sc_context_add_user_access_levels(_user_addr, _adding_levels) \
-  sc_access_levels _levels = (sc_uint64)sc_hash_table_get( \
-      manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+  sc_monitor_acquire_write(&manager->user_access_levels_monitor); \
+  sc_access_levels _levels = \
+      (sc_uint64)sc_hash_table_get(manager->user_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
   _levels |= (_adding_levels); \
   sc_hash_table_insert( \
-      manager->authenticated_users_access_levels, \
-      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
-      GINT_TO_POINTER(_levels))
+      manager->user_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), GINT_TO_POINTER(_levels)); \
+  sc_monitor_release_write(&manager->user_access_levels_monitor)
 
 #define _sc_context_remove_user_access_levels(_user_addr, _adding_levels) \
-  sc_access_levels _levels = (sc_uint64)sc_hash_table_get( \
-      manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+  sc_monitor_acquire_write(&manager->user_access_levels_monitor); \
+  sc_access_levels _levels = \
+      (sc_uint64)sc_hash_table_get(manager->user_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
   _levels &= ~(_adding_levels); \
   sc_hash_table_insert( \
-      manager->authenticated_users_access_levels, \
-      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
-      GINT_TO_POINTER(_levels))
+      manager->user_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), GINT_TO_POINTER(_levels)); \
+  sc_monitor_release_write(&manager->user_access_levels_monitor)
 
 /*! Function that creates a memory context for an authenticated user with specified parameters.
  * @param event Pointer to the sc_event triggering the context creation.
@@ -92,16 +99,13 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
   if (ctx == null_ptr)
   {
     _sc_context_add_user_access_levels(user_addr, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
-    sc_memory_arc_new(
-        s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_authenticated_user_addr, user_addr);
-
-    return SC_RESULT_OK;
+  }
+  else
+  {
+    sc_context_add_context_access_levels(ctx, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
   }
 
-  sc_monitor_acquire_write(&ctx->monitor);
-  sc_context_add_context_access_levels(ctx->access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
-  sc_monitor_release_write(&ctx->monitor);
-
+  sc_memory_element_free(s_memory_default_ctx, arc_addr);
   sc_memory_arc_new(
       s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_authenticated_user_addr, user_addr);
 
@@ -128,12 +132,11 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   if (ctx == null_ptr)
   {
     _sc_context_remove_user_access_levels(user_addr, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
-    return SC_RESULT_OK;
   }
-
-  sc_monitor_acquire_write(&ctx->monitor);
-  sc_context_remove_context_access_levels(ctx->access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
-  sc_monitor_release_write(&ctx->monitor);
+  else
+  {
+    sc_context_remove_context_access_levels(ctx, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+  }
 
   return SC_RESULT_OK;
 }
@@ -169,12 +172,11 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
   if (ctx == null_ptr)
   {
     _sc_context_add_user_access_levels(user_addr, levels);
-    return SC_RESULT_OK;
   }
-
-  sc_monitor_acquire_write(&ctx->monitor);
-  sc_context_add_context_access_levels(ctx->access_levels, levels);
-  sc_monitor_release_write(&ctx->monitor);
+  else
+  {
+    sc_context_add_context_access_levels(ctx, levels);
+  }
 
   return SC_RESULT_OK;
 }
@@ -196,12 +198,11 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
   if (ctx == null_ptr)
   {
     _sc_context_remove_user_access_levels(user_addr, levels);
-    return SC_RESULT_OK;
   }
-
-  sc_monitor_acquire_write(&ctx->monitor);
-  sc_context_remove_context_access_levels(ctx->access_levels, levels);
-  sc_monitor_release_write(&ctx->monitor);
+  else
+  {
+    sc_context_remove_context_access_levels(ctx, levels);
+  }
 
   return SC_RESULT_OK;
 }
@@ -215,7 +216,8 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
   (*manager)->user_mode = user_mode;
-  (*manager)->authenticated_users_access_levels = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  (*manager)->user_access_levels = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  sc_monitor_init(&(*manager)->user_access_levels_monitor);
   (*manager)->basic_action_classes = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
 
   s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
@@ -238,7 +240,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       null_ptr);
   manager->on_unauthentication_request_user_subscription = sc_event_new_ex(
       s_memory_default_ctx,
-      manager->concept_authentication_request_user_addr,
+      manager->concept_authenticated_user_addr,
       SC_EVENT_REMOVE_OUTPUT_ARC,
       manager,
       _sc_memory_context_manager_on_unauthentication_request_user,
@@ -299,8 +301,9 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
   sc_monitor_release_write(&manager->context_monitor);
 
   sc_monitor_destroy(&manager->context_monitor);
+  sc_monitor_destroy(&manager->user_access_levels_monitor);
 
-  sc_hash_table_destroy(manager->authenticated_users_access_levels);
+  sc_hash_table_destroy(manager->user_access_levels);
   sc_hash_table_destroy(manager->basic_action_classes);
 
   sc_mem_free(manager);
@@ -321,8 +324,8 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   sc_monitor_init(&ctx->monitor);
   ctx->user_addr = user_addr;
   ctx->ref_count = 0;
-  ctx->access_levels = (sc_uint64)sc_hash_table_get(
-      manager->authenticated_users_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->access_levels =
+      (sc_uint64)sc_hash_table_get(manager->user_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
 
   sc_hash_table_insert(
       manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
