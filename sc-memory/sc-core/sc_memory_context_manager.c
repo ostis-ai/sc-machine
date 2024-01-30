@@ -27,8 +27,8 @@ struct _sc_memory_context_manager
   sc_addr concept_authenticated_user_addr;           ///< sc-address representing concept node for action subjects.
   sc_hash_table * user_access_levels;                ///< Hash table storing access levels for authenticated users.
   sc_monitor user_access_levels_monitor;
-  sc_event * on_authentication_request_user_subscription;    ///< Event subscription for authenticated user events.
-  sc_event * on_remove_authenticated_user_subscription;  ///< Event subscription for unauthenticated user events.
+  sc_event * on_authentication_request_user_subscription;  ///< Event subscription for authenticated user events.
+  sc_event * on_remove_authenticated_user_subscription;    ///< Event subscription for unauthenticated user events.
   sc_addr nrel_user_action_class_addr;
   sc_hash_table * basic_action_classes;
   sc_event * on_new_user_action_class;
@@ -216,6 +216,9 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
     _sc_context_remove_user_access_levels(user_addr, levels);
   else
     sc_context_remove_context_access_levels(ctx, levels);
+
+  sc_memory_arc_new(
+      s_memory_default_ctx, sc_type_arc_neg_const_temp, manager->nrel_user_action_class_addr, arc_to_action_class_addr);
 
   return SC_RESULT_OK;
 }
