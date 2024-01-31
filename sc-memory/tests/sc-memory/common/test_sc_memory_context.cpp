@@ -8,7 +8,7 @@
 
 #define SC_LOCK_WAIT_WHILE_TRUE(expression) \
   ({ \
-    sc_uint32 retries = 30; \
+    sc_uint32 retries = 20; \
     sc_uint32 i = 0; \
     while (expression && i < retries) \
     { \
