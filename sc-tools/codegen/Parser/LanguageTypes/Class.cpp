@@ -279,7 +279,8 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
       outCode << "\\\n  static ScAddr const & GetCommandClassAddr() { return ms_cmdClass_" << m_displayName << "; }";
     }
     outCode << "\\\n	static bool handler_emit"
-            << "(ScAddr const & userAddr, ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr)";
+            << "(ScAddr const & userAddr, ScAddr const & addr, ScAddr const & edgeAddr, ScType const & edgeType, "
+               "ScAddr const & otherAddr)";
     outCode << "\\\n	{";
     outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "userAddr);";
     outCode << "\\\n		"

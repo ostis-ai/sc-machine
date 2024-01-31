@@ -51,15 +51,16 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager);
 /*! Function that adds an sc-event to the event emission manager for processing.
  * @param manager Pointer to the sc_event_emission_manager managing event emission.
  * @param event Pointer to the sc-event to be added for processing.
- * @param edge sc_addr representing the edge associated with the event.
- * @param other_el sc_addr representing the other element associated with the event.
+ * @param connector_addr sc-address representing the sc-connector associated with the event.
+ * @param other_addr sc-address representing the other sc-element associated with the event.
  * @note This function adds an sc-event to the event emission manager for asynchronous processing.
  */
 void _sc_event_emission_manager_add(
     sc_event_emission_manager * manager,
     sc_event * event,
     sc_addr user_addr,
-    sc_addr edge,
-    sc_addr other_el);
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr);
 
 #endif

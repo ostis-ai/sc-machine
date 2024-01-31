@@ -33,12 +33,10 @@ struct _sc_event
   sc_event_delete_function delete_callback;
   sc_monitor monitor;
   sc_uint32 ref_count;
-  //! Access levels
-  sc_access_levels access_levels;
 };
 
 /*! Notify about sc-element deletion.
- * @param element sc-addr of deleted sc-element
+ * @param element sc-address of deleted sc-element
  * @remarks This function call deletion callback function for event.
  * And destroy all events for deleted sc-element
  */
@@ -48,29 +46,29 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
  * If \ctx is in a pending mode, then event will be pend for emit
  * @param ctx pointer to context, that emits event
  * @param subscription_addr sc-addr of element that emitting event
- * @param subscription_addr_access Access level of \p subscription_addr
  * @param type Emitting event type
- * @param edge sc-addr of added/remove edge (just for specified events)
- * @param other_addr sc-addr of the second element of edge. If \p subscription_addr is a source, then \p other_addr is a
- * target. If \p subscription_addr is a target, then \p other_addr is a source.
+ * @param connector_addr sc-address of added/removed sc-connector (just for specified events)
+ * @param edge_type sc-type of added/removed sc-connector (just for specified events)
+ * @param other_addr sc-address of the second sc-element of sc-connector. If \p subscription_addr is a source, then \p
+ * other_addr is a target. If \p subscription_addr is a target, then \p other_addr is a source.
  * @return If event emitted without any errors, then return SC_OK; otherwise return SC_ERROR code
  */
 sc_result sc_event_emit(
     sc_memory_context const * ctx,
-    sc_addr el,
-    sc_access_levels el_access,
+    sc_addr subscription_addr,
     sc_event_type type,
-    sc_addr edge,
-    sc_addr other_el);
+    sc_addr connector_addr,
+    sc_type edge_type,
+    sc_addr other_addr);
 
 /*! Emit event immediately
  */
 sc_result sc_event_emit_impl(
     sc_memory_context const * ctx,
-    sc_addr el,
-    sc_access_levels el_access,
+    sc_addr subscription_addr,
     sc_event_type type,
-    sc_addr edge,
-    sc_addr other_el);
+    sc_addr connector_addr,
+    sc_type edge_type,
+    sc_addr other_addr);
 
 #endif

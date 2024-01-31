@@ -26,7 +26,7 @@ extern sc_memory_context * s_memory_default_ctx;
 
 /*! Function that initializes the memory context manager with specified parameters.
  * @param manager Pointer to a pointer that will store the newly created memory context manager.
- * @param myself_addr sc_addr representing the identity of the system.
+ * @param myself_addr sc-address representing the identity of the system.
  * @param user_mode Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
  * @note This function initializes the context manager, creates a default memory context, and sets up event
  * subscriptions.
@@ -66,7 +66,7 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
 
 /*! Function that retrieves an existing memory context for a specified user.
  * @param manager Pointer to the memory context manager responsible for context retrieval.
- * @param user_addr sc_addr representing the user for whom the context is retrieved.
+ * @param user_addr sc-address representing the user for whom the context is retrieved.
  * @returns Returns a pointer to the existing memory context for the specified user. If the context does not exist,
  * returns null_ptr.
  * @note This function retrieves an existing memory context for the specified user from the manager's context hash
@@ -121,17 +121,19 @@ void _sc_memory_context_pending_end(sc_memory_context * ctx);
 /*! Function that adds an event to the pending events list in a memory context.
  * @param ctx Pointer to the memory context to which the event is added.
  * @param type Type of the event to be added.
- * @param element sc_addr representing the element associated with the event.
- * @param edge sc_addr representing the edge associated with the event.
- * @param other_element sc_addr representing the other element associated with the event.
+ * @param subscription_addr sc_addr representing the sc-element associated with the event.
+ * @param connector_addr sc-address representing the sc-connector associated with the event.
+ * @param connector_type sc-type representing the sc-connector associated with the event.
+ * @param other_addr sc-address representing the other sc-element associated with the event.
  * @note This function adds an event to the pending events list in the memory context, to be emitted later.
  */
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
     sc_event_type type,
-    sc_addr element,
-    sc_addr edge,
-    sc_addr other_element);
+    sc_addr subscription_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr);
 
 /*! Function that emits pending events in a memory context.
  * @param ctx Pointer to the memory context for which pending events are emitted.

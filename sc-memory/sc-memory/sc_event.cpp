@@ -65,7 +65,7 @@ ScEvent::ScEvent(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
     Type eventType,
-    DelegateFuncExt func /*= DelegateFuncExt()*/)
+    DelegateFuncWithUserAddr func /*= DelegateFuncWithUserAddr()*/)
 {
   m_delegateExt = std::move(func);
   m_event = sc_event_with_user_new(
@@ -83,7 +83,7 @@ void ScEvent::RemoveDelegate()
   m_delegate = DelegateFunc();
 }
 
-sc_result ScEvent::Handler(sc_event const * event, sc_addr edge_addr, sc_addr other_addr)
+sc_result ScEvent::Handler(sc_event const * event, sc_addr connector_addr, sc_addr other_addr)
 {
   sc_result result = SC_RESULT_ERROR;
 
@@ -98,8 +98,9 @@ sc_result ScEvent::Handler(sc_event const * event, sc_addr edge_addr, sc_addr ot
 
   try
   {
-    result = delegateFunc(ScAddr(sc_event_get_element(event)), ScAddr(edge_addr), ScAddr(other_addr)) ? SC_RESULT_OK
-                                                                                                      : SC_RESULT_ERROR;
+    result = delegateFunc(ScAddr(sc_event_get_element(event)), ScAddr(connector_addr), ScAddr(other_addr))
+                 ? SC_RESULT_OK
+                 : SC_RESULT_ERROR;
   }
   catch (utils::ScException & e)
   {
@@ -110,7 +111,12 @@ result:
   return result;
 }
 
-sc_result ScEvent::Handler(sc_event const * event, sc_addr user_addr, sc_addr edge_addr, sc_addr other_addr)
+sc_result ScEvent::Handler(
+    sc_event const * event,
+    sc_addr user_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr)
 {
   sc_result result = SC_RESULT_ERROR;
 
@@ -119,16 +125,20 @@ sc_result ScEvent::Handler(sc_event const * event, sc_addr user_addr, sc_addr ed
   if (eventObj == nullptr)
     return result;
 
-  DelegateFuncExt delegateFuncExt = eventObj->m_delegateExt;
-  if (delegateFuncExt == nullptr)
+  DelegateFuncWithUserAddr delegateFunc = eventObj->m_delegateExt;
+  if (delegateFunc == nullptr)
     goto result;
 
   try
   {
-    result =
-        delegateFuncExt(ScAddr(sc_event_get_element(event)), ScAddr(user_addr), ScAddr(edge_addr), ScAddr(other_addr))
-            ? SC_RESULT_OK
-            : SC_RESULT_ERROR;
+    result = delegateFunc(
+                 ScAddr(sc_event_get_element(event)),
+                 ScAddr(user_addr),
+                 ScAddr(connector_addr),
+                 ScType(connector_type),
+                 ScAddr(other_addr))
+                 ? SC_RESULT_OK
+                 : SC_RESULT_ERROR;
   }
   catch (utils::ScException & e)
   {

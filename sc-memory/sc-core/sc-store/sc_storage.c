@@ -631,7 +631,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
         }
       }
 
-      sc_event_emit(ctx, begin_addr, element->flags.access_levels, SC_EVENT_REMOVE_OUTPUT_ARC, addr, end_addr);
+      sc_event_emit(ctx, begin_addr, SC_EVENT_REMOVE_OUTPUT_ARC, addr, type, end_addr);
 
       if (SC_ADDR_IS_NOT_EMPTY(prev_in_arc))
       {
@@ -667,14 +667,14 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
         }
       }
 
-      sc_event_emit(ctx, end_addr, element->flags.access_levels, SC_EVENT_REMOVE_INPUT_ARC, addr, begin_addr);
+      sc_event_emit(ctx, end_addr, SC_EVENT_REMOVE_INPUT_ARC, addr, type, begin_addr);
 
       sc_monitor_release_write_n(
           4, prev_out_arc_monitor, next_out_arc_monitor, prev_in_arc_monitor, next_in_arc_monitor);
       sc_monitor_release_write_n(2, beg_monitor, end_monitor);
     }
 
-    sc_event_emit(ctx, addr, element->flags.access_levels, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, SC_ADDR_EMPTY);
+    sc_event_emit(ctx, addr, SC_EVENT_REMOVE_ELEMENT, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
 
     sc_monitor_acquire_write(monitor);
     sc_storage_free_element(addr);
@@ -873,12 +873,12 @@ sc_addr sc_storage_arc_new_ext(
     _sc_storage_make_elements_incident_to_arc(arc_addr, arc_el, end_addr, end_el, beg_addr, beg_el, SC_TRUE);
 
   // emit events
-  sc_event_emit(ctx, beg_addr, beg_el->flags.access_levels, SC_EVENT_ADD_OUTPUT_ARC, arc_addr, end_addr);
-  sc_event_emit(ctx, end_addr, beg_el->flags.access_levels, SC_EVENT_ADD_INPUT_ARC, arc_addr, beg_addr);
+  sc_event_emit(ctx, beg_addr, SC_EVENT_ADD_OUTPUT_ARC, arc_addr, type, end_addr);
+  sc_event_emit(ctx, end_addr, SC_EVENT_ADD_INPUT_ARC, arc_addr, type, beg_addr);
   if (is_edge && is_not_loop)
   {
-    sc_event_emit(ctx, end_addr, beg_el->flags.access_levels, SC_EVENT_ADD_OUTPUT_ARC, arc_addr, beg_addr);
-    sc_event_emit(ctx, beg_addr, beg_el->flags.access_levels, SC_EVENT_ADD_INPUT_ARC, arc_addr, end_addr);
+    sc_event_emit(ctx, end_addr, SC_EVENT_ADD_OUTPUT_ARC, arc_addr, type, beg_addr);
+    sc_event_emit(ctx, beg_addr, SC_EVENT_ADD_INPUT_ARC, arc_addr, type, end_addr);
   }
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
@@ -1099,9 +1099,7 @@ sc_result sc_storage_set_link_content(
     goto error;
   }
 
-  sc_addr empty;
-  SC_ADDR_MAKE_EMPTY(empty);
-  sc_event_emit(ctx, addr, el->flags.access_levels, SC_EVENT_CONTENT_CHANGED, empty, empty);
+  sc_event_emit(ctx, addr, SC_EVENT_CONTENT_CHANGED, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
 
   sc_monitor_release_write(monitor);
   sc_mem_free(string);

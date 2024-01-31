@@ -43,7 +43,8 @@ struct _sc_event_emit_params
 {
   sc_addr subscription_addr;  ///< sc-address representing the subscription associated with the event.
   sc_event_type type;         ///< Type of the event to be emitted.
-  sc_addr edge_addr;          ///< sc-address representing the edge associated with the event.
+  sc_addr connector_addr;          ///< sc-address representing the connector associated with the event.
+  sc_type connector_type;          ///< sc-type of the connector associated with the event.
   sc_addr other_addr;         ///< sc-address representing the other element associated with the event.
 };
 
@@ -464,15 +465,17 @@ sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
     sc_event_type type,
-    sc_addr element,
-    sc_addr edge,
-    sc_addr other_element)
+    sc_addr subscription_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr)
 {
   sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
   params->type = type;
-  params->subscription_addr = element;
-  params->edge_addr = edge;
-  params->other_addr = other_element;
+  params->subscription_addr = subscription_addr;
+  params->connector_addr = connector_addr;
+  params->connector_type = connector_type;
+  params->other_addr = other_addr;
 
   sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
   ((sc_memory_context *)ctx)->pend_events = g_slist_append(ctx->pend_events, params);
@@ -482,21 +485,21 @@ void _sc_memory_context_pend_event(
 void _sc_memory_context_emit_events(sc_memory_context const * ctx)
 {
   GSList * item = null_ptr;
-  sc_event_emit_params * evt_params = null_ptr;
+  sc_event_emit_params * event_params = null_ptr;
 
   while (ctx->pend_events)
   {
     item = ctx->pend_events;
-    evt_params = (sc_event_emit_params *)item->data;
+    event_params = (sc_event_emit_params *)item->data;
 
     sc_event_emit_impl(
         ctx,
-        evt_params->subscription_addr,
-        ctx->access_levels,
-        evt_params->type,
-        evt_params->edge_addr,
-        evt_params->other_addr);
-    sc_mem_free(evt_params);
+        event_params->subscription_addr,
+        event_params->type,
+        event_params->connector_addr,
+        event_params->connector_type,
+        event_params->other_addr);
+    sc_mem_free(event_params);
 
     ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
   }

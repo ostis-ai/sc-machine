@@ -6,12 +6,13 @@
 
 #pragma once
 
-#include "sc_addr.hpp"
-#include "sc_utils.hpp"
-
-#include "utils/sc_lock.hpp"
-
 #include <functional>
+
+#include "sc_addr.hpp"
+#include "sc_type.hpp"
+
+#include "sc_utils.hpp"
+#include "utils/sc_lock.hpp"
 
 /* Base class for sc-events
  */
@@ -19,7 +20,8 @@ class ScEvent
 {
 public:
   using DelegateFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
-  using DelegateFuncExt = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &, ScAddr const &)>;
+  using DelegateFuncWithUserAddr =
+      std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &, ScType const &, ScAddr const &)>;
 
   enum class Type : uint8_t
   {
@@ -40,7 +42,7 @@ public:
       class ScMemoryContext const & ctx,
       ScAddr const & addr,
       Type eventType,
-      DelegateFuncExt func = DelegateFuncExt());
+      DelegateFuncWithUserAddr func = DelegateFuncWithUserAddr());
   virtual _SC_EXTERN ~ScEvent();
 
   // Don't allow copying of events
@@ -56,14 +58,19 @@ public:
   void RemoveDelegate();
 
 protected:
-  static sc_result Handler(sc_event const * event, sc_addr edge_addr, sc_addr other_addr);
-  static sc_result Handler(sc_event const * event, sc_addr user_addr, sc_addr edge_addr, sc_addr other_addr);
+  static sc_result Handler(sc_event const * event, sc_addr connector_addr, sc_addr other_addr);
+  static sc_result Handler(
+      sc_event const * event,
+      sc_addr user_addr,
+      sc_addr connector_addr,
+      sc_type connector_type,
+      sc_addr other_addr);
   static sc_result HandlerDelete(sc_event const * event);
 
 private:
   sc_event * m_event;
   DelegateFunc m_delegate;
-  DelegateFuncExt m_delegateExt;
+  DelegateFuncWithUserAddr m_delegateExt;
   utils::ScLock m_lock;
 };
 
