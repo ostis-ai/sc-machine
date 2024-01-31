@@ -671,3 +671,174 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadAccess
   SC_LOCK_WAIT_WHILE_TRUE(!isAccessLevelsUpdated.load());
   EXPECT_TRUE(isAccessLevelsUpdated.load());
 }
+
+void TestReadWriteEraseAccessedElementUnsuccessfully(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScMemoryContext & userContext,
+    std::string const & elementSysIdtf)
+{
+  ScAddr const & elementAddr = context->HelperFindBySystemIdtf(elementSysIdtf);
+
+  EXPECT_THROW(userContext.EraseElement(elementAddr), utils::ExceptionInvalidState);
+
+  ScIterator3Ptr it3 = userContext.Iterator3(elementAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  EXPECT_FALSE(it3->Next());
+
+  ScAddr const & nodeAddr = userContext.CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(nodeAddr.IsValid());
+
+  EXPECT_THROW(
+      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, elementAddr, nodeAddr), utils::ExceptionInvalidState);
+  EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
+
+  it3 = userContext.Iterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
+  EXPECT_TRUE(it3->Next());
+}
+
+void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScMemoryContext & userContext)
+{
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "concept_authentication_request_user");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "concept_authenticated_user");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "nrel_user_action_class");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "read_action_in_sc_memory");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "write_action_in_sc_memory");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "erase_action_in_sc_memory");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "read_access_levels_action_in_sc_memory");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "write_access_levels_action_in_sc_memory");
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, "erase_access_levels_action_in_sc_memory");
+}
+
+void TestReadWriteAccessedElementSuccessfully(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScMemoryContext & userContext,
+    std::string const & elementSysIdtf)
+{
+  ScAddr const & elementAddr = context->HelperFindBySystemIdtf(elementSysIdtf);
+
+  ScAddr const & nodeAddr = userContext.CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(nodeAddr.IsValid());
+
+  EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, elementAddr, nodeAddr).IsValid());
+
+  ScIterator3Ptr it3 = userContext.Iterator3(elementAddr, ScType::EdgeAccessConstPosTemp, nodeAddr);
+  EXPECT_TRUE(it3->Next());
+
+  EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
+
+  it3 = userContext.Iterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
+  EXPECT_TRUE(it3->Next());
+}
+
+void TestReadWriteEraseAccessedAllElementsSuccessfully(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScMemoryContext & userContext)
+{
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "concept_authentication_request_user");
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "nrel_user_action_class");
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "read_action_in_sc_memory");
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "write_action_in_sc_memory");
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "erase_action_in_sc_memory");
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "read_access_levels_action_in_sc_memory");
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "write_access_levels_action_in_sc_memory");
+  TestReadWriteAccessedElementSuccessfully(context, userContext, "erase_access_levels_action_in_sc_memory");
+}
+
+void TestAddAccessLevelsToHandleReadAccessLevels(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & userAddr)
+{
+  ScAddr const & readActionInScMemoryAddr = context->HelperFindBySystemIdtf("read_access_levels_action_in_sc_memory");
+  TestAddAccessLevelsForUserToInitActions(context, userAddr, readActionInScMemoryAddr);
+}
+
+void TestAddAccessLevelsToHandleWriteAccessLevels(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & userAddr)
+{
+  ScAddr const & writeActionInScMemoryAddr = context->HelperFindBySystemIdtf("write_access_levels_action_in_sc_memory");
+  TestAddAccessLevelsForUserToInitActions(context, userAddr, writeActionInScMemoryAddr);
+}
+
+void TestAddAccessLevelsToHandleEraseAccessLevels(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & userAddr)
+{
+  ScAddr const & eraseActionInScMemoryAddr = context->HelperFindBySystemIdtf("erase_access_levels_action_in_sc_memory");
+  TestAddAccessLevelsForUserToInitActions(context, userAddr, eraseActionInScMemoryAddr);
+}
+
+void TestAddAllAccessLevelsToHandleAllAccessLevels(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & userAddr)
+{
+  TestAddAccessLevelsToHandleReadAccessLevels(context, userAddr);
+  TestAddAccessLevelsToHandleWriteAccessLevels(context, userAddr);
+  TestAddAccessLevelsToHandleEraseAccessLevels(context, userAddr);
+}
+
+TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithoutAccessLevelsForAccessLevels)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScMemoryContext userContext{userAddr};
+
+  {
+    ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
+    std::atomic_bool isAuthenticated = false;
+    ScEventAddOutputEdge event(
+        *m_ctx,
+        conceptAuthenticatedUserAddr,
+        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        {
+          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+
+          TestActionsSuccessfully(m_ctx, userContext);
+
+          isAuthenticated = true;
+
+          return true;
+        });
+
+    TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr);
+    TestAuthenticationRequestUser(m_ctx, userAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+    EXPECT_TRUE(isAuthenticated.load());
+  }
+
+  TestReadWriteEraseAccessedAllElementsUnsuccessfully(m_ctx, userContext);
+}
+
+TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithAccessLevelsForAccessLevels)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScMemoryContext userContext{userAddr};
+
+  {
+    ScAddr const & conceptAuthenticatedUserAddr = m_ctx->HelperFindBySystemIdtf("concept_authenticated_user");
+    std::atomic_bool isAuthenticated = false;
+    ScEventAddOutputEdge event(
+        *m_ctx,
+        conceptAuthenticatedUserAddr,
+        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        {
+          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+
+          TestActionsSuccessfully(m_ctx, userContext);
+
+          isAuthenticated = true;
+
+          return true;
+        });
+
+    TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr);
+    TestAddAllAccessLevelsToHandleAllAccessLevels(m_ctx, userAddr);
+    TestAuthenticationRequestUser(m_ctx, userAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+    EXPECT_TRUE(isAuthenticated.load());
+  }
+
+  TestReadWriteEraseAccessedAllElementsSuccessfully(m_ctx, userContext);
+}
