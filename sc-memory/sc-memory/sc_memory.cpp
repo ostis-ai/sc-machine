@@ -263,6 +263,11 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to erase sc-element due sc-memory context hasn't erase access levels");
 
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_ERASE_ACCESS_LEVELS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to erase sc-element due sc-memory context hasn't access levels to erase access levels");
+
   default:
     break;
   }
@@ -364,6 +369,11 @@ ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to create sc-connector due sc-memory context hasn't write access levels");
+
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_WRITE_ACCESS_LEVELS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to create sc-connector due sc-memory context hasn't access levels to write access levels");
 
   default:
     break;

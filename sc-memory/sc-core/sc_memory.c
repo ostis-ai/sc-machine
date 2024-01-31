@@ -232,8 +232,13 @@ sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_DELETE) == SC_FALSE)
+  if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_ERASE) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS;
+
+  if (_sc_memory_context_access_levels_to_erase_access_levels(
+          memory->context_manager, ctx, addr, SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS)
+      == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_ERASE_ACCESS_LEVELS;
 
   return sc_storage_element_free(ctx, addr);
 }
@@ -306,6 +311,14 @@ sc_addr sc_memory_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_ad
   if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;
+    return SC_ADDR_EMPTY;
+  }
+
+  if (_sc_memory_context_access_levels_to_write_access_levels(
+          memory->context_manager, ctx, beg, type, SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS)
+      == SC_FALSE)
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_WRITE_ACCESS_LEVELS;
     return SC_ADDR_EMPTY;
   }
 
@@ -385,7 +398,7 @@ sc_result sc_memory_set_link_content_ext(
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_DELETE) == SC_FALSE)
+  if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_ERASE) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS;
 
   if (_sc_memory_context_check_action_class(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE) == SC_FALSE)

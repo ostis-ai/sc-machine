@@ -217,7 +217,10 @@ sc_result sc_helper_find_element_by_system_identifier_ext(
   // try to find sc-link with that contains system identifier value
   result = sc_memory_find_links_with_content_string(ctx, stream, &found_links);
   if (result != SC_RESULT_OK)
+  {
+    sc_stream_free(stream);
     goto error;
+  }
 
   sc_iterator * links_it = sc_list_iterator(found_links);
   while (sc_iterator_next(links_it))
@@ -311,20 +314,14 @@ sc_result sc_helper_set_system_identifier_ext(
   sc_stream_free(stream);
 
   // setup new system identifier
-  sc_addr arc_addr = sc_memory_arc_new(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr);
-  if (SC_ADDR_IS_EMPTY(arc_addr))
-  {
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+  sc_addr arc_addr = sc_memory_arc_new_ext(ctx, sc_type_arc_common | sc_type_const, addr, idtf_addr, &result);
+  if (result != SC_RESULT_OK)
     goto error;
-  }
 
   sc_addr const arc_to_arc_addr =
       sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER], arc_addr);
-  if (SC_ADDR_IS_EMPTY(arc_addr))
-  {
-    result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+  if (result != SC_RESULT_OK)
     goto error;
-  }
 
   if (out_fiver != null_ptr)
     *out_fiver = (sc_system_identifier_fiver){

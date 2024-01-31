@@ -69,7 +69,8 @@ void TestRemoveAccessLevelsForUserToInitActions(
   ScIterator5Ptr it5 = context->Iterator5(
       userAddr, ScType::EdgeDCommonConst, actionClassAddr, ScType::EdgeAccessConstPosTemp, nrelUserActionClassAddr);
   EXPECT_TRUE(it5->Next());
-  context->EraseElement(it5->Get(3));
+  ScAddr const & arcAddr = it5->Get(3);
+  context->EraseElement(arcAddr);
 }
 
 void TestRemoveAccessLevelsForUserToInitReadActions(

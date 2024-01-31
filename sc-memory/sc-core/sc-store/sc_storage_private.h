@@ -28,7 +28,7 @@ struct _sc_storage
   sc_event_registration_manager * events_registration_manager;
 };
 
-sc_storage * sc_storage_get();
+struct _sc_storage * sc_storage_get();
 
 sc_event_emission_manager * sc_storage_get_event_emission_manager();
 
