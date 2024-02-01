@@ -21,20 +21,21 @@
  */
 struct _sc_memory_context_manager
 {
-  sc_hash_table * context_hash_table;                ///< Hash table storing memory contexts based on user addresses.
-  sc_uint32 context_count;                           ///< Number of currently active memory contexts.
-  sc_monitor context_monitor;                        ///< Monitor for synchronizing access to the context manager.
-  sc_addr concept_authentication_request_user_addr;  ///< sc-address representing concept node for authentication
+  sc_hash_table * context_hash_table;  ///< Hash table storing memory contexts based on user addresses.
+  sc_uint32 context_count;             ///< Number of currently active memory contexts.
+  sc_monitor context_monitor;          ///< Monitor for synchronizing access to the hash table storing memory contexts.
+  sc_addr concept_authentication_request_user_addr;  ///< sc-address representing concept node for authentication.
                                                      ///< request users.
   sc_addr concept_authenticated_user_addr;           ///< sc-address representing concept node for authenticated users.
   sc_hash_table * user_access_levels;                ///< Hash table storing access levels for authenticated users.
-  sc_monitor user_access_levels_monitor;
+  sc_monitor user_access_levels_monitor;  ///< Monitor for synchronizing access to the hash table storing access levels.
+                                          ///< for authenticated users
   sc_event * on_authentication_request_user_subscription;  ///< Event subscription for authenticated user events.
   sc_event * on_remove_authenticated_user_subscription;    ///< Event subscription for unauthenticated user events.
-  sc_addr nrel_user_action_class_addr;
-  sc_hash_table * basic_action_classes;
-  sc_event * on_new_user_action_class;
-  sc_event * on_remove_user_action_class;
+  sc_addr nrel_user_action_class_addr;     ///< sc-address representing concept node for action class of user relation.
+  sc_hash_table * basic_action_classes;    ///< Hash table storing access levels for action classes in sc-memory.
+  sc_event * on_new_user_action_class;     ///< Event subscription for adding new action classes for users.
+  sc_event * on_remove_user_action_class;  ///< Event subscription for removing new action classes for users.
   sc_bool user_mode;  ///< Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
 };
 
@@ -54,6 +55,12 @@ struct _sc_event_emit_params
 
 #define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
 
+/**
+ * @brief Adds access levels to a given sc-memory context.
+ * @param _context Pointer to the sc-memory context.
+ * @param _adding_levels Access levels to be added.
+ * @return None.
+ */
 #define sc_context_add_context_access_levels(_context, _adding_levels) \
   ({ \
     sc_monitor_acquire_write(&_context->monitor); \
@@ -61,6 +68,12 @@ struct _sc_event_emit_params
     sc_monitor_release_write(&_context->monitor); \
   })
 
+/**
+ * @brief Removes access levels from a given sc-memory context.
+ * @param _context Pointer to the sc-memory context.
+ * @param _adding_levels Access levels to be removed.
+ * @return None.
+ */
 #define sc_context_remove_context_access_levels(_context, _adding_levels) \
   ({ \
     sc_monitor_acquire_write(&_context->monitor); \
@@ -68,9 +81,21 @@ struct _sc_event_emit_params
     sc_monitor_release_write(&_context->monitor); \
   })
 
+/**
+ * @brief Checks if a given set of access levels is present in the context.
+ * @param _access_levels Access levels of the context.
+ * @param _checking_levels Access levels to be checked.
+ * @return Returns true if all the specified access levels are present; otherwise, false.
+ */
 #define sc_context_check_context_access_levels(_access_levels, _checking_levels) \
   ((_access_levels) & (_checking_levels)) == _checking_levels
 
+/**
+ * @brief Adds access levels for a specific user in the context manager.
+ * @param _user_addr Address of the user.
+ * @param _adding_levels Access levels to be added.
+ * @return None.
+ */
 #define _sc_context_add_user_access_levels(_user_addr, _adding_levels) \
   ({ \
     sc_monitor_acquire_write(&manager->user_access_levels_monitor); \
@@ -84,6 +109,12 @@ struct _sc_event_emit_params
     sc_monitor_release_write(&manager->user_access_levels_monitor); \
   })
 
+/**
+ * @brief Removes access levels for a specific user in the context manager.
+ * @param _user_addr Address of the user.
+ * @param _adding_levels Access levels to be removed.
+ * @return None.
+ */
 #define _sc_context_remove_user_access_levels(_user_addr, _adding_levels) \
   ({ \
     sc_monitor_acquire_write(&manager->user_access_levels_monitor); \
@@ -97,6 +128,12 @@ struct _sc_event_emit_params
     sc_monitor_release_write(&manager->user_access_levels_monitor); \
   })
 
+/**
+ * @brief Sets access levels for a specific sc-memory element.
+ * @param _element_addr Address of the sc-memory element.
+ * @param _access_levels Access levels to be set.
+ * @return None.
+ */
 #define _sc_context_set_access_levels_for_element(_element_addr, _access_levels) \
   ({ \
     sc_element * _element; \
@@ -106,7 +143,7 @@ struct _sc_event_emit_params
   })
 
 /*! Function that creates a memory context for an authenticated user with specified parameters.
- * @param event Pointer to the sc_event triggering the context creation.
+ * @param event Pointer to the sc-event triggering the context creation.
  * @param initiator_addr sc-address representing user that initiated this request.
  * @param connector_addr sc-address representing created sc-connector to the user.
  * @param connector_type sc-type of created sc-connector to the user.
@@ -124,6 +161,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 {
   sc_unused(&initiator_addr);
 
+  // Only temporal sc-arcs can be used
   if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
     return SC_RESULT_OK;
 
@@ -139,6 +177,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 
   sc_memory_element_free(s_memory_default_ctx, connector_addr);
 
+  // Remove all negative sc-arcs
   sc_iterator3 * it3 = sc_iterator3_f_a_f_new(
       s_memory_default_ctx, manager->concept_authenticated_user_addr, sc_type_arc_neg_const_temp, user_addr);
   while (sc_iterator3_next(it3))
@@ -153,7 +192,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 }
 
 /*! Function that handles the removal of authentication for a user and its associated memory context.
- * @param event Pointer to the sc_event triggering the context removal.
+ * @param event Pointer to the sc-event triggering the context removal.
  * @param initiator_addr sc-address representing user that initiated this request.
  * @param connector_addr sc-address representing removed sc-connector to the authenticated user.
  * @param connector_type sc-type of created sc-connector to the user.
@@ -172,6 +211,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
+  // Only temporal sc-arcs can be used
   if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
     return SC_RESULT_OK;
 
@@ -182,12 +222,18 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   else
     sc_context_remove_context_access_levels(ctx, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
 
-  sc_memory_arc_new(
+  sc_addr const auth_arc_addr = sc_memory_arc_new(
       s_memory_default_ctx, sc_type_arc_neg_const_temp, manager->concept_authenticated_user_addr, user_addr);
+  _sc_context_set_access_levels_for_element(auth_arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
   return SC_RESULT_OK;
 }
 
+/**
+ * @brief Adds basic action class access levels to the sc-memory context manager.
+ * @param _action_class_system_idtf System identifier of the action class.
+ * @param _access_levels Access levels to be added for the action class.
+ */
 #define sc_context_manager_add_basic_action_class_access_levels(_action_class_system_idtf, _access_levels) \
   ({ \
     sc_addr _action_class_addr; \
@@ -199,10 +245,37 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
     _sc_context_set_access_levels_for_element(_action_class_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS); \
   })
 
+/**
+ * @brief Gets basic action class access levels from the sc-memory context manager.
+ * @param _action_class_addr sc-address of the action class.
+ * @return Access levels associated with the action class.
+ */
 #define sc_context_manager_get_basic_action_class_access_levels(_action_class_addr) \
   (sc_uint64) \
       sc_hash_table_get(manager->basic_action_classes, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_action_class_addr)))
 
+/*! Function that appends access levels for a memory context by adding relation between user and action class.
+ * @param event Pointer to the sc-event triggering the addition of the action class.
+ * @param initiator_addr sc-address representing user that initiated this request.
+ * @param connector_addr sc-address representing created sc-connector to sc-pair with user and action class which this
+ * use can complete.
+ * @param connector_type sc-type of created sc-connector to sc-pair with user and action class.
+ * @param arc_to_action_class_addr sc-address representing sc-pair with user and action class.
+ * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note The function is called in response to a sc-event and is responsible for appending access levels for users and
+ * its sc-memory contexts. It works this way:
+ * 1. Some user (with sc-address `initiator_addr`) adds possible action class for other user (with sc-address
+ * `user_addr`).
+ *
+ * user_addr ===========> action_class_addr
+ *                 |.\
+ *                  .
+ *                  .
+ *                  .
+ *       nrel_user_action_class_addr
+ * 2. This callback must be called by adding sc-arc from sc-relation with sc-address `nrel_user_action_class`, then
+ * this callback add access levels for user sc-memory context and assigns access levels to this sc-arc.
+ */
 sc_result _sc_memory_context_manager_on_new_user_action_class(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -213,6 +286,7 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
+  // Only temporal sc-arcs can be used
   if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
     return SC_RESULT_OK;
 
@@ -233,6 +307,20 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
   return SC_RESULT_OK;
 }
 
+/**
+ * @brief Handles the removal of an action class from a user in the sc-memory context manager.
+ *
+ * This function is triggered by an sc-event when an action class is removed from a user. It updates the
+ * access levels of the user or its sc-memory context accordingly.
+ *
+ * @param event Pointer to the sc-event triggering the removal of the action class.
+ * @param initiator_addr sc-address representing the user that initiated this removal request.
+ * @param connector_addr sc-address representing the created sc-connector to sc-pair with the user and action class
+ *                      which this user can complete (unused).
+ * @param connector_type sc-type of the created sc-connector to sc-pair with the user and action class.
+ * @param arc_to_action_class_addr sc-address representing the sc-pair with the user and action class.
+ * @return Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ */
 sc_result _sc_memory_context_manager_on_remove_user_action_class(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -243,6 +331,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
+  // Only temporal sc-arcs can be used
   if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
     return SC_RESULT_OK;
 
@@ -258,8 +347,9 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
   else
     sc_context_remove_context_access_levels(ctx, levels);
 
-  sc_memory_arc_new(
+  sc_addr const action_arc_addr = sc_memory_arc_new(
       s_memory_default_ctx, sc_type_arc_neg_const_temp, manager->nrel_user_action_class_addr, arc_to_action_class_addr);
+  _sc_context_set_access_levels_for_element(action_arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
   return SC_RESULT_OK;
 }
@@ -485,7 +575,7 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
     return SC_TRUE;
 
   sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
-  sc_access_levels access_levels = ctx->access_levels;
+  sc_access_levels const access_levels = ctx->access_levels;
   sc_monitor_release_read((sc_monitor *)&ctx->monitor);
 
   sc_bool is_authenticated =
@@ -498,13 +588,15 @@ sc_bool _sc_memory_context_check_action_class(
     sc_memory_context const * ctx,
     sc_access_levels action_class_access_levels)
 {
+  // If the system is not in user mode, grant access
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
   sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
-  sc_access_levels access_levels = ctx->access_levels;
+  sc_access_levels const access_levels = ctx->access_levels;
   sc_monitor_release_read((sc_monitor *)&ctx->monitor);
 
+  // Check if the sc-memory context has access to the action class
   sc_bool result = sc_context_check_context_access_levels(access_levels, action_class_access_levels);
   return result;
 }
@@ -518,6 +610,7 @@ sc_bool _sc_memory_context_access_levels_to_read_access_levels(
 {
   sc_unused(&accessed_element_addr);
 
+  // If the system is not in user mode, grant access
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
@@ -527,6 +620,7 @@ sc_bool _sc_memory_context_access_levels_to_read_access_levels(
 
   sc_access_levels const element_access_levels = accessed_element->flags.access_levels;
 
+  // Check if the sc-memory context has read access to the element
   sc_access_levels const required_context_access_levels = context_access_levels & required_access_levels;
   sc_access_levels const required_element_access_levels = element_access_levels & required_access_levels;
 
@@ -551,6 +645,7 @@ sc_bool _sc_memory_context_acess_levels_to_handle_access_levels(
   sc_access_levels const element_access_levels = accessed_element->flags.access_levels;
   sc_monitor_release_read(monitor);
 
+  // Check if the sc-memory context has access to handle the operation
   sc_access_levels const required_context_access_levels = context_access_levels & required_access_levels;
   sc_access_levels const required_element_access_levels = element_access_levels & required_access_levels;
 
@@ -566,6 +661,7 @@ sc_bool _sc_memory_context_access_levels_to_write_access_levels(
     sc_type connector_from_element_type,
     sc_access_levels required_access_levels)
 {
+  // If the system is not in user mode, grant access
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
@@ -581,6 +677,7 @@ sc_bool _sc_memory_context_access_levels_to_erase_access_levels(
     sc_addr accessed_element_addr,
     sc_access_levels required_access_levels)
 {
+  // If the system is not in user mode, grant access
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
@@ -620,6 +717,7 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
   GSList * item = null_ptr;
   sc_event_emit_params * event_params = null_ptr;
 
+  // Emit all saved events
   while (ctx->pend_events)
   {
     item = ctx->pend_events;
