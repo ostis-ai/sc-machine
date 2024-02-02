@@ -13,7 +13,7 @@
 #define SPLIT_TRIPLE(t) \
   auto const & src = parser.GetParsedElement(t.m_source); SC_UNUSED(src); \
   auto const & edge = parser.GetParsedElement(t.m_edge); SC_UNUSED(edge); \
-  auto const & trg = parser.GetParsedElement(t.m_target); SC_UNUSED(trg);
+  auto const & trg = parser.GetParsedElement(t.m_target); SC_UNUSED(trg)
 
 struct TripleElement
 {
