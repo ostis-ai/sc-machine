@@ -133,9 +133,9 @@ protected:
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
   ElementHandle ProcessConnector(std::string const & connector);
-  ElementHandle ProcessContent(std::string & content, bool isVar);
-  ElementHandle ProcessLink(std::string const & link);
-  ElementHandle ProcessFileURL(std::string const & fileURL);
+  ElementHandle ProcessContent(std::string content, bool isVar);
+  ElementHandle ProcessLink(ElementHandle const & handle, std::string content, bool isUrl = false);
+  ElementHandle ProcessFileURL(std::string fileURL);
 
   ElementHandle ProcessEmptyContour();
   void ProcessContourBegin();

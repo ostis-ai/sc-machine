@@ -403,7 +403,7 @@ ElementHandle Parser::AppendElement(
 ElementHandle Parser::ResolveAlias(std::string const & name)
 {
   auto const it = m_aliasHandles.find(name);
-  return (it == m_aliasHandles.end()) ? ElementHandle() : it->second;
+  return it == m_aliasHandles.cend() ? ElementHandle() : it->second;
 }
 
 ElementHandle Parser::ProcessIdentifier(std::string const & name)
@@ -416,14 +416,7 @@ ElementHandle Parser::ProcessIdentifier(std::string const & name)
 ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::string const & name)
 {
   ScType elType = scs::TypeResolver::GetKeynodeType(type);
-  if (scs::TypeResolver::IsConst(name))
-  {
-    elType |= ScType::Const;
-  }
-  else
-  {
-    elType |= ScType::Var;
-  }
+  elType |= scs::TypeResolver::IsConst(name) ? ScType::Const : ScType::Var;
 
   return AppendElement(name, elType);
 }
@@ -480,30 +473,45 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
   return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
-ElementHandle Parser::ProcessContent(std::string & content, bool isVar)
+#define DefineLinkType(content, isVar) \
+  ({ \
+    sc_char const startSCsLinkClassSymbol = '!'; \
+    ScType _type = content.find(startSCsLinkClassSymbol) == 0 ? ScType::LinkClass : ScType::Link; \
+    _type |= (isVar ? ScType::Var : ScType::Const); \
+  })
+
+#define ParseLinkContent(content, type) \
+  if ((type & ScType::LinkClass) == ScType::LinkClass) \
+    content = content.substr(1, content.size() - 2); \
+  content = UnescapeContent(content.substr(1, content.size() - 2))
+
+ElementHandle Parser::ProcessContent(std::string content, bool isVar)
 {
-  ScType type = ScType::Link;
-  type |= (isVar ? ScType::Var : ScType::Const);
+  ScType const type = DefineLinkType(content, isVar);
+  ParseLinkContent(content, type);
 
-  if (content.find('!') == 0)
-  {
-    content = content.substr(1, content.size() - 2);
-    type = ScType::LinkClass;
-  }
-
-  content = content.substr(1, content.size() - 2);
-
-  return AppendElement(GenerateLinkIdtf(), type, false, UnescapeContent(content));
+  return AppendElement(GenerateLinkIdtf(), type, false, content);
 }
 
-ElementHandle Parser::ProcessLink(std::string const & link)
+ElementHandle Parser::ProcessLink(ElementHandle const & handle, std::string content, bool isUrl)
 {
-  return AppendElement(GenerateLinkIdtf(), ScType::Link, false, link);
+  ParsedElement & link = GetParsedElementRef(handle);
+  ScType const type = DefineLinkType(content, link.m_type.IsVar());
+  ParseLinkContent(content, type);
+
+  link.m_type = type;
+  link.m_value = content;
+  link.m_isURL = isUrl;
+
+  return handle;
 }
 
-ElementHandle Parser::ProcessFileURL(std::string const & fileURL)
+ElementHandle Parser::ProcessFileURL(std::string fileURL)
 {
-  return AppendElement(GenerateLinkIdtf(), ScType::LinkConst, false, fileURL, true);
+  ScType const type = DefineLinkType(fileURL, false);
+  ParseLinkContent(fileURL, type);
+
+  return AppendElement(GenerateLinkIdtf(), type, false, fileURL, true);
 }
 
 ElementHandle Parser::ProcessEmptyContour()
