@@ -250,6 +250,8 @@ public:
   static ScType const Node;
   static ScType const Link;
   static ScType const LinkClass;
+  static ScType const LinkConstClass;
+  static ScType const LinkVarClass;
   static ScType const Unknown;
 
   static ScType const NodeConst;
