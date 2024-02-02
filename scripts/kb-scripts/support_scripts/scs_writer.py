@@ -340,16 +340,8 @@ class SCsWriter:
         return "@{}_{}".format(prefix, element_id.replace("-", "_"))
 
     @staticmethod
-    def is_idtf_generated(idtf):
-        return idtf.startswith("..el_") or idtf.startswith(".._el_")
-
-    @staticmethod
     def is_variable(el_type):
         return "/var/" in el_type
-
-    @staticmethod
-    def write_system_idtf(buffer, alias, idtf):
-        buffer.write("{} => {}: [{}];;\n".format(alias, SCsWriter.kNrelSystemIdtf, idtf))
 
     def write_edges(self, buffer, edges_queue, elements):
         processed_edge = True
@@ -471,6 +463,9 @@ class SCsWriter:
         content_type = content["type"]
         content_data = content["data"]
 
+        self.correct_idtf(buffer, el)
+        idtf = el["idtf"]
+
         is_url = False
         is_image = False
         image_format = ''
@@ -498,21 +493,13 @@ class SCsWriter:
             self.add_error(msg)
             return
 
-        alias = self.make_alias("link", el["id"])
-
         if is_url:
             if is_image:
-                buffer.write('{} = "{}";;\n'.format(alias, write_content))
-                buffer.write('@format_edge = ({} => {});;\n'.format(alias, image_format))
+                buffer.write('{} = "{}";;\n'.format(idtf, write_content))
+                buffer.write('@format_edge = ({} => {});;\n'.format(idtf, image_format))
                 buffer.write('@nrel_format_edge = (nrel_format -> @format_edge);;\n')
             else:
-                buffer.write('{} = "{}";;\n'.format(alias, write_content))
+                buffer.write('{} = "{}";;\n'.format(idtf, write_content))
         else:
             is_var = "_" if self.is_variable(el["type"]) else ""
-            buffer.write('{} = {}[{}];;\n'.format(alias, is_var, write_content))
-
-        idtf = el["idtf"]
-        if not self.is_idtf_generated(idtf):
-            self.write_system_idtf(buffer, alias, idtf)
-
-        el["idtf"] = alias
+            buffer.write('{} = {}[{}];;\n'.format(idtf, is_var, write_content))
