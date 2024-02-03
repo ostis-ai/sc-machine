@@ -117,7 +117,7 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
  * @param action_class_access_levels Access levels required for the action class.
  * @return Returns SC_TRUE if the sc-memory context has access; otherwise, returns SC_FALSE.
  */
-sc_bool _sc_memory_context_check_action_class(
+sc_bool _sc_memory_context_check_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_access_levels action_class_access_levels);
@@ -135,7 +135,7 @@ sc_bool _sc_memory_context_check_action_class(
  * @param required_access_levels Access levels required for the read operation.
  * @return Returns SC_TRUE if the sc-memory context has read access; otherwise, returns SC_FALSE.
  */
-sc_bool _sc_memory_context_access_levels_to_read_access_levels(
+sc_bool _sc_memory_context_check_access_levels_to_read_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_element * accessed_element,
@@ -155,7 +155,7 @@ sc_bool _sc_memory_context_access_levels_to_read_access_levels(
  * @param required_access_levels Access levels required for the write operation.
  * @return Returns SC_TRUE if the sc-memory context has write access; otherwise, returns SC_FALSE.
  */
-sc_bool _sc_memory_context_access_levels_to_write_access_levels(
+sc_bool _sc_memory_context_check_access_levels_to_write_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_addr accessed_element_addr,

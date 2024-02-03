@@ -15,7 +15,7 @@
  */
 struct _sc_memory_context
 {
-  sc_addr user_addr;                 ///< sc_addr representing the user associated with the memory context.
+  sc_addr user_addr;                 ///< sc-address representing the user associated with the memory context.
   sc_uint32 ref_count;               ///< Reference count to manage the number of references to the memory context.
   sc_access_levels access_levels;    ///< Access levels for the memory context.
   sc_uint8 flags;                    ///< Flags indicating the state of the memory context.

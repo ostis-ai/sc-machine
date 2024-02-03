@@ -24,12 +24,12 @@ struct _sc_memory_context_manager
   sc_hash_table * context_hash_table;  ///< Hash table storing memory contexts based on user addresses.
   sc_uint32 context_count;             ///< Number of currently active memory contexts.
   sc_monitor context_monitor;          ///< Monitor for synchronizing access to the hash table storing memory contexts.
+  sc_hash_table * user_access_levels;  ///< Hash table storing access levels for users.
+  sc_monitor user_access_levels_monitor;  ///< Monitor for synchronizing access to the hash table storing access levels.
   sc_addr concept_authentication_request_user_addr;  ///< sc-address representing concept node for authentication.
                                                      ///< request users.
   sc_addr concept_authenticated_user_addr;           ///< sc-address representing concept node for authenticated users.
-  sc_hash_table * user_access_levels;                ///< Hash table storing access levels for authenticated users.
-  sc_monitor user_access_levels_monitor;  ///< Monitor for synchronizing access to the hash table storing access levels.
-                                          ///< for authenticated users
+                                                     ///< for authenticated users
   sc_event * on_authentication_request_user_subscription;  ///< Event subscription for authenticated user events.
   sc_event * on_remove_authenticated_user_subscription;    ///< Event subscription for unauthenticated user events.
   sc_addr nrel_user_action_class_addr;     ///< sc-address representing concept node for action class of user relation.
@@ -71,13 +71,13 @@ struct _sc_event_emit_params
 /**
  * @brief Removes access levels from a given sc-memory context.
  * @param _context Pointer to the sc-memory context.
- * @param _adding_levels Access levels to be removed.
+ * @param _removing_levels Access levels to be removed.
  * @return None.
  */
-#define sc_context_remove_context_access_levels(_context, _adding_levels) \
+#define sc_context_remove_context_access_levels(_context, _removing_levels) \
   ({ \
     sc_monitor_acquire_write(&_context->monitor); \
-    _context->access_levels &= ~_adding_levels; \
+    _context->access_levels &= ~_removing_levels; \
     sc_monitor_release_write(&_context->monitor); \
   })
 
@@ -115,12 +115,12 @@ struct _sc_event_emit_params
  * @param _adding_levels Access levels to be removed.
  * @return None.
  */
-#define _sc_context_remove_user_access_levels(_user_addr, _adding_levels) \
+#define _sc_context_remove_user_access_levels(_user_addr, _removing_levels) \
   ({ \
     sc_monitor_acquire_write(&manager->user_access_levels_monitor); \
     sc_access_levels _user_levels = \
         (sc_uint64)sc_hash_table_get(manager->user_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
-    _user_levels &= ~(_adding_levels); \
+    _user_levels &= ~(_removing_levels); \
     sc_hash_table_insert( \
         manager->user_access_levels, \
         GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
@@ -583,7 +583,7 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
   return is_authenticated;
 }
 
-sc_bool _sc_memory_context_check_action_class(
+sc_bool _sc_memory_context_check_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_access_levels action_class_access_levels)
@@ -601,7 +601,7 @@ sc_bool _sc_memory_context_check_action_class(
   return result;
 }
 
-sc_bool _sc_memory_context_access_levels_to_read_access_levels(
+sc_bool _sc_memory_context_check_access_levels_to_read_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_element * accessed_element,
@@ -629,7 +629,7 @@ sc_bool _sc_memory_context_access_levels_to_read_access_levels(
   return result;
 }
 
-sc_bool _sc_memory_context_acess_levels_to_handle_access_levels(
+sc_bool _sc_memory_context_check_acess_levels_to_handle_access_levels(
     sc_memory_context const * ctx,
     sc_addr accessed_element_addr,
     sc_access_levels required_access_levels)
@@ -654,7 +654,7 @@ sc_bool _sc_memory_context_acess_levels_to_handle_access_levels(
   return result;
 }
 
-sc_bool _sc_memory_context_access_levels_to_write_access_levels(
+sc_bool _sc_memory_context_check_access_levels_to_write_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_addr accessed_element_addr,
@@ -668,7 +668,8 @@ sc_bool _sc_memory_context_access_levels_to_write_access_levels(
   if (sc_type_check(connector_from_element_type, sc_type_arc_pos_const_temp) == SC_FALSE)
     return SC_TRUE;
 
-  return _sc_memory_context_acess_levels_to_handle_access_levels(ctx, accessed_element_addr, required_access_levels);
+  return _sc_memory_context_check_acess_levels_to_handle_access_levels(
+      ctx, accessed_element_addr, required_access_levels);
 }
 
 sc_bool _sc_memory_context_access_levels_to_erase_access_levels(
@@ -681,7 +682,8 @@ sc_bool _sc_memory_context_access_levels_to_erase_access_levels(
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
-  return _sc_memory_context_acess_levels_to_handle_access_levels(ctx, accessed_element_addr, required_access_levels);
+  return _sc_memory_context_check_acess_levels_to_handle_access_levels(
+      ctx, accessed_element_addr, required_access_levels);
 }
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
