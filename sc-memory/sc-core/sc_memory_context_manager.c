@@ -44,6 +44,9 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   (*manager)->user_global_access_levels = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
   sc_monitor_init(&(*manager)->user_global_access_levels_monitor);
   (*manager)->basic_action_classes = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  (*manager)->user_local_access_levels =
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)g_hash_table_destroy);
+  sc_monitor_init(&(*manager)->user_local_access_levels_monitor);
 
   _sc_context_set_access_levels_for_element(myself_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
@@ -73,9 +76,13 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
   sc_monitor_release_write(&manager->context_monitor);
 
   sc_monitor_destroy(&manager->context_monitor);
-  sc_monitor_destroy(&manager->user_global_access_levels_monitor);
 
+  sc_monitor_destroy(&manager->user_global_access_levels_monitor);
   sc_hash_table_destroy(manager->user_global_access_levels);
+
+  sc_monitor_destroy(&manager->user_local_access_levels_monitor);
+  sc_hash_table_destroy(manager->user_local_access_levels);
+
   sc_hash_table_destroy(manager->basic_action_classes);
 
   sc_mem_free(manager);
@@ -98,6 +105,8 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   ctx->ref_count = 0;
   ctx->global_access_levels = (sc_uint64)sc_hash_table_get(
       manager->user_global_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->local_access_levels =
+      sc_hash_table_get(manager->user_local_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
 
   if (SC_ADDR_IS_NOT_EMPTY(ctx->user_addr))
     sc_hash_table_insert(

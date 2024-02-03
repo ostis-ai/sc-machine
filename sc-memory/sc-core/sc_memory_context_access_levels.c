@@ -305,6 +305,159 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
   return SC_RESULT_OK;
 }
 
+/**
+ * @brief Adds local access levels (within sc-structure) for a specific user in the context manager.
+ * @param _user_addr sc-address of the user.
+ * @param _adding_levels Access levels to be added.
+ * @return None.
+ */
+#define _sc_context_add_user_local_access_levels(_user_addr, _adding_levels, _structure_addr) \
+  ({ \
+    sc_monitor_acquire_write(&manager->user_local_access_levels_monitor); \
+    sc_hash_table * structures_access_levels_table = \
+        sc_hash_table_get(manager->user_local_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+    sc_access_levels _user_levels = 0; \
+    if (structures_access_levels_table == null_ptr) \
+      structures_access_levels_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr); \
+    else \
+      _user_levels = (sc_uint64)sc_hash_table_get( \
+          structures_access_levels_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr))); \
+    _user_levels |= (_adding_levels); \
+    sc_hash_table_insert( \
+        structures_access_levels_table, \
+        GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr)), \
+        GINT_TO_POINTER(_user_levels)); \
+    sc_monitor_release_write(&manager->user_local_access_levels_monitor); \
+  })
+
+/**
+ * @brief Removes local access levels (within sc-structure) for a specific user in the context manager.
+ * @param _user_addr sc-address of the user.
+ * @param _removing_levels Access levels to be removed.
+ * @return None.
+ */
+#define _sc_context_remove_user_local_access_levels(_user_addr, _removing_levels, _structure_addr) \
+  ({ \
+    sc_monitor_acquire_write(&manager->user_local_access_levels_monitor); \
+    sc_hash_table * structures_access_levels_table = \
+        sc_hash_table_get(manager->user_local_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+    sc_access_levels _user_levels = 0; \
+    if (structures_access_levels_table != null_ptr) \
+    { \
+      _user_levels = (sc_uint64)sc_hash_table_get( \
+          structures_access_levels_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr))); \
+      _user_levels &= ~(_removing_levels); \
+      sc_hash_table_insert( \
+          structures_access_levels_table, \
+          GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr)), \
+          GINT_TO_POINTER(_user_levels)); \
+      sc_monitor_release_write(&manager->user_local_access_levels_monitor); \
+    } \
+  })
+
+/**
+ * @brief Adds local access levels (within sc-structure) to a given sc-memory context.
+ * @param _context Pointer to the sc-memory context.
+ * @param _adding_levels Access levels to be added.
+ * @return None.
+ */
+#define _sc_context_add_context_local_access_levels(_context, _adding_levels, _structure_addr) \
+  _sc_context_add_user_local_access_levels(_context->user_addr, _adding_levels, _structure_addr)
+
+/**
+ * @brief Removes local access levels (within sc-structure) from a given sc-memory context.
+ * @param _context Pointer to the sc-memory context.
+ * @param _removing_levels Access levels to be removed.
+ * @return None.
+ */
+#define _sc_context_remove_context_local_access_levels(_context, _removing_levels, _structure_addr) \
+  _sc_context_remove_user_local_access_levels(_context->user_addr, _removing_levels, _structure_addr)
+
+sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+{
+  sc_unused(&initiator_addr);
+  sc_unused(&connector_addr);
+
+  // Only temporal sc-arcs can be used
+  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+    return SC_RESULT_OK;
+
+  _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+
+  sc_addr user_addr, arc_between_action_class_and_structure;
+  sc_memory_get_arc_info(
+      s_memory_default_ctx,
+      arc_to_arc_between_action_class_and_structure_addr,
+      &user_addr,
+      &arc_between_action_class_and_structure);
+
+  sc_addr action_class_addr, structure_addr;
+  sc_memory_get_arc_info(
+      s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    _sc_context_add_user_local_access_levels(user_addr, levels, structure_addr);
+  else
+    _sc_context_add_context_local_access_levels(ctx, levels, structure_addr);
+
+  return SC_RESULT_OK;
+}
+
+sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structure(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+{
+  sc_unused(&initiator_addr);
+  sc_unused(&connector_addr);
+
+  // Only temporal sc-arcs can be used
+  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+    return SC_RESULT_OK;
+
+  _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+
+  sc_addr user_addr, arc_between_action_class_and_structure;
+  sc_memory_get_arc_info(
+      s_memory_default_ctx,
+      arc_to_arc_between_action_class_and_structure_addr,
+      &user_addr,
+      &arc_between_action_class_and_structure);
+
+  sc_addr action_class_addr, structure_addr;
+  sc_memory_get_arc_info(
+      s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    _sc_context_remove_user_local_access_levels(user_addr, levels, structure_addr);
+  else
+    _sc_context_remove_context_local_access_levels(ctx, levels, structure_addr);
+
+  sc_addr const action_arc_addr = sc_memory_arc_new(
+      s_memory_default_ctx,
+      sc_type_arc_neg_const_temp,
+      manager->nrel_user_action_class_addr,
+      arc_to_arc_between_action_class_and_structure_addr);
+  _sc_context_set_access_levels_for_element(action_arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+
+  return SC_RESULT_OK;
+}
+
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
 {
   manager->concept_authentication_request_user_addr = concept_authentication_request_user_addr;
@@ -361,6 +514,26 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       SC_EVENT_REMOVE_OUTPUT_ARC,
       manager,
       _sc_memory_context_manager_on_remove_user_action_class,
+      null_ptr);
+
+  manager->nrel_user_action_class_within_sc_structure_addr = nrel_user_action_class_within_sc_structure_addr;
+  _sc_context_set_access_levels_for_element(
+      manager->nrel_user_action_class_within_sc_structure_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+
+  manager->on_new_user_action_class_within_sc_structure = sc_event_with_user_new(
+      s_memory_default_ctx,
+      manager->nrel_user_action_class_within_sc_structure_addr,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_new_user_action_class_within_structure,
+      null_ptr);
+
+  manager->on_remove_user_action_class_within_sc_structure = sc_event_with_user_new(
+      s_memory_default_ctx,
+      manager->nrel_user_action_class_within_sc_structure_addr,
+      SC_EVENT_REMOVE_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_remove_user_action_class_within_structure,
       null_ptr);
 }
 
