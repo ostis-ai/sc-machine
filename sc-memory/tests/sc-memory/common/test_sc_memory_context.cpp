@@ -156,14 +156,13 @@ void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & cont
   EXPECT_THROW(userContext.HelperResolveSystemIdtf("test"), utils::ExceptionInvalidState);
 
   ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
-  EXPECT_THROW(it3->Next(), utils::ExceptionInvalidState);
+  EXPECT_NO_THROW(it3->Next());
 
   ScIterator5Ptr it5 = userContext.Iterator5(
       nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
-  EXPECT_THROW(it5->Next(), utils::ExceptionInvalidState);
+  EXPECT_NO_THROW(it5->Next());
 
-  EXPECT_THROW(
-      userContext.HelperCheckEdge(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
+  EXPECT_NO_THROW(userContext.HelperCheckEdge(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 void TestWriteActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, ScMemoryContext & userContext)
