@@ -194,6 +194,56 @@ TEST_F(ScIterator3CoreTest, sc_iterator3_f_f_f)
   sc_iterator3_free(it);
 }
 
+TEST_F(ScMemoryTest, sc_iterator3_search_structure)
+{
+  sc_addr const structure_addr1 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_struct);
+  sc_addr const set_addr1 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
+  sc_addr const structure_addr2 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_struct);
+  sc_addr const structure_addr3 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_struct);
+  sc_addr const set_addr2 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
+
+  sc_addr const node_addr = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
+  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, structure_addr1, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, set_addr1, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, structure_addr2, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, structure_addr3, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, set_addr2, node_addr);
+
+  sc_iterator3 * it3 = sc_iterator3_a_a_f_new(
+      **m_ctx, sc_type_node | sc_type_const | sc_type_node_struct, sc_type_arc_pos_const_perm, node_addr);
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_FALSE(sc_iterator3_next(it3));
+  sc_iterator3_free(it3);
+
+  it3 = sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, node_addr);
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_FALSE(sc_iterator3_next(it3));
+  sc_iterator3_free(it3);
+
+  sc_memory_element_free(**m_ctx, structure_addr2);
+
+  it3 = sc_iterator3_a_a_f_new(
+      **m_ctx, sc_type_node | sc_type_const | sc_type_node_struct, sc_type_arc_pos_const_perm, node_addr);
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_FALSE(sc_iterator3_next(it3));
+  sc_iterator3_free(it3);
+
+  it3 = sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, node_addr);
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_TRUE(sc_iterator3_next(it3));
+  EXPECT_FALSE(sc_iterator3_next(it3));
+  sc_iterator3_free(it3);
+}
+
 class ScIterator5CoreTest : public ScMemoryTest
 {
 protected:
