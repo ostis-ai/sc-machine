@@ -205,7 +205,6 @@ sc_iterator3 * sc_iterator3_new(
   it->type = type;
   it->ctx = ctx;
   it->search_structure = SC_FALSE;
-  it->global_search = SC_FALSE;
   it->finished = SC_FALSE;
 
   return it;
@@ -301,10 +300,9 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
             : el->arc.next_begin_out_arc;
 
-    if (it->global_search == SC_FALSE
-        && _sc_memory_context_check_local_access_levels(
-               sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
-               == SC_FALSE)
+    if (_sc_memory_context_check_local_and_global_access_levels(
+            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+        == SC_FALSE)
     {
       if (is_not_same)
         sc_monitor_release_read(arc_monitor);
@@ -431,10 +429,9 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : el->arc.next_end_in_arc;
 
-    if (it->global_search == SC_FALSE
-        && _sc_memory_context_check_local_access_levels(
-               sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
-               == SC_FALSE)
+    if (_sc_memory_context_check_local_and_global_access_levels(
+            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+        == SC_FALSE)
     {
       if (is_not_same)
         sc_monitor_release_read(arc_monitor);
@@ -553,10 +550,9 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : (it->search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 
-    if (it->global_search == SC_FALSE
-        && _sc_memory_context_check_local_access_levels(
-               sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
-               == SC_FALSE)
+    if (_sc_memory_context_check_local_and_global_access_levels(
+            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+        == SC_FALSE)
     {
       if (is_not_same)
         sc_monitor_release_read(arc_monitor);
@@ -619,10 +615,9 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (it->global_search == SC_FALSE
-      && _sc_memory_context_check_local_access_levels(
-             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
-             == SC_FALSE)
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+      == SC_FALSE)
     goto error;
 
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
@@ -660,10 +655,9 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (it->global_search == SC_FALSE
-      && _sc_memory_context_check_local_access_levels(
-             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
-             == SC_FALSE)
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+      == SC_FALSE)
     goto error;
 
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
@@ -717,10 +711,9 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (it->global_search == SC_FALSE
-      && _sc_memory_context_check_local_access_levels(
-             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
-             == SC_FALSE)
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+      == SC_FALSE)
     goto error;
 
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
@@ -784,10 +777,9 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
       == SC_FALSE)
     goto error;
 
-  if (it->global_search == SC_FALSE
-      && _sc_memory_context_check_local_access_levels(
-             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
-             == SC_FALSE)
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+      == SC_FALSE)
     goto error;
 
   if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
@@ -839,9 +831,6 @@ sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
     it->results[2] = SC_ADDR_EMPTY;
     return status;
   }
-
-  it->global_search = _sc_memory_context_check_global_access_levels(
-      sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ);
 
   switch (it->type)
   {

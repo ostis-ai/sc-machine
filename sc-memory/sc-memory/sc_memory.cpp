@@ -314,10 +314,6 @@ ScAddr ScMemoryContext::CreateNode(ScType const & type)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to create sc-node due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to create sc-node due sc-memory context hasn't write access levels");
-
   default:
     break;
   }
@@ -345,10 +341,6 @@ ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to create sc-link due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to create sc-link due sc-memory context hasn't write access levels");
 
   default:
     break;

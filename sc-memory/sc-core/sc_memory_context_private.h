@@ -21,11 +21,11 @@ struct _sc_memory_context_manager
   sc_hash_table *
       user_global_access_levels;  ///< Hash table storing global access levels (within the knowledge base) for users.
   sc_monitor user_global_access_levels_monitor;  ///< Monitor for synchronizing access to the hash table storing global
-                                                           ///< access levels within the knowledge base.
+                                                 ///< access levels within the knowledge base.
   sc_addr concept_authentication_request_user_addr;  ///< sc-address representing concept node for authentication.
-                                                           ///< request users.
+                                                     ///< request users.
   sc_addr concept_authenticated_user_addr;           ///< sc-address representing concept node for authenticated users.
-                                                           ///< for authenticated users
+                                                     ///< for authenticated users
   sc_event * on_authentication_request_user_subscription;  ///< Event subscription for authenticated user events.
   sc_event * on_remove_authenticated_user_subscription;    ///< Event subscription for unauthenticated user events.
   sc_addr nrel_user_action_class_addr;     ///< sc-address representing concept node for action class of user relation.

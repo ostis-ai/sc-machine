@@ -138,6 +138,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_node_material (sc_type)(0x2000)
 
 #  define sc_type_arc_pos_const (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos)
+#  define sc_type_arc_neg_const (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg)
 #  define sc_type_arc_pos_const_perm (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 #  define sc_type_arc_pos_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp)
 #  define sc_type_arc_neg_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp)

@@ -52,6 +52,7 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
 
   s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
   s_memory_default_ctx->global_access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
+  s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
