@@ -146,6 +146,12 @@ void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager
  */
 sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager, sc_memory_context const * ctx);
 
+sc_bool _sc_memory_context_check_local_access_levels(
+    sc_memory_context_manager * manager,
+    sc_memory_context const * ctx,
+    sc_access_levels action_class_access_levels,
+    sc_addr element_addr);
+
 /**
  * @brief Checks if the sc-memory context has access to a given action class.
  *

@@ -96,15 +96,6 @@ public:
 
     sc_result result;
     sc_bool const status = sc_iterator3_next_ext(m_iterator, &result);
-    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED)
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
-
-    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS)
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Unable to iterate next triple due sc-memory context hasn't read access levels");
-
     return status == SC_TRUE;
   }
 
@@ -164,15 +155,6 @@ public:
 
     sc_result result;
     sc_bool status = sc_iterator5_next_ext(m_iterator, &result);
-    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED)
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState, "Unable to iterate next fiver due sc-memory context is not authorized");
-
-    if (result == SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS)
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Unable to iterate next triple due sc-memory context hasn't read access levels");
-
     return status == SC_TRUE;
   }
 

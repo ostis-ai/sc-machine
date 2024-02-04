@@ -115,7 +115,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
   sc_unused(&initiator_addr);
 
   // Only temporal sc-arcs can be used
-  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const_temp))
     return SC_RESULT_OK;
 
   _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
@@ -165,7 +165,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   sc_unused(&connector_addr);
 
   // Only temporal sc-arcs can be used
-  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const_temp))
     return SC_RESULT_OK;
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
@@ -238,7 +238,7 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
   sc_unused(&connector_addr);
 
   // Only temporal sc-arcs can be used
-  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const_temp))
     return SC_RESULT_OK;
 
   _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
@@ -283,7 +283,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
   sc_unused(&connector_addr);
 
   // Only temporal sc-arcs can be used
-  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const_temp))
     return SC_RESULT_OK;
 
   sc_addr user_addr, action_class_addr;
@@ -384,7 +384,7 @@ sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
   sc_unused(&connector_addr);
 
   // Only temporal sc-arcs can be used
-  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const_temp))
     return SC_RESULT_OK;
 
   _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
@@ -423,7 +423,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
   sc_unused(&connector_addr);
 
   // Only temporal sc-arcs can be used
-  if (sc_type_check(connector_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const_temp))
     return SC_RESULT_OK;
 
   _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
@@ -558,6 +558,37 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
   return is_authenticated;
 }
 
+sc_bool _sc_memory_context_check_local_access_levels(
+    sc_memory_context_manager * manager,
+    sc_memory_context const * ctx,
+    sc_access_levels action_class_access_levels,
+    sc_addr element_addr)
+{
+  // If the system is not in user mode, grant access
+  if (manager->user_mode == SC_FALSE)
+    return SC_TRUE;
+
+  sc_bool result = SC_FALSE;
+
+  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
+  sc_hash_table * access_levels_table = ctx->local_access_levels;
+
+  sc_iterator3 * it3 = sc_iterator3_a_a_f_new(
+      s_memory_default_ctx, sc_type_node | sc_type_const | sc_type_node_struct, sc_type_arc_pos_const, element_addr);
+  while (!result && sc_iterator3_next(it3))
+  {
+    sc_addr const structure_addr = sc_iterator3_value(it3, 0);
+    sc_access_levels access_levels =
+        (sc_uint64)sc_hash_table_get(access_levels_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(structure_addr)));
+    result = sc_context_check_context_access_levels(access_levels, action_class_access_levels);
+  }
+  sc_iterator3_free(it3);
+
+  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+
+  return result;
+}
+
 sc_bool _sc_memory_context_check_global_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
@@ -628,7 +659,7 @@ sc_bool _sc_memory_context_check_global_access_levels_to_write_access_levels(
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
-  if (sc_type_check(connector_from_element_type, sc_type_arc_pos_const_temp) == SC_FALSE)
+  if (sc_type_has_not_subtype(connector_from_element_type, sc_type_arc_pos_const_temp))
     return SC_TRUE;
 
   return _sc_memory_context_check_global_access_levels_to_handle_access_levels(
