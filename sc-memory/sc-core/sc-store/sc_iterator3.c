@@ -204,6 +204,8 @@ sc_iterator3 * sc_iterator3_new(
 
   it->type = type;
   it->ctx = ctx;
+  it->search_structure = SC_FALSE;
+  it->global_search = SC_FALSE;
   it->finished = SC_FALSE;
 
   return it;
@@ -268,7 +270,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     }
 
     arc_addr =
-        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
             : el->arc.next_begin_out_arc;
 
@@ -295,9 +297,19 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     }
 
     sc_addr next_out_arc =
-        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
             : el->arc.next_begin_out_arc;
+
+    if (it->global_search == SC_FALSE
+        && _sc_memory_context_check_local_access_levels(
+               sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+               == SC_FALSE)
+    {
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
+      goto next;
+    }
 
     if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
             sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
@@ -309,7 +321,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     }
 
     sc_type arc_type = el->flags.type;
-    sc_addr arc_end = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+    sc_addr arc_end = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
                           ? _sc_iterator3_get_other_edge_incident_element(el, it->results[0])
                           : el->arc.end;
 
@@ -387,7 +399,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
                    ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
                    : el->arc.next_end_in_arc;
 
@@ -415,9 +427,19 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     }
 
     sc_addr next_in_arc =
-        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : el->arc.next_end_in_arc;
+
+    if (it->global_search == SC_FALSE
+        && _sc_memory_context_check_local_access_levels(
+               sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+               == SC_FALSE)
+    {
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
+      goto next;
+    }
 
     if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
             sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
@@ -431,7 +453,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     sc_type arc_type = el->flags.type;
 
     sc_bool is_begin_same =
-        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.begin) || SC_ADDR_IS_EQUAL(it->results[0], el->arc.end)
             : SC_ADDR_IS_EQUAL(it->results[0], el->arc.begin);
 
@@ -463,6 +485,7 @@ success:
 sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 {
   it->results[2] = it->params[2].addr;
+  it->search_structure = sc_type_is_structure_and_arc(it->params[0].type, it->params[1].type);
 
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
@@ -480,7 +503,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     if (result != SC_RESULT_OK)
       goto error;
 
-    arc_addr = el->first_in_arc;
+    arc_addr = it->search_structure ? el->first_in_arc_from_structure : el->first_in_arc;
   }
   else
   {
@@ -499,9 +522,9 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
                    ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
-                   : el->arc.next_end_in_arc;
+                   : (it->search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -526,9 +549,19 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     }
 
     sc_addr next_in_arc =
-        (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
-            : el->arc.next_end_in_arc;
+            : (it->search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
+
+    if (it->global_search == SC_FALSE
+        && _sc_memory_context_check_local_access_levels(
+               sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+               == SC_FALSE)
+    {
+      if (is_not_same)
+        sc_monitor_release_read(arc_monitor);
+      goto next;
+    }
 
     if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
             sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
@@ -540,7 +573,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     }
 
     sc_type arc_type = el->flags.type;
-    sc_addr arc_begin = (el->flags.type & sc_type_edge_common) == sc_type_edge_common
+    sc_addr arc_begin = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
                             ? _sc_iterator3_get_other_edge_incident_element(el, it->results[2])
                             : el->arc.begin;
 
@@ -586,6 +619,12 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
+  if (it->global_search == SC_FALSE
+      && _sc_memory_context_check_local_access_levels(
+             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+             == SC_FALSE)
+    goto error;
+
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
           sc_memory_get_context_manager(),
           it->ctx,
@@ -621,6 +660,12 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
+  if (it->global_search == SC_FALSE
+      && _sc_memory_context_check_local_access_levels(
+             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+             == SC_FALSE)
+    goto error;
+
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
           sc_memory_get_context_manager(),
           it->ctx,
@@ -631,7 +676,7 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
     goto error;
 
   sc_addr arc_begin;
-  if ((arc_el->flags.type & sc_type_edge_common) == sc_type_edge_common)
+  if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
   {
     if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.begin)
         && SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.end))
@@ -672,6 +717,12 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
+  if (it->global_search == SC_FALSE
+      && _sc_memory_context_check_local_access_levels(
+             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+             == SC_FALSE)
+    goto error;
+
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
           sc_memory_get_context_manager(),
           it->ctx,
@@ -682,7 +733,7 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
     goto error;
 
   sc_addr arc_begin;
-  if ((arc_el->flags.type & sc_type_edge_common) == sc_type_edge_common)
+  if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
   {
     if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.begin)
         && SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.end))
@@ -733,7 +784,13 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
       == SC_FALSE)
     goto error;
 
-  if ((arc_el->flags.type & sc_type_edge_common) == sc_type_edge_common)
+  if (it->global_search == SC_FALSE
+      && _sc_memory_context_check_local_access_levels(
+             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+             == SC_FALSE)
+    goto error;
+
+  if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
   {
     if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.begin)
         && SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.end))
@@ -783,19 +840,8 @@ sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
     return status;
   }
 
-  if (_sc_memory_context_is_authenticated(sc_memory_get_context_manager(), it->ctx) == SC_FALSE)
-  {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
-    return status;
-  }
-
-  if (_sc_memory_context_check_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
-      == SC_FALSE)
-  {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
-    return status;
-  }
+  it->global_search = _sc_memory_context_check_global_access_levels(
+      sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ);
 
   switch (it->type)
   {
@@ -854,7 +900,7 @@ sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint index)
 
 sc_bool sc_iterator_compare_type(sc_type el_type, sc_type it_type)
 {
-  if ((it_type & el_type) == it_type)
+  if (sc_type_has_subtype(el_type, it_type))
     return SC_TRUE;
 
   return SC_FALSE;

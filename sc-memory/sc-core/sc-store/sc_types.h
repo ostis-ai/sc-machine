@@ -137,6 +137,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_node_abstract (sc_type)(0x1000)
 #  define sc_type_node_material (sc_type)(0x2000)
 
+#  define sc_type_arc_pos_const (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos)
 #  define sc_type_arc_pos_const_perm (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 #  define sc_type_arc_pos_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp)
 #  define sc_type_arc_neg_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp)
@@ -154,7 +155,14 @@ typedef sc_uint16 sc_type;
         | sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
-#  define sc_type_check(_type, _other_type) ((_type & _other_type) == _other_type)
+#  define sc_type_has_subtype(_type, _subtype) ((_type & _subtype) == _subtype)
+#  define sc_type_has_not_subtype(_type, _subtype) !sc_type_has_subtype(_type, _subtype)
+#  define sc_type_has_subtype_in_mask(_type, _mask) ((_type & _mask) != 0)
+#  define sc_type_has_not_subtype_in_mask(_type, _mask) !sc_type_has_subtype_in_mask(_type, _mask)
+
+#  define sc_type_is_structure_and_arc(_node_type, _arc_type) \
+    (sc_type_has_subtype(_node_type, sc_type_node_struct) \
+     && (sc_type_has_subtype_in_mask(_arc_type, sc_type_arc_pos_const)))
 
 typedef sc_uint16 sc_states;
 
