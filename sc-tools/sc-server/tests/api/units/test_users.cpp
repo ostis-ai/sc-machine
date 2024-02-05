@@ -7,6 +7,8 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 
+#include "sc-core/sc_keynodes.h"
+
 #include "sc_server_test.hpp"
 #include "../../sc_client.hpp"
 
@@ -18,7 +20,7 @@ void TestAddAccessLevelsForUserToInitActions(
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr)
 {
-  ScAddr const & nrelUserActionClassAddr = context->HelperFindBySystemIdtf("nrel_user_action_class");
+  ScAddr const & nrelUserActionClassAddr{nrel_user_action_class_addr};
   ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeDCommonConst, userAddr, actionClassAddr);
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nrelUserActionClassAddr, edgeAddr);
 }
@@ -27,7 +29,7 @@ void TestAddAccessLevelsForUserToInitReadActions(
     std::unique_ptr<ScMemoryContext> const & context,
     ScAddr const & userAddr)
 {
-  ScAddr const & readActionInScMemoryAddr = context->HelperFindBySystemIdtf("read_action_in_sc_memory");
+  ScAddr const & readActionInScMemoryAddr{action_read_from_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActions(context, userAddr, readActionInScMemoryAddr);
 }
 
@@ -35,7 +37,7 @@ void TestAddAccessLevelsForUserToInitWriteActions(
     std::unique_ptr<ScMemoryContext> const & context,
     ScAddr const & userAddr)
 {
-  ScAddr const & writeActionInScMemoryAddr = context->HelperFindBySystemIdtf("write_action_in_sc_memory");
+  ScAddr const & writeActionInScMemoryAddr{action_generate_in_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActions(context, userAddr, writeActionInScMemoryAddr);
 }
 
@@ -43,7 +45,7 @@ void TestAddAccessLevelsForUserToInitEraseActions(
     std::unique_ptr<ScMemoryContext> const & context,
     ScAddr const & userAddr)
 {
-  ScAddr const & eraseActionInScMemoryAddr = context->HelperFindBySystemIdtf("erase_action_in_sc_memory");
+  ScAddr const & eraseActionInScMemoryAddr{action_erase_in_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActions(context, userAddr, eraseActionInScMemoryAddr);
 }
 
@@ -58,8 +60,7 @@ void TestAddAllAccessLevelsForUserToInitActions(
 
 void TestAuthenticationRequestUser(std::unique_ptr<ScMemoryContext> const & context, ScAddr const & userAddr)
 {
-  ScAddr const & conceptAuthenticationRequestUserAddr =
-      context->HelperFindBySystemIdtf("concept_authentication_request_user");
+  ScAddr const & conceptAuthenticationRequestUserAddr{concept_authentication_request_user_addr};
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, conceptAuthenticationRequestUserAddr, userAddr);
 }
 

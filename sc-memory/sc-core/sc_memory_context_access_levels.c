@@ -334,17 +334,18 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   _sc_context_set_access_levels_for_element(
       manager->nrel_user_action_class_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
-  sc_context_manager_add_basic_action_class_access_levels(read_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_READ);
   sc_context_manager_add_basic_action_class_access_levels(
-      write_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_WRITE);
+      action_read_from_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_READ);
   sc_context_manager_add_basic_action_class_access_levels(
-      erase_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_ERASE);
+      action_generate_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_WRITE);
   sc_context_manager_add_basic_action_class_access_levels(
-      read_access_levels_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS);
+      action_erase_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_ERASE);
   sc_context_manager_add_basic_action_class_access_levels(
-      write_access_levels_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS);
+      action_read_access_levels_from_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS);
   sc_context_manager_add_basic_action_class_access_levels(
-      erase_access_levels_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS);
+      action_generate_access_levels_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS);
+  sc_context_manager_add_basic_action_class_access_levels(
+      action_erase_access_levels_from_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS);
 
   manager->on_new_user_action_class = sc_event_with_user_new(
       s_memory_default_ctx,

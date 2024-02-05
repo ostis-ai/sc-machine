@@ -13,12 +13,12 @@
 sc_addr concept_authentication_request_user_addr;
 sc_addr concept_authenticated_user_addr;
 sc_addr nrel_user_action_class_addr;
-sc_addr read_action_in_sc_memory_addr;
-sc_addr write_action_in_sc_memory_addr;
-sc_addr erase_action_in_sc_memory_addr;
-sc_addr read_access_levels_action_in_sc_memory_addr;
-sc_addr write_access_levels_action_in_sc_memory_addr;
-sc_addr erase_access_levels_action_in_sc_memory_addr;
+sc_addr action_read_from_sc_memory_addr;
+sc_addr action_generate_in_sc_memory_addr;
+sc_addr action_erase_in_sc_memory_addr;
+sc_addr action_read_access_levels_from_sc_memory_addr;
+sc_addr action_generate_access_levels_in_sc_memory_addr;
+sc_addr action_erase_access_levels_from_sc_memory_addr;
 
 sc_result sc_keynodes_resolve_keynode(
     sc_memory_context * ctx,
@@ -57,12 +57,12 @@ sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_mem
   SC_RESOLVE_KEYNODE(ctx, concept_authentication_request_user_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, concept_authenticated_user_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, nrel_user_action_class_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, read_action_in_sc_memory_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, write_action_in_sc_memory_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, erase_action_in_sc_memory_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, read_access_levels_action_in_sc_memory_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, write_access_levels_action_in_sc_memory_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, erase_access_levels_action_in_sc_memory_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, action_read_from_sc_memory_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, action_generate_in_sc_memory_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, action_erase_in_sc_memory_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, action_read_access_levels_from_sc_memory_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, action_generate_access_levels_in_sc_memory_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, action_erase_access_levels_from_sc_memory_addr, init_memory_generated_structure);
 
   return SC_RESULT_OK;
 }
