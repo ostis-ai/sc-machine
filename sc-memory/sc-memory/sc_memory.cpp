@@ -186,7 +186,25 @@ bool ScMemoryContext::IsValid() const
 bool ScMemoryContext::IsElement(ScAddr const & addr) const
 {
   CHECK_CONTEXT;
-  return sc_memory_is_element(m_context, *addr) == SC_TRUE;
+
+  sc_result result;
+  sc_bool status = sc_memory_is_element_ext(m_context, *addr, &result);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to check sc-element due sc-memory context is not authorized");
+
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to check sc-element due sc-memory context hasn't read access levels");
+
+  default:
+    break;
+  }
+
+  return status;
 }
 
 size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const

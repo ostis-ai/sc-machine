@@ -186,6 +186,8 @@ _SC_EXTERN sc_bool sc_iterator5_next(sc_iterator5 * it);
  * Possible values for the result:
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
+ * access levels.
  * @code
  * sc_result result;
  * while(sc_iterator_next(it, &result)) { <your code> }

@@ -461,7 +461,7 @@ sc_bool _sc_memory_context_check_global_access_levels_to_write_access_levels(
       ctx, accessed_element_addr, required_access_levels);
 }
 
-sc_bool _sc_memory_context_global_access_levels_to_erase_access_levels(
+sc_bool _sc_memory_context_check_global_access_levels_to_erase_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_addr accessed_element_addr,

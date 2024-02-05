@@ -214,7 +214,7 @@ sc_bool _sc_memory_context_check_global_access_levels_to_write_access_levels(
  * @param required_access_levels Access levels required for the erase operation.
  * @return Returns SC_TRUE if the sc-memory context has access; otherwise, returns SC_FALSE.
  */
-sc_bool _sc_memory_context_global_access_levels_to_erase_access_levels(
+sc_bool _sc_memory_context_check_global_access_levels_to_erase_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_addr accessed_element_addr,
