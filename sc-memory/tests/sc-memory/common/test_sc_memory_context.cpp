@@ -9,7 +9,7 @@
 
 #define SC_LOCK_WAIT_WHILE_TRUE(expression) \
   ({ \
-    sc_uint32 retries = 20; \
+    sc_uint32 retries = 30; \
     sc_uint32 i = 0; \
     while (expression && i < retries) \
     { \
@@ -102,6 +102,7 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & contex
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
   ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
+  EXPECT_TRUE(userContext.IsElement(nodeAddr));
   EXPECT_EQ(userContext.GetElementInputArcsCount(nodeAddr), 0u);
   EXPECT_EQ(userContext.GetElementOutputArcsCount(nodeAddr), 1u);
   EXPECT_EQ(userContext.GetEdgeSource(edgeAddr), nodeAddr);
@@ -137,6 +138,7 @@ void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & cont
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
   ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
+  EXPECT_THROW(userContext.IsElement(nodeAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetElementInputArcsCount(nodeAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetElementOutputArcsCount(nodeAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetEdgeSource(edgeAddr), utils::ExceptionInvalidState);
@@ -306,7 +308,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
         return isChecked = true;
       });
 
-  TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr);
+  TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr, ScType::EdgeAccessConstNegTemp);
   TestAuthenticationRequestUser(m_ctx, userAddr, ScType::EdgeAccessConstNegTemp);
 
   SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
@@ -316,6 +318,28 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
 
   SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
   EXPECT_TRUE(!isChecked.load());
+
+  TestAuthenticationRequestUser(m_ctx, userAddr);
+
+  SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
+  EXPECT_TRUE(isChecked.load());
+
+  ScEventAddOutputEdge event2(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        return isChecked = false;
+      });
+
+  ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeDCommonConst, userAddr);
+  while (it3->Next())
+  {
+    m_ctx->EraseElement(it3->Get(2));
+  }
+
+  SC_LOCK_WAIT_WHILE_TRUE(isChecked.load());
+  EXPECT_TRUE(isChecked.load());
 }
 
 TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByUserWithInvalidConnectorsToAccessLevels)
@@ -406,7 +430,9 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
   }
 }
 
-TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeAndUnauthenticatedAfter)
+TEST_F(
+    ScMemoryTestWithUserMode,
+    HandleElementsByAuthenticatedUserCreatedBeforeAndUnauthenticatedAfterAndAuthenticatedAfter)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScMemoryContext userContext{userAddr};
@@ -436,26 +462,55 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeA
     EXPECT_TRUE(isAuthenticated.load());
   }
 
-  ScEventAddOutputEdge event2(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+  {
+    ScEventAddOutputEdge event2(
+        *m_ctx,
+        conceptAuthenticatedUserAddr,
+        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        {
+          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
-        TestActionsUnsuccessfully(m_ctx, userContext);
+          TestActionsUnsuccessfully(m_ctx, userContext);
 
-        isAuthenticated = false;
+          isAuthenticated = false;
 
-        return true;
-      });
+          return true;
+        });
 
-  ScIterator3Ptr const it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
-  EXPECT_TRUE(it3->Next());
-  m_ctx->EraseElement(it3->Get(1));
+    ScIterator3Ptr const it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
+    EXPECT_TRUE(it3->Next());
+    m_ctx->EraseElement(it3->Get(1));
 
-  SC_LOCK_WAIT_WHILE_TRUE(isAuthenticated.load());
-  EXPECT_FALSE(isAuthenticated.load());
+    SC_LOCK_WAIT_WHILE_TRUE(isAuthenticated.load());
+    EXPECT_FALSE(isAuthenticated.load());
+  }
+
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
+
+  {
+    ScEventAddOutputEdge event(
+        *m_ctx,
+        conceptAuthenticatedUserAddr,
+        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        {
+          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+
+          TestActionsSuccessfully(m_ctx, userContext);
+
+          isAuthenticated = true;
+
+          return true;
+        });
+
+    TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr);
+    TestAuthenticationRequestUser(m_ctx, userAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+    EXPECT_TRUE(isAuthenticated.load());
+  }
+
+  EXPECT_FALSE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutAccessLevels)
