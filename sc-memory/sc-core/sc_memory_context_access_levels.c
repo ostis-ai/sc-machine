@@ -415,7 +415,7 @@ sc_bool _sc_memory_context_check_global_access_levels_to_read_access_levels(
 
   sc_access_levels const context_access_levels = _sc_monitor_get_context_global_access_levels(ctx);
 
-  sc_access_levels const element_access_levels = accessed_element->flags.access_levels;
+  sc_access_levels const element_access_levels = accessed_element->flags.states;
 
   // Check if the sc-memory context has read access to the element
   sc_access_levels const required_context_access_levels = context_access_levels & required_access_levels;

@@ -47,7 +47,7 @@ struct _sc_arc_info
 struct _sc_element_flags
 {
   sc_type type;
-  sc_access_levels access_levels;
+  sc_states states;
 };
 
 struct _sc_element

@@ -156,8 +156,10 @@ typedef sc_uint16 sc_type;
 
 #  define sc_type_check(_type, _other_type) ((_type & _other_type) == _other_type)
 
-#  define SC_ACCESS_LVL_REQUEST_DELETION 0x1
-#  define SC_ACCESS_LVL_ELEMENT_EXIST 0x2
+typedef sc_uint16 sc_states;
+
+#  define SC_STATE_REQUEST_DELETION 0x1
+#  define SC_STATE_ELEMENT_EXIST 0x2
 
 #  define SC_ACCESS_LVL_MAX_VALUE 15
 #  define SC_ACCESS_LVL_MIN_VALUE 0

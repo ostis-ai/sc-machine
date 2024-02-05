@@ -25,7 +25,7 @@
     sc_element * _element; \
     sc_storage_get_element_by_addr(_element_addr, &_element); \
     if (_element != null_ptr) \
-      _element->flags.access_levels |= _access_levels; \
+      _element->flags.states |= _access_levels; \
     sc_monitor_release_write(_monitor); \
   })
 
@@ -36,7 +36,7 @@
     sc_monitor_acquire_read(_monitor); \
     sc_element * _element; \
     sc_storage_get_element_by_addr(_element_addr, &_element); \
-    sc_access_levels const _element_access_levels = _element->flags.access_levels; \
+    sc_access_levels const _element_access_levels = _element->flags.states; \
     sc_monitor_release_read(_monitor); \
     _element_access_levels; \
   })

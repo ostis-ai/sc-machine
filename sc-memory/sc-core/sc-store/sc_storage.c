@@ -159,7 +159,7 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
     goto error;
 
   *el = &segment->elements[addr.offset];
-  if (((*el)->flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) != SC_ACCESS_LVL_ELEMENT_EXIST)
+  if (((*el)->flags.states & SC_STATE_ELEMENT_EXIST) != SC_STATE_ELEMENT_EXIST)
     goto error;
 
   result = SC_RESULT_OK;
@@ -212,8 +212,8 @@ sc_segment * _sc_storage_get_last_not_engaged_segment()
 
     if (segment != null_ptr)
     {
-      storage->last_not_engaged_segment_num = segment->elements[0].flags.access_levels;
-      segment->elements[0].flags.access_levels = 0;
+      storage->last_not_engaged_segment_num = segment->elements[0].flags.states;
+      segment->elements[0].flags.states = 0;
     }
   }
   while (segment != null_ptr
@@ -405,7 +405,7 @@ sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_a
   }
 
   if (element != null_ptr)
-    element->flags.access_levels |= SC_ACCESS_LVL_ELEMENT_EXIST;
+    element->flags.states |= SC_STATE_ELEMENT_EXIST;
 
   return element;
 }
@@ -443,7 +443,7 @@ void sc_storage_end_new_process()
     sc_monitor_acquire_write(&storage->segments_monitor);
 
     sc_addr_seg const last_not_engaged_segment_num = storage->last_not_engaged_segment_num;
-    segment->elements[0].flags.access_levels = last_not_engaged_segment_num;
+    segment->elements[0].flags.states = last_not_engaged_segment_num;
     storage->last_not_engaged_segment_num = segment->num;
 
     sc_monitor_release_write(&storage->segments_monitor);
@@ -545,14 +545,13 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
     sc_element * element;
     result = sc_storage_get_element_by_addr(addr, &element);
-    if (result != SC_RESULT_OK
-        || (element->flags.access_levels & SC_ACCESS_LVL_REQUEST_DELETION) == SC_ACCESS_LVL_REQUEST_DELETION)
+    if (result != SC_RESULT_OK || (element->flags.states & SC_STATE_REQUEST_DELETION) == SC_STATE_REQUEST_DELETION)
     {
       sc_monitor_release_write(monitor);
       continue;
     }
 
-    element->flags.access_levels |= SC_ACCESS_LVL_REQUEST_DELETION;
+    element->flags.states |= SC_STATE_REQUEST_DELETION;
     sc_type type = element->flags.type;
 
     sc_monitor_release_write(monitor);
