@@ -20,10 +20,25 @@
  */
 #define _sc_context_set_access_levels_for_element(_element_addr, _access_levels) \
   ({ \
+    sc_monitor * _monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, _element_addr); \
+    sc_monitor_acquire_write(_monitor); \
     sc_element * _element; \
     sc_storage_get_element_by_addr(_element_addr, &_element); \
     if (_element != null_ptr) \
       _element->flags.access_levels |= _access_levels; \
+    sc_monitor_release_write(_monitor); \
+  })
+
+//! Gets access levels of a specific sc-memory element.
+#define _sc_context_get_access_levels_for_element(_element_addr) \
+  ({ \
+    sc_monitor * _monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, _element_addr); \
+    sc_monitor_acquire_read(_monitor); \
+    sc_element * _element; \
+    sc_storage_get_element_by_addr(_element_addr, &_element); \
+    sc_access_levels const _element_access_levels = _element->flags.access_levels; \
+    sc_monitor_release_read(_monitor); \
+    _element_access_levels; \
   })
 
 /*! Function that creates a memory context for an authenticated user with specified parameters.

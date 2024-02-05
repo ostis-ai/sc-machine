@@ -48,6 +48,15 @@
 #define sc_context_check_context_access_levels(_access_levels, _checking_levels) \
   ((_access_levels) & (_checking_levels)) == _checking_levels
 
+//! Gets sc-memory context global access levels.
+#define _sc_monitor_get_context_global_access_levels(_context) \
+  ({ \
+    sc_monitor_acquire_read((sc_monitor *)&_context->monitor); \
+    sc_access_levels const _context_access_levels = _context->global_access_levels; \
+    sc_monitor_release_read((sc_monitor *)&_context->monitor); \
+    _context_access_levels; \
+  })
+
 /**
  * @brief Adds global access levels (within the knowledge base) for a specific user in the context manager.
  * @param _user_addr sc-address of the user.
@@ -368,12 +377,10 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
-  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
-  sc_access_levels const access_levels = ctx->global_access_levels;
-  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+  sc_access_levels const context_access_levels = _sc_monitor_get_context_global_access_levels(ctx);
 
   sc_bool is_authenticated =
-      sc_context_check_context_access_levels(access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
+      sc_context_check_context_access_levels(context_access_levels, SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED);
   return is_authenticated;
 }
 
@@ -386,12 +393,10 @@ sc_bool _sc_memory_context_check_global_access_levels(
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
-  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
-  sc_access_levels const access_levels = ctx->global_access_levels;
-  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+  sc_access_levels const context_access_levels = _sc_monitor_get_context_global_access_levels(ctx);
 
   // Check if the sc-memory context has access to the action class
-  sc_bool result = sc_context_check_context_access_levels(access_levels, action_class_access_levels);
+  sc_bool result = sc_context_check_context_access_levels(context_access_levels, action_class_access_levels);
   return result;
 }
 
@@ -408,9 +413,7 @@ sc_bool _sc_memory_context_check_global_access_levels_to_read_access_levels(
   if (manager->user_mode == SC_FALSE)
     return SC_TRUE;
 
-  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
-  sc_access_levels const context_access_levels = ctx->global_access_levels;
-  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+  sc_access_levels const context_access_levels = _sc_monitor_get_context_global_access_levels(ctx);
 
   sc_access_levels const element_access_levels = accessed_element->flags.access_levels;
 
@@ -428,16 +431,8 @@ sc_bool _sc_memory_context_check_global_access_levels_to_handle_access_levels(
     sc_addr accessed_element_addr,
     sc_access_levels required_access_levels)
 {
-  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
-  sc_access_levels const context_access_levels = ctx->global_access_levels;
-  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
-
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, accessed_element_addr);
-  sc_monitor_acquire_read(monitor);
-  sc_element * accessed_element;
-  sc_storage_get_element_by_addr(accessed_element_addr, &accessed_element);
-  sc_access_levels const element_access_levels = accessed_element->flags.access_levels;
-  sc_monitor_release_read(monitor);
+  sc_access_levels const context_access_levels = _sc_monitor_get_context_global_access_levels(ctx);
+  sc_access_levels const element_access_levels = _sc_context_get_access_levels_for_element(accessed_element_addr);
 
   // Check if the sc-memory context has access to handle the operation
   sc_access_levels const required_context_access_levels = context_access_levels & required_access_levels;
