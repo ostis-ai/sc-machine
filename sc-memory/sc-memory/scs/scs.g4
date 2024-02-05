@@ -44,14 +44,17 @@ public:
 
 }
 
-content returns [ElementHandle handle]
+content[ElementHandle contentHandle = ElementHandle()]
+  returns [ElementHandle handle]
   locals [ bool isVar = false;]
   @init{ $ctx->isVar = false; }
   : ('_' { $ctx->isVar = true; } )?
       c=CONTENT_BODY
     {
-      std::string v = $ctx->c->getText();
-      $ctx->handle = m_parser->ProcessContent(v, $ctx->isVar);
+      std::string content = $ctx->c->getText();
+      $ctx->handle = $contentHandle.IsValid()
+        ? m_parser->ProcessLink($contentHandle, content)
+        : m_parser->ProcessContent(content, $ctx->isVar);
     }
   ;
 
@@ -100,6 +103,7 @@ sentence_wrap
 sentence
   : sentence_lvl1
   | sentence_assign
+  | sentence_assign_link
   | sentence_assign_contour
   | sentence_lvl_common
   ;
@@ -122,8 +126,8 @@ idtf_system returns [ElementHandle handle]
     { $ctx->handle = m_parser->ProcessIdentifier($ID_SYSTEM->getText()); }
   | '...'
     { $ctx->handle = m_parser->ProcessIdentifier("..."); }
-  | type=idtf_lvl1_preffix
-    { $ctx->handle = m_parser->ProcessIdentifier($ctx->type->text); }
+  | name=idtf_lvl1_preffix
+    { $ctx->handle = m_parser->ProcessIdentifier($ctx->name->text); }
   ;
 
 
@@ -132,6 +136,11 @@ sentence_assign
     {
       m_parser->ProcessAssign($ALIAS_SYMBOLS->getText(), $ctx->i->handle);
     }
+  ;
+
+sentence_assign_link
+  : a=idtf_system '='
+  (content[$ctx->a->handle] | idtf_url[$ctx->a->handle])
   ;
 
 sentence_assign_contour
@@ -178,8 +187,8 @@ idtf_lvl1_value returns [ElementHandle handle]
     
 idtf_lvl1 returns [ElementHandle handle]
   : id=idtf_lvl1_value { $ctx->handle = $ctx->id->handle; }
-  | cn=content { $ctx->handle = $ctx->cn->handle; }
-  | u=idtf_url { $ctx->handle = $ctx->u->handle; }
+  | cn=content[] { $ctx->handle = $ctx->cn->handle; }
+  | u=idtf_url[] { $ctx->handle = $ctx->u->handle; }
   ;
 
 idtf_edge returns [ElementHandle handle]
@@ -271,11 +280,14 @@ idtf_atomic returns [ElementHandle handle]
   | is=idtf_system { $ctx->handle = $ctx->is->handle; }
   ;
 
-idtf_url returns [ElementHandle handle]
+idtf_url[ElementHandle contentHandle = ElementHandle()]
+  returns [ElementHandle handle]
   : LINK
     {
-      std::string const value = $LINK->getText();
-      $ctx->handle = m_parser->ProcessFileURL(value.substr(1, value.size() - 2));
+      std::string const content = $LINK->getText();
+      $ctx->handle = $contentHandle.IsValid()
+          ? m_parser->ProcessLink($contentHandle, content, true)
+          : m_parser->ProcessFileURL(content);
     }
   ;
 
@@ -284,8 +296,8 @@ idtf_common returns [ElementHandle handle]
   | ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
   | iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
   | ct=contour[] { $ctx->handle = $ctx->ct->handle; }
-  | cn=content { $ctx->handle = $ctx->cn->handle; }
-  | u=idtf_url { $ctx->handle = $ctx->u->handle; }
+  | cn=content[] { $ctx->handle = $ctx->cn->handle; }
+  | u=idtf_url[] { $ctx->handle = $ctx->u->handle; }
   ;
 
 idtf_list returns [std::vector<ElementHandle> items]

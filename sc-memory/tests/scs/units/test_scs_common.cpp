@@ -202,7 +202,6 @@ TEST(scs_common, nodes)
   }
 }
 
-
 TEST(scs_common, links)
 {
   std::string const data =
@@ -228,14 +227,47 @@ TEST(scs_common, links)
   EXPECT_EQ(parser.GetParsedElement(triples[2].m_target).GetType(), ScType::LinkVar);
   EXPECT_EQ(parser.GetParsedElement(triples[3].m_target).GetType(), ScType::LinkConst);
   EXPECT_FALSE(parser.GetParsedElement(triples[3].m_target).IsURL());
-  EXPECT_EQ(parser.GetParsedElement(triples[4].m_target).GetType(), ScType::LinkClass);
+  EXPECT_EQ(parser.GetParsedElement(triples[4].m_target).GetType(), ScType::LinkConstClass);
   EXPECT_EQ(parser.GetParsedElement(triples[4].m_target).GetValue(), "lala");
-  EXPECT_EQ(parser.GetParsedElement(triples[5].m_target).GetType(), ScType::LinkClass);
+  EXPECT_EQ(parser.GetParsedElement(triples[5].m_target).GetType(), ScType::LinkConstClass);
   EXPECT_EQ(parser.GetParsedElement(triples[5].m_target).GetValue(), "");
   EXPECT_EQ(parser.GetParsedElement(triples[6].m_target).GetType(), ScType::LinkConst);
   EXPECT_EQ(parser.GetParsedElement(triples[6].m_target).GetValue(), "tra! tra!");
 }
 
+TEST(scs_common, LinkAssigns)
+{
+  std::string const data =
+      "_a = \"file://data.txt\";;"
+      "_b = _[x];;"
+      "_c = _[];;"
+      "_d = _[];;"
+      "_e = _![lala]!;;"
+      "_f = _![]!;;";
+  scs::Parser parser;
+
+  EXPECT_TRUE(parser.Parse(data));
+
+  parser.ForEachParsedElement([](scs::ParsedElement const & element) -> void {
+    EXPECT_EQ(element.GetType() & ScType::LinkVar, ScType::LinkVar);
+  });
+
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(0)).GetValue(), "file://data.txt");
+  EXPECT_TRUE(parser.GetParsedElement(scs::ElementHandle(0)).IsURL());
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(0)).GetIdtf(), "_a");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(1)).GetValue(), "x");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(1)).GetIdtf(), "_b");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(2)).GetValue(), "");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(2)).GetIdtf(), "_c");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(3)).GetValue(), "");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(3)).GetIdtf(), "_d");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(4)).GetValue(), "lala");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(4)).GetType(), ScType::LinkVarClass);
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(4)).GetIdtf(), "_e");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(5)).GetValue(), "");
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(5)).GetType(), ScType::LinkVarClass);
+  EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(5)).GetIdtf(), "_f");
+}
 
 TEST(scs_common, backward_compatibility)
 {

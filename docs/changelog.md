@@ -9,11 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ScType::LinkConstClass and ScType::LinkVarClass
 - Sc-server connect with userAddr parameter
 - ScMemoryContext with userAddr parameter
 - User authentication checks
 - Denote sc-machine with sc-element `myself`
 - Provide users for sc-memory, sc-events and sc-agents
+
+### Changed
+
+- Allows assigns sc-link to its system identifier
+
+### Fixed
+
+- Resolve sc.g-links with the same system identifier
 
 ## [0.9.0-Unlock] - 22.01.2024
 

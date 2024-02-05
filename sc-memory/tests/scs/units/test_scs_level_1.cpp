@@ -20,7 +20,7 @@ TEST(scs_level_1, SimpleTriple)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 1u);
   {
-    SPLIT_TRIPLE(triples[0])
+    SPLIT_TRIPLE(triples[0]);
 
     EXPECT_EQ(src.GetType(), ScType::NodeConst);
     EXPECT_EQ(trg.GetType(), ScType::NodeConst);
@@ -38,7 +38,7 @@ TEST(scs_level_1, TripleWithLinkUrl)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 1u);
   {
-    SPLIT_TRIPLE(triples[0])
+    SPLIT_TRIPLE(triples[0]);
 
     EXPECT_EQ(src.GetType(), ScType::NodeConst);
     EXPECT_EQ(trg.GetType(), ScType::LinkConst);
