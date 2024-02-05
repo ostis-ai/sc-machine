@@ -11,6 +11,7 @@
 #include "sc_storage_private.h"
 #include "../sc_memory_context_manager.h"
 #include "../sc_memory_context_private.h"
+#include "../sc_memory_context_access_levels.h"
 
 #include "sc-base/sc_allocator.h"
 
@@ -298,7 +299,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
             : el->arc.next_begin_out_arc;
 
-    if (_sc_memory_context_check_access_levels_to_read_access_levels(
+    if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
             sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
         == SC_FALSE)
     {
@@ -418,7 +419,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : el->arc.next_end_in_arc;
 
-    if (_sc_memory_context_check_access_levels_to_read_access_levels(
+    if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
             sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
         == SC_FALSE)
     {
@@ -529,7 +530,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : el->arc.next_end_in_arc;
 
-    if (_sc_memory_context_check_access_levels_to_read_access_levels(
+    if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
             sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
         == SC_FALSE)
     {
@@ -585,7 +586,7 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_access_levels_to_read_access_levels(
+  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
           sc_memory_get_context_manager(),
           it->ctx,
           arc_el,
@@ -620,7 +621,7 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_access_levels_to_read_access_levels(
+  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
           sc_memory_get_context_manager(),
           it->ctx,
           arc_el,
@@ -671,7 +672,7 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_access_levels_to_read_access_levels(
+  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
           sc_memory_get_context_manager(),
           it->ctx,
           arc_el,
@@ -723,7 +724,7 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_access_levels_to_read_access_levels(
+  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
           sc_memory_get_context_manager(),
           it->ctx,
           arc_el,
@@ -788,7 +789,8 @@ sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
     return status;
   }
 
-  if (_sc_memory_context_check_access_levels(sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
       == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;

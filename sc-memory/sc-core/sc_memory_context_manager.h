@@ -43,19 +43,6 @@ void _sc_memory_context_manager_initialize(
     sc_addr myself_addr,
     sc_bool user_mode);
 
-/*! Function that registers event subscriptions for user authentication and unauthentication.
- * @param manager Pointer to the memory context manager for which events are registered.
- * @note This function sets up event subscriptions for user authentication and unauthentication events.
- */
-void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager);
-
-/*! Function that unregisters event subscriptions for user authentication and unauthentication.
- * @param manager Pointer to the memory context manager for which events are unregistered.
- * @note This function releases resources associated with event subscriptions for user authentication and
- * unauthentication.
- */
-void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager);
-
 /*! Function that unregisters event subscriptions for user authentication and unauthentication.
  * @param manager Pointer to the memory context manager for which events are unregistered.
  * @note This function releases resources associated with event subscriptions for user authentication and
@@ -97,88 +84,6 @@ sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * 
  * associated resources.
  */
 void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory_context * ctx);
-
-/*! Function that checks if a memory context is authorized.
- * @param manager Pointer to the memory context manager responsible for context authentication checks.
- * @param ctx Pointer to the memory context to be checked for authentication.
- * @returns Returns SC_TRUE if the context is authorized, SC_FALSE otherwise.
- * @note This function checks if a memory context is authorized based on the access levels.
- */
-sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager, sc_memory_context const * ctx);
-
-/**
- * @brief Checks if the sc-memory context has access to a given action class.
- *
- * This function checks if the sc-memory context has access to a specified action class based on
- * the provided access levels.
- *
- * @param manager Pointer to the sc-memory context manager.
- * @param ctx Pointer to the sc-memory context to be checked.
- * @param action_class_access_levels Access levels required for the action class.
- * @return Returns SC_TRUE if the sc-memory context has access; otherwise, returns SC_FALSE.
- */
-sc_bool _sc_memory_context_check_access_levels(
-    sc_memory_context_manager * manager,
-    sc_memory_context const * ctx,
-    sc_access_levels action_class_access_levels);
-
-/**
- * @brief Checks if the sc-memory context has read access to a specified element.
- *
- * This function checks if the sc-memory context has read access to a specified element based on
- * the required access levels.
- *
- * @param manager Pointer to the sc-memory context manager.
- * @param ctx Pointer to the sc-memory context to be checked.
- * @param accessed_element Pointer to the sc-element being accessed.
- * @param accessed_element_addr sc-address representing the accessed sc-element.
- * @param required_access_levels Access levels required for the read operation.
- * @return Returns SC_TRUE if the sc-memory context has read access; otherwise, returns SC_FALSE.
- */
-sc_bool _sc_memory_context_check_access_levels_to_read_access_levels(
-    sc_memory_context_manager * manager,
-    sc_memory_context const * ctx,
-    sc_element * accessed_element,
-    sc_addr accessed_element_addr,
-    sc_access_levels required_access_levels);
-
-/**
- * @brief Checks if the sc-memory context has write access to a specified element.
- *
- * This function checks if the sc-memory context has write access to a specified element based on
- * the required access levels.
- *
- * @param manager Pointer to the sc-memory context manager.
- * @param ctx Pointer to the sc-memory context to be checked.
- * @param accessed_element_addr sc-address representing the accessed sc-element.
- * @param connector_from_element_type sc-type of the arc connecting from the element (unused).
- * @param required_access_levels Access levels required for the write operation.
- * @return Returns SC_TRUE if the sc-memory context has write access; otherwise, returns SC_FALSE.
- */
-sc_bool _sc_memory_context_check_access_levels_to_write_access_levels(
-    sc_memory_context_manager * manager,
-    sc_memory_context const * ctx,
-    sc_addr accessed_element_addr,
-    sc_type connector_from_element_type,
-    sc_access_levels required_access_levels);
-
-/**
- * @brief Checks if the sc-memory context has access to erase a specified element.
- *
- * This function checks if the sc-memory context has access to erase a specified element based on
- * the required access levels.
- *
- * @param manager Pointer to the sc-memory context manager.
- * @param ctx Pointer to the sc-memory context to be checked.
- * @param accessed_element_addr sc-address representing the accessed sc-element.
- * @param required_access_levels Access levels required for the erase operation.
- * @return Returns SC_TRUE if the sc-memory context has access; otherwise, returns SC_FALSE.
- */
-sc_bool _sc_memory_context_access_levels_to_erase_access_levels(
-    sc_memory_context_manager * manager,
-    sc_memory_context const * ctx,
-    sc_addr accessed_element_addr,
-    sc_access_levels required_access_levels);
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx);
 
