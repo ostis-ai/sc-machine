@@ -4,6 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#ifndef _sc_memory_context_access_levels_h_
+#define _sc_memory_context_access_levels_h_
+
 #include "sc_memory.h"
 #include "sc-store/sc_event.h"
 
@@ -201,3 +204,5 @@ sc_bool _sc_memory_context_global_access_levels_to_erase_access_levels(
     sc_memory_context const * ctx,
     sc_addr accessed_element_addr,
     sc_access_levels required_access_levels);
+
+#endif

@@ -11,6 +11,7 @@
 #include "sc-store/sc_storage_private.h"
 #include "sc-store/sc_iterator3.h"
 #include "sc_helper.h"
+#include "sc_keynodes.h"
 
 /**
  * @brief Adds global access levels (within the knowledge base) to a given sc-memory context.
@@ -177,10 +178,8 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
  * @param _action_class_system_idtf System identifier of the action class.
  * @param _access_levels Access levels to be added for the action class.
  */
-#define sc_context_manager_add_basic_action_class_access_levels(_action_class_system_idtf, _access_levels) \
+#define sc_context_manager_add_basic_action_class_access_levels(_action_class_addr, _access_levels) \
   ({ \
-    sc_addr _action_class_addr; \
-    sc_helper_resolve_system_identifier(s_memory_default_ctx, _action_class_system_idtf, &_action_class_addr); \
     sc_hash_table_insert( \
         manager->basic_action_classes, \
         GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_action_class_addr)), \
@@ -299,13 +298,11 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
 {
-  sc_helper_resolve_system_identifier(
-      s_memory_default_ctx, "concept_authentication_request_user", &manager->concept_authentication_request_user_addr);
+  manager->concept_authentication_request_user_addr = concept_authentication_request_user_addr;
   _sc_context_set_access_levels_for_element(
       manager->concept_authentication_request_user_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
-  sc_helper_resolve_system_identifier(
-      s_memory_default_ctx, "concept_authenticated_user", &manager->concept_authenticated_user_addr);
+  manager->concept_authenticated_user_addr = concept_authenticated_user_addr;
   _sc_context_set_access_levels_for_element(
       manager->concept_authenticated_user_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
@@ -324,20 +321,21 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       _sc_memory_context_manager_on_unauthentication_request_user,
       null_ptr);
 
-  sc_helper_resolve_system_identifier(
-      s_memory_default_ctx, "nrel_user_action_class", &manager->nrel_user_action_class_addr);
+  manager->nrel_user_action_class_addr = nrel_user_action_class_addr;
   _sc_context_set_access_levels_for_element(
       manager->nrel_user_action_class_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
-  sc_context_manager_add_basic_action_class_access_levels("read_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_READ);
-  sc_context_manager_add_basic_action_class_access_levels("write_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_WRITE);
-  sc_context_manager_add_basic_action_class_access_levels("erase_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_ERASE);
+  sc_context_manager_add_basic_action_class_access_levels(read_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_READ);
   sc_context_manager_add_basic_action_class_access_levels(
-      "read_access_levels_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS);
+      write_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_WRITE);
   sc_context_manager_add_basic_action_class_access_levels(
-      "write_access_levels_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS);
+      erase_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_ERASE);
   sc_context_manager_add_basic_action_class_access_levels(
-      "erase_access_levels_action_in_sc_memory", SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS);
+      read_access_levels_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS);
+  sc_context_manager_add_basic_action_class_access_levels(
+      write_access_levels_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS);
+  sc_context_manager_add_basic_action_class_access_levels(
+      erase_access_levels_action_in_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS);
 
   manager->on_new_user_action_class = sc_event_with_user_new(
       s_memory_default_ctx,

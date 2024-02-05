@@ -12,6 +12,7 @@
 #include "sc_memory_private.h"
 #include "sc_helper.h"
 #include "sc_helper_private.h"
+#include "sc_keynodes.h"
 #include "sc_memory_ext.h"
 #include "sc_memory_context_manager.h"
 #include "sc_memory_context_access_levels.h"
@@ -62,6 +63,14 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
     goto error;
   }
 
+  sc_addr init_memory_generated_structure = SC_ADDR_EMPTY;
+  if (params->init_memory_generated_upload)
+    sc_helper_resolve_system_identifier(
+        s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
+
+  if (sc_keynodes_initialize(s_memory_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
+    goto error;
+
   sc_char * const myself_system_idtf = "myself";
   sc_helper_set_system_identifier(
       s_memory_default_ctx, memory->myself_addr, myself_system_idtf, sc_str_len(myself_system_idtf));
@@ -72,11 +81,6 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
   sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
   sc_message("\tExtensions path: %s", params->ext_path);
-
-  sc_addr init_memory_generated_structure = SC_ADDR_EMPTY;
-  if (params->init_memory_generated_upload)
-    sc_helper_resolve_system_identifier(
-        s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
 
   if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) != SC_RESULT_OK)
   {

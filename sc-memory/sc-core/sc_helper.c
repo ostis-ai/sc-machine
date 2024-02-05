@@ -358,23 +358,34 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
 
 sc_bool sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * system_idtf, sc_addr * result_addr)
 {
+  sc_system_identifier_fiver fiver;
+  return sc_helper_resolve_system_identifier_ext(ctx, system_idtf, result_addr, &fiver);
+}
+
+sc_bool sc_helper_resolve_system_identifier_ext(
+    sc_memory_context * ctx,
+    sc_char const * system_idtf,
+    sc_addr * result_addr,
+    sc_system_identifier_fiver * fiver)
+{
   *result_addr = SC_ADDR_EMPTY;
 
   if (ctx == null_ptr || system_idtf == null_ptr)
     return SC_FALSE;
 
   sc_uint32 const string_size = sc_str_len(system_idtf);
-  sc_result result = sc_helper_find_element_by_system_identifier(ctx, system_idtf, string_size, result_addr);
+  sc_result result = sc_helper_find_element_by_system_identifier_ext(ctx, system_idtf, string_size, fiver);
   if (result != SC_RESULT_OK && result != SC_RESULT_NO)
     goto error;
 
   if (result == SC_RESULT_OK)
+  {
+    *result_addr = fiver->addr1;
     return SC_TRUE;
+  }
 
   *result_addr = sc_memory_node_new(ctx, sc_type_node | sc_type_const);
-
-  sc_system_identifier_fiver fiver;
-  result = sc_helper_set_system_identifier_ext(ctx, *result_addr, system_idtf, string_size, &fiver);
+  result = sc_helper_set_system_identifier_ext(ctx, *result_addr, system_idtf, string_size, fiver);
   if (result != SC_RESULT_OK)
     goto error;
 
