@@ -75,6 +75,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   sc_helper_set_system_identifier(
       s_memory_default_ctx, memory->myself_addr, myself_system_idtf, sc_str_len(myself_system_idtf));
 
+  _sc_memory_context_handle_all_user_access_levels(memory->context_manager);
   _sc_memory_context_manager_register_user_events(memory->context_manager);
 
   sc_memory_info("Build configuration:");

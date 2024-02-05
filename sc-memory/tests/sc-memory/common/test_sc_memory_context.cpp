@@ -185,8 +185,6 @@ void TestWriteActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & con
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
 
-  EXPECT_NO_THROW(userContext.CreateNode(ScType::NodeConst));
-  EXPECT_NO_THROW(userContext.CreateLink(ScType::LinkConst));
   EXPECT_THROW(
       userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr), utils::ExceptionInvalidState);
 
@@ -262,6 +260,8 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScMemoryContext userContext{userAddr};
+  EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.CreateLink(ScType::LinkConst), utils::ExceptionInvalidState);
   TestActionsUnsuccessfully(m_ctx, userContext);
 }
 
@@ -977,7 +977,7 @@ void TestAddAccessLevelsForUserToInitReadActionsWithinStructure(
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & readActionInScMemoryAddr{read_action_in_sc_memory_addr};
+  ScAddr const & readActionInScMemoryAddr{action_read_from_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActionsWithinStructure(
       context, userAddr, readActionInScMemoryAddr, structureAddr, arcType);
 }
@@ -988,7 +988,7 @@ void TestAddAccessLevelsForUserToInitWriteActionsWithinStructure(
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & writeActionInScMemoryAddr{write_action_in_sc_memory_addr};
+  ScAddr const & writeActionInScMemoryAddr{action_generate_in_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActionsWithinStructure(
       context, userAddr, writeActionInScMemoryAddr, structureAddr, arcType);
 }
@@ -999,7 +999,7 @@ void TestAddAccessLevelsForUserToInitEraseActionsWithinStructure(
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & eraseActionInScMemoryAddr{erase_action_in_sc_memory_addr};
+  ScAddr const & eraseActionInScMemoryAddr{action_erase_in_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActionsWithinStructure(
       context, userAddr, eraseActionInScMemoryAddr, structureAddr, arcType);
 }

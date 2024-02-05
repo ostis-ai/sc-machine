@@ -127,6 +127,8 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
     sc_type connector_type,
     sc_addr arc_to_action_class_addr);
 
+void _sc_memory_context_handle_all_user_access_levels(sc_memory_context_manager * manager);
+
 /*! Function that registers event subscriptions for user authentication and unauthentication.
  * @param manager Pointer to the memory context manager for which events are registered.
  * @note This function sets up event subscriptions for user authentication and unauthentication events.

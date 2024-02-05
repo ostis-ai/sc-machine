@@ -13,6 +13,8 @@
 #include "sc_helper.h"
 #include "sc_keynodes.h"
 
+typedef void (*sc_access_levels_handler)(sc_memory_context_manager *, sc_addr, sc_addr);
+
 /**
  * @brief Adds global access levels (within the knowledge base) to a given sc-memory context.
  * @param _context Pointer to the sc-memory context.
@@ -115,7 +117,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
   sc_unused(&initiator_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype_in_mask(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_OK;
 
   _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
@@ -165,7 +167,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype_in_mask(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_OK;
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
@@ -205,6 +207,27 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   (sc_uint64) \
       sc_hash_table_get(manager->basic_action_classes, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_action_class_addr)))
 
+void _sc_memory_context_manager_add_user_action_class(
+    sc_memory_context_manager * manager,
+    sc_addr connector_addr,
+    sc_addr arc_to_action_class_addr)
+{
+  _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+
+  sc_addr user_addr, action_class_addr;
+  if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr)
+      != SC_RESULT_OK)
+    return;
+
+  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    _sc_context_add_user_global_access_levels(user_addr, levels);
+  else
+    _sc_context_add_context_global_access_levels(ctx, levels);
+}
+
 /*! Function that appends access levels for a memory context by adding relation between user and action class.
  * @param event Pointer to the sc-event triggering the addition of the action class.
  * @param initiator_addr sc-address representing user that initiated this request.
@@ -238,22 +261,13 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype_in_mask(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_OK;
 
   _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
-  sc_addr user_addr, action_class_addr;
-  sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr);
-
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
-
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_add_user_global_access_levels(user_addr, levels);
-  else
-    _sc_context_add_context_global_access_levels(ctx, levels);
+  _sc_memory_context_manager_add_user_action_class(manager, connector_addr, arc_to_action_class_addr);
 
   return SC_RESULT_OK;
 }
@@ -283,11 +297,13 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype_in_mask(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_OK;
 
   sc_addr user_addr, action_class_addr;
-  sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr);
+  if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr)
+      != SC_RESULT_OK)
+    return SC_RESULT_OK;
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
   sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
@@ -388,6 +404,68 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
 #define _sc_context_remove_context_local_access_levels(_context, _removing_levels, _structure_addr) \
   _sc_context_remove_user_local_access_levels(_context->user_addr, _removing_levels, _structure_addr)
 
+void _sc_memory_context_manager_add_user_action_class_within_structure(
+    sc_memory_context_manager * manager,
+    sc_addr connector_addr,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+{
+  _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+
+  sc_addr user_addr, arc_between_action_class_and_structure;
+  if (sc_memory_get_arc_info(
+          s_memory_default_ctx,
+          arc_to_arc_between_action_class_and_structure_addr,
+          &user_addr,
+          &arc_between_action_class_and_structure)
+      != SC_RESULT_OK)
+    return;
+
+  sc_addr action_class_addr, structure_addr;
+  if (sc_memory_get_arc_info(
+          s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr)
+      != SC_RESULT_OK)
+    return;
+
+  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    _sc_context_add_user_local_access_levels(user_addr, levels, structure_addr);
+  else
+    _sc_context_add_context_local_access_levels(ctx, levels, structure_addr);
+}
+
+void _sc_memory_context_manager_remove_user_action_class_within_structure(
+    sc_memory_context_manager * manager,
+    sc_addr connector_addr,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+{
+  sc_unused(&connector_addr);
+
+  sc_addr user_addr, arc_between_action_class_and_structure;
+  if (sc_memory_get_arc_info(
+          s_memory_default_ctx,
+          arc_to_arc_between_action_class_and_structure_addr,
+          &user_addr,
+          &arc_between_action_class_and_structure)
+      != SC_RESULT_OK)
+    return;
+
+  sc_addr action_class_addr, structure_addr;
+  if (sc_memory_get_arc_info(
+          s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr)
+      != SC_RESULT_OK)
+    return;
+
+  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
+
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    _sc_context_remove_user_local_access_levels(user_addr, levels, structure_addr);
+  else
+    _sc_context_remove_context_local_access_levels(ctx, levels, structure_addr);
+}
+
 sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -396,33 +474,23 @@ sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
     sc_addr arc_to_arc_between_action_class_and_structure_addr)
 {
   sc_unused(&initiator_addr);
-  sc_unused(&connector_addr);
-
-  // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype_in_mask(connector_type, sc_type_arc_pos_const))
-    return SC_RESULT_OK;
-
-  _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
-
-  sc_addr user_addr, arc_between_action_class_and_structure;
-  sc_memory_get_arc_info(
-      s_memory_default_ctx,
-      arc_to_arc_between_action_class_and_structure_addr,
-      &user_addr,
-      &arc_between_action_class_and_structure);
-
-  sc_addr action_class_addr, structure_addr;
-  sc_memory_get_arc_info(
-      s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr);
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
 
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_add_user_local_access_levels(user_addr, levels, structure_addr);
-  else
-    _sc_context_add_context_local_access_levels(ctx, levels, structure_addr);
+  // Only positive access sc-arcs can be used
+  if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_pos_const))
+  {
+    _sc_memory_context_manager_add_user_action_class_within_structure(
+        manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr);
+    return SC_RESULT_OK;
+  }
+
+  if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_neg_const))
+  {
+    _sc_memory_context_manager_remove_user_action_class_within_structure(
+        manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr);
+    return SC_RESULT_OK;
+  }
 
   return SC_RESULT_OK;
 }
@@ -438,30 +506,12 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype_in_mask(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_OK;
 
-  _sc_context_set_access_levels_for_element(connector_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
-
-  sc_addr user_addr, arc_between_action_class_and_structure;
-  sc_memory_get_arc_info(
-      s_memory_default_ctx,
-      arc_to_arc_between_action_class_and_structure_addr,
-      &user_addr,
-      &arc_between_action_class_and_structure);
-
-  sc_addr action_class_addr, structure_addr;
-  sc_memory_get_arc_info(
-      s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr);
-
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_access_levels const levels = sc_context_manager_get_basic_action_class_access_levels(action_class_addr);
-
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_remove_user_local_access_levels(user_addr, levels, structure_addr);
-  else
-    _sc_context_remove_context_local_access_levels(ctx, levels, structure_addr);
+  _sc_memory_context_manager_remove_user_action_class_within_structure(
+      manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr);
 
   sc_addr const action_arc_addr = sc_memory_arc_new(
       s_memory_default_ctx,
@@ -471,6 +521,47 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
   _sc_context_set_access_levels_for_element(action_arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
   return SC_RESULT_OK;
+}
+
+void _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relation(
+    sc_memory_context_manager * manager,
+    sc_addr const accessed_relation,
+    sc_type const arc_mask,
+    sc_access_levels_handler handler)
+{
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(s_memory_default_ctx, accessed_relation, 0, sc_type_arc_common);
+  while (sc_iterator3_next(it3))
+  {
+    sc_addr const arc_addr = sc_iterator3_value(it3, 1);
+    sc_type arc_type;
+    if (sc_memory_get_element_type(s_memory_default_ctx, arc_addr, &arc_type) != SC_RESULT_OK
+        || sc_type_has_not_subtype(arc_type, arc_mask))
+      continue;
+
+    sc_addr const target_arc_addr = sc_iterator3_value(it3, 2);
+    handler(manager, arc_addr, target_arc_addr);
+  }
+}
+
+void _sc_memory_context_handle_all_user_access_levels(sc_memory_context_manager * manager)
+{
+  _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relation(
+      manager,
+      manager->nrel_user_action_class_addr,
+      sc_type_arc_pos_const,
+      _sc_memory_context_manager_add_user_action_class);
+
+  _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relation(
+      manager,
+      manager->nrel_user_action_class_within_sc_structure_addr,
+      sc_type_arc_pos_const,
+      _sc_memory_context_manager_add_user_action_class_within_structure);
+
+  _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relation(
+      manager,
+      manager->nrel_user_action_class_within_sc_structure_addr,
+      sc_type_arc_neg_const,
+      _sc_memory_context_manager_remove_user_action_class_within_structure);
 }
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
