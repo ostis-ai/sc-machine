@@ -827,11 +827,11 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 bool ScMemoryContext::HelperResolveSystemIdtf(
     std::string const & sysIdtf,
     ScType const & type,
-    ScSystemIdentifierQuintuple & outFiver)
+    ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
-  bool result = HelperFindBySystemIdtf(sysIdtf, outFiver);
+  bool result = HelperFindBySystemIdtf(sysIdtf, outQuintuple);
   if (result)
     return result;
 
@@ -839,12 +839,13 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
     return false;
 
   ScAddr const & resultAddr = CreateNode(type);
-  result = HelperSetSystemIdtf(sysIdtf, resultAddr, outFiver);
+  result = HelperSetSystemIdtf(sysIdtf, resultAddr, outQuintuple);
   if (result)
     return result;
 
   EraseElement(resultAddr);
-  outFiver = (ScSystemIdentifierQuintuple){ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty};
+  outQuintuple =
+      (ScSystemIdentifierQuintuple){ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty};
 
   return result;
 }
@@ -1003,51 +1004,30 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr
 {
   CHECK_CONTEXT;
 
-  sc_result const result = sc_helper_find_element_by_system_identifier(
-      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &outAddr.m_realAddr);
+  ScSystemIdentifierQuintuple outQuintuple;
+  bool status = HelperFindBySystemIdtf(sysIdtf, outQuintuple);
+  outAddr = outQuintuple.addr1;
 
-  switch (result)
-  {
-  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
-
-  case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "File memory state is invalid to find sc-element by system identifier");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to find by system identifier due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find by system identifier due sc-memory context hasn't read access levels");
-
-  default:
-    break;
-  }
-
-  return result == SC_RESULT_OK;
+  return status;
 }
 
 ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
 {
   CHECK_CONTEXT;
 
-  ScSystemIdentifierQuintuple outFiver;
-  HelperFindBySystemIdtf(sysIdtf, outFiver);
+  ScSystemIdentifierQuintuple outQuintuple;
+  HelperFindBySystemIdtf(sysIdtf, outQuintuple);
 
-  return outFiver.addr1;
+  return outQuintuple.addr1;
 }
 
-bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierQuintuple & outFiver)
+bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
-  sc_system_identifier_fiver fiver;
-  sc_result const result =
-      sc_helper_find_element_by_system_identifier_ext(m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &fiver);
+  sc_system_identifier_fiver quintuple;
+  sc_result const result = sc_helper_find_element_by_system_identifier_ext(
+      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &quintuple);
 
   switch (result)
   {
@@ -1071,8 +1051,12 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
     break;
   }
 
-  outFiver = (ScSystemIdentifierQuintuple){
-      ScAddr(fiver.addr1), ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4), ScAddr(fiver.addr5)};
+  outQuintuple = (ScSystemIdentifierQuintuple){
+      ScAddr(quintuple.addr1),
+      ScAddr(quintuple.addr2),
+      ScAddr(quintuple.addr3),
+      ScAddr(quintuple.addr4),
+      ScAddr(quintuple.addr5)};
   return result == SC_RESULT_OK;
 }
 

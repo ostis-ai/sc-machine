@@ -968,7 +968,7 @@ public:
    * If the element is found, the function returns true; otherwise, it returns false.
    *
    * @param sysIdtf The system identifier of the sc-element to find.
-   * @param outFiver A reference to store the system identifier fiver of the found sc-element (if any).
+   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -976,12 +976,13 @@ public:
    *
    * @code
    * ScMemoryContext ctx;
-   * ScSystemIdentifierQuintuple resultFiver;
-   * bool found = ctx.HelperFindBySystemIdtf("example_identifier", resultFiver);
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool found = ctx.HelperFindBySystemIdtf("example_identifier", resultQuintuple);
    * @endcode
    */
-  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierQuintuple & outFiver) noexcept(
-      false);
+  _SC_EXTERN bool HelperFindBySystemIdtf(
+      std::string const & sysIdtf,
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*!
    * Generates sc-constructions by isomorphic sc-template and accumulates generated sc-construction into `result`.

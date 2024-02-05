@@ -162,9 +162,9 @@ TEST(ScBuilder, BuilderConfig)
 
   auto * context = new ScMemoryContext();
 
-  ScSystemIdentifierQuintuple fiver;
-  context->HelperFindBySystemIdtf(builderParams.m_resultStructureSystemIdtf, fiver);
-  ScAddr const & resultStructure = fiver.addr1;
+  ScSystemIdentifierQuintuple quintuple;
+  context->HelperFindBySystemIdtf(builderParams.m_resultStructureSystemIdtf, quintuple);
+  ScAddr const & resultStructure = quintuple.addr1;
   EXPECT_TRUE(resultStructure.IsValid());
 
   auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr)
@@ -172,10 +172,10 @@ TEST(ScBuilder, BuilderConfig)
     EXPECT_TRUE(context->HelperCheckEdge(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
   };
 
-  CheckInStructure(fiver.addr2);
-  CheckInStructure(fiver.addr3);
-  CheckInStructure(fiver.addr4);
-  CheckInStructure(fiver.addr5);
+  CheckInStructure(quintuple.addr2);
+  CheckInStructure(quintuple.addr3);
+  CheckInStructure(quintuple.addr4);
+  CheckInStructure(quintuple.addr5);
 
   context->Destroy();
   delete context;
