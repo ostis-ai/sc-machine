@@ -243,6 +243,7 @@ typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;
 typedef struct _sc_iterator_param sc_iterator_param;
+typedef struct _sc_iterator_result sc_iterator_result;
 typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_iterator5 sc_iterator5;
 typedef struct _sc_event sc_event;

@@ -215,12 +215,6 @@ void sc_iterator3_free(sc_iterator3 * it)
   if (it == null_ptr)
     return;
 
-  if ((it->finished == SC_FALSE) && SC_ADDR_IS_NOT_EMPTY(it->results[1]))
-  {
-    sc_element * el = null_ptr;
-    sc_storage_get_element_by_addr(it->results[1], &el);
-  }
-
   sc_mem_free(it);
 }
 
@@ -231,21 +225,27 @@ sc_addr _sc_iterator3_get_other_edge_incident_element(sc_element * el, sc_addr i
 
 sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
 {
-  it->results[0] = it->params[0].addr;
+  sc_addr const arc_begin = it->results[0].addr = it->params[0].addr;
 
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
   sc_monitor * arc_monitor = null_ptr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_begin);
   sc_monitor_acquire_read(monitor);
+
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+      == SC_FALSE)
+    goto error;
+  it->results[0].is_accessed = SC_TRUE;
 
   // try to find first output arc
   sc_element * el = null_ptr;
-  if (SC_ADDR_IS_EMPTY(it->results[1]))
+  if (SC_ADDR_IS_EMPTY(it->results[1].addr))
   {
-    result = sc_storage_get_element_by_addr(it->results[0], &el);
+    result = sc_storage_get_element_by_addr(arc_begin, &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -253,14 +253,14 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   }
   else
   {
-    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[0], it->results[1]);
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, it->results[1].addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
-    result = sc_storage_get_element_by_addr(it->results[1], &el);
+    result = sc_storage_get_element_by_addr(it->results[1].addr, &el);
     if (result != SC_RESULT_OK)
     {
       if (is_not_same)
@@ -268,10 +268,9 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr =
-        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-            ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
-            : el->arc.next_begin_out_arc;
+    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+                   ? SC_ADDR_IS_EQUAL(arc_begin, el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
+                   : el->arc.next_begin_out_arc;
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -280,7 +279,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   // iterate through output arcs
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
-    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[0], arc_addr);
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_addr);
     if (is_not_same)
     {
       arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
@@ -297,7 +296,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
 
     sc_addr next_out_arc =
         sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-            ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
+            ? SC_ADDR_IS_EQUAL(arc_begin, el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
             : el->arc.next_begin_out_arc;
 
     if (_sc_memory_context_check_local_and_global_access_levels(
@@ -320,7 +319,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
 
     sc_type arc_type = el->flags.type;
     sc_addr arc_end = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-                          ? _sc_iterator3_get_other_edge_incident_element(el, it->results[0])
+                          ? _sc_iterator3_get_other_edge_incident_element(el, arc_begin)
                           : el->arc.end;
 
     if (is_not_same)
@@ -334,8 +333,16 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     if (sc_iterator_compare_type(arc_type, it->params[1].type) && sc_iterator_compare_type(el_type, it->params[2].type))
     {
       // store found result
-      it->results[1] = arc_addr;
-      it->results[2] = arc_end;
+      it->results[1].addr = arc_addr;
+      it->results[1].is_accessed = SC_TRUE;
+
+      if (_sc_memory_context_check_local_and_global_access_levels(
+              sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+          == SC_TRUE)
+      {
+        it->results[2].addr = arc_end;
+        it->results[2].is_accessed = SC_TRUE;
+      }
 
       goto success;
     }
@@ -357,23 +364,35 @@ success:
 
 sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
 {
-  it->results[0] = it->params[0].addr;
-  it->results[2] = it->params[2].addr;
+  sc_addr const arc_begin = it->results[0].addr = it->params[0].addr;
+  sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
 
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
 
   sc_monitor * arc_monitor = null_ptr;
 
-  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[0]);
-  sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
+  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_begin);
+  sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
   sc_monitor_acquire_read_n(2, beg_monitor, end_monitor);
+
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+      == SC_FALSE)
+    goto error;
+  it->results[0].is_accessed = SC_TRUE;
+
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+      == SC_FALSE)
+    goto error;
+  it->results[2].is_accessed = SC_TRUE;
 
   // try to find first input arc
   sc_element * el = null_ptr;
-  if (SC_ADDR_IS_EMPTY(it->results[1]))
+  if (SC_ADDR_IS_EMPTY(it->results[1].addr))
   {
-    result = sc_storage_get_element_by_addr(it->results[2], &el);
+    result = sc_storage_get_element_by_addr(arc_end, &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -382,14 +401,14 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   else
   {
     sc_bool const is_not_same =
-        SC_ADDR_IS_NOT_EQUAL(it->results[0], it->results[1]) && SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[1]);
+        SC_ADDR_IS_NOT_EQUAL(arc_begin, it->results[1].addr) && SC_ADDR_IS_NOT_EQUAL(arc_end, it->results[1].addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
-    result = sc_storage_get_element_by_addr(it->results[1], &el);
+    result = sc_storage_get_element_by_addr(it->results[1].addr, &el);
     if (result != SC_RESULT_OK)
     {
       if (is_not_same)
@@ -398,7 +417,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     }
 
     arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-                   ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+                   ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
                    : el->arc.next_end_in_arc;
 
     if (is_not_same)
@@ -408,8 +427,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   // trying to find input arc, that created before iterator, and wasn't deleted
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
-    sc_bool const is_not_same =
-        SC_ADDR_IS_NOT_EQUAL(it->results[0], arc_addr) && SC_ADDR_IS_NOT_EQUAL(it->results[2], arc_addr);
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_addr) && SC_ADDR_IS_NOT_EQUAL(arc_end, arc_addr);
     if (is_not_same)
     {
       arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
@@ -426,7 +444,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
 
     sc_addr next_in_arc =
         sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-            ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+            ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : el->arc.next_end_in_arc;
 
     if (_sc_memory_context_check_local_and_global_access_levels(
@@ -449,10 +467,9 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
 
     sc_type arc_type = el->flags.type;
 
-    sc_bool is_begin_same =
-        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-            ? SC_ADDR_IS_EQUAL(it->results[0], el->arc.begin) || SC_ADDR_IS_EQUAL(it->results[0], el->arc.end)
-            : SC_ADDR_IS_EQUAL(it->results[0], el->arc.begin);
+    sc_bool is_begin_same = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+                                ? SC_ADDR_IS_EQUAL(arc_begin, el->arc.begin) || SC_ADDR_IS_EQUAL(arc_begin, el->arc.end)
+                                : SC_ADDR_IS_EQUAL(arc_begin, el->arc.begin);
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -460,7 +477,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     if (is_begin_same && sc_iterator_compare_type(arc_type, it->params[1].type))
     {
       // store found result
-      it->results[1] = arc_addr;
+      it->results[1].addr = arc_addr;
+      it->results[1].is_accessed = SC_TRUE;
       goto success;
     }
 
@@ -481,7 +499,7 @@ success:
 
 sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 {
-  it->results[2] = it->params[2].addr;
+  sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
   it->search_structure = sc_type_is_structure_and_arc(it->params[0].type, it->params[1].type);
 
   sc_addr arc_addr = SC_ADDR_EMPTY;
@@ -489,14 +507,20 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
   sc_monitor * arc_monitor;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[2]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
   sc_monitor_acquire_read(monitor);
+
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+      == SC_FALSE)
+    goto error;
+  it->results[2].is_accessed = SC_TRUE;
 
   // try to find first input arc
   sc_element * el = null_ptr;
-  if (SC_ADDR_IS_EMPTY(it->results[1]))
+  if (SC_ADDR_IS_EMPTY(it->results[1].addr))
   {
-    result = sc_storage_get_element_by_addr(it->results[2], &el);
+    result = sc_storage_get_element_by_addr(arc_end, &el);
     if (result != SC_RESULT_OK)
       goto error;
 
@@ -504,14 +528,14 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   }
   else
   {
-    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[2], it->results[1]);
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_end, it->results[1].addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
-    result = sc_storage_get_element_by_addr(it->results[1], &el);
+    result = sc_storage_get_element_by_addr(it->results[1].addr, &el);
     if (result != SC_RESULT_OK)
     {
       if (is_not_same)
@@ -520,7 +544,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     }
 
     arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-                   ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+                   ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
                    : (it->search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 
     if (is_not_same)
@@ -530,7 +554,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   // trying to find input arc, that created before iterator, and wasn't deleted
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
-    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(it->results[2], arc_addr);
+    sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_end, arc_addr);
     if (is_not_same)
     {
       arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
@@ -547,7 +571,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
     sc_addr next_in_arc =
         sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-            ? SC_ADDR_IS_EQUAL(it->results[2], el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+            ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : (it->search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 
     if (_sc_memory_context_check_local_and_global_access_levels(
@@ -570,7 +594,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
     sc_type arc_type = el->flags.type;
     sc_addr arc_begin = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
-                            ? _sc_iterator3_get_other_edge_incident_element(el, it->results[2])
+                            ? _sc_iterator3_get_other_edge_incident_element(el, arc_end)
                             : el->arc.begin;
 
     if (is_not_same)
@@ -582,8 +606,16 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     if (sc_iterator_compare_type(arc_type, it->params[1].type) && sc_iterator_compare_type(el_type, it->params[0].type))
     {
       // store found result
-      it->results[1] = arc_addr;
-      it->results[0] = arc_begin;
+      it->results[1].addr = arc_addr;
+      it->results[1].is_accessed = SC_TRUE;
+
+      if (_sc_memory_context_check_local_and_global_access_levels(
+              sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+          == SC_TRUE)
+      {
+        it->results[0].addr = arc_begin;
+        it->results[0].is_accessed = SC_TRUE;
+      }
 
       goto success;
     }
@@ -605,33 +637,44 @@ success:
 
 sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
 {
-  it->results[1] = it->params[1].addr;
+  sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &arc_el);
+  sc_result result = sc_storage_get_element_by_addr(arc_addr, &arc_el);
   if (result != SC_RESULT_OK)
     goto error;
 
   if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(),
-          it->ctx,
-          arc_el,
-          it->results[1],
-          SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
       == SC_FALSE)
     goto error;
+  it->results[1].is_accessed = SC_TRUE;
 
-  it->results[0] = arc_el->arc.begin;
-  it->results[2] = arc_el->arc.end;
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_el->arc.begin)
+      == SC_FALSE)
+    goto success;
 
+  it->results[0].addr = arc_el->arc.begin;
+  it->results[0].is_accessed = SC_TRUE;
+
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_el->arc.end)
+      == SC_FALSE)
+    goto success;
+
+  it->results[2].addr = arc_el->arc.end;
+  it->results[2].is_accessed = SC_TRUE;
+
+success:
   sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
@@ -644,50 +687,58 @@ error:
 
 sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
 {
-  it->results[0] = it->params[0].addr;
-  it->results[1] = it->params[1].addr;
+  sc_addr const arc_begin = it->results[0].addr = it->params[0].addr;
+  sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &arc_el);
+  sc_result result = sc_storage_get_element_by_addr(arc_addr, &arc_el);
   if (result != SC_RESULT_OK)
     goto error;
 
   if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(),
-          it->ctx,
-          arc_el,
-          it->results[1],
-          SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
       == SC_FALSE)
     goto error;
+  it->results[1].is_accessed = SC_TRUE;
 
-  sc_addr arc_begin;
+  sc_addr arc_end;
   if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.begin)
-        && SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.begin) && SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.end))
       goto error;
 
-    arc_begin = _sc_iterator3_get_other_edge_incident_element(arc_el, it->results[0]);
+    arc_end = _sc_iterator3_get_other_edge_incident_element(arc_el, arc_begin);
   }
   else
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.begin))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.begin))
       goto error;
 
-    arc_begin = arc_el->arc.end;
+    arc_end = arc_el->arc.end;
   }
 
-  it->results[2] = arc_begin;
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+      == SC_FALSE)
+    goto success;
+  it->results[0].is_accessed = SC_TRUE;
 
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+      == SC_FALSE)
+    goto success;
+  it->results[2].addr = arc_end;
+  it->results[2].is_accessed = SC_TRUE;
+
+success:
   sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
@@ -700,50 +751,58 @@ error:
 
 sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
 {
-  it->results[1] = it->params[1].addr;
-  it->results[2] = it->params[2].addr;
+  sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
+  sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &arc_el);
+  sc_result result = sc_storage_get_element_by_addr(arc_addr, &arc_el);
   if (result != SC_RESULT_OK)
     goto error;
 
   if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
   if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(),
-          it->ctx,
-          arc_el,
-          it->results[1],
-          SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
       == SC_FALSE)
     goto error;
+  it->results[1].is_accessed = SC_TRUE;
 
   sc_addr arc_begin;
   if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.begin)
-        && SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.begin) && SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.end))
       goto error;
 
-    arc_begin = _sc_iterator3_get_other_edge_incident_element(arc_el, it->results[2]);
+    arc_begin = _sc_iterator3_get_other_edge_incident_element(arc_el, arc_end);
   }
   else
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.end))
       goto error;
 
     arc_begin = arc_el->arc.begin;
   }
 
-  it->results[0] = arc_begin;
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+      == SC_FALSE)
+    goto success;
+  it->results[2].is_accessed = SC_TRUE;
 
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+      == SC_FALSE)
+    goto success;
+  it->results[0].addr = arc_begin;
+  it->results[0].is_accessed = SC_TRUE;
+
+success:
   sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
@@ -756,51 +815,59 @@ error:
 
 sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
 {
-  it->results[0] = it->params[0].addr;
-  it->results[1] = it->params[1].addr;
-  it->results[2] = it->params[2].addr;
+  sc_addr const arc_begin = it->results[0].addr = it->params[0].addr;
+  sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
+  sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1]);
+  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
-  sc_result result = sc_storage_get_element_by_addr(it->results[1], &arc_el);
+  sc_result result = sc_storage_get_element_by_addr(arc_addr, &arc_el);
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(),
-          it->ctx,
-          arc_el,
-          it->results[1],
-          SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, it->results[1])
+  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
       == SC_FALSE)
     goto error;
+  it->results[1].is_accessed = SC_TRUE;
 
   if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.begin)
-        && SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.begin) && SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.end))
       goto error;
 
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.begin)
-        && SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.begin) && SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.end))
       goto error;
   }
   else
   {
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[0].addr, arc_el->arc.begin))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.begin))
       goto error;
 
-    if (SC_ADDR_IS_NOT_EQUAL(it->params[2].addr, arc_el->arc.end))
+    if (SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.end))
       goto error;
   }
 
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+      == SC_FALSE)
+    goto success;
+  it->results[0].is_accessed = SC_TRUE;
+
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+      == SC_FALSE)
+    goto success;
+  it->results[2].is_accessed = SC_TRUE;
+
+success:
   sc_monitor_release_read(monitor);
   it->finished = SC_TRUE;
   return SC_TRUE;
@@ -822,13 +889,26 @@ sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
   *result = SC_RESULT_OK;
   sc_bool status = SC_FALSE;
   if (it == null_ptr)
+  {
+    *result = SC_RESULT_NO;
     return status;
+  }
+
+  it->results[0].is_accessed = SC_FALSE;
+  it->results[1].is_accessed = SC_FALSE;
+  it->results[2].is_accessed = SC_FALSE;
 
   if (it->finished == SC_TRUE)
   {
-    it->results[0] = SC_ADDR_EMPTY;
-    it->results[1] = SC_ADDR_EMPTY;
-    it->results[2] = SC_ADDR_EMPTY;
+    it->results[0] = SC_ITERATOR_RESULT_EMPTY;
+    it->results[1] = SC_ITERATOR_RESULT_EMPTY;
+    it->results[2] = SC_ITERATOR_RESULT_EMPTY;
+    return status;
+  }
+
+  if (_sc_memory_context_is_authenticated(sc_memory_get_context_manager(), it->ctx) == SC_FALSE)
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
     return status;
   }
 
@@ -868,9 +948,9 @@ sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
 
   if (status == SC_FALSE)
   {
-    it->results[0] = SC_ADDR_EMPTY;
-    it->results[1] = SC_ADDR_EMPTY;
-    it->results[2] = SC_ADDR_EMPTY;
+    it->results[0] = SC_ITERATOR_RESULT_EMPTY;
+    it->results[1] = SC_ITERATOR_RESULT_EMPTY;
+    it->results[2] = SC_ITERATOR_RESULT_EMPTY;
   }
 
   return status;
@@ -878,13 +958,32 @@ sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result)
 
 sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint index)
 {
+  sc_result result;
+  return sc_iterator3_value_ext(it, index, &result);
+}
+
+sc_addr sc_iterator3_value_ext(sc_iterator3 * it, sc_uint index, sc_result * result)
+{
   if (it == null_ptr)
+  {
+    *result = SC_RESULT_NO;
     return SC_ADDR_EMPTY;
+  }
 
-  if (index < 3)
-    return it->results[index];
+  if (index >= 3)
+  {
+    *result = SC_RESULT_ERROR_INVALID_PARAMS;
+    return SC_ADDR_EMPTY;
+  }
 
-  return SC_ADDR_EMPTY;
+  if (it->results[index].is_accessed == SC_FALSE)
+  {
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_ADDR_EMPTY;
+  }
+
+  *result = SC_RESULT_OK;
+  return it->results[index].addr;
 }
 
 sc_bool sc_iterator_compare_type(sc_type el_type, sc_type it_type)

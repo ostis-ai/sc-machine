@@ -14,11 +14,6 @@ extern "C"
 #include "sc-core/sc_memory_headers.h"
 }
 
-namespace
-{
-#define CHECK_ITERATOR SC_CHECK(IsValid(), "Used iterator is invalid. Make sure that it's initialized")
-}  // namespace
-
 class ScMemoryContext;
 
 template <typename IterType, sc_uint8 tripleSize>
@@ -48,7 +43,7 @@ public:
   }
 
 protected:
-  IterType * m_iterator;
+  IterType * m_iterator = nullptr;
   size_t m_tripleSize = tripleSize;
 };
 
@@ -92,29 +87,52 @@ public:
 
   _SC_EXTERN bool Next() const override
   {
-    CHECK_ITERATOR;
-
     sc_result result;
-    sc_bool const status = sc_iterator3_next_ext(m_iterator, &result);
+    sc_bool status = sc_iterator3_next_ext(m_iterator, &result);
+
+    switch (result)
+    {
+    case SC_RESULT_NO:
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator3 is empty to iterate next");
+    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
+    default:
+      break;
+    }
+
     return status == SC_TRUE;
   }
 
   _SC_EXTERN ScAddr Get(size_t index) const override
   {
-    CHECK_ITERATOR;
+    sc_result result;
+    sc_addr const addr = sc_iterator3_value_ext(m_iterator, index, &result);
 
-    if (index < m_tripleSize)
-      return ScAddr(sc_iterator3_value(m_iterator, index));
+    switch (result)
+    {
+    case SC_RESULT_NO:
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator3 is empty to get element by index");
 
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+    case SC_RESULT_ERROR_INVALID_PARAMS:
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+
+    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Not able to get sc-element sc-address by index=" + std::to_string(index)
+              + " due sc-memory context has not read access levels");
+    default:
+      break;
+    }
+
+    return addr;
   }
 
   _SC_EXTERN ScAddrTriple Get() const override
   {
-    CHECK_ITERATOR;
-
     return {Get(0), Get(1), Get(2)};
   }
 };
@@ -151,29 +169,52 @@ public:
 
   _SC_EXTERN bool Next() const override
   {
-    CHECK_ITERATOR;
-
     sc_result result;
     sc_bool status = sc_iterator5_next_ext(m_iterator, &result);
+
+    switch (result)
+    {
+    case SC_RESULT_NO:
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator5 is empty to iterate next");
+    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
+    default:
+      break;
+    }
+
     return status == SC_TRUE;
   }
 
   _SC_EXTERN ScAddr Get(size_t index) const override
   {
-    CHECK_ITERATOR;
+    sc_result result;
+    sc_addr const addr = sc_iterator5_value_ext(m_iterator, index, &result);
 
-    if (index < m_tripleSize)
-      return sc_iterator5_value(m_iterator, index);
+    switch (result)
+    {
+    case SC_RESULT_NO:
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator5 is empty to get element by index");
 
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+    case SC_RESULT_ERROR_INVALID_PARAMS:
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+
+    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Not able to get sc-element sc-address by index=" + std::to_string(index)
+              + " due sc-memory context has not read access levels");
+    default:
+      break;
+    }
+
+    return addr;
   }
 
   _SC_EXTERN ScAddrQuintuple Get() const override
   {
-    CHECK_ITERATOR;
-
     return {Get(0), Get(1), Get(2), Get(3), Get(4)};
   }
 };

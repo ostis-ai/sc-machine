@@ -41,7 +41,7 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
       stat->node_count++;
     else if (sc_type_has_subtype(type, sc_type_link))
       stat->link_count++;
-    else if (sc_type_has_subtype(type, sc_type_arc_mask))
+    else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
       stat->arc_count++;
   }
 }

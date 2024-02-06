@@ -27,7 +27,7 @@ struct _sc_iterator5
 {
   sc_iterator5_type type;         // iterator type (search template)
   sc_iterator_param params[5];    // parameters array
-  sc_addr results[5];             // results array (same size as params)
+  sc_iterator_result results[5];  // results array (same size as params)
   sc_iterator3 * it_main;         // iterator of main arc
   sc_iterator3 * it_attr;         // iterator of attribute arc
   sc_memory_context const * ctx;  // pointer to used memory context
@@ -197,10 +197,12 @@ _SC_EXTERN sc_bool sc_iterator5_next_ext(sc_iterator5 * it, sc_result * result);
 
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
- * @param vid Value id (can't be more that 5 for sc-iterator5)
+ * @param index Value id (can't be more that 5 for sc-iterator5)
  * @return Return sc-addr of search result value
  */
-_SC_EXTERN sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint vid);
+_SC_EXTERN sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint index);
+
+_SC_EXTERN sc_addr sc_iterator5_value_ext(sc_iterator5 * it, sc_uint index, sc_result * result);
 
 /*! Destroy iterator and free allocated memory
  * @param it Pointer to sc-iterator that need to be destroyed

@@ -39,13 +39,32 @@ struct _sc_iterator_param
   };
 };
 
+/*! Iterator result
+ */
+struct _sc_iterator_result
+{
+  sc_addr addr;
+  sc_bool is_accessed;
+};
+
+#define SC_ITERATOR_RESULT_EMPTY \
+  (sc_iterator_result) \
+  { \
+    SC_ADDR_EMPTY, SC_TRUE \
+  }
+#define SC_ITERATOR_RESULT_WITHOUT_ACCESS \
+  (sc_iterator_result) \
+  { \
+    SC_ADDR_EMPTY, SC_FALSE \
+  }
+
 /*! Structure to store iterator information
  */
 struct _sc_iterator3
 {
   sc_iterator3_type type;         // iterator type (search template)
   sc_iterator_param params[3];    // parameters array
-  sc_addr results[3];             // results array (same size as params)
+  sc_iterator_result results[3];  // results array (same size as params)
   sc_memory_context const * ctx;  // pointer to used memory context
   sc_bool search_structure;
   sc_bool finished;
@@ -158,10 +177,12 @@ _SC_EXTERN sc_bool sc_iterator3_next_ext(sc_iterator3 * it, sc_result * result);
 
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
- * @param vid Value id (can't be more that 3 for sc-iterator3)
+ * @param index Value id (can't be more that 3 for sc-iterator3)
  * @return Return sc-addr of search result value
  */
-_SC_EXTERN sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint vid);
+_SC_EXTERN sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint index);
+
+_SC_EXTERN sc_addr sc_iterator3_value_ext(sc_iterator3 * it, sc_uint index, sc_result * result);
 
 /*! Check if specified element type passed into
  * iterator selection.

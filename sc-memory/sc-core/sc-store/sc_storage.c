@@ -18,7 +18,6 @@
 #include "sc_stream_memory.h"
 #include "sc-base/sc_allocator.h"
 #include "sc-container/sc-string/sc_string.h"
-#include "../sc_memory_context_manager.h"
 
 sc_storage * storage;
 
