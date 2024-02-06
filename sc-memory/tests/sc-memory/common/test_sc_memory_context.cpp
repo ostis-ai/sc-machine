@@ -122,15 +122,6 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & contex
   EXPECT_NO_THROW(userContext.FindLinksContentsByContentSubstring("test"));
   EXPECT_NO_THROW(userContext.HelperFindBySystemIdtf("test"));
   EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test"));
-
-  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
-  EXPECT_TRUE(it3->Next());
-
-  ScIterator5Ptr it5 = userContext.Iterator5(
-      nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
-  EXPECT_FALSE(it5->Next());
-
-  EXPECT_TRUE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, ScMemoryContext & userContext)
@@ -155,15 +146,55 @@ void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & cont
   EXPECT_THROW(userContext.FindLinksContentsByContentSubstring("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.HelperFindBySystemIdtf("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.HelperResolveSystemIdtf("test"), utils::ExceptionInvalidState);
+}
+
+void TestIteratorsFoundSuccessfully(std::unique_ptr<ScMemoryContext> const & context, ScMemoryContext & userContext)
+{
+  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
+  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
-  EXPECT_NO_THROW(it3->Next());
+  EXPECT_TRUE(it3->Next());
 
   ScIterator5Ptr it5 = userContext.Iterator5(
       nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
-  EXPECT_NO_THROW(it5->Next());
+  EXPECT_FALSE(it5->Next());
 
-  EXPECT_NO_THROW(userContext.HelperCheckEdge(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp));
+  EXPECT_TRUE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
+}
+
+void TestIteratorsFoundUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, ScMemoryContext & userContext)
+{
+  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
+  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
+
+  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  EXPECT_FALSE(it3->Next());
+
+  ScIterator5Ptr it5 = userContext.Iterator5(
+      nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
+  EXPECT_FALSE(it5->Next());
+
+  EXPECT_FALSE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
+}
+
+void TestIteratorsWithError(std::unique_ptr<ScMemoryContext> const & context, ScMemoryContext & userContext)
+{
+  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
+  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
+
+  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  EXPECT_THROW(it3->Next(), utils::ExceptionInvalidState);
+
+  ScIterator5Ptr it5 = userContext.Iterator5(
+      nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
+  EXPECT_THROW(it5->Next(), utils::ExceptionInvalidState);
+
+  EXPECT_THROW(
+      userContext.HelperCheckEdge(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
 }
 
 void TestWriteActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, ScMemoryContext & userContext)
@@ -263,6 +294,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
   EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.CreateLink(ScType::LinkConst), utils::ExceptionInvalidState);
   TestActionsUnsuccessfully(m_ctx, userContext);
+  TestIteratorsWithError(m_ctx, userContext);
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
@@ -280,6 +312,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
         TestActionsSuccessfully(m_ctx, userContext);
+        TestIteratorsFoundSuccessfully(m_ctx, userContext);
 
         isAuthenticated = true;
 
@@ -355,6 +388,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByUserWithInvalidConnectorsToAc
       [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
       {
         TestActionsUnsuccessfully(m_ctx, userContext);
+        TestIteratorsFoundUnsuccessfully(m_ctx, userContext);
         return isChecked = true;
       });
 
@@ -379,6 +413,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedAfter)
 
         ScMemoryContext userContext{userAddr};
         TestActionsSuccessfully(m_ctx, userContext);
+        TestIteratorsFoundSuccessfully(m_ctx, userContext);
 
         isChecked = true;
 
@@ -407,6 +442,7 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
 
         ScMemoryContext userContext{userAddr};
         TestActionsSuccessfully(m_ctx, userContext);
+        TestIteratorsFoundSuccessfully(m_ctx, userContext);
 
         isChecked = true;
 
@@ -423,10 +459,12 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
   {
     ScMemoryContext userContext{userAddr};
     TestActionsSuccessfully(m_ctx, userContext);
+    TestIteratorsFoundSuccessfully(m_ctx, userContext);
   }
   {
     ScMemoryContext userContext{userAddr};
     TestActionsSuccessfully(m_ctx, userContext);
+    TestIteratorsFoundSuccessfully(m_ctx, userContext);
   }
 }
 
@@ -449,6 +487,7 @@ TEST_F(
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
           TestActionsSuccessfully(m_ctx, userContext);
+          TestIteratorsFoundSuccessfully(m_ctx, userContext);
 
           isAuthenticated = true;
 
@@ -471,6 +510,7 @@ TEST_F(
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
           TestActionsUnsuccessfully(m_ctx, userContext);
+          TestIteratorsWithError(m_ctx, userContext);
 
           isAuthenticated = false;
 
@@ -496,6 +536,7 @@ TEST_F(
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
           TestActionsSuccessfully(m_ctx, userContext);
+          TestIteratorsFoundSuccessfully(m_ctx, userContext);
 
           isAuthenticated = true;
 
