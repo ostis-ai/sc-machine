@@ -404,6 +404,14 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
 #define _sc_context_remove_context_local_access_levels(_context, _removing_levels, _structure_addr) \
   _sc_context_remove_user_local_access_levels(_context->user_addr, _removing_levels, _structure_addr)
 
+/*! Function that adds a new user action class within a structure, updating access levels accordingly.
+ * @param manager Pointer to the sc-memory context manager.
+ * @param connector_addr sc-address representing the created sc-connector connecting user and action class.
+ * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
+ * structure.
+ * @note This function is called when a new user action class is added within a structure. It updates access levels
+ * for the user's sc-memory context and assigns access levels to the sc-arc connecting user and action class.
+ */
 void _sc_memory_context_manager_add_user_action_class_within_structure(
     sc_memory_context_manager * manager,
     sc_addr connector_addr,
@@ -435,6 +443,14 @@ void _sc_memory_context_manager_add_user_action_class_within_structure(
     _sc_context_add_context_local_access_levels(ctx, levels, structure_addr);
 }
 
+/*! Function that removes a user action class within a structure, adjusting access levels accordingly.
+ * @param manager Pointer to the sc-memory context manager.
+ * @param connector_addr sc-address representing the sc-connector connecting user and action class.
+ * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
+ * structure.
+ * @note This function is called when a user action class is removed within a structure. It adjusts access levels
+ * for the user's sc-memory context and removes access levels assigned to the sc-arc connecting user and action class.
+ */
 void _sc_memory_context_manager_remove_user_action_class_within_structure(
     sc_memory_context_manager * manager,
     sc_addr connector_addr,
@@ -466,6 +482,18 @@ void _sc_memory_context_manager_remove_user_action_class_within_structure(
     _sc_context_remove_context_local_access_levels(ctx, levels, structure_addr);
 }
 
+/*! Callback function triggered when a new user action class is added within a structure.
+ * @param event Pointer to the sc-event triggering the addition of the action class within a structure.
+ * @param initiator_addr sc-address representing the user that initiated this request.
+ * @param connector_addr sc-address representing created sc-connector connecting user and action class within a
+ * structure.
+ * @param connector_type sc-type of the created sc-connector.
+ * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
+ * structure.
+ * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to a sc-event and is responsible for handling the addition of a user
+ * action class within a structure.
+ */
 sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -495,6 +523,17 @@ sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
   return SC_RESULT_OK;
 }
 
+/*! Callback function triggered when a user action class is removed within a structure.
+ * @param event Pointer to the sc-event triggering the removal of the action class within a structure.
+ * @param initiator_addr sc-address representing the user that initiated this request.
+ * @param connector_addr sc-address representing sc-connector connecting user and action class within a structure.
+ * @param connector_type sc-type of the sc-connector.
+ * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
+ * structure.
+ * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ * @note This function is called in response to a sc-event and is responsible for handling the removal of a user
+ * action class within a structure.
+ */
 sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structure(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -523,6 +562,18 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
   return SC_RESULT_OK;
 }
 
+/*! Function that iterates through all output arcs from a specified accessed relation with a given arc mask,
+ * invoking a provided handler function for each matching arc.
+ * @param manager Pointer to the sc-memory context manager.
+ * @param accessed_relation sc-address representing the accessed relation for which output arcs are iterated.
+ * @param arc_mask sc-type mask used to filter the output arcs.
+ * @param handler Function pointer to the handler function that is invoked for each matching arc.
+ *                The handler function must have the signature: void handler(sc_memory_context_manager * manager,
+ *                sc_addr arc_addr, sc_addr target_arc_addr).
+ * @note This function iterates through all output arcs from the specified accessed relation that match the provided arc
+ * mask. For each matching arc, the handler function is called, providing the sc-memory context manager, arc address,
+ * and target arc address.
+ */
 void _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relation(
     sc_memory_context_manager * manager,
     sc_addr const accessed_relation,

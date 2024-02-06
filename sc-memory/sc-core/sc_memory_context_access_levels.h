@@ -43,141 +43,100 @@
     _element_access_levels; \
   })
 
-/*! Function that creates a memory context for an authenticated user with specified parameters.
- * @param event Pointer to the sc-event triggering the context creation.
- * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector to the user.
- * @param connector_type sc-type of created sc-connector to the user.
- * @param user_addr sc-address representing the authenticated user for whom the context is created.
- * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
- * @note This function is called in response to a sc-event and is responsible for creating a new memory context
- * for an authenticated user and establishing a connection between user and the context.
+/*! Function that handles all user access levels by iterating through relevant relations and invoking corresponding
+ * handlers.
+ * @param manager Pointer to the sc-memory context manager.
+ * @note This function is responsible for handling all user access levels within the given memory context manager.
+ * It achieves this by iterating through specific relations related to user action classes and user action classes
+ * within SC structures. For each relevant relation, the corresponding handler function is invoked to manage the access
+ * levels accordingly. The handlers used are:
+ * - _sc_memory_context_manager_add_user_action_class: Adds a new user action class and updates access levels.
+ * - _sc_memory_context_manager_add_user_action_class_within_structure: Adds a new user action class within a structure
+ * and updates access levels.
+ * - _sc_memory_context_manager_remove_user_action_class_within_structure: Removes a user action class within a
+ * structure and adjusts access levels.
  */
-sc_result _sc_memory_context_manager_on_authentication_request_user(
-    sc_event const * event,
-    sc_addr initiator_addr,
-    sc_addr connector_addr,
-    sc_type connector_type,
-    sc_addr user_addr);
-
-/*! Function that handles the removal of authentication for a user and its associated memory context.
- * @param event Pointer to the sc-event triggering the context removal.
- * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing removed sc-connector to the authenticated user.
- * @param connector_type sc-type of created sc-connector to the user.
- * @param user_addr sc-address representing the user whose authentication is being revoked.
- * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
- * @note This function is called in response to a sc-event and is responsible for removing authentication
- * for user and its associated memory context.
- */
-sc_result _sc_memory_context_manager_on_unauthentication_request_user(
-    sc_event const * event,
-    sc_addr initiator_addr,
-    sc_addr connector_addr,
-    sc_type connector_type,
-    sc_addr user_addr);
-
-/*! Function that appends access levels for a memory context by adding relation between user and action class.
- * @param event Pointer to the sc-event triggering the addition of the action class.
- * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector to sc-pair with user and action class which this
- * use can complete.
- * @param connector_type sc-type of created sc-connector to sc-pair with user and action class.
- * @param arc_to_action_class_addr sc-address representing sc-pair with user and action class.
- * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
- * @note The function is called in response to a sc-event and is responsible for appending access levels for users and
- * its sc-memory contexts. It works this way:
- * 1. Some user (with sc-address `initiator_addr`) adds possible action class for other user (with sc-address
- * `user_addr`).
- *
- * user_addr ===========> action_class_addr
- *                 |.\
- *                  .
- *                  .
- *                  .
- *       nrel_user_action_class_addr
- * 2. This callback must be called by adding sc-arc from sc-relation with sc-address `nrel_user_action_class`, then
- * this callback add access levels for user sc-memory context and assigns access levels to this sc-arc.
- */
-sc_result _sc_memory_context_manager_on_new_user_action_class(
-    sc_event const * event,
-    sc_addr initiator_addr,
-    sc_addr connector_addr,
-    sc_type connector_type,
-    sc_addr arc_to_action_class_addr);
-
-/**
- * @brief Handles the removal of an action class from a user in the sc-memory context manager.
- *
- * This function is triggered by an sc-event when an action class is removed from a user. It updates the
- * access levels of the user or its sc-memory context accordingly.
- *
- * @param event Pointer to the sc-event triggering the removal of the action class.
- * @param initiator_addr sc-address representing the user that initiated this removal request.
- * @param connector_addr sc-address representing the created sc-connector to sc-pair with the user and action class
- *                      which this user can complete (unused).
- * @param connector_type sc-type of the created sc-connector to sc-pair with the user and action class.
- * @param arc_to_action_class_addr sc-address representing the sc-pair with the user and action class.
- * @return Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
- */
-sc_result _sc_memory_context_manager_on_remove_user_action_class(
-    sc_event const * event,
-    sc_addr initiator_addr,
-    sc_addr connector_addr,
-    sc_type connector_type,
-    sc_addr arc_to_action_class_addr);
-
 void _sc_memory_context_handle_all_user_access_levels(sc_memory_context_manager * manager);
 
 /*! Function that registers event subscriptions for user authentication and unauthentication.
- * @param manager Pointer to the memory context manager for which events are registered.
+ * @param manager Pointer to the sc-memory context manager for which events are registered.
  * @note This function sets up event subscriptions for user authentication and unauthentication events.
  */
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager);
 
 /*! Function that unregisters event subscriptions for user authentication and unauthentication.
- * @param manager Pointer to the memory context manager for which events are unregistered.
+ * @param manager Pointer to the sc-memory context manager for which events are unregistered.
  * @note This function releases resources associated with event subscriptions for user authentication and
  * unauthentication.
  */
 void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager);
 
 /*! Function that checks if a memory context is authorized.
- * @param manager Pointer to the memory context manager responsible for context authentication checks.
- * @param ctx Pointer to the memory context to be checked for authentication.
+ * @param manager Pointer to the sc-memory context manager responsible for context authentication checks.
+ * @param ctx Pointer to the sc-memory context to be checked for authentication.
  * @returns Returns SC_TRUE if the context is authorized, SC_FALSE otherwise.
  * @note This function checks if a memory context is authorized based on the access levels.
  */
 sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager, sc_memory_context const * ctx);
 
+/*! Function that checks if an element is an accessed structure within a specific memory context.
+ * @param manager Pointer to the sc-memory context manager.
+ * @param ctx Pointer to the sc-memory context in which the check is performed.
+ * @param action_class_access_levels Access levels associated with the action class for the check.
+ * @param element_addr sc-address representing the element to be checked.
+ * @returns Returns SC_TRUE if the element is an accessed structure with the specified access levels, otherwise
+ * SC_FALSE.
+ * @note This function checks if the provided element is an accessed structure within the given memory context. It
+ * compares the access levels associated with the element against the access levels of the action class. If the access
+ * levels match, the function returns SC_TRUE; otherwise, it returns SC_FALSE.
+ */
 sc_bool _sc_memory_context_check_if_is_accessed_structure(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_access_levels action_class_access_levels,
     sc_addr element_addr);
 
+/*! Function that checks local access levels for a given element within a specific memory context.
+ * @param manager Pointer to the sc-memory context manager.
+ * @param ctx Pointer to the sc-memory context in which the check is performed.
+ * @param action_class_access_levels Access levels associated with the action class for the check.
+ * @param element_addr sc-address representing the element to be checked.
+ * @returns Returns SC_RESULT_OK if the local access levels match the action class access levels, otherwise
+ * SC_RESULT_NO.
+ * @note This function checks the local access levels associated with the provided element within the given memory
+ * context. It compares the local access levels against the access levels of the action class. If the access levels
+ * match, the function returns SC_RESULT_OK; otherwise, it returns SC_RESULT_NO.
+ */
 sc_result _sc_memory_context_check_local_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_access_levels action_class_access_levels,
     sc_addr element_addr);
 
-/**
- * @brief Checks if the sc-memory context has access to a given action class.
- *
- * This function checks if the sc-memory context has access to a specified action class based on
- * the provided access levels.
- *
+/*! Function that checks global access levels for a given memory context.
  * @param manager Pointer to the sc-memory context manager.
- * @param ctx Pointer to the sc-memory context to be checked.
- * @param action_class_access_levels Access levels required for the action class.
- * @return Returns SC_TRUE if the sc-memory context has access; otherwise, returns SC_FALSE.
+ * @param ctx Pointer to the sc-memory context for which global access levels are checked.
+ * @param action_class_access_levels Access levels associated with the action class for the check.
+ * @returns Returns SC_TRUE if the global access levels match the action class access levels, otherwise SC_FALSE.
+ * @note This function checks the global access levels associated with the provided memory context against the access
+ * levels of the action class. If the access levels match, the function returns SC_TRUE; otherwise, it returns SC_FALSE.
  */
 sc_bool _sc_memory_context_check_global_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_access_levels action_class_access_levels);
 
+/*! Function that checks both local and global access levels for a given element within a specific memory context.
+ * @param manager Pointer to the sc-memory context manager.
+ * @param ctx Pointer to the sc-memory context in which the check is performed.
+ * @param action_class_access_levels Access levels associated with the action class for the check.
+ * @param element_addr sc-address representing the element to be checked.
+ * @returns Returns SC_TRUE if either local or global access levels match the action class access levels, otherwise
+ * SC_FALSE.
+ * @note This function checks both local and global access levels associated with the provided element within the given
+ * memory context. If either the local or global access levels match the access levels of the action class, the function
+ * returns SC_TRUE; otherwise, it returns SC_FALSE.
+ */
 sc_bool _sc_memory_context_check_local_and_global_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,

@@ -31,7 +31,7 @@ extern sc_memory_context * s_memory_default_ctx;
   (SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS | SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS \
    | SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS)
 
-/*! Function that initializes the memory context manager with specified parameters.
+/*! Function that initializes the sc-memory context manager with specified parameters.
  * @param manager Pointer to a pointer that will store the newly created memory context manager.
  * @param myself_addr sc-address representing the identity of the system.
  * @param user_mode Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
@@ -44,7 +44,7 @@ void _sc_memory_context_manager_initialize(
     sc_bool user_mode);
 
 /*! Function that unregisters event subscriptions for user authentication and unauthentication.
- * @param manager Pointer to the memory context manager for which events are unregistered.
+ * @param manager Pointer to the sc-memory context manager for which events are unregistered.
  * @note This function releases resources associated with event subscriptions for user authentication and
  * unauthentication.
  */
@@ -59,7 +59,7 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
 sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr user_addr);
 
 /*! Function that retrieves an existing memory context for a specified user.
- * @param manager Pointer to the memory context manager responsible for context retrieval.
+ * @param manager Pointer to the sc-memory context manager responsible for context retrieval.
  * @param user_addr sc-address representing the user for whom the context is retrieved.
  * @returns Returns a pointer to the existing memory context for the specified user. If the context does not exist,
  * returns null_ptr.
@@ -69,7 +69,7 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
 sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * manager, sc_addr user_addr);
 
 /*! Function that resolves a memory context for a specified user, creating a new one if it does not exist.
- * @param manager Pointer to the memory context manager responsible for context resolution.
+ * @param manager Pointer to the sc-memory context manager responsible for context resolution.
  * @param user_addr sc_addr representing the user for whom the context is resolved.
  * @returns Returns a pointer to the resolved memory context. If an error occurs during resolution, returns null_ptr.
  * @note This function resolves a memory context for the specified user. If the context does not exist, it creates a new
@@ -78,8 +78,8 @@ sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * mana
 sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr user_addr);
 
 /*! Function that frees a memory context, removing it from the context manager.
- * @param manager Pointer to the memory context manager responsible for context removal.
- * @param ctx Pointer to the memory context to be freed.
+ * @param manager Pointer to the sc-memory context manager responsible for context removal.
+ * @param ctx Pointer to the sc-memory context to be freed.
  * @note This function frees a memory context, removing it from the manager's context hash table and releasing
  * associated resources.
  */
@@ -88,25 +88,25 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx);
 
 /*! Function that marks the beginning of a pending events block in a memory context.
- * @param ctx Pointer to the memory context for which the pending events block begins.
- * @note This function marks the beginning of a pending events block in the memory context.
+ * @param ctx Pointer to the sc-memory context for which the pending events block begins.
+ * @note This function marks the beginning of a pending events block in the sc-memory context.
  */
 void _sc_memory_context_pending_begin(sc_memory_context * ctx);
 
 /*! Function that marks the end of a pending events block in a memory context, emitting pending events.
- * @param ctx Pointer to the memory context for which the pending events block ends.
- * @note This function marks the end of a pending events block in the memory context, emitting all pending events.
+ * @param ctx Pointer to the sc-memory context for which the pending events block ends.
+ * @note This function marks the end of a pending events block in the sc-memory context, emitting all pending events.
  */
 void _sc_memory_context_pending_end(sc_memory_context * ctx);
 
 /*! Function that adds an event to the pending events list in a memory context.
- * @param ctx Pointer to the memory context to which the event is added.
+ * @param ctx Pointer to the sc-memory context to which the event is added.
  * @param type Type of the event to be added.
  * @param subscription_addr sc_addr representing the sc-element associated with the event.
  * @param connector_addr sc-address representing the sc-connector associated with the event.
  * @param connector_type sc-type representing the sc-connector associated with the event.
  * @param other_addr sc-address representing the other sc-element associated with the event.
- * @note This function adds an event to the pending events list in the memory context, to be emitted later.
+ * @note This function adds an event to the pending events list in the sc-memory context, to be emitted later.
  */
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
@@ -117,8 +117,8 @@ void _sc_memory_context_pend_event(
     sc_addr other_addr);
 
 /*! Function that emits pending events in a memory context.
- * @param ctx Pointer to the memory context for which pending events are emitted.
- * @note This function emits all pending events in the memory context, clearing the pending events list afterward.
+ * @param ctx Pointer to the sc-memory context for which pending events are emitted.
+ * @note This function emits all pending events in the sc-memory context, clearing the pending events list afterward.
  */
 void _sc_memory_context_emit_events(sc_memory_context const * ctx);
 

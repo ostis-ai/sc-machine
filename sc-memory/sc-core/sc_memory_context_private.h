@@ -47,13 +47,13 @@ struct _sc_memory_context_manager
  */
 struct _sc_memory_context
 {
-  sc_addr user_addr;                      ///< sc-address representing the user associated with the memory context.
-  sc_uint32 ref_count;                    ///< Reference count to manage the number of references to the memory context.
+  sc_addr user_addr;    ///< sc-address representing the user associated with the sc-memory context.
+  sc_uint32 ref_count;  ///< Reference count to manage the number of references to the sc-memory context.
   sc_access_levels global_access_levels;  ///< Global access levels within the knowledge base.
   sc_hash_table * local_access_levels;    ///< Local access levels within sc-structures.
-  sc_uint8 flags;                         ///< Flags indicating the state of the memory context.
-  sc_hash_table_list * pend_events;       ///< List of pending events to be emitted in the memory context.
-  sc_monitor monitor;                     ///< Monitor for synchronizing access to the memory context.
+  sc_uint8 flags;                         ///< Flags indicating the state of the sc-memory context.
+  sc_hash_table_list * pend_events;       ///< List of pending events to be emitted in the sc-memory context.
+  sc_monitor monitor;                     ///< Monitor for synchronizing access to the sc-memory context.
 };
 
 /*!
