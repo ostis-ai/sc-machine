@@ -386,7 +386,7 @@ sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_add
   return sc_storage_change_element_subtype(ctx, addr, type);
 }
 
-sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
+sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
@@ -396,10 +396,18 @@ sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, s
       == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
 
-  return sc_storage_get_arc_begin(ctx, addr, result);
+  sc_result const result = sc_storage_get_arc_begin(ctx, addr, begin_addr);
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_access_levels(
+             memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ, *begin_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+
+  return result;
 }
 
-sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
+sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * end_addr)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
@@ -409,14 +417,18 @@ sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_
       == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
 
-  return sc_storage_get_arc_end(ctx, addr, result);
+  sc_result const result = sc_storage_get_arc_end(ctx, addr, end_addr);
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_access_levels(
+             memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ, *end_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+
+  return result;
 }
 
-sc_result sc_memory_get_arc_info(
-    sc_memory_context const * ctx,
-    sc_addr addr,
-    sc_addr * result_start_addr,
-    sc_addr * result_end_addr)
+sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr, sc_addr * end_addr)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
@@ -426,7 +438,21 @@ sc_result sc_memory_get_arc_info(
       == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
 
-  return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
+  sc_result const result = sc_storage_get_arc_info(ctx, addr, begin_addr, end_addr);
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_access_levels(
+             memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ, *begin_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_access_levels(
+             memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ, *end_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+
+  return result;
 }
 
 sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const * stream)
