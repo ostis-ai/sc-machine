@@ -635,10 +635,10 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
 void _PushLinkAddr(void * _data, sc_addr const link_addr)
 {
   void ** data = ((void **)_data);
-  auto * ctx = (ScMemoryContext *)data[0];
+  auto * ctx = (sc_memory_context *)data[0];
 
   if (_sc_memory_context_check_local_and_global_access_levels(
-          (sc_memory_context_manager *)sc_memory_get_context_manager(), **ctx, SC_CONTEXT_ACCESS_LEVEL_READ, link_addr)
+          (sc_memory_context_manager *)sc_memory_get_context_manager(), ctx, SC_CONTEXT_ACCESS_LEVEL_READ, link_addr)
       == SC_FALSE)
     return;
 
@@ -646,13 +646,15 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
   linkAddrList->emplace_back(link_addr);
 }
 
-#define _MAKE_DATA(context_ptr, list_ptr) \
+#define _MAKE_DATA(_context_ptr, _list_ptr) \
   ({ \
-    void * data[2]; \
-    data[0] = context_ptr; \
-    data[1] = list_ptr; \
-    data; \
+    void ** _data = new void *[2]; \
+    _data[0] = _context_ptr; \
+    _data[1] = _list_ptr; \
+    _data; \
   })
+
+#define _ERASE_DATA(_data) delete[] _data
 
 ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
 {
@@ -662,8 +664,10 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content");
 
   ScAddrVector linkAddrList;
-  sc_result const result = sc_memory_find_links_with_content_string_ext(
-      m_context, stream->m_stream, _MAKE_DATA(this, &linkAddrList), _PushLinkAddr);
+  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
+  sc_result const result =
+      sc_memory_find_links_with_content_string_ext(m_context, stream->m_stream, data, _PushLinkAddr);
+  _ERASE_DATA(data);
 
   switch (result)
   {
@@ -694,8 +698,10 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
         utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring");
 
   ScAddrVector linkAddrList;
+  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
   sc_result const result = sc_memory_find_links_by_content_substring_ext(
-      m_context, stream->m_stream, maxLengthToSearchAsPrefix, _MAKE_DATA(this, &linkAddrList), _PushLinkAddr);
+      m_context, stream->m_stream, maxLengthToSearchAsPrefix, data, _PushLinkAddr);
+  _ERASE_DATA(data);
 
   switch (result)
   {
