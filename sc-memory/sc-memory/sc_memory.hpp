@@ -556,6 +556,7 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & stream) noexcept(false);
 
@@ -568,6 +569,7 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext ctx;
@@ -594,6 +596,7 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext ctx;
@@ -621,6 +624,7 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN ScAddrVector
   FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
@@ -723,7 +727,7 @@ public:
    * @param fn The function to be called for each result.
    *
    * @note fn function should have 3 parameters (ScAddr const & source, ScAddr const & edge, ScAddr const & target).
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
   void ForEachIter3(ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3, FnT && fn)
@@ -753,7 +757,7 @@ public:
    *
    * @note fn function should have 4 parameters (ScAddr const & source, ScAddr const & edge, ScAddr const & target,
    * ScAddr const & attrEdge, ScAddr const & attr)
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN template <
       typename ParamType1,
@@ -811,7 +815,7 @@ public:
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
    * or resolving sc-element type is not ScType::Node subtype
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read, write and erase access
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase access
    * levels.
    *
    * @code
@@ -841,7 +845,7 @@ public:
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
               or resolving sc-element type is not ScType::Node subtype.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read, write and erase access
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase access
    levels.
    *
    * @code
@@ -927,7 +931,7 @@ public:
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext ctx;
@@ -947,7 +951,7 @@ public:
    * @return Returns the sc-address of the found sc-element.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext ctx;
@@ -968,7 +972,7 @@ public:
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext ctx;
@@ -987,7 +991,7 @@ public:
    * @param params A map of specified sc-template sc-variables to user replacements.
    * @param resultCode A pointer to status of method completion.
    * @return Returns true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
-   * @throws utils::ExceptionInvalidState if sc-template is not valid
+   * @throws utils::ExceptionInvalidState if sc-template is not valid.
    *
    * @code
    * ...

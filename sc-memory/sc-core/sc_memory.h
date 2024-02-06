@@ -126,7 +126,7 @@ _SC_EXTERN sc_memory_context * sc_memory_context_new_ext(sc_addr user_addr);
 /*!
  * Frees an sc-memory context.
  *
- * This function destroys the memory context that was created using `sc_memory_context_new_ext`.
+ * This function destroys the sc-memory context that was created using `sc_memory_context_new_ext`.
  *
  * @param ctx Pointer to the sc-memory context to be freed.
  *
@@ -140,7 +140,7 @@ _SC_EXTERN void sc_memory_context_free(sc_memory_context * ctx);
  *
  * In this mode, all new emitted events will be pending until `sc_memory_context_pending_end` is called.
  *
- * @param ctx Pointer to the memory context.
+ * @param ctx Pointer to the sc-memory context.
  *
  * @note Use this function to start a pending mode for events emitted by the specified context.
  * @see sc_memory_context_pending_end
@@ -153,7 +153,7 @@ _SC_EXTERN void sc_memory_context_pending_begin(sc_memory_context * ctx);
  * This function ends the pending mode for events emitted by the specified context.
  * All pending events will be emitted when this function is called.
  *
- * @param ctx Pointer to the memory context.
+ * @param ctx Pointer to the sc-memory context.
  *
  * @note Use this function to end the pending mode for events emitted by the specified context.
  * @see sc_memory_context_pending_begin
@@ -520,7 +520,7 @@ _SC_EXTERN sc_result sc_memory_change_element_subtype(sc_memory_context const * 
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-connector for which to retrieve the begin sc-addr.
- * @param result_begin_addr Pointer to a variable that will store the result (begin sc-addr)
+ * @param begin_addr Pointer to a variable that will store the result (begin sc-addr)
  *                          of the operation. It can be NULL if the result is not needed.
  *
  * @return Returns the result of the operation. If successful, the function returns
@@ -538,7 +538,7 @@ _SC_EXTERN sc_result sc_memory_change_element_subtype(sc_memory_context const * 
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
  * access levels.
  */
-_SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result_begin_addr);
+_SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr);
 
 /*!
  * @brief Retrieves the end sc-addr of the specified sc-arc.
@@ -548,7 +548,7 @@ _SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_a
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-connector for which to retrieve the end sc-addr.
- * @param result_end_addr Pointer to a variable that will store the result (end sc-addr)
+ * @param end_addr Pointer to a variable that will store the result (end sc-addr)
  *                        of the operation. It can be NULL if the result is not needed.
  *
  * @return Returns the result of the operation. If successful, the function returns
@@ -566,7 +566,7 @@ _SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_a
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
  * access levels.
  */
-_SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result_end_addr);
+_SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * end_addr);
 
 /*!
  * @brief Retrieves the begin and end sc-addrs of the specified sc-arc.
@@ -576,9 +576,9 @@ _SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_add
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-connector for which to retrieve the begin and end sc-addrs.
- * @param result_begin_addr Pointer to a variable that will store the result (begin sc-addr)
+ * @param begin_addr Pointer to a variable that will store the result (begin sc-addr)
  *                          of the operation. It can be NULL if the result is not needed.
- * @param result_end_addr Pointer to a variable that will store the result (end sc-addr)
+ * @param end_addr Pointer to a variable that will store the result (end sc-addr)
  *                        of the operation. It can be NULL if the result is not needed.
  *
  * @return Returns the result of the operation. If successful, the function returns
@@ -596,11 +596,8 @@ _SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_add
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
  * access levels.
  */
-_SC_EXTERN sc_result sc_memory_get_arc_info(
-    sc_memory_context const * ctx,
-    sc_addr addr,
-    sc_addr * result_begin_addr,
-    sc_addr * result_end_addr);
+_SC_EXTERN sc_result
+sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr, sc_addr * end_addr);
 
 /*!
  * @brief Sets the content of the specified sc-link.
@@ -696,8 +693,8 @@ _SC_EXTERN sc_result sc_memory_set_link_content_ext(
  * @retval SC_RESULT_ERROR_STREAM_IO Error occurred while processing the stream.
  * @retval SC_RESULT_ERROR_FILE_MEMORY_IO Error occurred during file/memory operations.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- *@retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- *access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
+ * access levels.
  */
 _SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream);
 
