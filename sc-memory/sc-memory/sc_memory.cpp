@@ -827,46 +827,9 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
 
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
-  CHECK_CONTEXT;
-  sc_result const result =
-      sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size());
-
-  switch (result)
-  {
-  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to set system identifier");
-
-  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
-
-  case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set system identifier");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set system identifier due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to set system identifier due sc-memory context hasn't read access levels");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to set system identifier due sc-memory context hasn't write access levels");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to set system identifier due sc-memory context hasn't erase access levels");
-
-  default:
-    break;
-  }
-
-  return result == SC_RESULT_OK;
+  ScSystemIdentifierQuintuple quintuple;
+  return HelperSetSystemIdtf(sysIdtf, addr, quintuple);
+  ;
 }
 
 bool ScMemoryContext::HelperSetSystemIdtf(
@@ -901,6 +864,11 @@ bool ScMemoryContext::HelperSetSystemIdtf(
         utils::ExceptionInvalidState,
         "Not able to set system identifier due sc-memory context hasn't write access levels");
 
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to set system identifier due sc-memory context hasn't erase access levels");
+
   default:
     break;
   }
@@ -927,11 +895,6 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to get system identifier due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to get system identifier due sc-memory context hasn't read access levels");
 
   default:
     break;
@@ -963,10 +926,6 @@ bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType c
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to check sc-connector due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to check sc-connector due sc-memory context hasn't read access levels");
 
   default:
     break;
@@ -1016,11 +975,6 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to find by system identifier due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find by system identifier due sc-memory context hasn't read access levels");
 
   default:
     break;
