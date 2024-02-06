@@ -495,42 +495,84 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
   return sc_storage_get_link_content(ctx, addr, stream);
 }
 
+void _push_link_hash(void * data, sc_addr const link_addr)
+{
+  sc_list_push_back((sc_list *)data, (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(link_addr));
+}
+
 sc_result sc_memory_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result)
+    sc_list ** result_hashes)
+{
+  sc_list_init(result_hashes);
+  return sc_memory_find_links_with_content_string_ext(ctx, stream, *result_hashes, _push_link_hash);
+}
+
+sc_result sc_memory_find_links_with_content_string_ext(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    void * data,
+    void (*callback)(void * data, sc_addr const link_addr))
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
-      == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
-
-  return sc_storage_find_links_with_content_string(ctx, stream, result);
+  return sc_storage_find_links_with_content_string(ctx, stream, data, callback);
 }
 
 sc_result sc_memory_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result,
-    sc_uint32 max_length_to_search_as_prefix)
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** result_hashes)
+{
+  sc_list_init(&*result_hashes);
+  return sc_memory_find_links_by_content_substring_ext(
+      ctx, stream, max_length_to_search_as_prefix, *result_hashes, _push_link_hash);
+}
+
+sc_result sc_memory_find_links_by_content_substring_ext(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_uint32 max_length_to_search_as_prefix,
+    void * data,
+    void (*callback)(void * data, sc_addr const link_addr))
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
-      == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+  return sc_storage_find_links_by_content_substring(ctx, stream, max_length_to_search_as_prefix, data, callback);
+}
 
-  return sc_storage_find_links_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
+void _test_push_link_content(void * data, sc_addr const link_addr, sc_char const * link_content)
+{
+  sc_unused(link_addr);
+
+  sc_uint32 const size = sc_str_len(link_content);
+  sc_char * copied_string;
+  sc_str_cpy(copied_string, link_content, size);
+
+  sc_list_push_back((sc_list *)data, (sc_pointer)copied_string);
 }
 
 sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result,
-    sc_uint32 max_length_to_search_as_prefix)
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** strings)
+{
+  sc_list_init(&*strings);
+  return sc_memory_find_links_contents_by_content_substring_ext(
+      ctx, stream, max_length_to_search_as_prefix, *strings, _test_push_link_content);
+}
+
+sc_result sc_memory_find_links_contents_by_content_substring_ext(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_uint32 max_length_to_search_as_prefix,
+    void * data,
+    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content))
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
@@ -539,7 +581,8 @@ sc_result sc_memory_find_links_contents_by_content_substring(
       == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
 
-  return sc_storage_find_links_contents_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
+  return sc_storage_find_links_contents_by_content_substring(
+      ctx, stream, max_length_to_search_as_prefix, data, callback);
 }
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)

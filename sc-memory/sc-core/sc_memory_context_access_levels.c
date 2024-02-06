@@ -541,6 +541,7 @@ void _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relatio
     sc_addr const target_arc_addr = sc_iterator3_value(it3, 2);
     handler(manager, arc_addr, target_arc_addr);
   }
+  sc_iterator3_free(it3);
 }
 
 void _sc_memory_context_handle_all_user_access_levels(sc_memory_context_manager * manager)
@@ -650,6 +651,9 @@ void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager
 
   sc_event_destroy(manager->on_new_user_action_class);
   sc_event_destroy(manager->on_remove_user_action_class);
+
+  sc_event_destroy(manager->on_new_user_action_class_within_sc_structure);
+  sc_event_destroy(manager->on_remove_user_action_class_within_sc_structure);
 }
 
 // If the system is not in user mode, grant access
@@ -744,6 +748,20 @@ sc_bool _sc_memory_context_check_global_access_levels(
   // Check if the sc-memory context has access to the action class
   sc_bool result = sc_context_check_context_access_levels(context_access_levels, action_class_access_levels);
   return result;
+}
+
+sc_bool _sc_memory_context_check_local_and_global_access_levels(
+    sc_memory_context_manager * manager,
+    sc_memory_context const * ctx,
+    sc_access_levels action_class_access_levels,
+    sc_addr element_addr)
+{
+  sc_result const result =
+      _sc_memory_context_check_local_access_levels(manager, ctx, action_class_access_levels, element_addr);
+  return result == SC_RESULT_OK
+         || (result == SC_RESULT_UNKNOWN
+             && _sc_memory_context_check_global_access_levels(manager, ctx, action_class_access_levels))
+                == SC_TRUE;
 }
 
 sc_bool _sc_memory_context_check_global_access_levels_to_read_access_levels(

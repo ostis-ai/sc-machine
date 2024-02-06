@@ -710,7 +710,7 @@ _SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, s
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search string.
- * @param result_addrs The list containing the hash values of sc-links with content
+ * @param result_hashes The list containing the hash values of sc-links with content
  *                      matching the specified string.
  *
  * @note The caller is responsible for handling any errors indicated by the result value.
@@ -723,13 +723,11 @@ _SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, s
  * @retval SC_RESULT_ERROR_STREAM_IO: An error occurred during stream I/O.
  * @retval SC_RESULT_ERROR_FILE_MEMORY_IO: An error occurred during file memory I/O.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
  */
 _SC_EXTERN sc_result sc_memory_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result_addrs);
+    sc_list ** result_hashes);
 
 /*!
  * @brief Finds sc-links with content containing the specified substring.
@@ -753,14 +751,12 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content_string(
  * @retval SC_RESULT_NO_STRING: The operation was unsuccessful. Sc-links wasn't found by content substring.
  * @retval SC_RESULT_ERROR_STREAM_IO: An error occurred during stream I/O.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
  */
 _SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result_hashes,
-    sc_uint32 max_length_to_search_as_prefix);
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** result_hashes);
 
 /*!
  * @brief Finds sc-link contents containing the specified substring.
@@ -791,8 +787,8 @@ _SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
 _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result_strings,
-    sc_uint32 max_length_to_search_as_prefix);
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** result_strings);
 
 /*!
  * @brief Retrieves statistics for sc-storage elements.

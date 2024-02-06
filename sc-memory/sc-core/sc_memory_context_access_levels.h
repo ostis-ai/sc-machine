@@ -162,16 +162,6 @@ sc_result _sc_memory_context_check_local_access_levels(
     sc_access_levels action_class_access_levels,
     sc_addr element_addr);
 
-#define _sc_memory_context_check_local_and_global_access_levels(_manager, _context, _check_access_levels, _addr) \
-  ({ \
-    sc_result const _check_result = \
-        _sc_memory_context_check_local_access_levels(_manager, _context, _check_access_levels, _addr); \
-    (_check_result == SC_RESULT_OK \
-     || (_check_result == SC_RESULT_UNKNOWN \
-         && _sc_memory_context_check_global_access_levels(_manager, _context, _check_access_levels)) \
-            == SC_TRUE); \
-  })
-
 /**
  * @brief Checks if the sc-memory context has access to a given action class.
  *
@@ -187,6 +177,12 @@ sc_bool _sc_memory_context_check_global_access_levels(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_access_levels action_class_access_levels);
+
+sc_bool _sc_memory_context_check_local_and_global_access_levels(
+    sc_memory_context_manager * manager,
+    sc_memory_context const * ctx,
+    sc_access_levels action_class_access_levels,
+    sc_addr element_addr);
 
 /**
  * @brief Checks if the sc-memory context has read access to a specified element.

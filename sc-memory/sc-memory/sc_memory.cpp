@@ -13,14 +13,13 @@
 
 #include "utils/sc_log.hpp"
 
-#include <cstdlib>
-#include <ctime>
 #include <iostream>
-#include <utility>
 
 extern "C"
 {
-#include <glib.h>
+#include "sc-core/sc_memory_private.h"
+#include "sc-core/sc_memory_context_private.h"
+#include "sc-core/sc_memory_context_access_levels.h"
 }
 
 SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
@@ -633,6 +632,28 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
   return std::make_shared<ScStream>(s);
 }
 
+void _PushLinkAddr(void * _data, sc_addr const link_addr)
+{
+  void ** data = ((void **)_data);
+  auto * ctx = (ScMemoryContext *)data[0];
+
+  if (_sc_memory_context_check_local_and_global_access_levels(
+          (sc_memory_context_manager *)sc_memory_get_context_manager(), **ctx, SC_CONTEXT_ACCESS_LEVEL_READ, link_addr)
+      == SC_FALSE)
+    return;
+
+  auto * linkAddrList = (ScAddrVector *)data[1];
+  linkAddrList->emplace_back(link_addr);
+}
+
+#define _MAKE_DATA(context_ptr, list_ptr) \
+  ({ \
+    void * data[2]; \
+    data[0] = context_ptr; \
+    data[1] = list_ptr; \
+    data; \
+  })
+
 ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
 {
   CHECK_CONTEXT;
@@ -640,11 +661,9 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
   if (!stream || !stream->IsValid())
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content");
 
-  ScAddrVector contents;
-  sc_list * found_links = nullptr;
-
-  sc_stream * str = stream->m_stream;
-  sc_result const result = sc_memory_find_links_with_content_string(m_context, str, &found_links);
+  ScAddrVector linkAddrList;
+  sc_result const result = sc_memory_find_links_with_content_string_ext(
+      m_context, stream->m_stream, _MAKE_DATA(this, &linkAddrList), _PushLinkAddr);
 
   switch (result)
   {
@@ -659,25 +678,11 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to find sc-links by content due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find sc-links by content due sc-memory context hasn't read access levels");
-
   default:
     break;
   }
 
-  sc_iterator * it = sc_list_iterator(found_links);
-  while (sc_iterator_next(it))
-  {
-    auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
-    contents.emplace_back(addr_hash);
-  }
-  sc_iterator_destroy(it);
-  sc_list_destroy(found_links);
-
-  return contents;
+  return linkAddrList;
 }
 
 ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix)
@@ -688,12 +693,9 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring");
 
-  ScAddrVector contents;
-  sc_list * found_links = nullptr;
-
-  sc_stream * str = stream->m_stream;
-  sc_result const result =
-      sc_memory_find_links_by_content_substring(m_context, str, &found_links, maxLengthToSearchAsPrefix);
+  ScAddrVector linkAddrList;
+  sc_result const result = sc_memory_find_links_by_content_substring_ext(
+      m_context, stream->m_stream, maxLengthToSearchAsPrefix, _MAKE_DATA(this, &linkAddrList), _PushLinkAddr);
 
   switch (result)
   {
@@ -710,25 +712,19 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
         utils::ExceptionInvalidState,
         "Not able to find sc-links by content substring due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find sc-links by content substring due sc-memory context hasn't read access levels");
-
   default:
     break;
   }
 
-  sc_iterator * it = sc_list_iterator(found_links);
-  while (sc_iterator_next(it))
-  {
-    auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
-    contents.emplace_back(addr_hash);
-  }
-  sc_iterator_destroy(it);
-  sc_list_destroy(found_links);
+  return linkAddrList;
+}
 
-  return contents;
+void _PushLinkContent(void * data, sc_addr const link_addr, sc_char const * link_content)
+{
+  SC_UNUSED(link_addr);
+
+  auto * linkContentList = (std::vector<std::string> *)data;
+  linkContentList->emplace_back(link_content);
 }
 
 std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
@@ -741,12 +737,9 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find contents by content substring");
 
-  std::vector<std::string> contents;
-  sc_list * found_strings = nullptr;
-
-  sc_stream * str = stream->m_stream;
-  sc_result const result =
-      sc_memory_find_links_contents_by_content_substring(m_context, str, &found_strings, maxLengthToSearchAsPrefix);
+  std::vector<std::string> linkContentList;
+  sc_result const result = sc_memory_find_links_contents_by_content_substring_ext(
+      m_context, stream->m_stream, maxLengthToSearchAsPrefix, &linkContentList, _PushLinkContent);
 
   switch (result)
   {
@@ -772,17 +765,7 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
     break;
   }
 
-  sc_iterator * it = sc_list_iterator(found_strings);
-  while (sc_iterator_next(it))
-  {
-    auto string = (sc_char *)sc_iterator_get(it);
-    contents.emplace_back(string);
-    free(string);
-  }
-  sc_iterator_destroy(it);
-  sc_list_destroy(found_strings);
-
-  return contents;
+  return linkContentList;
 }
 
 bool ScMemoryContext::Save()

@@ -556,7 +556,6 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
    */
   _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & stream) noexcept(false);
 
@@ -569,7 +568,6 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
    *
    * @code
    * ScMemoryContext ctx;
@@ -596,7 +594,6 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
    *
    * @code
    * ScMemoryContext ctx;
@@ -624,7 +621,6 @@ public:
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
    */
   _SC_EXTERN ScAddrVector
   FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
