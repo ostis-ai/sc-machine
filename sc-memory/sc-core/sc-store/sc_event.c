@@ -130,6 +130,8 @@ sc_event * sc_event_new(
     sc_event_callback callback,
     sc_event_delete_function delete_callback)
 {
+  sc_unused(ctx);
+
   if (SC_ADDR_IS_EMPTY(subscription_addr))
     return null_ptr;
 
@@ -144,7 +146,6 @@ sc_event * sc_event_new(
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
-  event->access_levels = 0;
   sc_monitor_init(&event->monitor);
 
   // register created event
@@ -162,6 +163,8 @@ sc_event * sc_event_new_ex(
     sc_event_callback_ext callback,
     sc_event_delete_function delete_callback)
 {
+  sc_unused(ctx);
+
   if (SC_ADDR_IS_EMPTY(subscription_addr))
     return null_ptr;
 
@@ -176,7 +179,6 @@ sc_event * sc_event_new_ex(
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
-  event->access_levels = 0;
   sc_monitor_init(&event->monitor);
 
   // register created event
@@ -194,6 +196,8 @@ sc_event * sc_event_with_user_new(
     sc_event_callback_with_user callback,
     sc_event_delete_function delete_callback)
 {
+  sc_unused(ctx);
+
   if (SC_ADDR_IS_EMPTY(subscription_addr))
     return null_ptr;
 
@@ -208,7 +212,6 @@ sc_event * sc_event_with_user_new(
   event->delete_callback = delete_callback;
   event->data = data;
   event->ref_count = 1;
-  event->access_levels = 0;
   sc_monitor_init(&event->monitor);
 
   // register created event
@@ -244,7 +247,6 @@ sc_result sc_event_destroy(sc_event * event)
   event->callback_with_user = null_ptr;
   event->delete_callback = null_ptr;
   event->data = null_ptr;
-  event->access_levels = 0;
 
   sc_storage * storage = sc_storage_get();
   if (storage != null_ptr)
@@ -309,33 +311,33 @@ result:
 
 sc_result sc_event_emit(
     sc_memory_context const * ctx,
-    sc_addr el,
-    sc_access_levels el_access,
+    sc_addr subscription_addr,
     sc_event_type type,
-    sc_addr edge,
-    sc_addr other_el)
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr)
 {
   if (_sc_memory_context_is_pending(ctx))
   {
-    _sc_memory_context_pend_event(ctx, type, el, edge, other_el);
+    _sc_memory_context_pend_event(ctx, type, subscription_addr, connector_addr, connector_type, other_addr);
     return SC_RESULT_OK;
   }
 
-  return sc_event_emit_impl(ctx, el, el_access, type, edge, other_el);
+  return sc_event_emit_impl(ctx, subscription_addr, type, connector_addr, connector_type, other_addr);
 }
 
 sc_result sc_event_emit_impl(
     sc_memory_context const * ctx,
-    sc_addr el,
-    sc_access_levels el_access,
+    sc_addr subscription_addr,
     sc_event_type type,
-    sc_addr edge,
-    sc_addr other_el)
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr)
 {
   sc_hash_table_list * element_events_list = null_ptr;
   sc_event * event = null_ptr;
 
-  if (SC_ADDR_IS_EMPTY(el))
+  if (SC_ADDR_IS_EMPTY(subscription_addr))
     return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
   sc_event_registration_manager * registration_manager = sc_storage_get_event_registration_manager();
@@ -348,7 +350,8 @@ sc_result sc_event_emit_impl(
   // sc_set_lookup for all registered to specified sc-element events
   sc_monitor_acquire_read(&registration_manager->events_table_monitor);
   if (registration_manager != null_ptr)
-    element_events_list = (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(el));
+    element_events_list =
+        (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(subscription_addr));
   sc_monitor_release_read(&registration_manager->events_table_monitor);
 
   while (element_events_list != null_ptr)
@@ -356,7 +359,8 @@ sc_result sc_event_emit_impl(
     event = (sc_event *)element_events_list->data;
 
     if (event->type == type)
-      _sc_event_emission_manager_add(emission_manager, event, ctx->user_addr, edge, other_el);
+      _sc_event_emission_manager_add(
+          emission_manager, event, ctx->user_addr, connector_addr, connector_type, other_addr);
 
     element_events_list = element_events_list->next;
   }

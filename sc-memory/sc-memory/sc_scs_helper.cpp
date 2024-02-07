@@ -170,10 +170,10 @@ private:
       // try to find existing
       if (el.GetVisibility() == scs::Visibility::System)
       {
-        ScSystemIdentifierQuintuple fiver;
-        m_ctx.HelperFindBySystemIdtf(el.GetIdtf(), fiver);
-        resultAddr = fiver.addr1;
-        result = {fiver.addr2, fiver.addr3, fiver.addr4};
+        ScSystemIdentifierQuintuple quintuple;
+        m_ctx.HelperFindBySystemIdtf(el.GetIdtf(), quintuple);
+        resultAddr = quintuple.addr1;
+        result = {quintuple.addr2, quintuple.addr3, quintuple.addr4};
       }
       else if (el.GetVisibility() == scs::Visibility::Global)
       {

@@ -33,7 +33,7 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
   for (sc_addr_offset i = 0; i < seg->last_engaged_offset; ++i)
   {
     sc_element element = seg->elements[i];
-    if ((element.flags.access_levels & SC_ACCESS_LVL_ELEMENT_EXIST) == 0)
+    if ((element.flags.states & SC_STATE_ELEMENT_EXIST) == 0)
       continue;
 
     sc_type type = element.flags.type;

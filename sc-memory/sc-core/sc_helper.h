@@ -104,13 +104,30 @@ _SC_EXTERN sc_result sc_helper_set_system_identifier_ext(
 _SC_EXTERN sc_result
 sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc_addr el, sc_addr * sys_idtf_addr);
 
-/*! Resolve sc-elemen by specified string system identifier
+/*! Resolve sc-element by specified string system identifier
  * @param system_idtf String that represents system identifier (it will be converted into utf-8)
  * @param result Pointer to result sc-addr container
  * @return If sc-element was founded, then return SC_TRUE; otherwise return SC_FALSE.
  */
 _SC_EXTERN sc_bool
 sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * system_idtf, sc_addr * result);
+
+/*! Resolve sc-element by specified string system identifier
+ * @param system_idtf String that represents system identifier (it will be converted into utf-8)
+ * @param result Pointer to result sc-addr container
+ * @param out_fiver Structure contains the 1th, 2d, 3d, 4th and 5th sc-element address of resolved fiver
+ *                          addr1 (`addr`)
+ *               addr4        |
+ *    addr5 --------------->  | addr3
+ * (nrel_system_identifier)   |
+ *                          addr3 (system identifier sc-link)
+ * @return If sc-element was founded, then return SC_TRUE; otherwise return SC_FALSE.
+ */
+_SC_EXTERN sc_bool sc_helper_resolve_system_identifier_ext(
+    sc_memory_context * ctx,
+    sc_char const * system_idtf,
+    sc_addr * result_addr,
+    sc_system_identifier_fiver * out_fiver);
 
 /*! Check if specified arc type exist between two objects
  * @param beg_el sc-addr of begin element

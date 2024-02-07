@@ -139,6 +139,7 @@ typedef sc_uint16 sc_type;
 
 #  define sc_type_arc_pos_const_perm (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 #  define sc_type_arc_pos_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp)
+#  define sc_type_arc_neg_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp)
 #  define sc_type_arc_pos_var_perm (sc_type)(sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm)
 
 // type mask
@@ -153,8 +154,12 @@ typedef sc_uint16 sc_type;
         | sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
-#  define SC_ACCESS_LVL_REQUEST_DELETION 0x1
-#  define SC_ACCESS_LVL_ELEMENT_EXIST 0x2
+#  define sc_type_check(_type, _other_type) ((_type & _other_type) == _other_type)
+
+typedef sc_uint16 sc_states;
+
+#  define SC_STATE_REQUEST_DELETION 0x1
+#  define SC_STATE_ELEMENT_EXIST 0x2
 
 #  define SC_ACCESS_LVL_MAX_VALUE 15
 #  define SC_ACCESS_LVL_MIN_VALUE 0
@@ -186,6 +191,12 @@ enum _sc_result
   SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER,
   SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER,
   SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_READ_ACCESS_LEVELS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_WRITE_ACCESS_LEVELS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_ERASE_ACCESS_LEVELS,
   SC_RESULT_UNKNOWN,  // result unknown
 
   // add atomic types before
@@ -216,7 +227,7 @@ struct _sc_stat
 
 typedef struct _sc_arc sc_arc;
 typedef struct _sc_arc_info sc_arc_info;
-typedef sc_uint8 sc_access_levels;
+typedef sc_uint16 sc_access_levels;
 typedef struct _sc_element_flags sc_element_flags;
 typedef struct _sc_memory_context sc_memory_context;
 typedef struct _sc_element sc_element;

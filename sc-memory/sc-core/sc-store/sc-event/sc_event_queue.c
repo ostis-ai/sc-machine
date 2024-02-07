@@ -20,28 +20,31 @@
  */
 typedef struct
 {
-  sc_event * event;    ///< Pointer to the sc-event associated with the worker.
-  sc_addr user_addr;   ///< sc_addr representing user that initiated this sc-event
-  sc_addr edge_addr;   ///< sc_addr representing the edge associated with the event.
-  sc_addr other_addr;  ///< sc_addr representing the other element associated with the event.
+  sc_event * event;        ///< Pointer to the sc-event associated with the worker.
+  sc_addr user_addr;       ///< sc-address representing user that initiated this sc-event
+  sc_addr connector_addr;  ///< sc-address representing the sc-connector associated with the event.
+  sc_type connector_type;  ///< sc-type of the sc-connector associated with the event.
+  sc_addr other_addr;      ///< sc-address representing the other element associated with the event.
 } sc_event_emission_pool_worker_data;
 
 /*! Function that creates a new instance of sc_event_emission_pool_worker_data.
  * @param event Pointer to the sc-event associated with the worker.
- * @param edge_addr sc_addr representing the edge associated with the event.
- * @param other_addr sc_addr representing the other element associated with the event.
+ * @param connector_addr sc-address representing the sc-connector associated with the event.
+ * @param other_addr sc-address representing the other element associated with the event.
  * @returns Returns a pointer to the newly created sc_event_emission_pool_worker_data.
  */
 sc_event_emission_pool_worker_data * _sc_event_emission_pool_worker_data_new(
     sc_event * event,
     sc_addr user_addr,
-    sc_addr edge_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
     sc_addr other_addr)
 {
   sc_event_emission_pool_worker_data * data = sc_mem_new(sc_event_emission_pool_worker_data, 1);
   data->event = event;
   data->user_addr = user_addr;
-  data->edge_addr = edge_addr;
+  data->connector_addr = connector_addr;
+  data->connector_type = connector_type;
   data->other_addr = other_addr;
 
   return data;
@@ -87,11 +90,12 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
   sc_storage_start_new_process();
 
   if (callback != null_ptr)
-    callback(event, work_data->edge_addr);
+    callback(event, work_data->connector_addr);
   else if (callback_ext != null_ptr)
-    callback_ext(event, work_data->edge_addr, work_data->other_addr);
+    callback_ext(event, work_data->connector_addr, work_data->other_addr);
   else if (callback_ext2 != null_ptr)
-    callback_ext2(event, work_data->user_addr, work_data->edge_addr, work_data->other_addr);
+    callback_ext2(
+        event, work_data->user_addr, work_data->connector_addr, work_data->connector_type, work_data->other_addr);
 
   sc_storage_end_new_process();
 
@@ -183,13 +187,15 @@ void _sc_event_emission_manager_add(
     sc_event_emission_manager * manager,
     sc_event * event,
     sc_addr user_addr,
-    sc_addr edge,
-    sc_addr other_el)
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr)
 {
   if (manager == null_ptr)
     return;
 
-  sc_event_emission_pool_worker_data * data = _sc_event_emission_pool_worker_data_new(event, user_addr, edge, other_el);
+  sc_event_emission_pool_worker_data * data =
+      _sc_event_emission_pool_worker_data_new(event, user_addr, connector_addr, connector_type, other_addr);
 
   sc_monitor_acquire_write(&manager->pool_monitor);
   g_thread_pool_push(manager->thread_pool, data, null_ptr);

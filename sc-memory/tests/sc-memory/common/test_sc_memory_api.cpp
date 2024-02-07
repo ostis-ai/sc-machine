@@ -59,14 +59,14 @@ TEST_F(ScMemoryTest, SetGetFindSystemIdentifierWithOutFiver)
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr, setFiver));
   EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
 
-  ScSystemIdentifierQuintuple foundFiver;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", foundFiver));
+  ScSystemIdentifierQuintuple quintuple;
+  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", quintuple));
 
-  EXPECT_EQ(setFiver.addr1, foundFiver.addr1);
-  EXPECT_EQ(setFiver.addr2, foundFiver.addr2);
-  EXPECT_EQ(setFiver.addr3, foundFiver.addr3);
-  EXPECT_EQ(setFiver.addr4, foundFiver.addr4);
-  EXPECT_EQ(setFiver.addr5, foundFiver.addr5);
+  EXPECT_EQ(setFiver.addr1, quintuple.addr1);
+  EXPECT_EQ(setFiver.addr2, quintuple.addr2);
+  EXPECT_EQ(setFiver.addr3, quintuple.addr3);
+  EXPECT_EQ(setFiver.addr4, quintuple.addr4);
+  EXPECT_EQ(setFiver.addr5, quintuple.addr5);
   EXPECT_TRUE(setFiver.addr1.IsValid());
   EXPECT_TRUE(setFiver.addr2.IsValid());
   EXPECT_TRUE(setFiver.addr3.IsValid());
@@ -97,26 +97,26 @@ TEST_F(ScMemoryTest, ResolveGetSystemIdentifier)
 
 TEST_F(ScMemoryTest, ResolveGetSystemIdentifierWithOutFiver)
 {
-  ScSystemIdentifierQuintuple resolveFiver;
-  EXPECT_TRUE(m_ctx->HelperResolveSystemIdtf("test_node", ScType::NodeConst, resolveFiver));
+  ScSystemIdentifierQuintuple resolveQuintuple;
+  EXPECT_TRUE(m_ctx->HelperResolveSystemIdtf("test_node", ScType::NodeConst, resolveQuintuple));
 
-  EXPECT_EQ(m_ctx->HelperGetSystemIdtf(resolveFiver.addr1), "test_node");
-  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), resolveFiver.addr1);
+  EXPECT_EQ(m_ctx->HelperGetSystemIdtf(resolveQuintuple.addr1), "test_node");
+  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), resolveQuintuple.addr1);
 
-  ScSystemIdentifierQuintuple foundFiver;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", foundFiver));
+  ScSystemIdentifierQuintuple foundQuintuple;
+  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", foundQuintuple));
 
   ScAddr addr;
   EXPECT_FALSE(m_ctx->HelperFindBySystemIdtf("test_node1", addr));
 
-  EXPECT_EQ(resolveFiver.addr1, foundFiver.addr1);
-  EXPECT_EQ(resolveFiver.addr2, foundFiver.addr2);
-  EXPECT_EQ(resolveFiver.addr3, foundFiver.addr3);
-  EXPECT_EQ(resolveFiver.addr4, foundFiver.addr4);
-  EXPECT_EQ(resolveFiver.addr5, foundFiver.addr5);
-  EXPECT_TRUE(resolveFiver.addr1.IsValid());
-  EXPECT_TRUE(resolveFiver.addr2.IsValid());
-  EXPECT_TRUE(resolveFiver.addr3.IsValid());
-  EXPECT_TRUE(resolveFiver.addr4.IsValid());
-  EXPECT_TRUE(resolveFiver.addr5.IsValid());
+  EXPECT_EQ(resolveQuintuple.addr1, foundQuintuple.addr1);
+  EXPECT_EQ(resolveQuintuple.addr2, foundQuintuple.addr2);
+  EXPECT_EQ(resolveQuintuple.addr3, foundQuintuple.addr3);
+  EXPECT_EQ(resolveQuintuple.addr4, foundQuintuple.addr4);
+  EXPECT_EQ(resolveQuintuple.addr5, foundQuintuple.addr5);
+  EXPECT_TRUE(resolveQuintuple.addr1.IsValid());
+  EXPECT_TRUE(resolveQuintuple.addr2.IsValid());
+  EXPECT_TRUE(resolveQuintuple.addr3.IsValid());
+  EXPECT_TRUE(resolveQuintuple.addr4.IsValid());
+  EXPECT_TRUE(resolveQuintuple.addr5.IsValid());
 }

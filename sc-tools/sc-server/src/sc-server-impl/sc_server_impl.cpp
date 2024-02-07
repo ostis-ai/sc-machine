@@ -120,6 +120,7 @@ void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessag
     sc_storage_start_new_process();
 
     action->Emit();
+    delete action;
 
     sc_storage_end_new_process();
   }

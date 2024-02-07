@@ -14,18 +14,22 @@ typedef struct _sc_event_registration_manager sc_event_registration_manager;
 /*! Event callback function type.
  * It takes 3 parameters:
  * - pointer to emitted event description
- * - sc-addr of added/remove edge
- * - sc-addr of another end of added/remove edge
+ * - sc-address of added/removed sc-connector
+ * - sc-address of another end of added/removed sc-connector
  * So it can be empty.
  */
-typedef sc_result (
-    *sc_event_callback_with_user)(sc_event const * event, sc_addr user_addr, sc_addr arg, sc_addr other_el);
+typedef sc_result (*sc_event_callback_with_user)(
+    sc_event const * event,
+    sc_addr user_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr);
 
 /// Backward compatibility
-typedef sc_result (*sc_event_callback_ext)(sc_event const * event, sc_addr arg, sc_addr other_el);
+typedef sc_result (*sc_event_callback_ext)(sc_event const * event, sc_addr connector_addr, sc_addr other_addr);
 
 /// Backward compatibility
-typedef sc_result (*sc_event_callback)(sc_event const * event, sc_addr arg);
+typedef sc_result (*sc_event_callback)(sc_event const * event, sc_addr connector_addr);
 
 //! Delete listened element callback function type
 typedef sc_result (*sc_event_delete_function)(sc_event const * event);
@@ -41,7 +45,7 @@ void sc_event_registration_manager_initialize(sc_event_registration_manager ** m
 void sc_event_registration_manager_shutdown(sc_event_registration_manager * manager);
 
 /*! Subscribe for events from specified sc-element
- * @param el sc-addr of subscribed sc-element events
+ * @param subscription_addr sc-address of subscribed sc-element events
  * @param type Type of listening sc-events
  * @param data Pointer to user data
  * @param callback Pointer to callback function. It would be calls, when event emitted
@@ -51,14 +55,14 @@ void sc_event_registration_manager_shutdown(sc_event_registration_manager * mana
  */
 _SC_EXTERN sc_event * sc_event_new(
     sc_memory_context const * ctx,
-    sc_addr el,
+    sc_addr subscription_addr,
     sc_event_type type,
     sc_pointer data,
     sc_event_callback callback,
     sc_event_delete_function delete_callback);
 
 /*! Subscribe for events from specified sc-element
- * @param el sc-addr of subscribed sc-element events
+ * @param subscription_addr sc-address of subscribed sc-element events
  * @param type Type of listening sc-events
  * @param data Pointer to user data
  * @param callback Pointer to callback function. It would be calls, when event emitted
@@ -68,7 +72,7 @@ _SC_EXTERN sc_event * sc_event_new(
  */
 _SC_EXTERN sc_event * sc_event_new_ex(
     sc_memory_context const * ctx,
-    sc_addr el,
+    sc_addr subscription_addr,
     sc_event_type type,
     sc_pointer data,
     sc_event_callback_ext callback,
