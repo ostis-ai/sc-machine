@@ -297,16 +297,7 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 * it)
   it->results[1].addr = SC_ADDR_EMPTY;
   it->results[3].addr = SC_ADDR_EMPTY;
 
-  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
-  {
-    it->results[0] = it->it_main->results[0];
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
-  }
-  else
+  if (it->it_attr == null_ptr || !sc_iterator3_next(it->it_attr))
   {
     if (it->it_attr != null_ptr)
     {
@@ -330,13 +321,14 @@ sc_bool _sc_iterator5_a_a_f_a_f_next(sc_iterator5 * it)
       if (it->it_attr == null_ptr)
         return SC_FALSE;
     }
-    it->results[0] = it->it_main->results[0];
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
   }
+
+  it->results[0] = it->it_main->results[0];
+  it->results[1] = it->it_main->results[1];
+  it->results[2].is_accessed = it->it_main->results[2].is_accessed;
+  it->results[3] = it->it_attr->results[1];
+  it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
+  return SC_TRUE;
 }
 
 sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 * it)
@@ -345,16 +337,7 @@ sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 * it)
   it->results[2].addr = SC_ADDR_EMPTY;
   it->results[3].addr = SC_ADDR_EMPTY;
 
-  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
-  {
-    it->results[0].is_accessed = it->it_main->results[0].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2] = it->it_main->results[2];
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
-  }
-  else
+  if (it->it_attr == null_ptr || !sc_iterator3_next(it->it_attr))
   {
     if (it->it_attr != null_ptr)
     {
@@ -378,13 +361,14 @@ sc_bool _sc_iterator5_f_a_a_a_f_next(sc_iterator5 * it)
       if (it->it_attr == null_ptr)
         return SC_FALSE;
     }
-    it->results[0].is_accessed = it->it_main->results[0].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2] = it->it_main->results[2];
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
   }
+
+  it->results[0].is_accessed = it->it_main->results[0].is_accessed;
+  it->results[1] = it->it_main->results[1];
+  it->results[2] = it->it_main->results[2];
+  it->results[3] = it->it_attr->results[1];
+  it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
+  return SC_TRUE;
 }
 
 sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 * it)
@@ -392,16 +376,7 @@ sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 * it)
   it->results[1].addr = SC_ADDR_EMPTY;
   it->results[3].addr = SC_ADDR_EMPTY;
 
-  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
-  {
-    it->results[0].is_accessed = it->it_main->results[0].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
-  }
-  else
+  if (it->it_attr == null_ptr || !sc_iterator3_next(it->it_attr))
   {
     if (it->it_attr != null_ptr)
     {
@@ -425,13 +400,14 @@ sc_bool _sc_iterator5_f_a_f_a_f_next(sc_iterator5 * it)
       if (it->it_attr == null_ptr)
         return SC_FALSE;
     }
-    it->results[0].is_accessed = it->it_main->results[0].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
   }
+
+  it->results[0].is_accessed = it->it_main->results[0].is_accessed;
+  it->results[1] = it->it_main->results[1];
+  it->results[2].is_accessed = it->it_main->results[2].is_accessed;
+  it->results[3] = it->it_attr->results[1];
+  it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
+  return SC_TRUE;
 }
 
 sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 * it)
@@ -440,16 +416,7 @@ sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 * it)
   it->results[3].addr = SC_ADDR_EMPTY;
   it->results[4].addr = SC_ADDR_EMPTY;
 
-  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
-  {
-    it->results[0].is_accessed = it->it_main->results[0].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4] = it->it_attr->results[0];
-    return SC_TRUE;
-  }
-  else
+  if (it->it_attr == null_ptr || !sc_iterator3_next(it->it_attr))
   {
     if (it->it_attr != null_ptr)
     {
@@ -473,13 +440,14 @@ sc_bool _sc_iterator5_f_a_f_a_a_next(sc_iterator5 * it)
       if (it->it_attr == null_ptr)
         return SC_FALSE;
     }
-    it->results[0].is_accessed = it->it_main->results[0].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4] = it->it_attr->results[0];
-    return SC_TRUE;
   }
+
+  it->results[0].is_accessed = it->it_main->results[0].is_accessed;
+  it->results[1] = it->it_main->results[1];
+  it->results[2].is_accessed = it->it_main->results[2].is_accessed;
+  it->results[3] = it->it_attr->results[1];
+  it->results[4] = it->it_attr->results[0];
+  return SC_TRUE;
 }
 
 sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 * it)
@@ -489,16 +457,7 @@ sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 * it)
   it->results[3].addr = SC_ADDR_EMPTY;
   it->results[4].addr = SC_ADDR_EMPTY;
 
-  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
-  {
-    it->results[0].is_accessed = it->it_main->results[0].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2] = it->it_main->results[2];
-    it->results[3] = it->it_attr->results[1];
-    it->results[4] = it->it_attr->results[0];
-    return SC_TRUE;
-  }
-  else
+  if (it->it_attr == null_ptr || !sc_iterator3_next(it->it_attr))
   {
     if (it->it_attr != null_ptr)
     {
@@ -522,13 +481,14 @@ sc_bool _sc_iterator5_f_a_a_a_a_next(sc_iterator5 * it)
       if (it->it_attr == null_ptr)
         return SC_FALSE;
     }
-    it->results[0].is_accessed = it->it_main->results[1].is_accessed;
-    it->results[1] = it->it_main->results[1];
-    it->results[2] = it->it_main->results[2];
-    it->results[3] = it->it_attr->results[1];
-    it->results[4] = it->it_attr->results[0];
-    return SC_TRUE;
   }
+
+  it->results[0].is_accessed = it->it_main->results[0].is_accessed;
+  it->results[1] = it->it_main->results[1];
+  it->results[2] = it->it_main->results[2];
+  it->results[3] = it->it_attr->results[1];
+  it->results[4] = it->it_attr->results[0];
+  return SC_TRUE;
 }
 
 sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 * it)
@@ -538,16 +498,7 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 * it)
   it->results[3].addr = SC_ADDR_EMPTY;
   it->results[4].addr = SC_ADDR_EMPTY;
 
-  if (it->it_attr != null_ptr && sc_iterator3_next(it->it_attr))
-  {
-    it->results[0] = it->it_main->results[0];
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4] = it->it_attr->results[0];
-    return SC_TRUE;
-  }
-  else
+  if (it->it_attr == null_ptr || !sc_iterator3_next(it->it_attr))
   {
     if (it->it_attr != null_ptr)
     {
@@ -570,13 +521,14 @@ sc_bool _sc_iterator5_a_a_f_a_a_next(sc_iterator5 * it)
       if (it->it_attr == null_ptr)
         return SC_FALSE;
     }
-    it->results[0] = it->it_main->results[0];
-    it->results[1] = it->it_main->results[1];
-    it->results[2].is_accessed = it->it_main->results[2].is_accessed;
-    it->results[3] = it->it_attr->results[1];
-    it->results[4] = it->it_attr->results[0];
-    return SC_TRUE;
   }
+
+  it->results[0] = it->it_main->results[0];
+  it->results[1] = it->it_main->results[1];
+  it->results[2].is_accessed = it->it_main->results[2].is_accessed;
+  it->results[3] = it->it_attr->results[1];
+  it->results[4] = it->it_attr->results[0];
+  return SC_TRUE;
 }
 
 sc_bool _sc_iterator5_a_a_a_a_f_next(sc_iterator5 * it)
@@ -586,16 +538,7 @@ sc_bool _sc_iterator5_a_a_a_a_f_next(sc_iterator5 * it)
   it->results[2].addr = SC_ADDR_EMPTY;
   it->results[3].addr = SC_ADDR_EMPTY;
 
-  if (it->it_main != null_ptr && sc_iterator3_next(it->it_main))
-  {
-    it->results[0] = it->it_main->results[0];
-    it->results[1] = it->it_main->results[1];
-    it->results[2] = it->it_main->results[2];
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
-  }
-  else
+  if (it->it_main == null_ptr || !sc_iterator3_next(it->it_main))
   {
     if (it->it_main != null_ptr)
     {
@@ -619,13 +562,14 @@ sc_bool _sc_iterator5_a_a_a_a_f_next(sc_iterator5 * it)
       if (it->it_main == null_ptr)
         return SC_FALSE;
     }
-    it->results[0] = it->it_main->results[0];
-    it->results[1] = it->it_main->results[1];
-    it->results[2] = it->it_main->results[2];
-    it->results[3] = it->it_attr->results[1];
-    it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
-    return SC_TRUE;
   }
+
+  it->results[0] = it->it_main->results[0];
+  it->results[1] = it->it_main->results[1];
+  it->results[2] = it->it_main->results[2];
+  it->results[3] = it->it_attr->results[1];
+  it->results[4].is_accessed = it->it_attr->results[0].is_accessed;
+  return SC_TRUE;
 }
 
 sc_bool sc_iterator5_next(sc_iterator5 * it)
@@ -719,7 +663,7 @@ sc_addr sc_iterator5_value_ext(sc_iterator5 * it, sc_uint index, sc_result * res
     return SC_ADDR_EMPTY;
   }
 
-  if (SC_ADDR_IS_EMPTY(it->results[index].addr) && it->results[index].is_accessed == SC_FALSE)
+  if (it->results[index].is_accessed == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
     return SC_ADDR_EMPTY;
