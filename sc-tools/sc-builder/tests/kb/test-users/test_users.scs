@@ -1,0 +1,11 @@
+nrel_user_action_class
+~> (test_user_1 => action_read_from_sc_memory);
+~> (test_user_2 => action_read_from_sc_memory);;
+
+nrel_user_action_class_within_sc_structure
+~> (test_user_1 => (action_generate_in_sc_memory => user_structure));
+~|> (test_user_2 => (action_generate_in_sc_memory => user_structure));;
+
+user_structure = [*
+    test_user_2 <~ ..role: ..set;;
+*];;
