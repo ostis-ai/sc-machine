@@ -13,6 +13,7 @@
 
 #include "sc_memory.h"
 #include "sc_memory_private.h"
+#include "sc_helper.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 
@@ -32,7 +33,7 @@ struct _sc_event_emit_params
 
 #define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
 
-void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr myself_addr, sc_bool user_mode)
+void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_bool user_mode)
 {
   sc_memory_info("Initialize context manager");
 
@@ -48,11 +49,22 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
       sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)g_hash_table_destroy);
   sc_monitor_init(&(*manager)->user_local_access_levels_monitor);
 
-  _sc_context_set_access_levels_for_element(myself_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
-
-  s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
+  s_memory_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
   s_memory_default_ctx->global_access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
   s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
+}
+
+void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr)
+{
+  sc_char * const myself_system_idtf = "myself";
+  sc_helper_resolve_system_identifier(s_memory_default_ctx, myself_system_idtf, myself_addr);
+
+  _sc_context_set_access_levels_for_element(*myself_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+  s_memory_default_ctx->user_addr = *myself_addr;
+  sc_hash_table_insert(
+      manager->context_hash_table,
+      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(*myself_addr)),
+      (sc_pointer)s_memory_default_ctx);
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)

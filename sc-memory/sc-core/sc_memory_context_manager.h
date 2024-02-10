@@ -33,15 +33,13 @@ extern sc_memory_context * s_memory_default_ctx;
 
 /*! Function that initializes the sc-memory context manager with specified parameters.
  * @param manager Pointer to a pointer that will store the newly created memory context manager.
- * @param myself_addr sc-address representing the identity of the system.
  * @param user_mode Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
  * @note This function initializes the context manager, creates a default memory context, and sets up event
  * subscriptions.
  */
-void _sc_memory_context_manager_initialize(
-    sc_memory_context_manager ** manager,
-    sc_addr myself_addr,
-    sc_bool user_mode);
+void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_bool user_mode);
+
+void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr);
 
 /*! Function that unregisters event subscriptions for user authentication and unauthentication.
  * @param manager Pointer to the sc-memory context manager for which events are unregistered.
