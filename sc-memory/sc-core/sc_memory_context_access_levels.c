@@ -373,8 +373,8 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
           structures_access_levels_table, \
           GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr)), \
           GINT_TO_POINTER(_user_levels)); \
-      sc_monitor_release_write(&manager->user_local_access_levels_monitor); \
     } \
+    sc_monitor_release_write(&manager->user_local_access_levels_monitor); \
   })
 
 /**
@@ -597,6 +597,9 @@ void _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relatio
 
 void _sc_memory_context_handle_all_user_access_levels(sc_memory_context_manager * manager)
 {
+  if (manager->user_mode == SC_FALSE)
+    return;
+
   _sc_memory_context_manager_iterate_by_all_output_arcs_from_accessed_relation(
       manager,
       manager->nrel_user_action_class_addr,
@@ -616,6 +619,10 @@ void _sc_memory_context_handle_all_user_access_levels(sc_memory_context_manager 
       _sc_memory_context_manager_remove_user_action_class_within_structure);
 }
 
+#define sc_context_manager_register_user_event(...) manager->user_mode ? sc_event_with_user_new(__VA_ARGS__) : null_ptr
+
+#define sc_context_manager_unregister_user_event(...) sc_event_destroy(__VA_ARGS__)
+
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
 {
   manager->concept_authentication_request_user_addr = concept_authentication_request_user_addr;
@@ -626,14 +633,14 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   _sc_context_set_access_levels_for_element(
       manager->concept_authenticated_user_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
-  manager->on_authentication_request_user_subscription = sc_event_with_user_new(
+  manager->on_authentication_request_user_subscription = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->concept_authentication_request_user_addr,
       SC_EVENT_ADD_OUTPUT_ARC,
       manager,
       _sc_memory_context_manager_on_authentication_request_user,
       null_ptr);
-  manager->on_remove_authenticated_user_subscription = sc_event_with_user_new(
+  manager->on_remove_authenticated_user_subscription = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->concept_authenticated_user_addr,
       SC_EVENT_REMOVE_OUTPUT_ARC,
@@ -658,7 +665,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   sc_context_manager_add_basic_action_class_access_levels(
       action_erase_access_levels_from_sc_memory_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS);
 
-  manager->on_new_user_action_class = sc_event_with_user_new(
+  manager->on_new_user_action_class = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_addr,
       SC_EVENT_ADD_OUTPUT_ARC,
@@ -666,7 +673,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       _sc_memory_context_manager_on_new_user_action_class,
       null_ptr);
 
-  manager->on_remove_user_action_class = sc_event_with_user_new(
+  manager->on_remove_user_action_class = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_addr,
       SC_EVENT_REMOVE_OUTPUT_ARC,
@@ -678,7 +685,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   _sc_context_set_access_levels_for_element(
       manager->nrel_user_action_class_within_sc_structure_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
 
-  manager->on_new_user_action_class_within_sc_structure = sc_event_with_user_new(
+  manager->on_new_user_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_within_sc_structure_addr,
       SC_EVENT_ADD_OUTPUT_ARC,
@@ -686,7 +693,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       _sc_memory_context_manager_on_new_user_action_class_within_structure,
       null_ptr);
 
-  manager->on_remove_user_action_class_within_sc_structure = sc_event_with_user_new(
+  manager->on_remove_user_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_within_sc_structure_addr,
       SC_EVENT_REMOVE_OUTPUT_ARC,
@@ -697,14 +704,14 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
 
 void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager)
 {
-  sc_event_destroy(manager->on_authentication_request_user_subscription);
-  sc_event_destroy(manager->on_remove_authenticated_user_subscription);
+  sc_context_manager_unregister_user_event(manager->on_authentication_request_user_subscription);
+  sc_context_manager_unregister_user_event(manager->on_remove_authenticated_user_subscription);
 
-  sc_event_destroy(manager->on_new_user_action_class);
-  sc_event_destroy(manager->on_remove_user_action_class);
+  sc_context_manager_unregister_user_event(manager->on_new_user_action_class);
+  sc_context_manager_unregister_user_event(manager->on_remove_user_action_class);
 
-  sc_event_destroy(manager->on_new_user_action_class_within_sc_structure);
-  sc_event_destroy(manager->on_remove_user_action_class_within_sc_structure);
+  sc_context_manager_unregister_user_event(manager->on_new_user_action_class_within_sc_structure);
+  sc_context_manager_unregister_user_event(manager->on_remove_user_action_class_within_sc_structure);
 }
 
 // If the system is not in user mode, grant access
