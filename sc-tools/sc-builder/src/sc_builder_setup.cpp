@@ -65,6 +65,7 @@ try
 
   formedMemoryParams.dump_memory = SC_FALSE;
   formedMemoryParams.dump_memory_statistics = SC_FALSE;
+  formedMemoryParams.user_mode = SC_FALSE;
 
   Builder builder;
   return builder.Run(params, formedMemoryParams) ? EXIT_SUCCESS : EXIT_FAILURE;
