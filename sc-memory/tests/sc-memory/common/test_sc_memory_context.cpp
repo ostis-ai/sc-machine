@@ -994,11 +994,11 @@ void TestAddAccessLevelsForUserToInitActionsWithinStructure(
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & nrelUserActionClassAddr{nrel_user_action_class_within_sc_structure_addr};
+  ScAddr const & nrelUserActionClassWithinScStructureAddr{nrel_user_action_class_within_sc_structure_addr};
   ScAddr const & edgeBetweenActionAndStructureAddr =
       context->CreateEdge(ScType::EdgeDCommonConst, actionClassAddr, structureAddr);
   ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeDCommonConst, userAddr, edgeBetweenActionAndStructureAddr);
-  context->CreateEdge(arcType, nrelUserActionClassAddr, edgeAddr);
+  context->CreateEdge(arcType, nrelUserActionClassWithinScStructureAddr, edgeAddr);
 }
 
 void TestAddAccessLevelsForUserToInitReadActionsWithinStructure(
@@ -1346,6 +1346,74 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
 
   SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
   EXPECT_TRUE(isAuthenticated.load());
+}
+
+TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadAccessLevelsAndWithoutAfter)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
+  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+      m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
+
+  ScMemoryContext userContext{userAddr};
+  ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
+
+  std::atomic_bool isAuthenticated = false;
+  {
+    ScEventAddOutputEdge event(
+        *m_ctx,
+        conceptAuthenticatedUserAddr,
+        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
+        {
+          TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
+              userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
+          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+
+          return isAuthenticated = true;
+        });
+    TestAddAccessLevelsForUserToInitReadActionsWithinStructure(m_ctx, userAddr, structureAddr);
+    TestAuthenticationRequestUser(m_ctx, userAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+    EXPECT_TRUE(isAuthenticated.load());
+  }
+
+  ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
+  EXPECT_TRUE(it3->Next());
+  m_ctx->EraseElement(it3->Get(1));
+  isAuthenticated = false;
+
+  {
+    ScEventAddOutputEdge event(
+        *m_ctx,
+        conceptAuthenticatedUserAddr,
+        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
+        {
+          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+
+          return isAuthenticated = true;
+        });
+
+    ScAddr const & nrelUserActionClassWithinScStructureAddr{nrel_user_action_class_within_sc_structure_addr};
+    it3 = m_ctx->Iterator3(
+        nrelUserActionClassWithinScStructureAddr, ScType::EdgeAccessConstPosTemp, ScType::EdgeDCommonConst);
+    EXPECT_TRUE(it3->Next());
+    m_ctx->EraseElement(it3->Get(1));
+
+    TestAddAccessLevelsForUserToInitReadActionsWithinStructure(
+        m_ctx, userAddr, structureAddr, ScType::EdgeAccessConstNegTemp);
+    TestAuthenticationRequestUser(m_ctx, userAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+    EXPECT_TRUE(isAuthenticated.load());
+  }
 }
 
 ScAddr TestCreateStructureWithConnectorAndSource(
