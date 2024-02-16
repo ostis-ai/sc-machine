@@ -46,14 +46,13 @@ public:
         outputStructure = ScAddr(atom["output_structure"].get<size_t>());
       }
 
-      if (m_helper == nullptr)
-        m_helper = new SCsHelper{*context, std::make_shared<DummyFileInterface>()};
+      SCsHelper helper{*context, std::make_shared<DummyFileInterface>()};
 
       sc_bool textGenResult = SC_FALSE;
 
       try
       {
-        m_helper->GenerateBySCsTextLazy(scs, outputStructure);
+        helper.GenerateBySCsTextLazy(scs, outputStructure);
         textGenResult = SC_TRUE;
       }
       catch (utils::ScException const & e)
@@ -71,12 +70,4 @@ public:
 
     return responsePayload;
   }
-
-  ~ScMemoryCreateElementsByScsJsonAction() override
-  {
-    delete m_helper;
-  }
-
-private:
-  SCsHelper * m_helper;
 };

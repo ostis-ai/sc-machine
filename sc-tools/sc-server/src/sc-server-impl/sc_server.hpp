@@ -15,6 +15,9 @@
 #include "sc_server_action.hpp"
 #include "sc_server_logger.hpp"
 
+using ScServerMutex = std::mutex;
+using ScServerLock = std::lock_guard<ScServerMutex>;
+
 class ScServer
 {
 public:
@@ -33,6 +36,8 @@ public:
   virtual sc_bool IsWorkable() = 0;
 
   std::string GetUri();
+
+  bool IsSessionValid(ScServerSessionId const & sessionId);
 
   void AddSessionContext(ScServerSessionId const & sessionId, ScMemoryContext * sessionCtx);
 
@@ -66,6 +71,7 @@ protected:
   ScServerLogger * m_logger;
   ScServerCore * m_instance;
   ScServerSessionContexts * m_connections;
+  ScServerMutex m_connectionsMutex;
 
   virtual void Initialize() = 0;
 

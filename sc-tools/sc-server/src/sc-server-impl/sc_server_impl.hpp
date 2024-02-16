@@ -8,9 +8,7 @@
 
 #include "sc_server.hpp"
 
-using ScServerMutex = std::mutex;
 using ScServerUniqueLock = std::unique_lock<ScServerMutex>;
-using ScServerLock = std::lock_guard<ScServerMutex>;
 using ScServerCondVar = std::condition_variable;
 
 using ScServerActions = std::queue<ScServerAction *>;
@@ -31,8 +29,8 @@ public:
   ~ScServerImpl() override;
 
 protected:
-  ScServerMutex m_actionLock;
-  ScServerMutex m_connectionLock;
+  ScServerMutex m_actionMutex;
+  ScServerMutex m_connectionMutex;
   ScServerCondVar m_actionCond;
   sc_bool m_parallelActions;
 
