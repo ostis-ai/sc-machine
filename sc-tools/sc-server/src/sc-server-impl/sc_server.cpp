@@ -127,7 +127,10 @@ void ScServer::AddSessionContext(ScServerSessionId const & sessionId, ScMemoryCo
 
 ScMemoryContext * ScServer::PopSessionContext(ScServerSessionId const & sessionId)
 {
-  ScMemoryContext * sessionCtx = m_connections->at(sessionId);
+  ScMemoryContext * sessionCtx = nullptr;
+  if (m_connections->find(sessionId) != m_connections->cend())
+    sessionCtx = m_connections->at(sessionId);
+
   m_connections->erase(sessionId);
   return sessionCtx;
 }
