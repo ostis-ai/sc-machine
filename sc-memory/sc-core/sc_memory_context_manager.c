@@ -11,6 +11,8 @@
 
 #include "sc-store/sc_storage_private.h"
 
+#include "sc_keynodes.h"
+
 #include "sc_memory.h"
 #include "sc_memory_private.h"
 #include "sc_helper.h"
@@ -54,16 +56,14 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
 }
 
-void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr)
+void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr_ptr)
 {
-  sc_char * const myself_system_idtf = "myself";
-  sc_helper_resolve_system_identifier(s_memory_default_ctx, myself_system_idtf, myself_addr);
-
-  _sc_context_set_access_levels_for_element(*myself_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
-  s_memory_default_ctx->user_addr = *myself_addr;
+  *myself_addr_ptr = myself_addr;
+  _sc_context_set_access_levels_for_element(*myself_addr_ptr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+  s_memory_default_ctx->user_addr = *myself_addr_ptr;
   sc_hash_table_insert(
       manager->context_hash_table,
-      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(*myself_addr)),
+      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(*myself_addr_ptr)),
       (sc_pointer)s_memory_default_ctx);
 }
 

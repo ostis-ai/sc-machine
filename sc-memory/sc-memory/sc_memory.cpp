@@ -835,7 +835,6 @@ bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr co
 {
   ScSystemIdentifierQuintuple quintuple;
   return HelperSetSystemIdtf(sysIdtf, addr, quintuple);
-  ;
 }
 
 bool ScMemoryContext::HelperSetSystemIdtf(

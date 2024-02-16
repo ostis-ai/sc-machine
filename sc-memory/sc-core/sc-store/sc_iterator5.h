@@ -223,4 +223,4 @@ _SC_EXTERN sc_addr sc_iterator5_value_ext(sc_iterator5 * it, sc_uint index, sc_r
  */
 _SC_EXTERN void sc_iterator5_free(sc_iterator5 * it);
 
-#endif  // SC_ITERATOR5_H
+#endif  // _sc_iterator5_h_

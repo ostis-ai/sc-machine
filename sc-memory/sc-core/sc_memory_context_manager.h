@@ -39,7 +39,7 @@ extern sc_memory_context * s_memory_default_ctx;
  */
 void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_bool user_mode);
 
-void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr);
+void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr_ptr);
 
 /*! Function that unregisters event subscriptions for user authentication and unauthentication.
  * @param manager Pointer to the sc-memory context manager for which events are unregistered.

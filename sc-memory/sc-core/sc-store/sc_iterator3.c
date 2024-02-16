@@ -204,7 +204,6 @@ sc_iterator3 * sc_iterator3_new(
 
   it->type = type;
   it->ctx = ctx;
-  it->search_structure = SC_FALSE;
   it->finished = SC_FALSE;
 
   return it;
@@ -500,7 +499,7 @@ success:
 sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 {
   sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
-  it->search_structure = sc_type_is_structure_and_arc(it->params[0].type, it->params[1].type);
+  sc_bool const search_structure = sc_type_is_structure_and_arc(it->params[0].type, it->params[1].type);
 
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
@@ -524,7 +523,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     if (result != SC_RESULT_OK)
       goto error;
 
-    arc_addr = it->search_structure ? el->first_in_arc_from_structure : el->first_in_arc;
+    arc_addr = search_structure ? el->first_in_arc_from_structure : el->first_in_arc;
   }
   else
   {
@@ -545,7 +544,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
     arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
                    ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
-                   : (it->search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
+                   : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -572,7 +571,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     sc_addr next_in_arc =
         sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
-            : (it->search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
+            : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 
     if (_sc_memory_context_check_local_and_global_access_levels(
             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)

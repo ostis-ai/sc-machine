@@ -10,6 +10,7 @@
 
 #include "sc-store/sc-container/sc-string/sc_string.h"
 
+sc_addr myself_addr;
 sc_addr concept_authentication_request_user_addr;
 sc_addr concept_authenticated_user_addr;
 sc_addr nrel_user_action_class_addr;
@@ -55,6 +56,7 @@ sc_result sc_keynodes_resolve_keynode(
 
 sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_memory_generated_structure)
 {
+  SC_RESOLVE_KEYNODE(ctx, myself_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, concept_authentication_request_user_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, concept_authenticated_user_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, nrel_user_action_class_addr, init_memory_generated_structure);

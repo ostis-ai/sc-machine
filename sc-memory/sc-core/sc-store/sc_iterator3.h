@@ -52,11 +52,6 @@ struct _sc_iterator_result
   { \
     SC_ADDR_EMPTY, SC_TRUE \
   }
-#define SC_ITERATOR_RESULT_WITHOUT_ACCESS \
-  (sc_iterator_result) \
-  { \
-    SC_ADDR_EMPTY, SC_FALSE \
-  }
 
 /*! Structure to store iterator information
  */
@@ -66,7 +61,6 @@ struct _sc_iterator3
   sc_iterator_param params[3];    // parameters array
   sc_iterator_result results[3];  // results array (same size as params)
   sc_memory_context const * ctx;  // pointer to used memory context
-  sc_bool search_structure;
   sc_bool finished;
 };
 

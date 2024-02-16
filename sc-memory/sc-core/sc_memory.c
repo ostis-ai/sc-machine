@@ -62,8 +62,6 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
     goto error;
   }
 
-  _sc_memory_context_assign_context_for_system(memory->context_manager, &memory->myself_addr);
-
   sc_addr init_memory_generated_structure = SC_ADDR_EMPTY;
   if (params->init_memory_generated_upload)
     sc_helper_resolve_system_identifier(
@@ -72,6 +70,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   if (sc_keynodes_initialize(s_memory_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
     goto error;
 
+  _sc_memory_context_assign_context_for_system(memory->context_manager, &memory->myself_addr);
   _sc_memory_context_manager_register_user_events(memory->context_manager);
   _sc_memory_context_handle_all_user_access_levels(memory->context_manager);
 
