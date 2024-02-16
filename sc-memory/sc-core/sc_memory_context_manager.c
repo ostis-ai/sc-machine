@@ -99,8 +99,9 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   ctx->global_access_levels = (sc_uint64)sc_hash_table_get(
       manager->user_global_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
 
-  sc_hash_table_insert(
-      manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
+  if (SC_ADDR_IS_NOT_EMPTY(ctx->user_addr))
+    sc_hash_table_insert(
+        manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
   ++manager->context_count;
   goto result;
 
