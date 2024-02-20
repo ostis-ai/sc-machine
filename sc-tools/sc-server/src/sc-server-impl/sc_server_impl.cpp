@@ -48,10 +48,14 @@ void ScServerImpl::EmitActions()
 {
   while (m_actionsRun == SC_TRUE)
   {
-    ScServerUniqueLock lock(m_actionLock);
+    ScServerUniqueLock actionLock(m_actionMutex);
 
-    while (m_actions->empty() && m_actionsRun)
-      m_actionCond.wait(lock);
+    m_actionCond.wait(
+        actionLock,
+        [this]
+        {
+          return !m_actions->empty() || !m_actionsRun;
+        });
 
     if (m_actionsRun == SC_FALSE)
       break;
@@ -59,9 +63,7 @@ void ScServerImpl::EmitActions()
     ScServerAction * action = m_actions->front();
     m_actions->pop();
 
-    lock.unlock();
-
-    ScServerLock guard(m_connectionLock);
+    actionLock.unlock();
 
     try
     {
@@ -87,7 +89,8 @@ void ScServerImpl::OnOpen(ScServerSessionId const & sessionId)
 
   auto * action = new ScServerConnectAction(this, sessionId, resourceData);
   {
-    ScServerLock guard(m_actionLock);
+    ScServerLock connectionLock(m_connectionMutex);
+    ScServerLock actionLock(m_actionMutex);
     m_actions->push(action);
   }
   m_actionCond.notify_one();
@@ -97,7 +100,8 @@ void ScServerImpl::OnClose(ScServerSessionId const & sessionId)
 {
   auto * action = new ScServerDisconnectAction(this, sessionId);
   {
-    ScServerLock guard(m_actionLock);
+    ScServerLock connectionLock(m_connectionMutex);
+    ScServerLock actionLock(m_actionMutex);
     m_actions->push(action);
   }
   m_actionCond.notify_one();
@@ -105,12 +109,16 @@ void ScServerImpl::OnClose(ScServerSessionId const & sessionId)
 
 void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessage const & msg)
 {
+  ScServerLock connectionLock(m_connectionMutex);
+  if (!IsSessionValid(sessionId))
+    return;
+
   auto * action = new ScServerMessageAction(this, sessionId, msg);
 
   if (m_parallelActions == SC_FALSE)
   {
     {
-      ScServerLock guard(m_actionLock);
+      ScServerLock actionLock(m_actionMutex);
       m_actions->push(action);
     }
     m_actionCond.notify_one();
@@ -128,8 +136,12 @@ void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessag
 
 void ScServerImpl::OnEvent(ScServerSessionId const & sessionId, std::string const & msg)
 {
+  ScServerLock connectionLock(m_connectionMutex);
+  if (!IsSessionValid(sessionId))
+    return;
+
   {
-    ScServerLock guard(m_actionLock);
+    ScServerLock actionLock(m_actionMutex);
     m_actions->push(new ScServerEventCallbackAction(this, sessionId, msg));
   }
   m_actionCond.notify_one();
