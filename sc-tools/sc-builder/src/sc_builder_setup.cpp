@@ -50,7 +50,7 @@ try
 
   ScParams memoryParams{options, {{"verbose", "v"}, {"clear"}}};
   if (!params.m_outputPath.empty())
-    memoryParams.insert({"repo_path", params.m_outputPath});
+    memoryParams.Insert({"repo_path", params.m_outputPath});
 
   ScConfig config{configPath, {"repo_path", "log_file", "input_path"}, {"extensions_path"}};
   ScMemoryConfig memoryConfig{config, memoryParams};
