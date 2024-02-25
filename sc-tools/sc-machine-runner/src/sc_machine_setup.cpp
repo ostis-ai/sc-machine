@@ -46,17 +46,19 @@ try
 
   sc_bool saveOnShutdown = !options.Has({"verbose", "v"});
 
-  ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
+  ScMemory::ms_configPath = configFile;
 
+  ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
   ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"clear"}}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
+  std::atomic_bool isRun;
   if (ScMemory::Initialize(memoryConfig.GetParams()) == SC_FALSE)
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Error while initialize sc-memory");
+    goto error;
 
   utils::ScSignalHandler::Initialize();
 
-  std::atomic_bool isRun = {!options.Has({"test", "t"})};
+  isRun = !options.Has({"test", "t"});
   // LCOV_EXCL_START
   utils::ScSignalHandler::m_onTerminate = [&isRun]()
   {
@@ -69,6 +71,7 @@ try
   }
   // LCOV_EXCL_STOP
 
+error:
   return ScMemory::Shutdown(saveOnShutdown) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

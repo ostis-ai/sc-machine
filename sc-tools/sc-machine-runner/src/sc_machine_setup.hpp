@@ -4,6 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#pragma once
+
 #include <sc-memory/sc_type.hpp>
 
 void PrintStartMessage();

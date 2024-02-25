@@ -8,18 +8,18 @@
 
 #include "../sc_server_setup.hpp"
 
+ScParams ScServerModule::sServerParams;
+
 SC_IMPLEMENT_MODULE(ScServerModule)
 
 sc_result ScServerModule::InitializeImpl()
 {
-  ScConfig config{"", {"repo_path", "extensions_path", "log_file"}};
-  auto serverConfig = config["sc-server"];
-
-  ScParams serverParams;
+  ScConfig config{ScMemory::ms_configPath, {{"log_file"}}};
+  ScConfigGroup serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)
-    serverParams.Insert({key, serverConfig[key]});
+    sServerParams.Insert({key, serverConfig[key]});
 
-  RunServer(serverParams, m_server);
+  RunServer(sServerParams, m_server);
 
   return SC_RESULT_OK;
 }

@@ -14,6 +14,7 @@
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
 #include "sc_server_factory.hpp"
+#include "sc-server-module/sc_server_module.hpp"
 
 void PrintStartMessage()
 {
@@ -23,8 +24,8 @@ void PrintStartMessage()
             << "--port|-p -- Sc-server port\n"
             << "--extensions_path|-e -- Path to directory with sc-memory extensions\n"
             << "--repo_path|-r -- Path to kb.bin folder\n"
-            << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
-            << "--clear -- Flag to clear sc-memory on start\n"
+            << "--clear -- Flag to clear sc-memory state on initialize\n"
+            << "--verbose|-v -- Flag to don't save sc-memory state on shutdown\n"
             << "--test|-t -- Flag to test sc-server, run and stop it\n"
             << "--help -- Display this message\n\n";
 }
@@ -86,23 +87,35 @@ try
     return EXIT_SUCCESS;
   }
 
+  SC_LOG_WARNING(
+      "Now sc-server is an extension and all extensions are loaded by executable `sc-machine`. The executable "
+      "`sc-server` is deprecated in sc-machine 0.10.0. It will be removed in sc-machine 0.11.0. Use "
+      "executable `sc-machine` instead.");
+
   std::string configFile;
   if (options.Has({"config", "c"}))
     configFile = options[{"config", "c"}].second;
 
   sc_bool saveOnShutdown = !options.Has({"verbose", "v"});
 
-  ScParams serverParams{options, {{"host", "h"}, {"port", "p"}}};
-  ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
+  ScMemory::ms_configPath = configFile;
 
+  ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
   ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"clear"}}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
+  SC_LOG_WARNING(
+      "Use the common configuration file `<config-name>.ini` to set port and host of sc-server. `Options `--host` and "
+      "`--port` are deprecated as well.");
+  ScServerModule::sServerParams = ScParams{options, {{"host", "h"}, {"port", "p"}}};
+
+  std::atomic_bool isRun;
   if (ScMemory::Initialize(memoryConfig.GetParams()) == SC_FALSE)
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Error while initialize sc-memory");
+    goto error;
+
   utils::ScSignalHandler::Initialize();
 
-  std::atomic_bool isRun = {!options.Has({"test", "t"})};
+  isRun = !options.Has({"test", "t"});
   // LCOV_EXCL_START
   utils::ScSignalHandler::m_onTerminate = [&isRun]()
   {
@@ -115,6 +128,7 @@ try
   }
   // LCOV_EXCL_STOP
 
+error:
   return ScMemory::Shutdown(saveOnShutdown) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
