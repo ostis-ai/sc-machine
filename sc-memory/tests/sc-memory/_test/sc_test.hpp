@@ -64,7 +64,7 @@ protected:
   static void Shutdown()
   {
     ScMemory::LogMute();
-    ScMemory::Shutdown(false);
+    ScMemory::Shutdown(SC_FALSE);
     ScMemory::LogUnmute();
   }
 

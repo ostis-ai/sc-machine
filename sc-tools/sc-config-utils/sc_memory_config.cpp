@@ -57,9 +57,9 @@ ScMemoryConfig::ScMemoryConfig(ScConfig const & config, ScParams const & params,
   }
 }
 
-sc_char const * ScMemoryConfig::GetStringByKey(std::string const & key, sc_char const defaultValue[])
+sc_char const * ScMemoryConfig::GetStringByKey(std::string const & key, sc_char const * defaultValue)
 {
-  return m_params.Get<std::string>(key, defaultValue).c_str();
+  return m_params.Has(key) ? m_params.Get<std::string>(key).c_str() : defaultValue;
 }
 
 sc_int32 ScMemoryConfig::GetIntByKey(std::string const & key, sc_int32 const defaultValue)

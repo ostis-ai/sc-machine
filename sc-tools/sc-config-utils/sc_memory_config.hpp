@@ -12,13 +12,19 @@
 #include <map>
 #include <unordered_set>
 
+#include <sc-memory/sc_debug.hpp>
+
 #include "sc_options.hpp"
 #include "sc-core/sc_memory_params.h"
 #include "sc-config/sc_config.hpp"
 
+class ScMemoryConfig;
+
 class ScParams
 {
 public:
+  friend class ScMemoryConfig;
+
   explicit ScParams(ScOptions const & options, std::vector<std::vector<std::string>> const & keysSet);
 
   ScParams();
@@ -28,10 +34,15 @@ public:
   void Insert(std::pair<std::string, std::string> const & pair);
 
   template <typename TContentType>
-  TContentType Get(std::string const & key) const
+  TContentType const & Get(std::string const & key) const
   {
     if constexpr (std::is_same_v<TContentType, std::string>)
-      return m_params.count(key) ? m_params.at(key) : "";
+    {
+      if (m_params.count(key) == SC_FALSE)
+        SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Parameter value not found by `" << key << "`");
+
+      return m_params.at(key);
+    }
 
     std::stringstream streamString;
     if (m_params.count(key))
@@ -70,12 +81,6 @@ class ScMemoryConfig
 public:
   explicit ScMemoryConfig(ScConfig const & config, ScParams const & params, std::string groupName = "sc-memory");
 
-  sc_char const * GetStringByKey(std::string const & key, sc_char const * defaultValue = "");
-
-  sc_int32 GetIntByKey(std::string const & key, sc_int32 const defaultValue = 0);
-
-  sc_bool GetBoolByKey(std::string const & key, sc_bool const defaultValue = SC_FALSE);
-
   sc_bool HasKey(std::string const & key);
 
   sc_memory_params GetParams();
@@ -85,4 +90,10 @@ private:
   std::string m_groupName;
 
   sc_memory_params m_memoryParams{};
+
+  sc_char const * GetStringByKey(std::string const & key, sc_char const * defaultValue = nullptr);
+
+  sc_int32 GetIntByKey(std::string const & key, sc_int32 const defaultValue = 0);
+
+  sc_bool GetBoolByKey(std::string const & key, sc_bool const defaultValue = SC_FALSE);
 };

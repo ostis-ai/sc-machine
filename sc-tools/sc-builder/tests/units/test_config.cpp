@@ -180,5 +180,5 @@ TEST(ScBuilder, BuilderConfig)
 
   context->Destroy();
   delete context;
-  ScMemory::Shutdown(false);
+  ScMemory::Shutdown(SC_FALSE);
 }
