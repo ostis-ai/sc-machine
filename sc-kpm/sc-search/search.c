@@ -124,7 +124,7 @@ sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr cons
 
 _SC_EXT_EXTERN sc_uint32 sc_module_load_priority()
 {
-  return 0;
+  return 2;
 }
 
 sc_result sc_module_shutdown()
