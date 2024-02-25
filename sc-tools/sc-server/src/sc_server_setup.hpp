@@ -11,7 +11,7 @@
 
 void PrintStartMessage();
 
-sc_bool RunServer(ScParams const & serverParams, ScMemoryConfig & memoryConfig, std::shared_ptr<ScServer> & server);
+sc_bool RunServer(ScParams const & serverParams, std::shared_ptr<ScServer> & server);
 
 sc_bool StopServer(std::shared_ptr<ScServer> const & server);
 

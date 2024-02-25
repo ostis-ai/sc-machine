@@ -46,21 +46,22 @@ TEST(ScServer, RunStopServer)
   ScConfig config{configFile, {}};
   auto serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)
-    serverParams.insert({key, serverConfig[key]});
+    serverParams.Insert({key, serverConfig[key]});
 
   ScParams memoryParams{options, {}};
-  memoryParams.insert({"repo_path", SC_SERVER_REPO_PATH});
+  memoryParams.Insert({"repo_path", SC_SERVER_REPO_PATH});
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 
   auto server = std::unique_ptr<ScServer>(new ScServerImpl(
-      serverParams.at("host"),
-      std::stoi(serverParams.at("port")),
-      std::stoi(serverParams.at("sync_actions")),
-      memoryConfig.GetParams()));
+      serverParams.Get<std::string>("host"),
+      serverParams.Get<sc_uint32>("port"),
+      serverParams.Get<sc_bool>("sync_actions")));
 
+  ScMemory::Initialize(memoryConfig.GetParams());
   server->Run();
   server->Stop();
+  ScMemory::Shutdown();
 }
 
 TEST_F(ScServerTest, Connection)
@@ -98,7 +99,7 @@ TEST_F(ScServerTestWithoutParallelMode, HealthcheckOK)
 
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
-  EXPECT_TRUE(response.get<std    ::string>() == "OK");
+  EXPECT_EQ(response.get<std::string>(), "OK");
 
   client.Stop();
 }

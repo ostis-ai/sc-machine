@@ -15,12 +15,8 @@ extern "C"
 #include "sc-core/sc-store/sc-base/sc_thread.h"
 }
 
-ScServerImpl::ScServerImpl(
-    std::string const & host,
-    ScServerPort port,
-    sc_bool parallelActions,
-    sc_memory_params const & params)
-  : ScServer(host, port, params)
+ScServerImpl::ScServerImpl(std::string const & host, ScServerPort port, sc_bool parallelActions)
+  : ScServer(host, port)
   , m_parallelActions(parallelActions)
   , m_actionsRun(SC_TRUE)
   , m_actions(new ScServerActions())

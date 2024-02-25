@@ -46,7 +46,8 @@ protected:
     params.repo_path = SC_SERVER_REPO_PATH;
 
     ScMemory::LogMute();
-    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8865, parallel_actions, params);
+    ScMemory::Initialize(params);
+    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8865, parallel_actions);
     m_server->ClearChannels();
     m_server->Run();
     ScMemory::LogUnmute();
@@ -63,7 +64,8 @@ protected:
     params.user_mode = SC_TRUE;
 
     ScMemory::LogMute();
-    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8865, SC_TRUE, params);
+    ScMemory::Initialize(params);
+    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8865, SC_TRUE);
     m_server->ClearChannels();
     m_server->Run();
     ScMemory::LogUnmute();
@@ -74,6 +76,7 @@ protected:
     ScMemory::LogMute();
     m_server->Stop();
     m_server = nullptr;
+    ScMemory::Shutdown();
     ScMemory::LogUnmute();
   }
 

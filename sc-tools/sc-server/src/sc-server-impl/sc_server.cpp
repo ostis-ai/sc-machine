@@ -8,15 +8,11 @@
 
 #include "sc-memory/sc_keynodes.hpp"
 
-ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
+ScServer::ScServer(std::string hostName, size_t port)
   : m_hostName(std::move(hostName))
   , m_port(port)
   , m_logger(nullptr)
 {
-  m_memoryState = ScMemory::Initialize(params);
-  if (m_memoryState)
-    m_context = new ScMemoryContext(ScKeynodes::kMySelf);
-
   m_instance = new ScServerCore();
   ResetLogger();
   LogMessage(ScServerErrorLevel::info, "Initialize sc-server");
@@ -34,9 +30,6 @@ ScServer::ScServer(std::string hostName, size_t port, sc_memory_params params)
 void ScServer::Run()
 {
   m_instance->init_asio();
-
-  if (!m_memoryState)
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Sc-server sc-memory is invalid");
 
   m_isServerRun = SC_TRUE;
   m_instance->set_reuse_addr(SC_TRUE);
@@ -109,10 +102,6 @@ void ScServer::Shutdown()
 
   delete m_instance;
   m_instance = nullptr;
-
-  if (m_memoryState)
-    delete m_context;
-  ScMemory::Shutdown();
 }
 
 std::string ScServer::GetUri()

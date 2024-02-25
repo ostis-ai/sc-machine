@@ -25,16 +25,16 @@ void PrintStartMessage()
             << "--repo_path|-r -- Path to kb.bin folder\n"
             << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
             << "--clear -- Flag to clear sc-memory on start\n"
-            << "--help -- Display this message\n"
-            << "--test|-t -- Flag to test sc-server, run and stop it\n\n";
+            << "--test|-t -- Flag to test sc-server, run and stop it\n"
+            << "--help -- Display this message\n\n";
 }
 
-sc_bool RunServer(ScParams const & serverParams, ScMemoryConfig & memoryConfig, std::shared_ptr<ScServer> & server)
+sc_bool RunServer(ScParams const & serverParams, std::shared_ptr<ScServer> & server)
 {
   sc_bool status = SC_FALSE;
   try
   {
-    server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
+    server = ScServerFactory::ConfigureScServer(serverParams);
     ScServerLogger * logger = ScServerFactory::ConfigureScServerLogger(server, serverParams);
     server->Run();
     server->ResetLogger(logger);
@@ -90,24 +90,17 @@ try
   if (options.Has({"config", "c"}))
     configFile = options[{"config", "c"}].second;
 
+  sc_bool saveOnShutdown = !options.Has({"verbose", "v"});
+
   ScParams serverParams{options, {{"host", "h"}, {"port", "p"}}};
   ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
-  auto serverConfig = config["sc-server"];
-  for (auto const & key : *serverConfig)
-    serverParams.insert({key, serverConfig[key]});
 
-  ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"verbose", "v"}, {"clear"}}};
+  ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"clear"}}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
+  if (ScMemory::Initialize(memoryConfig.GetParams()) == SC_FALSE)
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Error while initialize sc-memory");
   utils::ScSignalHandler::Initialize();
-
-  std::shared_ptr<ScServer> server;
-  sc_bool const status = RunServer(serverParams, memoryConfig, server);
-  if (status == SC_FALSE)
-  {
-    StopServer(server);
-    return EXIT_FAILURE;
-  }
 
   std::atomic_bool isRun = {!options.Has({"test", "t"})};
   // LCOV_EXCL_START
@@ -122,7 +115,7 @@ try
   }
   // LCOV_EXCL_STOP
 
-  return StopServer(server) ? EXIT_SUCCESS : EXIT_FAILURE;
+  return ScMemory::Shutdown(saveOnShutdown) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 // LCOV_EXCL_START

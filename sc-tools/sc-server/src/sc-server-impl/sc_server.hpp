@@ -21,9 +21,7 @@ using ScServerLock = std::lock_guard<ScServerMutex>;
 class ScServer
 {
 public:
-  ScMemoryContext * m_context;
-
-  explicit ScServer(std::string hostName, size_t port, sc_memory_params params);
+  explicit ScServer(std::string hostName, size_t port);
 
   void Run();
 
@@ -65,8 +63,6 @@ protected:
   std::atomic<sc_bool> m_isServerRun = SC_FALSE;
   std::string m_hostName;
   ScServerPort m_port;
-
-  sc_bool m_memoryState;
 
   ScServerLogger * m_logger;
   ScServerCore * m_instance;

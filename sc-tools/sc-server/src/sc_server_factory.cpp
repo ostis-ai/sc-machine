@@ -7,26 +7,13 @@
 #include "sc_server_factory.hpp"
 #include "sc-server-impl/sc_server_logger_impl.hpp"
 
-std::shared_ptr<ScServer> ScServerFactory::ConfigureScServer(
-    ScParams const & serverParams,
-    sc_memory_params memoryParams)
+std::shared_ptr<ScServer> ScServerFactory::ConfigureScServer(ScParams const & serverParams)
 {
   sc_bool parallelActions = SC_TRUE;
-  if (serverParams.count("sync_actions"))
-  {
-    SC_LOG_WARNING(
-        "Option `sync_actions` is deprecated in sc-machine 0.9.0. It will be removed in sc-machine 0.10.0. Use option "
-        "`parallel_actions` instead of.");
-    parallelActions = serverParams.at("sync_actions") == "0";
-  }
-  if (serverParams.count("parallel_actions"))
-    parallelActions = serverParams.at("parallel_actions") == "true";
-
+  if (serverParams.Has("parallel_actions"))
+    parallelActions = serverParams.Get<std::string>("parallel_actions") == "true";
   std::unique_ptr<ScServer> server = std::unique_ptr<ScServer>(new ScServerImpl(
-      serverParams.count("host") ? serverParams.at("host") : "127.0.0.1",
-      serverParams.count("port") ? std::stoi(serverParams.at("port")) : 8090,
-      parallelActions,
-      memoryParams));
+      serverParams.Get<std::string>("host", "127.0.0.1"), serverParams.Get("port", 8090), parallelActions));
 
   return server;
 }
@@ -36,7 +23,10 @@ ScServerLogger * ScServerFactory::ConfigureScServerLogger(
     ScParams const & serverParams)
 {
   ScServerLogger * logger = new ScServerLoggerImpl(
-      server, serverParams.at("log_type"), serverParams.at("log_file"), serverParams.at("log_level"));
+      server,
+      serverParams.Get<std::string>("log_type", DEFAULT_LOG_TYPE),
+      serverParams.Get<std::string>("log_file", DEFAULT_LOG_FILE),
+      serverParams.Get<std::string>("log_level", DEFAULT_LOG_LEVEL));
 
   return logger;
 }
