@@ -23,26 +23,19 @@ ScParams::ScParams(ScOptions const & options, std::vector<std::vector<std::strin
   }
 }
 
+ScParams::ScParams() = default;
+
 ScParams::ScParams(ScParams const & object) noexcept
 {
   m_params = object.m_params;
 }
 
-void ScParams::insert(std::pair<std::string, std::string> const & pair)
+void ScParams::Insert(std::pair<std::string, std::string> const & pair)
 {
   m_params.insert(pair);
 }
 
-std::string const & ScParams::at(std::string const & key) const
-{
-  if (m_params.count(key))
-    return m_params.at(key);
-
-  static std::string empty;
-  return empty;
-}
-
-bool ScParams::count(std::string const & key) const
+sc_bool ScParams::Has(std::string const & key) const
 {
   return m_params.count(key);
 }
@@ -60,28 +53,28 @@ ScMemoryConfig::ScMemoryConfig(ScConfig const & config, ScParams const & params,
     std::string value = group[key];
     value = !value.empty() && value[0] == '\"' ? value.substr(1, value.length() - 2) : value;
 
-    m_params.insert({key, value});
+    m_params.Insert({key, value});
   }
 }
 
 sc_char const * ScMemoryConfig::GetStringByKey(std::string const & key, sc_char const defaultValue[])
 {
-  return m_params.count(key) ? m_params.at(key).c_str() : (sc_char const *)defaultValue;
+  return m_params.Get<std::string>(key, defaultValue).c_str();
 }
 
 sc_int32 ScMemoryConfig::GetIntByKey(std::string const & key, sc_int32 const defaultValue)
 {
-  return m_params.count(key) ? std::stoi(m_params.at(key)) : defaultValue;
+  return m_params.Get(key, defaultValue);
 }
 
 sc_bool ScMemoryConfig::GetBoolByKey(std::string const & key, sc_bool const defaultValue)
 {
-  return m_params.count(key) ? (m_params.at(key) == "true" ? SC_TRUE : SC_FALSE) : defaultValue;
+  return m_params.Has(key) ? (m_params.Get<std::string>(key) == "true" ? SC_TRUE : SC_FALSE) : defaultValue;
 }
 
 sc_bool ScMemoryConfig::HasKey(std::string const & key)
 {
-  return m_params.count(key);
+  return m_params.Has(key);
 }
 
 sc_memory_params ScMemoryConfig::GetParams()

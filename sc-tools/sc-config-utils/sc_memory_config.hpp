@@ -21,13 +21,45 @@ class ScParams
 public:
   explicit ScParams(ScOptions const & options, std::vector<std::vector<std::string>> const & keysSet);
 
+  ScParams();
+
   ScParams(ScParams const & object) noexcept;
 
-  void insert(std::pair<std::string, std::string> const & pair);
+  void Insert(std::pair<std::string, std::string> const & pair);
 
-  std::string const & at(std::string const & key) const;
+  template <typename TContentType>
+  TContentType Get(std::string const & key) const
+  {
+    if constexpr (std::is_same_v<TContentType, std::string>)
+      return m_params.count(key) ? m_params.at(key) : "";
 
-  bool count(std::string const & key) const;
+    std::stringstream streamString;
+    if (m_params.count(key))
+      streamString << m_params.at(key);
+
+    static TContentType value;
+    streamString >> value;
+    return value;
+  }
+
+  template <typename TContentType>
+  TContentType const & Get(std::string const & key, TContentType const & defaultValue) const
+  {
+    if constexpr (std::is_same_v<TContentType, std::string>)
+      return m_params.count(key) ? m_params.at(key) : defaultValue;
+
+    std::stringstream streamString;
+    if (m_params.count(key))
+      streamString << m_params.at(key);
+    else
+      streamString << defaultValue;
+
+    static TContentType value;
+    streamString >> value;
+    return value;
+  }
+
+  sc_bool Has(std::string const & key) const;
 
 private:
   std::map<std::string, std::string> m_params;
@@ -38,7 +70,7 @@ class ScMemoryConfig
 public:
   explicit ScMemoryConfig(ScConfig const & config, ScParams const & params, std::string groupName = "sc-memory");
 
-  sc_char const * GetStringByKey(std::string const & key, sc_char const defaultValue[] = nullptr);
+  sc_char const * GetStringByKey(std::string const & key, sc_char const * defaultValue = "");
 
   sc_int32 GetIntByKey(std::string const & key, sc_int32 const defaultValue = 0);
 
