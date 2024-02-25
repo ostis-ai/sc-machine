@@ -84,7 +84,7 @@ sc_memory_params ScMemoryConfig::GetParams()
 
   m_memoryParams.clear = HasKey("clear");
   m_memoryParams.repo_path = GetStringByKey("repo_path");
-  m_memoryParams.ext_path = GetStringByKey("extensions_path");
+  m_memoryParams.ext_path = HasKey("extensions_path") ? GetStringByKey("extensions_path") : nullptr;
   m_memoryParams.enabled_exts = nullptr;
 
   m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);

@@ -14,3 +14,12 @@ if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-machine-runner)
     target_clangformat_setup(sc-machine)
 endif()
+
+configure_file(
+    "${SC_MACHINE_RUNNER_ROOT}/tests/test_defines.hpp.in"
+    "${SC_MACHINE_RUNNER_ROOT}/tests/test_defines.hpp"
+)
+
+if(${SC_BUILD_TESTS})
+    include(tests/units/tests.cmake)
+endif()
