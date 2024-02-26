@@ -7,7 +7,7 @@
 
 Short version: **SC-machine** is a software package that emulates semantic computer behaviour. It uses agent-based approach to process knowledge graphs.
 
-SC-machine stores and processes knowledge graphs represented in the SC-code (language of the universal knowledge representation). Theoretical basis of SC-machine is provided by the [**OSTIS Technology**](https://github.com/ostis-ai/ostis-project).
+SC-machine stores and processes knowledge graphs represented in the SC-code (language of the universal knowledge representation). Theoretical basis of SC-machine is provided by the [**OSTIS Technology**](https://github.com/ostis-ai).
 
 SC-machine allows integrating problem solutions from different subject domains **by using the same**:
 
