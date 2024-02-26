@@ -126,12 +126,15 @@ sc_result sc_memory_shutdown(sc_bool save_state)
 {
   sc_memory_info("Shutdown");
 
+  if (memory == null_ptr)
+    goto error;
+
   sc_memory_shutdown_ext();
   sc_helper_shutdown();
 
-  if (memory != null_ptr)
-    _sc_memory_context_manager_unregister_user_events(memory->context_manager);
+  _sc_memory_context_manager_unregister_user_events(memory->context_manager);
 
+error:
   if (sc_storage_shutdown(save_state) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
