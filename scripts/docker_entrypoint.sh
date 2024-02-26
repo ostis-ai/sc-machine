@@ -26,9 +26,11 @@ USAGE
 }
 
 function rebuild_kb() {
-    if [ -e "$1" ]; then
+    if [ -e "$1" ];
+    then
         "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -i "$@"
-    elif [ -e "$KB_PATH" ]; then
+    elif [ -e "$KB_PATH" ];
+    then
         echo "$KB_PATH is set as a KB path by the environment variable"
         "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -i "$KB_PATH"
     else
@@ -38,13 +40,15 @@ function rebuild_kb() {
 }
 
 function start_server() {
-    if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ]; then
+    if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ];
+    then
         # this expands to $KB_PATH if it's non-null and expands to "/kb" otherwise.
         rebuild_kb "${KB_PATH:-"/kb"}"
     fi
 
     # if arguments were provided, use them instead of the default ones.
-    if [ $# -eq 0 ]; then
+    if [ $# -eq 0 ];
+    then
         # you should provide the config file path and host settings yourself in case you want to use custom options!
         echo "Using default arguments."
         "$BINARY_PATH"/sc-server -c "$CONFIG_PATH" -h 0.0.0.0 -e "$BINARY_PATH/extensions"
@@ -54,13 +58,15 @@ function start_server() {
 }
 
 function start_machine {
-    if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ]; then
+    if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ];
+    then
         # this expands to $KB_PATH if it's non-null and expands to "/kb" otherwise.
         rebuild_kb "${KB_PATH:-"/kb"}"
     fi
 
     # if arguments were provided, use them instead of the default ones.
-    if [ $# -eq 0 ]; then
+    if [ $# -eq 0 ];
+    then
         # you should provide the config file path and host settings yourself in case you want to use custom options!
         echo "Using default arguments."
         "$BINARY_PATH"/sc-machine -c "$CONFIG_PATH" -e "$BINARY_PATH/extensions"
@@ -75,7 +81,8 @@ case $1 in
 # rebuild KB in case the build command was passed
 build)
     shift 1;
-    while getopts "b:c:h" opt; do
+    while getopts "b:c:h" opt;
+    do
         case $opt in
         b)
             BINARY_PATH=$OPTARG
@@ -100,7 +107,8 @@ build)
 # launch sc-server
 serve)
     shift 1;
-    while getopts "b:c:h" opt; do
+    while getopts "b:c:h" opt;
+    do
         case $opt in
         b)
             BINARY_PATH=$OPTARG
@@ -125,7 +133,8 @@ serve)
 # launch sc-machine
 run)
     shift 1;
-    while getopts "b:c:h" opt; do
+    while getopts "b:c:h" opt;
+    do
         case $opt in
         b)
             BINARY_PATH=$OPTARG
