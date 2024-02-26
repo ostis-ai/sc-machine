@@ -515,6 +515,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement ref counter for sc-elements
 - Cover whole functionality of `C++` API by unit tests
 - Implement `C++` API
-
-[unreleased]: https://github.com/ostis-ai/sc-machine/compare/0.6.1...HEAD
-[0.6.1]: https://github.com/ostis-ai/sc-machine/compare/0.6.0...0.6.1
