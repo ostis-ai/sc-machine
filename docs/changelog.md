@@ -9,12 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Docker entrypoint run to launch binary `sc-machine` in docker
+- Script `run_sc_machine.sh` to launch binary `sc-machine`
+- Binary `sc-machine` instead of binary `sc-server` that loads extension sc-server
 - Generalized build_cxx_project.sh
 - Collect user permissions during sc-memory initialize
 - Throw exceptions in get values methods of iterators if sc-element is not accessed
 - Callback to get and collect sc-links by its contents from fs-memory
 - Local user permissions for actions within sc-structures
-- List in sc-element for input arcs from sc-structures 
+- List in sc-element for input arcs from sc-structures
 - Provide sc-arc types for sc-event callbacks
 - User permissions for handling permissions for actions in sc-memory
 - Global user permissions for actions in sc-memory
@@ -34,8 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Resolve sc.g-links with the same system identifier
 
+### Deprecated
+
+- Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve
+
 ### Removed
 
+- Config option `sync_actions` in `[sc-server]` deprecated in 0.9.0
 - Sc-links lists translation from C API to C++ API
 
 ## [0.9.0-Unlock] - 22.01.2024
