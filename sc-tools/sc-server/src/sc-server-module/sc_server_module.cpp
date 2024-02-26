@@ -14,6 +14,8 @@ SC_IMPLEMENT_MODULE(ScServerModule)
 
 sc_result ScServerModule::InitializeImpl()
 {
+  // It is backward compatible logic. When all platform-dependent components will be configured from kb it will be
+  // removed.
   ScConfig config{ScMemory::ms_configPath, {{"log_file"}}};
   ScConfigGroup serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)

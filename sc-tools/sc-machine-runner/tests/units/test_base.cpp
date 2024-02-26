@@ -25,3 +25,17 @@ TEST(ScMachine, InvalidRunMain)
   sc_char const * args[argsNumber] = {"sc-machine"};
   EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_FAILURE);
 }
+
+TEST(ScMachine, RunMainVerbose)
+{
+  sc_uint32 const argsNumber = 5;
+  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-t", "-v"};
+  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScMachine, RunMainHelp)
+{
+  sc_uint32 const argsNumber = 2;
+  sc_char const * args[argsNumber] = {"sc-machine", "--help"};
+  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}

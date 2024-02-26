@@ -21,5 +21,5 @@ configure_file(
 )
 
 if(${SC_BUILD_TESTS})
-    include(tests/units/tests.cmake)
+    include(tests/tests.cmake)
 endif()

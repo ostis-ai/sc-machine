@@ -53,12 +53,13 @@ TEST(ScServer, RunStopServer)
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 
+  ScMemory::Initialize(memoryConfig.GetParams());
+
   auto server = std::unique_ptr<ScServer>(new ScServerImpl(
       serverParams.Get<std::string>("host"),
       serverParams.Get<sc_uint32>("port"),
       serverParams.Get<sc_bool>("sync_actions")));
 
-  ScMemory::Initialize(memoryConfig.GetParams());
   server->Run();
   server->Stop();
   ScMemory::Shutdown();
