@@ -73,17 +73,17 @@ Semantic network storage is a core of any ostis-system, so you can use a referen
   
   # build kb
   docker compose run --rm machine build
-  # run sc-server
+  # run sc-machine
   docker compose up
   ```
 
 - Native
 
   ```sh
-  #build kb
+  # build kb
   ./bin/sc-builder -f --clear -c ./sc-machine.ini -i <path to kb folder with SCs and SCg sources (or path to repo.path file)> -o <output path>
-  #launch sc-server
-  ./bin/sc-server -c ./sc-machine.ini
+  # launch sc-machine
+  ./bin/sc-machine -c ./sc-machine.ini
   ```
 
 Most of these commands have a help page bundled inside, so if you have any questions or want to customize the command behavior, use `--help` flag to learn more about them.
