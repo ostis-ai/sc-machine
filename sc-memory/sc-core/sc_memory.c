@@ -324,7 +324,7 @@ sc_addr sc_memory_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_ad
     return SC_ADDR_EMPTY;
   }
 
-  if (_sc_memory_context_check_if_is_permitted_structure(
+  if (_sc_memory_context_check_if_has_permitted_structure(
           memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, beg)
           == SC_FALSE
       || sc_type_has_not_subtype_in_mask(type, sc_type_arc_pos_const))

@@ -42,13 +42,13 @@ typedef void (*sc_permissions_handler)(sc_memory_context_manager *, sc_addr, sc_
   })
 
 /**
- * @brief Checks if a given set of permissions is present in the context.
- * @param _permissions Permissions of the context.
- * @param _checking_permissions Permissions to be checked.
- * @return Returns true if all the specified permissions are present; otherwise, false.
+ * @brief Checks if a given subset of permissions is present in the permission.
+ * @param _permissions Permissions to be checked if it has subset of permissions.
+ * @param _sub_permissions Subset of permissions to be checked in permissions.
+ * @return Returns true if all the specified subset of permissions are present; otherwise, false.
  */
-#define sc_context_check_context_permissions(_permissions, _checking_permissions) \
-  ((_permissions) & (_checking_permissions)) == _checking_permissions
+#define sc_context_has_permissions_subset(_permissions, _permissions_subset) \
+  ((_permissions) & (_permissions_subset)) == _permissions_subset
 
 //! Gets sc-memory context global permissions.
 #define _sc_monitor_get_context_global_permissions(_context) \
@@ -434,6 +434,8 @@ void _sc_memory_context_manager_add_user_action_class_within_structure(
       != SC_RESULT_OK)
     return;
 
+  _sc_context_set_permissions_for_element(structure_addr, SC_CONTEXT_PERMITTED_STRUCTURE);
+
   sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
 
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
@@ -723,12 +725,12 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
 
   sc_permissions const context_permissions = _sc_monitor_get_context_global_permissions(ctx);
 
-  sc_bool is_authenticated =
-      sc_context_check_context_permissions(context_permissions, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
+  sc_bool const is_authenticated =
+      sc_context_has_permissions_subset(context_permissions, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
   return is_authenticated;
 }
 
-sc_bool _sc_memory_context_check_if_is_permitted_structure(
+sc_bool _sc_memory_context_check_if_has_permitted_structure(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_permissions action_class_permissions,
@@ -748,13 +750,20 @@ sc_bool _sc_memory_context_check_if_is_permitted_structure(
 
   sc_permissions permissions =
       (sc_uint64)sc_hash_table_get(permissions_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(element_addr)));
-  result = sc_context_check_context_permissions(permissions, action_class_permissions);
+  result = sc_context_has_permissions_subset(permissions, action_class_permissions);
 
 result:
   sc_monitor_release_read((sc_monitor *)&ctx->monitor);
 
   return result;
 }
+
+#define _sc_memory_check_if_is_permitted_structure(_structure_addr) \
+  ({ \
+    sc_permissions const _structure_permissions = _sc_context_get_permissions_for_element(_structure_addr); \
+    sc_bool const _result = sc_context_has_permissions_subset(_structure_permissions, SC_CONTEXT_PERMITTED_STRUCTURE); \
+    _result; \
+  })
 
 sc_result _sc_memory_context_check_local_permissions(
     sc_memory_context_manager * manager,
@@ -778,9 +787,12 @@ sc_result _sc_memory_context_check_local_permissions(
   while (result != SC_RESULT_OK && sc_iterator3_next(it3))
   {
     sc_addr const structure_addr = sc_iterator3_value(it3, 0);
-    sc_permissions permissions =
+    if (_sc_memory_check_if_is_permitted_structure(structure_addr) == SC_FALSE)
+      continue;
+
+    sc_permissions const permissions =
         (sc_uint64)sc_hash_table_get(permissions_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(structure_addr)));
-    result = sc_context_check_context_permissions(permissions, action_class_permissions) ? SC_RESULT_OK : SC_RESULT_NO;
+    result = sc_context_has_permissions_subset(permissions, action_class_permissions) ? SC_RESULT_OK : SC_RESULT_NO;
   }
   sc_iterator3_free(it3);
 
@@ -800,8 +812,8 @@ sc_bool _sc_memory_context_check_global_permissions(
 
   sc_permissions const context_permissions = _sc_monitor_get_context_global_permissions(ctx);
 
-  // Check if the sc-memory context has access to the action class
-  sc_bool result = sc_context_check_context_permissions(context_permissions, action_class_permissions);
+  // Check if the sc-memory context has permissions to the action class
+  sc_bool const result = sc_context_has_permissions_subset(context_permissions, action_class_permissions);
   return result;
 }
 
@@ -839,7 +851,7 @@ sc_bool _sc_memory_context_check_global_permissions_to_read_permissions(
   sc_permissions const required_context_permissions = context_permissions & required_permissions;
   sc_permissions const required_element_permissions = element_permissions & required_permissions;
 
-  sc_bool result = sc_context_check_context_permissions(required_context_permissions, required_element_permissions);
+  sc_bool result = sc_context_has_permissions_subset(required_context_permissions, required_element_permissions);
   return result;
 }
 
@@ -855,7 +867,7 @@ sc_bool _sc_memory_context_check_global_permissions_to_handle_permissions(
   sc_permissions const required_context_permissions = context_permissions & required_permissions;
   sc_permissions const required_element_permissions = element_permissions & required_permissions;
 
-  sc_bool result = sc_context_check_context_permissions(required_context_permissions, required_element_permissions);
+  sc_bool const result = sc_context_has_permissions_subset(required_context_permissions, required_element_permissions);
   return result;
 }
 

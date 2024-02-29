@@ -90,7 +90,7 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
  * compares the permissions associated with the element against the permissions of the action class. If the
  * permissions match, the function returns SC_TRUE; otherwise, it returns SC_FALSE.
  */
-sc_bool _sc_memory_context_check_if_is_permitted_structure(
+sc_bool _sc_memory_context_check_if_has_permitted_structure(
     sc_memory_context_manager * manager,
     sc_memory_context const * ctx,
     sc_permissions action_class_permissions,

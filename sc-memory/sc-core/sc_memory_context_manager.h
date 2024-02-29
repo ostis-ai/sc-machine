@@ -31,6 +31,8 @@ extern sc_memory_context * s_memory_default_ctx;
   (SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS | SC_CONTEXT_PERMISSIONS_TO_WRITE_PERMISSIONS \
    | SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS)
 
+#define SC_CONTEXT_PERMITTED_STRUCTURE 0x100
+
 /*! Function that initializes the sc-memory context manager with specified parameters.
  * @param manager Pointer to a pointer that will store the newly created memory context manager.
  * @param user_mode Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
