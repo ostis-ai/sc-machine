@@ -47,7 +47,7 @@ ScMemoryContext context{"my_name"};
 ```
 
 !!! note
-    Don't use constructor of ScMemoryContext, providing sc_access_levels argument. It can be unsafe. It will be 
+    Don't use constructor of ScMemoryContext, providing sc_permissions argument. It can be unsafe. It will be 
     deleted in the further versions of sc-machine. 
 
 ### **CreateNode**

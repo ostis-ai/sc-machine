@@ -15,7 +15,7 @@
 #include "sc_keynodes.h"
 #include "sc_memory_ext.h"
 #include "sc_memory_context_manager.h"
-#include "sc_memory_context_access_levels.h"
+#include "sc_memory_context_permissions.h"
 
 #include "sc-store/sc_types.h"
 #include "sc-store/sc-base/sc_allocator.h"
@@ -54,8 +54,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
 
   sc_storage_start_new_process();
 
-  memory->myself_addr = sc_storage_node_new(null_ptr, sc_type_node | sc_type_const);
-  _sc_memory_context_manager_initialize(&memory->context_manager, memory->myself_addr, params->user_mode);
+  _sc_memory_context_manager_initialize(&memory->context_manager, params->user_mode);
 
   if (sc_helper_init(s_memory_default_ctx) != SC_RESULT_OK)
   {
@@ -71,11 +70,9 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   if (sc_keynodes_initialize(s_memory_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
     goto error;
 
-  sc_char * const myself_system_idtf = "myself";
-  sc_helper_set_system_identifier(
-      s_memory_default_ctx, memory->myself_addr, myself_system_idtf, sc_str_len(myself_system_idtf));
-
+  _sc_memory_context_assign_context_for_system(memory->context_manager, &memory->myself_addr);
   _sc_memory_context_manager_register_user_events(memory->context_manager);
+  _sc_memory_context_handle_all_user_permissions(memory->context_manager);
 
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
@@ -207,10 +204,10 @@ sc_bool sc_memory_is_element_ext(sc_memory_context const * ctx, sc_addr addr, sc
     return SC_FALSE;
   }
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_global_permissions(memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ)
       == SC_FALSE)
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
     return SC_FALSE;
   }
 
@@ -226,10 +223,11 @@ sc_uint32 sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx,
     return 0;
   }
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, addr)
       == SC_FALSE)
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
     return 0;
   }
 
@@ -244,10 +242,11 @@ sc_uint32 sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, 
     return 0;
   }
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, addr)
       == SC_FALSE)
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
     return 0;
   }
 
@@ -259,14 +258,15 @@ sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_ERASE)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_ERASE, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS;
 
-  if (_sc_memory_context_check_global_access_levels_to_erase_access_levels(
-          memory->context_manager, ctx, addr, SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS)
+  if (_sc_memory_context_check_global_permissions_to_erase_permissions(
+          memory->context_manager, ctx, addr, SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_ERASE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_ERASE_PERMISSIONS;
 
   return sc_storage_element_free(ctx, addr);
 }
@@ -282,13 +282,6 @@ sc_addr sc_memory_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_r
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
   {
     *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
-    return SC_ADDR_EMPTY;
-  }
-
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE)
-      == SC_FALSE)
-  {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;
     return SC_ADDR_EMPTY;
   }
 
@@ -314,13 +307,6 @@ sc_addr sc_memory_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_r
     return SC_ADDR_EMPTY;
   }
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE)
-      == SC_FALSE)
-  {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;
-    return SC_ADDR_EMPTY;
-  }
-
   return sc_storage_link_new_ext(ctx, type, result);
 }
 
@@ -338,18 +324,32 @@ sc_addr sc_memory_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_ad
     return SC_ADDR_EMPTY;
   }
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE)
-      == SC_FALSE)
+  if (_sc_memory_context_check_if_has_permitted_structure(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, beg)
+          == SC_FALSE
+      || sc_type_has_not_subtype_in_mask(type, sc_type_arc_pos_const))
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;
-    return SC_ADDR_EMPTY;
+    if (_sc_memory_context_check_local_and_global_permissions(
+            memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, beg)
+        == SC_FALSE)
+    {
+      *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS;
+      return SC_ADDR_EMPTY;
+    }
+    if (_sc_memory_context_check_local_and_global_permissions(
+            memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, end)
+        == SC_FALSE)
+    {
+      *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS;
+      return SC_ADDR_EMPTY;
+    }
   }
 
-  if (_sc_memory_context_check_global_access_levels_to_write_access_levels(
-          memory->context_manager, ctx, beg, type, SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS)
+  if (_sc_memory_context_check_global_permissions_to_write_permissions(
+          memory->context_manager, ctx, beg, type, SC_CONTEXT_PERMISSIONS_TO_WRITE_PERMISSIONS)
       == SC_FALSE)
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_WRITE_ACCESS_LEVELS;
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_WRITE_PERMISSIONS;
     return SC_ADDR_EMPTY;
   }
 
@@ -361,9 +361,10 @@ sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
   return sc_storage_get_element_type(ctx, addr, result);
 }
@@ -373,51 +374,81 @@ sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_add
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS;
 
   return sc_storage_change_element_subtype(ctx, addr, type);
 }
 
-sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
+sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
-  return sc_storage_get_arc_begin(ctx, addr, result);
+  sc_result const result = sc_storage_get_arc_begin(ctx, addr, begin_addr);
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_permissions(
+             memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, *begin_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
+
+  return result;
 }
 
-sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * result)
+sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * end_addr)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
-  return sc_storage_get_arc_end(ctx, addr, result);
+  sc_result const result = sc_storage_get_arc_end(ctx, addr, end_addr);
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_permissions(
+             memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, *end_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
+
+  return result;
 }
 
-sc_result sc_memory_get_arc_info(
-    sc_memory_context const * ctx,
-    sc_addr addr,
-    sc_addr * result_start_addr,
-    sc_addr * result_end_addr)
+sc_result sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr, sc_addr * end_addr)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
-  return sc_storage_get_arc_info(ctx, addr, result_start_addr, result_end_addr);
+  sc_result const result = sc_storage_get_arc_info(ctx, addr, begin_addr, end_addr);
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_permissions(
+             memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, *begin_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
+
+  if (result == SC_RESULT_OK
+      && _sc_memory_context_check_local_and_global_permissions(
+             memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, *end_addr)
+             == SC_FALSE)
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
+
+  return result;
 }
 
 sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const * stream)
@@ -434,13 +465,15 @@ sc_result sc_memory_set_link_content_ext(
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_ERASE)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_ERASE, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS;
 
   return sc_storage_set_link_content(ctx, addr, stream, is_searchable_string);
 }
@@ -450,58 +483,102 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ, addr)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
   return sc_storage_get_link_content(ctx, addr, stream);
+}
+
+void _push_link_hash(void * data, sc_addr const link_addr)
+{
+  sc_list_push_back((sc_list *)data, (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(link_addr));
 }
 
 sc_result sc_memory_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result)
+    sc_list ** result_hashes)
+{
+  sc_list_init(result_hashes);
+  return sc_memory_find_links_with_content_string_ext(ctx, stream, *result_hashes, _push_link_hash);
+}
+
+sc_result sc_memory_find_links_with_content_string_ext(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    void * data,
+    void (*callback)(void * data, sc_addr const link_addr))
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
-      == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
-
-  return sc_storage_find_links_with_content_string(ctx, stream, result);
+  return sc_storage_find_links_with_content_string(ctx, stream, data, callback);
 }
 
 sc_result sc_memory_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result,
-    sc_uint32 max_length_to_search_as_prefix)
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** result_hashes)
+{
+  sc_list_init(&*result_hashes);
+  return sc_memory_find_links_by_content_substring_ext(
+      ctx, stream, max_length_to_search_as_prefix, *result_hashes, _push_link_hash);
+}
+
+sc_result sc_memory_find_links_by_content_substring_ext(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_uint32 max_length_to_search_as_prefix,
+    void * data,
+    void (*callback)(void * data, sc_addr const link_addr))
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
-      == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+  return sc_storage_find_links_by_content_substring(ctx, stream, max_length_to_search_as_prefix, data, callback);
+}
 
-  return sc_storage_find_links_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
+void _test_push_link_content(void * data, sc_addr const link_addr, sc_char const * link_content)
+{
+  sc_unused(link_addr);
+
+  sc_uint32 const size = sc_str_len(link_content);
+  sc_char * copied_string;
+  sc_str_cpy(copied_string, link_content, size);
+
+  sc_list_push_back((sc_list *)data, (sc_pointer)copied_string);
 }
 
 sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_list ** result,
-    sc_uint32 max_length_to_search_as_prefix)
+    sc_uint32 max_length_to_search_as_prefix,
+    sc_list ** strings)
+{
+  sc_list_init(&*strings);
+  return sc_memory_find_links_contents_by_content_substring_ext(
+      ctx, stream, max_length_to_search_as_prefix, *strings, _test_push_link_content);
+}
+
+sc_result sc_memory_find_links_contents_by_content_substring_ext(
+    sc_memory_context const * ctx,
+    sc_stream const * stream,
+    sc_uint32 max_length_to_search_as_prefix,
+    void * data,
+    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content))
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_global_permissions(memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
-  return sc_storage_find_links_contents_by_content_substring(ctx, stream, result, max_length_to_search_as_prefix);
+  return sc_storage_find_links_contents_by_content_substring(
+      ctx, stream, max_length_to_search_as_prefix, data, callback);
 }
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)
@@ -509,9 +586,9 @@ sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_READ)
+  if (_sc_memory_context_check_global_permissions(memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_READ)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
   return sc_storage_get_elements_stat(stat);
 }
@@ -521,9 +598,9 @@ sc_result sc_memory_save(sc_memory_context const * ctx)
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  if (_sc_memory_context_check_global_access_levels(memory->context_manager, ctx, SC_CONTEXT_ACCESS_LEVEL_WRITE)
+  if (_sc_memory_context_check_global_permissions(memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE)
       == SC_FALSE)
-    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS;
+    return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS;
 
   return sc_storage_save(ctx);
 }

@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_keynodes.hpp"
 
 #include "test_defines.hpp"
 
@@ -41,6 +42,24 @@ protected:
     ScMemory::LogUnmute();
   }
 
+  void InitializeWithUserMode()
+  {
+    sc_memory_params params;
+    sc_memory_params_clear(&params);
+
+    params.dump_memory = SC_FALSE;
+    params.dump_memory_statistics = SC_FALSE;
+
+    params.clear = SC_FALSE;
+    params.repo_path = SC_BUILDER_REPO_PATH;
+
+    params.user_mode = SC_TRUE;
+
+    ScMemory::LogMute();
+    ScMemory::Initialize(params);
+    ScMemory::LogUnmute();
+  }
+
   static void Shutdown()
   {
     ScMemory::LogMute();
@@ -50,4 +69,14 @@ protected:
 
 protected:
   std::unique_ptr<ScMemoryContext> m_ctx;
+};
+
+class ScBuilderLoadUserAccessLevelsTest : public ScBuilderTest
+{
+protected:
+  virtual void SetUp()
+  {
+    ScBuilderTest::InitializeWithUserMode();
+    m_ctx = std::make_unique<ScMemoryContext>(ScKeynodes::kMySelf);
+  }
 };

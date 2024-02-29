@@ -218,6 +218,7 @@ sc_result sc_helper_find_element_by_system_identifier_ext(
   result = sc_memory_find_links_with_content_string(ctx, stream, &found_links);
   if (result != SC_RESULT_OK)
   {
+    sc_list_destroy(found_links);
     sc_stream_free(stream);
     goto error;
   }

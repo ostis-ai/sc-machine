@@ -13,14 +13,13 @@
 
 #include "utils/sc_log.hpp"
 
-#include <cstdlib>
-#include <ctime>
 #include <iostream>
-#include <utility>
 
 extern "C"
 {
-#include <glib.h>
+#include "sc-core/sc_memory_private.h"
+#include "sc-core/sc_memory_context_private.h"
+#include "sc-core/sc_memory_context_permissions.h"
 }
 
 SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
@@ -129,10 +128,10 @@ void ScMemory::LogUnmute()
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext(sc_uint8 accessLevels, std::string const & name)
+ScMemoryContext::ScMemoryContext(sc_permissions permissions, std::string const & name)
   : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
 {
-  SC_UNUSED(accessLevels);
+  SC_UNUSED(permissions);
   SC_UNUSED(name);
 }
 
@@ -196,9 +195,9 @@ bool ScMemoryContext::IsElement(ScAddr const & addr) const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to check sc-element due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to check sc-element due sc-memory context hasn't read access levels");
+        utils::ExceptionInvalidState, "Not able to check sc-element due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -224,10 +223,10 @@ size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to get output arcs count due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get output arcs count due sc-memory context hasn't read access levels");
+        "Not able to get output arcs count due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -253,10 +252,9 @@ size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to get input arcs count due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to get input arcs count due sc-memory context hasn't read access levels");
+        utils::ExceptionInvalidState, "Not able to get input arcs count due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -277,14 +275,14 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to erase sc-element due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to erase sc-element due sc-memory context hasn't erase access levels");
+        utils::ExceptionInvalidState, "Not able to erase sc-element due sc-memory context hasn't erase permissions");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_ERASE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_ERASE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to erase sc-element due sc-memory context hasn't access levels to erase access levels");
+        "Not able to erase sc-element due sc-memory context hasn't permissions to erase permissions");
 
   default:
     break;
@@ -314,10 +312,6 @@ ScAddr ScMemoryContext::CreateNode(ScType const & type)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to create sc-node due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to create sc-node due sc-memory context hasn't write access levels");
-
   default:
     break;
   }
@@ -345,10 +339,6 @@ ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to create sc-link due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to create sc-link due sc-memory context hasn't write access levels");
 
   default:
     break;
@@ -383,15 +373,14 @@ ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, 
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to create sc-connector due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to create sc-connector due sc-memory context hasn't write access levels");
+        utils::ExceptionInvalidState, "Not able to create sc-connector due sc-memory context hasn't write permissions");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_WRITE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to create sc-connector due sc-memory context hasn't access levels to write access levels");
+        "Not able to create sc-connector due sc-memory context hasn't permissions to write permissions");
 
   default:
     break;
@@ -415,9 +404,9 @@ ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Not able to get sc-type due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get sc-type due sc-memory context hasn't read access levels");
+        utils::ExceptionInvalidState, "Not able to get sc-type due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -440,9 +429,9 @@ bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Not able to set sc-type due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set sc-type due sc-memory context hasn't write access levels");
+        utils::ExceptionInvalidState, "Not able to set sc-type due sc-memory context hasn't write permissions");
 
   default:
     break;
@@ -474,10 +463,10 @@ ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
         utils::ExceptionInvalidState,
         "Not able to get incident source sc-element due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident source sc-element due sc-memory context hasn't read access levels");
+        "Not able to get incident source sc-element due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -512,10 +501,10 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
         utils::ExceptionInvalidState,
         "Not able to get incident target sc-element due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident target sc-element due sc-memory context hasn't read access levels");
+        "Not able to get incident target sc-element due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -548,10 +537,10 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to get incident sc-elements due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident sc-elements due sc-memory context hasn't read access levels");
+        "Not able to get incident sc-elements due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -594,13 +583,13 @@ bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & st
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Not able to set content due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set content due sc-memory context hasn't erase access levels");
+        utils::ExceptionInvalidState, "Not able to set content due sc-memory context hasn't erase permissions");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set content due sc-memory context hasn't write access levels");
+        utils::ExceptionInvalidState, "Not able to set content due sc-memory context hasn't write permissions");
 
   default:
     break;
@@ -630,9 +619,9 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Not able to get content due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get content due sc-memory context hasn't read access levels");
+        utils::ExceptionInvalidState, "Not able to get content due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -641,6 +630,30 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
   return std::make_shared<ScStream>(s);
 }
 
+void _PushLinkAddr(void * _data, sc_addr const link_addr)
+{
+  void ** data = ((void **)_data);
+  auto * ctx = (sc_memory_context *)data[0];
+
+  if (_sc_memory_context_check_local_and_global_permissions(
+          (sc_memory_context_manager *)sc_memory_get_context_manager(), ctx, SC_CONTEXT_PERMISSIONS_READ, link_addr)
+      == SC_FALSE)
+    return;
+
+  auto * linkAddrList = (ScAddrVector *)data[1];
+  linkAddrList->emplace_back(link_addr);
+}
+
+#define _MAKE_DATA(_context_ptr, _list_ptr) \
+  ({ \
+    void ** _data = new void *[2]; \
+    _data[0] = _context_ptr; \
+    _data[1] = _list_ptr; \
+    _data; \
+  })
+
+#define _ERASE_DATA(_data) delete[] _data
+
 ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
 {
   CHECK_CONTEXT;
@@ -648,11 +661,11 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
   if (!stream || !stream->IsValid())
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content");
 
-  ScAddrVector contents;
-  sc_list * found_links = nullptr;
-
-  sc_stream * str = stream->m_stream;
-  sc_result const result = sc_memory_find_links_with_content_string(m_context, str, &found_links);
+  ScAddrVector linkAddrList;
+  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
+  sc_result const result =
+      sc_memory_find_links_with_content_string_ext(m_context, stream->m_stream, data, _PushLinkAddr);
+  _ERASE_DATA(data);
 
   switch (result)
   {
@@ -667,25 +680,11 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to find sc-links by content due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find sc-links by content due sc-memory context hasn't read access levels");
-
   default:
     break;
   }
 
-  sc_iterator * it = sc_list_iterator(found_links);
-  while (sc_iterator_next(it))
-  {
-    auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
-    contents.emplace_back(addr_hash);
-  }
-  sc_iterator_destroy(it);
-  sc_list_destroy(found_links);
-
-  return contents;
+  return linkAddrList;
 }
 
 ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix)
@@ -696,12 +695,11 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring");
 
-  ScAddrVector contents;
-  sc_list * found_links = nullptr;
-
-  sc_stream * str = stream->m_stream;
-  sc_result const result =
-      sc_memory_find_links_by_content_substring(m_context, str, &found_links, maxLengthToSearchAsPrefix);
+  ScAddrVector linkAddrList;
+  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
+  sc_result const result = sc_memory_find_links_by_content_substring_ext(
+      m_context, stream->m_stream, maxLengthToSearchAsPrefix, data, _PushLinkAddr);
+  _ERASE_DATA(data);
 
   switch (result)
   {
@@ -718,25 +716,19 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
         utils::ExceptionInvalidState,
         "Not able to find sc-links by content substring due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find sc-links by content substring due sc-memory context hasn't read access levels");
-
   default:
     break;
   }
 
-  sc_iterator * it = sc_list_iterator(found_links);
-  while (sc_iterator_next(it))
-  {
-    auto addr_hash = (sc_addr_hash)sc_iterator_get(it);
-    contents.emplace_back(addr_hash);
-  }
-  sc_iterator_destroy(it);
-  sc_list_destroy(found_links);
+  return linkAddrList;
+}
 
-  return contents;
+void _PushLinkContent(void * data, sc_addr const link_addr, sc_char const * link_content)
+{
+  SC_UNUSED(link_addr);
+
+  auto * linkContentList = (std::vector<std::string> *)data;
+  linkContentList->emplace_back(link_content);
 }
 
 std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
@@ -749,12 +741,9 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find contents by content substring");
 
-  std::vector<std::string> contents;
-  sc_list * found_strings = nullptr;
-
-  sc_stream * str = stream->m_stream;
-  sc_result const result =
-      sc_memory_find_links_contents_by_content_substring(m_context, str, &found_strings, maxLengthToSearchAsPrefix);
+  std::vector<std::string> linkContentList;
+  sc_result const result = sc_memory_find_links_contents_by_content_substring_ext(
+      m_context, stream->m_stream, maxLengthToSearchAsPrefix, &linkContentList, _PushLinkContent);
 
   switch (result)
   {
@@ -771,26 +760,16 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
         utils::ExceptionInvalidState,
         "Not able to find contents by content substring due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to find contents by content substring due sc-memory context hasn't read access levels");
+        "Not able to find contents by content substring due sc-memory context hasn't read permissions");
 
   default:
     break;
   }
 
-  sc_iterator * it = sc_list_iterator(found_strings);
-  while (sc_iterator_next(it))
-  {
-    auto string = (sc_char *)sc_iterator_get(it);
-    contents.emplace_back(string);
-    free(string);
-  }
-  sc_iterator_destroy(it);
-  sc_list_destroy(found_strings);
-
-  return contents;
+  return linkContentList;
 }
 
 bool ScMemoryContext::Save()
@@ -803,10 +782,10 @@ bool ScMemoryContext::Save()
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to save sc-memory state due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to save sc-memory state due sc-memory context hasn't write access levels");
+        "Not able to save sc-memory state due sc-memory context hasn't write permissions");
 
   default:
     break;
@@ -852,46 +831,8 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
 
 bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
 {
-  CHECK_CONTEXT;
-  sc_result const result =
-      sc_helper_set_system_identifier(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size());
-
-  switch (result)
-  {
-  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to set system identifier");
-
-  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
-
-  case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set system identifier");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set system identifier due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to set system identifier due sc-memory context hasn't read access levels");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to set system identifier due sc-memory context hasn't write access levels");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to set system identifier due sc-memory context hasn't erase access levels");
-
-  default:
-    break;
-  }
-
-  return result == SC_RESULT_OK;
+  ScSystemIdentifierQuintuple quintuple;
+  return HelperSetSystemIdtf(sysIdtf, addr, quintuple);
 }
 
 bool ScMemoryContext::HelperSetSystemIdtf(
@@ -921,10 +862,15 @@ bool ScMemoryContext::HelperSetSystemIdtf(
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to set system identifier due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to set system identifier due sc-memory context hasn't write access levels");
+        "Not able to set system identifier due sc-memory context hasn't write permissions");
+
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to set system identifier due sc-memory context hasn't erase permissions");
 
   default:
     break;
@@ -952,11 +898,6 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to get system identifier due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to get system identifier due sc-memory context hasn't read access levels");
 
   default:
     break;
@@ -988,10 +929,6 @@ bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType c
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to check sc-connector due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to check sc-connector due sc-memory context hasn't read access levels");
 
   default:
     break;
@@ -1041,11 +978,6 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Not able to find by system identifier due sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find by system identifier due sc-memory context hasn't read access levels");
 
   default:
     break;
@@ -1152,10 +1084,10 @@ ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
         utils::ExceptionInvalidState,
         "Not able to get sc-memory statistics state due sc-memory context is not authorized");
 
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get sc-memory statistics due sc-memory context hasn't read access levels");
+        "Not able to get sc-memory statistics due sc-memory context hasn't read permissions");
 
   default:
     break;

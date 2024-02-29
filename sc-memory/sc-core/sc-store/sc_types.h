@@ -137,6 +137,8 @@ typedef sc_uint16 sc_type;
 #  define sc_type_node_abstract (sc_type)(0x1000)
 #  define sc_type_node_material (sc_type)(0x2000)
 
+#  define sc_type_arc_pos_const (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos)
+#  define sc_type_arc_neg_const (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg)
 #  define sc_type_arc_pos_const_perm (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 #  define sc_type_arc_pos_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp)
 #  define sc_type_arc_neg_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp)
@@ -154,7 +156,14 @@ typedef sc_uint16 sc_type;
         | sc_type_node_abstract | sc_type_node_material)
 #  define sc_type_arc_mask (sc_type)(sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
 
-#  define sc_type_check(_type, _other_type) ((_type & _other_type) == _other_type)
+#  define sc_type_has_subtype(_type, _subtype) ((_type & _subtype) == _subtype)
+#  define sc_type_has_not_subtype(_type, _subtype) !sc_type_has_subtype(_type, _subtype)
+#  define sc_type_has_subtype_in_mask(_type, _mask) ((_type & _mask) != 0)
+#  define sc_type_has_not_subtype_in_mask(_type, _mask) !sc_type_has_subtype_in_mask(_type, _mask)
+
+#  define sc_type_is_structure_and_arc(_node_type, _arc_type) \
+    (sc_type_has_subtype(_node_type, sc_type_node_struct) \
+     && (sc_type_has_subtype_in_mask(_arc_type, sc_type_arc_pos_const)))
 
 typedef sc_uint16 sc_states;
 
@@ -191,12 +200,12 @@ enum _sc_result
   SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER,
   SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER,
   SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED,
-  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS,
-  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS,
-  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS,
-  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_READ_ACCESS_LEVELS,
-  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_WRITE_ACCESS_LEVELS,
-  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ACCESS_LEVELS_TO_ERASE_ACCESS_LEVELS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_READ_PERMISSIONS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_WRITE_PERMISSIONS,
+  SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_ERASE_PERMISSIONS,
   SC_RESULT_UNKNOWN,  // result unknown
 
   // add atomic types before
@@ -227,13 +236,14 @@ struct _sc_stat
 
 typedef struct _sc_arc sc_arc;
 typedef struct _sc_arc_info sc_arc_info;
-typedef sc_uint16 sc_access_levels;
+typedef sc_uint16 sc_permissions;
 typedef struct _sc_element_flags sc_element_flags;
 typedef struct _sc_memory_context sc_memory_context;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;
 typedef struct _sc_iterator_param sc_iterator_param;
+typedef struct _sc_iterator_result sc_iterator_result;
 typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_iterator5 sc_iterator5;
 typedef struct _sc_event sc_event;

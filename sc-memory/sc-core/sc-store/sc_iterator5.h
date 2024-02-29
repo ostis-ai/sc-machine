@@ -27,7 +27,7 @@ struct _sc_iterator5
 {
   sc_iterator5_type type;         // iterator type (search template)
   sc_iterator_param params[5];    // parameters array
-  sc_addr results[5];             // results array (same size as params)
+  sc_iterator_result results[5];  // results array (same size as params)
   sc_iterator3 * it_main;         // iterator of main arc
   sc_iterator3 * it_attr;         // iterator of attribute arc
   sc_memory_context const * ctx;  // pointer to used memory context
@@ -186,8 +186,8 @@ _SC_EXTERN sc_bool sc_iterator5_next(sc_iterator5 * it);
  * Possible values for the result:
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  * @code
  * sc_result result;
  * while(sc_iterator_next(it, &result)) { <your code> }
@@ -197,14 +197,30 @@ _SC_EXTERN sc_bool sc_iterator5_next_ext(sc_iterator5 * it, sc_result * result);
 
 /*! Get iterator value
  * @param it Pointer to iterator for getting value
- * @param vid Value id (can't be more that 5 for sc-iterator5)
+ * @param index Value id (can't be more that 5 for sc-iterator5)
  * @return Return sc-addr of search result value
  */
-_SC_EXTERN sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint vid);
+_SC_EXTERN sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint index);
+
+/*! Get iterator value
+ * @param it Pointer to iterator for getting value
+ * @param index Value id (can't be more that 5 for sc-iterator5)
+ * @param result Pointer to a variable that will store the result of the operation.
+ *               It can be NULL if the result is not needed.
+ * @return Return sc-addr of search result value.
+ *
+ * Possible values for the `result` parameter:
+ * @retval SC_RESULT_OK The function executed successfully.
+ * @retval SC_RESULT_NO The specified sc-iterator4 is not valid.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions to get sc-element by specified index.
+ */
+_SC_EXTERN sc_addr sc_iterator5_value_ext(sc_iterator5 * it, sc_uint index, sc_result * result);
 
 /*! Destroy iterator and free allocated memory
  * @param it Pointer to sc-iterator that need to be destroyed
  */
 _SC_EXTERN void sc_iterator5_free(sc_iterator5 * it);
 
-#endif  // SC_ITERATOR5_H
+#endif  // _sc_iterator5_h_

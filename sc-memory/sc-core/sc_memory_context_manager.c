@@ -7,12 +7,15 @@
 #include "sc_memory_context_manager.h"
 
 #include "sc_memory_context_private.h"
-#include "sc_memory_context_access_levels.h"
+#include "sc_memory_context_permissions.h"
 
 #include "sc-store/sc_storage_private.h"
 
+#include "sc_keynodes.h"
+
 #include "sc_memory.h"
 #include "sc_memory_private.h"
+#include "sc_helper.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 
@@ -30,9 +33,9 @@ struct _sc_event_emit_params
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
 
-#define SC_CONTEXT_ACCESS_LEVEL_FULL 0xff
+#define SC_CONTEXT_PERMISSIONS_FULL 0xff
 
-void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_addr myself_addr, sc_bool user_mode)
+void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_bool user_mode)
 {
   sc_memory_info("Initialize context manager");
 
@@ -41,14 +44,27 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   (*manager)->context_count = 0;
   sc_monitor_init(&(*manager)->context_monitor);
   (*manager)->user_mode = user_mode;
-  (*manager)->user_global_access_levels = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
-  sc_monitor_init(&(*manager)->user_global_access_levels_monitor);
+  (*manager)->user_global_permissions = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  sc_monitor_init(&(*manager)->user_global_permissions_monitor);
   (*manager)->basic_action_classes = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  (*manager)->user_local_permissions =
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)g_hash_table_destroy);
+  sc_monitor_init(&(*manager)->user_local_permissions_monitor);
 
-  _sc_context_set_access_levels_for_element(myself_addr, SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS);
+  s_memory_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
+  s_memory_default_ctx->global_permissions = SC_CONTEXT_PERMISSIONS_FULL;
+  s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
+}
 
-  s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
-  s_memory_default_ctx->global_access_levels = SC_CONTEXT_ACCESS_LEVEL_FULL;
+void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr_ptr)
+{
+  *myself_addr_ptr = myself_addr;
+  _sc_context_set_permissions_for_element(*myself_addr_ptr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+  s_memory_default_ctx->user_addr = *myself_addr_ptr;
+  sc_hash_table_insert(
+      manager->context_hash_table,
+      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(*myself_addr_ptr)),
+      (sc_pointer)s_memory_default_ctx);
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
@@ -73,9 +89,13 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
   sc_monitor_release_write(&manager->context_monitor);
 
   sc_monitor_destroy(&manager->context_monitor);
-  sc_monitor_destroy(&manager->user_global_access_levels_monitor);
 
-  sc_hash_table_destroy(manager->user_global_access_levels);
+  sc_monitor_destroy(&manager->user_global_permissions_monitor);
+  sc_hash_table_destroy(manager->user_global_permissions);
+
+  sc_monitor_destroy(&manager->user_local_permissions_monitor);
+  sc_hash_table_destroy(manager->user_local_permissions);
+
   sc_hash_table_destroy(manager->basic_action_classes);
 
   sc_mem_free(manager);
@@ -96,8 +116,10 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   sc_monitor_init(&ctx->monitor);
   ctx->user_addr = user_addr;
   ctx->ref_count = 0;
-  ctx->global_access_levels = (sc_uint64)sc_hash_table_get(
-      manager->user_global_access_levels, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->global_permissions = (sc_uint64)sc_hash_table_get(
+      manager->user_global_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->local_permissions =
+      sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
 
   if (SC_ADDR_IS_NOT_EMPTY(ctx->user_addr))
     sc_hash_table_insert(

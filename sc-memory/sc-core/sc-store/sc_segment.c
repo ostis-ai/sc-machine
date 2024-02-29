@@ -37,11 +37,11 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
       continue;
 
     sc_type type = element.flags.type;
-    if (type & sc_type_node)
+    if (sc_type_has_subtype(type, sc_type_node))
       stat->node_count++;
-    else if (type & sc_type_link)
+    else if (sc_type_has_subtype(type, sc_type_link))
       stat->link_count++;
-    else if (type & sc_type_arc_mask)
+    else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
       stat->arc_count++;
   }
 }
