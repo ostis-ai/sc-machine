@@ -26,7 +26,7 @@ void PrintStartMessage()
             << "--repo_path|-r -- Path to kb.bin folder\n"
             << "--clear -- Flag to clear sc-memory state on initialize\n"
             << "--verbose|-v -- Flag to don't save sc-memory state on shutdown\n"
-            << "--test|-t -- Flag to test sc-server, run and stop it\n"
+            << "--test|-t -- Flag to test sc-server (sc-server with this option runs and stops)\n"
             << "--help -- Display this message\n\n";
 }
 
@@ -107,7 +107,7 @@ try
   SC_LOG_WARNING(
       "Use the common configuration file `<config-name>.ini` to set port and host of sc-server. `Options `--host` and "
       "`--port` are deprecated as well.");
-  ScServerModule::sServerParams = ScParams{options, {{"host", "h"}, {"port", "p"}}};
+  ScServerModule::ms_serverParams = ScParams{options, {{"host", "h"}, {"port", "p"}}};
 
   std::atomic_bool isRun;
   if (ScMemory::Initialize(memoryConfig.GetParams()) == SC_FALSE)

@@ -25,7 +25,7 @@ void PrintStartMessage()
             << "--repo_path|-r -- Path to kb.bin directory\n"
             << "--clear -- Flag to clear sc-memory state on initialize\n"
             << "--verbose|-v -- Flag to don't save sc-memory state on shutdown\n"
-            << "--test|-t -- Flag to test sc-machine, run and stop it\n"
+            << "--test|-t -- Flag to test sc-machine (sc-machine with this option runs and stops)\n"
             << "--help -- Display this message\n\n";
 }
 

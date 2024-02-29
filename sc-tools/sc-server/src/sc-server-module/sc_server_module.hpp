@@ -26,5 +26,5 @@ class ScServerModule : public ScModule
   std::shared_ptr<ScServer> m_server;
 
 public:
-  static ScParams sServerParams;
+  static ScParams ms_serverParams;
 };

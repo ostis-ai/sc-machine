@@ -21,7 +21,7 @@ SC-machine usage:
   --repo_path|-r            Path to kb.bin folder
   --clear                   Flag to clear sc-memory state on initialize
   --verbose|-v              Flag to don't save sc-memory state on shutdown
-  --test|-t                 Flag to test sc-server, run and stop it
+  --test|-t                 Flag to test sc-machine (sc-machine with this option runs and stops)
   --help                    Display this message
 </pre>
 

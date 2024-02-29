@@ -8,7 +8,7 @@
 
 #include "../sc_server_setup.hpp"
 
-ScParams ScServerModule::sServerParams;
+ScParams ScServerModule::ms_serverParams;
 
 SC_IMPLEMENT_MODULE(ScServerModule)
 
@@ -19,9 +19,9 @@ sc_result ScServerModule::InitializeImpl()
   ScConfig config{ScMemory::ms_configPath, {{"log_file"}}};
   ScConfigGroup serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)
-    sServerParams.Insert({key, serverConfig[key]});
+    ms_serverParams.Insert({key, serverConfig[key]});
 
-  RunServer(sServerParams, m_server);
+  RunServer(ms_serverParams, m_server);
 
   return SC_RESULT_OK;
 }
