@@ -119,19 +119,22 @@ void ExampleFunction(sc_uint32 x)
 
 ```cpp
 // It is correct style.
-class MyClass {
+class MyClass 
+{
 public:
   // Constructor with initializer list
   MyClass(sc_uint32 x, sc_uint32 y)
-    : memberX(x)
-    , memberY(y) 
+    : m_x(x)
+    , m_y(y) 
   {
     // Constructor body
   }
 
 private:
-  sc_uint32 memberX;
-  sc_uint32 memberY;
+  sc_uint32 m_x; // `m` - is abbreviation of `member`
+  sc_uint32 m_y;
+  static sc_uint32 ms_maxX; // `ms` - is abbreviation of `member static`
+  static sc_uint32 ms_maxY;
 };
 
 ```
@@ -179,7 +182,7 @@ std::vector<sc_uint32> numbers = {
 * Braces for functions, classes, namespaces, etc., should be on a new line.
 
 ```cpp
-// It is correct style.
+// It is correct styles.
 void ExampleFunction() 
 {
   // Code block
@@ -196,7 +199,7 @@ namespace exampleNamespace
   // Namespace contents
 }
 
-// It is incorrect style.
+// It is incorrect styles.
 void ExampleFunction() {
   // Code block
 }
