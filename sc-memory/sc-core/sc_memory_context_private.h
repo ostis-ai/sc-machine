@@ -19,9 +19,9 @@ struct _sc_memory_context_manager
   sc_uint32 context_count;             ///< Number of currently active memory contexts.
   sc_monitor context_monitor;          ///< Monitor for synchronizing access to the hash table storing memory contexts.
   sc_hash_table *
-      user_global_access_levels;  ///< Hash table storing global access levels (within the knowledge base) for users.
-  sc_monitor user_global_access_levels_monitor;  ///< Monitor for synchronizing access to the hash table storing global
-                                                 ///< access levels within the knowledge base.
+      user_global_permissions;  ///< Hash table storing global permissions (within the knowledge base) for users.
+  sc_monitor user_global_permissions_monitor;  ///< Monitor for synchronizing access to the hash table storing global
+                                               ///< permissions within the knowledge base.
   sc_addr concept_authentication_request_user_addr;  ///< sc-address representing concept node for authentication.
                                                      ///< request users.
   sc_addr concept_authenticated_user_addr;           ///< sc-address representing concept node for authenticated users.
@@ -29,16 +29,15 @@ struct _sc_memory_context_manager
   sc_event * on_authentication_request_user_subscription;  ///< Event subscription for authenticated user events.
   sc_event * on_remove_authenticated_user_subscription;    ///< Event subscription for unauthenticated user events.
   sc_addr nrel_user_action_class_addr;     ///< sc-address representing concept node for action class of user relation.
-  sc_hash_table * basic_action_classes;    ///< Hash table storing access levels for action classes in sc-memory.
+  sc_hash_table * basic_action_classes;    ///< Hash table storing permissions for action classes in sc-memory.
   sc_event * on_new_user_action_class;     ///< Event subscription for adding new action classes for users.
   sc_event * on_remove_user_action_class;  ///< Event subscription for removing new action classes for users.
   sc_addr nrel_user_action_class_within_sc_structure_addr;
   sc_event * on_new_user_action_class_within_sc_structure;
   sc_event * on_remove_user_action_class_within_sc_structure;
-  sc_hash_table *
-      user_local_access_levels;  ///< Hash table storing local access levels (within sc-structures) for users.
-  sc_monitor user_local_access_levels_monitor;  ///< Monitor for synchronizing access to the hash table storing local
-                                                ///< access levels within sc-structures.
+  sc_hash_table * user_local_permissions;  ///< Hash table storing local permissions (within sc-structures) for users.
+  sc_monitor user_local_permissions_monitor;  ///< Monitor for synchronizing access to the hash table storing local
+                                              ///< permissions within sc-structures.
   sc_bool user_mode;  ///< Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
 };
 
@@ -47,13 +46,13 @@ struct _sc_memory_context_manager
  */
 struct _sc_memory_context
 {
-  sc_addr user_addr;    ///< sc-address representing the user associated with the sc-memory context.
-  sc_uint32 ref_count;  ///< Reference count to manage the number of references to the sc-memory context.
-  sc_access_levels global_access_levels;  ///< Global access levels within the knowledge base.
-  sc_hash_table * local_access_levels;    ///< Local access levels within sc-structures.
-  sc_uint8 flags;                         ///< Flags indicating the state of the sc-memory context.
-  sc_hash_table_list * pend_events;       ///< List of pending events to be emitted in the sc-memory context.
-  sc_monitor monitor;                     ///< Monitor for synchronizing access to the sc-memory context.
+  sc_addr user_addr;                  ///< sc-address representing the user associated with the sc-memory context.
+  sc_uint32 ref_count;                ///< Reference count to manage the number of references to the sc-memory context.
+  sc_permissions global_permissions;  ///< Global permissions within the knowledge base.
+  sc_hash_table * local_permissions;  ///< Local permissions within sc-structures.
+  sc_uint8 flags;                     ///< Flags indicating the state of the sc-memory context.
+  sc_hash_table_list * pend_events;   ///< List of pending events to be emitted in the sc-memory context.
+  sc_monitor monitor;                 ///< Monitor for synchronizing access to the sc-memory context.
 };
 
 /*!

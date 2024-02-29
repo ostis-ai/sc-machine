@@ -104,7 +104,7 @@ public:
       0.10.0,
       "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
       "This function will be deleted in 0.11.0")
-  _SC_EXTERN explicit ScMemoryContext(sc_uint8 accessLevels, std::string const & name = "");
+  _SC_EXTERN explicit ScMemoryContext(sc_permissions permissions, std::string const & name = "");
   SC_DEPRECATED(
       0.10.0,
       "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
@@ -183,7 +183,7 @@ public:
    * @param addr The sc-address of the sc-element to query.
    * @return Returns the count of output arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -202,7 +202,7 @@ public:
    * @param addr The sc-address of the sc-element to query.
    * @return Returns the count of input arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -220,7 +220,7 @@ public:
    *
    * @param addr The sc-address of the sc-element to erase.
    * @return Returns true if the sc-element was successfully erased; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not erase access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not erase permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -242,7 +242,7 @@ public:
    * @param type The type of the sc-node to create.
    * @return Returns the sc-address of the newly created sc-node.
    * @throws ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -259,7 +259,7 @@ public:
    * @param type The type of the sc-link to create (default is ScType::LinkConst).
    * @return Returns the sc-address of the newly created sc-link.
    * @throws ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -278,7 +278,7 @@ public:
    * @param addrEnd The sc-address of the target sc-element.
    * @return Returns the sc-address of the newly created sc-connector.
    * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write permissions.
    * @code
    * ScMemoryContext ctx;
    * ScAddr sourceNode = ctx.CreateNode(ScType::NodeConst);
@@ -296,7 +296,7 @@ public:
    * @param addr The sc-address of the sc-element to query.
    * @return Returns the type of the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -316,7 +316,7 @@ public:
    * @param subtype The new subtype to set.
    * @return Returns true if the subtype was successfully changed; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -338,7 +338,7 @@ public:
    * @param edgeAddr The sc-address of the sc-connector.
    * @return Returns the sc-address of the source sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -358,7 +358,7 @@ public:
    * @param edgeAddr The sc-address of the sc-connector.
    * @return Returns the sc-address of the target sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -380,7 +380,7 @@ public:
    * @param outTargetAddr Reference to store the sc-address of the target sc-element.
    * @return Returns true if the information was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -409,8 +409,8 @@ public:
    * @return Returns true if the content was successfully set; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not erase and write access
-   * levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not erase and write
+   * permissions.
    */
   _SC_EXTERN bool SetLinkContent(
       ScAddr const & addr,
@@ -428,8 +428,8 @@ public:
    * @return Returns true if the content was successfully set; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not erase and write access
-   * levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not erase and write
+   * permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -466,7 +466,7 @@ public:
    * @param typedContent[out] The typed content retrieved from the sc-link.
    * @return Returns true if the content was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -494,7 +494,7 @@ public:
    * @return Returns a shared pointer to the stream containing the content.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    */
   _SC_EXTERN ScStreamPtr GetLinkContent(ScAddr const & addr) noexcept(false);
 
@@ -507,7 +507,7 @@ public:
    * @return Returns a shared pointer to the stream containing the content.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -639,7 +639,7 @@ public:
    * @return Returns a vector of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -668,7 +668,7 @@ public:
    * @return Returns a vector of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    */
   _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
       ScStreamPtr const & stream,
@@ -680,7 +680,7 @@ public:
    * This method saves the state of the sc-memory.
    *
    * @return Returns true if the memory state was successfully saved; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write permissions.
    */
   _SC_EXTERN bool Save();
 
@@ -790,7 +790,7 @@ public:
    * @param edgeType The type of the directed edge to check.
    * @return Returns true if the specified edge exists; otherwise, returns false.
    * @throws ExceptionInvalidState if the sc-memory context is not valid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -815,8 +815,8 @@ public:
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
    * or resolving sc-element type is not ScType::Node subtype
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase access
-   * levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase
+   * permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -845,8 +845,8 @@ public:
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
               or resolving sc-element type is not ScType::Node subtype.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase access
-   levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase
+   permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -865,8 +865,8 @@ public:
    * @returns false if `sysIdtf` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase access
-   * levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase
+   * permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -889,8 +889,8 @@ public:
    * @returns false if `sysIdtf` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase access
-   * levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not write and erase
+   * permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -909,7 +909,7 @@ public:
    * @returns "" if system identifier doesn't exist for `addr`.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -1205,7 +1205,7 @@ public:
   /*! Calculate sc-element counts
    *
    * @return Returns sc-nodes, sc-connectors and sc-links counts.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read access levels.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    */
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
 

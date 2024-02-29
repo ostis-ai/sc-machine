@@ -848,10 +848,9 @@ void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_read_from_sc_memory_addr);
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_generate_in_sc_memory_addr);
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_erase_in_sc_memory_addr);
-  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_read_access_levels_from_sc_memory_addr);
-  TestReadWriteEraseAccessedElementUnsuccessfully(
-      context, userContext, action_generate_access_levels_in_sc_memory_addr);
-  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_erase_access_levels_from_sc_memory_addr);
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_read_permissions_from_sc_memory_addr);
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_generate_permissions_in_sc_memory_addr);
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_erase_permissions_from_sc_memory_addr);
 }
 
 void TestReadWriteAccessedElementSuccessfully(
@@ -884,16 +883,16 @@ void TestReadWriteEraseAccessedAllElementsSuccessfully(
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_read_from_sc_memory_addr);
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_generate_in_sc_memory_addr);
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_erase_in_sc_memory_addr);
-  TestReadWriteAccessedElementSuccessfully(context, userContext, action_read_access_levels_from_sc_memory_addr);
-  TestReadWriteAccessedElementSuccessfully(context, userContext, action_generate_access_levels_in_sc_memory_addr);
-  TestReadWriteAccessedElementSuccessfully(context, userContext, action_erase_access_levels_from_sc_memory_addr);
+  TestReadWriteAccessedElementSuccessfully(context, userContext, action_read_permissions_from_sc_memory_addr);
+  TestReadWriteAccessedElementSuccessfully(context, userContext, action_generate_permissions_in_sc_memory_addr);
+  TestReadWriteAccessedElementSuccessfully(context, userContext, action_erase_permissions_from_sc_memory_addr);
 }
 
 void TestAddAccessLevelsToHandleReadAccessLevels(
     std::unique_ptr<ScMemoryContext> const & context,
     ScAddr const & userAddr)
 {
-  ScAddr const & readActionInScMemoryAddr{action_read_access_levels_from_sc_memory_addr};
+  ScAddr const & readActionInScMemoryAddr{action_read_permissions_from_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActions(context, userAddr, readActionInScMemoryAddr);
 }
 
@@ -901,7 +900,7 @@ void TestAddAccessLevelsToHandleWriteAccessLevels(
     std::unique_ptr<ScMemoryContext> const & context,
     ScAddr const & userAddr)
 {
-  ScAddr const & writeActionInScMemoryAddr{action_generate_access_levels_in_sc_memory_addr};
+  ScAddr const & writeActionInScMemoryAddr{action_generate_permissions_in_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActions(context, userAddr, writeActionInScMemoryAddr);
 }
 
@@ -909,7 +908,7 @@ void TestAddAccessLevelsToHandleEraseAccessLevels(
     std::unique_ptr<ScMemoryContext> const & context,
     ScAddr const & userAddr)
 {
-  ScAddr const & eraseActionInScMemoryAddr{action_erase_access_levels_from_sc_memory_addr};
+  ScAddr const & eraseActionInScMemoryAddr{action_erase_permissions_from_sc_memory_addr};
   TestAddAccessLevelsForUserToInitActions(context, userAddr, eraseActionInScMemoryAddr);
 }
 

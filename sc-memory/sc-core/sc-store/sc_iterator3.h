@@ -160,8 +160,8 @@ _SC_EXTERN sc_bool sc_iterator3_next(sc_iterator3 * it);
  * @return Return SC_TRUE, if iterator moved to new results; otherwise return SC_FALSE.
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  * @code
  * sc_result result;
  * while(sc_iterator_next(it, &result)) { <your code> }
@@ -187,8 +187,8 @@ _SC_EXTERN sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint index);
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_NO The specified sc-iterator3 is not valid.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels to get sc-element by specified index.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions to get sc-element by specified index.
  */
 _SC_EXTERN sc_addr sc_iterator3_value_ext(sc_iterator3 * it, sc_uint index, sc_result * result);
 

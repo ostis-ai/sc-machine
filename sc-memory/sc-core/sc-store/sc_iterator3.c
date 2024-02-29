@@ -11,7 +11,7 @@
 #include "sc_storage_private.h"
 #include "../sc_memory_context_manager.h"
 #include "../sc_memory_context_private.h"
-#include "../sc_memory_context_access_levels.h"
+#include "../sc_memory_context_permissions.h"
 
 #include "sc-base/sc_allocator.h"
 
@@ -234,8 +234,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_begin);
   sc_monitor_acquire_read(monitor);
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_begin)
       == SC_FALSE)
     goto error;
   it->results[0].is_accessed = SC_TRUE;
@@ -298,8 +298,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(arc_begin, el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
             : el->arc.next_begin_out_arc;
 
-    if (_sc_memory_context_check_local_and_global_access_levels(
-            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+    if (_sc_memory_context_check_local_and_global_permissions(
+            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
         == SC_FALSE)
     {
       if (is_not_same)
@@ -307,8 +307,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       goto next;
     }
 
-    if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-            sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+    if (_sc_memory_context_check_global_permissions_to_read_permissions(
+            sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS)
         == SC_FALSE)
     {
       if (is_not_same)
@@ -335,8 +335,8 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       it->results[1].addr = arc_addr;
       it->results[1].is_accessed = SC_TRUE;
 
-      if (_sc_memory_context_check_local_and_global_access_levels(
-              sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+      if (_sc_memory_context_check_local_and_global_permissions(
+              sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_end)
           == SC_TRUE)
       {
         it->results[2].addr = arc_end;
@@ -375,14 +375,14 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
   sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
   sc_monitor_acquire_read_n(2, beg_monitor, end_monitor);
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_begin)
       == SC_FALSE)
     goto error;
   it->results[0].is_accessed = SC_TRUE;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_end)
       == SC_FALSE)
     goto error;
   it->results[2].is_accessed = SC_TRUE;
@@ -446,8 +446,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : el->arc.next_end_in_arc;
 
-    if (_sc_memory_context_check_local_and_global_access_levels(
-            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+    if (_sc_memory_context_check_local_and_global_permissions(
+            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
         == SC_FALSE)
     {
       if (is_not_same)
@@ -455,8 +455,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
       goto next;
     }
 
-    if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-            sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+    if (_sc_memory_context_check_global_permissions_to_read_permissions(
+            sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS)
         == SC_FALSE)
     {
       if (is_not_same)
@@ -509,8 +509,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
   sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
   sc_monitor_acquire_read(monitor);
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_end)
       == SC_FALSE)
     goto error;
   it->results[2].is_accessed = SC_TRUE;
@@ -573,8 +573,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
             ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 
-    if (_sc_memory_context_check_local_and_global_access_levels(
-            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+    if (_sc_memory_context_check_local_and_global_permissions(
+            sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
         == SC_FALSE)
     {
       if (is_not_same)
@@ -582,8 +582,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       goto next;
     }
 
-    if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-            sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+    if (_sc_memory_context_check_global_permissions_to_read_permissions(
+            sc_memory_get_context_manager(), it->ctx, el, arc_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS)
         == SC_FALSE)
     {
       if (is_not_same)
@@ -608,8 +608,8 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       it->results[1].addr = arc_addr;
       it->results[1].is_accessed = SC_TRUE;
 
-      if (_sc_memory_context_check_local_and_global_access_levels(
-              sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+      if (_sc_memory_context_check_local_and_global_permissions(
+              sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_begin)
           == SC_TRUE)
       {
         it->results[0].addr = arc_begin;
@@ -646,27 +646,27 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
-  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+  if (_sc_memory_context_check_global_permissions_to_read_permissions(
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS)
       == SC_FALSE)
     goto error;
   it->results[1].is_accessed = SC_TRUE;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_el->arc.begin)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_el->arc.begin)
       == SC_FALSE)
     goto success;
 
   it->results[0].addr = arc_el->arc.begin;
   it->results[0].is_accessed = SC_TRUE;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_el->arc.end)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_el->arc.end)
       == SC_FALSE)
     goto success;
 
@@ -697,13 +697,13 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
-  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+  if (_sc_memory_context_check_global_permissions_to_read_permissions(
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS)
       == SC_FALSE)
     goto error;
   it->results[1].is_accessed = SC_TRUE;
@@ -724,14 +724,14 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
     arc_end = arc_el->arc.end;
   }
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_begin)
       == SC_FALSE)
     goto success;
   it->results[0].is_accessed = SC_TRUE;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_end)
       == SC_FALSE)
     goto success;
   it->results[2].addr = arc_end;
@@ -761,13 +761,13 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
-  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+  if (_sc_memory_context_check_global_permissions_to_read_permissions(
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS)
       == SC_FALSE)
     goto error;
   it->results[1].is_accessed = SC_TRUE;
@@ -788,14 +788,14 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
     arc_begin = arc_el->arc.begin;
   }
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_end)
       == SC_FALSE)
     goto success;
   it->results[2].is_accessed = SC_TRUE;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_begin)
       == SC_FALSE)
     goto success;
   it->results[0].addr = arc_begin;
@@ -826,13 +826,13 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_addr)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
       == SC_FALSE)
     goto error;
 
-  if (_sc_memory_context_check_global_access_levels_to_read_access_levels(
-          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS)
+  if (_sc_memory_context_check_global_permissions_to_read_permissions(
+          sc_memory_get_context_manager(), it->ctx, arc_el, arc_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS)
       == SC_FALSE)
     goto error;
   it->results[1].is_accessed = SC_TRUE;
@@ -854,14 +854,14 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
       goto error;
   }
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_begin)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_begin)
       == SC_FALSE)
     goto success;
   it->results[0].is_accessed = SC_TRUE;
 
-  if (_sc_memory_context_check_local_and_global_access_levels(
-          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_ACCESS_LEVEL_READ, arc_end)
+  if (_sc_memory_context_check_local_and_global_permissions(
+          sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_end)
       == SC_FALSE)
     goto success;
   it->results[2].is_accessed = SC_TRUE;
@@ -977,7 +977,7 @@ sc_addr sc_iterator3_value_ext(sc_iterator3 * it, sc_uint index, sc_result * res
 
   if (it->results[index].is_accessed == SC_FALSE)
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
     return SC_ADDR_EMPTY;
   }
 

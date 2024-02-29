@@ -8,7 +8,7 @@
 
 #include "../sc_memory_context_manager.h"
 #include "../sc_memory_context_private.h"
-#include "../sc_memory_context_access_levels.h"
+#include "../sc_memory_context_permissions.h"
 
 #include "sc-base/sc_allocator.h"
 
@@ -665,7 +665,7 @@ sc_addr sc_iterator5_value_ext(sc_iterator5 * it, sc_uint index, sc_result * res
 
   if (it->results[index].is_accessed == SC_FALSE)
   {
-    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS;
+    *result = SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
     return SC_ADDR_EMPTY;
   }
 

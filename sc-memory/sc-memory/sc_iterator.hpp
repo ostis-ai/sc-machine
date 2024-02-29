@@ -119,11 +119,11 @@ public:
           utils::ExceptionInvalidParams,
           "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
 
-    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Not able to get sc-element sc-address by index=" + std::to_string(index)
-              + " due sc-memory context has not read access levels");
+              + " due sc-memory context has not read permissions");
     default:
       break;
     }
@@ -201,11 +201,11 @@ public:
           utils::ExceptionInvalidParams,
           "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
 
-    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS:
+    case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Not able to get sc-element sc-address by index=" + std::to_string(index)
-              + " due sc-memory context has not read access levels");
+              + " due sc-memory context has not read permissions");
     default:
       break;
     }

@@ -186,8 +186,8 @@ _SC_EXTERN sc_bool sc_iterator5_next(sc_iterator5 * it);
  * Possible values for the result:
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  * @code
  * sc_result result;
  * while(sc_iterator_next(it, &result)) { <your code> }
@@ -213,8 +213,8 @@ _SC_EXTERN sc_addr sc_iterator5_value(sc_iterator5 * it, sc_uint index);
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_NO The specified sc-iterator4 is not valid.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels to get sc-element by specified index.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions to get sc-element by specified index.
  */
 _SC_EXTERN sc_addr sc_iterator5_value_ext(sc_iterator5 * it, sc_uint index, sc_result * result);
 

@@ -18,18 +18,18 @@ typedef struct _sc_event_emit_params sc_event_emit_params;
 
 extern sc_memory_context * s_memory_default_ctx;
 
-#define SC_CONTEXT_ACCESS_LEVEL_AUTHENTICATED 0x1
+#define SC_CONTEXT_PERMISSIONS_AUTHENTICATED 0x1
 
-#define SC_CONTEXT_ACCESS_LEVEL_READ 0x4
-#define SC_CONTEXT_ACCESS_LEVEL_WRITE 0x8
-#define SC_CONTEXT_ACCESS_LEVEL_ERASE 0x10
+#define SC_CONTEXT_PERMISSIONS_READ 0x4
+#define SC_CONTEXT_PERMISSIONS_WRITE 0x8
+#define SC_CONTEXT_PERMISSIONS_ERASE 0x10
 
-#define SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS 0x20
-#define SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS 0x40
-#define SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS 0x80
-#define SC_CONTEXT_ACCESS_LEVEL_TO_ALL_ACCESS_LEVELS \
-  (SC_CONTEXT_ACCESS_LEVEL_TO_READ_ACCESS_LEVELS | SC_CONTEXT_ACCESS_LEVEL_TO_WRITE_ACCESS_LEVELS \
-   | SC_CONTEXT_ACCESS_LEVEL_TO_ERASE_ACCESS_LEVELS)
+#define SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS 0x20
+#define SC_CONTEXT_PERMISSIONS_TO_WRITE_PERMISSIONS 0x40
+#define SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS 0x80
+#define SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS \
+  (SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS | SC_CONTEXT_PERMISSIONS_TO_WRITE_PERMISSIONS \
+   | SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS)
 
 /*! Function that initializes the sc-memory context manager with specified parameters.
  * @param manager Pointer to a pointer that will store the newly created memory context manager.
@@ -49,7 +49,7 @@ void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * ma
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
 
 /*! Function that create memory context with specified params
- * @param levels Access levels, you can create it with macros @see sc_access_level_make
+ * @param permissions Permissions, you can create it with macros @see sc_access_level_make
  * @returns Returns pointer to create memory context. If there were any errors during
  * context creation, then function returns 0
  * @note Do not use one context in different threads.

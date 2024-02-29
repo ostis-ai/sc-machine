@@ -93,11 +93,11 @@ _SC_EXTERN sc_result sc_memory_shutdown(sc_bool save_state);
 _SC_EXTERN void sc_memory_shutdown_ext();
 
 /*!
- * @brief Creates a new memory context with specified access levels.
+ * @brief Creates a new memory context with specified permissions.
  *
- * This function creates a new sc-memory context with the specified access levels.
+ * This function creates a new sc-memory context with the specified permissions.
  *
- * @param levels Access levels, created using the `sc_access_level_make` macro.
+ * @param permissions Permissions, created using the `sc_access_level_make` macro.
  *
  * @return Returns a pointer to the created memory context. If there were any errors during
  * context creation, the function returns NULL.
@@ -108,7 +108,7 @@ SC_DEPRECATED(
     0.10.0,
     "Don't use this method for creating sc-memory context. Use one with `user_addr` params instead of. "
     "This function will be deleted in 0.11.0")
-_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_uint8 levels);
+_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_uint8 permissions);
 
 /*!
  * Creates a new sc-memory context for a specified user.
@@ -200,8 +200,8 @@ _SC_EXTERN sc_bool sc_memory_is_element(sc_memory_context const * ctx, sc_addr a
  *
  * @note This function is thread-safe.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_bool sc_memory_is_element_ext(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
@@ -223,8 +223,8 @@ _SC_EXTERN sc_bool sc_memory_is_element_ext(sc_memory_context const * ctx, sc_ad
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS The specified sc-memory context has not erase
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS The specified sc-memory context has not erase
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr);
 
@@ -269,8 +269,8 @@ _SC_EXTERN sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type typ
  * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE The specified sc-type is not valid for a sc-node.
  * @retval SC_RESULT_ERROR_FULL_MEMORY Unable to allocate memory for the new sc-node.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS The specified sc-memory context has not write
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS The specified sc-memory context has not write
+ * permissions.
  */
 _SC_EXTERN sc_addr sc_memory_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
@@ -333,8 +333,8 @@ _SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type ty
  * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK The specified sc-type is not valid for a sc-link.
  * @retval SC_RESULT_ERROR_FULL_MEMORY Unable to allocate memory for the new sc-link.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS The specified sc-memory context has not write
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS The specified sc-memory context has not write
+ * permissions.
  */
 _SC_EXTERN sc_addr sc_memory_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
@@ -390,8 +390,8 @@ _SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID Either the begin or end sc-addr is not valid.
  * @retval SC_RESULT_ERROR_FULL_MEMORY Memory allocation for the new sc-connector failed.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS The specified sc-memory context has not write
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS The specified sc-memory context has not write
+ * permissions.
  */
 _SC_EXTERN sc_addr sc_memory_arc_new_ext(
     sc_memory_context const * ctx,
@@ -423,8 +423,8 @@ _SC_EXTERN sc_addr sc_memory_arc_new_ext(
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_uint32
 sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
@@ -452,8 +452,8 @@ sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr a
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_uint32
 sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
@@ -480,8 +480,8 @@ sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr ad
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result);
 
@@ -507,8 +507,8 @@ _SC_EXTERN sc_result sc_memory_get_element_type(sc_memory_context const * ctx, s
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_INVALID_PARAMS The provided type is not a valid subtype for the sc-element.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS The specified sc-memory context has not write
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS The specified sc-memory context has not write
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type);
 
@@ -535,8 +535,8 @@ _SC_EXTERN sc_result sc_memory_change_element_subtype(sc_memory_context const * 
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-arc.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr);
 
@@ -563,8 +563,8 @@ _SC_EXTERN sc_result sc_memory_get_arc_begin(sc_memory_context const * ctx, sc_a
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-arc.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc_addr * end_addr);
 
@@ -593,8 +593,8 @@ _SC_EXTERN sc_result sc_memory_get_arc_end(sc_memory_context const * ctx, sc_add
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a valid sc-arc.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_result
 sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * begin_addr, sc_addr * end_addr);
@@ -623,10 +623,10 @@ sc_memory_get_arc_info(sc_memory_context const * ctx, sc_addr addr, sc_addr * be
  * @retval SC_RESULT_ERROR_STREAM_IO Error occurred while processing the stream.
  * @retval SC_RESULT_ERROR_FILE_MEMORY_IO Error occurred during file/memory operations.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS The specified sc-memory context has not write
- * access levels.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS The specified sc-memory context has not erase
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS The specified sc-memory context has not write
+ * permissions.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS The specified sc-memory context has not erase
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream const * stream);
 
@@ -657,10 +657,10 @@ _SC_EXTERN sc_result sc_memory_set_link_content(sc_memory_context const * ctx, s
  * @retval SC_RESULT_ERROR_STREAM_IO Error occurred while processing the stream.
  * @retval SC_RESULT_ERROR_FILE_MEMORY_IO Error occurred during file/memory operations.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS The specified sc-memory context has not write
- * access levels.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_ACCESS_LEVELS The specified sc-memory context has not erase
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS The specified sc-memory context has not write
+ * permissions.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS The specified sc-memory context has not erase
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_set_link_content_ext(
     sc_memory_context const * ctx,
@@ -693,8 +693,8 @@ _SC_EXTERN sc_result sc_memory_set_link_content_ext(
  * @retval SC_RESULT_ERROR_STREAM_IO Error occurred while processing the stream.
  * @retval SC_RESULT_ERROR_FILE_MEMORY_IO Error occurred during file/memory operations.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr, sc_stream ** stream);
 
@@ -778,8 +778,8 @@ _SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
  * @retval SC_RESULT_ERROR_STREAM_IO: An error occurred during stream I/O.
  * @retval SC_RESULT_ERROR_FILE_MEMORY_IO: An error occurred during file memory I/O.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
@@ -806,8 +806,8 @@ _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
  * @note This function is thread-safe.
  *
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_ACCESS_LEVELS The specified sc-memory context has not read
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat);
 
@@ -826,8 +826,8 @@ _SC_EXTERN sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * sta
  * @note This function is thread-safe.
  *
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_ACCESS_LEVELS The specified sc-memory context has not write
- * access levels.
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS The specified sc-memory context has not write
+ * permissions.
  */
 _SC_EXTERN sc_result sc_memory_save(sc_memory_context const * ctx);
 

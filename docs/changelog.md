@@ -9,14 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Collect user access levels during sc-memory initialize
+- Collect user permissions during sc-memory initialize
 - Throw exceptions in get values methods of iterators if sc-element is not accessed
 - Callback to get and collect sc-links by its contents from fs-memory
-- Local user access levels for actions within sc-structures
+- Local user permissions for actions within sc-structures
 - List in sc-element for input arcs from sc-structures 
 - Provide sc-arc types for sc-event callbacks
-- User access levels for handling access levels for actions in sc-memory
-- Global user access levels for actions in sc-memory
+- User permissions for handling permissions for actions in sc-memory
+- Global user permissions for actions in sc-memory
 - ScType::LinkConstClass and ScType::LinkVarClass
 - Sc-server connect with userAddr parameter
 - ScMemoryContext with userAddr parameter
