@@ -166,6 +166,12 @@ void ScMemoryContext::Destroy()
   }
 }
 
+ScAddr ScMemoryContext::GetUserAddr()
+{
+  CHECK_CONTEXT;
+  return sc_memory_context_get_user_addr(m_context);
+}
+
 void ScMemoryContext::BeingEventsPending()
 {
   CHECK_CONTEXT;

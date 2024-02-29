@@ -120,6 +120,8 @@ public:
   ScMemoryContext(ScMemoryContext const & other) = delete;
   ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
 
+  _SC_EXTERN ScAddr GetUserAddr();
+
   _SC_EXTERN sc_memory_context * operator*() const
   {
     return m_context;

@@ -15,7 +15,6 @@
 
 #include "sc_memory.h"
 #include "sc_memory_private.h"
-#include "sc_helper.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 
@@ -199,6 +198,14 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
   sc_mem_free(ctx);
 error:
   sc_monitor_release_write(&manager->context_monitor);
+}
+
+sc_addr _sc_memory_context_get_user_addr(sc_memory_context * ctx)
+{
+  sc_monitor_acquire_read(&ctx->monitor);
+  sc_addr const user_addr = ctx->user_addr;
+  sc_monitor_release_read(&ctx->monitor);
+  return user_addr;
 }
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
