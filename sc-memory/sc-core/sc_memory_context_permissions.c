@@ -97,6 +97,16 @@ typedef void (*sc_permissions_handler)(sc_memory_context_manager *, sc_addr, sc_
     sc_monitor_release_write(&manager->user_global_permissions_monitor); \
   })
 
+sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager)
+{
+  sc_addr const guest_user_addr = sc_memory_node_new(s_memory_default_ctx, sc_type_node | sc_type_const);
+  sc_addr const guest_user_arc_addr =
+      sc_memory_arc_new(s_memory_default_ctx, sc_type_arc_pos_const_temp, concept_guest_user_addr, guest_user_addr);
+  _sc_context_set_permissions_for_element(guest_user_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+  _sc_context_add_user_global_permissions(guest_user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
+  return guest_user_addr;
+}
+
 /*! Function that creates a memory context for an authenticated user with specified parameters.
  * @param event Pointer to the sc-event triggering the context creation.
  * @param initiator_addr sc-address representing user that initiated this request.
@@ -627,6 +637,9 @@ void _sc_memory_context_handle_all_user_permissions(sc_memory_context_manager * 
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
 {
+  manager->concept_guest_user_addr = concept_guest_user_addr;
+  _sc_context_set_permissions_for_element(manager->concept_guest_user_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
   manager->concept_authentication_request_user_addr = concept_authentication_request_user_addr;
   _sc_context_set_permissions_for_element(
       manager->concept_authentication_request_user_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);

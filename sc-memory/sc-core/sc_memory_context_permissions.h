@@ -43,6 +43,8 @@
     _element_permissions; \
   })
 
+sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager);
+
 /*! Function that handles all user permissions by iterating through relevant relations and invoking corresponding
  * handlers.
  * @param manager Pointer to the sc-memory context manager.

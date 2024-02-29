@@ -18,6 +18,7 @@ struct _sc_memory_context_manager
   sc_hash_table * context_hash_table;  ///< Hash table storing memory contexts based on user addresses.
   sc_uint32 context_count;             ///< Number of currently active memory contexts.
   sc_monitor context_monitor;          ///< Monitor for synchronizing access to the hash table storing memory contexts.
+  sc_addr concept_guest_user_addr;
   sc_hash_table *
       user_global_permissions;  ///< Hash table storing global permissions (within the knowledge base) for users.
   sc_monitor user_global_permissions_monitor;  ///< Monitor for synchronizing access to the hash table storing global
