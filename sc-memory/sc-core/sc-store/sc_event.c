@@ -317,6 +317,9 @@ sc_result sc_event_emit(
     sc_type connector_type,
     sc_addr other_addr)
 {
+  if (ctx == null_ptr)
+    return SC_RESULT_NO;
+
   if (_sc_memory_context_is_pending(ctx))
   {
     _sc_memory_context_pend_event(ctx, type, subscription_addr, connector_addr, connector_type, other_addr);
