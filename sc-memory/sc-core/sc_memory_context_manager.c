@@ -208,6 +208,12 @@ sc_addr _sc_memory_context_get_user_addr(sc_memory_context * ctx)
   return user_addr;
 }
 
+void _sc_memory_context_set_user_addr(sc_memory_context_manager * manager, sc_memory_context ** ctx, sc_addr user_addr)
+{
+  _sc_memory_context_free_impl(manager, *ctx);
+  *ctx = _sc_memory_context_resolve_impl(manager, user_addr);
+}
+
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
 {
   sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);

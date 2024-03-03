@@ -172,6 +172,12 @@ ScAddr ScMemoryContext::GetUserAddr()
   return sc_memory_context_get_user_addr(m_context);
 }
 
+void ScMemoryContext::SetUserAddr(ScAddr const & userAddr)
+{
+  CHECK_CONTEXT;
+  sc_memory_context_set_user_addr(&m_context, userAddr.m_realAddr);
+}
+
 void ScMemoryContext::BeingEventsPending()
 {
   CHECK_CONTEXT;

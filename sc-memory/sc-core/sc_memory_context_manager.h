@@ -87,6 +87,8 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
 
 sc_addr _sc_memory_context_get_user_addr(sc_memory_context * ctx);
 
+void _sc_memory_context_set_user_addr(sc_memory_context_manager * manager, sc_memory_context ** ctx, sc_addr user_addr);
+
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx);
 
 /*! Function that marks the beginning of a pending events block in a memory context.

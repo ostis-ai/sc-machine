@@ -122,6 +122,8 @@ public:
 
   _SC_EXTERN ScAddr GetUserAddr();
 
+  _SC_EXTERN void SetUserAddr(ScAddr const & userAddr);
+
   _SC_EXTERN sc_memory_context * operator*() const
   {
     return m_context;

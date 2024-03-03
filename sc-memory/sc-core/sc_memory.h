@@ -137,6 +137,8 @@ _SC_EXTERN void sc_memory_context_free(sc_memory_context * ctx);
 
 _SC_EXTERN sc_addr sc_memory_context_get_user_addr(sc_memory_context * ctx);
 
+_SC_EXTERN void sc_memory_context_set_user_addr(sc_memory_context ** ctx, sc_addr user_addr);
+
 /*!
  * @brief Starts events pending mode for a context.
  *
