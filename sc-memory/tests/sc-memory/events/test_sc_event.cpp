@@ -408,3 +408,49 @@ TEST_F(ScEventTest, pend_events)
 
   EXPECT_EQ(passedCount, el_num);
 }
+
+TEST_F(ScEventTest, BlockEvents)
+{
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  std::atomic_bool isCalled = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      nodeAddr,
+      [&isCalled](ScAddr const & addr, ScAddr const &, ScAddr const & target)
+      {
+        return isCalled = true;
+      });
+
+  m_ctx->BeingEventsBlocking();
+
+  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, nodeAddr2);
+
+  m_ctx->EndEventsBlocking();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  EXPECT_FALSE(isCalled);
+}
+
+TEST_F(ScEventTest, BlockEventsGuard)
+{
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  std::atomic_bool isCalled = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      nodeAddr,
+      [&isCalled](ScAddr const & addr, ScAddr const &, ScAddr const & target)
+      {
+        return isCalled = true;
+      });
+
+  ScMemoryContextEventsBlockingGuard guard(*m_ctx);
+
+  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, nodeAddr2);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  EXPECT_FALSE(isCalled);
+}
