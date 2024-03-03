@@ -315,6 +315,47 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByGuestUser)
   TestActionsUnsuccessfully(m_ctx, userContext);
 }
 
+void TestSetIdentifiedUser(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & guestUserAddr,
+    ScAddr const & userAddr,
+    ScType const & arcType = ScType::EdgeAccessConstPosTemp)
+{
+  ScAddr const & nrelIdentifiedUserAddr{nrel_identified_user_addr};
+  ScAddr const & arcAddr = context->CreateEdge(ScType::EdgeDCommonConst, guestUserAddr, userAddr);
+  context->CreateEdge(arcType, nrelIdentifiedUserAddr, arcAddr);
+}
+
+TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
+{
+  TestScMemoryContext userContext;
+
+  ScAddr const & guestUserAddr = userContext.GetUserAddr();
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  TestSetIdentifiedUser(m_ctx, guestUserAddr, userAddr);
+
+  ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
+  std::atomic_bool isAuthenticated = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+
+        TestActionsSuccessfully(m_ctx, userContext);
+        TestIteratorsSuccessfully(m_ctx, userContext);
+
+        return isAuthenticated = true;
+      });
+
+  TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr);
+  TestAuthenticationRequestUser(m_ctx, userAddr);
+
+  SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+  EXPECT_TRUE(isAuthenticated.load());
+}
+
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
