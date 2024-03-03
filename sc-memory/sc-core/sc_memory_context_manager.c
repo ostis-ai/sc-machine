@@ -57,9 +57,12 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
 
 void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr_ptr)
 {
+  sc_unused(manager);
+
   *myself_addr_ptr = myself_addr;
   _sc_context_set_permissions_for_element(*myself_addr_ptr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
-  _sc_memory_context_set_user_addr(manager, &s_memory_default_ctx, *myself_addr_ptr);
+  sc_memory_context_free(s_memory_default_ctx);
+  s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
   s_memory_default_ctx->global_permissions = SC_CONTEXT_PERMISSIONS_FULL;
   s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
 }
@@ -204,12 +207,6 @@ sc_addr _sc_memory_context_get_user_addr(sc_memory_context * ctx)
   sc_addr const user_addr = ctx->user_addr;
   sc_monitor_release_read(&ctx->monitor);
   return user_addr;
-}
-
-void _sc_memory_context_set_user_addr(sc_memory_context_manager * manager, sc_memory_context ** ctx, sc_addr user_addr)
-{
-  _sc_memory_context_free_impl(manager, *ctx);
-  *ctx = _sc_memory_context_resolve_impl(manager, user_addr);
 }
 
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)

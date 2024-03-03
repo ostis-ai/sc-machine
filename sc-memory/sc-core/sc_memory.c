@@ -183,11 +183,6 @@ sc_addr sc_memory_context_get_user_addr(sc_memory_context * ctx)
   return _sc_memory_context_get_user_addr(ctx);
 }
 
-void sc_memory_context_set_user_addr(sc_memory_context ** ctx, sc_addr user_addr)
-{
-  _sc_memory_context_set_user_addr(memory->context_manager, ctx, user_addr);
-}
-
 void sc_memory_context_pending_begin(sc_memory_context * ctx)
 {
   _sc_memory_context_pending_begin(ctx);

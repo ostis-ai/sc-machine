@@ -104,15 +104,15 @@ public:
 public:
   SC_DEPRECATED(
       0.10.0,
-      "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
+      "Don't use this method for creating sc-memory context. Use one without params instead of. "
       "This function will be deleted in 0.11.0")
   _SC_EXTERN explicit ScMemoryContext(sc_permissions permissions, std::string const & name = "");
   SC_DEPRECATED(
       0.10.0,
-      "Don't use this method for creating sc-memory context. Use one with `userAddr` params instead of. "
+      "Don't use this method for creating sc-memory context. Use one without params instead of. "
       "This function will be deleted in 0.11.0")
   _SC_EXTERN explicit ScMemoryContext(std::string const & name);
-  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr = ScAddr::Empty);
+  _SC_EXTERN explicit ScMemoryContext();
   _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context);
   _SC_EXTERN ~ScMemoryContext();
 
@@ -121,8 +121,6 @@ public:
   ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
 
   _SC_EXTERN ScAddr GetUserAddr();
-
-  _SC_EXTERN void SetUserAddr(ScAddr const & userAddr);
 
   _SC_EXTERN sc_memory_context * operator*() const
   {
@@ -344,7 +342,7 @@ public:
    * @param edgeAddr The sc-address of the sc-connector.
    * @return Returns the sc-address of the source sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -364,7 +362,7 @@ public:
    * @param edgeAddr The sc-address of the sc-connector.
    * @return Returns the sc-address of the target sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -386,7 +384,7 @@ public:
    * @param outTargetAddr Reference to store the sc-address of the target sc-element.
    * @return Returns true if the information was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   *@throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
    * @code
    * ScMemoryContext ctx;
@@ -1214,6 +1212,12 @@ public:
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    */
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
+
+protected:
+  friend class ScAgent;
+  friend class ScServerMessageAction;
+
+  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr);
 
 private:
   sc_memory_context * m_context;

@@ -81,11 +81,20 @@ class ScMemoryTestWithInitMemoryGeneratedStructure : public ScMemoryTest
   }
 };
 
+class TestScMemoryContext : public ScMemoryContext
+{
+public:
+  TestScMemoryContext(ScAddr const & userAddr = ScAddr::Empty)
+    : ScMemoryContext(userAddr)
+  {
+  }
+};
+
 class ScMemoryTestWithUserMode : public ScMemoryTest
 {
   virtual void SetUp()
   {
     ScMemoryTestWithUserMode::InitializeWithUserMode();
-    m_ctx = std::make_unique<ScMemoryContext>(ScKeynodes::kMySelf);
+    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::kMySelf);
   }
 };
