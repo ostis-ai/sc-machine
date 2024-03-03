@@ -36,6 +36,8 @@ public:
 
     if (IsHealthCheck(messageType))
       OnHealthCheck(m_sessionId, m_msg);
+    else if (IsConnectionInfo(messageType))
+      OnConnectionInfo(m_sessionId, m_msg);
     else if (IsEvent(messageType))
       OnEvent(m_sessionId, m_msg);
     else
@@ -104,6 +106,16 @@ public:
     m_server->CloseConnection(sessionId, websocketpp::close::status::normal, "Status checked");
   }
 
+  void OnConnectionInfo(ScServerSessionId const & sessionId, ScServerMessage const & msg)
+  {
+    SC_UNUSED(msg);
+
+    ScAddr const & userAddr = m_server->GetSessionContext(sessionId)->GetUserAddr();
+    ScMemoryJsonPayload response{{"connection_id", (sc_uint64)sessionId.lock().get()}, {"user_addr", userAddr.Hash()}};
+
+    m_server->Send(sessionId, response.dump(), ScServerMessageType::text);
+  }
+
   ~ScServerMessageAction() override
   {
     delete m_actionsHandler;
@@ -136,5 +148,10 @@ protected:
   static sc_bool IsHealthCheck(std::string const & messageType)
   {
     return messageType == "healthcheck";
+  }
+
+  static sc_bool IsConnectionInfo(std::string const & messageType)
+  {
+    return messageType == "connection_info";
   }
 };

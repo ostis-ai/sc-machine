@@ -72,11 +72,28 @@ TEST(ScServer, RunStopServer)
   ScMemory::Shutdown();
 }
 
-TEST_F(ScServerTest, Connection)
+TEST_F(ScServerTest, Connect)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
+  client.Stop();
+}
+
+TEST_F(ScServerTest, ConnectAndGetUser)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  std::string const payloadString = R"({"type": "connection_info"})";
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+
+  EXPECT_FALSE(response.is_null());
+  ScAddr const & userAddr = ScAddr(response["user_addr"].get<sc_addr_hash>());
+  EXPECT_TRUE(userAddr.IsValid());
   client.Stop();
 }
 
@@ -91,7 +108,7 @@ TEST_F(ScServerTest, HealthcheckOK)
 
   auto const response = client.GetResponseMessage();
   EXPECT_FALSE(response.is_null());
-  EXPECT_TRUE(response.get<std::string>() == "OK");
+  EXPECT_EQ(response.get<std::string>(), "OK");
 
   client.Stop();
 }

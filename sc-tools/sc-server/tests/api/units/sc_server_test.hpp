@@ -53,24 +53,6 @@ protected:
     ScMemory::LogUnmute();
   }
 
-  void InitializeWithUserMode()
-  {
-    sc_memory_params params;
-    sc_memory_params_clear(&params);
-
-    params.clear = SC_TRUE;
-    params.repo_path = SC_SERVER_REPO_PATH;
-
-    params.user_mode = SC_TRUE;
-
-    ScMemory::LogMute();
-    ScMemory::Initialize(params);
-    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8865, SC_TRUE);
-    m_server->ClearChannels();
-    m_server->Run();
-    ScMemory::LogUnmute();
-  }
-
   void Shutdown()
   {
     ScMemory::LogMute();
@@ -92,23 +74,5 @@ protected:
   {
     Initialize(SC_FALSE);
     m_ctx = std::make_unique<ScMemoryContext>();
-  }
-};
-
-class TestScMemoryContext : public ScMemoryContext
-{
-public:
-  TestScMemoryContext(ScAddr const & userAddr = ScAddr::Empty)
-    : ScMemoryContext(userAddr)
-  {
-  }
-};
-
-class ScServerTestWithUserMode : public ScServerTest
-{
-  void SetUp() override
-  {
-    ScServerTestWithUserMode::InitializeWithUserMode();
-    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::kMySelf);
   }
 };
