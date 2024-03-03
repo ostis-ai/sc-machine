@@ -12,7 +12,6 @@
 #include "sc_server_test.hpp"
 #include "../../sc_client.hpp"
 
-#include "sc_memory_config.hpp"
 #include "../../sc_memory_json_converter.hpp"
 
 void TestAddAccessLevelsForUserToInitActions(
@@ -162,7 +161,7 @@ TEST_F(ScServerTestWithUserMode, CreateElementsByUnauthenticatedUser)
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
-  EXPECT_TRUE(client.Connect(m_server->GetUri() + "/?user_addr=" + std::to_string(userAddr.Hash())));
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
   TestRequestCreateElements(client);
   TestUnsuccessfulCreateElements(m_ctx, client);
@@ -176,7 +175,7 @@ TEST_F(ScServerTestWithUserMode, CreateElementsByAuthenticatedUser)
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
   ScClient client;
-  EXPECT_TRUE(client.Connect(m_server->GetUri() + "/?user_addr=" + std::to_string(userAddr.Hash())));
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
   TestRequestCreateElements(client);
   TestCheckSuccessfulCreateElements(m_ctx, client);
@@ -191,7 +190,7 @@ TEST_F(ScServerTestWithUserMode, CreateElementsByAuthenticatedUserWithReconnect)
 
   {
     ScClient client;
-    EXPECT_TRUE(client.Connect(m_server->GetUri() + "/?user_addr=" + std::to_string(userAddr.Hash())));
+    EXPECT_TRUE(client.Connect(m_server->GetUri()));
     client.Run();
     TestRequestCreateElements(client);
     TestCheckSuccessfulCreateElements(m_ctx, client);
@@ -200,7 +199,7 @@ TEST_F(ScServerTestWithUserMode, CreateElementsByAuthenticatedUserWithReconnect)
 
   {
     ScClient client;
-    EXPECT_TRUE(client.Connect(m_server->GetUri() + "/?user_addr=" + std::to_string(userAddr.Hash())));
+    EXPECT_TRUE(client.Connect(m_server->GetUri()));
     client.Run();
     TestRequestCreateElements(client);
     TestCheckSuccessfulCreateElements(m_ctx, client);
