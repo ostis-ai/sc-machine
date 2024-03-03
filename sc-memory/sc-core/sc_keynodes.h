@@ -11,6 +11,7 @@
 
 extern sc_addr myself_addr;
 extern sc_addr concept_guest_user_addr;
+extern sc_addr nrel_identified_user_addr;
 extern sc_addr concept_authentication_request_user_addr;
 extern sc_addr concept_authenticated_user_addr;
 extern sc_addr nrel_user_action_class_addr;

@@ -312,8 +312,7 @@ TEST_F(ScMemoryTestWithUserMode, GetGuestUserAddrFromContext)
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByGuestUser)
 {
   TestScMemoryContext userContext;
-  TestAddAllAccessLevelsForUserToInitActions(m_ctx, userContext.GetUserAddr());
-  TestActionsSuccessfully(m_ctx, userContext);
+  TestActionsUnsuccessfully(m_ctx, userContext);
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)

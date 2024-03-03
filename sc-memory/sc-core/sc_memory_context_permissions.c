@@ -107,6 +107,46 @@ sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager *
   return guest_user_addr;
 }
 
+sc_result _sc_memory_context_manager_on_identified_user(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_identified_user_addr)
+{
+  sc_unused(&connector_addr);
+  sc_unused(&initiator_addr);
+
+  // Only positive access sc-arcs can be used
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+    return SC_RESULT_OK;
+
+  sc_addr quest_user_addr, identified_user_addr;
+  if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_identified_user_addr, &quest_user_addr, &identified_user_addr)
+      != SC_RESULT_OK)
+    return SC_RESULT_OK;
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, quest_user_addr);
+
+  sc_monitor_acquire_write(&ctx->monitor);
+
+  sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+
+  ctx->user_addr = identified_user_addr;
+  ctx->global_permissions = (sc_uint64)sc_hash_table_get(
+      manager->user_global_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->local_permissions =
+      sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+
+  sc_hash_table_insert(
+      manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
+
+  sc_monitor_release_write(&ctx->monitor);
+
+  return SC_RESULT_OK;
+}
+
 /*! Function that creates a memory context for an authenticated user with specified parameters.
  * @param event Pointer to the sc-event triggering the context creation.
  * @param initiator_addr sc-address representing user that initiated this request.
@@ -640,6 +680,18 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->concept_guest_user_addr = concept_guest_user_addr;
   _sc_context_set_permissions_for_element(manager->concept_guest_user_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
+  manager->nrel_identified_user_addr = nrel_identified_user_addr;
+  _sc_context_set_permissions_for_element(
+      manager->nrel_identified_user_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
+  manager->on_new_identified_user_subscription = sc_context_manager_register_user_event(
+      s_memory_default_ctx,
+      manager->nrel_identified_user_addr,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_identified_user,
+      null_ptr);
+
   manager->concept_authentication_request_user_addr = concept_authentication_request_user_addr;
   _sc_context_set_permissions_for_element(
       manager->concept_authentication_request_user_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
@@ -717,6 +769,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
 
 void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager * manager)
 {
+  sc_context_manager_unregister_user_event(manager->on_new_identified_user_subscription);
+
   sc_context_manager_unregister_user_event(manager->on_authentication_request_user_subscription);
   sc_context_manager_unregister_user_event(manager->on_remove_authenticated_user_subscription);
 

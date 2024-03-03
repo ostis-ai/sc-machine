@@ -120,6 +120,7 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
       manager->user_global_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
   ctx->local_permissions =
       sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->pend_events = null_ptr;
 
   sc_hash_table_insert(
       manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
@@ -233,7 +234,7 @@ void _sc_memory_context_pend_event(
   params->other_addr = other_addr;
 
   sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
-  ((sc_memory_context *)ctx)->pend_events = g_slist_append(ctx->pend_events, params);
+  ((sc_memory_context *)ctx)->pend_events = sc_hash_table_list_append(ctx->pend_events, params);
   sc_monitor_release_write((sc_monitor *)&ctx->monitor);
 }
 
@@ -257,7 +258,7 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
         event_params->other_addr);
     sc_mem_free(event_params);
 
-    ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
+    ((sc_memory_context *)ctx)->pend_events = sc_hash_table_list_remove_sublist(ctx->pend_events, ctx->pend_events);
   }
 }
 
