@@ -729,7 +729,8 @@ void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager
 
 // If the system is not in user mode, grant permissions
 #define _sc_memory_context_check_system(_manager, _context) \
-  (manager->user_mode == SC_FALSE || (ctx->flags & SC_CONTEXT_FLAG_SYSTEM) == SC_CONTEXT_FLAG_SYSTEM)
+  (manager == null_ptr || manager->user_mode == SC_FALSE || ctx == null_ptr \
+   || (ctx->flags & SC_CONTEXT_FLAG_SYSTEM) == SC_CONTEXT_FLAG_SYSTEM)
 
 sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager, sc_memory_context const * ctx)
 {

@@ -59,11 +59,9 @@ void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * ma
 {
   *myself_addr_ptr = myself_addr;
   _sc_context_set_permissions_for_element(*myself_addr_ptr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
-  s_memory_default_ctx->user_addr = *myself_addr_ptr;
-  sc_hash_table_insert(
-      manager->context_hash_table,
-      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(*myself_addr_ptr)),
-      (sc_pointer)s_memory_default_ctx);
+  _sc_memory_context_set_user_addr(manager, &s_memory_default_ctx, *myself_addr_ptr);
+  s_memory_default_ctx->global_permissions = SC_CONTEXT_PERMISSIONS_FULL;
+  s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
