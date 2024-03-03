@@ -293,6 +293,36 @@ void TestActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context,
   TestChangeActionsUnsuccessfully(context, userContext);
 }
 
+TEST_F(ScMemoryTestWithUserMode, GetUserAddrFromContext)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScMemoryContext userContext{userAddr};
+  EXPECT_EQ(userContext.GetUserAddr(), userAddr);
+}
+
+TEST_F(ScMemoryTestWithUserMode, GetGuestUserAddrFromContext)
+{
+  ScMemoryContext userContext;
+  EXPECT_TRUE(userContext.GetUserAddr().IsValid());
+}
+
+TEST_F(ScMemoryTestWithUserMode, SetUserAddrForContext)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScMemoryContext userContext;
+  userContext.SetUserAddr(userAddr);
+  EXPECT_EQ(userContext.GetUserAddr(), userAddr);
+}
+
+TEST_F(ScMemoryTestWithUserMode, HandleElementsByGuestUser)
+{
+  ScMemoryContext userContext;
+  TestAddAllAccessLevelsForUserToInitActions(m_ctx, userContext.GetUserAddr());
+  TestActionsSuccessfully(m_ctx, userContext);
+}
+
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
 {
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
@@ -322,6 +352,34 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
         return isAuthenticated = true;
       });
 
+  TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr);
+  TestAuthenticationRequestUser(m_ctx, userAddr);
+
+  SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+  EXPECT_TRUE(isAuthenticated.load());
+}
+
+TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserSetAfter)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScMemoryContext userContext;
+
+  ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
+  std::atomic_bool isAuthenticated = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+
+        TestActionsSuccessfully(m_ctx, userContext);
+        TestIteratorsSuccessfully(m_ctx, userContext);
+
+        return isAuthenticated = true;
+      });
+
+  userContext.SetUserAddr(userAddr);
   TestAddAllAccessLevelsForUserToInitActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
