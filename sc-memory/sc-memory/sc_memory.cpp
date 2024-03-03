@@ -189,6 +189,18 @@ void ScMemoryContext::EndEventsPending()
   sc_memory_context_pending_end(m_context);
 }
 
+void ScMemoryContext::BeingEventsBlocking()
+{
+  CHECK_CONTEXT;
+  sc_memory_context_blocking_begin(m_context);
+}
+
+void ScMemoryContext::EndEventsBlocking()
+{
+  CHECK_CONTEXT;
+  sc_memory_context_blocking_end(m_context);
+}
+
 bool ScMemoryContext::IsValid() const
 {
   return m_context != nullptr;

@@ -140,6 +140,12 @@ public:
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
 
+  //! Begin events blocking mode
+  _SC_EXTERN void BeingEventsBlocking();
+
+  //! End events blocking mode
+  _SC_EXTERN void EndEventsBlocking();
+
   /*!
    * @brief Checks if the sc-memory context is valid.
    *
@@ -1235,6 +1241,24 @@ public:
   _SC_EXTERN ~ScMemoryContextEventsPendingGuard()
   {
     m_ctx.EndEventsPending();
+  }
+
+private:
+  ScMemoryContext & m_ctx;
+};
+
+class ScMemoryContextEventsBlockingGuard
+{
+public:
+  _SC_EXTERN explicit ScMemoryContextEventsBlockingGuard(ScMemoryContext & ctx)
+    : m_ctx(ctx)
+  {
+    m_ctx.BeingEventsBlocking();
+  }
+
+  _SC_EXTERN ~ScMemoryContextEventsBlockingGuard()
+  {
+    m_ctx.EndEventsBlocking();
   }
 
 private:

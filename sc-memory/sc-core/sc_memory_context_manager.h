@@ -89,7 +89,7 @@ void _sc_memory_context_free_impl(sc_memory_context_manager * manager, sc_memory
 sc_addr _sc_memory_context_get_user_addr(sc_memory_context * ctx);
 
 //! Checks if specified sc-memory context has pending events block.
-sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx);
+sc_bool _sc_memory_context_are_events_pending(sc_memory_context const * ctx);
 
 /*! Function that marks the beginning of a pending events block in a sc-memory context.
  * @param ctx Pointer to the sc-memory context for which the pending events block begins.
@@ -125,5 +125,20 @@ void _sc_memory_context_pend_event(
  * @note This function emits all pending events in the sc-memory context, clearing the pending events list afterward.
  */
 void _sc_memory_context_emit_events(sc_memory_context const * ctx);
+
+//! Checks if specified sc-memory context has blocking events block.
+sc_bool _sc_memory_context_are_events_blocking(sc_memory_context const * ctx);
+
+/*! Function that marks the beginning of a blocking events block in a sc-memory context.
+ * @param ctx Pointer to the sc-memory context for which the blocking events block begins.
+ * @note This function marks the beginning of a blocking events block in the sc-memory context.
+ */
+void _sc_memory_context_blocking_begin(sc_memory_context * ctx);
+
+/*! Function that marks the end of a blocking events block in a sc-memory context.
+ * @param ctx Pointer to the sc-memory context for which the blocking events block ends.
+ * @note This function marks the end of a blocking events block in the sc-memory context.
+ */
+void _sc_memory_context_blocking_end(sc_memory_context * ctx);
 
 #endif

@@ -163,6 +163,30 @@ _SC_EXTERN void sc_memory_context_pending_begin(sc_memory_context * ctx);
 _SC_EXTERN void sc_memory_context_pending_end(sc_memory_context * ctx);
 
 /*!
+ * @brief Starts events blocking mode for a context.
+ *
+ * In this mode, all new emitted events will be blocking until `sc_memory_context_blocking_end` is called.
+ *
+ * @param ctx Pointer to the sc-memory context.
+ *
+ * @note Use this function to start a blocking mode for events emitted by the specified context.
+ * @see sc_memory_context_blocking_end
+ */
+_SC_EXTERN void sc_memory_context_blocking_begin(sc_memory_context * ctx);
+
+/*!
+ * @brief Ends events blocking mode for a context.
+ *
+ * This function ends the blocking mode for events emitted by the specified context.
+ *
+ * @param ctx Pointer to the sc-memory context.
+ *
+ * @note Use this function to end the blocking mode for events emitted by the specified context.
+ * @see sc_memory_context_blocking_begin
+ */
+_SC_EXTERN void sc_memory_context_blocking_end(sc_memory_context * ctx);
+
+/*!
  * @brief Checks if sc-memory is initialized.
  *
  * @return Returns SC_TRUE if sc-memory is initialized; otherwise, returns SC_FALSE.
