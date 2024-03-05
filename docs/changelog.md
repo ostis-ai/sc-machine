@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Generalized build_cxx_project.sh
 - Collect user permissions during sc-memory initialize
 - Throw exceptions in get values methods of iterators if sc-element is not accessed
 - Callback to get and collect sc-links by its contents from fs-memory
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Configure SC_BIN_PATH from scripts
 - Allows assigns sc-link to its system identifier
 
 ### Fixed
