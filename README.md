@@ -1,15 +1,15 @@
-# SC-machine
+# sc-machine
 
 [![CI](https://github.com/ostis-ai/sc-machine/actions/workflows/main.yml/badge.svg)](https://github.com/ostis-ai/sc-machine/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/ostis-ai/sc-machine/branch/main/graph/badge.svg?token=WU8O9Z1DNL)](https://codecov.io/gh/ostis-ai/sc-machine)
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](COPYING.MIT)
 [![docker](https://img.shields.io/docker/v/ostis/sc-machine?arch=amd64&label=Docker&logo=Docker&sort=date)](https://hub.docker.com/r/ostis/sc-machine)
 
-Short version: **SC-machine** is a software package that emulates semantic computer behaviour. It uses agent-based approach to process knowledge graphs.
+Short version: **sc-machine** is a software package of Semantic network storage that emulates semantic computer behaviour. It uses agent-based approach to process knowledge graphs.
 
-SC-machine stores and processes knowledge graphs represented in the SC-code (language of the universal knowledge representation). Theoretical basis of SC-machine is provided by the [**OSTIS Technology**](https://github.com/ostis-ai).
+Semantic network storage stores and processes knowledge graphs represented in the SC-code (language of the universal knowledge representation). Theoretical basis of sc-machine is provided by the [**OSTIS Technology**](https://github.com/ostis-ai).
 
-SC-machine allows integrating problem solutions from different subject domains **by using the same**:
+Semantic network storage allows integrating problem solutions from different subject domains **by using the same**:
 
 - **technology**
 - **programming and data representation language**
@@ -27,7 +27,7 @@ This project contains:
 <details>
    <summary>More info</summary>
 
-SC-machine is a **platform-independent graph database management system** that can store / retrieve knowledge graphs and run tasks (agents) on them.
+sc-machine is a **platform-independent graph database management system** that can store / retrieve knowledge graphs and run tasks (agents) on them.
 
 Both declarative (data, data structures, documentation, tasks specification, etc.) and procedural
 (programs, modules, systems, communication between systems) knowledge is represented using the same language: the SC-code.
@@ -40,7 +40,7 @@ Both declarative (data, data structures, documentation, tasks specification, etc
 - Full documentation, including:
 
   - core concepts
-  - rationale behind the SC-machine
+  - rationale behind the sc-machine
   - system design
   - software interfaces
 
@@ -50,17 +50,17 @@ Both declarative (data, data structures, documentation, tasks specification, etc
 
 ## Quick start
 
-SC-machine is a core of any ostis-system, so you can use a reference system named [OSTIS Web platform](https://github.com/ostis-ai/ostis-web-platform) to get it up and running quickly.
+Semantic network storage is a core of any ostis-system, so you can use a reference system named [OSTIS Platform](https://github.com/ostis-ai/ostis-web-platform) to get it up and running quickly.
 
 ## Installation
 
 - Docker:
-  We provide a Docker image for this project. Head to [Installing with Docker](https://ostis-ai.github.io/sc-machine/docker) to learn more. It's the recommended way to deploy the SC-machine.
+  We provide a Docker image for this project. Head to [Installing with Docker](https://ostis-ai.github.io/sc-machine/docker) to learn more. It's the recommended way to deploy the sc-machine.
 - Native:
   If you do not have the option to deploy the system using Docker, please refer to the docs for your OS:
   [Build on Linux](https://ostis-ai.github.io/sc-machine/build/linux-build/) or [Build on macOS](https://ostis-ai.github.io/sc-machine/build/osx-build/) respectively.
 
-  Note: currently, the SC-machine isn't _natively_ supported on Windows.
+  Note: currently, the sc-machine isn't _natively_ supported on Windows.
 
 ## Usage
 
@@ -91,7 +91,7 @@ You can also use `./scripts/build_kb.sh` and `./scripts/run_sc_server.sh` to do 
 
 ## Config
 
-This repository provides a default configuration for the SC-machine. To customize the _SC-machine_ to suit your needs you can [create your own config file](https://ostis-ai.github.io/sc-machine/other/config).
+This repository provides a default configuration for the sc-machine. To customize the _sc-machine_ to suit your needs you can [create your own config file](https://ostis-ai.github.io/sc-machine/other/config).
 
 ## Feedback
 

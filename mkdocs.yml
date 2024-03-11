@@ -1,4 +1,4 @@
-site_name: SC-machine
+site_name: sc-machine
 
 extra_css:
   - _assets/main.css

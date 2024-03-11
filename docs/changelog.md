@@ -257,7 +257,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine.
 - Remind that all binary content are stored in sc-fs-storage as base64 string.
 - sctp-server was removed, move to sc-server usage.
-- SC-machine doesn't support ubuntu versions lower than 20.04.
+- sc-machine doesn't support ubuntu versions lower than 20.04.
 
 ### Added
 
