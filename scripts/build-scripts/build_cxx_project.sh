@@ -9,9 +9,9 @@ function usage() {
 Usage: $(basename "$0") [OPTION]...
 
 Options:
-  -p, --project-path Path to project CMakeLists.txt
-  -s, --source-path  Path to project cxx sources
-  -b, --build-path   Path to project build
+  -p, --project-path Path to project CMakeLists.txt (required)
+  -s, --source-path  Path to project cxx sources (required)
+  -b, --build-path   Path to project build (required)
   -f, --force        Full rebuild with the deleting of build directory
   -t, --tests        Build in tests mode
   -r, --release      Build in release mode
@@ -72,6 +72,11 @@ fi
 
 tests_mode="-DSC_BUILD_TESTS=ON"
 release_mode="-DCMAKE_BUILD_TYPE=Release"
+
+if [[ -z "${CMAKE_PATH}" || "${SOURCES_PATH}" || -z "${BUILD_PATH}" ]];
+then
+  usage
+fi
 
 cd "${CMAKE_PATH}"
 cmake -B "${BUILD_PATH}" "${CMAKE_PATH}" ${build_tests:+${tests_mode}} ${build_release:+${release_mode}} "${outer_cmake_args[@]}"
