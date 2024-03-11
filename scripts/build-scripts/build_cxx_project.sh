@@ -73,7 +73,7 @@ fi
 tests_mode="-DSC_BUILD_TESTS=ON"
 release_mode="-DCMAKE_BUILD_TYPE=Release"
 
-if [[ -z "${CMAKE_PATH}" || "${SOURCES_PATH}" || -z "${BUILD_PATH}" ]];
+if [[ -z "${CMAKE_PATH}" || -z "${SOURCES_PATH}" || -z "${BUILD_PATH}" ]];
 then
   usage
 fi
