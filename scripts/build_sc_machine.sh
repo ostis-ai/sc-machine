@@ -15,4 +15,4 @@ BUILD_SCRIPTS="${CURRENT_DIR}/build-scripts"
 "${BUILD_SCRIPTS}/build_cxx_project.sh" -p "${ROOT_CMAKE_PATH}" -s "${CXX_SOURCES_PATH}" -b "${BUILD_PATH}" \
   --cmake-arg "-DSC_BIN_PATH=${BINARY_PATH}" "$@"
 
-stage "SC-machine built successfully"
+stage "sc-machine is built successfully"

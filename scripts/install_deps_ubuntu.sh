@@ -3,7 +3,7 @@ set -eo pipefail
 
 if [[ -z "${SC_MACHINE_PATH}" || -z "${BINARY_PATH}" || -z "${BUILD_PATH}" ]];
 then
-  source "$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"/set_vars.sh
+  source "$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)/set_vars.sh"
 fi
 
 function usage() {
@@ -11,7 +11,7 @@ function usage() {
 Usage: $0 [--dev]
 
 Options:
-  --dev:          installs dependencies required to compile sc-machine
+  --dev:          Installs dependencies required to compile sc-machine
 USAGE
   exit 1
 }
