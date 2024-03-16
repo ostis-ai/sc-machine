@@ -57,7 +57,7 @@ TEST(ScBuilder, RunStopBuilder)
   std::string config = SC_BUILDER_INI;
 
   ScParams memoryParams{options, {}};
-  memoryParams.insert({"repo_path", SC_BUILDER_REPO_PATH});
+  memoryParams.Insert({"repo_path", SC_BUILDER_REPO_PATH});
 
   ScConfig configFile{config, {"repo_path"}};
   std::string memoryGroupName = "sc-memory";
@@ -73,25 +73,25 @@ TEST(ScBuilder, RunStopBuilder)
   for (std::string const & key : *group)
   {
     std::string const & value = group[key];
-    scParams.insert({key, value});
+    scParams.Insert({key, value});
   }
   sc_memory_params const scMemoryParams = memoryConfig.GetParams();
 
-  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("max_loaded_segments")), scMemoryParams.max_loaded_segments);
-  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("dump_memory_period")), scMemoryParams.dump_memory_period);
-  EXPECT_EQ(
-      (sc_uint32)std::stoi(scParams.at("dump_memory_statistics_period")), scMemoryParams.dump_memory_statistics_period);
-  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("save_period")), scMemoryParams.dump_memory_period);
-  EXPECT_EQ((sc_uint32)std::stoi(scParams.at("update_period")), scMemoryParams.dump_memory_statistics_period);
+  EXPECT_EQ(scParams.Get<sc_uint32>("max_loaded_segments"), scMemoryParams.max_loaded_segments);
+  EXPECT_EQ(scParams.Get<sc_uint32>("dump_memory_period"), scMemoryParams.dump_memory_period);
+  EXPECT_EQ(scParams.Get<sc_uint32>("dump_memory_statistics_period"), scMemoryParams.dump_memory_statistics_period);
+  EXPECT_EQ(scParams.Get<sc_uint32>("save_period"), scMemoryParams.dump_memory_period);
+  EXPECT_EQ(scParams.Get<sc_uint32>("update_period"), scMemoryParams.dump_memory_statistics_period);
   EXPECT_EQ(scMemoryParams.dump_memory_period, scMemoryParams.save_period);
   EXPECT_EQ(scMemoryParams.dump_memory_statistics_period, scMemoryParams.update_period);
-  EXPECT_EQ(scParams.at("log_type"), scMemoryParams.log_type);
-  EXPECT_EQ(scParams.at("log_file"), scMemoryParams.log_file);
-  EXPECT_EQ(scParams.at("log_level"), scMemoryParams.log_level);
+  EXPECT_EQ(scParams.Get<std::string>("log_type"), scMemoryParams.log_type);
+  EXPECT_EQ(scParams.Get<std::string>("log_file"), scMemoryParams.log_file);
+  EXPECT_EQ(scParams.Get<std::string>("log_level"), scMemoryParams.log_level);
   EXPECT_EQ(
-      scParams.at("init_memory_generated_upload") == "true" ? true : false,
+      scParams.Get<std::string>("init_memory_generated_upload") == "true" ? true : false,
       scMemoryParams.init_memory_generated_upload);
-  EXPECT_EQ(scParams.at("init_memory_generated_structure"), scMemoryParams.init_memory_generated_structure);
+  EXPECT_EQ(
+      scParams.Get<std::string>("init_memory_generated_structure"), scMemoryParams.init_memory_generated_structure);
 }
 
 TEST(ScBuilder, InvalidConfig)
@@ -121,8 +121,8 @@ TEST(ScBuilder, BuilderConfig)
   ScConfig configFile{config, {"repo_path"}};
 
   ScParams memoryParams{options, {}};
-  memoryParams.insert({"repo_path", SC_BUILDER_REPO_PATH});
-  memoryParams.insert({"clear", {}});
+  memoryParams.Insert({"repo_path", SC_BUILDER_REPO_PATH});
+  memoryParams.Insert({"clear", {}});
   ScMemoryConfig memoryConfig{configFile, memoryParams};
 
   sc_memory_params const memory_params = memoryConfig.GetParams();
@@ -142,19 +142,20 @@ TEST(ScBuilder, BuilderConfig)
   for (std::string const & key : *group)
   {
     std::string const & value = group[key];
-    scParams.insert({key, value});
+    scParams.Insert({key, value});
   }
 
   group = configFile[memoryGroupName];
   for (std::string const & key : *group)
   {
     std::string const & value = group[key];
-    scParams.insert({key, value});
+    scParams.Insert({key, value});
   }
 
   EXPECT_EQ(
-      scParams.at("init_memory_generated_upload") == "true" ? true : false, builderParams.m_resultStructureUpload);
-  EXPECT_EQ(scParams.at("init_memory_generated_structure"), builderParams.m_resultStructureSystemIdtf);
+      scParams.Get<std::string>("init_memory_generated_upload") == "true" ? true : false,
+      builderParams.m_resultStructureUpload);
+  EXPECT_EQ(scParams.Get<std::string>("init_memory_generated_structure"), builderParams.m_resultStructureSystemIdtf);
 
   sc_memory_params newMemoryParams = memoryConfig.GetParams();
   newMemoryParams.clear = false;
@@ -179,5 +180,5 @@ TEST(ScBuilder, BuilderConfig)
 
   context->Destroy();
   delete context;
-  ScMemory::Shutdown(false);
+  ScMemory::Shutdown(SC_FALSE);
 }

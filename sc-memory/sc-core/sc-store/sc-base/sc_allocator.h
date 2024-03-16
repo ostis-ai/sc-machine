@@ -19,6 +19,6 @@ typedef gconstpointer sc_const_pointer;
 
 #define sc_mem_cpy(source, dest, n_structs) memcpy(source, dest, n_structs)
 
-#define sc_mem_free(pointer) g_free(pointer)
+#define sc_mem_free(pointer) g_free((sc_pointer)pointer)
 
 #endif

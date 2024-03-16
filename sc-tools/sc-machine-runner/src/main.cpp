@@ -4,10 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#pragma once
+#include "sc_machine_setup.hpp"
 
-#include "sc_memory_config.hpp"
+// LCOV_EXCL_START
+sc_int main(sc_int argc, sc_char * argv[])
+{
+  BuildAndRunMachine(argc, argv);
+}
 
-void PrintStartMessage();
-
-sc_int BuildAndRunBuilder(sc_int argc, sc_char * argv[]);
+// LCOV_EXCL_STOP

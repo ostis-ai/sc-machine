@@ -39,7 +39,7 @@ bool Builder::Run(BuilderParams const & params, sc_memory_params const & memoryP
   bool const status = BuildSources(buildSources, outputStructure);
 
   m_ctx.reset();
-  ScMemory::Shutdown(true);
+  ScMemory::Shutdown(SC_TRUE);
 
   return status;
 }

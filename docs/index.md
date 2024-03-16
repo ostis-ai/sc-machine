@@ -25,6 +25,7 @@
     * [Knowledge Base builder](sc-tools/sc_builder.md) - *description of options of sc-builder for knowledge base sources*
     * [Knowledge Base repo file](sc-tools/kb_repo_file.md) - *description of configuration of knowledge base sources*
     * [Websocket Server](sc-tools/sc_server.md) - *description of options of sc-server for communication with sc-memory through network*
+    * [Sc-machine Runner](sc-tools/sc_machine.md) - *description of options of sc-machine runner*
     * [Meta Programming](sc-tools/cpp_meta.md) - *documentation of meta programming language*
 - **Development**
     * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*

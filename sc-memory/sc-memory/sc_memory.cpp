@@ -71,6 +71,7 @@ void _logPrintHandler(
 // ------------------
 
 ScMemoryContext * ScMemory::ms_globalContext = nullptr;
+std::string ScMemory::ms_configPath;
 
 bool ScMemory::Initialize(sc_memory_params const & params)
 {

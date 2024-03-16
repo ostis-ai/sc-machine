@@ -19,7 +19,7 @@
 #include "sc-base/sc_allocator.h"
 #include "sc-container/sc-string/sc_string.h"
 
-sc_storage * storage;
+sc_storage * storage = null_ptr;
 
 sc_result sc_storage_initialize(sc_memory_params const * params)
 {
@@ -65,7 +65,7 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
 sc_result sc_storage_shutdown(sc_bool save_state)
 {
   if (storage == null_ptr)
-    return SC_RESULT_NO;
+    goto error;
 
   sc_event_emission_manager_stop(storage->events_emission_manager);
   sc_event_emission_manager_shutdown(storage->events_emission_manager);
@@ -81,8 +81,12 @@ sc_result sc_storage_shutdown(sc_bool save_state)
       return SC_RESULT_ERROR;
   }
 
+error:
   if (sc_fs_memory_shutdown() != SC_FS_MEMORY_OK)
     return SC_RESULT_ERROR;
+
+  if (storage == null_ptr)
+    return SC_RESULT_NO;
 
   sc_monitor_acquire_write(&storage->processes_monitor);
 

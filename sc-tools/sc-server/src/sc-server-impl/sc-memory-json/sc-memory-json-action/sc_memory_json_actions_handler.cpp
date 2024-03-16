@@ -10,9 +10,9 @@
 
 std::map<std::string, ScMemoryJsonAction *> ScMemoryJsonActionsHandler::m_actions;
 
-ScMemoryJsonActionsHandler::ScMemoryJsonActionsHandler(ScServer * server, ScMemoryContext * processCtx)
+ScMemoryJsonActionsHandler::ScMemoryJsonActionsHandler(ScServer * server, ScMemoryContext * sessionCtx)
   : ScMemoryJsonHandler(server)
-  , m_context(processCtx)
+  , m_context(sessionCtx)
 {
 }
 
@@ -34,8 +34,11 @@ void ScMemoryJsonActionsHandler::InitializeActionClasses()
 
 void ScMemoryJsonActionsHandler::ClearActionClasses()
 {
-  for (auto const & it : m_actions)
+  for (auto & it : m_actions)
+  {
     delete it.second;
+    it.second = nullptr;
+  }
 }
 
 ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(

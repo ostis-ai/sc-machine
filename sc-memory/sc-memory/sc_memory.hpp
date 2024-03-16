@@ -44,6 +44,8 @@ class ScMemory
   friend class ScMemoryContext;
 
 public:
+  static std::string ms_configPath;
+
   /*!
    * @brief Initializes the sc-memory system with the specified parameters.
    *

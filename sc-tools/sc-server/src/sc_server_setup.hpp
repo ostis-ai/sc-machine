@@ -4,6 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#pragma once
+
 #include "sc-server-impl/sc_server.hpp"
 
 #include "sc-config/sc_config.hpp"
@@ -11,7 +13,7 @@
 
 void PrintStartMessage();
 
-sc_bool RunServer(ScParams const & serverParams, ScMemoryConfig & memoryConfig, std::shared_ptr<ScServer> & server);
+sc_bool RunServer(ScParams const & serverParams, std::shared_ptr<ScServer> & server);
 
 sc_bool StopServer(std::shared_ptr<ScServer> const & server);
 

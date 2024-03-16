@@ -6,7 +6,7 @@ configure_file(
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/units
     NAME sc-builder-tests
     DEPENDS sc-builder-lib sc-memory sc-config-utils
-    INCLUDES ${SC_MEMORY_SRC} $
+    INCLUDES ${SC_MEMORY_SRC}
 )
 
 if(${SC_CLANG_FORMAT_CODE})

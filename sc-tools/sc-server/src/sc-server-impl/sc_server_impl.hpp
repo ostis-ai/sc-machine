@@ -16,11 +16,7 @@ using ScServerActions = std::queue<ScServerAction *>;
 class ScServerImpl : public ScServer
 {
 public:
-  explicit ScServerImpl(
-      std::string const & host,
-      ScServerPort port,
-      sc_bool parallelActions,
-      sc_memory_params const & params);
+  explicit ScServerImpl(std::string const & host, ScServerPort port, sc_bool parallelActions);
 
   void EmitActions() override;
 

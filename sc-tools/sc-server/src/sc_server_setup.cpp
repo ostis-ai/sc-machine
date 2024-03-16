@@ -14,6 +14,7 @@
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
 #include "sc_server_factory.hpp"
+#include "sc-server-module/sc_server_module.hpp"
 
 void PrintStartMessage()
 {
@@ -23,18 +24,18 @@ void PrintStartMessage()
             << "--port|-p -- Sc-server port\n"
             << "--extensions_path|-e -- Path to directory with sc-memory extensions\n"
             << "--repo_path|-r -- Path to kb.bin folder\n"
-            << "--verbose|-v -- Flag to don't save sc-memory state on exit\n"
-            << "--clear -- Flag to clear sc-memory on start\n"
-            << "--help -- Display this message\n"
-            << "--test|-t -- Flag to test sc-server, run and stop it\n\n";
+            << "--clear -- Flag to clear sc-memory state on initialize\n"
+            << "--verbose|-v -- Flag to don't save sc-memory state on shutdown\n"
+            << "--test|-t -- Flag to test sc-server (sc-server with this option runs and stops)\n"
+            << "--help -- Display this message\n\n";
 }
 
-sc_bool RunServer(ScParams const & serverParams, ScMemoryConfig & memoryConfig, std::shared_ptr<ScServer> & server)
+sc_bool RunServer(ScParams const & serverParams, std::shared_ptr<ScServer> & server)
 {
   sc_bool status = SC_FALSE;
   try
   {
-    server = ScServerFactory::ConfigureScServer(serverParams, memoryConfig.GetParams());
+    server = ScServerFactory::ConfigureScServer(serverParams);
     ScServerLogger * logger = ScServerFactory::ConfigureScServerLogger(server, serverParams);
     server->Run();
     server->ResetLogger(logger);
@@ -86,30 +87,35 @@ try
     return EXIT_SUCCESS;
   }
 
+  SC_LOG_WARNING(
+      "Now sc-server is an extension and all extensions are loaded by executable `sc-machine`. The executable "
+      "`sc-server` is deprecated in sc-machine 0.10.0. It will be removed in sc-machine 0.11.0. Use "
+      "executable `sc-machine` instead.");
+
   std::string configFile;
   if (options.Has({"config", "c"}))
     configFile = options[{"config", "c"}].second;
 
-  ScParams serverParams{options, {{"host", "h"}, {"port", "p"}}};
-  ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
-  auto serverConfig = config["sc-server"];
-  for (auto const & key : *serverConfig)
-    serverParams.insert({key, serverConfig[key]});
+  sc_bool saveOnShutdown = !options.Has({"verbose", "v"});
 
-  ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"verbose", "v"}, {"clear"}}};
+  ScMemory::ms_configPath = configFile;
+
+  ScConfig config{configFile, {"repo_path", "extensions_path", "log_file"}};
+  ScParams memoryParams{options, {{"extensions_path", "e"}, {"repo_path", "r"}, {"clear"}}};
   ScMemoryConfig memoryConfig{config, memoryParams};
+
+  SC_LOG_WARNING(
+      "Use the common configuration file `<config-name>.ini` to set port and host of sc-server. `Options `--host` and "
+      "`--port` are deprecated as well.");
+  ScServerModule::ms_serverParams = ScParams{options, {{"host", "h"}, {"port", "p"}}};
+
+  std::atomic_bool isRun;
+  if (ScMemory::Initialize(memoryConfig.GetParams()) == SC_FALSE)
+    goto error;
 
   utils::ScSignalHandler::Initialize();
 
-  std::shared_ptr<ScServer> server;
-  sc_bool const status = RunServer(serverParams, memoryConfig, server);
-  if (status == SC_FALSE)
-  {
-    StopServer(server);
-    return EXIT_FAILURE;
-  }
-
-  std::atomic_bool isRun = {!options.Has({"test", "t"})};
+  isRun = !options.Has({"test", "t"});
   // LCOV_EXCL_START
   utils::ScSignalHandler::m_onTerminate = [&isRun]()
   {
@@ -122,7 +128,8 @@ try
   }
   // LCOV_EXCL_STOP
 
-  return StopServer(server) ? EXIT_SUCCESS : EXIT_FAILURE;
+error:
+  return ScMemory::Shutdown(saveOnShutdown) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 // LCOV_EXCL_START

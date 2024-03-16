@@ -23,7 +23,7 @@ typedef struct _sc_module_info
   gchar * path;
   sc_uint32 priority;
   fModuleFunc init_func;
-  char * init_func_type;
+  sc_char * init_func_type;
   fModuleFunc shut_func;
 } sc_module_info;
 
