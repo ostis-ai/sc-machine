@@ -34,7 +34,7 @@ nav:
       - Knowledge Base Builder: sc-tools/sc_builder.md
       - Knowledge Base repo file: sc-tools/kb_repo_file.md
       - Websocket Server: sc-tools/sc_server.md
-      - sc-machine Runner: sc-tools/sc_machine.md
+      - Sc-machine Runner: sc-tools/sc_machine.md
       - Meta Programming: sc-tools/cpp_meta.md
   - Development:
       - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md

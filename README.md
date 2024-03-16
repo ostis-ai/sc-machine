@@ -27,7 +27,7 @@ This project contains:
 <details>
    <summary>More info</summary>
 
-sc-machine is a **platform-independent graph database management system** that can store / retrieve knowledge graphs and run tasks (agents) on them.
+Sc-machine is a **platform-independent graph database management system** that can store / retrieve knowledge graphs and run tasks (agents) on them.
 
 Both declarative (data, data structures, documentation, tasks specification, etc.) and procedural
 (programs, modules, systems, communication between systems) knowledge is represented using the same language: the SC-code.

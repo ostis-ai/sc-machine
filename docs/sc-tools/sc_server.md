@@ -1,6 +1,6 @@
-# SC-server
+# sc-server
 
-SC-server allows to communicate with sc-memory through network. You can find it in a `bin` directory.
+Sc-server allows to communicate with sc-memory through network. You can find it in the `bin` directory.
 There are options of this tool:
 
 !!! warning
@@ -11,11 +11,11 @@ There are options of this tool:
 <pre>
 ./bin/sc-server --help
 
-SC-server usage:
+Sc-server usage:
 
   --config|-c               Path to configuration file
-  --host|-h                 Sc-server host name, ip-address
-  --port|-p                 Sc-server port
+  --host|-h                 sc-server host name, ip-address
+  --port|-p                 sc-server port
   --extensions_path|-e      Path to directory with sc-memory extensions
   --repo_path|-r            Path to kb.bin folder
   --clear                   Flag to clear sc-memory state on initialize
