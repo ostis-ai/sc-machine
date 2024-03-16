@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Generalized build_cxx_project.sh
 - Collect user permissions during sc-memory initialize
 - Throw exceptions in get values methods of iterators if sc-element is not accessed
 - Callback to get and collect sc-links by its contents from fs-memory
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Configure SC_BIN_PATH from scripts
 - Allows assigns sc-link to its system identifier
 
 ### Fixed
@@ -255,7 +257,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `;` after `SC_ASSERT` calls in projects that use sc-machine.
 - Remind that all binary content are stored in sc-fs-storage as base64 string.
 - sctp-server was removed, move to sc-server usage.
-- SC-machine doesn't support ubuntu versions lower than 20.04.
+- sc-machine doesn't support ubuntu versions lower than 20.04.
 
 ### Added
 

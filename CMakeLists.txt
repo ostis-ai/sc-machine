@@ -10,7 +10,9 @@ project_version(SC_MACHINE "0.9.0-Unlock")
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
 # CMAKE_BINARY_DIR is a path to the top level of the build tree (i.e to the "build" folder). Placing a "bin" folder nearby
-set(SC_BIN_PATH "${CMAKE_BINARY_DIR}/../bin")
+if(NOT SC_BIN_PATH)
+    set(SC_BIN_PATH "${CMAKE_BINARY_DIR}/../bin")
+endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SC_BIN_PATH})
 set(SC_EXTENSIONS_DIRECTORY "${SC_BIN_PATH}/extensions")
@@ -99,7 +101,6 @@ message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, path: ${CMAKE_CXX_COMPILER}")
 
 add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
-
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-tools)
