@@ -19,6 +19,13 @@ TEST(ScMachine, RunMain)
   EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
+TEST(ScMachine, RunMainWithExtensions)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-e", SC_MACHINE_EXTENSIONS, "-t"};
+  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
 TEST(ScMachine, InvalidRunMain)
 {
   sc_uint32 const argsNumber = 1;

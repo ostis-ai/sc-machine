@@ -21,6 +21,13 @@ TEST(ScServer, RunMain)
   EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
+TEST(ScServer, RunMainWithExtensions)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {"sc-server", "-c", SC_SERVER_INI, "-e", SC_SERVER_EXTENSIONS, "-t"};
+  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
 TEST(ScServer, InvalidRunMain)
 {
   sc_uint32 const argsNumber = 1;
