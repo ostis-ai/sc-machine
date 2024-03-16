@@ -1,6 +1,6 @@
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/units
     NAME sc-machine-tests
-    DEPENDS sc-machine-setup
+    DEPENDS sc-machine-runner
     INCLUDES ${SC_MEMORY_SRC}
 )
 
