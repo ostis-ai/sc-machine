@@ -10,7 +10,7 @@ function usage() {
 
     Usage: 
         $0 build -b binary_path -c config_path [KB path]
-        $0 serve -b binary_path -c config_path [sc-server args]
+        $0 serve -b binary_path -c config_path [sc-server args] (deprecated)
         $0 run -b binary_path -c config_path [sc-machine args]
 
     Options:

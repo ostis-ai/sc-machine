@@ -1,10 +1,10 @@
-# SC-machine
+# sc-machine
 
 !!! warning
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
-SC-machine is a sc-memory with opportunity to add modules consistent with the general sc-machine interface. All such 
+sc-machine is a sc-memory with opportunity to add modules consistent with the general sc-machine interface. All such 
 modules are named extensions, must be shared libraries (with file extension `.so`) and stored in common directory 
 (by default it is `./bin/extensions`). By default, sc-machine contains sc-server that allows to communicate with 
 sc-memory through network. You can find `sc-machine` in a `bin` directory.
@@ -14,7 +14,7 @@ There are options of sc-machine:
 <pre>
 ./bin/sc-machine --help
 
-SC-machine usage:
+sc-machine usage:
 
   --config|-c               Path to configuration file
   --extensions_path|-e      Path to directory with sc-memory extensions
