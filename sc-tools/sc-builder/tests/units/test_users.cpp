@@ -32,11 +32,11 @@ void TestAuthenticationRequestUser(
   context->CreateEdge(arcType, conceptAuthenticationRequestUserAddr, userAddr);
 }
 
-TEST_F(ScBuilderLoadUserAccessLevelsTest, UserWithGlobalReadAccessLevelsAndWithLocalWriteAccessLevels)
+TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLocalWritePermissions)
 {
   ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_1");
 
-  ScMemoryContext userContext{userAddr};
+  TestScMemoryContext userContext{userAddr};
   EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -64,11 +64,11 @@ TEST_F(ScBuilderLoadUserAccessLevelsTest, UserWithGlobalReadAccessLevelsAndWithL
   EXPECT_TRUE(isAuthenticated.load());
 }
 
-TEST_F(ScBuilderLoadUserAccessLevelsTest, UserWithGlobalReadAccessLevelsAndWithoutLocalWriteAccessLevels)
+TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithoutLocalWritePermissions)
 {
   ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_2");
 
-  ScMemoryContext userContext{userAddr};
+  TestScMemoryContext userContext{userAddr};
   EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};

@@ -80,10 +80,7 @@ sc_bool ScServerImpl::IsWorkable()
 
 void ScServerImpl::OnOpen(ScServerSessionId const & sessionId)
 {
-  auto session = m_instance->get_con_from_hdl(sessionId);
-  std::string const & resourceData = session->get_resource();
-
-  auto * action = new ScServerConnectAction(this, sessionId, resourceData);
+  auto * action = new ScServerConnectAction(this, sessionId);
   {
     ScServerLock connectionLock(m_connectionMutex);
     ScServerLock actionLock(m_actionMutex);

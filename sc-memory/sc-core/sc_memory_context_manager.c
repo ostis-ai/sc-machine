@@ -15,7 +15,6 @@
 
 #include "sc_memory.h"
 #include "sc_memory_private.h"
-#include "sc_helper.h"
 
 #include "sc-store/sc-base/sc_allocator.h"
 
@@ -58,13 +57,14 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
 
 void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * manager, sc_addr * myself_addr_ptr)
 {
+  sc_unused(manager);
+
   *myself_addr_ptr = myself_addr;
   _sc_context_set_permissions_for_element(*myself_addr_ptr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
-  s_memory_default_ctx->user_addr = *myself_addr_ptr;
-  sc_hash_table_insert(
-      manager->context_hash_table,
-      GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(*myself_addr_ptr)),
-      (sc_pointer)s_memory_default_ctx);
+  sc_memory_context_free(s_memory_default_ctx);
+  s_memory_default_ctx = sc_memory_context_new_ext(myself_addr);
+  s_memory_default_ctx->global_permissions = SC_CONTEXT_PERMISSIONS_FULL;
+  s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
 }
 
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
@@ -114,16 +114,16 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
     goto error;
 
   sc_monitor_init(&ctx->monitor);
-  ctx->user_addr = user_addr;
+  ctx->user_addr = SC_ADDR_IS_EMPTY(user_addr) ? _sc_memory_context_manager_create_guest_user(manager) : user_addr;
   ctx->ref_count = 0;
   ctx->global_permissions = (sc_uint64)sc_hash_table_get(
       manager->user_global_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
   ctx->local_permissions =
       sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->pend_events = null_ptr;
 
-  if (SC_ADDR_IS_NOT_EMPTY(ctx->user_addr))
-    sc_hash_table_insert(
-        manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
+  sc_hash_table_insert(
+      manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
   ++manager->context_count;
   goto result;
 
@@ -202,6 +202,14 @@ error:
   sc_monitor_release_write(&manager->context_monitor);
 }
 
+sc_addr _sc_memory_context_get_user_addr(sc_memory_context * ctx)
+{
+  sc_monitor_acquire_read(&ctx->monitor);
+  sc_addr const user_addr = ctx->user_addr;
+  sc_monitor_release_read(&ctx->monitor);
+  return user_addr;
+}
+
 sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
 {
   sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
@@ -226,7 +234,7 @@ void _sc_memory_context_pend_event(
   params->other_addr = other_addr;
 
   sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
-  ((sc_memory_context *)ctx)->pend_events = g_slist_append(ctx->pend_events, params);
+  ((sc_memory_context *)ctx)->pend_events = sc_hash_table_list_append(ctx->pend_events, params);
   sc_monitor_release_write((sc_monitor *)&ctx->monitor);
 }
 
@@ -250,7 +258,7 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
         event_params->other_addr);
     sc_mem_free(event_params);
 
-    ((sc_memory_context *)ctx)->pend_events = g_slist_delete_link(ctx->pend_events, ctx->pend_events);
+    ((sc_memory_context *)ctx)->pend_events = sc_hash_table_list_remove_sublist(ctx->pend_events, ctx->pend_events);
   }
 }
 

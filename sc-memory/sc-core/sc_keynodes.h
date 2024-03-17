@@ -10,9 +10,12 @@
 #include "sc-store/sc_types.h"
 
 extern sc_addr myself_addr;
+extern sc_addr concept_guest_user_addr;
+extern sc_addr nrel_identified_user_addr;
 extern sc_addr concept_authentication_request_user_addr;
 extern sc_addr concept_authenticated_user_addr;
 extern sc_addr nrel_user_action_class_addr;
+extern sc_addr nrel_users_set_action_class_addr;
 extern sc_addr action_read_from_sc_memory_addr;
 extern sc_addr action_generate_in_sc_memory_addr;
 extern sc_addr action_erase_in_sc_memory_addr;
@@ -20,6 +23,7 @@ extern sc_addr action_read_permissions_from_sc_memory_addr;
 extern sc_addr action_generate_permissions_in_sc_memory_addr;
 extern sc_addr action_erase_permissions_from_sc_memory_addr;
 extern sc_addr nrel_user_action_class_within_sc_structure_addr;
+extern sc_addr nrel_users_set_action_class_within_sc_structure_addr;
 
 sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr init_memory_generated_structure);
 

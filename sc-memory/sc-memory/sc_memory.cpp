@@ -142,6 +142,11 @@ ScMemoryContext::ScMemoryContext(std::string const & name)
   SC_UNUSED(name);
 }
 
+ScMemoryContext::ScMemoryContext()
+  : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
+{
+}
+
 ScMemoryContext::ScMemoryContext(ScAddr const & userAddr)
   : m_context(sc_memory_context_new_ext(*userAddr))
 {
@@ -164,6 +169,12 @@ void ScMemoryContext::Destroy()
     sc_memory_context_free(m_context);
     m_context = nullptr;
   }
+}
+
+ScAddr ScMemoryContext::GetUserAddr()
+{
+  CHECK_CONTEXT;
+  return sc_memory_context_get_user_addr(m_context);
 }
 
 void ScMemoryContext::BeingEventsPending()

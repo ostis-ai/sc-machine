@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Opportunity to set permissions for set of users
+- Guests identification
+- Create guest users during creating sc-memory context
+- Get user address for sc-server session and sc-memory context
 - Docker entrypoint run to launch binary `sc-machine` in docker
 - Script `run_sc_machine.sh` to launch binary `sc-machine`
 - Binary `sc-machine` instead of binary `sc-server` that loads extension sc-server
@@ -22,8 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - User permissions for handling permissions for actions in sc-memory
 - Global user permissions for actions in sc-memory
 - ScType::LinkConstClass and ScType::LinkVarClass
-- Sc-server connect with userAddr parameter
-- ScMemoryContext with userAddr parameter
 - User authentication checks
 - Denote sc-machine with sc-element `myself`
 - Provide users for sc-memory, sc-events and sc-agents

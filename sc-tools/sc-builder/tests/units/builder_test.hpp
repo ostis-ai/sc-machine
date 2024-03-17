@@ -71,12 +71,21 @@ protected:
   std::unique_ptr<ScMemoryContext> m_ctx;
 };
 
-class ScBuilderLoadUserAccessLevelsTest : public ScBuilderTest
+class TestScMemoryContext : public ScMemoryContext
+{
+public:
+  TestScMemoryContext(ScAddr const & userAddr = ScAddr::Empty)
+    : ScMemoryContext(userAddr)
+  {
+  }
+};
+
+class ScBuilderLoadUserPermissionsTest : public ScBuilderTest
 {
 protected:
   virtual void SetUp()
   {
     ScBuilderTest::InitializeWithUserMode();
-    m_ctx = std::make_unique<ScMemoryContext>(ScKeynodes::kMySelf);
+    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::kMySelf);
   }
 };
