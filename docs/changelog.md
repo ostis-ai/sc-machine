@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Opportunity to set permissions for set of users
 - Guests identification
 - Create guest users during creating sc-memory context
 - Get user address for sc-server session and sc-memory context
