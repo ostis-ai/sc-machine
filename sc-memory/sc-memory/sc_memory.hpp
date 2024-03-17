@@ -81,7 +81,6 @@ public:
   _SC_EXTERN static void LogMute();
   _SC_EXTERN static void LogUnmute();
 
-protected:
   static ScMemoryContext * ms_globalContext;
 };
 
