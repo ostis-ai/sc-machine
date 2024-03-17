@@ -28,16 +28,20 @@ struct _sc_memory_context_manager
   sc_hash_table * user_global_permissions;
   ///< Monitor for synchronizing access to the hash table storing global permissions within the knowledge base.
   sc_monitor user_global_permissions_monitor;
-  sc_hash_table * basic_action_classes;    ///< Hash table storing permissions for action classes in sc-memory.
-  sc_event * on_new_user_action_class;     ///< Event subscription for adding new permitted action classes for users.
+  sc_hash_table * basic_action_classes;  ///< Hash table storing permissions for action classes in sc-memory.
+  sc_event * on_new_user_action_class;   ///< Event subscription for adding new permitted action classes for users.
+  sc_event * on_new_users_set_action_class;
   sc_event * on_remove_user_action_class;  ///< Event subscription for removing new permitted action classes for users.
+  sc_event * on_remove_users_set_action_class;
 
   ///< Hash table storing local permissions (within sc-structures) for users.
   sc_hash_table * user_local_permissions;
   ///< Monitor for synchronizing access to the hash table storing local permissions within sc-structures.
   sc_monitor user_local_permissions_monitor;
   sc_event * on_new_user_action_class_within_sc_structure;
+  sc_event * on_new_users_set_action_class_within_sc_structure;
   sc_event * on_remove_user_action_class_within_sc_structure;
+  sc_event * on_remove_users_set_action_class_within_sc_structure;
 
   ///< sc-address representing class for authentication request users.
   sc_addr concept_guest_user_addr;
@@ -49,8 +53,10 @@ struct _sc_memory_context_manager
   sc_addr concept_authenticated_user_addr;
   ///< sc-address representing relation between users and theirs permitted actions on the knowledge base.
   sc_addr nrel_user_action_class_addr;
+  sc_addr nrel_users_set_action_class_addr;
   ///< sc-address representing relation between users and theirs permitted actions on sc-structures.
   sc_addr nrel_user_action_class_within_sc_structure_addr;
+  sc_addr nrel_users_set_action_class_within_sc_structure_addr;
 
   sc_bool user_mode;  ///< Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
 };

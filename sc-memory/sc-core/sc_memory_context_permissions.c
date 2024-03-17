@@ -13,7 +13,9 @@
 #include "sc_helper.h"
 #include "sc_keynodes.h"
 
-typedef void (*sc_permissions_handler)(sc_memory_context_manager *, sc_addr, sc_addr);
+typedef void (*sc_users_permissions_updater)(sc_memory_context_manager *, sc_addr, sc_addr, sc_addr);
+typedef void (*sc_users_updater)(sc_memory_context_manager *, sc_addr, sc_addr, sc_addr, sc_users_permissions_updater);
+typedef void (*sc_users_action_class_handler)(sc_memory_context_manager *, sc_addr, sc_addr, sc_users_updater);
 
 /**
  * @brief Adds global permissions (within the knowledge base) to a given sc-memory context.
@@ -119,12 +121,12 @@ sc_result _sc_memory_context_manager_on_identified_user(
 
   // Only positive access sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
-    return SC_RESULT_OK;
+    return SC_RESULT_NO;
 
   sc_addr quest_user_addr, identified_user_addr;
   if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_identified_user_addr, &quest_user_addr, &identified_user_addr)
       != SC_RESULT_OK)
-    return SC_RESULT_OK;
+    return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, quest_user_addr);
@@ -168,7 +170,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 
   // Only positive access sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
-    return SC_RESULT_OK;
+    return SC_RESULT_NO;
 
   _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
   _sc_context_set_permissions_for_element(user_addr, SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS);
@@ -218,7 +220,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
 
   // Only positive access sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
-    return SC_RESULT_OK;
+    return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
@@ -257,20 +259,46 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   (sc_uint64) \
       sc_hash_table_get(manager->basic_action_classes, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_action_class_addr)))
 
-void _sc_memory_context_manager_add_user_action_class(
+void _sc_memory_context_manager_handle_user_action_class(
     sc_memory_context_manager * manager,
-    sc_addr connector_addr,
-    sc_addr arc_to_action_class_addr)
+    sc_addr user_addr,
+    sc_addr action_class_addr,
+    sc_addr structure_addr,
+    sc_users_permissions_updater updater)
 {
-  _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+  updater(manager, user_addr, action_class_addr, structure_addr);
+}
 
-  sc_addr user_addr, action_class_addr;
-  if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr)
-      != SC_RESULT_OK)
-    return;
+void _sc_memory_context_manager_handle_users_set_action_class(
+    sc_memory_context_manager * manager,
+    sc_addr users_set_addr,
+    sc_addr action_class_addr,
+    sc_addr structure_addr,
+    sc_users_permissions_updater updater)
+{
+  sc_iterator3 * users_it3 = sc_iterator3_f_a_a_new(s_memory_default_ctx, users_set_addr, 0, 0);
+  while (sc_iterator3_next(users_it3))
+  {
+    sc_addr const arc_addr = sc_iterator3_value(users_it3, 1);
 
+    sc_type arc_type;
+    if (sc_memory_get_element_type(s_memory_default_ctx, arc_addr, &arc_type) != SC_RESULT_OK
+        || sc_type_has_not_subtype(arc_type, sc_type_arc_pos_const))
+      continue;
+    _sc_context_set_permissions_for_element(arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
+    sc_addr const user_addr = sc_iterator3_value(users_it3, 2);
+    updater(manager, user_addr, action_class_addr, structure_addr);
+  }
+  sc_iterator3_free(users_it3);
+}
+
+void _sc_context_add_user_context_global_permissions(
+    sc_memory_context_manager * manager,
+    sc_addr user_addr,
+    sc_addr action_class_addr)
+{
   sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
-
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
   if (ctx == null_ptr)
     _sc_context_add_user_global_permissions(user_addr, permissions);
@@ -278,28 +306,76 @@ void _sc_memory_context_manager_add_user_action_class(
     _sc_context_add_context_global_permissions(ctx, permissions);
 }
 
-/*! Function that appends permissions for a memory context by adding relation between user and action class.
+void _sc_memory_context_manager_add_user_action_class(
+    sc_memory_context_manager * manager,
+    sc_addr connector_addr,
+    sc_addr arc_to_action_class_addr,
+    sc_users_updater updater)
+{
+  _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
+  sc_addr user_or_users_addr, action_class_addr;
+  if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_or_users_addr, &action_class_addr)
+      != SC_RESULT_OK)
+    return;
+
+  updater(
+      manager,
+      user_or_users_addr,
+      action_class_addr,
+      SC_ADDR_EMPTY,
+      (sc_users_permissions_updater)_sc_context_add_user_context_global_permissions);
+}
+
+/*! Function that appends permissions for a memory context by adding relation between user (or set of users)
+ * and action class.
  * @param event Pointer to the sc-event triggering the addition of the action class.
  * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector to sc-pair with user and action class which this
- * use can complete.
- * @param connector_type sc-type of created sc-connector to sc-pair with user and action class.
- * @param arc_to_action_class_addr sc-address representing sc-pair with user and action class.
+ * @param connector_addr sc-address representing created sc-connector to sc-pair with user (or set of users)
+ * and action class which this use can complete.
+ * @param connector_type sc-type of created sc-connector to sc-pair with user (or set of users) and action class.
+ * @param arc_to_action_class_addr sc-address representing sc-pair with user (or set of users) and action class.
+ * @param updater callback that update permissions for user (or set of users).
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  * @note The function is called in response to a sc-event and is responsible for appending permissions for users and
  * its sc-memory contexts. It works this way:
- * 1. Some user (with sc-address `initiator_addr`) adds possible action class for other user (with sc-address
- * `user_addr`).
+ * 1. Some user (with sc-address `initiator_addr`) adds possible action class for other user (or set of users)
+ * (with sc-address `user_addr` (`users_addr`)).
  *
- * user_addr ===========> action_class_addr
- *                 |.\
+ *  user_addr ===========> action_class_addr
+ * (users_addr)    |.\
  *                  .
  *                  .
  *                  .
  *       nrel_user_action_class_addr
- * 2. This callback must be called by adding sc-arc from sc-relation with sc-address `nrel_user_action_class`, then
- * this callback add permissions for user sc-memory context and assigns permissions to this sc-arc.
+ *    (nrel_users_set_action_class_addr)
+ * 2. This callback must be called by adding sc-arc from sc-relation with sc-address `nrel_user_action_class`
+ * (`nrel_users_set_action_class_addr`), then this callback add permissions for user sc-memory context and assigns
+ * permissions to this sc-arc.
  */
+sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_action_class_addr,
+    sc_users_updater updater)
+{
+  sc_unused(&initiator_addr);
+  sc_unused(&connector_addr);
+
+  // Only positive access sc-arcs can be used
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+    return SC_RESULT_NO;
+
+  _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  _sc_memory_context_manager_add_user_action_class(manager, connector_addr, arc_to_action_class_addr, updater);
+
+  return SC_RESULT_OK;
+}
+
 sc_result _sc_memory_context_manager_on_new_user_action_class(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -307,35 +383,106 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
     sc_type connector_type,
     sc_addr arc_to_action_class_addr)
 {
+  return _sc_memory_context_manager_on_new_user_or_users_set_action_class(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_action_class_addr,
+      _sc_memory_context_manager_handle_user_action_class);
+}
+
+sc_result _sc_memory_context_manager_on_new_users_set_action_class(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_action_class_addr)
+{
+  return _sc_memory_context_manager_on_new_user_or_users_set_action_class(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_action_class_addr,
+      _sc_memory_context_manager_handle_users_set_action_class);
+}
+
+void _sc_context_remove_user_context_global_permissions(
+    sc_memory_context_manager * manager,
+    sc_addr user_addr,
+    sc_addr action_class_addr)
+{
+  sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
+  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
+  if (ctx == null_ptr)
+    _sc_context_remove_user_global_permissions(user_addr, permissions);
+  else
+    _sc_context_remove_context_global_permissions(ctx, permissions);
+}
+
+void _sc_memory_context_manager_remove_user_action_class(
+    sc_memory_context_manager * manager,
+    sc_addr connector_addr,
+    sc_addr arc_to_action_class_addr,
+    sc_users_updater updater)
+{
+  sc_unused(&connector_addr);
+
+  sc_addr user_or_users_addr, action_class_addr;
+  if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_or_users_addr, &action_class_addr)
+      != SC_RESULT_OK)
+    return;
+
+  updater(
+      manager,
+      user_or_users_addr,
+      action_class_addr,
+      SC_ADDR_EMPTY,
+      (sc_users_permissions_updater)_sc_context_remove_user_context_global_permissions);
+}
+
+/**
+ * @brief Handles the removal of an action class from a user (or set of users) in the sc-memory context manager.
+ *
+ * This function is triggered by an sc-event when an action class is removed from a user (or set of users). It updates
+ * the permissions of the user (or set of users) or its sc-memory context accordingly.
+ *
+ * @param event Pointer to the sc-event triggering the removal of the action class.
+ * @param initiator_addr sc-address representing the user that initiated this removal request.
+ * @param connector_addr sc-address representing the created sc-connector to sc-pair with the user (or set of users) and
+ * action class which this user can complete (unused).
+ * @param connector_type sc-type of the created sc-connector to sc-pair with the user (or set of users) and action
+ * class.
+ * @param arc_to_action_class_addr sc-address representing the sc-pair with the user (or set of users) and action class.
+ * @param updater callback that update permissions for user (or set of users).
+ * @return Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
+ */
+sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_action_class_addr,
+    sc_users_updater updater)
+{
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
-    return SC_RESULT_OK;
-
-  _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+    return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  _sc_memory_context_manager_add_user_action_class(manager, connector_addr, arc_to_action_class_addr);
+  _sc_memory_context_manager_remove_user_action_class(manager, connector_addr, arc_to_action_class_addr, updater);
+
+  sc_addr const action_arc_addr = sc_memory_arc_new(
+      s_memory_default_ctx, sc_type_arc_neg_const_temp, event->subscription_addr, arc_to_action_class_addr);
+  _sc_context_set_permissions_for_element(action_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
   return SC_RESULT_OK;
 }
 
-/**
- * @brief Handles the removal of an action class from a user in the sc-memory context manager.
- *
- * This function is triggered by an sc-event when an action class is removed from a user. It updates the
- * permissions of the user or its sc-memory context accordingly.
- *
- * @param event Pointer to the sc-event triggering the removal of the action class.
- * @param initiator_addr sc-address representing the user that initiated this removal request.
- * @param connector_addr sc-address representing the created sc-connector to sc-pair with the user and action class
- *                      which this user can complete (unused).
- * @param connector_type sc-type of the created sc-connector to sc-pair with the user and action class.
- * @param arc_to_action_class_addr sc-address representing the sc-pair with the user and action class.
- * @return Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
- */
 sc_result _sc_memory_context_manager_on_remove_user_action_class(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -343,32 +490,29 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
     sc_type connector_type,
     sc_addr arc_to_action_class_addr)
 {
-  sc_unused(&initiator_addr);
-  sc_unused(&connector_addr);
+  return _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_action_class_addr,
+      _sc_memory_context_manager_handle_user_action_class);
+}
 
-  // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
-    return SC_RESULT_OK;
-
-  sc_addr user_addr, action_class_addr;
-  if (sc_memory_get_arc_info(s_memory_default_ctx, arc_to_action_class_addr, &user_addr, &action_class_addr)
-      != SC_RESULT_OK)
-    return SC_RESULT_OK;
-
-  sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
-
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_remove_user_global_permissions(user_addr, permissions);
-  else
-    _sc_context_remove_context_global_permissions(ctx, permissions);
-
-  sc_addr const action_arc_addr = sc_memory_arc_new(
-      s_memory_default_ctx, sc_type_arc_neg_const_temp, manager->nrel_user_action_class_addr, arc_to_action_class_addr);
-  _sc_context_set_permissions_for_element(action_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
-
-  return SC_RESULT_OK;
+sc_result _sc_memory_context_manager_on_remove_users_set_action_class(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_action_class_addr)
+{
+  return _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_action_class_addr,
+      _sc_memory_context_manager_handle_users_set_action_class);
 }
 
 /**
@@ -454,40 +598,13 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
 #define _sc_context_remove_context_local_permissions(_context, _removing_permissions, _structure_addr) \
   _sc_context_remove_user_local_permissions(_context->user_addr, _removing_permissions, _structure_addr)
 
-/*! Function that adds a new user action class within a structure, updating permissions accordingly.
- * @param manager Pointer to the sc-memory context manager.
- * @param connector_addr sc-address representing the created sc-connector connecting user and action class.
- * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
- * structure.
- * @note This function is called when a new user action class is added within a structure. It updates permissions
- * for the user's sc-memory context and assigns permissions to the sc-arc connecting user and action class.
- */
-void _sc_memory_context_manager_add_user_action_class_within_structure(
+void _sc_context_add_user_context_local_permissions(
     sc_memory_context_manager * manager,
-    sc_addr connector_addr,
-    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+    sc_addr user_addr,
+    sc_addr action_class_addr,
+    sc_addr structure_addr)
 {
-  _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
-
-  sc_addr user_addr, arc_between_action_class_and_structure;
-  if (sc_memory_get_arc_info(
-          s_memory_default_ctx,
-          arc_to_arc_between_action_class_and_structure_addr,
-          &user_addr,
-          &arc_between_action_class_and_structure)
-      != SC_RESULT_OK)
-    return;
-
-  sc_addr action_class_addr, structure_addr;
-  if (sc_memory_get_arc_info(
-          s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr)
-      != SC_RESULT_OK)
-    return;
-
-  _sc_context_set_permissions_for_element(structure_addr, SC_CONTEXT_PERMITTED_STRUCTURE);
-
   sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
-
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
   if (ctx == null_ptr)
     _sc_context_add_user_local_permissions(user_addr, permissions, structure_addr);
@@ -495,26 +612,30 @@ void _sc_memory_context_manager_add_user_action_class_within_structure(
     _sc_context_add_context_local_permissions(ctx, permissions, structure_addr);
 }
 
-/*! Function that removes a user action class within a structure, adjusting permissions accordingly.
+/*! Function that adds a new user (or set of users) action class within a structure, updating permissions accordingly.
  * @param manager Pointer to the sc-memory context manager.
- * @param connector_addr sc-address representing the sc-connector connecting user and action class.
+ * @param connector_addr sc-address representing the created sc-connector connecting user (or set of users) and action
+ * class.
  * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
  * structure.
- * @note This function is called when a user action class is removed within a structure. It adjusts permissions
- * for the user's sc-memory context and removes permissions assigned to the sc-arc connecting user and action class.
+ * @param updater callback that update permissions for user (or set of users).
+ * @note This function is called when a new user action class is added within a structure. It updates permissions
+ * for the user's sc-memory context and assigns permissions to the sc-arc connecting user (or set of users) and action
+ * class.
  */
-void _sc_memory_context_manager_remove_user_action_class_within_structure(
+void _sc_memory_context_manager_add_user_action_class_within_structure(
     sc_memory_context_manager * manager,
     sc_addr connector_addr,
-    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+    sc_addr arc_to_arc_between_action_class_and_structure_addr,
+    sc_users_updater updater)
 {
   sc_unused(&connector_addr);
 
-  sc_addr user_addr, arc_between_action_class_and_structure;
+  sc_addr user_or_users_addr, arc_between_action_class_and_structure;
   if (sc_memory_get_arc_info(
           s_memory_default_ctx,
           arc_to_arc_between_action_class_and_structure_addr,
-          &user_addr,
+          &user_or_users_addr,
           &arc_between_action_class_and_structure)
       != SC_RESULT_OK)
     return;
@@ -525,8 +646,19 @@ void _sc_memory_context_manager_remove_user_action_class_within_structure(
       != SC_RESULT_OK)
     return;
 
-  sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
+  updater(
+      manager, user_or_users_addr, action_class_addr, structure_addr, _sc_context_add_user_context_local_permissions);
 
+  _sc_context_set_permissions_for_element(structure_addr, SC_CONTEXT_PERMITTED_STRUCTURE);
+}
+
+void _sc_context_remove_user_context_local_permissions(
+    sc_memory_context_manager * manager,
+    sc_addr user_addr,
+    sc_addr action_class_addr,
+    sc_addr structure_addr)
+{
+  sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
   if (ctx == null_ptr)
     _sc_context_remove_user_local_permissions(user_addr, permissions, structure_addr);
@@ -534,24 +666,67 @@ void _sc_memory_context_manager_remove_user_action_class_within_structure(
     _sc_context_remove_context_local_permissions(ctx, permissions, structure_addr);
 }
 
-/*! Callback function triggered when a new user action class is added within a structure.
+/*! Function that removes a user (or set of users) action class within a structure, adjusting permissions accordingly.
+ * @param manager Pointer to the sc-memory context manager.
+ * @param connector_addr sc-address representing the sc-connector connecting user (or set of users) and action class.
+ * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
+ * structure.
+ * @param updater callback that update permissions for user (or set of users).
+ * @note This function is called when a user (or set of users) action class is removed within a structure. It adjusts
+ * permissions for the user's sc-memory context and removes permissions assigned to the sc-arc connecting user
+ * (or set of users) and action class.
+ */
+void _sc_memory_context_manager_remove_user_action_class_within_structure(
+    sc_memory_context_manager * manager,
+    sc_addr connector_addr,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr,
+    sc_users_updater updater)
+{
+  sc_unused(&connector_addr);
+
+  sc_addr user_or_users_addr, arc_between_action_class_and_structure;
+  if (sc_memory_get_arc_info(
+          s_memory_default_ctx,
+          arc_to_arc_between_action_class_and_structure_addr,
+          &user_or_users_addr,
+          &arc_between_action_class_and_structure)
+      != SC_RESULT_OK)
+    return;
+
+  sc_addr action_class_addr, structure_addr;
+  if (sc_memory_get_arc_info(
+          s_memory_default_ctx, arc_between_action_class_and_structure, &action_class_addr, &structure_addr)
+      != SC_RESULT_OK)
+    return;
+
+  updater(
+      manager,
+      user_or_users_addr,
+      action_class_addr,
+      structure_addr,
+      _sc_context_remove_user_context_local_permissions);
+}
+
+/*! Callback function triggered when a new user (or set of users) action class is added within a structure.
  * @param event Pointer to the sc-event triggering the addition of the action class within a structure.
  * @param initiator_addr sc-address representing the user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector connecting user and action class within a
- * structure.
+ * @param connector_addr sc-address representing created sc-connector connecting user (or set of users) and action class
+ * within a structure.
  * @param connector_type sc-type of the created sc-connector.
  * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
  * structure.
+ * @param updater callback that update permissions for user (or set of users).
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  * @note This function is called in response to a sc-event and is responsible for handling the addition of a user
- * action class within a structure.
+ * (or set of users) action class within a structure.
  */
-sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
+sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_within_structure(
     sc_event const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
-    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+    sc_addr arc_to_arc_between_action_class_and_structure_addr,
+    sc_users_updater updater)
 {
   sc_unused(&initiator_addr);
 
@@ -561,31 +736,94 @@ sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
   if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_pos_const))
   {
     _sc_memory_context_manager_add_user_action_class_within_structure(
-        manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr);
-    return SC_RESULT_OK;
+        manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr, updater);
+    return SC_RESULT_NO;
   }
 
   if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_neg_const))
   {
     _sc_memory_context_manager_remove_user_action_class_within_structure(
-        manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr);
-    return SC_RESULT_OK;
+        manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr, updater);
+    return SC_RESULT_NO;
   }
 
   return SC_RESULT_OK;
 }
 
-/*! Callback function triggered when a user action class is removed within a structure.
+sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+{
+  return _sc_memory_context_manager_on_new_user_or_users_set_action_class_within_structure(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_arc_between_action_class_and_structure_addr,
+      _sc_memory_context_manager_handle_user_action_class);
+}
+
+sc_result _sc_memory_context_manager_on_new_users_set_action_class_within_structure(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+{
+  return _sc_memory_context_manager_on_new_user_or_users_set_action_class_within_structure(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_arc_between_action_class_and_structure_addr,
+      _sc_memory_context_manager_handle_users_set_action_class);
+}
+
+/*! Callback function triggered when a user (or set of users) action class is removed within a structure.
  * @param event Pointer to the sc-event triggering the removal of the action class within a structure.
  * @param initiator_addr sc-address representing the user that initiated this request.
- * @param connector_addr sc-address representing sc-connector connecting user and action class within a structure.
+ * @param connector_addr sc-address representing sc-connector connecting user (or set of users) and action class within
+ * a structure.
  * @param connector_type sc-type of the sc-connector.
  * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
  * structure.
+ * @param updater callback that update permissions for user (or set of users).
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  * @note This function is called in response to a sc-event and is responsible for handling the removal of a user
- * action class within a structure.
+ * (or set of users) action class within a structure.
  */
+sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_within_structure(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr,
+    sc_users_updater updater)
+{
+  sc_unused(&initiator_addr);
+  sc_unused(&connector_addr);
+
+  // Only positive access sc-arcs can be used
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+    return SC_RESULT_NO;
+
+  sc_memory_context_manager * manager = sc_event_get_data(event);
+  _sc_memory_context_manager_remove_user_action_class_within_structure(
+      manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr, updater);
+
+  sc_addr const action_arc_addr = sc_memory_arc_new(
+      s_memory_default_ctx,
+      sc_type_arc_neg_const_temp,
+      event->subscription_addr,
+      arc_to_arc_between_action_class_and_structure_addr);
+  _sc_context_set_permissions_for_element(action_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
+  return SC_RESULT_OK;
+}
+
 sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structure(
     sc_event const * event,
     sc_addr initiator_addr,
@@ -593,25 +831,29 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
     sc_type connector_type,
     sc_addr arc_to_arc_between_action_class_and_structure_addr)
 {
-  sc_unused(&initiator_addr);
-  sc_unused(&connector_addr);
+  return _sc_memory_context_manager_on_remove_user_or_users_set_action_class_within_structure(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_arc_between_action_class_and_structure_addr,
+      _sc_memory_context_manager_handle_user_action_class);
+}
 
-  // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
-    return SC_RESULT_OK;
-
-  sc_memory_context_manager * manager = sc_event_get_data(event);
-  _sc_memory_context_manager_remove_user_action_class_within_structure(
-      manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr);
-
-  sc_addr const action_arc_addr = sc_memory_arc_new(
-      s_memory_default_ctx,
-      sc_type_arc_neg_const_temp,
-      manager->nrel_user_action_class_addr,
-      arc_to_arc_between_action_class_and_structure_addr);
-  _sc_context_set_permissions_for_element(action_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
-
-  return SC_RESULT_OK;
+sc_result _sc_memory_context_manager_on_remove_users_set_action_class_within_structure(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr arc_to_arc_between_action_class_and_structure_addr)
+{
+  return _sc_memory_context_manager_on_remove_user_or_users_set_action_class_within_structure(
+      event,
+      initiator_addr,
+      connector_addr,
+      connector_type,
+      arc_to_arc_between_action_class_and_structure_addr,
+      _sc_memory_context_manager_handle_users_set_action_class);
 }
 
 /*! Function that iterates through all output arcs from a specified permitted relation with a given arc mask,
@@ -619,6 +861,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
  * @param manager Pointer to the sc-memory context manager.
  * @param permitted_relation sc-address representing the permitted relation for which output arcs are iterated.
  * @param arc_mask sc-type mask used to filter the output arcs.
+ * @param updater callback that update permissions for user (or set of users).
  * @param handler Function pointer to the handler function that is invoked for each matching arc.
  *                The handler function must have the signature: void handler(sc_memory_context_manager * manager,
  *                sc_addr arc_addr, sc_addr target_arc_addr).
@@ -630,7 +873,8 @@ void _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relati
     sc_memory_context_manager * manager,
     sc_addr const permitted_relation,
     sc_type const arc_mask,
-    sc_permissions_handler handler)
+    sc_users_updater updater,
+    sc_users_action_class_handler handler)
 {
   sc_iterator3 * it3 = sc_iterator3_f_a_a_new(s_memory_default_ctx, permitted_relation, 0, sc_type_arc_common);
   while (sc_iterator3_next(it3))
@@ -642,7 +886,7 @@ void _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relati
       continue;
 
     sc_addr const target_arc_addr = sc_iterator3_value(it3, 2);
-    handler(manager, arc_addr, target_arc_addr);
+    handler(manager, arc_addr, target_arc_addr, updater);
   }
   sc_iterator3_free(it3);
 }
@@ -656,18 +900,42 @@ void _sc_memory_context_handle_all_user_permissions(sc_memory_context_manager * 
       manager,
       manager->nrel_user_action_class_addr,
       sc_type_arc_pos_const,
+      _sc_memory_context_manager_handle_user_action_class,
+      _sc_memory_context_manager_add_user_action_class);
+
+  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+      manager,
+      manager->nrel_users_set_action_class_addr,
+      sc_type_arc_pos_const,
+      _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_add_user_action_class);
 
   _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_within_sc_structure_addr,
       sc_type_arc_pos_const,
+      _sc_memory_context_manager_handle_user_action_class,
+      _sc_memory_context_manager_add_user_action_class_within_structure);
+
+  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+      manager,
+      manager->nrel_users_set_action_class_within_sc_structure_addr,
+      sc_type_arc_pos_const,
+      _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_add_user_action_class_within_structure);
 
   _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_within_sc_structure_addr,
       sc_type_arc_neg_const,
+      _sc_memory_context_manager_handle_user_action_class,
+      _sc_memory_context_manager_remove_user_action_class_within_structure);
+
+  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+      manager,
+      manager->nrel_users_set_action_class_within_sc_structure_addr,
+      sc_type_arc_neg_const,
+      _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_remove_user_action_class_within_structure);
 }
 
@@ -719,6 +987,10 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   _sc_context_set_permissions_for_element(
       manager->nrel_user_action_class_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
+  manager->nrel_users_set_action_class_addr = nrel_users_set_action_class_addr;
+  _sc_context_set_permissions_for_element(
+      manager->nrel_users_set_action_class_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
   sc_context_manager_add_basic_action_class_permissions(action_read_from_sc_memory_addr, SC_CONTEXT_PERMISSIONS_READ);
   sc_context_manager_add_basic_action_class_permissions(
       action_generate_in_sc_memory_addr, SC_CONTEXT_PERMISSIONS_WRITE);
@@ -738,6 +1010,14 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       _sc_memory_context_manager_on_new_user_action_class,
       null_ptr);
 
+  manager->on_new_users_set_action_class = sc_context_manager_register_user_event(
+      s_memory_default_ctx,
+      manager->nrel_users_set_action_class_addr,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_new_users_set_action_class,
+      null_ptr);
+
   manager->on_remove_user_action_class = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_addr,
@@ -746,9 +1026,21 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       _sc_memory_context_manager_on_remove_user_action_class,
       null_ptr);
 
+  manager->on_remove_users_set_action_class = sc_context_manager_register_user_event(
+      s_memory_default_ctx,
+      manager->nrel_users_set_action_class_addr,
+      SC_EVENT_REMOVE_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_remove_users_set_action_class,
+      null_ptr);
+
   manager->nrel_user_action_class_within_sc_structure_addr = nrel_user_action_class_within_sc_structure_addr;
   _sc_context_set_permissions_for_element(
       manager->nrel_user_action_class_within_sc_structure_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
+  manager->nrel_users_set_action_class_within_sc_structure_addr = nrel_users_set_action_class_within_sc_structure_addr;
+  _sc_context_set_permissions_for_element(
+      manager->nrel_users_set_action_class_within_sc_structure_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
   manager->on_new_user_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
@@ -758,12 +1050,28 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       _sc_memory_context_manager_on_new_user_action_class_within_structure,
       null_ptr);
 
+  manager->on_new_users_set_action_class_within_sc_structure = sc_context_manager_register_user_event(
+      s_memory_default_ctx,
+      manager->nrel_users_set_action_class_within_sc_structure_addr,
+      SC_EVENT_ADD_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_new_users_set_action_class_within_structure,
+      null_ptr);
+
   manager->on_remove_user_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_within_sc_structure_addr,
       SC_EVENT_REMOVE_OUTPUT_ARC,
       manager,
       _sc_memory_context_manager_on_remove_user_action_class_within_structure,
+      null_ptr);
+
+  manager->on_remove_users_set_action_class_within_sc_structure = sc_context_manager_register_user_event(
+      s_memory_default_ctx,
+      manager->nrel_users_set_action_class_within_sc_structure_addr,
+      SC_EVENT_REMOVE_OUTPUT_ARC,
+      manager,
+      _sc_memory_context_manager_on_remove_users_set_action_class_within_structure,
       null_ptr);
 }
 
@@ -775,10 +1083,14 @@ void _sc_memory_context_manager_unregister_user_events(sc_memory_context_manager
   sc_context_manager_unregister_user_event(manager->on_remove_authenticated_user_subscription);
 
   sc_context_manager_unregister_user_event(manager->on_new_user_action_class);
+  sc_context_manager_unregister_user_event(manager->on_new_users_set_action_class);
   sc_context_manager_unregister_user_event(manager->on_remove_user_action_class);
+  sc_context_manager_unregister_user_event(manager->on_remove_users_set_action_class);
 
   sc_context_manager_unregister_user_event(manager->on_new_user_action_class_within_sc_structure);
+  sc_context_manager_unregister_user_event(manager->on_new_users_set_action_class_within_sc_structure);
   sc_context_manager_unregister_user_event(manager->on_remove_user_action_class_within_sc_structure);
+  sc_context_manager_unregister_user_event(manager->on_remove_users_set_action_class_within_sc_structure);
 }
 
 // If the system is not in user mode, grant permissions
