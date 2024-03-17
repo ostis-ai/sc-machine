@@ -32,7 +32,7 @@ void TestAuthenticationRequestUser(
   context->CreateEdge(arcType, conceptAuthenticationRequestUserAddr, userAddr);
 }
 
-TEST_F(ScBuilderLoadUserAccessLevelsTest, UserWithGlobalReadAccessLevelsAndWithLocalWriteAccessLevels)
+TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLocalWritePermissions)
 {
   ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_1");
 
@@ -64,7 +64,7 @@ TEST_F(ScBuilderLoadUserAccessLevelsTest, UserWithGlobalReadAccessLevelsAndWithL
   EXPECT_TRUE(isAuthenticated.load());
 }
 
-TEST_F(ScBuilderLoadUserAccessLevelsTest, UserWithGlobalReadAccessLevelsAndWithoutLocalWriteAccessLevels)
+TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithoutLocalWritePermissions)
 {
   ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_2");
 

@@ -80,7 +80,7 @@ public:
   }
 };
 
-class ScBuilderLoadUserAccessLevelsTest : public ScBuilderTest
+class ScBuilderLoadUserPermissionsTest : public ScBuilderTest
 {
 protected:
   virtual void SetUp()
