@@ -132,8 +132,8 @@ sc_result ScEvent::Handler(
   try
   {
     result = delegateFunc(
-                 ScAddr(sc_event_get_element(event)),
                  ScAddr(user_addr),
+                 ScAddr(sc_event_get_element(event)),
                  ScAddr(connector_addr),
                  ScType(connector_type),
                  ScAddr(other_addr))
