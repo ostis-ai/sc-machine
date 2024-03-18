@@ -193,6 +193,16 @@ void sc_memory_context_pending_end(sc_memory_context * ctx)
   _sc_memory_context_pending_end(ctx);
 }
 
+void sc_memory_context_blocking_begin(sc_memory_context * ctx)
+{
+  _sc_memory_context_blocking_begin(ctx);
+}
+
+void sc_memory_context_blocking_end(sc_memory_context * ctx)
+{
+  _sc_memory_context_blocking_end(ctx);
+}
+
 sc_bool sc_memory_is_initialized()
 {
   return sc_storage_is_initialized();

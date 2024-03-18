@@ -31,6 +31,7 @@ struct _sc_event_emit_params
 };
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
+#define SC_CONTEXT_FLAG_BLOCKING_EVENTS 0x2
 
 #define SC_CONTEXT_PERMISSIONS_FULL 0xff
 
@@ -210,11 +211,11 @@ sc_addr _sc_memory_context_get_user_addr(sc_memory_context * ctx)
   return user_addr;
 }
 
-sc_bool _sc_memory_context_is_pending(sc_memory_context const * ctx)
+sc_bool _sc_memory_context_are_events_pending(sc_memory_context const * ctx)
 {
-  sc_monitor_acquire_write((sc_monitor *)&ctx->monitor);
+  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
   sc_bool result = ((sc_memory_context *)ctx)->flags & SC_CONTEXT_FLAG_PENDING_EVENTS;
-  sc_monitor_release_write((sc_monitor *)&ctx->monitor);
+  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
   return result;
 }
 
@@ -274,5 +275,27 @@ void _sc_memory_context_pending_end(sc_memory_context * ctx)
   sc_monitor_acquire_write(&ctx->monitor);
   ctx->flags &= ~SC_CONTEXT_FLAG_PENDING_EVENTS;
   _sc_memory_context_emit_events(ctx);
+  sc_monitor_release_write(&ctx->monitor);
+}
+
+sc_bool _sc_memory_context_are_events_blocking(sc_memory_context const * ctx)
+{
+  sc_monitor_acquire_read((sc_monitor *)&ctx->monitor);
+  sc_bool result = ((sc_memory_context *)ctx)->flags & SC_CONTEXT_FLAG_BLOCKING_EVENTS;
+  sc_monitor_release_read((sc_monitor *)&ctx->monitor);
+  return result;
+}
+
+void _sc_memory_context_blocking_begin(sc_memory_context * ctx)
+{
+  sc_monitor_acquire_write(&ctx->monitor);
+  ctx->flags |= SC_CONTEXT_FLAG_BLOCKING_EVENTS;
+  sc_monitor_release_write(&ctx->monitor);
+}
+
+void _sc_memory_context_blocking_end(sc_memory_context * ctx)
+{
+  sc_monitor_acquire_write(&ctx->monitor);
+  ctx->flags &= ~SC_CONTEXT_FLAG_BLOCKING_EVENTS;
   sc_monitor_release_write(&ctx->monitor);
 }

@@ -320,7 +320,10 @@ sc_result sc_event_emit(
   if (ctx == null_ptr)
     return SC_RESULT_NO;
 
-  if (_sc_memory_context_is_pending(ctx))
+  if (_sc_memory_context_are_events_blocking(ctx))
+    return SC_RESULT_OK;
+
+  if (_sc_memory_context_are_events_pending(ctx))
   {
     _sc_memory_context_pend_event(ctx, type, subscription_addr, connector_addr, connector_type, other_addr);
     return SC_RESULT_OK;

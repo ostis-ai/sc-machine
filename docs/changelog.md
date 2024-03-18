@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Block events mode for sc-memory context
 - Opportunity to set permissions for set of users
 - Guests identification
 - Create guest users during creating sc-memory context

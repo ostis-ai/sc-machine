@@ -12,7 +12,7 @@
 
 #include "sc_memory_context_manager.h"
 
-#define SC_CONTEXT_FLAG_SYSTEM 0x2
+#define SC_CONTEXT_FLAG_SYSTEM 0x10
 
 /**
  * @brief Sets permissions for a specific sc-memory element.
