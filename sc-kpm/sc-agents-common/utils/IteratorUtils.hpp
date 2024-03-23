@@ -11,7 +11,7 @@
 #include <sc-memory/sc_type.hpp>
 #include <sc-memory/sc_iterator.hpp>
 
-#include "sc-agents-common/keynodes/coreKeynodes.hpp"
+#include "../keynodes/coreKeynodes.hpp"
 
 namespace utils
 {

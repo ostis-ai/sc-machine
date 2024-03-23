@@ -10,7 +10,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "sc-agents-common/keynodes/coreKeynodes.hpp"
+#include "keynodes/coreKeynodes.hpp"
 
 #include "GetDecompositionAgent.generated.hpp"
 
