@@ -55,10 +55,12 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             DEPENDS ${HEADER_FILES}
         )
 
-        set (SUB_TARGET "${Target}-GenerateCode")
+        set(SUB_TARGET "${Target}-GenerateCode")
         add_custom_target(${SUB_TARGET} DEPENDS ${CACHE_FILE} SOURCES ${HEADER_FILES})
 
-        add_dependencies(${SUB_TARGET} sc-code-generator)
+        if(TARGET sc-code-generator)
+            add_dependencies(${SUB_TARGET} sc-code-generator)
+        endif()
         add_dependencies(${Target} ${SUB_TARGET})
     endif()
 
