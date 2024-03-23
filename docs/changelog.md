@@ -33,11 +33,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Build codegen target first
+- Up minimum required cmake version to 3.11.0
 - Configure SC_BIN_PATH from scripts
 - Allows assigns sc-link to its system identifier
 
 ### Fixed
 
+- Private and public dependencies between cmake targets
 - Use reenterable strtok
 - Resolve sc.g-links with the same system identifier
 
