@@ -24,37 +24,17 @@ set(SOURCES_PARSER
 file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
 
 add_library(sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
-
-target_include_directories(sc-memory
-    PRIVATE ${GLIB2_INCLUDE_DIRS}
-    PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
-    PRIVATE ${SC_MEMORY_SRC}
+target_link_libraries(sc-memory
+    LINK_PUBLIC sc-core
+    LINK_PRIVATE antlr4_static
+    LINK_PRIVATE ${LIBCURL_LIBRARIES}
 )
-
-if(${WIN32})
-    target_link_libraries(sc-memory
-        sc-core
-        ${LIBCURL_LIBRARIES}
-        antlr4_static
-    )
-elseif(${UNIX})
-    target_link_libraries(sc-memory
-        sc-core
-        antlr4_static
-        ${LIBCURL_LIBRARIES}
-        ${Boost_LIBRARIES}
-    )
-endif(${WIN32})
+target_include_directories(sc-memory
+    PUBLIC ${SC_MEMORY_SRC}
+    PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
+)
 
 sc_codegen_ex(sc-memory ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/generated")
-add_dependencies(sc-memory 
-    sc-core
-    sc-code-generator
-    antlr4_static
-    SCsParser
-)
-
-target_compile_definitions(sc-memory PRIVATE "-DSC_MEMORY_SELF_BUILD")
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-memory)

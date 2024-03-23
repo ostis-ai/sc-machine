@@ -3,13 +3,15 @@ set(SC_UTILS_TEST_AGENTS_SOURCES
     "${SC_UTILS_TEST_AGENTS_SRC}/FinishActionTestAgent.cpp"
     "${SC_UTILS_TEST_AGENTS_SRC}/FinishActionTestAgent.hpp"
 )
-add_library(sc-utils-test-agents ${SC_UTILS_TEST_AGENTS_SOURCES})
-include_directories(
-    ${SC_UTILS_TEST_AGENTS_SRC}
-    ${SC_MEMORY_SRC}
-    ${SC_KPM_SRC}
+add_library(sc-utils-test-agents SHARED ${SC_UTILS_TEST_AGENTS_SOURCES})
+target_link_libraries(sc-utils-test-agents
+    LINK_PRIVATE sc-memory
+    LINK_PRIVATE sc-agents-common
 )
-target_link_libraries(sc-utils-test-agents sc-memory sc-agents-common)
+target_include_directories(sc-utils-test-agents
+    PRIVATE ${SC_UTILS_TEST_AGENTS_SRC}
+    PRIVATE ${SC_MEMORY_SRC}
+)
 sc_codegen_ex(sc-utils-test-agents ${SC_UTILS_TEST_AGENTS_SRC} ${SC_UTILS_TEST_AGENTS_SRC}/generated)
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-agents
