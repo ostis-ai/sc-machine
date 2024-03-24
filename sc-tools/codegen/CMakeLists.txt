@@ -2,29 +2,19 @@ set(SC_CODEGEN_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 file(GLOB_RECURSE SOURCES "Parser/*.cpp" "Parser/*.hpp")
 
-add_executable(sc-code-generator ${SOURCES})
-target_include_directories(sc-code-generator PRIVATE ${SC_CODEGEN_DIR}/Parser)
-
-if(${WIN32})
-    set (BOOST_LIBS_LIST)
-    include_directories(${LIBCLANG_INCLUDE_DIRS})
+if(${APPLE})
+    set(BOOST_LIBS_LIST Boost::filesystem Boost::program_options)
 else()
-    if(${APPLE})
-        set(BOOST_LIBS_LIST
-            Boost::filesystem
-            Boost::program_options
-        )
-    else()
-        set(BOOST_LIBS_LIST
-            boost_filesystem
-            boost_program_options
-            boost_system
-        )
+    set(BOOST_LIBS_LIST boost_filesystem boost_program_options boost_system)
 endif()
-    set_target_properties(sc-code-generator PROPERTIES COMPILE_FLAGS ${LIBCLANG_CXXFLAGS})
-endif(${WIN32})
 
-target_link_libraries(sc-code-generator ${LIBCLANG_LIBRARY} ${BOOST_LIBS_LIST})
+add_executable(sc-code-generator ${SOURCES})
+target_link_libraries(sc-code-generator
+    LINK_PRIVATE ${LIBCLANG_LIBRARY}
+    LINK_PRIVATE ${BOOST_LIBS_LIST}
+)
+target_include_directories(sc-code-generator PRIVATE ${SC_CODEGEN_DIR}/Parser)
+set_target_properties(sc-code-generator PROPERTIES COMPILE_FLAGS ${LIBCLANG_CXXFLAGS})
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-code-generator)

@@ -7,12 +7,10 @@
 #ifndef _sc_config_h_
 #define _sc_config_h_
 
-#include <glib.h>
-
 #include "sc-core/sc-store/sc_types.h"
 
 // Config, that contains all configuration options: ['<group>/<key>'] = <value>
-typedef GHashTable sc_config;
+typedef struct _GHashTable sc_config;
 
 #define sc_config_get_keys(config) g_hash_table_get_keys(config)
 #define sc_list_get_first(list) g_list_first(list)
