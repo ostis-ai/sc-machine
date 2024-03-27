@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -eo pipefail # stop script execution if any errors are encountered
 
-CURRENT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
-source "${CURRENT_DIR}/formats.sh"
+CURRENT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
+OSTIS_SCRIPTS_DIR="${CURRENT_DIR}/ostis-scripts"
+source "${OSTIS_SCRIPTS_DIR}/message-scripts/messages.sh"
 
 # script help info
 function usage() {
@@ -31,10 +32,10 @@ function rebuild_kb() {
         "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -i "$@"
     elif [ -e "$KB_PATH" ];
     then
-        echo "$KB_PATH is set as a KB path by the environment variable"
+        info "$KB_PATH is set as a KB path by the environment variable"
         "$BINARY_PATH"/sc-builder -f --clear -c "$CONFIG_PATH" -i "$KB_PATH"
     else
-        echo "Invalid KB source path provided."
+        warning "Invalid KB source path provided."
         exit 1
     fi
 }
@@ -50,7 +51,7 @@ function start_server() {
     if [ $# -eq 0 ];
     then
         # you should provide the config file path and host settings yourself in case you want to use custom options!
-        echo "Using default arguments."
+        info "Using default arguments."
         "$BINARY_PATH"/sc-server -c "$CONFIG_PATH" -h 0.0.0.0 -e "$BINARY_PATH/extensions"
     else
         "$BINARY_PATH"/sc-server "$@"
@@ -68,7 +69,7 @@ function start_machine {
     if [ $# -eq 0 ];
     then
         # you should provide the config file path and host settings yourself in case you want to use custom options!
-        echo "Using default arguments."
+        info "Using default arguments."
         "$BINARY_PATH"/sc-machine -c "$CONFIG_PATH" -e "$BINARY_PATH/extensions"
     else
         "$BINARY_PATH"/sc-machine "$@"

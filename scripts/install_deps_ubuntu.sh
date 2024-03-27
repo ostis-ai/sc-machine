@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+CURRENT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
+OSTIS_SCRIPTS_DIR="${CURRENT_DIR}/ostis-scripts"
+source "${OSTIS_SCRIPTS_DIR}/message-scripts/messages.sh"
+
 if [[ -z "${SC_MACHINE_PATH}" || -z "${BINARY_PATH}" || -z "${BUILD_PATH}" ]];
 then
   source "$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)/set_vars.sh"
@@ -69,13 +73,11 @@ done
 
 if ! command -v apt> /dev/null 2>&1;
 then
-  RED='\033[22;31m'
-  NC='\033[0m' # No Color
-  echo -e "${RED}[ERROR] Apt command not found. Debian-based distros are the only officially supported.
+  error "Apt command not found. Debian-based distros are the only officially supported.
 Please install the following packages by yourself:
   ${packages[*]}
 At the end run the following script:
-  ${SC_MACHINE_PATH}/scripts/install_deps_python.sh ${NC}"
+  ${SC_MACHINE_PATH}/scripts/install_deps_python.sh"
   exit 1
 fi
 
