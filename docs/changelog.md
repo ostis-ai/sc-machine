@@ -17,7 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Docker entrypoint run to launch binary `sc-machine` in docker
 - Script `run_sc_machine.sh` to launch binary `sc-machine`
 - Binary `sc-machine` instead of binary `sc-server` that loads extension sc-server
-- Generalized build_cxx_project.sh
 - Collect user permissions during sc-memory initialize
 - Throw exceptions in get values methods of iterators if sc-element is not accessed
 - Callback to get and collect sc-links by its contents from fs-memory
@@ -33,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use common scripts to install submodules and build project from ostis-scripts
 - Build codegen target first
 - Up minimum required cmake version to 3.11.0
 - Configure SC_BIN_PATH from scripts
