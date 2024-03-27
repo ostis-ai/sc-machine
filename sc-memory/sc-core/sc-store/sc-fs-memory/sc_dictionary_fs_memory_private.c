@@ -96,7 +96,8 @@ sc_char * _sc_dictionary_fs_memory_get_first_term(sc_char const * string, sc_cha
   sc_mem_cpy(copied_string, string, size);
   copied_string[size] = '\0';
 
-  sc_char * term = strtok(copied_string, term_separators);
+  sc_char * saved_ptr;
+  sc_char * term = strtok_r(copied_string, term_separators, &saved_ptr);
   sc_char * copied_term;
   term == null_ptr ? sc_string_empty(copied_term) : sc_str_cpy(copied_term, term, sc_str_len(term));
   return copied_term;
@@ -109,7 +110,8 @@ sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string, sc_c
   sc_mem_cpy(copied_string, string, string_size);
   copied_string[string_size] = '\0';
 
-  sc_char * term = strtok(copied_string, term_separators);
+  sc_char * saved_ptr;
+  sc_char * term = strtok_r(copied_string, term_separators, &saved_ptr);
   sc_list * terms;
   sc_list_init(&terms);
 
@@ -131,7 +133,7 @@ sc_list * _sc_dictionary_fs_memory_get_string_terms(sc_char const * string, sc_c
         sc_dictionary_append(unique_terms, term_copy, term_size, null_ptr);
       }
 
-      term = strtok(null_ptr, term_separators);
+      term = strtok_r(null_ptr, term_separators, &saved_ptr);
     }
     sc_dictionary_destroy(unique_terms, null_ptr);
   }
