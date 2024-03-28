@@ -99,12 +99,6 @@ public:
 
   SC_PROPERTY(Keynode("nrel_basic_sequence"), ForceCreate)
   static ScAddr nrel_basic_sequence;
-
-  SC_PROPERTY(Keynode("action_get_decomposition"), ForceCreate)
-  static ScAddr action_get_decomposition;
-
-  SC_PROPERTY(Keynode("nrel_section_decomposition"), ForceCreate)
-  static ScAddr nrel_section_decomposition;
 };
 
 }  // namespace scAgentsCommon

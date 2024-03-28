@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- GetDecompositionAgent
 - Config option `sync_actions` in `[sc-server]` deprecated in 0.9.0
 - Sc-links lists translation from C API to C++ API
 
