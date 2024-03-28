@@ -24,7 +24,6 @@ knowledge_base_IMS
     [Knowledge base IMS]
     (* <- lang_en;; *);
 
-<- entities_interface_internet_bank;
 <- not_enough_formed_structure;
 <- sc_model_of_knowledge_base;
 
