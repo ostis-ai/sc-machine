@@ -9,6 +9,7 @@
 #include "uiTranslators.h"
 #include "uiCommands.h"
 #include "uiKeynodes.h"
+#include "sc-core/sc_memory_context_manager.h"
 
 extern "C"
 {
@@ -21,7 +22,7 @@ sc_memory_context * s_default_ctx = nullptr;
 _SC_EXT_EXTERN sc_result
 sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
+  s_default_ctx = s_memory_default_ctx;
 
   if (!initialize_keynodes(init_memory_generated_structure))
   {
@@ -39,8 +40,6 @@ _SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
   ui_shutdown_translators();
   ui_shutdown_commands();
-
-  sc_memory_context_free(s_default_ctx);
 
   return SC_RESULT_OK;
 }

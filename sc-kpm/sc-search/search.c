@@ -8,8 +8,8 @@
 #include "search_agents.h"
 #include "search_keynodes.h"
 
-#include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
+#include "sc-core/sc_memory_context_manager.h"
 
 sc_memory_context * s_default_ctx = 0;
 
@@ -29,7 +29,7 @@ sc_event * event_question_search_links_of_relation_connected_with_element;
 
 sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
+  s_default_ctx = s_memory_default_ctx;
 
   if (search_keynodes_initialize(s_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
@@ -151,8 +151,6 @@ sc_result sc_module_shutdown()
     sc_event_destroy(event_question_search_all_superclasses_in_quasybinary_relation);
   if (event_question_search_links_of_relation_connected_with_element)
     sc_event_destroy(event_question_search_links_of_relation_connected_with_element);
-
-  sc_memory_context_free(s_default_ctx);
 
   return SC_RESULT_OK;
 }
