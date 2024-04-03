@@ -1219,6 +1219,7 @@ public:
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
 
 protected:
+  friend class ScMemory;
   friend class ScAgent;
   friend class ScServerMessageAction;
 

@@ -17,6 +17,7 @@
 
 extern "C"
 {
+#include "sc-core/sc_keynodes.h"
 #include "sc-core/sc_memory_private.h"
 #include "sc-core/sc_memory_context_private.h"
 #include "sc-core/sc_memory_context_permissions.h"
@@ -77,12 +78,10 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 {
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
-  ms_globalContext = nullptr;
-  sc_memory_context * ctx = sc_memory_initialize(&params);
+  ms_globalContext = new ScMemoryContext();
+  sc_memory_context * ctx = sc_memory_initialize(&params, &ms_globalContext->m_context);
   if (ctx == nullptr)
     return false;
-
-  ms_globalContext = new ScMemoryContext(ctx);
 
   ScKeynodes::Init(
       ms_globalContext,

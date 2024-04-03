@@ -30,7 +30,7 @@ struct _sc_memory
 sc_memory * memory = null_ptr;
 sc_memory_context * s_memory_default_ctx = null_ptr;
 
-sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
+sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_memory_context ** context)
 {
   sc_memory_info("Initialize");
 
@@ -73,6 +73,8 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params)
   _sc_memory_context_assign_context_for_system(memory->context_manager, &memory->myself_addr);
   _sc_memory_context_manager_register_user_events(memory->context_manager);
   _sc_memory_context_handle_all_user_permissions(memory->context_manager);
+
+  *context = s_memory_default_ctx;
 
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
