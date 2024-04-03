@@ -9,6 +9,8 @@
 #include "utils_erase_elements.h"
 #include "../sc-search/search_keynodes.h"
 
+#include "sc-core/sc_memory_context_manager.h"
+
 sc_memory_context * s_erase_elements_ctx = 0;
 
 sc_event * event_erase_elements;
@@ -16,7 +18,7 @@ sc_event * event_erase_elements;
 _SC_EXT_EXTERN sc_result
 sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
-  s_erase_elements_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
+  s_erase_elements_ctx = s_memory_default_ctx;
 
   if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
@@ -45,8 +47,6 @@ _SC_EXT_EXTERN sc_result sc_module_shutdown()
 
   if (event_erase_elements)
     sc_event_destroy(event_erase_elements);
-
-  sc_memory_context_free(s_erase_elements_ctx);
 
   return res;
 }

@@ -14,7 +14,7 @@ SC_IMPLEMENT_MODULE(SCAgentsCommonModule)
 
 sc_result SCAgentsCommonModule::InitializeImpl()
 {
-  if (!CoreKeynodes::InitGlobal())
+  if (!CoreKeynodes::InitGlobal(*ScMemory::ms_globalContext))
     return SC_RESULT_ERROR;
 
   return SC_RESULT_OK;
