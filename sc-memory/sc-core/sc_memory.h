@@ -33,6 +33,7 @@ typedef struct _sc_memory sc_memory;
  * It configures the logger, initializes the storage, and loads extensions.
  *
  * @param params Pointer to the structure containing initialization parameters.
+ * @param context Pointer to default system context pointer.
  *
  * @return Returns a pointer to the initialized sc-memory context if successful,
  *         or a null pointer if initialization fails.
@@ -40,7 +41,7 @@ typedef struct _sc_memory sc_memory;
  * @note The caller is responsible for handling any errors and releasing resources
  *       associated with the sc-memory context.
  */
-_SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * params);
+_SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_memory_context ** context);
 
 /*!
  * @brief Initializes sc-memory extensions.
