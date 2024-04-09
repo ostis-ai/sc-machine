@@ -3,7 +3,7 @@ configure_file(
     "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp"
 )
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
 list(REMOVE_ITEM SOURCES "${SC_BUILDER_SRC}/src/main.cpp")
 
 add_library(sc-builder-lib SHARED ${SOURCES})

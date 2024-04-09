@@ -1,16 +1,14 @@
-file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS "*.cpp" "*.hpp")
 
 add_executable(sc-memory-performance-tests ${SOURCES})
 
+target_link_libraries(sc-memory-performance-tests
+    LINK_PRIVATE sc-memory
+    LINK_PRIVATE benchmark
+)
 target_include_directories(sc-memory-performance-tests
-    PRIVATE ${GLIB2_INCLUDE_DIRS}
     PRIVATE ${SC_MEMORY_SRC}
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sc-memory-tests_gen/"
-)
-
-target_link_libraries(sc-memory-performance-tests
-    sc-memory
-    benchmark
 )
 
 sc_codegen(sc-memory-performance-tests ${CMAKE_CURRENT_LIST_DIR})

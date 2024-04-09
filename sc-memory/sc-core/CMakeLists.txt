@@ -1,6 +1,11 @@
 set(SC_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR})
 
-file(GLOB_RECURSE SOURCES "*.c" "*.h" "*.cpp" "*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.c" "*.h"
+    "*/*.c" "*/*.h"
+    "*/*/*.c" "*/*/*.h"
+    "*/*/*/*.c" "*/*/*/*.h"
+)
 
 add_library(sc-core SHARED ${SOURCES})
 target_link_libraries(sc-core LINK_PUBLIC ${GLIB2_LIBRARIES})

@@ -1,4 +1,4 @@
-file(GLOB_RECURSE SOURCES "*.c" "*.h")
+file(GLOB SOURCES CONFIGURE_DEPENDS "*.c" "*.h")
 
 add_library(sc-kpm-common SHARED ${SOURCES})
 target_link_libraries(sc-kpm-common LINK_PUBLIC sc-core)

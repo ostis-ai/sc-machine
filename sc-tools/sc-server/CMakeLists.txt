@@ -1,6 +1,11 @@
 set(SC_SERVER_ROOT ${CMAKE_CURRENT_LIST_DIR})
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "src/*.cpp" "src/*.hpp"
+    "src/*/*.cpp" "src/*/*.hpp"
+    "src/*/*/*.cpp" "src/*/*/*.hpp"
+    "src/*/*/*/*.cpp" "src/*/*/*/*.hpp"
+)
 list(REMOVE_ITEM SOURCES "${SC_SERVER_ROOT}/src/main.cpp")
 
 find_package(nlohmann_json 3.2.0 REQUIRED)

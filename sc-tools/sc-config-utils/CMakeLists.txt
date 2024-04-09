@@ -1,4 +1,7 @@
-file(GLOB_RECURSE SOURCES "*.c" "*.h" "*.cpp" "*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.cpp" "*.hpp"
+    "*/*.c" "*/*.h" "*/*.cpp" "*/*.hpp"
+)
 
 add_library(sc-config-utils SHARED ${SOURCES})
 target_link_libraries(sc-config-utils LINK_PUBLIC sc-memory)

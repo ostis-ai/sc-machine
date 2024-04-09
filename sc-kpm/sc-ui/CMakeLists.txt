@@ -1,4 +1,7 @@
-file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.cpp" "*.h"
+    "*/*.cpp" "*/*.h"
+)
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 

@@ -1,6 +1,9 @@
 set(SC_CODEGEN_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-file(GLOB_RECURSE SOURCES "Parser/*.cpp" "Parser/*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "Parser/*.cpp" "Parser/*.hpp"
+    "Parser/*/*.cpp" "Parser/*/*.hpp"
+)
 
 if(${APPLE})
     set(BOOST_LIBS_LIST Boost::filesystem Boost::program_options)

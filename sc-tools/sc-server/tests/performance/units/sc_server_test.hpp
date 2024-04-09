@@ -31,10 +31,10 @@ public:
     std::uniform_int_distribution<> distribution(MIN_TEST_SERVER_PORT, MAX_TEST_SERVER_PORT);
     std::mt19937 generator(random_device());
 
-    m_server = std::make_unique<ScServerImpl>("127.0.0.1", distribution(generator), SC_TRUE, params);
+    ScMemory::Initialize(params);
+    m_server = std::make_unique<ScServerImpl>("127.0.0.1", distribution(generator), SC_TRUE);
     m_server->ClearChannels();
     m_server->Run();
-
     ScMemory::LogUnmute();
 
     InitContext();
@@ -46,6 +46,7 @@ public:
     DestroyContext();
 
     ScMemory::LogMute();
+    ScMemory::Shutdown(false);
     m_server->Stop();
     m_server = nullptr;
     ScMemory::LogUnmute();

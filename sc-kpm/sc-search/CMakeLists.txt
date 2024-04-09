@@ -1,4 +1,7 @@
-file(GLOB_RECURSE SOURCES "*.c" "*.cpp" "*.h" "*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.c" "*.h"
+    "*/*.c" "*/*.h"
+)
 
 add_library(sc-search SHARED ${SOURCES})
 target_link_libraries(sc-search LINK_PRIVATE sc-kpm-common)

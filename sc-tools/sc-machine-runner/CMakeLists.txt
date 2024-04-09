@@ -1,6 +1,6 @@
 set(SC_MACHINE_RUNNER_ROOT ${CMAKE_CURRENT_LIST_DIR})
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
 list(REMOVE_ITEM SOURCES "${SC_MACHINE_RUNNER_ROOT}/src/main.cpp")
 
 add_library(sc-machine-runner SHARED ${SOURCES})

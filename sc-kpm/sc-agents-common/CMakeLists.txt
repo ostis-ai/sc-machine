@@ -1,6 +1,9 @@
 set(SC_AGENTS_COMMON_SRC "${CMAKE_CURRENT_LIST_DIR}")
 
-file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.cpp" "*.hpp"
+    "*/*.cpp" "*/*.hpp"
+)
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
