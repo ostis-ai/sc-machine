@@ -3,7 +3,7 @@
 #include "sc-memory/kpm/sc_agent.hpp"
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
-#include "FinishActionTestAgent.generated.hpp"
+#include "generated/FinishActionTestAgent.generated.hpp"
 
 namespace scUtilsTestAgents
 {

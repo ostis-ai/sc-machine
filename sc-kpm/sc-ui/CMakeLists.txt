@@ -1,16 +1,18 @@
-file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.cpp" "*.h"
+    "*/*.cpp" "*/*.h"
+)
 
 add_library(sc-ui SHARED ${SOURCES})
-
-target_include_directories(sc-ui 
-    PRIVATE ${SC_MEMORY_SRC}
-    PRIVATE ${GLIB2_INCLUDE_DIRS}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+target_link_libraries(sc-ui
+    LINK_PUBLIC sc-memory
+    LINK_PUBLIC sc-kpm-common
+    LINK_PUBLIC nlohmann_json::nlohmann_json
 )
-add_dependencies(sc-ui sc-memory sc-core sc-kpm-common)
-
-find_package(nlohmann_json)
-target_link_libraries(sc-ui sc-memory sc-kpm-common nlohmann_json::nlohmann_json)
+target_include_directories(sc-ui
+    PRIVATE "${CMAKE_CURRENT_LIST_DIR}"
+    PUBLIC "${CMAKE_CURRENT_LIST_DIR}/.."
+)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-ui)

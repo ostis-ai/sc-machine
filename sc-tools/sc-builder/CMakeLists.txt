@@ -1,17 +1,24 @@
+set(SC_BUILDER_SRC "${CMAKE_CURRENT_LIST_DIR}")
+
 configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp.in"
-    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp"
+    "${SC_BUILDER_SRC}/src/builder_defines.hpp.in"
+    "${SC_BUILDER_SRC}/src/builder_defines.hpp"
 )
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
 list(REMOVE_ITEM SOURCES "${SC_BUILDER_SRC}/src/main.cpp")
 
 add_library(sc-builder-lib SHARED ${SOURCES})
-include_directories(${SC_MEMORY_SRC} ${SC_CONFIG_UTILS_SRC} ${GLIB2_INCLUDE_DIRS})
-target_link_libraries(sc-builder-lib sc-memory sc-config-utils)
+target_link_libraries(sc-builder-lib
+    LINK_PUBLIC sc-memory
+    LINK_PUBLIC sc-config-utils
+)
+target_include_directories(sc-builder-lib
+    PUBLIC ${SC_BUILDER_SRC}
+)
 
 add_executable(sc-builder "${SC_BUILDER_SRC}/src/main.cpp")
-target_link_libraries(sc-builder sc-builder-lib)
+target_link_libraries(sc-builder LINK_PRIVATE sc-builder-lib)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-builder)

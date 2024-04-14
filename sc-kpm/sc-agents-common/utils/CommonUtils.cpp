@@ -6,11 +6,8 @@
 
 #include "CommonUtils.hpp"
 
-#include <sc-memory/sc_stream.hpp>
-
 #include "IteratorUtils.hpp"
 #include "GenerationUtils.hpp"
-#include "keynodes/coreKeynodes.hpp"
 
 using namespace scAgentsCommon;
 

@@ -6,6 +6,10 @@
 
 #include "sc_config.h"
 
+#include <glib.h>
+
+typedef GHashTable sc_config;
+
 void value_table_destroy_key_value(void * data)
 {
   g_free(data);

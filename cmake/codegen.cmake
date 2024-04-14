@@ -3,13 +3,13 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
     get_target_property(DIRECTORIES ${Target} INCLUDE_DIRECTORIES)
 
     # build the include directory flags
-    foreach (DIRECTORY ${DIRECTORIES})
+    foreach(DIRECTORY ${DIRECTORIES})
         set(META_FLAGS ${META_FLAGS} "-I${DIRECTORY}")
-    endforeach ()
+    endforeach()
 
     get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
     foreach(dir ${dirs})
-          set(META_FLAGS ${META_FLAGS} "-I${dir}")
+        set(META_FLAGS ${META_FLAGS} "-I${dir}")
     endforeach()
 
     # include the system directories
@@ -21,6 +21,9 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
     elseif (${UNIX})
         set(META_FLAGS ${META_FLAGS}
             "-I${LIBCLANG_LIBDIR}/clang/${LIBCLANG_VERSION_STRING}/include/"
+        )
+        set(META_FLAGS ${META_FLAGS}
+            "-I${SC_MEMORY_SRC}"
         )
     else ()
         # you can figure it out for other compilers :)
@@ -55,10 +58,12 @@ macro(sc_codegen_ex Target SrcPath OutputPath)
             DEPENDS ${HEADER_FILES}
         )
 
-        set (SUB_TARGET "${Target}-GenerateCode")
+        set(SUB_TARGET "${Target}-GenerateCode")
         add_custom_target(${SUB_TARGET} DEPENDS ${CACHE_FILE} SOURCES ${HEADER_FILES})
 
-        add_dependencies(${SUB_TARGET} sc-code-generator)
+        if(TARGET sc-code-generator)
+            add_dependencies(${SUB_TARGET} sc-code-generator)
+        endif()
         add_dependencies(${Target} ${SUB_TARGET})
     endif()
 
