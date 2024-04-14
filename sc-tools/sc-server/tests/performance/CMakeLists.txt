@@ -7,10 +7,8 @@ add_executable(sc-server-performance-tests ${SOURCES})
 
 target_link_libraries(sc-server-performance-tests
     LINK_PRIVATE sc-server-lib
-    LINK_PRIVATE sc-memory
     LINK_PRIVATE benchmark
 )
-target_include_directories(sc-server-performance-tests PRIVATE ${SC_MEMORY_SRC})
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-server-performance-tests)

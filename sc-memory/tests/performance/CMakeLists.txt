@@ -7,7 +7,6 @@ target_link_libraries(sc-memory-performance-tests
     LINK_PRIVATE benchmark
 )
 target_include_directories(sc-memory-performance-tests
-    PRIVATE ${SC_MEMORY_SRC}
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sc-memory-tests_gen/"
 )
 

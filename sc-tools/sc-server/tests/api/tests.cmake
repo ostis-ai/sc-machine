@@ -1,7 +1,11 @@
+configure_file(
+    "${SC_SERVER_ROOT}/tests/test_defines.hpp.in"
+    "${SC_SERVER_ROOT}/tests/test_defines.hpp"
+)
+
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/units
     NAME sc-server-tests
-    DEPENDS sc-memory sc-server-lib sc-config-utils
-    INCLUDES ${SC_MEMORY_SRC} ${GLIB2_LIBRARIES}
+    DEPENDS sc-server-lib
 )
 
 if(${SC_CLANG_FORMAT_CODE})

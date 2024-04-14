@@ -1,4 +1,4 @@
-set(SC_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR})
+set(SC_CORE_SRC "${CMAKE_CURRENT_LIST_DIR}/..")
 
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "*.c" "*.h"
@@ -9,7 +9,10 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 
 add_library(sc-core SHARED ${SOURCES})
 target_link_libraries(sc-core LINK_PUBLIC ${GLIB2_LIBRARIES})
-target_include_directories(sc-core PUBLIC ${GLIB2_INCLUDE_DIRS})
+target_include_directories(sc-core
+    PUBLIC ${SC_CORE_SRC}
+    PUBLIC ${GLIB2_INCLUDE_DIRS}
+)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-core)

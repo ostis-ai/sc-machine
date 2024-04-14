@@ -8,9 +8,6 @@
 
 #include "GenerationUtils.hpp"
 
-#include <sc-memory/sc_iterator.hpp>
-
-#include "keynodes/coreKeynodes.hpp"
 #include "IteratorUtils.hpp"
 #include "CommonUtils.hpp"
 

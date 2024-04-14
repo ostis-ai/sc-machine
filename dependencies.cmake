@@ -26,6 +26,7 @@ macro(sc_linux_target_dependencies)
 
     find_package(Boost 1.71 REQUIRED COMPONENTS filesystem system program_options)
     find_package(websocketpp REQUIRED 0.8.3)
+    find_package(nlohmann_json 3.2.0 REQUIRED)
 
     find_package(PkgConfig REQUIRED)
     pkg_search_module(GLIB2 REQUIRED glib-2.0)
@@ -36,8 +37,6 @@ macro(sc_linux_target_dependencies)
     if(NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
         find_package(LibClang REQUIRED)
     endif()
-
-	pkg_check_modules(LIBCURL REQUIRED libcurl)
 
     # for std::thread support
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")

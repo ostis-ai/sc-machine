@@ -1,3 +1,3 @@
 #define SC_MACHINE_REPO_PATH "${SC_BIN_PATH}/sc-machine-test-repo"
 #define SC_MACHINE_EXTENSIONS "${SC_BIN_PATH}/extensions"
-#define SC_MACHINE_INI "${CMAKE_CURRENT_LIST_DIR}/tests/sc-machine-test.ini"
+#define SC_MACHINE_INI "${CMAKE_CURRENT_LIST_DIR}/sc-machine-test.ini"

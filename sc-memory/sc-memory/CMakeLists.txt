@@ -10,8 +10,8 @@ add_custom_command(OUTPUT "${CMAKE_CURRENT_LIST_DIR}/scs/scsLexer.cpp"
 )
 
 add_custom_target(SCsParser ALL
-      DEPENDS "${CMAKE_CURRENT_LIST_DIR}"
-      SOURCES "scs/scs.g4"
+    DEPENDS "${CMAKE_CURRENT_LIST_DIR}"
+    SOURCES "scs/scs.g4"
 )
 
 set(SOURCES_PARSER
@@ -30,7 +30,6 @@ add_library(sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 target_link_libraries(sc-memory
     LINK_PUBLIC sc-core
     LINK_PRIVATE antlr4_static
-    LINK_PRIVATE ${LIBCURL_LIBRARIES}
 )
 target_include_directories(sc-memory
     PUBLIC ${SC_MEMORY_SRC}

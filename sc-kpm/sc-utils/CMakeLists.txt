@@ -6,10 +6,6 @@ target_link_libraries(sc-utils
     LINK_PRIVATE sc-kpm-common
     LINK_PRIVATE sc-search
 )
-target_include_directories(sc-utils
-    PRIVATE ${SC_MEMORY_SRC}
-    PRIVATE ${SC_COMMON_SRC}
-)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-utils)

@@ -1,6 +1,8 @@
+set(SC_BUILDER_SRC "${CMAKE_CURRENT_LIST_DIR}")
+
 configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp.in"
-    "${CMAKE_CURRENT_LIST_DIR}/src/builder_defines.hpp"
+    "${SC_BUILDER_SRC}/src/builder_defines.hpp.in"
+    "${SC_BUILDER_SRC}/src/builder_defines.hpp"
 )
 
 file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
@@ -8,11 +10,11 @@ list(REMOVE_ITEM SOURCES "${SC_BUILDER_SRC}/src/main.cpp")
 
 add_library(sc-builder-lib SHARED ${SOURCES})
 target_link_libraries(sc-builder-lib
-    LINK_PRIVATE sc-memory
-    LINK_PUBLIC sc-config-utils)
+    LINK_PUBLIC sc-memory
+    LINK_PUBLIC sc-config-utils
+)
 target_include_directories(sc-builder-lib
-    PRIVATE ${SC_MEMORY_SRC}
-    PUBLIC ${SC_CONFIG_UTILS_SRC}
+    PUBLIC ${SC_BUILDER_SRC}
 )
 
 add_executable(sc-builder "${SC_BUILDER_SRC}/src/main.cpp")
