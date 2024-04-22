@@ -70,6 +70,7 @@ bool SCsTranslator::TranslateImpl(Params const & params)
   std::string data;
   GetFileContent(params.m_fileName, data);
 
+  ScMemoryContextEventsBlockingGuard guard{m_ctx};
   SCsHelper scs(m_ctx, std::make_shared<impl::FileProvider>(params.m_fileName));
 
   if (!scs.GenerateBySCsText(data, params.m_outputStructure))
