@@ -179,7 +179,7 @@
     <td>sc_type_node | sc_type_const | sc_type_node_class</td>
     <td>ScType::NodeConstClass</td>
     <td>sc_node_class <br> sc_node_not_relation</td>
-    <td>2089</td>
+    <td>2081</td>
     <td>0x821</td>
   </tr>
 
