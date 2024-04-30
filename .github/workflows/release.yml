@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Read changlog
+      - name: Read changelog
         id: changelog_reader
         uses: mindsers/changelog-reader-action@v2
         with:

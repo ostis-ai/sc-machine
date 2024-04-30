@@ -10,7 +10,7 @@ on:
 jobs:
   check_pr_commits:
     name: Check commit messages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: GS Commit Message Checker
@@ -35,7 +35,7 @@ jobs:
 
   check_formatting:
     name: Check formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout

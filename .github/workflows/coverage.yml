@@ -10,7 +10,7 @@ on:
 jobs:
   run_coverage:
     name: Coverage
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
 
     strategy:
       fail-fast: false
@@ -18,7 +18,7 @@ jobs:
         config:
           - {
             name: "Coverage C++",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             file_memory: "Dictionary",
             build_type: "Debug",
             cc: "gcc",

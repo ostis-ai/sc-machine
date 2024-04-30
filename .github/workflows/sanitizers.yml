@@ -10,7 +10,7 @@ on:
 jobs:
   run_sanitizers:
     name: ${{ matrix.config.name }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
 
     strategy:
       fail-fast: false
@@ -18,7 +18,7 @@ jobs:
         config:
           - {
             name: "Sanitizer - address",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             file_memory: "Dictionary",
             sanitizer: "address",
             cc: clang,
