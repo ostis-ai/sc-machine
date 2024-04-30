@@ -29,6 +29,7 @@ FROM base AS final
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
 COPY --from=builder /sc-machine/sc-machine.ini /sc-machine/sc-machine.ini 
 COPY --from=builder /sc-machine/bin /sc-machine/bin
+COPY --from=base /tmp/sc-machine/.venv /sc-machine/.venv
 WORKDIR /sc-machine/scripts
 
 EXPOSE 8090
