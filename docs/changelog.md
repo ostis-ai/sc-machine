@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use venv for python dependencies
 - Don't emit events after kb build
 - Build codegen target first
 - Up minimum required cmake version to 3.11.0
