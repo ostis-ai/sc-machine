@@ -7,6 +7,22 @@
 
 #include "antlr4-common.h"
 
+#if defined(__clang__)
+
+#  define PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN \
+    _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+
+#  define PRAGMA_DISABLE_DEPRECATION_WARNINGS_END _Pragma("CLANG diagnostic pop")
+
+#elif defined(__GNUC__) || defined(__GNUG__)
+
+#  define PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN \
+    _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+
+#  define PRAGMA_DISABLE_DEPRECATION_WARNINGS_END _Pragma("GCC diagnostic pop")
+
+#endif
+
 namespace antlrcpp {
 
   // For all conversions utf8 <-> utf32.
@@ -14,7 +30,9 @@ namespace antlrcpp {
 #if defined(_MSC_VER) && _MSC_VER >= 1900 && _MSC_VER < 2000
   typedef std::wstring_convert<std::codecvt_utf8<__int32>, __int32> UTF32Converter;
 #else
+  PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
   typedef std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> UTF32Converter;
+  PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
 #endif
   
   // The conversion functions fails in VS2017, so we explicitly use a workaround.
