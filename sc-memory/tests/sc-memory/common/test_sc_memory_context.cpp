@@ -53,7 +53,7 @@ void TestAddPermissionsForUserToInitEraseActions(
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & eraseActionInScMemoryAddr{action_erase_in_sc_memory_addr};
+  ScAddr const & eraseActionInScMemoryAddr{action_erase_from_sc_memory_addr};
   TestAddPermissionsForUserToInitActions(context, userAddr, eraseActionInScMemoryAddr, arcType);
 }
 
@@ -122,7 +122,7 @@ void TestAddPermissionsForUsersSetToInitEraseActions(
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & eraseActionInScMemoryAddr{action_erase_in_sc_memory_addr};
+  ScAddr const & eraseActionInScMemoryAddr{action_erase_from_sc_memory_addr};
   TestAddPermissionsForUsersSetToInitActions(context, usersSetAddr, eraseActionInScMemoryAddr, arcType);
 }
 
@@ -1127,7 +1127,7 @@ void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, nrel_user_action_class_addr);
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_read_from_sc_memory_addr);
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_generate_in_sc_memory_addr);
-  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_erase_in_sc_memory_addr);
+  TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_erase_from_sc_memory_addr);
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_read_permissions_from_sc_memory_addr);
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_generate_permissions_in_sc_memory_addr);
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, action_erase_permissions_from_sc_memory_addr);
@@ -1166,7 +1166,7 @@ void TestReadWriteEraseAccessedAllElementsSuccessfully(
   TestReadWriteAccessedElementSuccessfully(context, userContext, nrel_users_set_action_class_addr);
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_read_from_sc_memory_addr);
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_generate_in_sc_memory_addr);
-  TestReadWriteAccessedElementSuccessfully(context, userContext, action_erase_in_sc_memory_addr);
+  TestReadWriteAccessedElementSuccessfully(context, userContext, action_erase_from_sc_memory_addr);
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_read_permissions_from_sc_memory_addr);
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_generate_permissions_in_sc_memory_addr);
   TestReadWriteAccessedElementSuccessfully(context, userContext, action_erase_permissions_from_sc_memory_addr);
@@ -1314,7 +1314,7 @@ void TestAddPermissionsForUserToInitEraseActionsWithinStructure(
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & eraseActionInScMemoryAddr{action_erase_in_sc_memory_addr};
+  ScAddr const & eraseActionInScMemoryAddr{action_erase_from_sc_memory_addr};
   TestAddPermissionsForUserToInitActionsWithinStructure(
       context, userAddr, eraseActionInScMemoryAddr, structureAddr, arcType);
 }

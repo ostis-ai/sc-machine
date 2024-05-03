@@ -43,6 +43,11 @@ struct _sc_memory_context_manager
   sc_event * on_remove_user_action_class_within_sc_structure;
   sc_event * on_remove_users_set_action_class_within_sc_structure;
 
+  sc_hash_table * on_new_users_in_sets_events;
+  sc_monitor on_new_users_in_sets_events_monitor;
+  sc_hash_table * on_remove_users_from_sets_events;
+  sc_monitor on_remove_users_from_sets_events_monitor;
+
   ///< sc-address representing class for authentication request users.
   sc_addr concept_guest_user_addr;
   ///< sc-address representing relation between quests and theirs identified users.

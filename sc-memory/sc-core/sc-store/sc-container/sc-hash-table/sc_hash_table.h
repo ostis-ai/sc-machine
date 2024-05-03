@@ -38,4 +38,10 @@ typedef GSList sc_hash_table_list;
 
 #define sc_hash_table_list_remove_sublist(list, sublist) g_slist_delete_link(list, sublist)
 
+typedef GHashTableIter sc_hash_table_iterator;
+
+#define sc_hash_table_iterator_init(iterator, hash_table) g_hash_table_iter_init(iterator, hash_table)
+
+#define sc_hash_table_iterator_next(iterator, key, value) g_hash_table_iter_next(iterator, key, value)
+
 #endif

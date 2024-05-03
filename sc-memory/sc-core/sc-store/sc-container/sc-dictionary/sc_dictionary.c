@@ -267,7 +267,7 @@ sc_bool sc_dictionary_has(sc_dictionary * dictionary, sc_char const * string, sc
   return SC_DICTIONARY_NODE_IS_VALID(last);
 }
 
-void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * string, const sc_uint32 string_size)
+void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * string, sc_uint32 const string_size)
 {
   sc_dictionary_node const * last =
       sc_dictionary_get_last_node_from_node(dictionary, dictionary->root, string, string_size);
@@ -278,7 +278,7 @@ void * _sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * str
   return null_ptr;
 }
 
-void * sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * string, const sc_uint32 string_size)
+void * sc_dictionary_get_by_key(sc_dictionary * dictionary, sc_char const * string, sc_uint32 const string_size)
 {
   return _sc_dictionary_get_by_key(dictionary, string, string_size);
 }
@@ -336,7 +336,7 @@ sc_bool _sc_dictionary_get_by_key_prefix(
 sc_bool sc_dictionary_get_by_key_prefix(
     sc_dictionary * dictionary,
     sc_char const * string,
-    const sc_uint32 string_size,
+    sc_uint32 const string_size,
     sc_bool (*callable)(sc_dictionary_node *, void **),
     void ** dest)
 {

@@ -112,7 +112,7 @@ sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
 
 sc_fs_memory_status sc_fs_memory_get_strings_by_substring(
     sc_char const * substring,
-    const sc_uint32 substring_size,
+    sc_uint32 const substring_size,
     sc_uint32 const max_length_to_search_as_prefix,
     void * data,
     void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content))
