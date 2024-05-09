@@ -167,6 +167,15 @@ ScAddr TestGenerateClassForUser(
   return setAddr;
 }
 
+ScAddr TestAddClassForUser(
+    std::unique_ptr<ScMemoryContext> const & context,
+    ScAddr const & userAddr,
+    ScAddr const & usersSetAddr,
+    ScType const & arcType = ScType::EdgeAccessConstPosTemp)
+{
+  return context->CreateEdge(arcType, usersSetAddr, userAddr);
+}
+
 void TestAuthenticationRequestUser(
     std::unique_ptr<ScMemoryContext> const & context,
     ScAddr const & userAddr,
@@ -497,6 +506,73 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeA
 
   SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
   EXPECT_TRUE(isAuthenticated.load());
+}
+
+TEST_F(
+    ScMemoryTestWithUserMode,
+    HandleElementsByAuthenticatedUserCreatedBeforeAndBoughtClassWithPermissionsAndSoldThisClassAfter)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  TestScMemoryContext userContext{userAddr};
+
+  ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
+  std::atomic_bool isAuthenticated = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+
+        TestActionsUnsuccessfully(m_ctx, userContext);
+
+        return isAuthenticated = true;
+      });
+
+  ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
+  TestAddAllPermissionsForUsersSetToInitActions(m_ctx, usersSetAddr);
+  TestAuthenticationRequestUser(m_ctx, userAddr);
+  TestAddClassForUser(m_ctx, userAddr, usersSetAddr, ScType::EdgeAccessConstNegTemp);
+
+  SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+  EXPECT_TRUE(isAuthenticated.load());
+
+  ScAddr edgeAddr;
+  std::atomic_bool isChecked = false;
+  {
+    ScEventRemoveOutputEdge event2(
+        *m_ctx,
+        usersSetAddr,
+        [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        {
+          TestActionsSuccessfully(m_ctx, userContext);
+
+          return isChecked = true;
+        });
+
+    edgeAddr = TestAddClassForUser(m_ctx, userAddr, usersSetAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
+    EXPECT_TRUE(isChecked.load());
+  }
+
+  isChecked = false;
+  ScEventAddOutputEdge event3(
+      *m_ctx,
+      usersSetAddr,
+      [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+
+        TestActionsUnsuccessfully(m_ctx, userContext);
+
+        return isChecked = true;
+      });
+
+  m_ctx->EraseElement(edgeAddr);
+
+  SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
+  EXPECT_TRUE(isChecked.load());
 }
 
 TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
@@ -1588,6 +1664,86 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
 
   SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
   EXPECT_TRUE(isAuthenticated.load());
+}
+
+TEST_F(
+    ScMemoryTestWithUserMode,
+    HandleElementsByAuthenticatedUserBoughtClassWithLocalReadPermissionsAndSoldThisClassAfter)
+{
+  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
+  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+      m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
+
+  TestScMemoryContext userContext{userAddr};
+  ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
+  std::atomic_bool isAuthenticated = false;
+  ScEventAddOutputEdge event(
+      *m_ctx,
+      conceptAuthenticatedUserAddr,
+      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
+      {
+        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
+        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+
+        return isAuthenticated = true;
+      });
+  ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
+  TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(m_ctx, usersSetAddr, structureAddr);
+  TestAddClassForUser(m_ctx, userAddr, usersSetAddr, ScType::EdgeAccessConstNegTemp);
+
+  TestAuthenticationRequestUser(m_ctx, userAddr);
+
+  SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
+  EXPECT_TRUE(isAuthenticated.load());
+
+  ScAddr usersSetEdgeAddr;
+  std::atomic_bool isChecked = false;
+  {
+    ScEventRemoveOutputEdge event2(
+        *m_ctx,
+        usersSetAddr,
+        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        {
+          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+
+          return isChecked = true;
+        });
+
+    usersSetEdgeAddr = TestAddClassForUser(m_ctx, userAddr, usersSetAddr);
+
+    SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
+    EXPECT_TRUE(isChecked.load());
+  }
+
+  isChecked = false;
+  ScEventAddOutputEdge event3(
+      *m_ctx,
+      usersSetAddr,
+      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      {
+        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+
+        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
+        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+
+        return isChecked = true;
+      });
+
+  m_ctx->EraseElement(usersSetEdgeAddr);
+
+  SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
+  EXPECT_TRUE(isChecked.load());
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWritePermissions)
