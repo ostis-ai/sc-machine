@@ -43,9 +43,10 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -92,9 +93,10 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -144,9 +146,10 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -196,9 +199,10 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc_with_rel)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -253,9 +257,10 @@ TEST_F(ScMemoryTest, agent_search_all_identifiers)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -299,9 +304,10 @@ TEST_F(ScMemoryTest, agent_search_all_identified_elements)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -375,9 +381,10 @@ TEST_F(ScMemoryTest, agent_search_full_semantic_neighborhood)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -468,9 +475,10 @@ TEST_F(ScMemoryTest, agent_search_links_of_relation_connected_with_element)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -535,9 +543,10 @@ TEST_F(ScMemoryTest, agent_search_decomposition)
       keynode_nrel_answer);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
+  sc_addr const structure_addr = sc_iterator5_value(it5, 2);
   sc_iterator5_free(it5);
 
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, sc_iterator5_value(it5, 2), sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(context, structure_addr, sc_type_arc_pos_const_perm, 0);
 
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
