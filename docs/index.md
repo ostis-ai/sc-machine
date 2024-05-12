@@ -20,6 +20,7 @@
                 * [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md)
                 * [C++ Agent context API](sc-memory/api/cpp/extended/agents/agent_context.md)
                 * [C++ Modules API](sc-memory/api/cpp/extended/agents/modules.md)
+            * [User permissions API](sc-memory/api/cpp/extended/permissions_api.md)
         * C++ Guides:
             * [C++ Simple guide for implementing agent](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md)
     * Python API - *documentation of Python API provided by py-sc-client*
