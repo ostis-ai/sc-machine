@@ -16,7 +16,7 @@ jobs:
       - name: GS Commit Message Checker
         # You may pin to the exact commit or the version.
         # uses: GsActions/commit-message-checker@9d8708beab99f811c5fe3a4f98acc4b2f2ba8496
-        uses: GsActions/commit-message-checker@v1
+        uses: GsActions/commit-message-checker@v2
         with:
           # A regex pattern to check if a commit message is valid.
           pattern: "((\\[(builder|changelog|ci|thirdparty|codegen|config|doc|docs|docker|kpm|test|tests|memory|tools|review|refactor|scripts|server|git|cmake)\\])+(.)+)|(Review fixes)$"
