@@ -19,7 +19,6 @@ jobs:
           - {
             name: "Sanitizer - address",
             os: ubuntu-22.04,
-            file_memory: "Dictionary",
             sanitizer: "address",
             cc: clang,
             cxx: clang++,
@@ -38,14 +37,13 @@ jobs:
       - name: Restore build caches
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-${{ matrix.config.os}}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}-${{ matrix.config.file_memory }}
+          key: ${{ github.job }}-${{ matrix.config.os}}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}
 
       - name: Build
         id: run_cmake
         env:
           CC: ${{ matrix.config.cc }}
           CXX: ${{ matrix.config.cxx }}
-          FILE_MEMORY: ${{ matrix.config.file_memory }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
