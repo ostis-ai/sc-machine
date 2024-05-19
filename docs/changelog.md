@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking changes
+
+- Python dependencies are set up locally in `.venv` environment. Therefore, you should make the following changes: 
+  - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv`;
+  - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
+
 ### Added
 
+- Check build and tests on runner-image `ubuntu-24.04`
+- Support for ubuntu-24.04 and macOS 14.4.1
 - Block events mode for sc-memory context
 - Opportunity to set permissions for set of users
 - Guests identification
@@ -33,7 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Use venv for python dependencies
+- Use runner-image `macos-14` instead of runner-image `macos-latest` in CI
+- Don't check extensions when loading dynamic modules (`g_open_module` does it automatically)
+- Use venv for python dependencies in scripts and docker
 - Don't emit events after kb build
 - Build codegen target first
 - Up minimum required cmake version to 3.11.0
@@ -42,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- C++ warnings for ubuntu-24.04 and macOS-14.4.1 when building project
+- Use `snprintf(3)` instead of `sprintf(2)`
 - Private and public dependencies between cmake targets
 - Use reenterable strtok
 - Resolve sc.g-links with the same system identifier
