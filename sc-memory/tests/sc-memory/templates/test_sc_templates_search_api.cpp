@@ -432,3 +432,25 @@ TEST_F(ScTemplateSearchApiTest, SearchWithContinueRequest)
 
   EXPECT_EQ(count, 2u);
 }
+
+TEST_F(ScTemplateSearchApiTest, SearchTemplateWithConstantTriple)
+{
+  ScAddr const & nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr2, edgeAddr);
+
+  ScTemplate templ;
+  templ.Triple(nodeAddr1, edgeAddr, nodeAddr2);
+  templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, edgeAddr);
+
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+
+  EXPECT_EQ(result[0][nodeAddr1], nodeAddr1);
+  EXPECT_EQ(result[0][edgeAddr], edgeAddr);
+  EXPECT_EQ(result[0][nodeAddr2], nodeAddr2);
+
+  for (ScAddr const & addr : result[0])
+    EXPECT_TRUE(addr.IsValid());
+}

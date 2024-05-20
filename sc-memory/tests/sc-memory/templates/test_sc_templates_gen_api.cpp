@@ -112,3 +112,65 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithRefSecondEdge)
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
 }
+
+TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedVariableTriple)
+{
+  ScTemplate templ;
+  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_edge", ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::NodeVar >> "_addr2", ScType::EdgeAccessVarPosTemp, "_edge");
+
+  ScAddr const & nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+
+  ScTemplateParams params;
+  params.Add("_addr1", nodeAddr1);
+  params.Add("_addr2", nodeAddr2);
+  params.Add("_edge", edgeAddr);
+
+  ScTemplateGenResult result;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+
+  EXPECT_EQ(result["_addr1"], nodeAddr1);
+  EXPECT_EQ(result["_edge"], edgeAddr);
+  EXPECT_EQ(result["_addr2"], nodeAddr2);
+}
+
+TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSourceAndTargetInVariableTriple)
+{
+  ScAddr const & nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+
+  ScTemplate templ;
+  templ.Triple(ScType::NodeVar >> "_addr1", edgeAddr, ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::NodeVar >> "_addr2", ScType::EdgeAccessVarPosTemp, edgeAddr);
+
+  ScTemplateParams params;
+  params.Add("_addr1", nodeAddr1);
+  params.Add("_addr2", nodeAddr2);
+
+  ScTemplateGenResult result;
+  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantTriple)
+{
+  ScAddr const & nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+
+  ScTemplate templ;
+  templ.Triple(nodeAddr1, edgeAddr, nodeAddr2);
+  templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, edgeAddr);
+
+  ScTemplateGenResult result;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+
+  EXPECT_EQ(result[nodeAddr1], nodeAddr1);
+  EXPECT_EQ(result[edgeAddr], edgeAddr);
+  EXPECT_EQ(result[nodeAddr2], nodeAddr2);
+
+  for (ScAddr const & addr : result)
+    EXPECT_TRUE(addr.IsValid());
+}

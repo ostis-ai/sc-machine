@@ -28,7 +28,7 @@ public:
     for (auto const & triple : m_triples)
     {
       auto values = triple->GetValues();
-      if (values[1].IsFixed())
+      if (!(values[0].IsFixed() && values[2].IsFixed()) && values[1].IsFixed())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams, "You can't use fixed value for edge in triple for template generation");
 
@@ -51,7 +51,7 @@ public:
 
     ScMemoryContextEventsPendingGuard guard(m_context);
 
-    result = {*m_context, m_replacements};
+    result = ScTemplateResultItem{*m_context, m_replacements};
     result.m_replacementConstruction.resize(m_triples.size() * 3);
 
     ScAddrVector createdElements;
@@ -63,41 +63,38 @@ public:
       auto const & values = item->GetValues();
 
       // check that the third argument isn't a command to generate edge
-      if (values[2].m_itemType == ScTemplateItem::Type::Type && values[2].m_typeValue.IsEdge())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Don't generate edge as the third item of triple");
+      if (values[2].IsType() && values[2].m_typeValue.IsEdge())
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't generate edge as the third triple item");
 
       // check that second command is to generate edge
-      if (!(values[1].m_itemType == ScTemplateItem::Type::Type && values[1].m_typeValue.IsEdge()))
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple must have edge var type");
+      if (!(values[0].IsAddr() && values[2].IsAddr()) && !(values[1].IsType() && values[1].m_typeValue.IsEdge()))
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second triple item must have edge variable type");
 
       // the second item couldn't be a replacement
-      if (values[1].m_itemType == ScTemplateItem::Type::Replace)
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple couldn't be replacement");
+      if (values[1].IsReplacement())
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second triple item couldn't be replacement");
 
-      ScAddr const addr1 = ResolveAddr(values[0], result.m_replacementConstruction);
+      ScAddr const addr1 = ResolveNode(values[0], result.m_replacementConstruction);
       if (!addr1.IsValid())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved first item is not valid");
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Resolved address of the first triple item is not valid");
 
-      ScAddr const addr2 = ResolveAddr(values[2], result.m_replacementConstruction);
+      ScAddr const addr3 = ResolveNode(values[2], result.m_replacementConstruction);
+      if (!addr3.IsValid())
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Resolved address of the third triple item is not valid");
+
+      ScAddr addr2 = ResolveEdge(values[1], addr1, addr3, result.m_replacementConstruction);
       if (!addr2.IsValid())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "The resolved third item is not valid");
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Resolved address of the second triple item is not valid");
 
-      if (!addr1.IsValid() || !addr2.IsValid())
-      {
-        isError = true;
-        break;
-      }
-
-      ScAddr const edge = m_context.CreateEdge(values[1].m_typeValue.UpConstType(), addr1, addr2);
-      if (!edge.IsValid())
+      if (!addr1.IsValid() || !addr2.IsValid() || !addr3.IsValid())
       {
         isError = true;
         break;
       }
 
       result.m_replacementConstruction[resultIdx++] = addr1;
-      result.m_replacementConstruction[resultIdx++] = edge;
       result.m_replacementConstruction[resultIdx++] = addr2;
+      result.m_replacementConstruction[resultIdx++] = addr3;
     }
 
     if (isError)
@@ -109,7 +106,7 @@ public:
     return ScTemplateResultCode::Success;
   }
 
-  ScAddr CreateNodeLink(ScType const & type)
+  ScAddr CreateNodeOrLink(ScType const & type)
   {
     ScAddr addr;
     if (type.IsNode())
@@ -145,9 +142,8 @@ public:
     return result;
   }
 
-  ScAddr ResolveAddr(ScTemplateItem const & itemValue, ScAddrVector const & resultAddrs)
+  ScAddr ResolveNode(ScTemplateItem const & itemValue, ScAddrVector const & resultAddrs)
   {
-    /// TODO: improve speed, because not all time we need to replace by params
     // replace by value from params
     if (!m_params.IsEmpty() && !itemValue.m_name.empty())
     {
@@ -161,7 +157,40 @@ public:
     case ScTemplateItem::Type::Addr:
       return itemValue.m_addrValue;
     case ScTemplateItem::Type::Type:
-      return CreateNodeLink(itemValue.m_typeValue.UpConstType());
+      return CreateNodeOrLink(itemValue.m_typeValue.UpConstType());
+    case ScTemplateItem::Type::Replace:
+    {
+      auto it = m_replacements.find(itemValue.m_name);
+      if (it != m_replacements.cend())
+        return resultAddrs[it->second];
+    }
+    default:
+      break;
+    }
+
+    return {};
+  }
+
+  ScAddr ResolveEdge(
+      ScTemplateItem const & itemValue,
+      ScAddr const & sourceAddr,
+      ScAddr const & targetAddr,
+      ScAddrVector const & resultAddrs)
+  {
+    // replace by value from params
+    if (!m_params.IsEmpty() && !itemValue.m_name.empty())
+    {
+      ScAddr const & addr = GetAddrFromParams(itemValue);
+      if (addr.IsValid())
+        return addr;
+    }
+
+    switch (itemValue.m_itemType)
+    {
+    case ScTemplateItem::Type::Addr:
+      return itemValue.m_addrValue;
+    case ScTemplateItem::Type::Type:
+      return m_context.CreateEdge(itemValue.m_typeValue.UpConstType(), sourceAddr, targetAddr);
     case ScTemplateItem::Type::Replace:
     {
       auto it = m_replacements.find(itemValue.m_name);
@@ -201,7 +230,7 @@ public:
       ScTemplateTriple * triple = m_triples[itRepl->second / 3];
       ScType const & itemType = triple->GetValues()[itRepl->second % 3].m_typeValue;
       /// TODO: check subtype of objects. Can't replace tuple with no tuple object
-      if (itemType.HasConstancyFlag() && (!itemType.IsVar() || itemType.IsEdge()))
+      if (itemType.HasConstancyFlag() && !itemType.IsVar())
         return false;
     }
 
