@@ -108,7 +108,7 @@ ScTemplate & ScTemplate::Triple(
   m_templateTriples.emplace_back(new ScTemplateTriple(param1, param2, param3, m_templateTriples.size()));
 
   if (!param2.m_name.empty() && (param2.m_name == param1.m_name || param2.m_name == param3.m_name))
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for edge and source/target");
 
   ScTemplateTriple * triple = m_templateTriples.back();
 
@@ -117,10 +117,10 @@ ScTemplate & ScTemplate::Triple(
     ScTemplateItem & item = triple->m_values[i];
 
     if (item.IsAssign() && item.m_typeValue.HasConstancyFlag() && !item.m_typeValue.IsVar())
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can only use variable types in sc-template");
 
     if (item.IsAddr() && !item.m_addrValue.IsValid())
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty sc-address in sc-template");
 
     if (!item.m_name.empty())
     {

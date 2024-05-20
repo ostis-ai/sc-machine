@@ -168,7 +168,7 @@ protected:
       {
         ObjectInfo const & edge = m_elements.at(edgeHash);
         if (!edge.GetType().IsVar())
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge type must be var type");
+          SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Specified sc-edge type must be variable type");
 
         ObjectInfo const & src = m_elements.at(edge.GetSourceHash());
         ObjectInfo const & trg = m_elements.at(edge.GetTargetHash());

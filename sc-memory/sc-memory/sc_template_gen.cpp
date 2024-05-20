@@ -36,7 +36,7 @@ public:
       {
         if (value.IsAssign() && (!value.IsType() || value.m_typeValue.IsEdge()))
           SC_THROW_EXCEPTION(
-              utils::ExceptionInvalidParams, "You can't use edges as a source/target element in triple for generation");
+              utils::ExceptionInvalidParams, "You can't use edges as source/target element in triple for generation");
       };
 
       checkEdge(values[0]);
@@ -72,7 +72,7 @@ public:
 
       // the second item couldn't be a replacement
       if (values[1].m_itemType == ScTemplateItem::Type::Replace)
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple couldn't be a replacement");
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "The second item of triple couldn't be replacement");
 
       ScAddr const addr1 = ResolveAddr(values[0], result.m_replacementConstruction);
       if (!addr1.IsValid())
