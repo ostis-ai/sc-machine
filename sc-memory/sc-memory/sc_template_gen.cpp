@@ -46,50 +46,50 @@ public:
       if (sourceItem.IsType() && sourceItem.m_typeValue.IsUnknown())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "You can't generate sc-element with unknown sc-type as the first element of triple.");
+            "You can't generate sc-element with unknown sc-type as the first item of triple "
+                << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "") << ".");
 
       ScAddr sourceAddr = TryFindElementReplacement(sourceItem, result.m_replacementConstruction);
       if (sourceItem.IsType() && sourceItem.m_typeValue.IsEdge() && !sourceAddr.IsValid())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "You can't generate sc-connector as the first item of triple without specifying source and target "
-            "sc-elements of this sc-connector.");
+            "You can't generate sc-connector as the first item of triple "
+                << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "")
+                << "without specifying source and target "
+                   "sc-elements of this sc-connector.");
 
       if (targetItem.IsType() && targetItem.m_typeValue.IsUnknown())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "You can't generate sc-element with unknown sc-type as the third element of triple.");
+            "You can't generate sc-element with unknown sc-type as the third item of triple "
+                << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "") << ".");
 
       ScAddr targetAddr = TryFindElementReplacement(targetItem, result.m_replacementConstruction);
       if (targetItem.IsType() && targetItem.m_typeValue.IsEdge() && !targetAddr.IsValid())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "You can't generate sc-connector as the third item of triple without specifying source and target "
-            "sc-elements of this sc-connector.");
+            "You can't generate sc-connector as the third item of triple "
+                << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "")
+                << "without specifying source and target "
+                   "sc-elements of this sc-connector.");
 
       if (targetItem.IsType() && targetItem.m_typeValue.IsUnknown())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "You can't generate sc-element with unknown sc-type as the second element of triple.");
+            "You can't generate sc-element with unknown sc-type as the second item of triple "
+                << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "") << ".");
 
-      if (!(sourceItem.IsAddr() && targetItem.IsAddr())
-          && !(connectorItem.IsType() && connectorItem.m_typeValue.IsEdge()))
-        SC_THROW_EXCEPTION(
-            utils::ExceptionInvalidParams,
-            "The second element of triple must have variable type to generate sc-connector, because the first and "
-            "third elements of triple have variable types. You can't generate source and target for constant "
-            "sc-connector because this sc-connector already has source and target sc-elements.");
+      ScAddr connectorAddr = TryFindElementReplacement(connectorItem, result.m_replacementConstruction);
+      if (connectorAddr.IsValid())
+        m_context.GetEdgeInfo(connectorAddr, sourceAddr, targetAddr);
 
       if (!sourceAddr.IsValid())
         sourceAddr = CreateNodeOrLink(sourceItem.m_typeValue.UpConstType());
       if (!targetAddr.IsValid())
         targetAddr = CreateNodeOrLink(targetItem.m_typeValue.UpConstType());
 
-      ScAddr connectorAddr = TryFindElementReplacement(connectorItem, result.m_replacementConstruction);
-      if (!connectorAddr.IsValid() && !connectorItem.IsReplacement())
+      if (!connectorAddr.IsValid())
         connectorAddr = m_context.CreateEdge(connectorItem.m_typeValue.UpConstType(), sourceAddr, targetAddr);
-      else
-        m_context.GetEdgeInfo(connectorAddr, sourceAddr, targetAddr);
 
       result.m_replacementConstruction[resultIdx++] = sourceAddr;
       result.m_replacementConstruction[resultIdx++] = connectorAddr;
@@ -145,7 +145,7 @@ private:
   ScAddr TryFindElementReplacement(ScTemplateItem const & item, ScAddrVector const & resultAddrs)
   {
     // replace by value from params
-    if (!m_params.IsEmpty() && !item.m_name.empty())
+    if (!m_params.IsEmpty() && item.HasName())
     {
       ScAddr const & addr = GetAddrFromParams(item);
       if (addr.IsValid())
@@ -171,6 +171,7 @@ private:
         [&](std::string const & templateParamReplacementName, size_t & templateItemPosition)
     {
       ScAddr varAddr;
+      std::string addrHashStr;
 
       auto replacementIt = m_replacements.find(templateParamReplacementName);
       if (replacementIt != m_replacements.cend())
@@ -178,42 +179,91 @@ private:
 
       varAddr = m_context.HelperFindBySystemIdtf(templateParamReplacementName);
       if (!varAddr.IsValid())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "The given sc-template hasn't item with name `"
+                << templateParamReplacementName
+                << "` given in parameters, for which you want to perform substitution from these parameters.");
 
-      replacementIt = m_replacements.find(std::to_string(varAddr.Hash()));
+      addrHashStr = std::to_string(varAddr.Hash());
+      replacementIt = m_replacements.find(addrHashStr);
       if (replacementIt == m_replacements.cend())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "The given sc-template hasn't item with variable `"
+                << addrHashStr
+                << "` given in parameters, for which you want to perform substitution from these parameters.");
 
     end:
       templateItemPosition = replacementIt->second;
     };
 
-    auto const & CheckIncidenceBetweenConnectorAndIncidentElements =
-        [&](ScTemplateItem const & connectorItem, ScTemplateItem const & sourceItem, ScTemplateItem const & targetItem)
+    auto const & CheckIncidenceBetweenConnectorAndIncidentElements = [&](ScTemplateItem const & connectorItem,
+                                                                         ScAddr const & connectorAddr,
+                                                                         ScTemplateItem const & sourceItem,
+                                                                         ScTemplateItem const & targetItem)
     {
-      ScAddr const & connectorAddr = connectorItem.m_addrValue;
-
       ScAddr foundSourceAddr, foundTargetAddr;
       m_context.GetEdgeInfo(connectorAddr, foundSourceAddr, foundTargetAddr);
 
       if (sourceItem.IsAddr() && sourceItem.m_addrValue != foundSourceAddr)
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                       << "` as parameter for the second item in sc-template "
+                                       << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                       << "is not incident to specified source sc-element `"
+                                       << std::to_string(sourceItem.m_addrValue.Hash())
+                                       << "` as fixed first item in sc-template "
+                                       << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "")
+                                       << ". This sc-connector is incident to sc-element `"
+                                       << std::to_string(foundSourceAddr.Hash()) << "`.");
 
       if (sourceItem.HasName())
       {
         auto const & itemIt = m_params.m_templateItemsToParams.find(sourceItem.m_name);
-        if (itemIt != m_params.m_templateItemsToParams.cend() && sourceItem.m_addrValue != itemIt->second)
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
+        if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundSourceAddr)
+          SC_THROW_EXCEPTION(
+              utils::ExceptionInvalidParams,
+              "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                         << "` as parameter for the second item in sc-template "
+                                         << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                         << "is not incident to specified source sc-element `"
+                                         << std::to_string(itemIt->second.Hash())
+                                         << "` as parameter for the first item in sc-template "
+                                         << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "")
+                                         << ". This sc-connector is incident to sc-element `"
+                                         << std::to_string(foundSourceAddr.Hash()) << "`.");
       }
 
       if (targetItem.IsAddr() && targetItem.m_addrValue != foundTargetAddr)
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                       << "` as parameter for the second item in sc-template "
+                                       << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                       << "is not incident to specified target sc-element `"
+                                       << std::to_string(targetItem.m_addrValue.Hash())
+                                       << "` as fixed third item in sc-template "
+                                       << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "")
+                                       << ". This sc-connector is incident to sc-element `"
+                                       << std::to_string(foundTargetAddr.Hash()) << "`.");
 
       if (targetItem.HasName())
       {
         auto const & itemIt = m_params.m_templateItemsToParams.find(targetItem.m_name);
-        if (itemIt != m_params.m_templateItemsToParams.cend() && targetItem.m_addrValue != itemIt->second)
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
+        if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundTargetAddr)
+          SC_THROW_EXCEPTION(
+              utils::ExceptionInvalidParams,
+              "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                         << "` as parameter for the second item in sc-template "
+                                         << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                         << "is not incident to specified target sc-element `"
+                                         << std::to_string(itemIt->second.Hash())
+                                         << "` as fixed third item in sc-template "
+                                         << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "")
+                                         << ". This sc-connector is incident to sc-element `"
+                                         << std::to_string(foundTargetAddr.Hash()) << "`.");
       }
     };
 
@@ -221,13 +271,16 @@ private:
         [&](ScTemplateItem const & templateItem, ScAddr const & templateParamAddr)
     {
       ScType const & templateItemType = templateItem.m_typeValue;
-      if (templateItemType.HasConstancyFlag() && !templateItemType.IsVar())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
-
       ScType const & templateParamType = m_context.GetElementType(templateParamAddr);
 
-      if (templateItemType.UpConstType().CanExtendTo(templateParamType))
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "");
+      if (!templateItemType.UpConstType().CanExtendTo(templateParamType))
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "Template item " << (templateItem.HasName() ? ("`" + templateItem.m_name + "` ") : "") << "has type `"
+                             << templateItemType << "`. This item can't be replaced by template parameter `"
+                             << std::to_string(templateParamAddr.Hash()) << "`, because it has type `"
+                             << templateParamType
+                             << "` and up-constant template item type can't be extended to template parameter type.");
     };
 
     for (auto const & item : m_params.m_templateItemsToParams)
@@ -249,7 +302,8 @@ private:
         ScTemplateItem const & sourceItem = items[0];
         ScTemplateItem const & targetItem = items[2];
 
-        CheckIncidenceBetweenConnectorAndIncidentElements(foundItem, sourceItem, targetItem);
+        ScAddr const & foundItemAddr = item.second;
+        CheckIncidenceBetweenConnectorAndIncidentElements(foundItem, foundItemAddr, sourceItem, targetItem);
       }
 
       ScAddr const & templateParamAddr = item.second;
@@ -287,5 +341,5 @@ ScTemplate::Result ScTemplate::Generate(
   if (errorCode)
     *errorCode = resultCode;
 
-  return ScTemplate::Result(resultCode == ScTemplateResultCode::Success);
+  return ScTemplate::Result(true);
 }

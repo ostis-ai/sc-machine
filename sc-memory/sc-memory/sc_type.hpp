@@ -178,12 +178,12 @@ public:
 
     if (IsLink())
     {
-      if (!CheckMask(sc_type_constancy_mask | sc_type_link))
+      if (!CheckMask(sc_type_link | sc_type_constancy_mask))
         return false;
     }
     else if (IsNode())
     {
-      if (!CheckMask(sc_type_constancy_mask | sc_type_node_mask | sc_type_node))
+      if (!CheckMask(sc_type_node | sc_type_constancy_mask | sc_type_node_mask))
         return false;
 
       RealType const selfNodeType = m_realType & sc_type_node_mask;
@@ -193,13 +193,9 @@ public:
     }
     else if (IsEdge())
     {
-      if (!CheckMask(sc_type_arc_common | sc_type_constancy_mask))
-        return false;
-
-      if (!CheckMask(sc_type_arc_access | sc_type_constancy_mask | sc_type_positivity_mask | sc_type_permanency_mask))
-        return false;
-
-      if (!CheckMask(sc_type_edge_common))
+      if (!CheckMask(sc_type_arc_common | sc_type_constancy_mask)
+          && !CheckMask(sc_type_arc_access | sc_type_constancy_mask | sc_type_positivity_mask | sc_type_permanency_mask)
+          && !CheckMask(sc_type_edge_common | sc_type_constancy_mask))
         return false;
 
       RealType const selfPermType = m_realType & sc_type_permanency_mask;
