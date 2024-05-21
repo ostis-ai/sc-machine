@@ -48,29 +48,34 @@ struct ScTemplateItem
     SetReplacement(name.c_str());
   }
 
-  inline bool IsAddr() const
+  [[nodiscard]] inline bool IsAddr() const
   {
     return (m_itemType == Type::Addr);
   }
 
-  inline bool IsReplacement() const
+  [[nodiscard]] inline bool IsReplacement() const
   {
     return (m_itemType == Type::Replace);
   }
 
-  inline bool IsType() const
+  [[nodiscard]] inline bool IsType() const
   {
     return (m_itemType == Type::Type);
   }
 
-  inline bool IsFixed() const
+  [[nodiscard]] inline bool IsFixed() const
   {
     return IsAddr() || (IsReplacement() && m_addrValue.IsValid());
   }
 
-  inline bool IsAssign() const
+  [[nodiscard]] inline bool IsAssign() const
   {
     return m_itemType == Type::Type;
+  }
+
+  inline bool HasName() const
+  {
+    return !m_name.empty();
   }
 
   void SetAddr(ScAddr const & addr, sc_char const * replName = nullptr)

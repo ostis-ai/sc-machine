@@ -32,11 +32,6 @@ public:
     return m_type.IsEdge();
   }
 
-  inline bool IsUnknown() const
-  {
-    return m_type.IsUnknown();
-  }
-
   inline ScAddr const & GetAddr() const
   {
     return m_addr;
@@ -136,8 +131,6 @@ protected:
 
       auto const & it = m_elements.find(objAddr.Hash());
       ObjectInfo obj = it == m_elements.cend() ? CollectObjectInfo(objAddr) : it->second;
-      if (obj.IsUnknown())
-        return ScTemplate::Result(false, "Can't determine type of ScElement");  // template corrupted
 
       ScAddr objSrc, objTrg;
       if (obj.IsEdge() && m_context.GetEdgeInfo(objAddr, objSrc, objTrg))
@@ -180,7 +173,7 @@ protected:
                      : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
         };
 
-        inTemplate->Triple(param(src), edge.GetType() >> edge.GetIdtf(), param(trg));
+        inTemplate->Triple(param(src), param(edge), param(trg));
       }
     }
 
