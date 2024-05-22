@@ -79,6 +79,8 @@ Semantic network storage is a core of any ostis-system, so you can use a referen
 
 - Native
 
+  Note: Currently, only Linux (Ubuntu-20.04, Ubuntu-22.04, Ubuntu-24.04) and macOS are supported by this installation method. If you're going to use it, it might take a while to download dependencies and compile the components. Use it only if you know what you're doing!
+
   ```sh
   # build kb
   ./bin/sc-builder -f --clear -c ./sc-machine.ini -i <path to kb folder with SCs and SCg sources (or path to repo.path file)> -o <output path>
