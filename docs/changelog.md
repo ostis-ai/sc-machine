@@ -43,6 +43,7 @@ encapsulated this logic;
 
 ### Changed
 
+- Reformat code style according to clang-format-18
 - Use runner-image `macos-14` instead of runner-image `macos-latest` in CI
 - Don't check extensions when loading dynamic modules (`g_open_module` does it automatically)
 - Use venv for python dependencies in scripts and docker
