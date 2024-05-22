@@ -81,6 +81,9 @@ public:
 
       ScAddr connectorAddr = TryFindElementReplacement(connectorItem, result.m_replacementConstruction);
       if (connectorAddr.IsValid())
+        CheckIncidenceBetweenConnectorAndIncidentElements(connectorItem, connectorAddr, sourceItem, targetItem);
+
+      if (connectorAddr.IsValid())
         m_context.GetEdgeInfo(connectorAddr, sourceAddr, targetAddr);
 
       if (!sourceAddr.IsValid())
@@ -142,7 +145,7 @@ private:
     return result;
   }
 
-  ScAddr TryFindElementReplacement(ScTemplateItem const & item, ScAddrVector const & resultAddrs)
+  ScAddr TryFindElementReplacement(ScTemplateItem const & item, ScAddrVector const & resultAddrs) const
   {
     // replace by value from params
     if (!m_params.IsEmpty() && item.HasName())
@@ -164,6 +167,76 @@ private:
 
     return ScAddr::Empty;
   }
+
+  void CheckIncidenceBetweenConnectorAndIncidentElements(
+      ScTemplateItem const & connectorItem,
+      ScAddr const & connectorAddr,
+      ScTemplateItem const & sourceItem,
+      ScTemplateItem const & targetItem) const
+  {
+    ScAddr foundSourceAddr, foundTargetAddr;
+    m_context.GetEdgeInfo(connectorAddr, foundSourceAddr, foundTargetAddr);
+
+    if (sourceItem.IsAddr() && sourceItem.m_addrValue != foundSourceAddr)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                     << "` as parameter for the second item in sc-template "
+                                     << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                     << "is not incident to specified source sc-element `"
+                                     << std::to_string(sourceItem.m_addrValue.Hash())
+                                     << "` as fixed first item in sc-template "
+                                     << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "")
+                                     << ". This sc-connector is incident to sc-element `"
+                                     << std::to_string(foundSourceAddr.Hash()) << "`.");
+
+    if (sourceItem.HasName())
+    {
+      auto const & itemIt = m_params.m_templateItemsToParams.find(sourceItem.m_name);
+      if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundSourceAddr)
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                       << "` as parameter for the second item in sc-template "
+                                       << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                       << "is not incident to specified source sc-element `"
+                                       << std::to_string(itemIt->second.Hash())
+                                       << "` as parameter for the first item in sc-template "
+                                       << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "")
+                                       << ". This sc-connector is incident to sc-element `"
+                                       << std::to_string(foundSourceAddr.Hash()) << "`.");
+    }
+
+    if (targetItem.IsAddr() && targetItem.m_addrValue != foundTargetAddr)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                     << "` as parameter for the second item in sc-template "
+                                     << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                     << "is not incident to specified target sc-element `"
+                                     << std::to_string(targetItem.m_addrValue.Hash())
+                                     << "` as fixed third item in sc-template "
+                                     << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "")
+                                     << ". This sc-connector is incident to sc-element `"
+                                     << std::to_string(foundTargetAddr.Hash()) << "`.");
+
+    if (targetItem.HasName())
+    {
+      auto const & itemIt = m_params.m_templateItemsToParams.find(targetItem.m_name);
+      if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundTargetAddr)
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
+                                       << "` as parameter for the second item in sc-template "
+                                       << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
+                                       << "is not incident to specified target sc-element `"
+                                       << std::to_string(itemIt->second.Hash())
+                                       << "` as fixed third item in sc-template "
+                                       << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "")
+                                       << ". This sc-connector is incident to sc-element `"
+                                       << std::to_string(foundTargetAddr.Hash()) << "`.");
+    }
+  };
 
   void PreCheckTemplateAndParams() const
   {
@@ -196,75 +269,6 @@ private:
 
     end:
       templateItemPosition = replacementIt->second;
-    };
-
-    auto const & CheckIncidenceBetweenConnectorAndIncidentElements = [&](ScTemplateItem const & connectorItem,
-                                                                         ScAddr const & connectorAddr,
-                                                                         ScTemplateItem const & sourceItem,
-                                                                         ScTemplateItem const & targetItem)
-    {
-      ScAddr foundSourceAddr, foundTargetAddr;
-      m_context.GetEdgeInfo(connectorAddr, foundSourceAddr, foundTargetAddr);
-
-      if (sourceItem.IsAddr() && sourceItem.m_addrValue != foundSourceAddr)
-        SC_THROW_EXCEPTION(
-            utils::ExceptionInvalidParams,
-            "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
-                                       << "` as parameter for the second item in sc-template "
-                                       << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
-                                       << "is not incident to specified source sc-element `"
-                                       << std::to_string(sourceItem.m_addrValue.Hash())
-                                       << "` as fixed first item in sc-template "
-                                       << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "")
-                                       << ". This sc-connector is incident to sc-element `"
-                                       << std::to_string(foundSourceAddr.Hash()) << "`.");
-
-      if (sourceItem.HasName())
-      {
-        auto const & itemIt = m_params.m_templateItemsToParams.find(sourceItem.m_name);
-        if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundSourceAddr)
-          SC_THROW_EXCEPTION(
-              utils::ExceptionInvalidParams,
-              "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
-                                         << "` as parameter for the second item in sc-template "
-                                         << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
-                                         << "is not incident to specified source sc-element `"
-                                         << std::to_string(itemIt->second.Hash())
-                                         << "` as parameter for the first item in sc-template "
-                                         << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "")
-                                         << ". This sc-connector is incident to sc-element `"
-                                         << std::to_string(foundSourceAddr.Hash()) << "`.");
-      }
-
-      if (targetItem.IsAddr() && targetItem.m_addrValue != foundTargetAddr)
-        SC_THROW_EXCEPTION(
-            utils::ExceptionInvalidParams,
-            "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
-                                       << "` as parameter for the second item in sc-template "
-                                       << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
-                                       << "is not incident to specified target sc-element `"
-                                       << std::to_string(targetItem.m_addrValue.Hash())
-                                       << "` as fixed third item in sc-template "
-                                       << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "")
-                                       << ". This sc-connector is incident to sc-element `"
-                                       << std::to_string(foundTargetAddr.Hash()) << "`.");
-
-      if (targetItem.HasName())
-      {
-        auto const & itemIt = m_params.m_templateItemsToParams.find(targetItem.m_name);
-        if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundTargetAddr)
-          SC_THROW_EXCEPTION(
-              utils::ExceptionInvalidParams,
-              "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
-                                         << "` as parameter for the second item in sc-template "
-                                         << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "")
-                                         << "is not incident to specified target sc-element `"
-                                         << std::to_string(itemIt->second.Hash())
-                                         << "` as fixed third item in sc-template "
-                                         << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "")
-                                         << ". This sc-connector is incident to sc-element `"
-                                         << std::to_string(foundTargetAddr.Hash()) << "`.");
-      }
     };
 
     auto const & CheckTemplateItemTypeAndTemplateParamType =

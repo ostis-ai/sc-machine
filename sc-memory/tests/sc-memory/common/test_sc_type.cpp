@@ -119,8 +119,8 @@ TEST(ScTypeTest, extend)
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeUCommon));
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeDCommon));
 
-  EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeAccessConstPosPerm));
-  EXPECT_FALSE(ScType::EdgeDCommon.CanExtendTo(ScType::EdgeDCommonConst));
+  EXPECT_TRUE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(ScType::EdgeDCommon.CanExtendTo(ScType::EdgeDCommonConst));
 
   EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeDCommon));
   EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeUCommon));
