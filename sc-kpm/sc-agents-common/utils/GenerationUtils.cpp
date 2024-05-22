@@ -43,7 +43,7 @@ ScAddr GenerationUtils::wrapInOrientedSet(
     ScAddrVector const & addrVector,
     ScType const & setType)
 {
-  const size_t maxRrelCountExceeded = 10;
+  size_t const maxRrelCountExceeded = 10;
   SC_ASSERT(addrVector.size() < maxRrelCountExceeded, ("Not create numerated set with more than 10 elements"));
   SC_UNUSED(maxRrelCountExceeded);
 

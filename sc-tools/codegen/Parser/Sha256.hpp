@@ -46,7 +46,7 @@ protected:
   typedef unsigned int uint32;
   typedef unsigned long long uint64;
 
-  const static uint32 sha256_k[];
+  static uint32 const sha256_k[];
   static unsigned int const SHA224_256_BLOCK_SIZE = (512 / 8);
 
 public:

@@ -4,28 +4,28 @@
 
 namespace Props
 {
-const std::string Body = "GenBody";
-const std::string Keynode = "Keynode";
-const std::string Template = "Template";
-const std::string ForceCreate = "ForceCreate";
-const std::string Agent = "Agent";
-const std::string AgentCommandClass = "CmdClass";
-const std::string Event = "Event";
-const std::string LoadOrder = "LoadOrder";
+std::string const Body = "GenBody";
+std::string const Keynode = "Keynode";
+std::string const Template = "Template";
+std::string const ForceCreate = "ForceCreate";
+std::string const Agent = "Agent";
+std::string const AgentCommandClass = "CmdClass";
+std::string const Event = "Event";
+std::string const LoadOrder = "LoadOrder";
 
 }  // namespace Props
 
 namespace Classes
 {
-const std::string Object = "ScObject";
-const std::string Agent = "ScAgent";
-const std::string AgentAction = "ScAgentAction";
-const std::string Module = "ScModule";
+std::string const Object = "ScObject";
+std::string const Agent = "ScAgent";
+std::string const AgentAction = "ScAgentAction";
+std::string const Module = "ScModule";
 
 }  // namespace Classes
 
 namespace ParserMeta
 {
-const std::string ParentClass = "ParentClass";
+std::string const ParentClass = "ParentClass";
 
 }  // namespace ParserMeta

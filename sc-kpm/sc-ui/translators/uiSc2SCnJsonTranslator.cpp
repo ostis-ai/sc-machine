@@ -17,27 +17,27 @@
 
 namespace ScnTranslatorConstants
 {
-static const std::string_view STRUCT{"struct"};
-static const std::string_view SOURCE_NODE{"sourceNode"};
-static const std::string_view TARGET_NODE{"targetNode"};
-static const std::string_view CHILDREN{"children"};
-static const std::string_view CONTENT{"content"};
-static const std::string_view CONTENT_TYPE{"contentType"};
-static const std::string_view MODIFIERS{"modifiers"};
-static const std::string_view MODIFIER_ARCS{"modifierArcs"};
-static const std::string_view RIGHT{"right"};
-static const std::string_view LEFT{"left"};
-static const std::string_view ADDR{"addr"};
-static const std::string_view ARCS{"arcs"};
-static const std::string_view LINKED_NODES{"linkedNodes"};
-static const std::string_view IDTF{"idtf"};
-static const std::string_view TYPE{"type"};
-static const std::string_view DIRECTION{"direction"};
-static const std::string_view FORMAT_TXT{"format_txt"};
-static const std::string_view FORMAT_LARGE_TXT{"format_large_txt"};
-static const std::string_view formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
+static std::string_view const STRUCT{"struct"};
+static std::string_view const SOURCE_NODE{"sourceNode"};
+static std::string_view const TARGET_NODE{"targetNode"};
+static std::string_view const CHILDREN{"children"};
+static std::string_view const CONTENT{"content"};
+static std::string_view const CONTENT_TYPE{"contentType"};
+static std::string_view const MODIFIERS{"modifiers"};
+static std::string_view const MODIFIER_ARCS{"modifierArcs"};
+static std::string_view const RIGHT{"right"};
+static std::string_view const LEFT{"left"};
+static std::string_view const ADDR{"addr"};
+static std::string_view const ARCS{"arcs"};
+static std::string_view const LINKED_NODES{"linkedNodes"};
+static std::string_view const IDTF{"idtf"};
+static std::string_view const TYPE{"type"};
+static std::string_view const DIRECTION{"direction"};
+static std::string_view const FORMAT_TXT{"format_txt"};
+static std::string_view const FORMAT_LARGE_TXT{"format_large_txt"};
+static std::string_view const formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
 
-static const size_t FORMAT_LARGE_TXT_SIZE = 100;
+static size_t const FORMAT_LARGE_TXT_SIZE = 100;
 };  // namespace ScnTranslatorConstants
 
 uiSc2SCnJsonTranslator::uiSc2SCnJsonTranslator() = default;

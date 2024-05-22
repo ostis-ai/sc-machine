@@ -352,7 +352,7 @@ TEST_F(ScEventTest, pend_events)
   ScAddr const set1 = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const rel = m_ctx->CreateNode(ScType::NodeConstNoRole);
 
-  static const size_t el_num = 1 << 10;
+  static size_t const el_num = 1 << 10;
   std::vector<ScAddr> elements(el_num);
   for (size_t i = 0; i < el_num; ++i)
   {

@@ -343,7 +343,7 @@ TEST_F(ScTemplateCommonTest, DISABLED_BigTemplateSmoke)
   ScAddr const set1 = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const rel = m_ctx->CreateNode(ScType::NodeConstNoRole);
 
-  static const size_t el_num = 1 << 12;
+  static size_t const el_num = 1 << 12;
   std::set<ScAddr, ScAddrLessFunc> elements;
   for (size_t i = 0; i < el_num; ++i)
   {

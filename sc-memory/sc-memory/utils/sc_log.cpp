@@ -14,10 +14,10 @@
 namespace
 {
 // should be synced with ScLog::Type
-const std::string kTypeToStr[] = {"Debug", "Info", "Warning", "Error"};
+std::string const kTypeToStr[] = {"Debug", "Info", "Warning", "Error"};
 
 // should be synced with ScLog::OutputType
-const std::string kOutputTypeToStr[] = {"Console", "File"};
+std::string const kOutputTypeToStr[] = {"Console", "File"};
 
 }  // namespace
 
@@ -139,7 +139,7 @@ void ScLog::SetFileName(std::string const & file_name)
 }
 
 template <size_t N>
-int ScLog::FindEnumElement(const std::string (&elements)[N], std::string const & externalValue)
+int ScLog::FindEnumElement(std::string const (&elements)[N], std::string const & externalValue)
 {
   size_t size = N;
   int index = -1;
