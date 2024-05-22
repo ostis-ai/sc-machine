@@ -75,7 +75,7 @@ void ReflectionParser::CollectFiles(std::string const & inPath, tStringList & ou
     catch (std::exception & ex)
     {
       std::cout << ex.what() << std::endl;
-      it.no_push();
+      it.disable_recursion_pending();
       try
       {
         ++it;

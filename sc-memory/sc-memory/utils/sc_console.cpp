@@ -80,38 +80,38 @@ int kbhit()
 
 namespace impl
 {
-const std::string ANSI_CLS = "\033[2J\033[3J";
-const std::string ANSI_CONSOLE_TITLE_PRE = "\033]0;";
-const std::string ANSI_CONSOLE_TITLE_POST = "\007";
-const std::string ANSI_ATTRIBUTE_RESET = "\033[0m";
-const std::string ANSI_CURSOR_HIDE = "\033[?25l";
-const std::string ANSI_CURSOR_SHOW = "\033[?25h";
-const std::string ANSI_CURSOR_HOME = "\033[H";
-const std::string ANSI_BLACK = "\033[22;30m";
-const std::string ANSI_RED = "\033[22;31m";
-const std::string ANSI_GREEN = "\033[22;32m";
-const std::string ANSI_BROWN = "\033[22;33m";
-const std::string ANSI_BLUE = "\033[22;34m";
-const std::string ANSI_MAGENTA = "\033[22;35m";
-const std::string ANSI_CYAN = "\033[22;36m";
-const std::string ANSI_GREY = "\033[22;37m";
-const std::string ANSI_DARKGREY = "\033[01;30m";
-const std::string ANSI_LIGHTRED = "\033[01;31m";
-const std::string ANSI_LIGHTGREEN = "\033[01;32m";
-const std::string ANSI_YELLOW = "\033[01;33m";
-const std::string ANSI_LIGHTBLUE = "\033[01;34m";
-const std::string ANSI_LIGHTMAGENTA = "\033[01;35m";
-const std::string ANSI_LIGHTCYAN = "\033[01;36m";
-const std::string ANSI_WHITE = "\033[01;37m";
-const std::string ANSI_BACKGROUND_BLACK = "\033[40m";
-const std::string ANSI_BACKGROUND_RED = "\033[41m";
-const std::string ANSI_BACKGROUND_GREEN = "\033[42m";
-const std::string ANSI_BACKGROUND_YELLOW = "\033[43m";
-const std::string ANSI_BACKGROUND_BLUE = "\033[44m";
-const std::string ANSI_BACKGROUND_MAGENTA = "\033[45m";
-const std::string ANSI_BACKGROUND_CYAN = "\033[46m";
-const std::string ANSI_BACKGROUND_WHITE = "\033[47m";
-const std::string ANSI_EMPTY = "";
+std::string const ANSI_CLS = "\033[2J\033[3J";
+std::string const ANSI_CONSOLE_TITLE_PRE = "\033]0;";
+std::string const ANSI_CONSOLE_TITLE_POST = "\007";
+std::string const ANSI_ATTRIBUTE_RESET = "\033[0m";
+std::string const ANSI_CURSOR_HIDE = "\033[?25l";
+std::string const ANSI_CURSOR_SHOW = "\033[?25h";
+std::string const ANSI_CURSOR_HOME = "\033[H";
+std::string const ANSI_BLACK = "\033[22;30m";
+std::string const ANSI_RED = "\033[22;31m";
+std::string const ANSI_GREEN = "\033[22;32m";
+std::string const ANSI_BROWN = "\033[22;33m";
+std::string const ANSI_BLUE = "\033[22;34m";
+std::string const ANSI_MAGENTA = "\033[22;35m";
+std::string const ANSI_CYAN = "\033[22;36m";
+std::string const ANSI_GREY = "\033[22;37m";
+std::string const ANSI_DARKGREY = "\033[01;30m";
+std::string const ANSI_LIGHTRED = "\033[01;31m";
+std::string const ANSI_LIGHTGREEN = "\033[01;32m";
+std::string const ANSI_YELLOW = "\033[01;33m";
+std::string const ANSI_LIGHTBLUE = "\033[01;34m";
+std::string const ANSI_LIGHTMAGENTA = "\033[01;35m";
+std::string const ANSI_LIGHTCYAN = "\033[01;36m";
+std::string const ANSI_WHITE = "\033[01;37m";
+std::string const ANSI_BACKGROUND_BLACK = "\033[40m";
+std::string const ANSI_BACKGROUND_RED = "\033[41m";
+std::string const ANSI_BACKGROUND_GREEN = "\033[42m";
+std::string const ANSI_BACKGROUND_YELLOW = "\033[43m";
+std::string const ANSI_BACKGROUND_BLUE = "\033[44m";
+std::string const ANSI_BACKGROUND_MAGENTA = "\033[45m";
+std::string const ANSI_BACKGROUND_CYAN = "\033[46m";
+std::string const ANSI_BACKGROUND_WHITE = "\033[47m";
+std::string const ANSI_EMPTY = "";
 
 /// Function: getkey
 /// Reads a key press (blocking) and returns a key code.

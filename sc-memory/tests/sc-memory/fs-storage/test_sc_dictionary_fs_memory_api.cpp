@@ -1412,7 +1412,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings)
     sc_uint64 const STRING_COUNT = 1000;
     for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
     {
-      sprintf(string, string_template, hash);
+      snprintf(string, 50, string_template, hash);
 
       EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash, string, sc_str_len(string)), SC_FS_MEMORY_OK);
     }
@@ -1421,7 +1421,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings)
     sc_uint64 size;
     for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
     {
-      sprintf(string, string_template, hash);
+      snprintf(string, 50, string_template, hash);
 
       EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_OK);
       EXPECT_TRUE(sc_str_cmp(found_string, string));
@@ -1452,7 +1452,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings_with
     sc_uint64 const STRING_COUNT = 1000;
     for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
     {
-      sprintf(string, string_template, hash);
+      snprintf(string, 50, string_template, hash);
 
       EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, hash, string, sc_str_len(string)), SC_FS_MEMORY_OK);
     }
@@ -1461,7 +1461,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings_with
     sc_uint64 size;
     for (sc_uint64 hash = 0; hash < STRING_COUNT; ++hash)
     {
-      sprintf(string, string_template, hash);
+      snprintf(string, 50, string_template, hash);
 
       EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, hash, &found_string, &size), SC_FS_MEMORY_OK);
       EXPECT_TRUE(sc_str_cmp(found_string, string));

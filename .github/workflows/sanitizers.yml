@@ -10,7 +10,7 @@ on:
 jobs:
   run_sanitizers:
     name: ${{ matrix.config.name }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
 
     strategy:
       fail-fast: false
@@ -18,8 +18,7 @@ jobs:
         config:
           - {
             name: "Sanitizer - address",
-            os: ubuntu-latest,
-            file_memory: "Dictionary",
+            os: ubuntu-22.04,
             sanitizer: "address",
             cc: clang,
             cxx: clang++,
@@ -27,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -38,14 +37,13 @@ jobs:
       - name: Restore build caches
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-${{ matrix.config.os}}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}-${{ matrix.config.file_memory }}
+          key: ${{ github.job }}-${{ matrix.config.os}}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}
 
       - name: Build
         id: run_cmake
         env:
           CC: ${{ matrix.config.cc }}
           CXX: ${{ matrix.config.cxx }}
-          FILE_MEMORY: ${{ matrix.config.file_memory }}
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: ${{ matrix.config.sanitizer }}

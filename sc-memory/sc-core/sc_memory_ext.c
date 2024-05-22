@@ -10,24 +10,25 @@
 
 #include "sc-store/sc-base/sc_allocator.h"
 #include "sc-store/sc-base/sc_message.h"
+#include "sc-core/sc-store/sc-fs-memory/sc_file_system.h"
 
 GList * modules_priority_list = null_ptr;
 
 //! Type of module function
-typedef sc_result (*fModuleFunc)();
+typedef sc_result (*fModuleInitializeFunc)(sc_addr);
+typedef sc_result (*fModuleShutdownFunc)();
 typedef sc_uint32 (*fModulePriorityFunc)();
 
-typedef struct _sc_module_info
+typedef struct
 {
   GModule * ptr;
-  gchar * path;
+  sc_char * path;
   sc_uint32 priority;
-  fModuleFunc init_func;
-  sc_char * init_func_type;
-  fModuleFunc shut_func;
+  fModuleInitializeFunc init_func;
+  fModuleShutdownFunc shut_func;
 } sc_module_info;
 
-void sc_module_info_free(gpointer mi)
+void sc_module_info_free(sc_pointer mi)
 {
   sc_module_info * info = (sc_module_info *)mi;
 
@@ -56,20 +57,22 @@ gint sc_priority_great(gconstpointer a, gconstpointer b)
   return sc_priority_less(b, a);
 }
 
+sc_char * _sc_module_build_path(sc_char const * directory, sc_char const * module_name)
+{
+  return g_strconcat(directory, "/", module_name, null_ptr);
+}
+
 sc_result sc_ext_initialize(
     sc_char const * ext_dir_path,
     sc_char const ** enabled_list,
     sc_addr const init_memory_generated_structure)
 {
+  sc_unused(&enabled_list);
+
   GDir * ext_dir = null_ptr;
   sc_char const * file_name = null_ptr;
-  fModuleFunc func = null_ptr;
-
-#if SC_IS_PLATFORM_MAC
-  gchar const * moduleSuffix = "dylib";
-#else
-  gchar const * moduleSuffix = G_MODULE_SUFFIX;
-#endif
+  fModuleInitializeFunc initialize_func = null_ptr;
+  fModuleInitializeFunc shutdown_func = null_ptr;
 
   // doesn't need to initialize extensions
   if (ext_dir_path == null_ptr)
@@ -85,7 +88,7 @@ sc_result sc_ext_initialize(
   sc_message("Initialize extensions from %s", ext_dir_path);
 
   // check if specified directory exist
-  if (g_file_test(ext_dir_path, G_FILE_TEST_IS_DIR) == SC_FALSE)
+  if (sc_fs_is_directory(ext_dir_path) == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
   // get list of files in extension directory
@@ -97,28 +100,8 @@ sc_result sc_ext_initialize(
   file_name = g_dir_read_name(ext_dir);
   while (file_name != null_ptr)
   {
-    // check if it should be loaded
-    if (enabled_list)
-    {
-      sc_int32 i = 0;
-      gboolean shouldSkip = SC_TRUE;
-      while (enabled_list[i] != null_ptr)
-      {
-        sc_char const * name = enabled_list[i];
-        if (g_str_has_prefix(file_name, name) && g_str_has_suffix(file_name, moduleSuffix))
-        {
-          shouldSkip = (strlen(file_name) != (strlen(name) + strlen(moduleSuffix) + 1));
-        }
-
-        ++i;
-      }
-
-      if (shouldSkip)
-        goto next;
-    }
-
     sc_module_info * mi = sc_mem_new(sc_module_info, 1);
-    mi->path = g_module_build_path(ext_dir_path, file_name);
+    mi->path = _sc_module_build_path(ext_dir_path, file_name);
 
     // open module
     mi->ptr = g_module_open(mi->path, G_MODULE_BIND_LOCAL);
@@ -128,40 +111,32 @@ sc_result sc_ext_initialize(
       goto clean;
     }
 
-    // skip non module files
-    if (g_str_has_suffix(file_name, moduleSuffix) == SC_TRUE)
+    if (g_module_symbol(
+            mi->ptr, "sc_module_initialize_with_init_memory_generated_structure", (sc_pointer *)&initialize_func)
+        == SC_FALSE)
     {
-      if (g_module_symbol(mi->ptr, "sc_module_initialize_with_init_memory_generated_structure", (gpointer *)&func)
-          == SC_TRUE)
+      if (g_module_symbol(mi->ptr, "sc_module_initialize", (sc_pointer *)&initialize_func) == SC_FALSE)
       {
-        mi->init_func_type = "sc_module_initialize_with_init_memory_generated_structure";
-      }
-      else
-      {
-        if (g_module_symbol(mi->ptr, "sc_module_initialize", (gpointer *)&func) == SC_FALSE)
-        {
-          sc_warning("Can't find any 'sc_module_initialize' symbol in module: %s", mi->path);
-          goto clean;
-        }
-        mi->init_func_type = "sc_module_initialize";
-      }
-      mi->init_func = func;
-
-      if (g_module_symbol(mi->ptr, "sc_module_shutdown", (gpointer *)&func) == SC_FALSE)
-      {
-        sc_warning("Can't find 'sc_module_shutdown' symbol in module: %s", mi->path);
+        sc_warning("Can't find any 'sc_module_initialize' symbol in module: %s", mi->path);
         goto clean;
       }
-      mi->shut_func = func;
-
-      fModulePriorityFunc pfunc;
-      if (g_module_symbol(mi->ptr, "sc_module_load_priority", (gpointer *)&pfunc) == SC_FALSE)
-        mi->priority = G_MAXUINT32;
-      else
-        mi->priority = pfunc();
     }
+    mi->init_func = initialize_func;
 
-    modules_priority_list = g_list_insert_sorted(modules_priority_list, (gpointer)mi, sc_priority_less);
+    if (g_module_symbol(mi->ptr, "sc_module_shutdown", (sc_pointer *)&shutdown_func) == SC_FALSE)
+    {
+      sc_warning("Can't find 'sc_module_shutdown' symbol in module: %s", mi->path);
+      goto clean;
+    }
+    mi->shut_func = shutdown_func;
+
+    fModulePriorityFunc module_priority_func;
+    if (g_module_symbol(mi->ptr, "sc_module_load_priority", (sc_pointer *)&module_priority_func) == SC_FALSE)
+      mi->priority = G_MAXUINT32;
+    else
+      mi->priority = module_priority_func();
+
+    modules_priority_list = g_list_insert_sorted(modules_priority_list, (sc_pointer)mi, sc_priority_less);
     goto next;
 
   clean:
@@ -179,19 +154,12 @@ sc_result sc_ext_initialize(
 
   // initialize modules
   GList * item = modules_priority_list;
-  sc_result init_result = SC_RESULT_ERROR;
+  sc_result init_result;
   while (item != null_ptr)
   {
     sc_module_info * module = (sc_module_info *)item->data;
     sc_message("Initialize module: %s", module->path);
-    if (strcmp(module->init_func_type, "sc_module_initialize_with_init_memory_generated_structure") == 0)
-    {
-      init_result = module->init_func(init_memory_generated_structure);
-    }
-    else
-    {
-      init_result = module->init_func();
-    }
+    init_result = module->init_func(init_memory_generated_structure);
 
     if (init_result != SC_RESULT_OK)
     {

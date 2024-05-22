@@ -26,9 +26,11 @@ RUN --mount=type=cache,target=/ccache/ ./scripts/build_sc_machine.sh -r
 #Gathering all artifacts together
 FROM base AS final
 
+COPY --from=builder /sc-machine/requirements.txt /sc-machine/requirements.txt
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
 COPY --from=builder /sc-machine/sc-machine.ini /sc-machine/sc-machine.ini 
 COPY --from=builder /sc-machine/bin /sc-machine/bin
+RUN /sc-machine/scripts/install_deps_python.sh
 WORKDIR /sc-machine/scripts
 
 EXPOSE 8090

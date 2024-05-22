@@ -66,7 +66,7 @@ private:
   bool Initialize(std::string const & logFile);
 
   template <size_t N>
-  static int FindEnumElement(const std::string (&elements)[N], std::string const & externalValue);
+  static int FindEnumElement(std::string const (&elements)[N], std::string const & externalValue);
 };
 
 #define SC_LOG_COLOR(__type, __msg, __color) \

@@ -25,6 +25,7 @@ packagelist_runtime=(
   libboost-program-options-dev
   python3
   python3-pip
+  python3-venv
 )
 
 packagelist_dev=(

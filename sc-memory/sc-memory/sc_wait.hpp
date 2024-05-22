@@ -67,9 +67,7 @@ public:
     m_impl.Resolve();
   }
 
-  bool Wait(
-      uint32_t timeout_ms = 5000,
-      DelegateFunc const & initializationFunction = []() -> void {})
+  bool Wait(uint32_t timeout_ms = 5000, DelegateFunc const & initializationFunction = []() -> void {})
   {
     return m_impl.Wait(timeout_ms, initializationFunction);
   }
@@ -87,14 +85,14 @@ class ScWaitEvent : public ScWait
 public:
   ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr)
     : m_event(
-        ctx,
-        addr,
-        std::bind(
-            &ScWaitEvent<EventClassT>::OnEvent,
-            this,
-            std::placeholders::_1,
-            std::placeholders::_2,
-            std::placeholders::_3))
+          ctx,
+          addr,
+          std::bind(
+              &ScWaitEvent<EventClassT>::OnEvent,
+              this,
+              std::placeholders::_1,
+              std::placeholders::_2,
+              std::placeholders::_3))
   {
   }
 

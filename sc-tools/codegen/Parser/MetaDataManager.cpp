@@ -74,7 +74,7 @@ std::string MetaDataManager::GetNativeString(std::string const & key) const
   if (search == m_properties.end())
     return "";
 
-  static const std::regex quotedString(
+  static std::regex const quotedString(
       // opening quote
       "(?:\\s*\")"
       // actual string contents
@@ -98,7 +98,7 @@ std::vector<MetaDataManager::Property> MetaDataManager::ExtractProperties(Cursor
 {
   std::vector<Property> properties;
 
-  static const std::regex propertyList(
+  static std::regex const propertyList(
       // property name
       "([a-zA-Z\\:]+)"
       // optional whitespace before

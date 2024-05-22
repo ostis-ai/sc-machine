@@ -1,7 +1,6 @@
 #include "Sha256.hpp"
 
 #include <cstring>
-#include <fstream>
 
 unsigned int const SHA256::sha256_k[64] =  // UL = uint32
     {0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -126,6 +125,6 @@ std::string sha256(std::string input)
   char buf[2 * SHA256::DIGEST_SIZE + 1];
   buf[2 * SHA256::DIGEST_SIZE] = 0;
   for (size_t i = 0; i < SHA256::DIGEST_SIZE; i++)
-    sprintf(buf + i * 2, "%02x", digest[i]);
-  return std::string(buf);
+    snprintf(buf + i * 2, 3, "%02x", digest[i]);
+  return buf;
 }

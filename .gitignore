@@ -26,6 +26,7 @@ manifest.json
 .vscode
 .idea
 __pycache__
+.venv
 .DS_store
 .antlr
 .cache

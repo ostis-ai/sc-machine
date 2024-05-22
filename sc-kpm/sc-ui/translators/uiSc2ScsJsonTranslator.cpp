@@ -103,7 +103,7 @@ void uiSc2ScsTranslator::runImpl()
     auto constrItEnd = constrAddrs.cend();
     for (auto it = constrAddrs.cbegin(); it != constrItEnd; ++it)
     {
-      const sc_addr addr = *it;
+      sc_addr const addr = *it;
       String idtf;
       bool idtf_exists = getIdentifier(addr, mOutputLanguageAddr, idtf);
 

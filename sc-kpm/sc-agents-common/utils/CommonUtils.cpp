@@ -26,7 +26,7 @@ std::string CommonUtils::getLinkContent(ScMemoryContext * ms_context, ScAddr con
   SC_CHECK_PARAM(scLink, "Invalid link address passed to `getLinkContent`");
 
   std::string result;
-  const ScStreamPtr stream = ms_context->GetLinkContent(scLink);
+  ScStreamPtr const stream = ms_context->GetLinkContent(scLink);
   if (stream->IsValid())
   {
     std::string str;

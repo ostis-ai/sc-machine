@@ -52,7 +52,7 @@ protected:
     explicit ScExecBuffer(sc_char const * command)
     {
       std::array<sc_char, 256> buffer{};
-      std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
+      std::unique_ptr<FILE, int (*)(FILE *)> pipe(popen(command, "r"), pclose);
       if (!pipe)
       {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Invalid ScExec body");
