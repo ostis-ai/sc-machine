@@ -11,7 +11,7 @@ services:
     ports:
       - "8090:8090"
     healthcheck:
-      test: "bash -c 'source /sc-machine/.venv/bin/activate && python3 /sc-machine/scripts/healthcheck.py'"
+      test: "/sc-machine/scripts/healthcheck.sh"
       interval: 5s
       timeout: 10s
       retries: 3
