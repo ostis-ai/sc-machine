@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking changes
 
 - Python dependencies are set up locally in `.venv` environment. Therefore, you should make the following changes: 
-  - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv`;
+  - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv` or use `scripts/healthcheck.sh` 
+encapsulated this logic;
   - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
 
 ### Added
 
+- Script `healthcheck.sh` for `healthcheck.py`
 - Check build and tests on runner-image `ubuntu-24.04`
 - Support for ubuntu-24.04 and macOS 14.4.1
 - Block events mode for sc-memory context
