@@ -9,7 +9,6 @@
 #include "sc_debug.hpp"
 
 #include <vector>
-#include <unordered_set>
 #include <unordered_map>
 #include <iostream>
 
@@ -27,27 +26,27 @@ public:
   {
   }
 
-  inline bool IsEdge() const
+  [[nodiscard]] inline bool IsEdge() const
   {
     return m_type.IsEdge();
   }
 
-  inline ScAddr const & GetAddr() const
+  [[nodiscard]] inline ScAddr const & GetAddr() const
   {
     return m_addr;
   }
 
-  inline std::string const & GetIdtf() const
+  [[nodiscard]] inline std::string const & GetIdtf() const
   {
     return m_idtf;
   }
 
-  inline ScType const & GetType() const
+  [[nodiscard]] inline ScType const & GetType() const
   {
     return m_type;
   }
 
-  inline ScAddr::HashType GetHash() const
+  [[nodiscard]] inline ScAddr::HashType GetHash() const
   {
     return m_addr.Hash();
   }
@@ -62,12 +61,12 @@ public:
     m_trgHash = trgHash;
   }
 
-  inline ScAddr::HashType const & GetSourceHash() const
+  [[nodiscard]] inline ScAddr::HashType const & GetSourceHash() const
   {
     return m_srcHash;
   }
 
-  inline ScAddr::HashType const & GetTargetHash() const
+  [[nodiscard]] inline ScAddr::HashType const & GetTargetHash() const
   {
     return m_trgHash;
   }
@@ -120,7 +119,7 @@ protected:
 
   ScTemplate::Result operator()(ScTemplate * inTemplate)
   {
-    // TODO: add struct blocking
+    // TODO: Add blocking sc-structure
     ScAddrHashSet independentEdges;
 
     // define edges set and independent edges set
@@ -160,9 +159,6 @@ protected:
       for (ScAddr::HashType const & edgeHash : equalDependentEdges)
       {
         ObjectInfo const & edge = m_elements.at(edgeHash);
-        if (!edge.GetType().IsVar())
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Specified sc-edge type must be variable type");
-
         ObjectInfo const & src = m_elements.at(edge.GetSourceHash());
         ObjectInfo const & trg = m_elements.at(edge.GetTargetHash());
 

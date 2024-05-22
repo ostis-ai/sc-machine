@@ -26,6 +26,7 @@ public:
 
   ScTemplateResultCode operator()(ScTemplateGenResult & result)
   {
+    // TODO: Add blocking constant sc-structure
     ScMemoryContextEventsPendingGuard guard(m_context);
 
     PreCheckTemplateAndParams();
@@ -47,7 +48,7 @@ public:
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "You can't generate sc-element with unknown sc-type as the first item of triple "
-                << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "` ") : "") << ".");
+                << (sourceItem.HasName() ? ("`" + sourceItem.m_name + "`") : "") << ".");
 
       ScAddr sourceAddr = TryFindElementReplacement(sourceItem, result.m_replacementConstruction);
       if (sourceItem.IsType() && sourceItem.m_typeValue.IsEdge() && !sourceAddr.IsValid())
@@ -62,7 +63,7 @@ public:
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "You can't generate sc-element with unknown sc-type as the third item of triple "
-                << (targetItem.HasName() ? ("`" + targetItem.m_name + "` ") : "") << ".");
+                << (targetItem.HasName() ? ("`" + targetItem.m_name + "`") : "") << ".");
 
       ScAddr targetAddr = TryFindElementReplacement(targetItem, result.m_replacementConstruction);
       if (targetItem.IsType() && targetItem.m_typeValue.IsEdge() && !targetAddr.IsValid())
@@ -73,11 +74,11 @@ public:
                 << "without specifying source and target "
                    "sc-elements of this sc-connector.");
 
-      if (targetItem.IsType() && targetItem.m_typeValue.IsUnknown())
+      if (connectorItem.IsType() && connectorItem.m_typeValue.IsUnknown())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "You can't generate sc-element with unknown sc-type as the second item of triple "
-                << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "` ") : "") << ".");
+                << (connectorItem.HasName() ? ("`" + connectorItem.m_name + "`") : "") << ".");
 
       ScAddr connectorAddr = TryFindElementReplacement(connectorItem, result.m_replacementConstruction);
       if (connectorAddr.IsValid())
@@ -145,7 +146,7 @@ private:
     return result;
   }
 
-  ScAddr TryFindElementReplacement(ScTemplateItem const & item, ScAddrVector const & resultAddrs) const
+  [[nodiscard]] ScAddr TryFindElementReplacement(ScTemplateItem const & item, ScAddrVector const & resultAddrs) const
   {
     // replace by value from params
     if (!m_params.IsEmpty() && item.HasName())

@@ -711,7 +711,7 @@ private:
           utils::ExceptionInvalidState,
           "Fully variable triple was selected during searching by specified sc-template. It is possible that you have "
           "incorrect sc-template or you can't find constructions in knowledge base using this sc-template. Check "
-          "sc-template");
+          "sc-template.");
 
     size_t checkedCurrentResultEqualTemplateTriplesCount = 0;
 

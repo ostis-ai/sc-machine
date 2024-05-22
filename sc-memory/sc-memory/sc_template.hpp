@@ -73,7 +73,7 @@ struct ScTemplateItem
     return m_itemType == Type::Type;
   }
 
-  inline bool HasName() const
+  [[nodiscard]] inline bool HasName() const
   {
     return !m_name.empty();
   }
@@ -103,15 +103,12 @@ struct ScTemplateItem
       m_name = name;
   }
 
-  Type m_itemType;
+  Type m_itemType = Type::Type;
 
   ScAddr m_addrValue;
   ScType m_typeValue;
   std::string m_name;
 };
-
-//! backward compatibility
-using ScTemplateItemValue = ScTemplateItem;
 
 class ScTemplateTriple
 {
@@ -134,7 +131,7 @@ public:
     m_values[2] = param3;
   }
 
-  ScTemplateTripleItems const & GetValues() const
+  [[nodiscard]] ScTemplateTripleItems const & GetValues() const
   {
     return m_values;
   }
@@ -238,14 +235,14 @@ public:
     return false;
   }
 
-  SC_DEPRECATED(0.9.0, "Don't use this method, it is dangerous. It will be removed in 0.10.0.")
+  [[nodiscard]] SC_DEPRECATED(0.9.0, "Don't use this method, it is dangerous. It will be removed in 0.10.0.")
 
-  _SC_EXTERN ScTemplateItemsToParams GetAll() const
+      _SC_EXTERN ScTemplateItemsToParams GetAll() const
   {
     return m_templateItemsToParams;
   }
 
-  _SC_EXTERN bool IsEmpty() const noexcept
+  [[nodiscard]] _SC_EXTERN bool IsEmpty() const noexcept
   {
     return m_templateItemsToParams.empty();
   }
@@ -304,7 +301,7 @@ public:
       return m_result;
     }
 
-    std::string const & Msg() const
+    [[nodiscard]] std::string const & Msg() const
     {
       return m_msg;
     }
@@ -715,7 +712,7 @@ public:
   }
 
 protected:
-  sc_memory_context const * m_context;
+  sc_memory_context const * m_context = nullptr;
 
   using SearchResults = std::vector<ScAddrVector>;
   SearchResults m_replacementConstructions;
