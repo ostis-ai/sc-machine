@@ -30,7 +30,7 @@ TEST_F(ScTemplateGenApiTest, GenWithResultNotSafeGet)
 TEST_F(ScTemplateGenApiTest, GenWithResultSafeGet)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::LinkVar >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
@@ -393,6 +393,12 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementVarInParams)
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+
+  ScAddr resultAddr;
+  EXPECT_FALSE(result.Get(0, resultAddr));
+  EXPECT_EQ(resultAddr, ScAddr::Empty);
+
+  EXPECT_THROW(result[0], utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedTargetHavingUnextendableType)
