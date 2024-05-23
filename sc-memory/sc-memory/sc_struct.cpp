@@ -24,21 +24,13 @@ bool ScSet::Append(ScAddr const & elAddr)
 
 bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 {
-  if (!HasElement(elAddr))
-  {
-    ScAddr const edge = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
-    if (edge.IsValid())
-    {
-      ScAddr const edge2 = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
-      if (edge2.IsValid())
-        return true;
+  if (HasElement(elAddr))
+    return false;
 
-      // cleanup
-      m_context.EraseElement(edge);
-    }
-  }
+  ScAddr const edge = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
+  ScAddr const edge2 = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
 
-  return false;
+  return true;
 }
 
 bool ScSet::Remove(ScAddr const & elAddr)

@@ -193,4 +193,11 @@ TEST_F(ScTemplateSearchInStructTest, BuildGenSearchTemplateWithConstantTriple)
 
   EXPECT_EQ(searchResult[0][xyEdgeReplAddr], xyEdgeReplAddr);
   EXPECT_EQ(searchResult[0][yReplAddr], yReplAddr);
+
+  ScAddr const & structureAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScStruct structure(*m_ctx, structureAddr);
+  structure << searchResult[0];
+
+  EXPECT_TRUE(structure.HasElement(xyEdgeReplAddr));
+  EXPECT_TRUE(structure.HasElement(yReplAddr));
 }
