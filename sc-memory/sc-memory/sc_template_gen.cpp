@@ -93,7 +93,7 @@ public:
         targetAddr = CreateNodeOrLink(targetItem.m_typeValue.UpConstType());
 
       if (!connectorAddr.IsValid())
-        connectorAddr = m_context.CreateEdge(connectorItem.m_typeValue.UpConstType(), sourceAddr, targetAddr);
+        connectorAddr = CreateConnector(connectorItem.m_typeValue.UpConstType(), sourceAddr, targetAddr);
 
       result.m_replacementConstruction[resultIdx++] = sourceAddr;
       result.m_replacementConstruction[resultIdx++] = connectorAddr;
@@ -115,10 +115,18 @@ private:
   {
     ScAddr addr;
     if (type.IsLink())
-      addr = m_context.CreateLink();
+      addr = m_context.CreateLink(type);
     else
       addr = m_context.CreateNode(type);
 
+    m_createdElements.push_back(addr);
+
+    return addr;
+  }
+
+  ScAddr CreateConnector(ScType const & type, ScAddr const & sourceAddr, ScAddr const & targetAddr)
+  {
+    ScAddr const & addr = m_context.CreateEdge(type, sourceAddr, targetAddr);
     m_createdElements.push_back(addr);
 
     return addr;
@@ -315,7 +323,7 @@ private:
   ScTemplate::ScTemplateTriplesVector const & m_triples;
   ScTemplateParams const & m_params;
   ScMemoryContext & m_context;
-  ScAddrVector m_createdElements;
+  ScAddrList m_createdElements;
 };
 
 ScTemplate::Result ScTemplate::Generate(
