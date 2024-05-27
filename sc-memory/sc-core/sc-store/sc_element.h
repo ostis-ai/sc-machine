@@ -17,13 +17,13 @@ struct _sc_arc_info
   sc_addr next_begin_out_arc;
   sc_addr prev_begin_out_arc;
   sc_addr next_begin_in_arc;
-  sc_addr prev_begin_in_arc;
   sc_addr next_end_out_arc;
-  sc_addr prev_end_out_arc;
   sc_addr next_end_in_arc;
   sc_addr prev_end_in_arc;
+#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
   sc_addr prev_in_arc_from_structure;
   sc_addr next_in_arc_from_structure;
+#endif
 };
 
 /* Structure to store information for sc-elements.
@@ -58,7 +58,9 @@ struct _sc_element
 
   sc_addr first_out_arc;
   sc_addr first_in_arc;
+#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
   sc_addr first_in_arc_from_structure;
+#endif
 
   sc_arc_info arc;
 

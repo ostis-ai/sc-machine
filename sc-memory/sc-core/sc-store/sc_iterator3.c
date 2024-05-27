@@ -499,7 +499,9 @@ success:
 sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 {
   sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
+#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
   sc_bool const search_structure = sc_type_is_structure_and_arc(it->params[0].type, it->params[1].type);
+#endif
 
   sc_addr arc_addr = SC_ADDR_EMPTY;
   sc_result result;
@@ -523,7 +525,11 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     if (result != SC_RESULT_OK)
       goto error;
 
+#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
     arc_addr = search_structure ? el->first_in_arc_from_structure : el->first_in_arc;
+#else
+    arc_addr = el->first_in_arc;
+#endif
   }
   else
   {
@@ -544,7 +550,11 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
     arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
                    ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
                    : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
+#else
+                   : el->arc.next_end_in_arc;
+#endif
 
     if (is_not_same)
       sc_monitor_release_read(arc_monitor);
@@ -571,7 +581,11 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     sc_addr next_in_arc =
         sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
+#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
             : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
+#else
+            : el->arc.next_end_in_arc;
+#endif
 
     if (_sc_memory_context_check_local_and_global_permissions(
             sc_memory_get_context_manager(), it->ctx, SC_CONTEXT_PERMISSIONS_READ, arc_addr)
