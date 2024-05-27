@@ -16,6 +16,7 @@ encapsulated this logic;
 
 ### Added
 
+- Compile option to optimize checking local user permissions
 - Check incidence between sc-connectors and sc-elements substituted into sc-template from sc-template params
 - Generate and search by sc-templates with constant sc-connectors
 - Build sc-templates with constant sc-connectors
