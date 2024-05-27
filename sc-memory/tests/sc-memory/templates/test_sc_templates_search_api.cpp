@@ -452,5 +452,5 @@ TEST_F(ScTemplateSearchApiTest, SearchTemplateWithConstantTriple)
   EXPECT_EQ(result[0][nodeAddr2], nodeAddr2);
 
   for (ScAddr const & addr : result[0])
-    EXPECT_TRUE(addr.IsValid());
+    EXPECT_TRUE(m_ctx->IsElement(addr));
 }

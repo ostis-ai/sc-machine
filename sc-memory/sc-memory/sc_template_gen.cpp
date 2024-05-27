@@ -183,7 +183,8 @@ private:
       ScTemplateItem const & sourceItem,
       ScTemplateItem const & targetItem) const
   {
-    ScAddr foundSourceAddr, foundTargetAddr;
+    ScAddr foundSourceAddr;
+    ScAddr foundTargetAddr;
     m_context.GetEdgeInfo(connectorAddr, foundSourceAddr, foundTargetAddr);
 
     if (sourceItem.IsAddr() && sourceItem.m_addrValue != foundSourceAddr)

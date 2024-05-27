@@ -28,7 +28,7 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
     return false;
 
   ScAddr const edge = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
-  ScAddr const edge2 = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
+  m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
 
   return true;
 }
