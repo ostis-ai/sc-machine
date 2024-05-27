@@ -78,6 +78,18 @@ struct ScTemplateItem
     return !m_name.empty();
   }
 
+  [[nodiscard]] inline std::string GetPrettyName() const
+  {
+    std::string result;
+    if (HasName())
+    {
+      result.reserve(2 + m_name.size());
+      result = "`" + m_name + "`";
+    }
+
+    return result;
+  }
+
   void SetAddr(ScAddr const & addr, sc_char const * replName = nullptr)
   {
     m_itemType = Type::Addr;
