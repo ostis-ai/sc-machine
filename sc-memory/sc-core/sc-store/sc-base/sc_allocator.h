@@ -15,6 +15,8 @@ typedef gconstpointer sc_const_pointer;
 
 #define sc_mem_new(struct_type, n_structs) g_new0(struct_type, n_structs)
 
+#define sc_mem_realloc(mem, n_blocks, n_blocks_bytes) g_realloc_n(mem, n_blocks, n_blocks_bytes);
+
 #define sc_mem_set(pointer, constant, n_structs) memset(pointer, constant, n_structs)
 
 #define sc_mem_cpy(source, dest, n_structs) memcpy(source, dest, n_structs)

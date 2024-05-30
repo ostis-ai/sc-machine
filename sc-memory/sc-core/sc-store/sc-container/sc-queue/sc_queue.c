@@ -8,76 +8,83 @@
 
 #include "../../sc-base/sc_allocator.h"
 
-struct _sc_queue_node
-{
-  void * data;
-  struct _sc_queue_node * next;
-};
+#define INITIAL_CAPACITY 4
 
 struct _sc_queue
 {
-  sc_queue_node * begin;
-  sc_queue_node * end;
+  void ** data;
+  sc_int32 front;
+  sc_int32 back;
+  sc_int32 size;
+  sc_int32 capacity;
 };
 
 void sc_queue_init(sc_queue ** queue)
 {
   *queue = sc_mem_new(sc_queue, 1);
-  (*queue)->begin = null_ptr;
-  (*queue)->end = null_ptr;
+  (*queue)->data = sc_mem_new(void *, INITIAL_CAPACITY);
+  (*queue)->front = 0;
+  (*queue)->back = -1;
+  (*queue)->size = 0;
+  (*queue)->capacity = INITIAL_CAPACITY;
 }
 
 void sc_queue_destroy(sc_queue * queue)
 {
-  while (queue->begin)
-    sc_queue_pop(queue);
+  sc_mem_free(queue->data);
+  queue->front = 0;
+  queue->back = -1;
+  queue->size = 0;
+  queue->capacity = 0;
   sc_mem_free(queue);
+}
+
+void sc_queue_resize(sc_queue * queue)
+{
+  sc_int32 new_capacity = queue->capacity * 2;
+  void ** new_data = sc_mem_realloc(queue->data, new_capacity, new_capacity * sizeof(void *));
+  queue->data = new_data;
+  queue->capacity = new_capacity;
+
+  if (queue->front > queue->back)
+  {
+    for (int i = 0; i < queue->front; ++i)
+      queue->data[i + queue->capacity / 2] = queue->data[i];
+    
+    queue->back += queue->capacity / 2;
+  }
 }
 
 void sc_queue_push(sc_queue * queue, void * data)
 {
-  sc_queue_node * new_node = sc_mem_new(sc_queue_node, 1);
-  new_node->data = data;
-  new_node->next = null_ptr;
-
-  if (!queue->begin || !queue->end)
-  {
-    queue->begin = new_node;
-    queue->end = new_node;
-  }
-  else
-  {
-    queue->end->next = new_node;
-    queue->end = new_node;
-  }
+  if (queue->size == queue->capacity)
+    sc_queue_resize(queue);
+  
+  queue->back = (queue->back + 1) % queue->capacity;
+  queue->data[queue->back] = data;
+  queue->size++;
 }
 
 void * sc_queue_pop(sc_queue * queue)
 {
-  void * data = null_ptr;
-  if (queue->begin == null_ptr)
-    return data;
+  if (queue->size == 0)
+    return null_ptr;
 
-  sc_queue_node * temp = queue->begin;
-  queue->begin = queue->begin->next;
-  data = temp->data;
-  sc_mem_free(temp);
-
-  if (!queue->begin)
-    queue->end = null_ptr;
-
+  void * data = queue->data[queue->front];
+  queue->front = (queue->front + 1) % queue->capacity;
+  queue->size--;
   return data;
 }
 
 void * sc_queue_front(sc_queue * queue)
 {
-  if (queue->begin)
-    return queue->begin->data;
+  if (queue->size == 0)
+    return null_ptr;
 
-  return null_ptr;
+  return queue->data[queue->front];
 }
 
 sc_bool sc_queue_empty(sc_queue * queue)
 {
-  return queue == null_ptr || queue->begin == null_ptr;
+  return queue->size == 0;
 }
