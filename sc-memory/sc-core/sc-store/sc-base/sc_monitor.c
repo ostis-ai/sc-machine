@@ -7,16 +7,9 @@
 #include "sc_monitor.h"
 #include "sc_allocator.h"
 
-typedef enum
-{
-  READER,
-  WRITER
-} sc_request_type;
-
 struct _sc_request
 {
   sc_thread * thread;      // Thread instance of writer or reader
-  sc_request_type type;    // READER or WRITER
   sc_condition condition;  // Condition variable of writer or reader
 };
 
@@ -90,15 +83,15 @@ void sc_monitor_acquire_read(sc_monitor * monitor)
 
   sc_mutex_lock(&monitor->rw_mutex);
 
-  sc_request * current_request = sc_mem_new(sc_request, 1);
-  *current_request = (sc_request){.thread = sc_thread_self(), .type = READER};
-  sc_cond_init(&current_request->condition);
-  sc_queue_push(monitor->queue, current_request);
+  sc_request current_request = (sc_request){.thread = sc_thread_self()};
+  sc_cond_init(&current_request.condition);
+  sc_queue_push(monitor->queue, &current_request);
 
-  while (sc_queue_front(monitor->queue) != current_request || monitor->active_writer)
-    sc_cond_wait(&current_request->condition, &monitor->rw_mutex);
+  while (sc_queue_front(monitor->queue) != &current_request || monitor->active_writer)
+    sc_cond_wait(&current_request.condition, &monitor->rw_mutex);
 
-  sc_mem_free(sc_queue_pop(monitor->queue));
+  sc_request * popped_request = sc_queue_pop(monitor->queue);
+  sc_cond_destroy(&popped_request->condition);
   ++monitor->active_readers;
 
   sc_mutex_unlock(&monitor->rw_mutex);
@@ -128,15 +121,15 @@ void sc_monitor_acquire_write(sc_monitor * monitor)
 
   sc_mutex_lock(&monitor->rw_mutex);
 
-  sc_request * current_request = sc_mem_new(sc_request, 1);
-  *current_request = (sc_request){.thread = sc_thread_self(), .type = WRITER};
-  sc_cond_init(&current_request->condition);
-  sc_queue_push(monitor->queue, current_request);
+  sc_request current_request = (sc_request){.thread = sc_thread_self()};
+  sc_cond_init(&current_request.condition);
+  sc_queue_push(monitor->queue, &current_request);
 
-  while (sc_queue_front(monitor->queue) != current_request || monitor->active_writer || monitor->active_readers > 0)
-    sc_cond_wait(&current_request->condition, &monitor->rw_mutex);
+  while (sc_queue_front(monitor->queue) != &current_request || monitor->active_writer || monitor->active_readers > 0)
+    sc_cond_wait(&current_request.condition, &monitor->rw_mutex);
 
-  sc_mem_free(sc_queue_pop(monitor->queue));
+  sc_request * popped_request = sc_queue_pop(monitor->queue);
+  sc_cond_destroy(&popped_request->condition);
   monitor->active_writer = 1;
 
   sc_mutex_unlock(&monitor->rw_mutex);

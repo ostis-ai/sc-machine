@@ -50,7 +50,7 @@ void sc_queue_resize(sc_queue * queue)
   {
     for (int i = 0; i < queue->front; ++i)
       queue->data[i + queue->capacity / 2] = queue->data[i];
-    
+
     queue->back += queue->capacity / 2;
   }
 }
@@ -59,7 +59,7 @@ void sc_queue_push(sc_queue * queue, void * data)
 {
   if (queue->size == queue->capacity)
     sc_queue_resize(queue);
-  
+
   queue->back = (queue->back + 1) % queue->capacity;
   queue->data[queue->back] = data;
   queue->size++;
