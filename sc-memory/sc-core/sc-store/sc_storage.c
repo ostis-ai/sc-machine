@@ -468,18 +468,18 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
   sc_hash_table * cache_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
 
-  sc_queue * iter_queue;
+  sc_queue iter_queue;
   sc_queue_init(&iter_queue);
   sc_pointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr));
-  sc_queue_push(iter_queue, p_addr);
+  sc_queue_push(&iter_queue, p_addr);
 
-  sc_queue * remove_queue;
+  sc_queue remove_queue;
   sc_queue_init(&remove_queue);
-  sc_queue_push(remove_queue, p_addr);
-  while (!sc_queue_empty(iter_queue))
+  sc_queue_push(&remove_queue, p_addr);
+  while (!sc_queue_empty(&iter_queue))
   {
     // get sc-addr for removing
-    sc_addr_hash addr_int = (sc_addr_hash)sc_queue_pop(iter_queue);
+    sc_addr_hash addr_int = (sc_addr_hash)sc_queue_pop(&iter_queue);
     sc_addr _addr;
     _addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     _addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
@@ -504,8 +504,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
           break;
 
         sc_hash_table_insert(cache_table, p_addr, el2);
-        sc_queue_push(remove_queue, p_addr);
-        sc_queue_push(iter_queue, p_addr);
+        sc_queue_push(&remove_queue, p_addr);
+        sc_queue_push(&iter_queue, p_addr);
       }
 
       _addr = el2->arc.next_begin_out_arc;
@@ -524,8 +524,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
           break;
 
         sc_hash_table_insert(cache_table, p_addr, el2);
-        sc_queue_push(remove_queue, p_addr);
-        sc_queue_push(iter_queue, p_addr);
+        sc_queue_push(&remove_queue, p_addr);
+        sc_queue_push(&iter_queue, p_addr);
       }
 
       _addr = el2->arc.next_end_in_arc;
@@ -534,12 +534,12 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     sc_monitor_release_read(monitor);
   }
 
-  sc_queue_destroy(iter_queue);
+  sc_queue_destroy(&iter_queue);
   sc_hash_table_destroy(cache_table);
 
-  while (!sc_queue_empty(remove_queue))
+  while (!sc_queue_empty(&remove_queue))
   {
-    sc_addr_hash addr_int = (sc_addr_hash)sc_queue_pop(remove_queue);
+    sc_addr_hash addr_int = (sc_addr_hash)sc_queue_pop(&remove_queue);
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
 
@@ -748,7 +748,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     sc_event_notify_element_deleted(addr);
   }
 
-  sc_queue_destroy(remove_queue);
+  sc_queue_destroy(&remove_queue);
 
   result = SC_RESULT_OK;
 error:

@@ -73,7 +73,7 @@ void sc_monitor_destroy(sc_monitor * monitor)
   monitor->active_readers = 0;
   monitor->active_writer = 0;
   monitor->id = 0;
-  sc_queue_destroy(monitor->queue);
+  sc_queue_destroy(&monitor->queue);
 }
 
 void sc_monitor_acquire_read(sc_monitor * monitor)
@@ -85,12 +85,12 @@ void sc_monitor_acquire_read(sc_monitor * monitor)
 
   sc_request current_request = (sc_request){.thread = sc_thread_self()};
   sc_cond_init(&current_request.condition);
-  sc_queue_push(monitor->queue, &current_request);
+  sc_queue_push(&monitor->queue, &current_request);
 
-  while (sc_queue_front(monitor->queue) != &current_request || monitor->active_writer)
+  while (sc_queue_front(&monitor->queue) != &current_request || monitor->active_writer)
     sc_cond_wait(&current_request.condition, &monitor->rw_mutex);
 
-  sc_request * popped_request = sc_queue_pop(monitor->queue);
+  sc_request * popped_request = sc_queue_pop(&monitor->queue);
   sc_cond_destroy(&popped_request->condition);
   ++monitor->active_readers;
 
@@ -107,8 +107,8 @@ void sc_monitor_release_read(sc_monitor * monitor)
   --monitor->active_readers;
   if (monitor->active_readers == 0)
   {
-    if (!sc_queue_empty(monitor->queue))
-      sc_cond_signal(&((sc_request *)sc_queue_front(monitor->queue))->condition);
+    if (!sc_queue_empty(&monitor->queue))
+      sc_cond_signal(&((sc_request *)sc_queue_front(&monitor->queue))->condition);
   }
 
   sc_mutex_unlock(&monitor->rw_mutex);
@@ -123,12 +123,12 @@ void sc_monitor_acquire_write(sc_monitor * monitor)
 
   sc_request current_request = (sc_request){.thread = sc_thread_self()};
   sc_cond_init(&current_request.condition);
-  sc_queue_push(monitor->queue, &current_request);
+  sc_queue_push(&monitor->queue, &current_request);
 
-  while (sc_queue_front(monitor->queue) != &current_request || monitor->active_writer || monitor->active_readers > 0)
+  while (sc_queue_front(&monitor->queue) != &current_request || monitor->active_writer || monitor->active_readers > 0)
     sc_cond_wait(&current_request.condition, &monitor->rw_mutex);
 
-  sc_request * popped_request = sc_queue_pop(monitor->queue);
+  sc_request * popped_request = sc_queue_pop(&monitor->queue);
   sc_cond_destroy(&popped_request->condition);
   monitor->active_writer = 1;
 
@@ -144,8 +144,8 @@ void sc_monitor_release_write(sc_monitor * monitor)
 
   monitor->active_writer = 0;
 
-  if (!sc_queue_empty(monitor->queue))
-    sc_cond_signal(&((sc_request *)sc_queue_front(monitor->queue))->condition);
+  if (!sc_queue_empty(&monitor->queue))
+    sc_cond_signal(&((sc_request *)sc_queue_front(&monitor->queue))->condition);
 
   sc_mutex_unlock(&monitor->rw_mutex);
 }

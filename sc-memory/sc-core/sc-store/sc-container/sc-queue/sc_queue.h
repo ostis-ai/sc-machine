@@ -12,11 +12,19 @@
 #include "../sc_struct_node.h"
 #include "../sc-iterator/sc_container_iterator.h"
 
-typedef struct _sc_queue_node sc_queue_node;
+struct _sc_queue
+{
+  void ** data;
+  sc_int32 front;
+  sc_int32 back;
+  sc_int32 size;
+  sc_int32 capacity;
+};
+
 typedef struct _sc_queue sc_queue;
 
 // Initialize the queue
-void sc_queue_init(sc_queue ** queue);
+void sc_queue_init(sc_queue * queue);
 
 // Destroy the queue
 void sc_queue_destroy(sc_queue * queue);

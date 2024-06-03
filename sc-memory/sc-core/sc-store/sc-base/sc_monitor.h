@@ -18,7 +18,7 @@
 typedef struct
 {
   sc_mutex rw_mutex;         // Mutex for data protection
-  sc_queue * queue;          // Queue of writers and readers
+  sc_queue queue;            // Queue of writers and readers
   sc_uint32 active_readers;  // Number of readers currently accessing the data
   sc_uint32 active_writer;   // Flag to indicate if a writer is writing
   sc_uint32 id;              // Unique identifier of monitor

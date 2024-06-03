@@ -10,23 +10,13 @@
 
 #define INITIAL_CAPACITY 4
 
-struct _sc_queue
+void sc_queue_init(sc_queue * queue)
 {
-  void ** data;
-  sc_int32 front;
-  sc_int32 back;
-  sc_int32 size;
-  sc_int32 capacity;
-};
-
-void sc_queue_init(sc_queue ** queue)
-{
-  *queue = sc_mem_new(sc_queue, 1);
-  (*queue)->data = sc_mem_new(void *, INITIAL_CAPACITY);
-  (*queue)->front = 0;
-  (*queue)->back = -1;
-  (*queue)->size = 0;
-  (*queue)->capacity = INITIAL_CAPACITY;
+  queue->data = sc_mem_new(void *, INITIAL_CAPACITY);
+  queue->front = 0;
+  queue->back = -1;
+  queue->size = 0;
+  queue->capacity = INITIAL_CAPACITY;
 }
 
 void sc_queue_destroy(sc_queue * queue)
@@ -36,7 +26,6 @@ void sc_queue_destroy(sc_queue * queue)
   queue->back = -1;
   queue->size = 0;
   queue->capacity = 0;
-  sc_mem_free(queue);
 }
 
 void sc_queue_resize(sc_queue * queue)
