@@ -33,7 +33,7 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
   storage->last_released_segment_num = 0;
   storage->segments = sc_mem_new(sc_segment *, params->max_loaded_segments);
   sc_monitor_init(&storage->segments_monitor);
-  _sc_monitor_global_init(&storage->addr_monitors_table);
+  _sc_monitor_table_init(&storage->addr_monitors_table);
 
   sc_memory_info("Sc-memory configuration:");
   sc_message("\tClean on initialize: %s", params->clear ? "On" : "Off");
@@ -113,7 +113,7 @@ error:
 
   sc_mem_free(storage->segments);
   sc_monitor_destroy(&storage->segments_monitor);
-  _sc_monitor_global_destroy(&storage->addr_monitors_table);
+  _sc_monitor_table_destroy(&storage->addr_monitors_table);
   sc_mem_free(storage);
   storage = null_ptr;
 
@@ -488,7 +488,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     if (result != SC_RESULT_OK)
       continue;
 
-    sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, _addr);
+    sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, _addr);
     sc_monitor_acquire_read(monitor);
 
     _addr = el->first_out_arc;
@@ -543,7 +543,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
 
-    sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+    sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
     sc_monitor_acquire_write(monitor);
 
     sc_element * element;
@@ -570,8 +570,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
       sc_bool const is_not_loop = SC_ADDR_IS_NOT_EQUAL(begin_addr, end_addr);
 
-      sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, begin_addr);
-      sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, end_addr);
+      sc_monitor * beg_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, begin_addr);
+      sc_monitor * end_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, end_addr);
 
       sc_monitor_acquire_write_n(2, beg_monitor, end_monitor);
 
@@ -579,23 +579,23 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       sc_addr prev_out_arc_addr = element->arc.prev_begin_out_arc;
       sc_monitor * prev_out_arc_monitor = null_ptr;
       if (SC_ADDR_IS_NOT_EQUAL(begin_addr, prev_out_arc_addr) && SC_ADDR_IS_NOT_EQUAL(end_addr, prev_out_arc_addr))
-        prev_out_arc_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, prev_out_arc_addr);
+        prev_out_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, prev_out_arc_addr);
 
       sc_addr next_out_arc_addr = element->arc.next_begin_out_arc;
       sc_monitor * next_out_arc_monitor = null_ptr;
       if (SC_ADDR_IS_NOT_EQUAL(begin_addr, next_out_arc_addr) && SC_ADDR_IS_NOT_EQUAL(end_addr, next_out_arc_addr))
-        next_out_arc_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, next_out_arc_addr);
+        next_out_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, next_out_arc_addr);
 
       // input arcs
       sc_addr prev_in_arc_addr = element->arc.prev_end_in_arc;
       sc_monitor * prev_in_arc_monitor = null_ptr;
       if (SC_ADDR_IS_NOT_EQUAL(begin_addr, prev_in_arc_addr) && SC_ADDR_IS_NOT_EQUAL(end_addr, prev_in_arc_addr))
-        prev_in_arc_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, prev_in_arc_addr);
+        prev_in_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, prev_in_arc_addr);
 
       sc_addr next_in_arc = element->arc.next_end_in_arc;
       sc_monitor * next_in_arc_monitor = null_ptr;
       if (SC_ADDR_IS_NOT_EQUAL(begin_addr, next_in_arc) && SC_ADDR_IS_NOT_EQUAL(end_addr, next_in_arc))
-        next_in_arc_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, next_in_arc);
+        next_in_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, next_in_arc);
 
 #ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
       sc_addr prev_in_arc_from_structure = element->arc.prev_in_arc_from_structure;
@@ -603,14 +603,14 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       if (SC_ADDR_IS_NOT_EQUAL(begin_addr, prev_in_arc_from_structure)
           && SC_ADDR_IS_NOT_EQUAL(end_addr, prev_in_arc_from_structure))
         prev_in_arc_from_structure_monitor =
-            sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, prev_in_arc_from_structure);
+            sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, prev_in_arc_from_structure);
 
       sc_addr next_in_arc_from_structure_addr = element->arc.next_in_arc_from_structure;
       sc_monitor * next_in_arc_from_structure_monitor = null_ptr;
       if (SC_ADDR_IS_NOT_EQUAL(begin_addr, next_in_arc_from_structure_addr)
           && SC_ADDR_IS_NOT_EQUAL(end_addr, next_in_arc_from_structure_addr))
         next_in_arc_from_structure_monitor =
-            sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, next_in_arc_from_structure_addr);
+            sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, next_in_arc_from_structure_addr);
 #endif
 
 #ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
@@ -829,9 +829,9 @@ void _sc_storage_make_elements_incident_to_arc(
   sc_monitor * first_in_arc_monitor = null_ptr;
 
   if (SC_ADDR_IS_NOT_EQUAL(first_out_arc_addr, beg_addr) && SC_ADDR_IS_NOT_EQUAL(first_out_arc_addr, end_addr))
-    first_out_arc_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, first_out_arc_addr);
+    first_out_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_out_arc_addr);
   if (SC_ADDR_IS_NOT_EQUAL(first_in_arc_addr, beg_addr) && SC_ADDR_IS_NOT_EQUAL(first_in_arc_addr, end_addr))
-    first_in_arc_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, first_in_arc_addr);
+    first_in_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_in_arc_addr);
 
   sc_monitor_acquire_write_n(2, first_out_arc_monitor, first_in_arc_monitor);
 
@@ -884,7 +884,7 @@ void _sc_storage_update_structure_arcs(
   if (SC_ADDR_IS_NOT_EQUAL(first_in_accessed_arc_addr, beg_addr)
       && SC_ADDR_IS_NOT_EQUAL(first_in_accessed_arc_addr, end_addr))
     first_in_accessed_arc_monitor =
-        sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, first_in_accessed_arc_addr);
+        sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_in_accessed_arc_addr);
 
   sc_monitor_acquire_write(first_in_accessed_arc_monitor);
 
@@ -946,8 +946,8 @@ sc_addr sc_storage_arc_new_ext(
   sc_bool is_not_loop = SC_ADDR_IS_NOT_EQUAL(beg_addr, end_addr);
 
   // try to lock begin and end elements
-  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, beg_addr);
-  sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, end_addr);
+  sc_monitor * beg_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, beg_addr);
+  sc_monitor * end_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, end_addr);
   sc_monitor_acquire_write_n(2, beg_monitor, end_monitor);
 
   *result = sc_storage_get_element_by_addr(beg_addr, &beg_el);
@@ -991,7 +991,7 @@ sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx
 {
   sc_uint32 count = 0;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * el = null_ptr;
@@ -1010,7 +1010,7 @@ sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx,
 {
   sc_uint32 count = 0;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * el = null_ptr;
@@ -1047,7 +1047,7 @@ sc_result sc_storage_change_element_subtype(sc_memory_context const * ctx, sc_ad
 
   sc_element * el = null_ptr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_write(monitor);
 
   result = sc_storage_get_element_by_addr(addr, &el);
@@ -1074,7 +1074,7 @@ sc_result sc_storage_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, 
 
   sc_element * el = null_ptr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   result = sc_storage_get_element_by_addr(addr, &el);
@@ -1101,7 +1101,7 @@ sc_result sc_storage_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc
 
   sc_element * el = null_ptr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   result = sc_storage_get_element_by_addr(addr, &el);
@@ -1133,7 +1133,7 @@ sc_result sc_storage_get_arc_info(
 
   sc_element * el = null_ptr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   result = sc_storage_get_element_by_addr(addr, &el);
@@ -1175,7 +1175,7 @@ sc_result sc_storage_set_link_content(
   if (string == null_ptr)
     sc_string_empty(string);
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_write(monitor);
 
   result = sc_storage_get_element_by_addr(addr, &el);
@@ -1217,7 +1217,7 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   sc_char * string = null_ptr;
   sc_uint32 string_size = 0;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
   sc_monitor_acquire_read(monitor);
 
   result = sc_storage_get_element_by_addr(addr, &el);

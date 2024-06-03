@@ -13,73 +13,52 @@ struct _sc_request
   sc_condition condition;  // Condition variable of writer or reader
 };
 
-void _sc_monitor_destroy(void * monitor)
-{
-  sc_monitor_destroy((sc_monitor *)monitor);
-  sc_mem_free(monitor);
-}
-
-void _sc_monitor_global_init(sc_monitor_table * table)
-{
-  table->monitors = sc_hash_table_init(
-      sc_hash_table_default_hash_func, sc_hash_table_default_equal_func, null_ptr, _sc_monitor_destroy);
-  sc_mutex_init(&table->rw_mutex);
-  table->global_monitor_id_counter = 0;
-}
-
-void _sc_monitor_global_destroy(sc_monitor_table * table)
-{
-  sc_hash_table_destroy(table->monitors);
-  sc_mutex_destroy(&table->rw_mutex);
-  table->global_monitor_id_counter = 0;
-}
-
-sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr addr)
-{
-  sc_pointer key = (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(addr);
-  return key == null_ptr ? null_ptr : sc_monitor_get_monitor_from_table(table, key);
-}
-
-sc_monitor * sc_monitor_get_monitor_from_table(sc_monitor_table * table, sc_pointer key)
-{
-  sc_mutex_lock(&table->rw_mutex);
-
-  sc_monitor * monitor = (sc_monitor *)sc_hash_table_get(table->monitors, key);
-
-  if (monitor == null_ptr)
-  {
-    monitor = sc_mem_new(sc_monitor, 1);
-    sc_monitor_init(monitor);
-    monitor->id = table->global_monitor_id_counter++;
-    sc_hash_table_insert(table->monitors, key, monitor);
-  }
-
-  sc_mutex_unlock(&table->rw_mutex);
-
-  return monitor;
-}
-
 void sc_monitor_init(sc_monitor * monitor)
 {
   sc_mutex_init(&monitor->rw_mutex);
+  monitor->id = 1;
   monitor->active_readers = 0;
   monitor->active_writer = 0;
   sc_queue_init(&monitor->queue);
+  sc_mutex_init(&monitor->ref_count_mutex);
+  monitor->ref_count = 0;
 }
 
 void sc_monitor_destroy(sc_monitor * monitor)
 {
+  if (monitor == null_ptr || monitor->id == 0)
+    return;
+
   sc_mutex_destroy(&monitor->rw_mutex);
   monitor->active_readers = 0;
   monitor->active_writer = 0;
   monitor->id = 0;
   sc_queue_destroy(&monitor->queue);
+  sc_mutex_destroy(&monitor->ref_count_mutex);
+  monitor->ref_count = 0;
+}
+
+void sc_monitor_acquire(sc_monitor * monitor)
+{
+  sc_mutex_lock(&monitor->ref_count_mutex);
+  monitor->ref_count++;
+  sc_mutex_unlock(&monitor->ref_count_mutex);
+}
+
+void sc_monitor_release(sc_monitor * monitor)
+{
+  sc_mutex_lock(&monitor->ref_count_mutex);
+  if (monitor->ref_count > 0)
+    monitor->ref_count--;
+  sc_mutex_unlock(&monitor->ref_count_mutex);
 }
 
 void sc_monitor_acquire_read(sc_monitor * monitor)
 {
-  if (monitor == null_ptr)
+  if (monitor == null_ptr || monitor->id == 0)
     return;
+
+  sc_monitor_acquire(monitor);
 
   sc_mutex_lock(&monitor->rw_mutex);
 
@@ -99,7 +78,7 @@ void sc_monitor_acquire_read(sc_monitor * monitor)
 
 void sc_monitor_release_read(sc_monitor * monitor)
 {
-  if (monitor == null_ptr)
+  if (monitor == null_ptr || monitor->id == 0)
     return;
 
   sc_mutex_lock(&monitor->rw_mutex);
@@ -112,12 +91,16 @@ void sc_monitor_release_read(sc_monitor * monitor)
   }
 
   sc_mutex_unlock(&monitor->rw_mutex);
+
+  sc_monitor_release(monitor);
 }
 
 void sc_monitor_acquire_write(sc_monitor * monitor)
 {
-  if (monitor == null_ptr)
+  if (monitor == null_ptr || monitor->id == 0)
     return;
+
+  sc_monitor_acquire(monitor);
 
   sc_mutex_lock(&monitor->rw_mutex);
 
@@ -137,7 +120,7 @@ void sc_monitor_acquire_write(sc_monitor * monitor)
 
 void sc_monitor_release_write(sc_monitor * monitor)
 {
-  if (monitor == null_ptr)
+  if (monitor == null_ptr || monitor->id == 0)
     return;
 
   sc_mutex_lock(&monitor->rw_mutex);
@@ -148,6 +131,8 @@ void sc_monitor_release_write(sc_monitor * monitor)
     sc_cond_signal(&((sc_request *)sc_queue_front(&monitor->queue))->condition);
 
   sc_mutex_unlock(&monitor->rw_mutex);
+
+  sc_monitor_release(monitor);
 }
 
 sc_int32 compare_monitors(void const * a, void const * b)
