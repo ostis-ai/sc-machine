@@ -7,6 +7,9 @@
 #include "sc_monitor_table.h"
 #include "sc_allocator.h"
 
+#define SC_MONITOR_TABLE_CLEAN_SIZE_THRESHOLD 10000
+#define SC_MONITOR_TABLE_CLEAN_INTERVAL_CHECK 10
+
 void _sc_monitor_destroy(void * monitor)
 {
   sc_monitor_destroy((sc_monitor *)monitor);
@@ -21,23 +24,23 @@ void * _sc_monitor_table_clean_periodic(void * arg)
 
   while (table->is_working == SC_TRUE)
   {
-    g_usleep(10);
+    g_usleep(SC_MONITOR_TABLE_CLEAN_INTERVAL_CHECK);
 
     sc_mutex_lock(&table->rw_mutex);
     sc_uint64 const size = sc_hash_table_size(table->monitors);
     sc_mutex_unlock(&table->rw_mutex);
-    if (size > 100000)
-    {
-      if (previous_monitors != null_ptr)
-        sc_hash_table_destroy(previous_monitors);
+    if (size < SC_MONITOR_TABLE_CLEAN_SIZE_THRESHOLD)
+      continue;
 
-      sc_mutex_lock(&table->rw_mutex);
-      table->global_monitor_id_counter = 1;
-      previous_monitors = table->monitors;
-      table->monitors = sc_hash_table_init(
-          sc_hash_table_default_hash_func, sc_hash_table_default_equal_func, null_ptr, _sc_monitor_destroy);
-      sc_mutex_unlock(&table->rw_mutex);
-    }
+    if (previous_monitors != null_ptr)
+      sc_hash_table_destroy(previous_monitors);
+
+    sc_mutex_lock(&table->rw_mutex);
+    table->global_monitor_id_counter = 1;
+    previous_monitors = table->monitors;
+    table->monitors = sc_hash_table_init(
+        sc_hash_table_default_hash_func, sc_hash_table_default_equal_func, null_ptr, _sc_monitor_destroy);
+    sc_mutex_unlock(&table->rw_mutex);
   }
 
   if (previous_monitors != null_ptr)

@@ -7,6 +7,8 @@
 #include "sc_monitor.h"
 #include "sc_allocator.h"
 
+#define SC_MONITOR_FREE_PERIOD_CHECK 10
+
 struct _sc_request
 {
   sc_thread * thread;      // Thread instance of writer or reader
@@ -28,6 +30,15 @@ void sc_monitor_destroy(sc_monitor * monitor)
 {
   if (monitor == null_ptr || monitor->id == 0)
     return;
+
+  sc_mutex_lock(&monitor->ref_count_mutex);
+  while (monitor->ref_count > 0)
+  {
+    sc_mutex_unlock(&monitor->ref_count_mutex);
+    g_usleep(SC_MONITOR_FREE_PERIOD_CHECK);
+    sc_mutex_lock(&monitor->ref_count_mutex);
+  }
+  sc_mutex_unlock(&monitor->ref_count_mutex);
 
   sc_mutex_destroy(&monitor->rw_mutex);
   monitor->active_readers = 0;
