@@ -62,12 +62,12 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_mem
     goto error;
   }
 
-  sc_addr init_memory_generated_structure = SC_ADDR_EMPTY;
+  sc_addr init_memory_generated_structure_addr = SC_ADDR_EMPTY;
   if (params->init_memory_generated_upload)
     sc_helper_resolve_system_identifier(
-        s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure);
+        s_memory_default_ctx, params->init_memory_generated_structure, &init_memory_generated_structure_addr);
 
-  if (sc_keynodes_initialize(s_memory_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
+  if (sc_keynodes_initialize(s_memory_default_ctx, init_memory_generated_structure_addr) != SC_RESULT_OK)
     goto error;
 
   _sc_memory_context_assign_context_for_system(memory->context_manager, &memory->myself_addr);
@@ -81,7 +81,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_mem
   sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
   sc_message("\tExtensions path: %s", params->ext_path);
 
-  if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure) != SC_RESULT_OK)
+  if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure_addr) != SC_RESULT_OK)
   {
     sc_memory_error("Error while initialize extensions");
     goto error;
@@ -100,11 +100,11 @@ error:
 sc_result sc_memory_init_ext(
     sc_char const * ext_path,
     sc_char const ** enabled_list,
-    sc_addr const init_memory_generated_structure)
+    sc_addr const init_memory_generated_structure_addr)
 {
   sc_memory_info("Initialize extensions");
 
-  sc_result const ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_structure);
+  sc_result const ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_structure_addr);
 
   switch (ext_res)
   {

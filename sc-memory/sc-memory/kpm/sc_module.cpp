@@ -26,14 +26,14 @@ ScModule * ScModule::Agent(std::pair<ScAgentAbstract *, ScAddr> const & agentInf
   return this;
 }
 
-sc_result ScModule::Initialize()
+sc_result ScModule::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
   SC_LOG_INFO("Initialize " + GetName());
 
   for (auto * keynodes : m_keynodes)
   {
     SC_LOG_INFO("Initialize " + keynodes->GetName());
-    keynodes->Initialize();
+    keynodes->Initialize(ctx, initMemoryGeneratedStructureAddr);
   }
 
   for (auto const & agentInfo : m_agents)
@@ -42,25 +42,25 @@ sc_result ScModule::Initialize()
     ScAddrVector const & addrs = agentInfo.second;
 
     SC_LOG_INFO("Register " + agent->GetName());
-    agent->Register(addrs);
+    agent->Register(ctx, addrs);
   }
 
   return SC_RESULT_OK;
 }
 
-sc_result ScModule::Initialize(std::string const & initMemoryGeneratedStructure)
+sc_result ScModule::Initialize(ScMemoryContext * ctx)
 {
-  return Initialize();
+  return Initialize(ctx, ScAddr::Empty);
 }
 
-sc_result ScModule::Shutdown()
+sc_result ScModule::Shutdown(ScMemoryContext * ctx)
 {
   SC_LOG_INFO("Shutdown " + GetName());
 
   for (auto * keynodes : m_keynodes)
   {
     SC_LOG_INFO("Shutdown " + keynodes->GetName());
-    keynodes->Shutdown();
+    keynodes->Shutdown(ctx);
     delete keynodes;
   }
   m_keynodes.clear();
@@ -70,7 +70,7 @@ sc_result ScModule::Shutdown()
     ScAgentAbstract * agent = agentInfo.first;
 
     SC_LOG_INFO("Unregister " + agent->GetName());
-    agent->Unregister();
+    agent->Unregister(ctx);
     delete agent;
   }
   m_agents.clear();

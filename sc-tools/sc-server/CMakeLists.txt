@@ -18,9 +18,6 @@ target_include_directories(sc-server-lib
     PUBLIC ${SC_SERVER_ROOT}
 )
 
-set(SC_SERVER_MODULE_ROOT "${SC_SERVER_ROOT}/src/sc-server-module")
-sc_codegen_ex(sc-server-lib "${SC_SERVER_MODULE_ROOT}" "${SC_SERVER_MODULE_ROOT}/generated")
-
 add_executable(sc-server "${SC_SERVER_ROOT}/src/main.cpp")
 target_link_libraries(sc-server LINK_PRIVATE sc-server-lib)
 

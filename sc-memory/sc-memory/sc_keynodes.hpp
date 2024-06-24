@@ -29,14 +29,19 @@ public:
   static internal::ScKeynodesRegister m_instance;
 
   /*!
-   * @brief Reminds keynode data to register it after.
-   * @param keynode Pointer to reminding keynode data
+   * @brief Remembers keynode data to register it after.
+   * @param keynode Pointer to remembering keynode data
    * @param idtf Keynode system identifier
    * @param keynodeType Keynode syntactic type
    */
-  void Remind(ScAddr * keynode, std::string const & idtf, ScType const & keynodeType)
+  void Remember(ScAddr * keynode, std::string const & idtf, ScType const & keynodeType)
   {
     m_keynodes.insert({keynode, {idtf, keynodeType}});
+  }
+
+  void Forget(ScAddr * keynode)
+  {
+    m_keynodes.erase(keynode);
   }
 
   /*!
@@ -49,7 +54,7 @@ public:
     {
       ScAddr * keynode = item.first;
       auto const & keynodeInfo = item.second;
-      ScSystemIdentifierFiver fiver;
+      ScSystemIdentifierQuintuple fiver;
       context->HelperResolveSystemIdtf(keynodeInfo.first, keynodeInfo.second, fiver);
       *keynode = fiver.addr1;
 
@@ -61,6 +66,11 @@ public:
         context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr4);
       }
     }
+  }
+
+  void Unregister(ScMemoryContext * context)
+  {
+    SC_UNUSED(context);
   }
 
 protected:
@@ -83,12 +93,17 @@ public:
   explicit ScKeynode<type>(std::string const & sysIdtf)
     : ScAddr(ScAddr::Empty)
   {
-    internal::ScKeynodesRegister::m_instance.Remind(this, sysIdtf, ScType(type));
+    internal::ScKeynodesRegister::m_instance.Remember(this, sysIdtf, ScType(type));
   }
 
   explicit ScKeynode(sc_addr const & addr)
     : ScAddr(addr)
   {
+  }
+
+  ~ScKeynode()
+  {
+    internal::ScKeynodesRegister::m_instance.Forget(this);
   }
 
   ScKeynode(ScKeynode const & other)
@@ -216,14 +231,16 @@ class ScKeynodes : public ScObject
 public:
   SC_KEYNODES_BODY(ScKeynodes)
 
-  _SC_EXTERN sc_result Initialize() override;
-  _SC_EXTERN sc_result Initialize(std::string const & initMemoryGeneratedStructure) override;
-  _SC_EXTERN sc_result Shutdown() override;
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx) override;
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
 
   _SC_EXTERN static ScAddr const & GetResultCodeAddr(sc_result resCode);
   _SC_EXTERN static sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
   _SC_EXTERN static ScAddr const & GetRrelIndex(size_t idx);
   _SC_EXTERN static size_t GetRrelIndexNum();
+
+  _SC_EXTERN static ScKeynode<sc_type_node | sc_type_const> const kMySelf;
 
   /// command keynodes
   _SC_EXTERN static ScKeynodeClass const kQuestionState;
@@ -247,6 +264,15 @@ public:
   _SC_EXTERN static ScKeynodeClass const kScResultErrorIO;
   _SC_EXTERN static ScKeynodeClass const kScResultInvalidState;
   _SC_EXTERN static ScKeynodeClass const kScResultErrorNotFound;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorFullMemory;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorAddrIsNotValid;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorElementIsNotNode;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorElementIsNotLink;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorElementIsNotConnector;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorFileMemoryIO;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorStreamIO;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorInvalidSystemIdentifier;
+  _SC_EXTERN static ScKeynodeClass const kScResultErrorDuplicatedSystemIdentifier;
 
   /// link binary types
   _SC_EXTERN static ScKeynodeClass const kBinaryType;

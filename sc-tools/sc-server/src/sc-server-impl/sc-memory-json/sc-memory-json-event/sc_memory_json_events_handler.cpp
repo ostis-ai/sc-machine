@@ -11,8 +11,8 @@ std::map<std::string, ScEvent::Type> ScMemoryJsonEventsHandler::events = {
     {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
     {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
     {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
-    {"content_change", ScEvent::Type::ContentChanged},
-    {"delete_element", ScEvent::Type::EraseElement},
+    {"content_change", ScEvent::Type::ChangeContent},
+    {"delete_element", ScEvent::Type::RemoveElement},
 };
 
 ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx)
@@ -60,7 +60,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
                                 ScServerSessionId const & handle,
                                 ScAddr const & addr,
                                 ScAddr const & edgeAddr,
-                                ScAddr const & otherAddr) -> sc_result {
+                                ScAddr const & otherAddr) -> sc_result
+  {
     ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
     ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
     sc_bool const event = SC_TRUE;

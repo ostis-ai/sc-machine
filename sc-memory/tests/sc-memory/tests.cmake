@@ -72,13 +72,3 @@ make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/templates
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-memory-template-tests)
 endif()
-
-make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/codegen
-    NAME sc-memory-codegen-tests
-    DEPENDS sc-memory
-    INCLUDES ${CMAKE_CURRENT_LIST_DIR}/_test
-)
-
-if(${SC_CLANG_FORMAT_CODE})
-    target_clangformat_setup(sc-memory-codegen-tests)
-endif()

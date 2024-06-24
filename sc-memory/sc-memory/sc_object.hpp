@@ -24,7 +24,7 @@ public:
 
   _SC_EXTERN virtual std::string GetName() = 0;
 
-  _SC_EXTERN virtual sc_result Initialize() = 0;
-  _SC_EXTERN virtual sc_result Initialize(std::string const & initMemoryGeneratedStructure = "") = 0;
-  _SC_EXTERN virtual sc_result Shutdown() = 0;
+  _SC_EXTERN virtual sc_result Initialize(ScMemoryContext * ctx) = 0;
+  _SC_EXTERN virtual sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) = 0;
+  _SC_EXTERN virtual sc_result Shutdown(ScMemoryContext * ctx) = 0;
 };

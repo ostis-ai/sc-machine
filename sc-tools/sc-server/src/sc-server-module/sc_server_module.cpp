@@ -8,12 +8,13 @@
 
 #include "../sc_server_setup.hpp"
 
-ScParams ScServerModule::ms_serverParams;
-
-SC_IMPLEMENT_MODULE(ScServerModule)
-
-sc_result ScServerModule::InitializeImpl()
+extern "C"
 {
+_SC_EXTERN sc_result
+sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure_addr)
+{
+  ScServerModuleInstance->Initialize(ScMemory::ms_globalContext, init_memory_generated_structure_addr);
+
   // It is backward compatible logic. When all platform-dependent components will be configured from kb it will be
   // removed.
   ScConfig config{ScMemory::ms_configPath, {{"log_file"}}};
@@ -26,9 +27,17 @@ sc_result ScServerModule::InitializeImpl()
   return SC_RESULT_OK;
 }
 
-sc_result ScServerModule::ShutdownImpl()
+_SC_EXTERN sc_result sc_module_shutdown()
 {
   StopServer(m_server);
+  m_server = nullptr;
+
+  ScServerModuleInstance->Shutdown(ScMemory::ms_globalContext);
+
+  ScModule::ms_coreModule.m_modules.remove(ScServerModuleInstance);
+  delete ScServerModuleInstance;
+  ScServerModuleInstance = nullptr;
 
   return SC_RESULT_OK;
+}
 }

@@ -99,7 +99,7 @@ TEST_F(ScMemoryTest, formActionNode)
 
 TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
 {
-  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
+  SC_AGENT_REGISTER(&*m_ctx, FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
@@ -124,12 +124,12 @@ TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  SC_AGENT_UNREGISTER(FinishActionTestAgent);
+  SC_AGENT_UNREGISTER(&*m_ctx, FinishActionTestAgent);
 }
 
 TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 {
-  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
+  SC_AGENT_REGISTER(&*m_ctx, FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
 
@@ -150,12 +150,12 @@ TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  SC_AGENT_UNREGISTER(FinishActionTestAgent);
+  SC_AGENT_UNREGISTER(&*m_ctx, FinishActionTestAgent);
 }
 
 TEST_F(ScMemoryTest, applyGeneratedAction)
 {
-  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
+  SC_AGENT_REGISTER(&*m_ctx, FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
@@ -185,12 +185,12 @@ TEST_F(ScMemoryTest, applyGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  SC_AGENT_UNREGISTER(FinishActionTestAgent);
+  SC_AGENT_UNREGISTER(&*m_ctx, FinishActionTestAgent);
 }
 
 TEST_F(ScMemoryTest, applyExistingAction)
 {
-  SC_AGENT_REGISTER(FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
+  SC_AGENT_REGISTER(&*m_ctx, FinishActionTestAgent, scAgentsCommon::CoreKeynodes::question_initiated);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
 
@@ -199,5 +199,5 @@ TEST_F(ScMemoryTest, applyExistingAction)
   EXPECT_TRUE(m_ctx->HelperCheckEdge(
       scAgentsCommon::CoreKeynodes::action_finished, actionNode, ScType::EdgeAccessConstPosPerm));
 
-  SC_AGENT_UNREGISTER(FinishActionTestAgent);
+  SC_AGENT_UNREGISTER(&*m_ctx, FinishActionTestAgent);
 }

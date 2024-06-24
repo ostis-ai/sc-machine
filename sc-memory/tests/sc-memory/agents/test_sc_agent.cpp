@@ -97,20 +97,20 @@ SC_AGENT_IMPLEMENTATION(ATestCheckResult)
   return SC_RESULT_OK;
 }
 
-void ATestCheckResult::OnSuccess(const ScAddr & listenAddr, const ScAddr & edgeAddr, const ScAddr & otherAddr)
+void ATestCheckResult::OnSuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
   m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msAgentSet, msAgentKeynode);
 }
 
-void ATestCheckResult::OnUnsuccess(const ScAddr & listenAddr, const ScAddr & edgeAddr, const ScAddr & otherAddr)
+void ATestCheckResult::OnUnsuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
 {
   m_memoryCtx.CreateEdge(ScType::EdgeAccessConstFuzPerm, msAgentSet, msAgentKeynode);
 }
 
 void ATestCheckResult::OnError(
-    const ScAddr & listenAddr,
-    const ScAddr & edgeAddr,
-    const ScAddr & otherAddr,
+    ScAddr const & listenAddr,
+    ScAddr const & edgeAddr,
+    ScAddr const & otherAddr,
     sc_result errorCode)
 {
   m_memoryCtx.CreateEdge(ScType::EdgeAccessConstNegPerm, msAgentSet, msAgentKeynode);

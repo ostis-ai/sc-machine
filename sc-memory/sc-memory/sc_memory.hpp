@@ -103,8 +103,8 @@ public:
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
-  ScMemoryContext(ScMemoryContext const & other) = delete;
-  ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
+  ScMemoryContext(ScMemoryContext const & other);
+  ScMemoryContext & operator=(ScMemoryContext const & other);
 
   _SC_EXTERN ScAddr GetUserAddr();
 
@@ -1272,12 +1272,11 @@ public:
 
 protected:
   friend class ScMemory;
-  friend class ScAgent;
   friend class ScServerMessageAction;
 
   _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr);
 
-private:
+protected:
   sc_memory_context * m_context;
   std::string m_name;
 };

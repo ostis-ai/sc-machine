@@ -68,11 +68,16 @@ TEST_F(ScWaitTest, valid)
 {
   WaitTestData data(m_addr);
   ScWaitEvent<ScEventAddInputEdge> waiter(*m_ctx, m_addr);
+  waiter.SetOnWaitStartDelegate(
+      [&data]()
+      {
+        EmitEvent(data);
+      });
   EXPECT_TRUE(waiter.Wait(
       5000,
       [&data]()
       {
-        EmitEvent(data);
+        data.m_isDone = true;
       }));
   EXPECT_TRUE(data.m_isDone);
 }
@@ -86,13 +91,18 @@ TEST_F(ScWaitTest, CondValid)
 {
   WaitTestData data(m_addr);
   ScWaitCondition<ScEventAddInputEdge> waiter(
-      *m_ctx, m_addr, [](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result {
+      *m_ctx,
+      m_addr,
+      [](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
+      {
         return SC_RESULT_OK;
       });
 
-  waiter.SetOnWaitStartDelegate([&data]() {
-    EmitEvent(data);
-  });
+  waiter.SetOnWaitStartDelegate(
+      [&data]()
+      {
+        EmitEvent(data);
+      });
 
   EXPECT_TRUE(waiter.Wait());
   EXPECT_TRUE(data.m_isDone);
@@ -103,21 +113,28 @@ TEST_F(ScWaitTest, CondValidFalse)
   WaitTestData data(m_addr);
 
   ScWaitCondition<ScEventAddInputEdge> waiter(
-      *m_ctx, m_addr, [](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result {
+      *m_ctx,
+      m_addr,
+      [](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
+      {
         return SC_RESULT_NO;
       });
 
-  waiter.SetOnWaitStartDelegate([&data]() {
-    EmitEvent(data);
-  });
+  waiter.SetOnWaitStartDelegate(
+      [&data]()
+      {
+        EmitEvent(data);
+      });
 
   sc_bool result = SC_TRUE;
   EXPECT_FALSE(waiter.Wait(
       2000,
-      [&result]() {
+      [&result]()
+      {
         result = SC_TRUE;
       },
-      [&result]() {
+      [&result]()
+      {
         result = SC_FALSE;
       }));
   EXPECT_FALSE(result);
@@ -129,12 +146,17 @@ TEST_F(ScWaitTest, ActionFinished)
   WaitTestData data(m_addr, ScKeynodes::kQuestionFinished);
 
   ScWaitActionFinished waiter(*m_ctx, m_addr);
+  waiter.SetOnWaitStartDelegate(
+      [&data]()
+      {
+        EmitEvent(data);
+      });
 
   EXPECT_TRUE(waiter.Wait(
       5000,
       [&data]()
       {
-        EmitEvent(data);
+        data.m_isDone = true;
       }));
   EXPECT_TRUE(data.m_isDone);
 }
