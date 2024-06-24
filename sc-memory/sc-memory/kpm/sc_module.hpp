@@ -82,14 +82,14 @@ public:
   /*! Initializes all module keynodes and agents
    * @returns Result of initializing
    */
-  _SC_EXTERN sc_result Initialize() override;
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx) override;
 
-  _SC_EXTERN sc_result Initialize(std::string const & initMemoryGeneratedStructure) override;
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
 
   /*! Shutdowns all module keynodes and agents
    * @returns Result of shutdown
    */
-  _SC_EXTERN sc_result Shutdown() override;
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
 
   /// Registered modules
   std::list<ScModule *> m_modules;
@@ -124,20 +124,21 @@ protected:
 #define SC_MODULE_REGISTER(__ModuleName__) \
   extern "C" \
   { \
-    _SC_EXTERN sc_result sc_module_initialize() \
-    { \
-      __ModuleName__##Instance->Initialize(); \
-      return SC_RESULT_OK; \
-    } \
+  _SC_EXTERN sc_result \
+  sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure_addr) \
+  { \
+    __ModuleName__##Instance->Initialize(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
+    return SC_RESULT_OK; \
+  } \
 \
-    _SC_EXTERN sc_result sc_module_shutdown() \
-    { \
-      __ModuleName__##Instance->Shutdown(); \
-      ScModule::ms_coreModule.m_modules.remove(__ModuleName__##Instance); \
-      delete __ModuleName__##Instance; \
-      __ModuleName__##Instance = nullptr; \
-      return SC_RESULT_OK; \
-    } \
+  _SC_EXTERN sc_result sc_module_shutdown() \
+  { \
+    __ModuleName__##Instance->Shutdown(ScMemory::ms_globalContext); \
+    ScModule::ms_coreModule.m_modules.remove(__ModuleName__##Instance); \
+    delete __ModuleName__##Instance; \
+    __ModuleName__##Instance = nullptr; \
+    return SC_RESULT_OK; \
+  } \
   } \
   struct __ModuleName__##Dummy \
   { \

@@ -15,11 +15,20 @@
 class ScAgentContext : public ScMemoryContext
 {
 public:
-  _SC_EXTERN explicit ScAgentContext(sc_uint8 accessLevels, std::string const & name = "")
-    : ScMemoryContext(accessLevels, name)
+  _SC_EXTERN explicit ScAgentContext()
+    : ScAgentContext(ScAddr::Empty)
+  {
+  }
+
+  _SC_EXTERN explicit ScAgentContext(sc_memory_context * context)
+    : ScMemoryContext(context)
     , m_cache(*this)
   {
   }
+
+  ScAgentContext(ScAgentContext const & other);
+
+  ScAgentContext & operator=(ScAgentContext const & other);
 
   _SC_EXTERN ScAddr GetActionArgument(ScAddr const & actionAddr, sc_uint16 number);
 
@@ -29,7 +38,7 @@ public:
   _SC_EXTERN std::shared_ptr<ScWaitCondition<ScEventClass>> InitializeEvent(
       ScAddr const & descriptionAddr,
       std::function<void(void)> const & cause,
-      std::function<sc_result(const ScAddr &, const ScAddr &, const ScAddr &)> check)
+      std::function<sc_result(ScAddr const &, ScAddr const &, ScAddr const &)> check)
   {
     cause();
     return std::make_shared<ScWaitCondition<ScEventClass>>(*this, descriptionAddr, check);
@@ -41,4 +50,12 @@ public:
 
 protected:
   utils::ScKeynodeCache m_cache;
+
+  friend class ScAgentAbstract;
+
+  _SC_EXTERN explicit ScAgentContext(ScAddr const & userAddr)
+    : ScMemoryContext(userAddr)
+    , m_cache(*this)
+  {
+  }
 };

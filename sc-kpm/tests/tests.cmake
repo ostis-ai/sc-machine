@@ -3,7 +3,7 @@ set(SC_UTILS_TEST_AGENTS_SOURCES
     "${SC_UTILS_TEST_AGENTS_SRC}/FinishActionTestAgent.cpp"
     "${SC_UTILS_TEST_AGENTS_SRC}/FinishActionTestAgent.hpp"
 )
-add_library(sc-utils-test-agents SHARED ${SC_UTILS_TEST_AGENTS_SOURCES})
+add_library(sc-utils-test-agents STATIC ${SC_UTILS_TEST_AGENTS_SOURCES})
 target_link_libraries(sc-utils-test-agents LINK_PUBLIC sc-agents-common)
 target_include_directories(sc-utils-test-agents PUBLIC ${SC_UTILS_TEST_AGENTS_SRC})
 

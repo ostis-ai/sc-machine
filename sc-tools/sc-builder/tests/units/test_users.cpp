@@ -44,7 +44,8 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [&userContext, &isAuthenticated](
+          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
@@ -55,7 +56,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
         EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
         EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr));
 
-        return isAuthenticated = true;
+        return (isAuthenticated = true) ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -76,7 +77,8 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [&userContext, &isAuthenticated](
+          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
@@ -89,7 +91,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
             userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr),
             utils::ExceptionInvalidState);
 
-        return isAuthenticated = true;
+        return (isAuthenticated = true) ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
   TestAuthenticationRequestUser(m_ctx, userAddr);

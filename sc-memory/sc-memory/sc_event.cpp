@@ -41,12 +41,12 @@ ScEvent::ScEvent(
 ScEvent::ScEvent(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    Type eventType,
-    DelegateFuncWithUserAddr func /*= DelegateFuncWithUserAddr()*/)
+    Type const & eventType,
+    DelegateFuncWithUserAddr const & func /*= DelegateFuncWithUserAddr()*/)
 {
   m_delegateExt = std::move(func);
-  m_event = sc_event_with_user_new(
-      *ctx, *addr, ConvertEventType(eventType), (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
+  m_event =
+      sc_event_with_user_new(*ctx, *addr, eventType, (sc_pointer)this, &ScEvent::Handler, &ScEvent::HandlerDelete);
 }
 
 ScEvent::~ScEvent()

@@ -6,7 +6,7 @@
 
 TEST_F(ScAgentTest, SetGetActionArgument)
 {
-  auto * context = new ScAgentContext(sc_access_lvl_make_max);
+  auto * context = new ScAgentContext();
 
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & argumentAddr = context->CreateNode(ScType::NodeConst);
@@ -20,7 +20,7 @@ TEST_F(ScAgentTest, SetGetActionArgument)
 
 TEST_F(ScAgentTest, SetGetSetGetActionArgument)
 {
-  auto * context = new ScAgentContext(sc_access_lvl_make_max);
+  auto * context = new ScAgentContext();
 
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & argumentAddr = context->CreateNode(ScType::NodeConst);
@@ -39,7 +39,7 @@ TEST_F(ScAgentTest, SetGetSetGetActionArgument)
 
 TEST_F(ScAgentTest, GetEmptyActionArgument)
 {
-  auto * context = new ScAgentContext(sc_access_lvl_make_max);
+  auto * context = new ScAgentContext();
 
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
 
@@ -51,7 +51,7 @@ TEST_F(ScAgentTest, GetEmptyActionArgument)
 
 TEST_F(ScAgentTest, FormNewStructure)
 {
-  auto * context = new ScAgentContext(sc_access_lvl_make_max);
+  auto * context = new ScAgentContext();
 
   ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr2 = context->CreateNode(ScType::NodeConst);
@@ -67,7 +67,7 @@ TEST_F(ScAgentTest, FormNewStructure)
 
 TEST_F(ScAgentTest, AppendToStructure)
 {
-  auto * context = new ScAgentContext(sc_access_lvl_make_max);
+  auto * context = new ScAgentContext();
 
   ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr2 = context->CreateNode(ScType::NodeConst);
@@ -89,7 +89,7 @@ TEST_F(ScAgentTest, AppendToStructure)
 
 TEST_F(ScAgentTest, FormActionAnswer)
 {
-  auto * context = new ScAgentContext(sc_access_lvl_make_max);
+  auto * context = new ScAgentContext();
 
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
@@ -100,7 +100,7 @@ TEST_F(ScAgentTest, FormActionAnswer)
   context->FormActionAnswer(actionAddr, structAddr);
 
   ScTemplate templ;
-  templ.TripleWithRelation(
+  templ.Quintuple(
       actionAddr, ScType::EdgeDCommonVar, ScType::NodeVar, ScType::EdgeAccessVarPosPerm, ScKeynodes::kNrelAnswer);
   ScTemplateSearchResult result;
   context->HelperSearchTemplate(templ, result);

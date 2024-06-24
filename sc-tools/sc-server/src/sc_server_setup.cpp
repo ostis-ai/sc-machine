@@ -107,7 +107,7 @@ try
   SC_LOG_WARNING(
       "Use the common configuration file `<config-name>.ini` to set port and host of sc-server. `Options `--host` and "
       "`--port` are deprecated as well.");
-  ScServerModule::ms_serverParams = ScParams{options, {{"host", "h"}, {"port", "p"}}};
+  ms_serverParams = ScParams{options, {{"host", "h"}, {"port", "p"}}};
 
   std::atomic_bool isRun;
   if (ScMemory::Initialize(memoryConfig.GetParams()) == SC_FALSE)

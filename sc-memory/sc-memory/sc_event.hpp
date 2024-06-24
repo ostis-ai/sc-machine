@@ -9,6 +9,7 @@
 #include <functional>
 
 #include "sc_addr.hpp"
+#include "sc_type.hpp"
 #include "sc_utils.hpp"
 
 #include "utils/sc_lock.hpp"
@@ -53,6 +54,7 @@ public:
     {
       return (m_realType == other.m_realType);
     }
+
     inline sc_bool operator!=(Type const & other) const
     {
       return (m_realType != other.m_realType);
@@ -62,6 +64,7 @@ public:
     {
       return Type(m_realType | other.m_realType);
     }
+
     inline Type operator&(Type const & other) const
     {
       return Type(m_realType & other.m_realType);
@@ -72,6 +75,7 @@ public:
       m_realType |= other.m_realType;
       return *this;
     }
+
     inline Type & operator&=(Type const & other)
     {
       m_realType &= other.m_realType;
@@ -100,7 +104,7 @@ public:
   explicit _SC_EXTERN ScEvent(
       class ScMemoryContext const & ctx,
       ScAddr const & addr,
-      Type const &  eventType,
+      Type const & eventType,
       DelegateFuncWithUserAddr const & func = DelegateFuncWithUserAddr());
   virtual _SC_EXTERN ~ScEvent();
 

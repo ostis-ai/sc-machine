@@ -7,24 +7,12 @@
 #pragma once
 
 #include <sc-memory/sc_memory.hpp>
-#include <sc-memory/sc_module.hpp>
+#include <sc-memory/kpm/sc_module.hpp>
 
 #include "../sc-server-impl/sc_server.hpp"
 #include "sc_memory_config.hpp"
 
-#include "sc_server_module.generated.hpp"
+SC_MODULE(ScServerModule);
 
-class ScServerModule : public ScModule
-{
-  SC_CLASS(LoadOrder(1))
-  SC_GENERATED_BODY()
-
-  virtual sc_result InitializeImpl() override;
-
-  virtual sc_result ShutdownImpl() override;
-
-  std::shared_ptr<ScServer> m_server;
-
-public:
-  static ScParams ms_serverParams;
-};
+static std::shared_ptr<ScServer> m_server;
+static ScParams ms_serverParams;

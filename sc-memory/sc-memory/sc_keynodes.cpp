@@ -12,6 +12,8 @@ internal::ScKeynodesRegister internal::ScKeynodesRegister::m_instance;
 size_t const kKeynodeRrelListNum = 20;
 std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 
+ScKeynode<sc_type_node | sc_type_const> const ScKeynodes::kMySelf("myself");
+
 ScKeynodeClass const ScKeynodes::kQuestionState("question_state");
 ScKeynodeClass const ScKeynodes::kQuestionInitiated("question_initiated");
 ScKeynodeClass const ScKeynodes::kQuestionProgressed("question_progressed");
@@ -32,6 +34,16 @@ ScKeynodeClass const ScKeynodes::kScResultErrorInvalidType("sc_result_error_inva
 ScKeynodeClass const ScKeynodes::kScResultErrorIO("sc_result_error_io");
 ScKeynodeClass const ScKeynodes::kScResultInvalidState("sc_result_error_invalid_state");
 ScKeynodeClass const ScKeynodes::kScResultErrorNotFound("sc_result_error_not_found");
+ScKeynodeClass const ScKeynodes::kScResultErrorFullMemory("sc_result_error_full_memory");
+ScKeynodeClass const ScKeynodes::kScResultErrorAddrIsNotValid("sc_result_error_addr_is_not_valid");
+ScKeynodeClass const ScKeynodes::kScResultErrorElementIsNotNode("sc_result_error_element_is_not_node");
+ScKeynodeClass const ScKeynodes::kScResultErrorElementIsNotLink("sc_result_error_element_is_not_link");
+ScKeynodeClass const ScKeynodes::kScResultErrorElementIsNotConnector("sc_result_error_element_is_not_corrector");
+ScKeynodeClass const ScKeynodes::kScResultErrorFileMemoryIO("sc_result_error_file_memory_io");
+ScKeynodeClass const ScKeynodes::kScResultErrorStreamIO("sc_result_error_stream_io");
+ScKeynodeClass const ScKeynodes::kScResultErrorInvalidSystemIdentifier("sc_result_error_invalid_system_identifier");
+ScKeynodeClass const ScKeynodes::kScResultErrorDuplicatedSystemIdentifier(
+    "sc_result_error_duplicated_system_identifier");
 
 ScKeynodeClass const ScKeynodes::kBinaryType("binary_type");
 ScKeynodeClass const ScKeynodes::kBinaryFloat("binary_float");
@@ -49,21 +61,14 @@ ScKeynodeClass const ScKeynodes::kBinaryCustom("binary_custom");
 
 ScKeynodeClass const ScKeynodes::kEmptyClass;
 
-sc_result ScKeynodes::Initialize()
+sc_result ScKeynodes::Initialize(ScMemoryContext * ctx)
 {
-  return Initialize("");
+  return Initialize(ctx, ScAddr::Empty);
 }
 
-sc_result ScKeynodes::Initialize(std::string const & initMemoryGeneratedStructure)
+sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
-  ScMemoryContext ctx(sc_access_lvl_make_min, "ScKeynodes::Init");
-
-  ScAddr initMemoryGeneratedStructureAddr;
-  if (!initMemoryGeneratedStructure.empty())
-    initMemoryGeneratedStructureAddr =
-        ctx.HelperResolveSystemIdtf(initMemoryGeneratedStructure, ScType::NodeConstStruct);
-
-  internal::ScKeynodesRegister::m_instance.Register(&ctx, initMemoryGeneratedStructureAddr);
+  internal::ScKeynodesRegister::m_instance.Register(ctx, initMemoryGeneratedStructureAddr);
 
   sc_bool result;
 
@@ -72,13 +77,13 @@ sc_result ScKeynodes::Initialize(std::string const & initMemoryGeneratedStructur
   {
     ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
     result = result && resAddr.IsValid();
-    if (!ctx.HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
+    if (!ctx->HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
     {
-      ScAddr const & edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
+      ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
       result = result && edge.IsValid();
 
-      if (initMemoryGeneratedStructureAddr.IsValid() &&
-          !ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, edge).IsValid())
+      if (initMemoryGeneratedStructureAddr.IsValid()
+          && !ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, edge).IsValid())
         result = SC_FALSE;
     }
   }
@@ -87,7 +92,7 @@ sc_result ScKeynodes::Initialize(std::string const & initMemoryGeneratedStructur
   for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
   {
     ScAddr & item = kKeynodeRrelList[i];
-    item = ctx.HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
+    item = ctx->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
     if (!item.IsValid())
       result = SC_FALSE;
   }
@@ -96,7 +101,7 @@ sc_result ScKeynodes::Initialize(std::string const & initMemoryGeneratedStructur
   ScAddr states[] = {kQuestionInitiated, kQuestionProgressed, kQuestionStopped, kQuestionFinished};
   for (auto const & a : states)
   {
-    if (!ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kQuestionState, a).IsValid())
+    if (!ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, kQuestionState, a).IsValid())
       result = SC_FALSE;
   }
 
@@ -116,20 +121,22 @@ sc_result ScKeynodes::Initialize(std::string const & initMemoryGeneratedStructur
       kBinaryCustom};
   for (auto const & b : binaryTypes)
   {
-    ScAddr const & edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, b);
+    ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, b);
     if (!edge.IsValid())
       result = SC_FALSE;
 
-    if (initMemoryGeneratedStructureAddr.IsValid() &&
-        !ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, edge).IsValid())
+    if (initMemoryGeneratedStructureAddr.IsValid()
+        && !ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, edge).IsValid())
       result = SC_FALSE;
   }
 
   return result ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
-sc_result ScKeynodes::Shutdown()
+sc_result ScKeynodes::Shutdown(ScMemoryContext * ctx)
 {
+  internal::ScKeynodesRegister::m_instance.Unregister(ctx);
+
   return SC_RESULT_OK;
 }
 
@@ -161,9 +168,7 @@ ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)
     break;
   }
 
-  default:
-    return kScResultError;
-  }
+  return kScResultError;
 }
 
 sc_result ScKeynodes::GetResultCodeByAddr(ScAddr const & resultClassAddr)

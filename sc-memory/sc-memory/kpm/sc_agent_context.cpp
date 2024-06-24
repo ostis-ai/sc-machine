@@ -10,6 +10,20 @@
 
 #include "sc-memory/sc_keynodes.hpp"
 
+ScAgentContext::ScAgentContext(ScAgentContext const & other)
+  : m_cache(*this)
+{
+  this->m_context = other.m_context;
+  this->m_name = other.m_name;
+}
+
+ScAgentContext & ScAgentContext::operator=(ScAgentContext const & other)
+{
+  this->m_context = other.m_context;
+  this->m_name = other.m_name;
+  return *this;
+}
+
 ScAddr ScAgentContext::GetActionArgument(ScAddr const & actionAddr, sc_uint16 number)
 {
   std::stringstream stream;
@@ -49,9 +63,13 @@ ScAddr ScAgentContext::FormStructure(ScAddrVector const & addrVector, ScAddr ans
   if (answerAddr.IsValid() == SC_FALSE)
     answerAddr = CreateNode(ScType::NodeConstStruct);
 
-  std::for_each(addrVector.begin(), addrVector.end(), [this, &answerAddr](const auto & addr) {
-    CreateEdge(ScType::EdgeAccessConstPosPerm, answerAddr, addr);
-  });
+  std::for_each(
+      addrVector.begin(),
+      addrVector.end(),
+      [this, &answerAddr](auto const & addr)
+      {
+        CreateEdge(ScType::EdgeAccessConstPosPerm, answerAddr, addr);
+      });
 
   return answerAddr;
 }

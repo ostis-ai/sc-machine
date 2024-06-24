@@ -96,18 +96,22 @@ public:
   }
 
 protected:
-  sc_result Initialize() override
+  sc_result Initialize(ScMemoryContext * ctx) override
   {
+    SC_UNUSED(ctx);
     return SC_RESULT_OK;
   }
 
-  sc_result Initialize(std::string const & initMemoryGeneratedStructure) override
+  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override
   {
+    SC_UNUSED(ctx);
+    SC_UNUSED(initMemoryGeneratedStructureAddr);
     return SC_RESULT_OK;
   }
 
-  sc_result Shutdown() override
+  sc_result Shutdown(ScMemoryContext * ctx) override
   {
+    SC_UNUSED(ctx);
     return SC_RESULT_OK;
   }
 
@@ -123,11 +127,12 @@ template <class ScEventClassT>
 class ScWaitEvent : public ScWait
 {
 public:
-  ScWaitEvent(ScMemoryContext const & ctx, const ScAddr & addr)
+  ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr)
     : m_event(
           ctx,
           addr,
-          [this](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result {
+          [this](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result
+          {
             if (OnEvent(listenAddr, edgeAddr, otherAddr) == SC_RESULT_OK)
             {
               ScWait::Resolve();
@@ -154,7 +159,7 @@ class ScWaitCondition final : public ScWaitEvent<ScEventClassT>
 public:
   using DelegateCheckFunc = std::function<sc_result(ScAddr const &, ScAddr const &, ScAddr const &)>;
 
-  ScWaitCondition(ScMemoryContext const & ctx, const ScAddr & addr, DelegateCheckFunc func)
+  ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func)
     : ScWaitEvent<ScEventClassT>(ctx, addr)
     , m_checkFunc(std::move(func))
   {
