@@ -149,19 +149,6 @@ ScMemoryContext::~ScMemoryContext()
   Destroy();
 }
 
-ScMemoryContext::ScMemoryContext(ScMemoryContext const & other)
-{
-  this->m_context = other.m_context;
-  this->m_name = other.m_name;
-}
-
-ScMemoryContext & ScMemoryContext::operator=(ScMemoryContext const & other)
-{
-  this->m_context = other.m_context;
-  this->m_name = other.m_name;
-  return *this;
-}
-
 void ScMemoryContext::Destroy()
 {
   if (m_context)

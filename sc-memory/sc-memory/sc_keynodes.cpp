@@ -61,11 +61,6 @@ ScKeynodeClass const ScKeynodes::kBinaryCustom("binary_custom");
 
 ScKeynodeClass const ScKeynodes::kEmptyClass;
 
-sc_result ScKeynodes::Initialize(ScMemoryContext * ctx)
-{
-  return Initialize(ctx, ScAddr::Empty);
-}
-
 sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
   internal::ScKeynodesRegister::m_instance.Register(ctx, initMemoryGeneratedStructureAddr);

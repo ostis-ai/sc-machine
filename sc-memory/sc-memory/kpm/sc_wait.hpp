@@ -96,12 +96,6 @@ public:
   }
 
 protected:
-  sc_result Initialize(ScMemoryContext * ctx) override
-  {
-    SC_UNUSED(ctx);
-    return SC_RESULT_OK;
-  }
-
   sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override
   {
     SC_UNUSED(ctx);

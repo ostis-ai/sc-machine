@@ -6,8 +6,6 @@
 
 #include "sc-memory/kpm/sc_module.hpp"
 
-ScModule ScModule::ms_coreModule;
-
 ScModule * ScModule::Keynodes(ScKeynodes * keynodes)
 {
   m_keynodes.push_back(keynodes);
@@ -26,9 +24,11 @@ ScModule * ScModule::Agent(std::pair<ScAgentAbstract *, ScAddr> const & agentInf
   return this;
 }
 
-sc_result ScModule::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
+sc_result ScModule::Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
-  SC_LOG_INFO("Initialize " + GetName());
+  SC_LOG_INFO("Initialize " + this->GetName());
+
+  Initialize(ctx, initMemoryGeneratedStructureAddr);
 
   for (auto * keynodes : m_keynodes)
   {
@@ -48,14 +48,11 @@ sc_result ScModule::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryG
   return SC_RESULT_OK;
 }
 
-sc_result ScModule::Initialize(ScMemoryContext * ctx)
+sc_result ScModule::Unregister(ScMemoryContext * ctx)
 {
-  return Initialize(ctx, ScAddr::Empty);
-}
+  SC_LOG_INFO("Shutdown " + this->GetName());
 
-sc_result ScModule::Shutdown(ScMemoryContext * ctx)
-{
-  SC_LOG_INFO("Shutdown " + GetName());
+  Shutdown(ctx);
 
   for (auto * keynodes : m_keynodes)
   {

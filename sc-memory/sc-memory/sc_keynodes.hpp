@@ -231,7 +231,6 @@ class ScKeynodes : public ScObject
 public:
   SC_KEYNODES_BODY(ScKeynodes)
 
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx) override;
   _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
   _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
 

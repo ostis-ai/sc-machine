@@ -12,7 +12,14 @@
 #include "../sc-server-impl/sc_server.hpp"
 #include "sc_memory_config.hpp"
 
-SC_MODULE(ScServerModule);
+class _SC_EXTERN ScServerModule final : public ScModule
+{
+public:
+  SC_MODULE_BODY(ScServerModule);
 
-static std::shared_ptr<ScServer> m_server;
-static ScParams ms_serverParams;
+  static std::shared_ptr<ScServer> m_server;
+  static ScParams ms_serverParams;
+
+  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  sc_result Shutdown(ScMemoryContext * ctx) override;
+};

@@ -26,10 +26,6 @@ public:
   {
   }
 
-  ScAgentContext(ScAgentContext const & other);
-
-  ScAgentContext & operator=(ScAgentContext const & other);
-
   _SC_EXTERN ScAddr GetActionArgument(ScAddr const & actionAddr, sc_uint16 number);
 
   _SC_EXTERN ScAddr SetActionArgument(ScAddr const & actionAddr, ScAddr const & argumentAddr, sc_uint16 number);
