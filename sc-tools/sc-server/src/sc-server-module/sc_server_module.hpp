@@ -7,7 +7,7 @@
 #pragma once
 
 #include <sc-memory/sc_memory.hpp>
-#include <sc-memory/kpm/sc_module.hpp>
+#include <sc-memory/sc_module.hpp>
 
 #include "../sc-server-impl/sc_server.hpp"
 #include "sc_memory_config.hpp"

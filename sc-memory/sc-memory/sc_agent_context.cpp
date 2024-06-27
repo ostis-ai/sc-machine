@@ -4,9 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_agent_context.hpp"
-
 #include <algorithm>
+
+#include "sc_agent_context.hpp"
 
 #include "sc-memory/sc_keynodes.hpp"
 

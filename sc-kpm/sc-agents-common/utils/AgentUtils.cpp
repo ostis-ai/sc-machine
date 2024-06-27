@@ -6,7 +6,7 @@
 
 #include "AgentUtils.hpp"
 
-#include <sc-memory/kpm/sc_wait.hpp>
+#include <sc-memory/sc_wait.hpp>
 
 #include "IteratorUtils.hpp"
 #include "GenerationUtils.hpp"

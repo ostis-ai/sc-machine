@@ -9,8 +9,6 @@
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
 
-#include "kpm/sc_agent.hpp"
-
 #include "utils/sc_log.hpp"
 
 #include <iostream>

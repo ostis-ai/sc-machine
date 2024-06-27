@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc-memory/kpm/sc_module.hpp"
+#include "sc-memory/sc_module.hpp"
 
 ScModule * ScModule::Keynodes(ScKeynodes * keynodes)
 {
