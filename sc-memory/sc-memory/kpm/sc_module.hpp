@@ -44,12 +44,7 @@
 class _SC_EXTERN ScModule : public ScObject
 {
 public:
-  _SC_EXTERN ~ScModule() override
-  {
-    for (auto * module : m_modules)
-      delete module;
-    m_modules.clear();
-  }
+  _SC_EXTERN ~ScModule() override = default;
 
   _SC_EXTERN std::string GetName() override
   {
@@ -79,22 +74,15 @@ public:
    */
   _SC_EXTERN virtual ScModule * Agent(std::pair<ScAgentAbstract *, ScAddr> const & agentInfo) final;
 
-  /*! Initializes all module keynodes and agents
+  /*! Registers all module keynodes and agents
    * @returns Result of initializing
    */
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx) override;
+  _SC_EXTERN sc_result Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
 
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-
-  /*! Shutdowns all module keynodes and agents
+  /*! Unregisters all module keynodes and agents
    * @returns Result of shutdown
    */
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
-
-  /// Registered modules
-  std::list<ScModule *> m_modules;
-
-  static ScModule ms_coreModule;
+  _SC_EXTERN sc_result Unregister(ScMemoryContext * ctx);
 
 protected:
   /// Registered keynodes
@@ -104,21 +92,13 @@ protected:
 };
 
 /// Implements module class and create it instance
-#define SC_MODULE(__ModuleName__) \
-  class _SC_EXTERN __ModuleName__ final : public ScModule \
-  { \
-  public: \
-    __ModuleName__() \
-    { \
-      ScModule::ms_coreModule.m_modules.push_back(this); \
-    } \
+#define SC_MODULE_BODY(__ModuleName__) \
+  static ScModule * m_instance; \
 \
-    std::string GetName() override \
-    { \
-      return #__ModuleName__; \
-    } \
-  }; \
-  static ScModule * __ModuleName__##Instance __attribute__((unused)) = ScModule::Create(new __ModuleName__())
+  _SC_EXTERN std::string GetName() override \
+  { \
+    return #__ModuleName__; \
+  }
 
 /// Registers module class instance
 #define SC_MODULE_REGISTER(__ModuleName__) \
@@ -127,18 +107,26 @@ protected:
   _SC_EXTERN sc_result \
   sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure_addr) \
   { \
-    __ModuleName__##Instance->Initialize(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
+    __ModuleName__::m_instance->Register(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
     return SC_RESULT_OK; \
   } \
 \
   _SC_EXTERN sc_result sc_module_shutdown() \
   { \
-    __ModuleName__##Instance->Shutdown(ScMemory::ms_globalContext); \
-    ScModule::ms_coreModule.m_modules.remove(__ModuleName__##Instance); \
-    delete __ModuleName__##Instance; \
-    __ModuleName__##Instance = nullptr; \
+    __ModuleName__::m_instance->Unregister(ScMemory::ms_globalContext); \
     return SC_RESULT_OK; \
   } \
+  } \
+  ScModule * __ModuleName__::m_instance = __ModuleName__::Create(new __ModuleName__())
+
+#define SC_MODULE_INITIALIZE(__ModuleName__) \
+  sc_result __ModuleName__::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) \
+  { \
+    return SC_RESULT_OK; \
+  } \
+  sc_result __ModuleName__::Shutdown(ScMemoryContext * ctx) \
+  { \
+    return SC_RESULT_OK; \
   } \
   struct __ModuleName__##Dummy \
   { \

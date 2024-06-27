@@ -10,4 +10,11 @@
 
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
-SC_MODULE(ScAgentsCommonModule)->Keynodes(new scAgentsCommon::CoreKeynodes());
+class _SC_EXTERN ScAgentsCommonModule final : public ScModule
+{
+public:
+  SC_MODULE_BODY(ScAgentsCommonModule);
+
+  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  sc_result Shutdown(ScMemoryContext * ctx) override;
+};

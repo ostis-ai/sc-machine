@@ -34,11 +34,6 @@ sc_result ScAgentAbstract::Initialize(ScMemoryContext * ctx, ScAddr const & init
   return SC_RESULT_OK;
 }
 
-sc_result ScAgentAbstract::Initialize(ScMemoryContext * ctx)
-{
-  return Initialize(ctx, ScAddr::Empty);
-}
-
 sc_result ScAgentAbstract::Shutdown(ScMemoryContext * ctx)
 {
   SC_UNUSED(ctx);

@@ -103,8 +103,8 @@ public:
   _SC_EXTERN ~ScMemoryContext();
 
   // Disable object copying
-  ScMemoryContext(ScMemoryContext const & other);
-  ScMemoryContext & operator=(ScMemoryContext const & other);
+  ScMemoryContext(ScMemoryContext const & other) = delete;
+  ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
 
   _SC_EXTERN ScAddr GetUserAddr();
 

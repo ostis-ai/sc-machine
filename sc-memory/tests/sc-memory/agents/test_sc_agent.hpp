@@ -34,74 +34,88 @@ private:
   utils::ScLock m_lock;
 };
 
-class ATestAddInputEdge : public ScSubject<ScEvent::Type::AddInputEdge>
+class ATestAddInputEdge : public ScAgent<ScEvent::Type::AddInputEdge>
 {
 public:
-  SC_SUBJECT_BODY(ATestAddInputEdge);
+  SC_AGENT_BODY(ATestAddInputEdge);
 
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
-class ATestAddOutputEdge : public ScSubject<ScEvent::Type::AddOutputEdge>
+class ATestAddOutputEdge : public ScAgent<ScEvent::Type::AddOutputEdge>
 {
 public:
-  SC_SUBJECT_BODY(ATestAddOutputEdge);
+  SC_AGENT_BODY(ATestAddOutputEdge);
 
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
-class ATestRemoveInputEdge : public ScSubject<ScEvent::Type::RemoveInputEdge>
+class ATestRemoveInputEdge : public ScAgent<ScEvent::Type::RemoveInputEdge>
 {
 public:
-  SC_SUBJECT_BODY(ATestRemoveInputEdge);
+  SC_AGENT_BODY(ATestRemoveInputEdge);
 
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
-class ATestRemoveOutputEdge : public ScSubject<ScEvent::Type::RemoveOutputEdge>
+class ATestRemoveOutputEdge : public ScAgent<ScEvent::Type::RemoveOutputEdge>
 {
 public:
-  SC_SUBJECT_BODY(ATestRemoveOutputEdge);
+  SC_AGENT_BODY(ATestRemoveOutputEdge);
 
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
-class ATestRemoveElement : public ScSubject<ScEvent::Type::RemoveElement>
+class ATestRemoveElement : public ScAgent<ScEvent::Type::RemoveElement>
 {
 public:
-  SC_SUBJECT_BODY(ATestRemoveElement);
+  SC_AGENT_BODY(ATestRemoveElement);
 
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
-class ATestContentChanged : public ScSubject<ScEvent::Type::ChangeContent>
+class ATestContentChanged : public ScAgent<ScEvent::Type::ChangeContent>
 {
 public:
-  SC_SUBJECT_BODY(ATestContentChanged);
+  SC_AGENT_BODY(ATestContentChanged);
 
   static ScKeynodeLink const msAgentKeynode;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
-class ATestAddMultipleOutputEdge : public ScSubject<ScEvent::Type::AddOutputEdge>
+class ATestAddMultipleOutputEdge : public ScAgent<ScEvent::Type::AddOutputEdge>
 {
 public:
-  SC_SUBJECT_BODY(ATestAddMultipleOutputEdge);
+  SC_AGENT_BODY(ATestAddMultipleOutputEdge);
 
   static ScKeynodeClass const msAgentKeynode1;
   static ScKeynodeClass const msAgentKeynode2;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
-class ATestCheckResult : public ScAgent<>
+class ATestCheckResult : public ScActionAgent<>
 {
 public:
-  SC_AGENT_BODY(ATestCheckResult);
+  SC_ACTION_AGENT_BODY(ATestCheckResult);
 
   void OnSuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
   void OnUnsuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
@@ -111,4 +125,6 @@ public:
   static ScKeynodeClass const msAgentKeynode;
   static ScKeynodeClass const msAgentSet;
   static TestWaiter msWaiter;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
