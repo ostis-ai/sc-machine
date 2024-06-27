@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/kpm/sc_module.hpp"
+#include "sc-memory/sc_module.hpp"
 
 class ScMemoryTest : public testing::Test
 {

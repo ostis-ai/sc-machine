@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "sc-memory/kpm/sc_agent_context.hpp"
+#include "sc-memory/sc_agent_context.hpp"
 
 #include "agents_test_utils.hpp"
 

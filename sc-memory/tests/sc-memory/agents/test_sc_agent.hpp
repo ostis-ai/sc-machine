@@ -4,7 +4,7 @@
 #include "sc-memory/sc_object.hpp"
 #include "sc-memory/sc_timer.hpp"
 #include "sc-memory/utils/sc_lock.hpp"
-#include "sc-memory/kpm/sc_agent.hpp"
+#include "sc-memory/sc_agent.hpp"
 
 #include <thread>
 

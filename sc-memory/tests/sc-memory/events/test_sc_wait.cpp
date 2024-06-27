@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "sc-memory/kpm/sc_agent.hpp"
+#include "sc-memory/sc_agent.hpp"
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/kpm/sc_wait.hpp"
+#include "sc-memory/sc_wait.hpp"
 
 #include "sc_test.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sc-memory/kpm/sc_agent.hpp"
+#include "sc-memory/sc_agent.hpp"
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
 namespace scUtilsTestAgents
