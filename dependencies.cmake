@@ -20,7 +20,6 @@ macro(sc_target_dependencies)
 endmacro()
 
 macro(sc_linux_target_dependencies)
-    find_package(Boost 1.71 REQUIRED COMPONENTS filesystem system program_options)
     find_package(websocketpp REQUIRED 0.8.3)
     find_package(nlohmann_json 3.2.0 REQUIRED)
 
