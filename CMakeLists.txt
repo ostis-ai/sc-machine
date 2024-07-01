@@ -31,9 +31,6 @@ code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --cover
 option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
 sanitizer(SC_USE_SANITIZER "Build with specified sanitizer" "none")
 
-set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
-set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
-set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/sc-tools")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
