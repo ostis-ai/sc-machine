@@ -1,17 +1,19 @@
 #pragma once
 
-#include "sc-memory/kpm/sc_agent.hpp"
+#include "sc-memory/sc_agent.hpp"
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
-
-#include "generated/FinishActionTestAgent.generated.hpp"
 
 namespace scUtilsTestAgents
 {
 
-class FinishActionTestAgent : public ScAgent
+class FinishActionTestAgent : public ScActionAgent<>
 {
-  SC_CLASS(Agent, Event(scAgentsCommon::CoreKeynodes::question_initiated, ScEvent::Type::AddOutputEdge))
-  SC_GENERATED_BODY()
+public:
+  SC_ACTION_AGENT_BODY(FinishActionTestAgent);
+
+  static ScKeynodeClass const msAgentKeynode;
+
+  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
 };
 
 }  // namespace scUtilsTestAgents

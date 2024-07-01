@@ -89,8 +89,8 @@ sc_bool sc_fs_is_file(sc_char const * path)
 sc_bool sc_fs_is_binary_file(sc_char const * file_path)
 {
   sc_char command_prefix[] = SC_FS_FILE_COMMAND;
-  sc_char * command;
-  sc_str_cpy(command, command_prefix, sc_str_len(command_prefix) + sc_str_len(file_path));
+  sc_char * command = sc_mem_new(sc_char, sc_str_len(command_prefix) + sc_str_len(file_path) + 1);
+  strcat(command, command_prefix);
   strcat(command, file_path);
 
   sc_char * result = sc_fs_execute(command);

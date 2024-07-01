@@ -140,17 +140,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 
-  ScAddrVector const & keynodesAddrs = {
-      ScKeynodes::kCommandStateAddr,
-      ScKeynodes::kCommandInitiatedAddr,
-      ScKeynodes::kCommandProgressedAddr,
-      ScKeynodes::kCommandFinishedAddr,
-      ScKeynodes::kNrelResult,
-      ScKeynodes::kNrelCommonTemplate,
-      ScKeynodes::kNrelIdtf,
-      ScKeynodes::kNrelFormat,
-      ScKeynodes::kScResult,
-      ScKeynodes::kBinaryType};
+  ScAddrVector const & keynodesAddrs = {ScKeynodes::kScResult, ScKeynodes::kBinaryType};
 
   ScAddrVector const & resultCodes = {
       ScKeynodes::kScResultOk,

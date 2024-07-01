@@ -6,17 +6,15 @@
 
 #pragma once
 
-#include <sc-memory/sc_memory.hpp>
-#include <sc-memory/sc_module.hpp>
+#include "sc-memory/sc_module.hpp"
 
-#include "sc_agents_common.generated.hpp"
+#include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
-class SCAgentsCommonModule : public ScModule
+class _SC_EXTERN ScAgentsCommonModule final : public ScModule
 {
-  SC_CLASS(LoadOrder(50))
-  SC_GENERATED_BODY()
+public:
+  SC_MODULE_BODY(ScAgentsCommonModule);
 
-  virtual sc_result InitializeImpl() override;
-
-  virtual sc_result ShutdownImpl() override;
+  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  sc_result Shutdown(ScMemoryContext * ctx) override;
 };

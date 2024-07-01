@@ -41,7 +41,7 @@ ScAddr AgentUtils::createQuestionNode(ScMemoryContext * ms_context)
 
 ScAddr AgentUtils::formActionNode(ScMemoryContext * ms_context, ScAddr const & actionClass, ScAddrVector const & params)
 {
-  SC_CHECK_PARAM(actionClass, "Invalid action class address passed to `formActionNode`");
+  SC_CHECK_PARAM(actionClass, "Invalid action class address");
 
   ScAddr actionNode = createQuestionNode(ms_context);
   assignParamsToQuestionNode(ms_context, actionNode, params);
@@ -84,7 +84,7 @@ bool AgentUtils::applyAction(
 
   auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
-    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished;
+    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished ? SC_RESULT_OK : SC_RESULT_ERROR;
   };
 
   auto initialize = [ms_context, onEventClassAddr, actionNode]()
@@ -92,8 +92,9 @@ bool AgentUtils::applyAction(
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, onEventClassAddr, actionNode);
   };
 
-  ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, SC_WAIT_CHECK(check));
-  return waiter.Wait(waitTime, initialize);
+  ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, check);
+  initialize();
+  return waiter.Wait(waitTime);
 }
 
 ScAddr AgentUtils::getActionResultIfExists(

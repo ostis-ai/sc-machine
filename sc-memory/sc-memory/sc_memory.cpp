@@ -9,8 +9,6 @@
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
 
-#include "kpm/sc_agent.hpp"
-
 #include "utils/sc_log.hpp"
 
 #include <iostream>
@@ -83,11 +81,12 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   if (ctx == nullptr)
     return false;
 
-  ScKeynodes::Init(
-      ms_globalContext,
-      false,
-      params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)nullptr);
-  ScAgentInit(true);
+  ScAddr initMemoryGeneratedStructureAddr;
+  if (params.init_memory_generated_upload)
+    initMemoryGeneratedStructureAddr =
+        ms_globalContext->HelperResolveSystemIdtf(params.init_memory_generated_structure, ScType::NodeConstStruct);
+
+  ScKeynodes().Initialize(ms_globalContext, initMemoryGeneratedStructureAddr);
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
@@ -103,7 +102,7 @@ bool ScMemory::Shutdown(bool saveState /* = true */)
 {
   utils::ScLog::SetUp("Console", "", "Info");
 
-  ScKeynodes::Shutdown();
+  ScKeynodes().Shutdown(ms_globalContext);
 
   sc_bool result = sc_memory_shutdown(saveState);
 
