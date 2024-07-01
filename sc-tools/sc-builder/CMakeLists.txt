@@ -20,6 +20,7 @@ target_link_libraries(sc-builder-lib
     LINK_PUBLIC LibXml2::LibXml2
 )
 target_include_directories(sc-builder-lib
+    PRIVATE ${GLIB2_INCLUDE_DIRS}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
