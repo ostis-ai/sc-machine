@@ -16,6 +16,7 @@ encapsulated this logic;
 
 ### Added
 
+- Clean monitor tables by size threshold
 - Compile option to optimize checking local user permissions
 - Check incidence between sc-connectors and sc-elements substituted into sc-template from sc-template params
 - Generate and search by sc-templates with constant sc-connectors
@@ -48,6 +49,8 @@ encapsulated this logic;
 
 ### Changed
 
+- Use queues in monitors statically
+- Implement array-based sc-queue
 - Clarify error message for building sc-template, generating and searching by sc-template: provide sc-template item features in error message
 - Reformat code style according to clang-format-18
 - Use runner-image `macos-14` instead of runner-image `macos-latest` in CI
