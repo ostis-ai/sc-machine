@@ -299,6 +299,158 @@ TEST_F(ScMemoryTest, CreateEdges)
   EXPECT_TRUE(ctx.HelperCheckEdge(linkAddr, nodeAddr, ScType::EdgeUCommonConst));
 }
 
+TEST_F(ScMemoryTest, EraseEdgesBetweenTwoNodesByOneIterator)
+{
+  ScAddr const classAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  size_t const edgesCount = 5;
+  for (size_t i = 0; i < edgesCount; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
+
+  size_t i = 0;
+  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  while (it->Next())
+  {
+    m_ctx->EraseElement(it->Get(1));
+    ++i;
+  }
+
+  EXPECT_EQ(i, edgesCount);
+  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+}
+
+TEST_F(ScMemoryTest, EraseEdgesBetweenTwoNodesByTwoIterators)
+{
+  ScAddr const classAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  size_t const edgesCount = 6;
+  for (size_t i = 0; i < edgesCount; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
+
+  size_t i = 0;
+  ScIterator3Ptr it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  while (it->Next())
+  {
+    m_ctx->EraseElement(it->Get(1));
+    ++i;
+
+    if (i == edgesCount / 2)
+      break;
+  }
+
+  it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  while (it->Next())
+  {
+    m_ctx->EraseElement(it->Get(1));
+    ++i;
+  }
+
+  EXPECT_EQ(i, edgesCount);
+  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+}
+
+TEST_F(ScMemoryTest, EraseEdgesBetweenSomeNodesByOneIterator)
+{
+  ScAddr const classAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+
+  size_t const edgesCount = 6;
+  for (size_t i = 0; i < edgesCount / 2; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr1);
+
+  for (size_t i = 0; i < edgesCount / 2; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr2);
+
+  size_t i = 0;
+  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+  while (it->Next())
+  {
+    m_ctx->EraseElement(it->Get(1));
+    ++i;
+  }
+
+  EXPECT_EQ(i, edgesCount);
+  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr1), 0u);
+  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr2), 0u);
+}
+
+TEST_F(ScMemoryTest, EraseEdgesFromNodeByOneIterator)
+{
+  ScAddr const classAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  size_t const edgesCount = 5;
+  for (size_t i = 0; i < edgesCount; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
+
+  size_t i = 0;
+  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+  while (it->Next())
+  {
+    m_ctx->EraseElement(it->Get(1));
+    ++i;
+  }
+
+  EXPECT_EQ(i, edgesCount);
+  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+}
+
+TEST_F(ScMemoryTest, EraseEdgesToNodeByOneIterator)
+{
+  ScAddr const classAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  size_t const edgesCount = 5;
+  for (size_t i = 0; i < edgesCount; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
+
+  size_t i = 0;
+  ScIterator3Ptr const it = m_ctx->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  while (it->Next())
+  {
+    m_ctx->EraseElement(it->Get(1));
+    ++i;
+  }
+
+  EXPECT_EQ(i, edgesCount);
+  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+}
+
+TEST_F(ScMemoryTest, EraseEdgeTargetsBetweenSomeNodesByOneIterator)
+{
+  ScAddr const classAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+
+  size_t const edgesCount = 6;
+  for (size_t i = 0; i < edgesCount / 2; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr1);
+
+  for (size_t i = 0; i < edgesCount / 2; ++i)
+    m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr2);
+
+  size_t i = 0;
+  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+  while (it->Next())
+  {
+    m_ctx->EraseElement(it->Get(2));
+    ++i;
+  }
+
+  EXPECT_EQ(i, 2u);
+  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
+  EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
+  EXPECT_FALSE(m_ctx->IsElement(nodeAddr2));
+}
+
 TEST(SmallScMemoryTest, FullMemory)
 {
   sc_memory_params params;

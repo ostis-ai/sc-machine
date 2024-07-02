@@ -61,6 +61,7 @@ encapsulated this logic;
 
 ### Fixed
 
+- Erasing sc-connectors during iterating
 - Clear result of generating by sc-template if error is occurred
 - Check that template params sc-type can be extended to template item sc-type
 - No discard return types for sc-template API
