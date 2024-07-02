@@ -13,6 +13,8 @@
 #include "../sc-container/sc-list/sc_list.h"
 #include "../sc-container/sc-dictionary/sc_dictionary.h"
 
+#include "../sc-base/sc_monitor_table.h"
+
 #include "../../sc_memory_params.h"
 
 #define SC_FS_EXT ".scdb"

@@ -10,6 +10,8 @@
 #include "sc_memory.h"
 #include "sc-store/sc_event.h"
 
+#include "sc-store/sc-base/sc_monitor_table.h"
+
 #include "sc_memory_context_manager.h"
 
 #define SC_CONTEXT_FLAG_SYSTEM 0x10
@@ -22,7 +24,8 @@
  */
 #define _sc_context_set_permissions_for_element(_element_addr, _permissions) \
   ({ \
-    sc_monitor * _monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, _element_addr); \
+    sc_monitor * _monitor = \
+        sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, _element_addr); \
     sc_monitor_acquire_write(_monitor); \
     sc_element * _element; \
     sc_storage_get_element_by_addr(_element_addr, &_element); \
@@ -34,7 +37,8 @@
 //! Gets permissions of a specific sc-memory element.
 #define _sc_context_get_permissions_for_element(_element_addr) \
   ({ \
-    sc_monitor * _monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, _element_addr); \
+    sc_monitor * _monitor = \
+        sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, _element_addr); \
     sc_monitor_acquire_read(_monitor); \
     sc_element * _element; \
     sc_storage_get_element_by_addr(_element_addr, &_element); \

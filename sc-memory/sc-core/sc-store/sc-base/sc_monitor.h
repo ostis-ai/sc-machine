@@ -18,42 +18,15 @@
 typedef struct
 {
   sc_mutex rw_mutex;         // Mutex for data protection
-  sc_queue * queue;          // Queue of writers and readers
+  sc_queue queue;            // Queue of writers and readers
   sc_uint32 active_readers;  // Number of readers currently accessing the data
   sc_uint32 active_writer;   // Flag to indicate if a writer is writing
   sc_uint32 id;              // Unique identifier of monitor
+  sc_mutex ref_count_mutex;
+  sc_uint32 ref_count;
 } sc_monitor;
 
-typedef struct
-{
-  sc_hash_table * monitors;             // Hash table storing addr_monitors_table for each identifier;
-  sc_uint32 global_monitor_id_counter;  // Monitors count
-  sc_mutex rw_mutex;                    // Mutex for data protection
-} sc_monitor_table;
-
 typedef struct _sc_request sc_request;
-
-/*! Initializes the global monitor table
- * @param table Pointer to the sc_monitor_table to be initialized
- * @remarks This function prepares the monitor table for use (for internal usage)
- */
-_SC_EXTERN void _sc_monitor_global_init(sc_monitor_table * table);
-
-/*! Destroys the global monitor table
- * @param table Pointer to the sc_monitor_table to be destroyed
- * @remarks This function cleans up the monitor table and its resources (for internal usage)
- */
-_SC_EXTERN void _sc_monitor_global_destroy(sc_monitor_table * table);
-
-/*! Fetches or creates a monitor for a specific address
- * @param table Pointer to the sc_monitor_table
- * @param addr Address for which a monitor should be fetched or created
- * @return Returns pointer to the associated sc_monitor
- * @remarks If a monitor for the address does not exist, one is created
- */
-_SC_EXTERN sc_monitor * sc_monitor_get_monitor_for_addr(sc_monitor_table * table, sc_addr addr);
-
-_SC_EXTERN sc_monitor * sc_monitor_get_monitor_from_table(sc_monitor_table * table, sc_pointer key);
 
 /*! Initializes a monitor instance
  * @param monitor Pointer to the sc_monitor to be initialized

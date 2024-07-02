@@ -14,6 +14,7 @@
 #include "../sc_memory_context_permissions.h"
 
 #include "sc-base/sc_allocator.h"
+#include "sc-base/sc_monitor_table.h"
 
 sc_iterator3 * sc_iterator3_f_a_a_new(sc_memory_context const * ctx, sc_addr el, sc_type arc_type, sc_type end_type)
 {
@@ -231,7 +232,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
 
   sc_monitor * arc_monitor = null_ptr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_begin);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_begin);
   sc_monitor_acquire_read(monitor);
 
   if (_sc_memory_context_check_local_and_global_permissions(
@@ -255,7 +256,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, it->results[1].addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
+      arc_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
@@ -281,7 +282,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+      arc_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
@@ -371,8 +372,8 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
 
   sc_monitor * arc_monitor = null_ptr;
 
-  sc_monitor * beg_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_begin);
-  sc_monitor * end_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
+  sc_monitor * beg_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_begin);
+  sc_monitor * end_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
   sc_monitor_acquire_read_n(2, beg_monitor, end_monitor);
 
   if (_sc_memory_context_check_local_and_global_permissions(
@@ -403,7 +404,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
         SC_ADDR_IS_NOT_EQUAL(arc_begin, it->results[1].addr) && SC_ADDR_IS_NOT_EQUAL(arc_end, it->results[1].addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
+      arc_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
@@ -429,7 +430,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_addr) && SC_ADDR_IS_NOT_EQUAL(arc_end, arc_addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+      arc_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
@@ -508,7 +509,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
   sc_monitor * arc_monitor;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_end);
   sc_monitor_acquire_read(monitor);
 
   if (_sc_memory_context_check_local_and_global_permissions(
@@ -536,7 +537,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_end, it->results[1].addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
+      arc_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, it->results[1].addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
@@ -566,7 +567,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_end, arc_addr);
     if (is_not_same)
     {
-      arc_monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+      arc_monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
       sc_monitor_acquire_read(arc_monitor);
     }
 
@@ -652,7 +653,7 @@ sc_bool _sc_iterator3_a_f_a_next(sc_iterator3 * it)
 {
   sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
@@ -703,7 +704,7 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
   sc_addr const arc_begin = it->results[0].addr = it->params[0].addr;
   sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
@@ -767,7 +768,7 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
   sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
   sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;
@@ -832,7 +833,7 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
   sc_addr const arc_addr = it->results[1].addr = it->params[1].addr;
   sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
 
-  sc_monitor * monitor = sc_monitor_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&sc_storage_get()->addr_monitors_table, arc_addr);
   sc_monitor_acquire_read(monitor);
 
   sc_element * arc_el;

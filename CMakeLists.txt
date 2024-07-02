@@ -25,7 +25,7 @@ option(SC_BUILD_TESTS "Flag to build unit tests" OFF)
 option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
 
 set(SC_FILE_MEMORY "Dictionary" CACHE STRING "Sc-fs-storage type")
-option(SC_OPTIMIZE_CHECKING_LOCAL_USER_PERMISSIONS "Flag to optimize checking local user permissions" ON)
+option(SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES "Flag to optimize searching input sc-connctors from sc-structures" ON)
 
 code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
 option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
@@ -88,7 +88,7 @@ else()
     message(FATAL_ERROR "File memory type is not set up, CMake will exit.")
 endif()
 
-if(${SC_OPTIMIZE_CHECKING_LOCAL_USER_PERMISSIONS})
+if(${SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES})
     message("Build optimized checking local user permissions")
     add_definitions(-DSC_OPTIMIZE_CHECKING_LOCAL_USER_PERMISSIONS)
 endif()

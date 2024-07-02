@@ -168,13 +168,13 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager)
     manager->thread_pool = null_ptr;
   }
 
-  while (!sc_queue_empty(manager->deletable_events))
+  while (!sc_queue_empty(&manager->deletable_events))
   {
-    sc_event * event = sc_queue_pop(manager->deletable_events);
+    sc_event * event = sc_queue_pop(&manager->deletable_events);
     sc_monitor_destroy(&event->monitor);
     sc_mem_free(event);
   }
-  sc_queue_destroy(manager->deletable_events);
+  sc_queue_destroy(&manager->deletable_events);
 
   sc_monitor_release_write(&manager->pool_monitor);
 

@@ -7,10 +7,10 @@
 #ifndef _sc_storage_private_h_
 #define _sc_storage_private_h_
 
+#include "sc-base/sc_monitor_table.h"
+
 #include "sc_storage_dump_manager.h"
 #include "sc-event/sc_event_private.h"
-
-#include "sc-base/sc_monitor.h"
 
 struct _sc_storage
 {
