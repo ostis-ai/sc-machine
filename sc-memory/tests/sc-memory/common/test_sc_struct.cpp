@@ -40,6 +40,7 @@ TEST_F(ScStructTest, common)
   EXPECT_TRUE(attrAddr.IsValid());
 
   EXPECT_TRUE(st.Append(addr1, attrAddr));
+  EXPECT_FALSE(st.Append(addr1, attrAddr));
   ScIterator5Ptr iter5 = m_ctx->Iterator5(
       structAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
 

@@ -107,8 +107,19 @@ ScTemplate & ScTemplate::Triple(
   size_t const replPos = m_templateTriples.size() * 3;
   m_templateTriples.emplace_back(new ScTemplateTriple(param1, param2, param3, m_templateTriples.size()));
 
-  if (!param2.m_name.empty() && (param2.m_name == param1.m_name || param2.m_name == param3.m_name))
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use equal replacement for an edge and source/target");
+  if (param2.HasName() && param2.m_name == param1.m_name)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "The second and the first items in sc-template have the same replacement name `"
+            << param2.m_name
+            << "`. You can't use equal replacement for the second item and source/target items in sc-template.");
+
+  if (param2.HasName() && param2.m_name == param3.m_name)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "The second and the third items in sc-template have the same replacement name `"
+            << param2.m_name
+            << "`. You can't use equal replacement for the second item and source/target items in sc-template.");
 
   ScTemplateTriple * triple = m_templateTriples.back();
 
@@ -117,10 +128,18 @@ ScTemplate & ScTemplate::Triple(
     ScTemplateItem & item = triple->m_values[i];
 
     if (item.IsAssign() && item.m_typeValue.HasConstancyFlag() && !item.m_typeValue.IsVar())
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You should to use variable types in template");
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Specified sc-type for sc-template item "
+              << (item.HasName() ? ("`" + item.m_name + "`") : "")
+              << "is constant sc-type. You can only use variable sc-types for items in sc-template.");
 
     if (item.IsAddr() && !item.m_addrValue.IsValid())
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "You can't use empty ScAddr");
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Specified sc-address for sc-template item "
+              << (item.HasName() ? ("`" + item.m_name + "`") : "")
+              << "is invalid. You can't use invalid sc-addresses for items in sc-template.");
 
     if (!item.m_name.empty())
     {

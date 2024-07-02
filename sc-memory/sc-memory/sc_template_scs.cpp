@@ -51,7 +51,7 @@ protected:
       }
       else
       {
-        char const * alias = (isUnnamed ? nullptr : idtf.c_str());
+        sc_char const * alias = (isUnnamed ? nullptr : idtf.c_str());
         ScAddr const addr = keynodes.GetKeynode(idtf);
         if (addr.IsValid())
         {

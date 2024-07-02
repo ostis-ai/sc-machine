@@ -200,8 +200,8 @@ TEST_F(ScTemplateCommonTest, params_invalid)
   ScTemplate templ;
   templ.Triple(
       addrConst >> "1",
-      ScType::EdgeAccessVarPosPerm >> "_2",  // can't be replaced by param in template generation
-      ScType::NodeVar >> "_3");              // can't be replaced by param in template generation
+      ScType::EdgeAccessVarPosPerm >> "_2",
+      ScType::NodeVar >> "_3");  // can't be replaced by param in template generation
 
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
@@ -211,7 +211,7 @@ TEST_F(ScTemplateCommonTest, params_invalid)
     ScTemplateParams params;
     params.Add("_2", addrEdge2);
 
-    EXPECT_FALSE(m_ctx->HelperGenTemplate(templ, result, params));
+    EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
   }
 
   // test invalid params

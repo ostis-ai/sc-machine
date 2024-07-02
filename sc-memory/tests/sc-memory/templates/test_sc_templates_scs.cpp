@@ -14,14 +14,14 @@ TEST_F(ScTemplateSCsTest, BuildSuccessfull)
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("d", addr));
 
   ScTemplate templ;
-  char const * data = "_a _-> d;; _a <- sc_node_class;;";
+  sc_char const * data = "_a _-> d;; _a <- sc_node_class;;";
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
 }
 
 TEST_F(ScTemplateSCsTest, BuildFail)
 {
   ScTemplate templ;
-  char const * data = "_a _-> b";
+  sc_char const * data = "_a _-> b";
   EXPECT_FALSE(m_ctx->HelperBuildTemplate(templ, data));
 }
 
@@ -39,7 +39,7 @@ TEST_F(ScTemplateSCsTest, GenBuildSearch)
 
   // do search
   ScTemplate templ;
-  char const * data = "_a _-> b (* <- sc_node_tuple;; *);;";
+  sc_char const * data = "_a _-> b (* <- sc_node_tuple;; *);;";
 
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
   EXPECT_FALSE(templ.IsEmpty());
@@ -59,7 +59,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("c1", cAddr));
 
   ScTemplate templ;
-  char const * data = "c1 _=> _b1;; _b1 <- sc_node_abstract;;";
+  sc_char const * data = "c1 _=> _b1;; _b1 <- sc_node_abstract;;";
 
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
   ScTemplateGenResult genResult;
@@ -84,7 +84,7 @@ TEST_F(ScTemplateSCsTest, GenerateSearch)
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("g1", cAddr));
 
   ScTemplate templ;
-  char const * data = "g1 _-> _l1 (* <- sc_node_material;; *);; g1 _-> _f1;;";
+  sc_char const * data = "g1 _-> _l1 (* <- sc_node_material;; *);; g1 _-> _f1;;";
 
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
   ScTemplateGenResult genResult;

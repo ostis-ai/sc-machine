@@ -16,6 +16,10 @@ encapsulated this logic;
 
 ### Added
 
+- Check incidence between sc-connectors and sc-elements substituted into sc-template from sc-template params
+- Generate and search by sc-templates with constant sc-connectors
+- Build sc-templates with constant sc-connectors
+- Opportunity to substitute sc-connectors as params in sc-templates
 - Script `healthcheck.sh` for `healthcheck.py`
 - Check build and tests on runner-image `ubuntu-24.04`
 - Support for ubuntu-24.04 and macOS 14.4.1
@@ -43,6 +47,7 @@ encapsulated this logic;
 
 ### Changed
 
+- Clarify error message for building sc-template, generating and searching by sc-template: provide sc-template item features in error message
 - Reformat code style according to clang-format-18
 - Use runner-image `macos-14` instead of runner-image `macos-latest` in CI
 - Don't check extensions when loading dynamic modules (`g_open_module` does it automatically)
@@ -55,6 +60,9 @@ encapsulated this logic;
 
 ### Fixed
 
+- Clear result of generating by sc-template if error is occurred
+- Check that template params sc-type can be extended to template item sc-type
+- No discard return types for sc-template API
 - C++ warnings for ubuntu-24.04 and macOS-14.4.1 when building project
 - Use `snprintf(3)` instead of `sprintf(2)`
 - Private and public dependencies between cmake targets
@@ -67,6 +75,7 @@ encapsulated this logic;
 
 ### Removed
 
+- Throw `utils::ExceptionInvalidParams` if template params have sc-connectors substitution for generating by sc-template
 - GetDecompositionAgent
 - Config option `sync_actions` in `[sc-server]` deprecated in 0.9.0
 - Sc-links lists translation from C API to C++ API
