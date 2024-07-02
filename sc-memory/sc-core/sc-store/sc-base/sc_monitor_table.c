@@ -49,14 +49,14 @@ void * _sc_monitor_table_clean_periodic(void * arg)
   pthread_exit(null_ptr);
 }
 
-sc_cleaner _sc_monitor_table_create_clean_timer(sc_monitor_table * table)
+sc_cleaner _sc_monitor_table_create_cleaner(sc_monitor_table * table)
 {
   sc_cleaner cleaner;
   pthread_create(&cleaner, null_ptr, _sc_monitor_table_clean_periodic, table);
   return cleaner;
 }
 
-void _sc_monitor_table_delete_clean_timer(sc_cleaner cleaner)
+void _sc_monitor_table_delete_cleaner(sc_cleaner cleaner)
 {
   pthread_join(cleaner, null_ptr);
 }
@@ -68,7 +68,7 @@ void _sc_monitor_table_init(sc_monitor_table * table)
   sc_mutex_init(&table->rw_mutex);
   table->global_monitor_id_counter = 1;
   table->is_working = SC_TRUE;
-  table->cleaner = _sc_monitor_table_create_clean_timer(table);
+  table->cleaner = _sc_monitor_table_create_cleaner(table);
 }
 
 void _sc_monitor_table_destroy(sc_monitor_table * table)
@@ -76,7 +76,7 @@ void _sc_monitor_table_destroy(sc_monitor_table * table)
   if (table->is_working == SC_TRUE)
   {
     table->is_working = SC_FALSE;
-    _sc_monitor_table_delete_clean_timer(table->cleaner);
+    _sc_monitor_table_delete_cleaner(table->cleaner);
   }
 
   sc_hash_table_destroy(table->monitors);
