@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../sc_memory_json_payload.hpp"
+#include "sc_memory_connection_info_json_action.hpp"
 #include "sc_memory_check_elements_json_action.hpp"
 #include "sc_memory_create_elements_json_action.hpp"
 #include "sc_memory_create_elements_by_scs_json_action.hpp"

@@ -25,9 +25,9 @@ typedef void (*sc_users_action_class_handler)(sc_memory_context_manager *, sc_ad
  */
 #define _sc_context_add_context_global_permissions(_context, _adding_permissions) \
   ({ \
-    sc_monitor_acquire_write(&_context->monitor); \
-    _context->global_permissions |= _adding_permissions; \
-    sc_monitor_release_write(&_context->monitor); \
+    sc_monitor_acquire_write(&(_context)->monitor); \
+    (_context)->global_permissions |= (_adding_permissions); \
+    sc_monitor_release_write(&(_context)->monitor); \
   })
 
 /**
@@ -38,9 +38,9 @@ typedef void (*sc_users_action_class_handler)(sc_memory_context_manager *, sc_ad
  */
 #define _sc_context_remove_context_global_permissions(_context, _removing_permissions) \
   ({ \
-    sc_monitor_acquire_write(&_context->monitor); \
-    _context->global_permissions &= ~_removing_permissions; \
-    sc_monitor_release_write(&_context->monitor); \
+    sc_monitor_acquire_write(&(_context)->monitor); \
+    (_context)->global_permissions &= ~(_removing_permissions); \
+    sc_monitor_release_write(&(_context)->monitor); \
   })
 
 /**
@@ -53,11 +53,11 @@ typedef void (*sc_users_action_class_handler)(sc_memory_context_manager *, sc_ad
   ((_permissions) & (_permissions_subset)) == _permissions_subset
 
 //! Gets sc-memory context global permissions.
-#define _sc_monitor_get_context_global_permissions(_context) \
+#define _sc_context_get_context_global_permissions(_context) \
   ({ \
-    sc_monitor_acquire_read((sc_monitor *)&_context->monitor); \
-    sc_permissions const _context_permissions = _context->global_permissions; \
-    sc_monitor_release_read((sc_monitor *)&_context->monitor); \
+    sc_monitor_acquire_read((sc_monitor *)&(_context)->monitor); \
+    sc_permissions const _context_permissions = (_context)->global_permissions; \
+    sc_monitor_release_read((sc_monitor *)&(_context)->monitor); \
     _context_permissions; \
   })
 
@@ -99,6 +99,125 @@ typedef void (*sc_users_action_class_handler)(sc_memory_context_manager *, sc_ad
     sc_monitor_release_write(&manager->user_global_permissions_monitor); \
   })
 
+#define _sc_context_add_global_permissions(_user_addr, _adding_permissions) \
+  ({ \
+    sc_memory_context * ctx = _sc_memory_context_get_impl(manager, _user_addr); \
+    if (ctx == null_ptr) \
+      _sc_context_add_user_global_permissions(user_addr, _adding_permissions); \
+    else \
+      _sc_context_add_context_global_permissions(ctx, _adding_permissions); \
+  })
+
+#define _sc_context_remove_global_permissions(_user_addr, _removing_permissions) \
+  ({ \
+    sc_memory_context * ctx = _sc_memory_context_get_impl(manager, _user_addr); \
+    if (ctx == null_ptr) \
+      _sc_context_remove_user_global_permissions(user_addr, _removing_permissions); \
+    else \
+      _sc_context_remove_context_global_permissions(ctx, _removing_permissions); \
+  })
+
+/**
+ * @brief Adds local permissions (within sc-structure) for a specific user in the context manager.
+ * @param _user_addr sc-address of the user.
+ * @param _adding_permissions Permissions to be added.
+ * @return None.
+ */
+#define _sc_context_add_user_local_permissions(_user_addr, _adding_permissions, _structure_addr) \
+  ({ \
+    sc_monitor_acquire_write(&manager->user_local_permissions_monitor); \
+    sc_hash_table * structures_permissions_table = \
+        sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+    sc_permissions _user_permissions = 0; \
+    if (structures_permissions_table == null_ptr) \
+    { \
+      structures_permissions_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr); \
+      sc_hash_table_insert( \
+          manager->user_local_permissions, \
+          GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
+          structures_permissions_table); \
+    } \
+    else \
+      _user_permissions = (sc_uint64)sc_hash_table_get( \
+          structures_permissions_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr))); \
+    _user_permissions |= (_adding_permissions); \
+    sc_hash_table_insert( \
+        structures_permissions_table, \
+        GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr)), \
+        GINT_TO_POINTER(_user_permissions)); \
+    sc_monitor_release_write(&manager->user_local_permissions_monitor); \
+  })
+
+/**
+ * @brief Removes local permissions (within sc-structure) for a specific user in the context manager.
+ * @param _user_addr sc-address of the user.
+ * @param _removing_permissions Permissions to be removed.
+ * @return None.
+ */
+#define _sc_context_remove_user_local_permissions(_user_addr, _removing_permissions, _structure_addr) \
+  ({ \
+    sc_monitor_acquire_write(&manager->user_local_permissions_monitor); \
+    sc_hash_table * structures_permissions_table = \
+        sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+    sc_permissions _user_permissions = 0; \
+    if (structures_permissions_table != null_ptr) \
+    { \
+      _user_permissions = (sc_uint64)sc_hash_table_get( \
+          structures_permissions_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr))); \
+      _user_permissions &= ~(_removing_permissions); \
+      sc_hash_table_insert( \
+          structures_permissions_table, \
+          GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr)), \
+          GINT_TO_POINTER(_user_permissions)); \
+    } \
+    sc_monitor_release_write(&manager->user_local_permissions_monitor); \
+  })
+
+/**
+ * @brief Adds local permissions (within sc-structure) to a given sc-memory context.
+ * @param _context Pointer to the sc-memory context.
+ * @param _adding_permissions Permissions to be added.
+ * @return None.
+ */
+#define _sc_context_add_context_local_permissions(_context, _adding_permissions, _structure_addr) \
+  ({ \
+    _sc_context_add_user_local_permissions((_context)->user_addr, _adding_permissions, _structure_addr); \
+    if ((_context)->local_permissions == null_ptr) \
+    { \
+      sc_monitor_acquire_write(&manager->user_local_permissions_monitor); \
+      (_context)->local_permissions = sc_hash_table_get( \
+          manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT((_context)->user_addr))); \
+      sc_monitor_release_write(&manager->user_local_permissions_monitor); \
+    } \
+  })
+
+/**
+ * @brief Removes local permissions (within sc-structure) from a given sc-memory context.
+ * @param _context Pointer to the sc-memory context.
+ * @param _removing_permissions Permissions to be removed.
+ * @return None.
+ */
+#define _sc_context_remove_context_local_permissions(_context, _removing_permissions, _structure_addr) \
+  _sc_context_remove_user_local_permissions((_context)->user_addr, _removing_permissions, _structure_addr)
+
+#define _sc_context_add_local_permissions(_user_addr, _adding_permissions, _structure_addr) \
+  ({ \
+    sc_memory_context * ctx = _sc_memory_context_get_impl(manager, _user_addr); \
+    if (ctx == null_ptr) \
+      _sc_context_add_user_local_permissions(user_addr, _adding_permissions, _structure_addr); \
+    else \
+      _sc_context_add_context_local_permissions(ctx, _adding_permissions, _structure_addr); \
+  })
+
+#define _sc_context_remove_local_permissions(_user_addr, _removing_permissions, _structure_addr) \
+  ({ \
+    sc_memory_context * ctx = _sc_memory_context_get_impl(manager, _user_addr); \
+    if (ctx == null_ptr) \
+      _sc_context_remove_user_local_permissions(user_addr, _removing_permissions, _structure_addr); \
+    else \
+      _sc_context_remove_context_local_permissions(ctx, _removing_permissions, _structure_addr); \
+  })
+
 sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager)
 {
   sc_addr const guest_user_addr = sc_memory_node_new(s_memory_default_ctx, sc_type_node | sc_type_const);
@@ -136,10 +255,8 @@ sc_result _sc_memory_context_manager_on_identified_user(
   sc_hash_table_remove(manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
 
   ctx->user_addr = identified_user_addr;
-  ctx->global_permissions = (sc_uint64)sc_hash_table_get(
-      manager->user_global_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
-  ctx->local_permissions =
-      sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->global_permissions = _sc_context_get_user_global_permissions(ctx->user_addr);
+  ctx->local_permissions = _sc_context_get_user_local_permissions(ctx->user_addr);
 
   sc_hash_table_insert(
       manager->context_hash_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)), (sc_pointer)ctx);
@@ -176,11 +293,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
   _sc_context_set_permissions_for_element(user_addr, SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS);
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_add_user_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
-  else
-    _sc_context_add_context_global_permissions(ctx, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
+  _sc_context_add_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
 
   sc_memory_element_free(s_memory_default_ctx, connector_addr);
 
@@ -223,11 +336,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
     return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = sc_event_get_data(event);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_remove_user_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
-  else
-    _sc_context_remove_context_global_permissions(ctx, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
+  _sc_context_remove_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
 
   sc_addr const auth_arc_addr = sc_memory_arc_new(
       s_memory_default_ctx, sc_type_arc_neg_const_temp, manager->concept_authenticated_user_addr, user_addr);
@@ -269,6 +378,97 @@ void _sc_memory_context_manager_handle_user_action_class(
   updater(manager, user_addr, action_class_addr, structure_addr);
 }
 
+sc_result _sc_memory_context_manager_on_new_user_in_users_set(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr user_addr)
+{
+  sc_unused(&initiator_addr);
+  sc_unused(&connector_addr);
+
+  // Only positive access sc-arcs can be used
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+    return SC_RESULT_NO;
+
+  sc_memory_context_manager * manager = event->data;
+  sc_addr const users_set_addr = event->subscription_addr;
+
+  sc_permissions const global_permissions = _sc_context_get_user_global_permissions(users_set_addr);
+  _sc_context_add_global_permissions(user_addr, global_permissions);
+
+  sc_hash_table * local_permissions = _sc_context_get_user_local_permissions(users_set_addr);
+  if (local_permissions == null_ptr)
+    goto end;
+
+  sc_hash_table_iterator local_permissions_iterator;
+  sc_hash_table_iterator_init(&local_permissions_iterator, local_permissions);
+  sc_pointer key, value;
+  while (sc_hash_table_iterator_next(&local_permissions_iterator, &key, &value))
+  {
+    sc_addr structure_addr;
+    SC_ADDR_LOCAL_FROM_INT((sc_addr_hash)key, structure_addr);
+    sc_permissions const permissions = (sc_uint64)value;
+
+    _sc_context_add_local_permissions(user_addr, permissions, structure_addr);
+  }
+
+end:
+{
+  // Remove all negative sc-arcs
+  sc_iterator3 * it3 =
+      sc_iterator3_f_a_f_new(s_memory_default_ctx, event->subscription_addr, sc_type_arc_neg_const_temp, user_addr);
+  while (sc_iterator3_next(it3))
+    sc_memory_element_free(s_memory_default_ctx, sc_iterator3_value(it3, 1));
+  sc_iterator3_free(it3);
+};
+
+  return SC_RESULT_OK;
+}
+
+sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
+    sc_event const * event,
+    sc_addr initiator_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr user_addr)
+{
+  sc_unused(&initiator_addr);
+  sc_unused(&connector_addr);
+
+  // Only positive access sc-arcs can be used
+  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+    return SC_RESULT_NO;
+
+  sc_memory_context_manager * manager = event->data;
+  sc_addr const users_set_addr = event->subscription_addr;
+
+  sc_permissions const global_permissions = _sc_context_get_user_global_permissions(users_set_addr);
+  _sc_context_remove_global_permissions(user_addr, global_permissions);
+
+  sc_hash_table * local_permissions = _sc_context_get_user_local_permissions(users_set_addr);
+  if (local_permissions == null_ptr)
+    goto end;
+
+  sc_hash_table_iterator local_permissions_iterator;
+  sc_hash_table_iterator_init(&local_permissions_iterator, local_permissions);
+  sc_pointer key, value;
+  while (sc_hash_table_iterator_next(&local_permissions_iterator, &key, &value))
+  {
+    sc_addr structure_addr;
+    SC_ADDR_LOCAL_FROM_INT((sc_addr_hash)key, structure_addr);
+    sc_permissions const permissions = (sc_uint64)value;
+
+    _sc_context_remove_local_permissions(user_addr, permissions, structure_addr);
+  }
+
+end:
+  sc_memory_arc_new(s_memory_default_ctx, sc_type_arc_neg_const_temp, users_set_addr, user_addr);
+
+  return SC_RESULT_OK;
+}
+
 void _sc_memory_context_manager_handle_users_set_action_class(
     sc_memory_context_manager * manager,
     sc_addr users_set_addr,
@@ -291,6 +491,42 @@ void _sc_memory_context_manager_handle_users_set_action_class(
     updater(manager, user_addr, action_class_addr, structure_addr);
   }
   sc_iterator3_free(users_it3);
+
+  updater(manager, users_set_addr, action_class_addr, structure_addr);
+
+  sc_monitor_acquire_write(&manager->on_new_users_in_sets_events_monitor);
+  sc_event * event =
+      sc_hash_table_get(manager->on_new_users_in_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)));
+  if (event == null_ptr)
+  {
+    event = sc_event_with_user_new(
+        s_memory_default_ctx,
+        users_set_addr,
+        SC_EVENT_ADD_OUTPUT_ARC,
+        manager,
+        _sc_memory_context_manager_on_new_user_in_users_set,
+        null_ptr);
+    sc_hash_table_insert(
+        manager->on_new_users_in_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)), event);
+  }
+  sc_monitor_release_write(&manager->on_new_users_in_sets_events_monitor);
+
+  sc_monitor_acquire_write(&manager->on_remove_users_from_sets_events_monitor);
+  event = sc_hash_table_get(
+      manager->on_remove_users_from_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)));
+  if (event == null_ptr)
+  {
+    event = sc_event_with_user_new(
+        s_memory_default_ctx,
+        users_set_addr,
+        SC_EVENT_REMOVE_OUTPUT_ARC,
+        manager,
+        _sc_memory_context_manager_on_remove_user_from_users_set,
+        null_ptr);
+    sc_hash_table_insert(
+        manager->on_remove_users_from_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)), event);
+  }
+  sc_monitor_release_write(&manager->on_remove_users_from_sets_events_monitor);
 }
 
 void _sc_context_add_user_context_global_permissions(
@@ -299,11 +535,7 @@ void _sc_context_add_user_context_global_permissions(
     sc_addr action_class_addr)
 {
   sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_add_user_global_permissions(user_addr, permissions);
-  else
-    _sc_context_add_context_global_permissions(ctx, permissions);
+  _sc_context_add_global_permissions(user_addr, permissions);
 }
 
 void _sc_memory_context_manager_add_user_action_class(
@@ -414,11 +646,7 @@ void _sc_context_remove_user_context_global_permissions(
     sc_addr action_class_addr)
 {
   sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_remove_user_global_permissions(user_addr, permissions);
-  else
-    _sc_context_remove_context_global_permissions(ctx, permissions);
+  _sc_context_remove_global_permissions(user_addr, permissions);
 }
 
 void _sc_memory_context_manager_remove_user_action_class(
@@ -515,89 +743,6 @@ sc_result _sc_memory_context_manager_on_remove_users_set_action_class(
       _sc_memory_context_manager_handle_users_set_action_class);
 }
 
-/**
- * @brief Adds local permissions (within sc-structure) for a specific user in the context manager.
- * @param _user_addr sc-address of the user.
- * @param _adding_permissions Permissions to be added.
- * @return None.
- */
-#define _sc_context_add_user_local_permissions(_user_addr, _adding_permissions, _structure_addr) \
-  ({ \
-    sc_monitor_acquire_write(&manager->user_local_permissions_monitor); \
-    sc_hash_table * structures_permissions_table = \
-        sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
-    sc_permissions _user_permissions = 0; \
-    if (structures_permissions_table == null_ptr) \
-    { \
-      structures_permissions_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr); \
-      sc_hash_table_insert( \
-          manager->user_local_permissions, \
-          GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr)), \
-          structures_permissions_table); \
-    } \
-    else \
-      _user_permissions = (sc_uint64)sc_hash_table_get( \
-          structures_permissions_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr))); \
-    _user_permissions |= (_adding_permissions); \
-    sc_hash_table_insert( \
-        structures_permissions_table, \
-        GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr)), \
-        GINT_TO_POINTER(_user_permissions)); \
-    sc_monitor_release_write(&manager->user_local_permissions_monitor); \
-  })
-
-/**
- * @brief Removes local permissions (within sc-structure) for a specific user in the context manager.
- * @param _user_addr sc-address of the user.
- * @param _removing_permissions Permissions to be removed.
- * @return None.
- */
-#define _sc_context_remove_user_local_permissions(_user_addr, _removing_permissions, _structure_addr) \
-  ({ \
-    sc_monitor_acquire_write(&manager->user_local_permissions_monitor); \
-    sc_hash_table * structures_permissions_table = \
-        sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
-    sc_permissions _user_permissions = 0; \
-    if (structures_permissions_table != null_ptr) \
-    { \
-      _user_permissions = (sc_uint64)sc_hash_table_get( \
-          structures_permissions_table, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr))); \
-      _user_permissions &= ~(_removing_permissions); \
-      sc_hash_table_insert( \
-          structures_permissions_table, \
-          GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_structure_addr)), \
-          GINT_TO_POINTER(_user_permissions)); \
-    } \
-    sc_monitor_release_write(&manager->user_local_permissions_monitor); \
-  })
-
-/**
- * @brief Adds local permissions (within sc-structure) to a given sc-memory context.
- * @param _context Pointer to the sc-memory context.
- * @param _adding_permissions Permissions to be added.
- * @return None.
- */
-#define _sc_context_add_context_local_permissions(_context, _adding_permissions, _structure_addr) \
-  ({ \
-    _sc_context_add_user_local_permissions(_context->user_addr, _adding_permissions, _structure_addr); \
-    if (_context->local_permissions == null_ptr) \
-    { \
-      sc_monitor_acquire_write(&manager->user_local_permissions_monitor); \
-      _context->local_permissions = sc_hash_table_get( \
-          manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_context->user_addr))); \
-      sc_monitor_release_write(&manager->user_local_permissions_monitor); \
-    } \
-  })
-
-/**
- * @brief Removes local permissions (within sc-structure) from a given sc-memory context.
- * @param _context Pointer to the sc-memory context.
- * @param _removing_permissions Permissions to be removed.
- * @return None.
- */
-#define _sc_context_remove_context_local_permissions(_context, _removing_permissions, _structure_addr) \
-  _sc_context_remove_user_local_permissions(_context->user_addr, _removing_permissions, _structure_addr)
-
 void _sc_context_add_user_context_local_permissions(
     sc_memory_context_manager * manager,
     sc_addr user_addr,
@@ -605,11 +750,7 @@ void _sc_context_add_user_context_local_permissions(
     sc_addr structure_addr)
 {
   sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_add_user_local_permissions(user_addr, permissions, structure_addr);
-  else
-    _sc_context_add_context_local_permissions(ctx, permissions, structure_addr);
+  _sc_context_add_local_permissions(user_addr, permissions, structure_addr);
 }
 
 /*! Function that adds a new user (or set of users) action class within a structure, updating permissions accordingly.
@@ -659,11 +800,7 @@ void _sc_context_remove_user_context_local_permissions(
     sc_addr structure_addr)
 {
   sc_permissions const permissions = sc_context_manager_get_basic_action_class_permissions(action_class_addr);
-  sc_memory_context * ctx = _sc_memory_context_get_impl(manager, user_addr);
-  if (ctx == null_ptr)
-    _sc_context_remove_user_local_permissions(user_addr, permissions, structure_addr);
-  else
-    _sc_context_remove_context_local_permissions(ctx, permissions, structure_addr);
+  _sc_context_remove_local_permissions(user_addr, permissions, structure_addr);
 }
 
 /*! Function that removes a user (or set of users) action class within a structure, adjusting permissions accordingly.
@@ -994,7 +1131,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   sc_context_manager_add_basic_action_class_permissions(action_read_from_sc_memory_addr, SC_CONTEXT_PERMISSIONS_READ);
   sc_context_manager_add_basic_action_class_permissions(
       action_generate_in_sc_memory_addr, SC_CONTEXT_PERMISSIONS_WRITE);
-  sc_context_manager_add_basic_action_class_permissions(action_erase_in_sc_memory_addr, SC_CONTEXT_PERMISSIONS_ERASE);
+  sc_context_manager_add_basic_action_class_permissions(action_erase_from_sc_memory_addr, SC_CONTEXT_PERMISSIONS_ERASE);
   sc_context_manager_add_basic_action_class_permissions(
       action_read_permissions_from_sc_memory_addr, SC_CONTEXT_PERMISSIONS_TO_READ_PERMISSIONS);
   sc_context_manager_add_basic_action_class_permissions(
@@ -1103,7 +1240,7 @@ sc_bool _sc_memory_context_is_authenticated(sc_memory_context_manager * manager,
   if (_sc_memory_context_check_system(manager, ctx))
     return SC_TRUE;
 
-  sc_permissions const context_permissions = _sc_monitor_get_context_global_permissions(ctx);
+  sc_permissions const context_permissions = _sc_context_get_context_global_permissions(ctx);
 
   sc_bool const is_authenticated =
       sc_context_has_permissions_subset(context_permissions, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
@@ -1190,7 +1327,7 @@ sc_bool _sc_memory_context_check_global_permissions(
   if (_sc_memory_context_check_system(manager, ctx))
     return SC_TRUE;
 
-  sc_permissions const context_permissions = _sc_monitor_get_context_global_permissions(ctx);
+  sc_permissions const context_permissions = _sc_context_get_context_global_permissions(ctx);
 
   // Check if the sc-memory context has permissions to the action class
   sc_bool const result = sc_context_has_permissions_subset(context_permissions, action_class_permissions);
@@ -1223,7 +1360,7 @@ sc_bool _sc_memory_context_check_global_permissions_to_read_permissions(
   if (_sc_memory_context_check_system(manager, ctx))
     return SC_TRUE;
 
-  sc_permissions const context_permissions = _sc_monitor_get_context_global_permissions(ctx);
+  sc_permissions const context_permissions = _sc_context_get_context_global_permissions(ctx);
 
   sc_permissions const element_permissions = permitted_element->flags.states;
 
@@ -1240,7 +1377,7 @@ sc_bool _sc_memory_context_check_global_permissions_to_handle_permissions(
     sc_addr permitted_element_addr,
     sc_permissions required_permissions)
 {
-  sc_permissions const context_permissions = _sc_monitor_get_context_global_permissions(ctx);
+  sc_permissions const context_permissions = _sc_context_get_context_global_permissions(ctx);
   sc_permissions const element_permissions = _sc_context_get_permissions_for_element(permitted_element_addr);
 
   // Check if the sc-memory context has access to handle the operation
