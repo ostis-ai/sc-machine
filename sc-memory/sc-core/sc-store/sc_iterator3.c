@@ -242,7 +242,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
 
   // try to find first output arc
   sc_element * el = null_ptr;
-  if (SC_ADDR_IS_EMPTY(it->results[1].addr))
+  if (sc_storage_get_element_by_addr(it->results[1].addr, &el) != SC_RESULT_OK)
   {
     result = sc_storage_get_element_by_addr(arc_begin, &el);
     if (result != SC_RESULT_OK)
@@ -389,7 +389,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
 
   // try to find first input arc
   sc_element * el = null_ptr;
-  if (SC_ADDR_IS_EMPTY(it->results[1].addr))
+  if (sc_storage_get_element_by_addr(it->results[1].addr, &el) != SC_RESULT_OK)
   {
     result = sc_storage_get_element_by_addr(arc_end, &el);
     if (result != SC_RESULT_OK)
@@ -517,7 +517,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
   // try to find first input arc
   sc_element * el = null_ptr;
-  if (SC_ADDR_IS_EMPTY(it->results[1].addr))
+  if (sc_storage_get_element_by_addr(it->results[1].addr, &el) != SC_RESULT_OK)
   {
     result = sc_storage_get_element_by_addr(arc_end, &el);
     if (result != SC_RESULT_OK)
