@@ -20,22 +20,24 @@
 
 /// Defines `std::string GetName()` method for agent class. It is used in sc-memory logging.
 #define SC_AGENT_BODY(__AgentName__) \
-  _SC_EXTERN explicit __AgentName__(ScAddr const & userAddr) \
+public: \
+  _SC_EXTERN explicit __AgentName__(ScAddr const & userAddr = ScAddr::Empty) \
     : ScAgent(userAddr) \
   { \
   } \
-  _SC_EXTERN std::string GetName() override \
+  static _SC_EXTERN std::string GetName() \
   { \
     return #__AgentName__; \
   }
 
 /// Defines `std::string GetName()` method for agent class. It is used in sc-memory logging.
 #define SC_ACTION_AGENT_BODY(__AgentName__) \
-  _SC_EXTERN explicit __AgentName__(ScAddr const & userAddr) \
+public: \
+  _SC_EXTERN explicit __AgentName__(ScAddr const & userAddr = ScAddr::Empty) \
     : ScActionAgent(userAddr) \
   { \
   } \
-  _SC_EXTERN std::string GetName() override \
+  static _SC_EXTERN std::string GetName() \
   { \
     return #__AgentName__; \
   }
@@ -51,7 +53,7 @@ public:
 
   _SC_EXTERN ~ScAgentAbstract() override;
 
-  _SC_EXTERN std::string GetName() override;
+  static _SC_EXTERN std::string GetName();
 
   /*! @details It will be called, if the event the agent is subscribed to has been initialized. In this method,
    * the logic implemented by the agent starts running. Depending on the event type, the number of valid arguments to
@@ -59,7 +61,6 @@ public:
    * @param[in] listenAddr An address of a subscripting element (can be empty address)
    * @param[in] edgeAddr An address of an edge element that come in or from subscripting element (can be empty address)
    * @param[in] otherAddr An address of the element incident to the edge (can be empty address)
-   * @param[out] answerAddr An answer structure addr
    * @return sc_result A status code of agent on it finish
    */
   _SC_EXTERN virtual sc_result OnEvent(
@@ -83,6 +84,59 @@ public:
    * @return A pointer to agent instance
    */
   static _SC_EXTERN void Unregister(ScMemoryContext * ctx) {};
+
+protected:
+  mutable ScAgentContext m_memoryCtx;
+
+  static std::list<ScEvent *> m_events;
+
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
+
+  static _SC_EXTERN ScEvent::DelegateFuncWithUserAddr GetCallback();
+};
+
+/*!
+ * @interface An interface for agents classes
+ * @note This class is an API to implement your own registration API of agents.
+ */
+template <ScEvent::Type const & eventType>
+class _SC_EXTERN ScAgent : public ScAgentAbstract
+{
+public:
+  _SC_EXTERN explicit ScAgent(ScAddr const & userAddr)
+    : ScAgentAbstract(userAddr){};
+
+  template <class AgentClass>
+  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddrVector const & addrs)
+  {
+    SC_LOG_INFO("Register " << AgentClass::GetName());
+
+    for (auto const & addr : addrs)
+      m_events.push_back(new ScEvent(*ctx, addr, eventType, AgentClass::template GetCallback<AgentClass>()));
+  }
+
+  template <class AgentClass>
+  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & addr)
+  {
+    SC_LOG_INFO("Register " << AgentClass::GetName());
+
+    m_events.push_back(new ScEvent(*ctx, addr, eventType, AgentClass::template GetCallback<AgentClass>()));
+  }
+
+  template <class AgentClass>
+  static _SC_EXTERN void Unregister(ScMemoryContext * ctx)
+  {
+    SC_UNUSED(ctx);
+
+    SC_LOG_INFO("Unregister " << AgentClass::GetName());
+
+    for (auto * event : m_events)
+      delete event;
+
+    m_events.clear();
+  }
 
   /*! Complete defined logic if agent is finished successfully (SC_RESULT_OK)
    * @param listenAddr An address of a subscripting element
@@ -113,52 +167,6 @@ public:
       ScAddr const & otherAddr,
       sc_result errorCode)
   {
-  }
-
-protected:
-  mutable ScAgentContext m_memoryCtx;
-
-  static std::list<ScEvent *> m_events;
-
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
-
-  static _SC_EXTERN ScEvent::DelegateFuncWithUserAddr GetCallback();
-};
-
-/*!
- * @interface An interface for agents classes
- * @note This class is an API to implement your own registration API of agents.
- */
-template <ScEvent::Type const & eventType>
-class _SC_EXTERN ScAgent : public ScAgentAbstract
-{
-public:
-  _SC_EXTERN explicit ScAgent(ScAddr const & userAddr)
-    : ScAgentAbstract(userAddr){};
-
-  template <class AgentClass>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddrVector const & addrs)
-  {
-    for (auto const & addr : addrs)
-      m_events.push_back(new ScEvent(*ctx, addr, eventType, GetCallback<AgentClass>()));
-  }
-
-  template <class AgentClass>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & addr)
-  {
-    m_events.push_back(new ScEvent(*ctx, addr, eventType, GetCallback<AgentClass>()));
-  }
-
-  static _SC_EXTERN void Unregister(ScMemoryContext * ctx)
-  {
-    SC_UNUSED(ctx);
-
-    for (auto * event : m_events)
-      delete event;
-
-    m_events.clear();
   }
 
   template <class AgentClass>
@@ -275,20 +283,40 @@ public:
   {
   }
 
-  template <class AgentClass>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddrVector const & addrs)
+  _SC_EXTERN sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
   {
-    for (auto const & addr : addrs)
-      m_events.push_back(new ScEvent(*ctx, addr, ScEvent::Type::AddOutputEdge, GetCallback<AgentClass>()));
-  }
+    return SC_RESULT_OK;
+  };
 
-  template <class AgentClass>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & addr)
-  {
-    m_events.push_back(new ScEvent(*ctx, addr, ScEvent::Type::AddOutputEdge, GetCallback<AgentClass>()));
-  }
+  /*! @details It will be called, if the event the agent is subscribed to has been initialized. In this method,
+   * the logic implemented by the agent starts running. Depending on the event type, the number of valid arguments to
+   * this method changes.
+   * @param[in] listenAddr An address of a subscripting element (can be empty address)
+   * @param[in] edgeAddr An address of an edge element that come in or from subscripting element (can be empty address)
+   * @param[in] otherAddr An address of the element incident to the edge (can be empty address)
+   * @return sc_result A status code of agent on it finish
+   */
+  _SC_EXTERN virtual sc_result OnEvent(ScAddr const & actionAddr) = 0;
 
-protected:
+  /*! Complete defined logic if agent is finished successfully (SC_RESULT_OK)
+   * @param actionAddr An address of the element incident to the edge
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual void OnSuccess(ScAddr const & actionAddr) {}
+
+  /*! Complete defined logic if agent is finished unsuccessfully (SC_RESULT_NO)
+   * @param actionAddr An address of the element incident to the edge
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual void OnUnsuccess(ScAddr const & actionAddr) {}
+
+  /*! Complete defined logic if agent is finished with error
+   * @param actionAddr An address of the element incident to the edge
+   * @param errorCode An error code of agent
+   * @return A pointer to agent instance
+   */
+  _SC_EXTERN virtual void OnError(ScAddr const & actionAddr, sc_result errorCode) {}
+
   template <class AgentClass>
   static _SC_EXTERN ScEvent::DelegateFuncWithUserAddr GetCallback()
   {
@@ -306,27 +334,27 @@ protected:
 
       AgentClass agent(userAddr);
       SC_LOG_INFO(agent.GetName() << " started");
-      result = agent.OnEvent(addr, edgeAddr, otherAddr);
+      result = agent.OnEvent(otherAddr);
 
       // finish agent
       if (result == SC_RESULT_OK)
       {
         SC_LOG_INFO(agent.GetName() << " finished successfully");
-        agent.OnSuccess(addr, edgeAddr, otherAddr);
+        agent.OnSuccess(otherAddr);
         ScMemory::ms_globalContext->CreateEdge(
             ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedSuccessfully, otherAddr);
       }
       else if (result == SC_RESULT_NO)
       {
         SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
-        agent.OnUnsuccess(addr, edgeAddr, otherAddr);
+        agent.OnUnsuccess(otherAddr);
         ScMemory::ms_globalContext->CreateEdge(
             ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedUnsuccessfully, otherAddr);
       }
       else
       {
         SC_LOG_INFO(agent.GetName() << " finished with error");
-        agent.OnError(addr, edgeAddr, otherAddr, result);
+        agent.OnError(otherAddr, result);
         ScMemory::ms_globalContext->CreateEdge(
             ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedWithError, otherAddr);
       }
@@ -337,10 +365,12 @@ protected:
   }
 };
 
-#define SC_AGENT_REGISTER(__Context__, __AgentName__, __Addrs__) \
-  __AgentName__::Register<__AgentName__>(__Context__, __Addrs__)
+#define SC_AGENT_REGISTER(__Context__, __AgentName__, ...) \
+  __AgentName__::Register<__AgentName__>(__Context__, __VA_ARGS__)
 
-#define SC_AGENT_UNREGISTER(__Context__, __AgentName__) __AgentName__::Unregister(__Context__)
+#define SC_AGENT_UNREGISTER(__Context__, __AgentName__) __AgentName__::Unregister<__AgentName__>(__Context__)
 
 #define SC_AGENT_IMPLEMENTATION(__AgentName__) \
   sc_result __AgentName__::OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+
+#define SC_ACTION_AGENT_IMPLEMENTATION(__AgentName__) sc_result __AgentName__::OnEvent(ScAddr const & actionAddr)

@@ -24,14 +24,14 @@
  *
  * SC_MODULE(ScNLPModule)
  *   ->Keynodes(new nlp::ScNLPKeynodes())
- *   ->Agent({
+ *   ->Agent(
  *      new nlp::ScSyntacticAnalysisAgent<ScEvent::Type::AddOutputEdge>(),
  *      nlp::ScNLPKeynodes::kSyntacticAnalysisAction,
- *    })
- *   ->Agent({
+ *   )
+ *   ->Agent(
  *      new nlp::ScSemanticAnalysisAgent<ScEvent::Type::AddOutputEdge>(),
  *      nlp::ScNLPKeynodes::kSemanticAnalysisAction
- *    });
+ *   );
  * \endcode
  * File sc_nlp_module.cpp:
  * \code
@@ -46,7 +46,7 @@ class _SC_EXTERN ScModule : public ScObject
 public:
   _SC_EXTERN ~ScModule() override = default;
 
-  _SC_EXTERN std::string GetName() override
+  static _SC_EXTERN std::string GetName()
   {
     return "ScModule";
   }
@@ -60,19 +60,40 @@ public:
    * @param keynodes A pointer to dynamically created keynodes instance
    * @returns Pointer to module instance
    */
-  _SC_EXTERN virtual ScModule * Keynodes(ScKeynodes * keynodes) final;
+  template <class KeynodesClass>
+  _SC_EXTERN ScModule * Keynodes()
+  {
+    static_assert(
+        std::is_base_of<ScKeynodes, KeynodesClass>::value, "KeynodesClass must be derivied from ScKeynodes class");
+    m_keynodes.push_back(new KeynodesClass());
+    return this;
+  }
 
   /*! Reminds agent and it initiation condition to register it with module after.
    * @param agentInfo A pointer to dynamically created agent instance and a vector of subscription addrs
    * @returns Pointer to module instance
    */
-  _SC_EXTERN virtual ScModule * Agent(std::pair<ScAgentAbstract *, ScAddrVector> const & agentInfo) final;
+  template <class AgentClass>
+  _SC_EXTERN ScModule * Agent(ScAddrVector const & addrs)
+  {
+    static_assert(
+        std::is_base_of<ScAgentAbstract, AgentClass>::value, "AgentClass must be derivied from ScAgentAbstract class");
+    m_agents.push_back({{GetAgentRegisterCallback<AgentClass>(), GetAgentUnregisterCallback<AgentClass>()}, addrs});
+    return this;
+  }
 
   /*! Reminds agent and it initiation condition to register it with module after.
    * @param agentInfo A pointer to dynamically created agent instance and a subscription addr
    * @returns Pointer to module instance
    */
-  _SC_EXTERN virtual ScModule * Agent(std::pair<ScAgentAbstract *, ScAddr> const & agentInfo) final;
+  template <class AgentClass>
+  _SC_EXTERN ScModule * Agent(ScAddr const & addr)
+  {
+    static_assert(
+        std::is_base_of<ScAgentAbstract, AgentClass>::value, "AgentClass must be derivied from ScAgentAbstract class");
+    m_agents.push_back({{GetAgentRegisterCallback<AgentClass>(), GetAgentUnregisterCallback<AgentClass>()}, {addr}});
+    return this;
+  }
 
   /*! Registers all module keynodes and agents
    * @returns Result of initializing
@@ -88,14 +109,35 @@ protected:
   /// Registered keynodes
   std::list<ScKeynodes *> m_keynodes;
   /// Registered agents
-  std::list<std::pair<ScAgentAbstract *, ScAddrVector>> m_agents;
+  using ScAgentRegisterCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
+  using ScAgentUnregisterCallback = std::function<void(ScMemoryContext *)>;
+  std::list<std::pair<std::pair<ScAgentRegisterCallback, ScAgentUnregisterCallback>, ScAddrVector>> m_agents;
+
+  template <class AgentClass>
+  ScAgentRegisterCallback GetAgentRegisterCallback()
+  {
+    return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
+    {
+      AgentClass::template Register<AgentClass>(ctx, addrs);
+    };
+  }
+
+  template <class AgentClass>
+  ScAgentUnregisterCallback GetAgentUnregisterCallback()
+  {
+    return [](ScMemoryContext * ctx)
+    {
+      AgentClass::template Unegister<AgentClass>(ctx);
+    };
+  }
 };
 
 /// Implements module class and create it instance
 #define SC_MODULE_BODY(__ModuleName__) \
+public: \
   static ScModule * m_instance; \
 \
-  _SC_EXTERN std::string GetName() override \
+  static _SC_EXTERN std::string GetName() \
   { \
     return #__ModuleName__; \
   }

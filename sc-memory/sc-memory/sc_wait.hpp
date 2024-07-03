@@ -55,7 +55,7 @@ public:
 
   ~ScWait() override = default;
 
-  std::string GetName() override
+  static std::string GetName()
   {
     return "ScWait";
   }

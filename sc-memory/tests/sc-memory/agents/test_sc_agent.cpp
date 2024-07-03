@@ -76,10 +76,10 @@ ScKeynodeClass const ATestCheckResult::msAgentKeynode("ATestCheckResult");
 ScKeynodeClass const ATestCheckResult::msAgentSet("ATestCheckResultSet");
 TestWaiter ATestCheckResult::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestCheckResult)
+SC_ACTION_AGENT_IMPLEMENTATION(ATestCheckResult)
 {
-  ScAddr const & firstArgument = m_memoryCtx.GetActionArgument(otherAddr, 1);
-  ScAddr const & secondArgument = m_memoryCtx.GetActionArgument(otherAddr, 2);
+  ScAddr const & firstArgument = m_memoryCtx.GetActionArgument(actionAddr, 1);
+  ScAddr const & secondArgument = m_memoryCtx.GetActionArgument(actionAddr, 2);
 
   if (firstArgument.IsValid() == SC_FALSE)
   {
@@ -97,21 +97,17 @@ SC_AGENT_IMPLEMENTATION(ATestCheckResult)
   return SC_RESULT_OK;
 }
 
-void ATestCheckResult::OnSuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+void ATestCheckResult::OnSuccess(ScAddr const & actionAddr)
 {
   m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msAgentSet, msAgentKeynode);
 }
 
-void ATestCheckResult::OnUnsuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+void ATestCheckResult::OnUnsuccess(ScAddr const & actionAddr)
 {
   m_memoryCtx.CreateEdge(ScType::EdgeAccessConstFuzPerm, msAgentSet, msAgentKeynode);
 }
 
-void ATestCheckResult::OnError(
-    ScAddr const & listenAddr,
-    ScAddr const & edgeAddr,
-    ScAddr const & otherAddr,
-    sc_result errorCode)
+void ATestCheckResult::OnError(ScAddr const & actionAddr, sc_result errorCode)
 {
   m_memoryCtx.CreateEdge(ScType::EdgeAccessConstNegPerm, msAgentSet, msAgentKeynode);
 }

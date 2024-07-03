@@ -13,7 +13,7 @@ public:
 
   static ScKeynodeClass const msAgentKeynode;
 
-  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
+  sc_result OnEvent(ScAddr const & otherAddr) override;
 };
 
 }  // namespace scUtilsTestAgents

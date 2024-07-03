@@ -117,14 +117,13 @@ class ATestCheckResult : public ScActionAgent<>
 public:
   SC_ACTION_AGENT_BODY(ATestCheckResult);
 
-  void OnSuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
-  void OnUnsuccess(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
-  void OnError(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr, sc_result errorCode)
-      override;
+  void OnSuccess(ScAddr const & actionAddr) override;
+  void OnUnsuccess(ScAddr const & actionAddr) override;
+  void OnError(ScAddr const & actionAddr, sc_result errorCode) override;
 
   static ScKeynodeClass const msAgentKeynode;
   static ScKeynodeClass const msAgentSet;
   static TestWaiter msWaiter;
 
-  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
+  sc_result OnEvent(ScAddr const & actionAddr) override;
 };

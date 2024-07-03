@@ -523,13 +523,15 @@ TEST_F(
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [this, &userContext, &isAuthenticated](
+          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
         TestActionsUnsuccessfully(m_ctx, userContext);
+        isAuthenticated = true;
 
-        return isAuthenticated = true;
+        return SC_RESULT_OK;
       });
 
   ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
@@ -546,11 +548,13 @@ TEST_F(
     ScEventRemoveOutputEdge event2(
         *m_ctx,
         usersSetAddr,
-        [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        [this, &userContext, &isChecked](
+            ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
         {
           TestActionsSuccessfully(m_ctx, userContext);
+          isChecked = true;
 
-          return isChecked = true;
+          return SC_RESULT_OK;
         });
 
     edgeAddr = TestAddClassForUser(m_ctx, userAddr, usersSetAddr);
@@ -563,13 +567,15 @@ TEST_F(
   ScEventAddOutputEdge event3(
       *m_ctx,
       usersSetAddr,
-      [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [this, &userContext, &isChecked](
+          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
         TestActionsUnsuccessfully(m_ctx, userContext);
+        isChecked = true;
 
-        return isChecked = true;
+        return SC_RESULT_OK;
       });
 
   m_ctx->EraseElement(edgeAddr);
@@ -1691,15 +1697,16 @@ TEST_F(
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
+      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
       {
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
         TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
         TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
         TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+        isAuthenticated = true;
 
-        return isAuthenticated = true;
+        return SC_RESULT_OK;
       });
   ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
   TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(m_ctx, usersSetAddr, structureAddr);
@@ -1716,14 +1723,15 @@ TEST_F(
     ScEventRemoveOutputEdge event2(
         *m_ctx,
         usersSetAddr,
-        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
         {
           TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
           TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
           TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
           TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+          isChecked = true;
 
-          return isChecked = true;
+          return SC_RESULT_OK;
         });
 
     usersSetEdgeAddr = TestAddClassForUser(m_ctx, userAddr, usersSetAddr);
@@ -1736,7 +1744,7 @@ TEST_F(
   ScEventAddOutputEdge event3(
       *m_ctx,
       usersSetAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
@@ -1745,8 +1753,9 @@ TEST_F(
         TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
         TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
         TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+        isChecked = true;
 
-        return isChecked = true;
+        return SC_RESULT_OK;
       });
 
   m_ctx->EraseElement(usersSetEdgeAddr);
