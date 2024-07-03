@@ -46,7 +46,7 @@ class _SC_EXTERN ScModule : public ScObject
 public:
   _SC_EXTERN ~ScModule() override = default;
 
-  static _SC_EXTERN std::string GetName()
+  _SC_EXTERN virtual std::string GetName()
   {
     return "ScModule";
   }
@@ -137,7 +137,7 @@ protected:
 public: \
   static ScModule * m_instance; \
 \
-  static _SC_EXTERN std::string GetName() \
+  _SC_EXTERN std::string GetName() override \
   { \
     return #__ModuleName__; \
   }

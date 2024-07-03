@@ -63,6 +63,8 @@ ScKeynodeClass const ScKeynodes::kEmptyClass;
 
 sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
+  SC_LOG_INFO("Initialize " << this->GetName());
+
   internal::ScKeynodesRegister::m_instance.Register(ctx, initMemoryGeneratedStructureAddr);
 
   sc_bool result;
@@ -130,6 +132,7 @@ sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemor
 
 sc_result ScKeynodes::Shutdown(ScMemoryContext * ctx)
 {
+  SC_LOG_INFO("Shutdown " << this->GetName());
   internal::ScKeynodesRegister::m_instance.Unregister(ctx);
 
   return SC_RESULT_OK;
