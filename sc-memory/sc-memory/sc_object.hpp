@@ -22,7 +22,7 @@ public:
 
   _SC_EXTERN virtual ~ScObject() = default;
 
-  _SC_EXTERN virtual std::string GetName() = 0;
+  static _SC_EXTERN std::string GetName();
 
   _SC_EXTERN virtual sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) = 0;
   _SC_EXTERN virtual sc_result Shutdown(ScMemoryContext * ctx) = 0;

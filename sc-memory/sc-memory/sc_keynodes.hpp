@@ -196,7 +196,7 @@ public:
 
 /// Defines `std::string GetName()` method for own keynodes class. It is used in sc-memory logging.
 #define SC_KEYNODES_BODY(__KeynodesName) \
-  std::string GetName() override \
+  static _SC_EXTERN std::string GetName() \
   { \
     return #__KeynodesName; \
   }

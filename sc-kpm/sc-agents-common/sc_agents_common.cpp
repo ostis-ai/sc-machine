@@ -6,6 +6,6 @@
 
 #include "sc_agents_common.hpp"
 
-SC_MODULE_REGISTER(ScAgentsCommonModule)->Keynodes(new scAgentsCommon::CoreKeynodes());
+SC_MODULE_REGISTER(ScAgentsCommonModule)->Keynodes<scAgentsCommon::CoreKeynodes>();
 
 SC_MODULE_INITIALIZE(ScAgentsCommonModule);
