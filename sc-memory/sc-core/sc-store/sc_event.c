@@ -252,7 +252,7 @@ sc_result sc_event_destroy(sc_event * event)
   if (storage != null_ptr)
   {
     sc_monitor_acquire_write(&emission_manager->pool_monitor);
-    sc_queue_push(emission_manager->deletable_events, event);
+    sc_queue_push(&emission_manager->deletable_events, event);
     sc_monitor_release_write(&emission_manager->pool_monitor);
   }
   sc_monitor_release_write(&event->monitor);
@@ -295,7 +295,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
       sc_monitor_acquire_write(&event->monitor);
 
       sc_monitor_acquire_write(&emission_manager->pool_monitor);
-      sc_queue_push(emission_manager->deletable_events, event);
+      sc_queue_push(&emission_manager->deletable_events, event);
       sc_monitor_release_write(&emission_manager->pool_monitor);
 
       sc_monitor_release_write(&event->monitor);

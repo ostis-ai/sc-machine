@@ -45,7 +45,8 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   sc_monitor_release_read(&memory->monitor);
   if (channel != null_ptr)
   {
-    *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
+    *channel_monitor =
+        sc_monitor_table_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
     return channel;
   }
 
@@ -80,7 +81,7 @@ sc_io_channel * _sc_dictionary_fs_memory_get_strings_channel_by_offset(
   sc_io_channel_set_encoding(memory->strings_channels[idx], null_ptr, null_ptr);
 
   sc_monitor_release_write(&memory->monitor);
-  *channel_monitor = sc_monitor_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
+  *channel_monitor = sc_monitor_table_get_monitor_from_table(&memory->strings_channels_monitors_table, (sc_pointer)idx);
 
   sc_mem_free(strings_path);
 
@@ -141,7 +142,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
       sc_fs_concat_path((*memory)->path, term_string_offsets, &(*memory)->terms_string_offsets_path);
 
       (*memory)->strings_channels = (void **)sc_mem_new(sc_io_channel *, (*memory)->max_strings_channels);
-      _sc_monitor_global_init(&(*memory)->strings_channels_monitors_table);
+      _sc_monitor_table_init(&(*memory)->strings_channels_monitors_table);
       (*memory)->last_string_offset = 0;
       sc_monitor_init(&(*memory)->monitor);
     }
@@ -208,7 +209,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_shutdown(sc_dictionary_fs
         sc_io_channel_shutdown(memory->strings_channels[i], SC_TRUE, null_ptr);
       }
       sc_mem_free(memory->strings_channels);
-      _sc_monitor_global_destroy(&memory->strings_channels_monitors_table);
+      _sc_monitor_table_destroy(&memory->strings_channels_monitors_table);
       sc_monitor_destroy(&memory->monitor);
     }
 

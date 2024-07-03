@@ -22,7 +22,7 @@ typedef struct
   ///< Boolean indicating whether sc-memory limit `max_events_and_agents_threads` by maximum physical core number.
   sc_bool limit_max_threads_by_max_physical_cores;
   sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for processing events and agents.
-  sc_queue * deletable_events;              ///< Queue of events that need to be deleted after sc-memory shutdown.
+  sc_queue deletable_events;                ///< Queue of events that need to be deleted after sc-memory shutdown.
   sc_bool running;                          ///< Flag indicating whether the event emission manager is running.
   sc_monitor destroy_monitor;               ///< Monitor for synchronizing access to the destruction process.
   GThreadPool * thread_pool;                ///< Thread pool used for worker threads processing events.
