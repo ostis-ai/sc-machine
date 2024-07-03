@@ -21,6 +21,7 @@ ScMemoryJsonActionsHandler::~ScMemoryJsonActionsHandler() = default;
 void ScMemoryJsonActionsHandler::InitializeActionClasses()
 {
   m_actions = {
+      {"connection_info", new ScMemoryConnectionInfoJsonAction()},
       {"keynodes", new ScMemoryHandleKeynodesJsonAction()},
       {"create_elements", new ScMemoryCreateElementsJsonAction()},
       {"create_elements_by_scs", new ScMemoryCreateElementsByScsJsonAction()},

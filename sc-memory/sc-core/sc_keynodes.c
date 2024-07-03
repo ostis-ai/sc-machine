@@ -19,7 +19,7 @@ sc_addr nrel_user_action_class_addr;
 sc_addr nrel_users_set_action_class_addr;
 sc_addr action_read_from_sc_memory_addr;
 sc_addr action_generate_in_sc_memory_addr;
-sc_addr action_erase_in_sc_memory_addr;
+sc_addr action_erase_from_sc_memory_addr;
 sc_addr action_read_permissions_from_sc_memory_addr;
 sc_addr action_generate_permissions_in_sc_memory_addr;
 sc_addr action_erase_permissions_from_sc_memory_addr;
@@ -69,7 +69,7 @@ sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_mem
   SC_RESOLVE_KEYNODE(ctx, nrel_users_set_action_class_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_read_from_sc_memory_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_generate_in_sc_memory_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, action_erase_in_sc_memory_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, action_erase_from_sc_memory_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_read_permissions_from_sc_memory_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_generate_permissions_in_sc_memory_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_erase_permissions_from_sc_memory_addr, init_memory_generated_structure);

@@ -51,6 +51,14 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
       sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)g_hash_table_destroy);
   sc_monitor_init(&(*manager)->user_local_permissions_monitor);
 
+  (*manager)->on_new_users_in_sets_events =
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_destroy);
+  sc_monitor_init(&(*manager)->on_new_users_in_sets_events_monitor);
+
+  (*manager)->on_remove_users_from_sets_events =
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_destroy);
+  sc_monitor_init(&(*manager)->on_remove_users_from_sets_events_monitor);
+
   s_memory_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
   s_memory_default_ctx->global_permissions = SC_CONTEXT_PERMISSIONS_FULL;
   s_memory_default_ctx->flags |= SC_CONTEXT_FLAG_SYSTEM;
@@ -99,6 +107,12 @@ void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager)
 
   sc_hash_table_destroy(manager->basic_action_classes);
 
+  sc_hash_table_destroy(manager->on_new_users_in_sets_events);
+  sc_monitor_destroy(&manager->on_new_users_in_sets_events_monitor);
+
+  sc_hash_table_destroy(manager->on_remove_users_from_sets_events);
+  sc_monitor_destroy(&manager->on_remove_users_from_sets_events_monitor);
+
   sc_mem_free(manager);
 }
 
@@ -117,10 +131,8 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
   sc_monitor_init(&ctx->monitor);
   ctx->user_addr = SC_ADDR_IS_EMPTY(user_addr) ? _sc_memory_context_manager_create_guest_user(manager) : user_addr;
   ctx->ref_count = 0;
-  ctx->global_permissions = (sc_uint64)sc_hash_table_get(
-      manager->user_global_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
-  ctx->local_permissions =
-      sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(ctx->user_addr)));
+  ctx->global_permissions = _sc_context_get_user_global_permissions(ctx->user_addr);
+  ctx->local_permissions = _sc_context_get_user_local_permissions(ctx->user_addr);
   ctx->pend_events = null_ptr;
 
   sc_hash_table_insert(

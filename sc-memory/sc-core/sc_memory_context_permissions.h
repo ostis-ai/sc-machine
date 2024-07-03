@@ -43,6 +43,24 @@
     _element_permissions; \
   })
 
+#define _sc_context_get_user_global_permissions(_user_addr) \
+  ({ \
+    sc_monitor_acquire_read(&manager->user_global_permissions_monitor); \
+    sc_permissions const permissions = (sc_uint64)sc_hash_table_get( \
+        manager->user_global_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+    sc_monitor_release_read(&manager->user_global_permissions_monitor); \
+    permissions; \
+  })
+
+#define _sc_context_get_user_local_permissions(_user_addr) \
+  ({ \
+    sc_monitor_acquire_read(&manager->user_local_permissions_monitor); \
+    sc_hash_table * permissions = \
+        sc_hash_table_get(manager->user_local_permissions, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(_user_addr))); \
+    sc_monitor_release_read(&manager->user_local_permissions_monitor); \
+    permissions; \
+  })
+
 sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager);
 
 /*! Function that handles all user permissions by iterating through relevant relations and invoking corresponding

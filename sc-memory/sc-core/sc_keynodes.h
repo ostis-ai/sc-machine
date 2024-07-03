@@ -18,7 +18,7 @@ extern sc_addr nrel_user_action_class_addr;
 extern sc_addr nrel_users_set_action_class_addr;
 extern sc_addr action_read_from_sc_memory_addr;
 extern sc_addr action_generate_in_sc_memory_addr;
-extern sc_addr action_erase_in_sc_memory_addr;
+extern sc_addr action_erase_from_sc_memory_addr;
 extern sc_addr action_read_permissions_from_sc_memory_addr;
 extern sc_addr action_generate_permissions_in_sc_memory_addr;
 extern sc_addr action_erase_permissions_from_sc_memory_addr;
