@@ -55,11 +55,6 @@ public:
 
   ~ScWait() override = default;
 
-  static std::string GetName()
-  {
-    return "ScWait";
-  }
-
   void Resolve()
   {
     m_impl.Resolve();

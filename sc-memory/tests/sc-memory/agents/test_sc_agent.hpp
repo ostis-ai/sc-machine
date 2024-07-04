@@ -37,8 +37,6 @@ private:
 class ATestAddInputEdge : public ScAgent<ScEvent::Type::AddInputEdge>
 {
 public:
-  SC_AGENT_BODY(ATestAddInputEdge);
-
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
 
@@ -48,8 +46,6 @@ public:
 class ATestAddOutputEdge : public ScAgent<ScEvent::Type::AddOutputEdge>
 {
 public:
-  SC_AGENT_BODY(ATestAddOutputEdge);
-
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
 
@@ -59,8 +55,6 @@ public:
 class ATestRemoveInputEdge : public ScAgent<ScEvent::Type::RemoveInputEdge>
 {
 public:
-  SC_AGENT_BODY(ATestRemoveInputEdge);
-
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
 
@@ -70,8 +64,6 @@ public:
 class ATestRemoveOutputEdge : public ScAgent<ScEvent::Type::RemoveOutputEdge>
 {
 public:
-  SC_AGENT_BODY(ATestRemoveOutputEdge);
-
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
 
@@ -81,8 +73,6 @@ public:
 class ATestRemoveElement : public ScAgent<ScEvent::Type::RemoveElement>
 {
 public:
-  SC_AGENT_BODY(ATestRemoveElement);
-
   static ScKeynodeClass const msAgentKeynode;
   static TestWaiter msWaiter;
 
@@ -92,8 +82,6 @@ public:
 class ATestContentChanged : public ScAgent<ScEvent::Type::ChangeContent>
 {
 public:
-  SC_AGENT_BODY(ATestContentChanged);
-
   static ScKeynodeLink const msAgentKeynode;
   static TestWaiter msWaiter;
 
@@ -103,8 +91,6 @@ public:
 class ATestAddMultipleOutputEdge : public ScAgent<ScEvent::Type::AddOutputEdge>
 {
 public:
-  SC_AGENT_BODY(ATestAddMultipleOutputEdge);
-
   static ScKeynodeClass const msAgentKeynode1;
   static ScKeynodeClass const msAgentKeynode2;
   static TestWaiter msWaiter;
@@ -115,14 +101,13 @@ public:
 class ATestCheckResult : public ScActionAgent<>
 {
 public:
-  SC_ACTION_AGENT_BODY(ATestCheckResult);
-
   void OnSuccess(ScAddr const & actionAddr) override;
   void OnUnsuccess(ScAddr const & actionAddr) override;
   void OnError(ScAddr const & actionAddr, sc_result errorCode) override;
 
   static ScKeynodeClass const msAgentKeynode;
   static ScKeynodeClass const msAgentSet;
+
   static TestWaiter msWaiter;
 
   sc_result OnEvent(ScAddr const & actionAddr) override;

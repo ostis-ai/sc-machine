@@ -2,7 +2,7 @@
 
 using namespace scUtilsTestAgents;
 
-SC_ACTION_AGENT_IMPLEMENTATION(FinishActionTestAgent)
+sc_result FinishActionTestAgent::OnEvent(ScAddr const & actionAddr)
 {
   ScTemplate actionDescriptionTemplate;
   actionDescriptionTemplate.Quintuple(

@@ -46,11 +46,6 @@ class _SC_EXTERN ScModule : public ScObject
 public:
   _SC_EXTERN ~ScModule() override = default;
 
-  _SC_EXTERN virtual std::string GetName()
-  {
-    return "ScModule";
-  }
-
   _SC_EXTERN static ScModule * Create(ScModule * module)
   {
     return module;
@@ -105,6 +100,16 @@ public:
    */
   _SC_EXTERN sc_result Unregister(ScMemoryContext * ctx);
 
+  _SC_EXTERN sc_result Initialize(ScMemoryContext *, ScAddr const &) override
+  {
+    return SC_RESULT_OK;
+  }
+
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override
+  {
+    return SC_RESULT_OK;
+  }
+
 protected:
   /// Registered keynodes
   std::list<ScKeynodes *> m_keynodes;
@@ -132,44 +137,25 @@ protected:
   }
 };
 
-/// Implements module class and create it instance
-#define SC_MODULE_BODY(__ModuleName__) \
-public: \
-  static ScModule * m_instance; \
-\
-  _SC_EXTERN std::string GetName() override \
-  { \
-    return #__ModuleName__; \
-  }
-
 /// Registers module class instance
 #define SC_MODULE_REGISTER(__ModuleName__) \
+  struct __ModuleName__##Dummy \
+  { \
+    static ScModule * ms_module; \
+  }; \
   extern "C" \
   { \
   _SC_EXTERN sc_result \
   sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure_addr) \
   { \
-    __ModuleName__::m_instance->Register(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
+    __ModuleName__##Dummy::ms_module->Register(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
     return SC_RESULT_OK; \
   } \
 \
   _SC_EXTERN sc_result sc_module_shutdown() \
   { \
-    __ModuleName__::m_instance->Unregister(ScMemory::ms_globalContext); \
+    __ModuleName__##Dummy::ms_module->Unregister(ScMemory::ms_globalContext); \
     return SC_RESULT_OK; \
   } \
   } \
-  ScModule * __ModuleName__::m_instance = __ModuleName__::Create(new __ModuleName__())
-
-#define SC_MODULE_INITIALIZE(__ModuleName__) \
-  sc_result __ModuleName__::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) \
-  { \
-    return SC_RESULT_OK; \
-  } \
-  sc_result __ModuleName__::Shutdown(ScMemoryContext * ctx) \
-  { \
-    return SC_RESULT_OK; \
-  } \
-  struct __ModuleName__##Dummy \
-  { \
-  }
+  ScModule * __ModuleName__##Dummy::ms_module = __ModuleName__::Create(new __ModuleName__())

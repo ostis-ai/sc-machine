@@ -13,19 +13,9 @@
 
 std::list<ScEvent *> ScAgentAbstract::m_events;
 
-ScAgentAbstract::ScAgentAbstract(ScAddr const & userAddr)
-  : m_memoryCtx(userAddr)
-{
-}
-
 ScAgentAbstract::~ScAgentAbstract()
 {
   m_memoryCtx.Destroy();
-}
-
-std::string ScAgentAbstract::GetName()
-{
-  return "ScAgentAbstract";
 }
 
 sc_result ScAgentAbstract::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
@@ -34,10 +24,14 @@ sc_result ScAgentAbstract::Initialize(ScMemoryContext * ctx, ScAddr const & init
   return SC_RESULT_OK;
 }
 
-sc_result ScAgentAbstract::Shutdown(ScMemoryContext * ctx)
+sc_result ScAgentAbstract::Shutdown(ScMemoryContext *)
 {
-  SC_UNUSED(ctx);
   return SC_RESULT_OK;
+}
+
+void ScAgentAbstract::SetContext(ScAddr const & userAddr)
+{
+  m_memoryCtx = ScAgentContext(userAddr);
 }
 
 ScEvent::DelegateFuncWithUserAddr ScAgentAbstract::GetCallback()
