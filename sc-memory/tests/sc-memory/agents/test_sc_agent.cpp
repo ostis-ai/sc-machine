@@ -4,7 +4,7 @@
 ScKeynodeClass const ATestAddInputEdge::msAgentKeynode("ATestAddInputEdge");
 TestWaiter ATestAddInputEdge::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
+sc_result ATestAddInputEdge::OnEvent(ScAddr const & sourceAddr, ScAddr const & connectorAddr, ScAddr const & targetAddr)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -14,7 +14,10 @@ SC_AGENT_IMPLEMENTATION(ATestAddInputEdge)
 ScKeynodeClass const ATestAddOutputEdge::msAgentKeynode("ATestAddOutputEdge");
 TestWaiter ATestAddOutputEdge::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestAddOutputEdge)
+sc_result ATestAddOutputEdge::OnEvent(
+    ScAddr const & sourceAddr,
+    ScAddr const & connectorAddr,
+    ScAddr const & targetAddr)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -24,7 +27,10 @@ SC_AGENT_IMPLEMENTATION(ATestAddOutputEdge)
 ScKeynodeClass const ATestRemoveInputEdge::msAgentKeynode("ATestRemoveInputEdge");
 TestWaiter ATestRemoveInputEdge::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestRemoveInputEdge)
+sc_result ATestRemoveInputEdge::OnEvent(
+    ScAddr const & sourceAddr,
+    ScAddr const & connectorAddr,
+    ScAddr const & targetAddr)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -34,7 +40,10 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveInputEdge)
 ScKeynodeClass const ATestRemoveOutputEdge::msAgentKeynode("ATestRemoveOutputEdge");
 TestWaiter ATestRemoveOutputEdge::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestRemoveOutputEdge)
+sc_result ATestRemoveOutputEdge::OnEvent(
+    ScAddr const & sourceAddr,
+    ScAddr const & connectorAddr,
+    ScAddr const & targetAddr)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -44,7 +53,10 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveOutputEdge)
 ScKeynodeClass const ATestRemoveElement::msAgentKeynode("ATestRemoveElement");
 TestWaiter ATestRemoveElement::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestRemoveElement)
+sc_result ATestRemoveElement::OnEvent(
+    ScAddr const & sourceAddr,
+    ScAddr const & connectorAddr,
+    ScAddr const & targetAddr)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -54,7 +66,10 @@ SC_AGENT_IMPLEMENTATION(ATestRemoveElement)
 ScKeynodeLink const ATestContentChanged::msAgentKeynode("ATestContentChanged");
 TestWaiter ATestContentChanged::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestContentChanged)
+sc_result ATestContentChanged::OnEvent(
+    ScAddr const & sourceAddr,
+    ScAddr const & connectorAddr,
+    ScAddr const & targetAddr)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -65,7 +80,10 @@ ScKeynodeClass const ATestAddMultipleOutputEdge::msAgentKeynode1("ATestAddMultip
 ScKeynodeClass const ATestAddMultipleOutputEdge::msAgentKeynode2("ATestAddMultipleOutputEdge2");
 TestWaiter ATestAddMultipleOutputEdge::msWaiter;
 
-SC_AGENT_IMPLEMENTATION(ATestAddMultipleOutputEdge)
+sc_result ATestAddMultipleOutputEdge::OnEvent(
+    ScAddr const & sourceAddr,
+    ScAddr const & connectorAddr,
+    ScAddr const & targetAddr)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -76,7 +94,7 @@ ScKeynodeClass const ATestCheckResult::msAgentKeynode("ATestCheckResult");
 ScKeynodeClass const ATestCheckResult::msAgentSet("ATestCheckResultSet");
 TestWaiter ATestCheckResult::msWaiter;
 
-SC_ACTION_AGENT_IMPLEMENTATION(ATestCheckResult)
+sc_result ATestCheckResult::OnEvent(ScAddr const & actionAddr)
 {
   ScAddr const & firstArgument = m_memoryCtx.GetActionArgument(actionAddr, 1);
   ScAddr const & secondArgument = m_memoryCtx.GetActionArgument(actionAddr, 2);

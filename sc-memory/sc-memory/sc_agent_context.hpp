@@ -26,6 +26,21 @@ public:
   {
   }
 
+  _SC_EXTERN ScAgentContext(ScAgentContext const & other)
+    : m_cache(*this)
+  {
+    this->m_context = other.m_context;
+    this->m_name = other.m_name;
+  }
+
+  _SC_EXTERN ScAgentContext & operator=(ScAgentContext const & other)
+  {
+    this->m_context = other.m_context;
+    this->m_name = other.m_name;
+
+    return *this;
+  }
+
   _SC_EXTERN ScAddr GetActionArgument(ScAddr const & actionAddr, sc_uint16 number);
 
   _SC_EXTERN ScAddr SetActionArgument(ScAddr const & actionAddr, ScAddr const & argumentAddr, sc_uint16 number);

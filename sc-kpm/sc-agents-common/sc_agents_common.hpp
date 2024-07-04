@@ -12,9 +12,4 @@
 
 class _SC_EXTERN ScAgentsCommonModule final : public ScModule
 {
-public:
-  SC_MODULE_BODY(ScAgentsCommonModule);
-
-  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-  sc_result Shutdown(ScMemoryContext * ctx) override;
 };

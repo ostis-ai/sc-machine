@@ -194,13 +194,6 @@ public:
   }
 };
 
-/// Defines `std::string GetName()` method for own keynodes class. It is used in sc-memory logging.
-#define SC_KEYNODES_BODY(__KeynodesName) \
-  _SC_EXTERN std::string GetName() override \
-  { \
-    return #__KeynodesName; \
-  }
-
 /*!
  * @class A base class for keynodes declaration. It's like a namespace. Use it as a base class for own keynodes.
  * @example
@@ -229,11 +222,6 @@ public:
 class ScKeynodes : public ScObject
 {
 public:
-  _SC_EXTERN virtual std::string GetName()
-  {
-    return "ScKeynodes";
-  }
-
   _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
   _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
 

@@ -15,7 +15,7 @@
 class _SC_EXTERN ScServerModule final : public ScModule
 {
 public:
-  SC_MODULE_BODY(ScServerModule);
+  static ScModule * m_instance;
 
   static std::shared_ptr<ScServer> m_server;
   static ScParams ms_serverParams;
