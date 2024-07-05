@@ -311,7 +311,7 @@ TEST_F(ScEventTest, parallel_create_remove_edges)
   ScEventAddOutputEdge evt(
       *m_ctx,
       node,
-      [](ScAddr const & addr, ScAddr const &, ScAddr const & target) -> sc_result
+      [](ScAddr const & addr, ScAddr const &, ScAddr const &) -> sc_result
       {
         ScMemoryContext localCtx;
         ScIterator3Ptr it = localCtx.Iterator3(addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -333,7 +333,7 @@ TEST_F(ScEventTest, parallel_create_remove_edges2)
   ScEventAddOutputEdge evt(
       *m_ctx,
       node,
-      [](ScAddr const & addr, ScAddr const & edge, ScAddr const & target) -> sc_result
+      [](ScAddr const &, ScAddr const & edge, ScAddr const &) -> sc_result
       {
         ScMemoryContext localCtx;
         localCtx.EraseElement(edge);
@@ -418,7 +418,7 @@ TEST_F(ScEventTest, BlockEventsAndNotEmitAfter)
   ScEventAddOutputEdge event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScAddr const & addr, ScAddr const &, ScAddr const & target) -> sc_result
+      [&isCalled](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         isCalled = true;
         return SC_RESULT_OK;
@@ -443,7 +443,7 @@ TEST_F(ScEventTest, BlockEventsAndEmitAfter)
   ScEventAddOutputEdge event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScAddr const & addr, ScAddr const &, ScAddr const & target)
+      [&isCalled](ScAddr const, ScAddr const &, ScAddr const &)
       {
         isCalled = true;
         return SC_RESULT_OK;
@@ -474,7 +474,7 @@ TEST_F(ScEventTest, BlockEventsGuardAndNotEmitAfter)
   ScEventAddOutputEdge event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScAddr const & addr, ScAddr const &, ScAddr const & target)
+      [&isCalled](ScAddr const &, ScAddr const &, ScAddr const &)
       {
         isCalled = true;
         return SC_RESULT_OK;
@@ -497,7 +497,7 @@ TEST_F(ScEventTest, BlockEventsGuardAndEmitAfter)
   ScEventAddOutputEdge event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScAddr const & addr, ScAddr const &, ScAddr const & target)
+      [&isCalled](ScAddr const &, ScAddr const &, ScAddr const &)
       {
         isCalled = true;
         return SC_RESULT_OK;

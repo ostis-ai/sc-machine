@@ -8,7 +8,7 @@
 
 TEST_F(ScAgentTest, ATestAddInputEdge)
 {
-  SC_AGENT_REGISTER(&*m_ctx, ATestAddInputEdge, ATestAddInputEdge::msAgentKeynode);
+  RegisterAgent<ATestAddInputEdge>(&*m_ctx, ATestAddInputEdge::msAgentKeynode);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -16,12 +16,12 @@ TEST_F(ScAgentTest, ATestAddInputEdge)
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestAddInputEdge::msWaiter.Wait());
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestAddInputEdge);
+  UnregisterAgent<ATestAddInputEdge>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestAddOutputEdge)
 {
-  SC_AGENT_REGISTER(&*m_ctx, ATestAddOutputEdge, ATestAddOutputEdge::msAgentKeynode);
+  RegisterAgent<ATestAddOutputEdge>(&*m_ctx, ATestAddOutputEdge::msAgentKeynode);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -29,7 +29,7 @@ TEST_F(ScAgentTest, ATestAddOutputEdge)
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestAddOutputEdge::msWaiter.Wait());
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestAddOutputEdge);
+  UnregisterAgent<ATestAddOutputEdge>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestRemoveInputEdge)
@@ -39,12 +39,12 @@ TEST_F(ScAgentTest, ATestRemoveInputEdge)
   ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, node, ATestRemoveInputEdge::msAgentKeynode);
   EXPECT_TRUE(e.IsValid());
 
-  SC_AGENT_REGISTER(&*m_ctx, ATestRemoveInputEdge, ATestRemoveInputEdge::msAgentKeynode);
+  RegisterAgent<ATestRemoveInputEdge>(&*m_ctx, ATestRemoveInputEdge::msAgentKeynode);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveInputEdge::msWaiter.Wait());
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestRemoveInputEdge);
+  UnregisterAgent<ATestRemoveInputEdge>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestRemoveOutputEdge)
@@ -54,43 +54,42 @@ TEST_F(ScAgentTest, ATestRemoveOutputEdge)
   ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, ATestRemoveOutputEdge::msAgentKeynode, node);
   EXPECT_TRUE(e.IsValid());
 
-  SC_AGENT_REGISTER(&*m_ctx, ATestRemoveOutputEdge, ATestRemoveOutputEdge::msAgentKeynode);
+  RegisterAgent<ATestRemoveOutputEdge>(&*m_ctx, ATestRemoveOutputEdge::msAgentKeynode);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveOutputEdge::msWaiter.Wait());
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestRemoveOutputEdge);
+  UnregisterAgent<ATestRemoveOutputEdge>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestRemoveElement)
 {
-  SC_AGENT_REGISTER(&*m_ctx, ATestRemoveElement, ATestRemoveElement::msAgentKeynode);
+  RegisterAgent<ATestRemoveElement>(&*m_ctx, ATestRemoveElement::msAgentKeynode);
 
   EXPECT_TRUE(m_ctx->EraseElement(ATestRemoveElement::msAgentKeynode));
   EXPECT_TRUE(ATestRemoveElement::msWaiter.Wait());
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestRemoveElement);
+  UnregisterAgent<ATestRemoveElement>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestContentChanged)
 {
   ScAddr const link = ATestContentChanged::msAgentKeynode;
 
-  SC_AGENT_REGISTER(&*m_ctx, ATestContentChanged, ATestContentChanged::msAgentKeynode);
+  RegisterAgent<ATestContentChanged>(&*m_ctx, ATestContentChanged::msAgentKeynode);
 
   uint32_t const value = 100;
   ScStreamPtr const stream = ScStreamMakeRead(value);
   EXPECT_TRUE(m_ctx->SetLinkContent(link, stream));
   EXPECT_TRUE(ATestContentChanged::msWaiter.Wait());
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestContentChanged);
+  UnregisterAgent<ATestContentChanged>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
 {
-  ScAddrVector const & addrs = {
-      ATestAddMultipleOutputEdge::msAgentKeynode1, ATestAddMultipleOutputEdge::msAgentKeynode2};
-  SC_AGENT_REGISTER(&*m_ctx, ATestAddMultipleOutputEdge, addrs);
+  RegisterAgent<ATestAddMultipleOutputEdge>(
+      &*m_ctx, ATestAddMultipleOutputEdge::msAgentKeynode1, ATestAddMultipleOutputEdge::msAgentKeynode2);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -105,12 +104,12 @@ TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
   EXPECT_TRUE(e2.IsValid());
   EXPECT_TRUE(ATestAddMultipleOutputEdge::msWaiter.Wait());
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestAddMultipleOutputEdge);
+  UnregisterAgent<ATestAddMultipleOutputEdge>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
 {
-  SC_AGENT_REGISTER(&*m_ctx, ATestCheckResult, ATestCheckResult::msAgentKeynode);
+  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestCheckResult::msAgentKeynode);
 
   auto * context = new ScAgentContext();
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
@@ -124,10 +123,10 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
                 context->SetActionArgument(actionAddr, actionAddr, 1);
                 context->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestCheckResult::msAgentKeynode, actionAddr);
               },
-              [context](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result
+              [context](ScAddr const & classAddr, ScAddr const &, ScAddr const &) -> sc_result
               {
                 return context->HelperCheckEdge(
-                           ScKeynodes::kQuestionFinishedUnsuccessfully, addr, ScType::EdgeAccessConstPosPerm)
+                           ScKeynodes::kQuestionFinishedUnsuccessfully, classAddr, ScType::EdgeAccessConstPosPerm)
                            ? SC_RESULT_OK
                            : SC_RESULT_NO;
               })
@@ -145,12 +144,12 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
   context->Destroy();
   delete context;
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestCheckResult);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
 {
-  SC_AGENT_REGISTER(&*m_ctx, ATestCheckResult, ATestCheckResult::msAgentKeynode);
+  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestCheckResult::msAgentKeynode);
 
   auto * context = new ScAgentContext();
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
@@ -164,10 +163,10 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
                 context->SetActionArgument(actionAddr, actionAddr, 2);
                 context->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestCheckResult::msAgentKeynode, actionAddr);
               },
-              [context](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result
+              [context](ScAddr const & classAddr, ScAddr const &, ScAddr const &) -> sc_result
               {
                 return context->HelperCheckEdge(
-                           ScKeynodes::kQuestionFinishedWithError, addr, ScType::EdgeAccessConstPosPerm)
+                           ScKeynodes::kQuestionFinishedWithError, classAddr, ScType::EdgeAccessConstPosPerm)
                            ? SC_RESULT_OK
                            : SC_RESULT_NO;
               })
@@ -185,12 +184,12 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
   context->Destroy();
   delete context;
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestCheckResult);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
 {
-  SC_AGENT_REGISTER(&*m_ctx, ATestCheckResult, ATestCheckResult::msAgentKeynode);
+  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestCheckResult::msAgentKeynode);
 
   auto * context = new ScAgentContext();
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
@@ -207,10 +206,10 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
                 context->SetActionArgument(actionAddr, addr2, 2);
                 context->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestCheckResult::msAgentKeynode, actionAddr);
               },
-              [context](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result
+              [context](ScAddr const & classAddr, ScAddr const &, ScAddr const &) -> sc_result
               {
                 return context->HelperCheckEdge(
-                           ScKeynodes::kQuestionFinishedSuccessfully, addr, ScType::EdgeAccessConstPosPerm)
+                           ScKeynodes::kQuestionFinishedSuccessfully, classAddr, ScType::EdgeAccessConstPosPerm)
                            ? SC_RESULT_OK
                            : SC_RESULT_NO;
               })
@@ -227,5 +226,5 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
   context->Destroy();
   delete context;
 
-  SC_AGENT_UNREGISTER(&*m_ctx, ATestCheckResult);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }

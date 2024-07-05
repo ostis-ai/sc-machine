@@ -60,7 +60,7 @@ inline ScAddr ResolveKeynode(ScMemoryContext & ctx, std::string const & idtf)
 class DummyFileInterface : public SCsFileInterface
 {
 protected:
-  ScStreamPtr GetFileContent(std::string const & fileURL) override
+  ScStreamPtr GetFileContent(std::string const &) override
   {
     return {};
   }

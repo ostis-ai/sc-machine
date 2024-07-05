@@ -12,7 +12,7 @@
 #include "../sc_event.h"
 #include "../sc_types.h"
 
-#define SC_EVENT_REQUEST_DESTROY (1 << 31)
+#define SC_EVENT_REQUEST_DESTROY (sc_uint32)(1 << 31)
 
 /*! Structure that contains information about event
  */

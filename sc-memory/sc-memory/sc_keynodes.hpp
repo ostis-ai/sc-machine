@@ -19,7 +19,7 @@
 namespace internal
 {
 /*!
- * @class A base class to register keynodes
+ * @class A base class to register keynodes.
  * @brief It reminds keynodes data and resolve them after memory initialization.
  * @note This class is just for internal usage.
  */
@@ -30,9 +30,9 @@ public:
 
   /*!
    * @brief Remembers keynode data to register it after.
-   * @param keynode Pointer to remembering keynode data
-   * @param idtf Keynode system identifier
-   * @param keynodeType Keynode syntactic type
+   * @param keynode Pointer to remembering keynode data.
+   * @param idtf Keynode system identifier.
+   * @param keynodeType Keynode syntactic type.
    */
   void Remember(ScAddr * keynode, std::string const & idtf, ScType const & keynodeType)
   {
@@ -46,7 +46,7 @@ public:
 
   /*!
    * @brief Registers all reminded keynodes.
-   * @param context Sc-memory context to resolve keynodes
+   * @param context Sc-memory context to resolve keynodes.
    */
   void Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure)
   {
@@ -90,10 +90,10 @@ template <sc_type type>
 class ScKeynode : public ScAddr
 {
 public:
-  explicit ScKeynode<type>(std::string const & sysIdtf)
+  explicit ScKeynode(std::string const & sysIdtf)
     : ScAddr(ScAddr::Empty)
   {
-    internal::ScKeynodesRegister::m_instance.Remember(this, sysIdtf, ScType(type));
+    internal::ScKeynodesRegister::m_instance.Remember(this, sysIdtf, type);
   }
 
   explicit ScKeynode(sc_addr const & addr)
@@ -112,12 +112,10 @@ public:
     m_realAddr = other.m_realAddr;
   }
 
-  ScKeynode & operator=(ScKeynode const & other)
+  ScKeynode & operator=(ScKeynode const &)
   {
     return *this;
   }
-
-protected:
 };
 
 /*!

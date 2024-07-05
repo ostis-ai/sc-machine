@@ -56,7 +56,7 @@ TEST_F(ScAgentTest, FormNewStructure)
   ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr2 = context->CreateNode(ScType::NodeConst);
 
-  ScAddr const & structAddr = context->FormStructure({addr1, addr2});
+  ScAddr const & structAddr = context->FormStructure(addr1, addr2);
 
   for (auto const & addr : {addr1, addr2})
     EXPECT_TRUE(context->HelperCheckEdge(structAddr, addr, ScType::EdgeAccessConstPosPerm));
@@ -72,12 +72,12 @@ TEST_F(ScAgentTest, AppendToStructure)
   ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr2 = context->CreateNode(ScType::NodeConst);
 
-  ScAddr const & structAddr1 = context->FormStructure({addr1, addr2});
+  ScAddr const & structAddr1 = context->FormStructure(addr1, addr2);
 
   ScAddr const & addr3 = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr4 = context->CreateNode(ScType::NodeConst);
 
-  ScAddr const & structAddr2 = context->FormStructure({addr3, addr4}, structAddr1);
+  ScAddr const & structAddr2 = context->UpdateStructure(structAddr1, addr3, addr4);
   EXPECT_TRUE(structAddr1 == structAddr2);
 
   for (auto const & addr : {addr1, addr2, addr3, addr4})
@@ -95,7 +95,7 @@ TEST_F(ScAgentTest, FormActionAnswer)
   ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
   ScAddr const & addr2 = context->CreateNode(ScType::NodeConst);
 
-  ScAddr structAddr = context->FormStructure({addr1, addr2});
+  ScAddr structAddr = context->FormStructure(addr1, addr2);
 
   context->FormActionAnswer(actionAddr, structAddr);
 

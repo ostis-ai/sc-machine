@@ -13,7 +13,7 @@ SC_MODULE_REGISTER(ScServerModule);
 std::shared_ptr<ScServer> ScServerModule::m_server;
 ScParams ScServerModule::ms_serverParams;
 
-sc_result ScServerModule::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
+sc_result ScServerModule::Initialize(ScMemoryContext *, ScAddr const &)
 {
   // It is backward compatible logic. When all platform-dependent components will be configured from kb it will be
   // removed.
@@ -27,7 +27,7 @@ sc_result ScServerModule::Initialize(ScMemoryContext * ctx, ScAddr const & initM
   return SC_RESULT_OK;
 }
 
-sc_result ScServerModule::Shutdown(ScMemoryContext * ctx)
+sc_result ScServerModule::Shutdown(ScMemoryContext *)
 {
   StopServer(m_server);
   m_server = nullptr;

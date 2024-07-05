@@ -427,8 +427,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -464,8 +463,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -492,8 +490,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeA
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -523,8 +520,7 @@ TEST_F(
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -548,8 +544,7 @@ TEST_F(
     ScEventRemoveOutputEdge event2(
         *m_ctx,
         usersSetAddr,
-        [this, &userContext, &isChecked](
-            ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [this, &userContext, &isChecked](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
         {
           TestActionsSuccessfully(m_ctx, userContext);
           isChecked = true;
@@ -567,8 +562,7 @@ TEST_F(
   ScEventAddOutputEdge event3(
       *m_ctx,
       usersSetAddr,
-      [this, &userContext, &isChecked](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &userContext, &isChecked](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
@@ -594,7 +588,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&isChecked](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         return (isChecked = true) ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
@@ -618,7 +612,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
   ScEventAddOutputEdge event2(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&isChecked](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         return (isChecked = false) ? SC_RESULT_ERROR : SC_RESULT_NO;
       });
@@ -643,7 +637,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&isChecked](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         return (isChecked = true) ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
@@ -668,7 +662,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
   ScEventAddOutputEdge event2(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&isChecked](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         return (isChecked = false) ? SC_RESULT_ERROR : SC_RESULT_NO;
       });
@@ -693,8 +687,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByUserWithInvalidConnectorsToPe
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &userContext, &isChecked](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &userContext, &isChecked](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         TestActionsUnsuccessfully(m_ctx, userContext);
         TestIteratorsUnsuccessfully(m_ctx, userContext);
@@ -716,7 +709,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedAfter)
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &isChecked](ScAddr const &, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -745,7 +738,7 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [this, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [this, &isChecked](ScAddr const &, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -791,8 +784,7 @@ TEST_F(
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](
-            ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
         {
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -815,8 +807,7 @@ TEST_F(
     ScEventAddOutputEdge event2(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](
-            ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
         {
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
@@ -842,8 +833,7 @@ TEST_F(
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](
-            ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
         {
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -876,7 +866,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutPermiss
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -900,7 +890,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWriteAn
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -929,7 +919,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutErasePe
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -959,7 +949,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWritePe
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -989,7 +979,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1018,7 +1008,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadPer
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1048,7 +1038,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1078,7 +1068,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
         {
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1104,7 +1094,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
   ScEventAddOutputEdge event(
       *m_ctx,
       nrelUserActionClassAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
@@ -1138,7 +1128,7 @@ TEST_F(
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
         {
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1164,7 +1154,7 @@ TEST_F(
   ScEventAddOutputEdge event(
       *m_ctx,
       nrelUsersSetActionClassAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
@@ -1185,7 +1175,7 @@ TEST_F(
 }
 
 void TestReadWriteEraseAccessedElementUnsuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScMemoryContext> const &,
     TestScMemoryContext & userContext,
     sc_addr const & addr)
 {
@@ -1223,7 +1213,7 @@ void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
 }
 
 void TestReadWriteAccessedElementSuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScMemoryContext> const &,
     TestScMemoryContext & userContext,
     sc_addr const addr)
 {
@@ -1307,8 +1297,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithou
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](
-            ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
         {
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1340,8 +1329,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithPe
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](
-            ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [this, &userContext, &isAuthenticated](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
         {
           EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1630,7 +1618,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
             userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
@@ -1662,7 +1650,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
             userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
@@ -1697,7 +1685,7 @@ TEST_F(
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
@@ -1723,7 +1711,7 @@ TEST_F(
     ScEventRemoveOutputEdge event2(
         *m_ctx,
         usersSetAddr,
-        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+        [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
         {
           TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
           TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
@@ -1744,7 +1732,7 @@ TEST_F(
   ScEventAddOutputEdge event3(
       *m_ctx,
       usersSetAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
 
@@ -1778,7 +1766,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1811,7 +1799,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalErase
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1844,7 +1832,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -1882,7 +1870,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+        [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
         {
           TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
               userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
@@ -1909,7 +1897,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+        [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
         {
           TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
           TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
@@ -1951,7 +1939,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+        [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
         {
           TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
               userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
@@ -1978,7 +1966,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
     ScEventAddOutputEdge event(
         *m_ctx,
         conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+        [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
         {
           TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
           TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
@@ -2071,7 +2059,7 @@ TEST_F(
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -2158,7 +2146,7 @@ TEST_F(
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -2233,7 +2221,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 
@@ -2298,7 +2286,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&](ScAddr const &, ScAddr const & edgeAddr, ScAddr const &) -> sc_result
       {
         EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
 

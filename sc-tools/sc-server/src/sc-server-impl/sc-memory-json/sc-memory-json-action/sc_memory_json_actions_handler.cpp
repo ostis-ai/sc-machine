@@ -43,7 +43,7 @@ void ScMemoryJsonActionsHandler::ClearActionClasses()
 }
 
 ScMemoryJsonPayload ScMemoryJsonActionsHandler::HandleRequestPayload(
-    ScServerSessionId const & sessionId,
+    ScServerSessionId const &,
     std::string const & requestType,
     ScMemoryJsonPayload const & requestPayload,
     ScMemoryJsonPayload & errorsPayload,

@@ -12,8 +12,7 @@
 
 /**
  * Base class for all objects that has meta data.
- * If you override it, then call any constructor of ScObject
- * in your custom constructors
+ * If you override it, then call any constructor of ScObject in your custom constructors.
  */
 class ScObject
 {
@@ -22,16 +21,27 @@ public:
 
   _SC_EXTERN virtual ~ScObject() = default;
 
-  _SC_EXTERN virtual std::string GetName()
+  _SC_EXTERN std::string GetName()
   {
-    return Demangle(typeid(*this).name());
+    if (m_name.empty())
+      m_name = Demangle(typeid(*this).name());
+
+    return m_name;
+  }
+
+  template <class Class>
+  static _SC_EXTERN std::string GetName()
+  {
+    return Demangle(typeid(Class).name());
   }
 
   _SC_EXTERN virtual sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) = 0;
   _SC_EXTERN virtual sc_result Shutdown(ScMemoryContext * ctx) = 0;
 
 private:
-  std::string Demangle(std::string const & mangled_name)
+  std::string m_name;
+
+  static _SC_EXTERN std::string Demangle(std::string const & mangled_name)
   {
     std::string demangled;
     size_t i = 0;
@@ -53,9 +63,8 @@ private:
       if (i + len <= mangled_name.size())
       {
         if (!demangled.empty())
-        {
           demangled += "::";
-        }
+
         demangled += mangled_name.substr(i, len);
         i += len;
       }

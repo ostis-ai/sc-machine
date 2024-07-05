@@ -44,22 +44,6 @@ ScAddr ScAgentContext::SetActionArgument(ScAddr const & actionAddr, ScAddr const
   return CreateEdge(ScType::EdgeAccessConstPosPerm, rrelAddr, edge);
 }
 
-ScAddr ScAgentContext::FormStructure(ScAddrVector const & addrVector, ScAddr answerAddr)
-{
-  if (answerAddr.IsValid() == SC_FALSE)
-    answerAddr = CreateNode(ScType::NodeConstStruct);
-
-  std::for_each(
-      addrVector.begin(),
-      addrVector.end(),
-      [this, &answerAddr](auto const & addr)
-      {
-        CreateEdge(ScType::EdgeAccessConstPosPerm, answerAddr, addr);
-      });
-
-  return answerAddr;
-}
-
 void ScAgentContext::FormActionAnswer(ScAddr const & actionAddr, ScAddr const & answerAddr)
 {
   ScAddr const edge = CreateEdge(ScType::EdgeDCommonConst, actionAddr, answerAddr);

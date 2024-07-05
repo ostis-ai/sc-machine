@@ -105,7 +105,7 @@ public:
     return SC_RESULT_OK;
   }
 
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext *) override
   {
     return SC_RESULT_OK;
   }

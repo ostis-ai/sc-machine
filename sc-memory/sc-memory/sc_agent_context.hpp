@@ -55,7 +55,48 @@ public:
     return std::make_shared<ScWaitCondition<ScEventClass>>(*this, descriptionAddr, check);
   }
 
-  _SC_EXTERN ScAddr FormStructure(ScAddrVector const & addrVector, ScAddr answerAddr = ScAddr::Empty);
+  template <class... TScAddr>
+  _SC_EXTERN ScAddr FormStructure(TScAddr const &... addrs)
+  {
+    static_assert(
+        (std::is_base_of<ScAddr, TScAddr>::value && ...),
+        "Each argument in the parameter pack must be of class ScAddr.");
+
+    ScAddr const & structureAddr = CreateNode(ScType::NodeConstStruct);
+
+    ScAddrVector const & addrVector{addrs...};
+    std::for_each(
+        addrVector.begin(),
+        addrVector.end(),
+        [this, &structureAddr](ScAddr const & addr)
+        {
+          CreateEdge(ScType::EdgeAccessConstPosPerm, structureAddr, addr);
+        });
+
+    return structureAddr;
+  }
+
+  template <class... TScAddr>
+  _SC_EXTERN ScAddr UpdateStructure(ScAddr structureAddr, TScAddr const &... addrs)
+  {
+    static_assert(
+        (std::is_base_of<ScAddr, TScAddr>::value && ...),
+        "Each argument in the parameter pack must be of class ScAddr.");
+
+    if (!structureAddr.IsValid())
+      structureAddr = CreateNode(ScType::NodeConstStruct);
+
+    ScAddrVector const & addrVector{addrs...};
+    std::for_each(
+        addrVector.begin(),
+        addrVector.end(),
+        [this, &structureAddr](ScAddr const & addr)
+        {
+          CreateEdge(ScType::EdgeAccessConstPosPerm, structureAddr, addr);
+        });
+
+    return structureAddr;
+  }
 
   _SC_EXTERN void FormActionAnswer(ScAddr const & actionAddr, ScAddr const & answerAddr);
 
