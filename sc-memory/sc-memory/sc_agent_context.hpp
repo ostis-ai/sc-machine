@@ -15,31 +15,13 @@
 class ScAgentContext : public ScMemoryContext
 {
 public:
-  _SC_EXTERN explicit ScAgentContext()
-    : ScAgentContext(ScAddr::Empty)
-  {
-  }
+  _SC_EXTERN explicit ScAgentContext() noexcept;
 
-  _SC_EXTERN explicit ScAgentContext(sc_memory_context * context)
-    : ScMemoryContext(context)
-    , m_cache(*this)
-  {
-  }
+  _SC_EXTERN explicit ScAgentContext(sc_memory_context * context) noexcept;
 
-  _SC_EXTERN ScAgentContext(ScAgentContext const & other)
-    : m_cache(*this)
-  {
-    this->m_context = other.m_context;
-    this->m_name = other.m_name;
-  }
+  _SC_EXTERN ScAgentContext(ScAgentContext && other) noexcept;
 
-  _SC_EXTERN ScAgentContext & operator=(ScAgentContext const & other)
-  {
-    this->m_context = other.m_context;
-    this->m_name = other.m_name;
-
-    return *this;
-  }
+  _SC_EXTERN ScAgentContext & operator=(ScAgentContext && other) noexcept;
 
   _SC_EXTERN ScAddr GetActionArgument(ScAddr const & actionAddr, sc_uint16 number);
 
@@ -105,9 +87,5 @@ protected:
 
   friend class ScAgentAbstract;
 
-  _SC_EXTERN explicit ScAgentContext(ScAddr const & userAddr)
-    : ScMemoryContext(userAddr)
-    , m_cache(*this)
-  {
-  }
+  _SC_EXTERN explicit ScAgentContext(ScAddr const & userAddr) noexcept;
 };

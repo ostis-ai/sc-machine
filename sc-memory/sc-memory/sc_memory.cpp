@@ -127,27 +127,46 @@ void ScMemory::LogUnmute()
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext()
+ScMemoryContext::ScMemoryContext() noexcept
   : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
 {
 }
 
-ScMemoryContext::ScMemoryContext(ScAddr const & userAddr)
+ScMemoryContext::ScMemoryContext(ScAddr const & userAddr) noexcept
   : m_context(sc_memory_context_new_ext(*userAddr))
 {
 }
 
-ScMemoryContext::ScMemoryContext(sc_memory_context * context)
+ScMemoryContext::ScMemoryContext(sc_memory_context * context) noexcept
   : m_context(context)
 {
 }
 
-ScMemoryContext::~ScMemoryContext()
+ScMemoryContext::~ScMemoryContext() noexcept
 {
   Destroy();
 }
 
-void ScMemoryContext::Destroy()
+ScMemoryContext::ScMemoryContext(ScMemoryContext && other) noexcept
+  : m_context(other.m_context)
+  , m_name(other.m_name)
+{
+  other.m_context = nullptr;
+}
+
+ScMemoryContext & ScMemoryContext::operator=(ScMemoryContext && other) noexcept
+{
+  if (this == &other)
+    return *this;
+
+  m_context = other.m_context;
+  m_name = other.m_name;
+  other.m_context = nullptr;
+
+  return *this;
+}
+
+void ScMemoryContext::Destroy() noexcept
 {
   if (m_context)
   {
