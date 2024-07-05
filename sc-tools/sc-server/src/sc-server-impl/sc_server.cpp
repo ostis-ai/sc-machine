@@ -36,7 +36,7 @@ void ScServer::Run()
 
   Initialize();
 
-  m_instance->listen({boost::asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
+  m_instance->listen({asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
   m_instance->start_accept();
 
   LogMessage(ScServerErrorLevel::info, "Start actions processing");

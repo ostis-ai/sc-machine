@@ -8,11 +8,17 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 list(REMOVE_ITEM SOURCES "${SC_SERVER_ROOT}/src/main.cpp")
 
+find_package(websocketpp REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 add_library(sc-server-lib SHARED ${SOURCES})
 target_link_libraries(sc-server-lib
-    LINK_PUBLIC sc-config-utils
     LINK_PUBLIC websocketpp::websocketpp
     LINK_PUBLIC nlohmann_json::nlohmann_json
+    LINK_PUBLIC sc-config-utils
+)
+target_compile_definitions(sc-server-lib
+    PUBLIC ASIO_STANDALONE
 )
 target_include_directories(sc-server-lib
     PUBLIC ${SC_SERVER_ROOT}
