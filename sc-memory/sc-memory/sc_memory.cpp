@@ -28,15 +28,8 @@ namespace
 
 bool isLogMuted = false;
 
-void _logPrintHandler(
-    sc_char const * log_domain,
-    GLogLevelFlags log_level,
-    sc_char const * message,
-    sc_pointer user_data)
+void _logPrintHandler(sc_char const *, GLogLevelFlags log_level, sc_char const * message, sc_pointer)
 {
-  SC_UNUSED(log_domain);
-  SC_UNUSED(user_data);
-
   if (isLogMuted)
     return;
 
@@ -751,10 +744,8 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   return linkAddrList;
 }
 
-void _PushLinkContent(void * data, sc_addr const link_addr, sc_char const * link_content)
+void _PushLinkContent(void * data, sc_addr const, sc_char const * link_content)
 {
-  SC_UNUSED(link_addr);
-
   auto * linkContentList = (std::vector<std::string> *)data;
   linkContentList->emplace_back(link_content);
 }

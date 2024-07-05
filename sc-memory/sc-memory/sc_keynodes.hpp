@@ -68,10 +68,7 @@ public:
     }
   }
 
-  void Unregister(ScMemoryContext * context)
-  {
-    SC_UNUSED(context);
-  }
+  void Unregister(ScMemoryContext *) {}
 
 protected:
   std::map<ScAddr *, std::pair<std::string, ScType>> m_keynodes;

@@ -91,16 +91,13 @@ public:
   }
 
 protected:
-  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override
+  sc_result Initialize(ScMemoryContext *, ScAddr const &) override
   {
-    SC_UNUSED(ctx);
-    SC_UNUSED(initMemoryGeneratedStructureAddr);
     return SC_RESULT_OK;
   }
 
-  sc_result Shutdown(ScMemoryContext * ctx) override
+  sc_result Shutdown(ScMemoryContext *) override
   {
-    SC_UNUSED(ctx);
     return SC_RESULT_OK;
   }
 

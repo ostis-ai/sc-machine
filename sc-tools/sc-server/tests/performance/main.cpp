@@ -36,9 +36,9 @@ void BM_ServerThreaded(benchmark::State & state)
   clientsNum.fetch_add(1);
 
   uint32_t iterations = 0;
-  for (auto t : state)
+  for (auto _ : state)
   {
-    SC_UNUSED(t);
+
     test.Run(client);
     ++iterations;
   }
@@ -152,9 +152,8 @@ void BM_ServerRanged(benchmark::State & state)
   client->Connect(test.m_server->GetUri());
   client->Run();
 
-  for (auto t : state)
+  for (auto _ : state)
   {
-    SC_UNUSED(t);
     test.Run(client);
     ++iterations;
   }
