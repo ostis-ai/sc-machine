@@ -25,7 +25,7 @@ ScAgentAbstract::~ScAgentAbstract()
 
 sc_result ScAgentAbstract::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
-  internal::ScKeynodesRegister::m_instance.Register(ctx, initMemoryGeneratedStructureAddr);
+  internal::ScKeynodesRegister::Register(ctx, initMemoryGeneratedStructureAddr);
   return SC_RESULT_OK;
 }
 

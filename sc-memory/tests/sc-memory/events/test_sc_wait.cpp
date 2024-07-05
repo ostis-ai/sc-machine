@@ -143,7 +143,7 @@ TEST_F(ScWaitTest, CondValidFalse)
 
 TEST_F(ScWaitTest, ActionFinished)
 {
-  WaitTestData data(m_addr, ScKeynodes::kQuestionFinished);
+  WaitTestData data(m_addr, ScKeynodes::action_finished);
 
   ScWaitActionFinished waiter(*m_ctx, m_addr);
   waiter.SetOnWaitStartDelegate(

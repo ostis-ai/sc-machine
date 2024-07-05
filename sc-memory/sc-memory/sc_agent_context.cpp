@@ -77,5 +77,5 @@ ScAddr ScAgentContext::SetActionArgument(ScAddr const & actionAddr, ScAddr const
 void ScAgentContext::FormActionAnswer(ScAddr const & actionAddr, ScAddr const & answerAddr)
 {
   ScAddr const edge = CreateEdge(ScType::EdgeDCommonConst, actionAddr, answerAddr);
-  CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kNrelAnswer, edge);
+  CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_answer, edge);
 }

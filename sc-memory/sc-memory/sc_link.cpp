@@ -115,7 +115,7 @@ bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
 {
   // set type
   ScTemplate templ;
-  templ.Triple(ScKeynodes::kBinaryType, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
+  templ.Triple(ScKeynodes::binary_type, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
 
   templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", m_addr);
 

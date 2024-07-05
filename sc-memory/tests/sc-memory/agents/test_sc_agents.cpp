@@ -126,7 +126,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
               [context](ScAddr const & classAddr, ScAddr const &, ScAddr const &) -> sc_result
               {
                 return context->HelperCheckEdge(
-                           ScKeynodes::kQuestionFinishedUnsuccessfully, classAddr, ScType::EdgeAccessConstPosPerm)
+                           ScKeynodes::action_finished_unsuccessfully, classAddr, ScType::EdgeAccessConstPosPerm)
                            ? SC_RESULT_OK
                            : SC_RESULT_NO;
               })
@@ -136,7 +136,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
               [context, &actionAddr]()
               {
                 EXPECT_TRUE(context->HelperCheckEdge(
-                    ScKeynodes::kQuestionFinishedUnsuccessfully, actionAddr, ScType::EdgeAccessConstPosPerm));
+                    ScKeynodes::action_finished_unsuccessfully, actionAddr, ScType::EdgeAccessConstPosPerm));
                 EXPECT_TRUE(context->HelperCheckEdge(
                     ATestCheckResult::msAgentSet, ATestCheckResult::msAgentKeynode, ScType::EdgeAccessConstNegPerm));
               }));
@@ -166,7 +166,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
               [context](ScAddr const & classAddr, ScAddr const &, ScAddr const &) -> sc_result
               {
                 return context->HelperCheckEdge(
-                           ScKeynodes::kQuestionFinishedWithError, classAddr, ScType::EdgeAccessConstPosPerm)
+                           ScKeynodes::action_finished_with_error, classAddr, ScType::EdgeAccessConstPosPerm)
                            ? SC_RESULT_OK
                            : SC_RESULT_NO;
               })
@@ -176,7 +176,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
               [context, &actionAddr]()
               {
                 EXPECT_TRUE(context->HelperCheckEdge(
-                    ScKeynodes::kQuestionFinishedWithError, actionAddr, ScType::EdgeAccessConstPosPerm));
+                    ScKeynodes::action_finished_with_error, actionAddr, ScType::EdgeAccessConstPosPerm));
                 EXPECT_TRUE(context->HelperCheckEdge(
                     ATestCheckResult::msAgentSet, ATestCheckResult::msAgentKeynode, ScType::EdgeAccessConstFuzPerm));
               }));
@@ -209,7 +209,7 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
               [context](ScAddr const & classAddr, ScAddr const &, ScAddr const &) -> sc_result
               {
                 return context->HelperCheckEdge(
-                           ScKeynodes::kQuestionFinishedSuccessfully, classAddr, ScType::EdgeAccessConstPosPerm)
+                           ScKeynodes::action_finished_successfully, classAddr, ScType::EdgeAccessConstPosPerm)
                            ? SC_RESULT_OK
                            : SC_RESULT_NO;
               })
@@ -218,7 +218,7 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
               [context, &actionAddr]()
               {
                 EXPECT_TRUE(context->HelperCheckEdge(
-                    ScKeynodes::kQuestionFinishedSuccessfully, actionAddr, ScType::EdgeAccessConstPosPerm));
+                    ScKeynodes::action_finished_successfully, actionAddr, ScType::EdgeAccessConstPosPerm));
                 EXPECT_TRUE(context->HelperCheckEdge(
                     ATestCheckResult::msAgentSet, ATestCheckResult::msAgentKeynode, ScType::EdgeAccessConstPosPerm));
               }));

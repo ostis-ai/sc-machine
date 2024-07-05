@@ -1,71 +1,20 @@
 /*
- * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
- * Distributed under the MIT License
+ * This source file is part of an OSTIS project. For the lat_est info, see http://ostis.net
+ * Distribut_ed under the MIT License
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
 #include "sc_keynodes.hpp"
 #include "sc_struct.hpp"
 
-internal::ScKeynodesRegister internal::ScKeynodesRegister::m_instance;
-
 size_t const kKeynodeRrelListNum = 20;
 std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
-
-ScKeynode<sc_type_node | sc_type_const> const ScKeynodes::kMySelf("myself");
-
-ScKeynodeClass const ScKeynodes::kQuestionState("question_state");
-ScKeynodeClass const ScKeynodes::kQuestionInitiated("question_initiated");
-ScKeynodeClass const ScKeynodes::kQuestionProgressed("question_progressed");
-ScKeynodeClass const ScKeynodes::kQuestionStopped("question_stopped");
-ScKeynodeClass const ScKeynodes::kQuestionFinished("question_finished");
-ScKeynodeClass const ScKeynodes::kQuestionFinishedSuccessfully("question_finished_successfully");
-ScKeynodeClass const ScKeynodes::kQuestionFinishedUnsuccessfully("question_finished_unsuccessfully");
-ScKeynodeClass const ScKeynodes::kQuestionFinishedWithError("question_finished_with_error");
-ScKeynodeNoRole const ScKeynodes::kNrelAnswer("nrel_answer");
-
-ScKeynodeClass const ScKeynodes::kScResult("sc_result");
-ScKeynodeClass const ScKeynodes::kScResultOk("sc_result_ok");
-ScKeynodeClass const ScKeynodes::kScResultNo("sc_result_no");
-ScKeynodeClass const ScKeynodes::kScResultUnknown("sc_result_unknown");
-ScKeynodeClass const ScKeynodes::kScResultError("sc_result_error");
-ScKeynodeClass const ScKeynodes::kScResultErrorInvalidParams("sc_result_error_invalid_params");
-ScKeynodeClass const ScKeynodes::kScResultErrorInvalidType("sc_result_error_invalid_type");
-ScKeynodeClass const ScKeynodes::kScResultErrorIO("sc_result_error_io");
-ScKeynodeClass const ScKeynodes::kScResultInvalidState("sc_result_error_invalid_state");
-ScKeynodeClass const ScKeynodes::kScResultErrorNotFound("sc_result_error_not_found");
-ScKeynodeClass const ScKeynodes::kScResultErrorFullMemory("sc_result_error_full_memory");
-ScKeynodeClass const ScKeynodes::kScResultErrorAddrIsNotValid("sc_result_error_addr_is_not_valid");
-ScKeynodeClass const ScKeynodes::kScResultErrorElementIsNotNode("sc_result_error_element_is_not_node");
-ScKeynodeClass const ScKeynodes::kScResultErrorElementIsNotLink("sc_result_error_element_is_not_link");
-ScKeynodeClass const ScKeynodes::kScResultErrorElementIsNotConnector("sc_result_error_element_is_not_corrector");
-ScKeynodeClass const ScKeynodes::kScResultErrorFileMemoryIO("sc_result_error_file_memory_io");
-ScKeynodeClass const ScKeynodes::kScResultErrorStreamIO("sc_result_error_stream_io");
-ScKeynodeClass const ScKeynodes::kScResultErrorInvalidSystemIdentifier("sc_result_error_invalid_system_identifier");
-ScKeynodeClass const ScKeynodes::kScResultErrorDuplicatedSystemIdentifier(
-    "sc_result_error_duplicated_system_identifier");
-
-ScKeynodeClass const ScKeynodes::kBinaryType("binary_type");
-ScKeynodeClass const ScKeynodes::kBinaryFloat("binary_float");
-ScKeynodeClass const ScKeynodes::kBinaryDouble("binary_double");
-ScKeynodeClass const ScKeynodes::kBinaryInt8("binary_int8");
-ScKeynodeClass const ScKeynodes::kBinaryInt16("binary_int16");
-ScKeynodeClass const ScKeynodes::kBinaryInt32("binary_int32");
-ScKeynodeClass const ScKeynodes::kBinaryInt64("binary_int64");
-ScKeynodeClass const ScKeynodes::kBinaryUInt8("binary_uint8");
-ScKeynodeClass const ScKeynodes::kBinaryUInt16("binary_uint16");
-ScKeynodeClass const ScKeynodes::kBinaryUInt32("binary_uint32");
-ScKeynodeClass const ScKeynodes::kBinaryUInt64("binary_uint64");
-ScKeynodeClass const ScKeynodes::kBinaryString("binary_string");
-ScKeynodeClass const ScKeynodes::kBinaryCustom("binary_custom");
-
-ScKeynodeClass const ScKeynodes::kEmptyClass;
 
 sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
   SC_LOG_INFO("Initialize " << this->GetName());
 
-  internal::ScKeynodesRegister::m_instance.Register(ctx, initMemoryGeneratedStructureAddr);
+  internal::ScKeynodesRegister::Register(ctx, initMemoryGeneratedStructureAddr);
 
   sc_bool result = SC_TRUE;
 
@@ -74,9 +23,9 @@ sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemor
   {
     ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
     result = result && resAddr.IsValid();
-    if (!ctx->HelperCheckEdge(kScResult, resAddr, ScType::EdgeAccessConstPosPerm))
+    if (!ctx->HelperCheckEdge(sc_result_class, resAddr, ScType::EdgeAccessConstPosPerm))
     {
-      ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, kScResult, resAddr);
+      ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sc_result_class, resAddr);
       result = result && edge.IsValid();
 
       if (initMemoryGeneratedStructureAddr.IsValid()
@@ -95,30 +44,30 @@ sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemor
   }
 
   // command states
-  ScAddr states[] = {kQuestionInitiated, kQuestionProgressed, kQuestionStopped, kQuestionFinished};
+  ScAddr states[] = {action_initiated, action_finished};
   for (auto const & a : states)
   {
-    if (!ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, kQuestionState, a).IsValid())
+    if (!ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, action_state, a).IsValid())
       result = SC_FALSE;
   }
 
   // binary types
   ScAddr binaryTypes[] = {
-      kBinaryDouble,
-      kBinaryFloat,
-      kBinaryString,
-      kBinaryInt8,
-      kBinaryInt16,
-      kBinaryInt32,
-      kBinaryInt64,
-      kBinaryUInt8,
-      kBinaryUInt16,
-      kBinaryUInt32,
-      kBinaryUInt64,
-      kBinaryCustom};
+      binary_double,
+      binary_float,
+      binary_string,
+      binary_int8,
+      binary_int16,
+      binary_int32,
+      binary_int64,
+      binary_uint8,
+      binary_uint16,
+      binary_uint32,
+      binary_uint64,
+      binary_custom};
   for (auto const & b : binaryTypes)
   {
-    ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, kBinaryType, b);
+    ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, binary_type, b);
     if (!edge.IsValid())
       result = SC_FALSE;
 
@@ -133,7 +82,7 @@ sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemor
 sc_result ScKeynodes::Shutdown(ScMemoryContext * ctx)
 {
   SC_LOG_INFO("Shutdown " << this->GetName());
-  internal::ScKeynodesRegister::m_instance.Unregister(ctx);
+  internal::ScKeynodesRegister::Unregister(ctx);
 
   return SC_RESULT_OK;
 }
@@ -143,30 +92,30 @@ ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)
   switch (resCode)
   {
   case SC_RESULT_ERROR_FULL_MEMORY:
-    return kScResultErrorFullMemory;
+    return sc_result_error_full_memory;
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    return kScResultErrorAddrIsNotValid;
+    return sc_result_error_addr_is_not_valid;
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE:
-    return kScResultErrorElementIsNotNode;
+    return sc_result_error_element_is_not_node;
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
-    return kScResultErrorElementIsNotLink;
+    return sc_result_error_element_is_not_link;
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
-    return kScResultErrorElementIsNotConnector;
+    return sc_result_error_element_is_not_connector;
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    return kScResultErrorFileMemoryIO;
+    return sc_result_error_file_memory_io;
   case SC_RESULT_ERROR_STREAM_IO:
-    return kScResultErrorStreamIO;
+    return sc_result_error_stream_io;
   case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
-    return kScResultErrorInvalidSystemIdentifier;
+    return sc_result_error_invalid_system_identifier;
   case SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER:
-    return kScResultErrorDuplicatedSystemIdentifier;
+    return sc_result_error_duplicated_system_identifier;
   case SC_RESULT_UNKNOWN:
-    return kScResultUnknown;
+    return sc_result_unknown;
   default:
     break;
   }
 
-  return kScResultError;
+  return sc_result_error;
 }
 
 sc_result ScKeynodes::GetResultCodeByAddr(ScAddr const & resultClassAddr)
@@ -174,37 +123,37 @@ sc_result ScKeynodes::GetResultCodeByAddr(ScAddr const & resultClassAddr)
   if (!resultClassAddr.IsValid())
     return SC_RESULT_UNKNOWN;
 
-  if (resultClassAddr == kScResultError)
+  if (resultClassAddr == sc_result_error)
     return SC_RESULT_ERROR;
-  else if (resultClassAddr == kScResultOk)
+  else if (resultClassAddr == sc_result_ok)
     return SC_RESULT_OK;
-  else if (resultClassAddr == kScResultNo)
+  else if (resultClassAddr == sc_result_no)
     return SC_RESULT_NO;
-  else if (resultClassAddr == kScResultErrorInvalidParams)
+  else if (resultClassAddr == sc_result_error_invalid_params)
     return SC_RESULT_ERROR_INVALID_PARAMS;
-  else if (resultClassAddr == kScResultErrorInvalidType)
+  else if (resultClassAddr == sc_result_error_invalid_type)
     return SC_RESULT_ERROR_INVALID_TYPE;
-  else if (resultClassAddr == kScResultInvalidState)
+  else if (resultClassAddr == sc_result_invalid_state)
     return SC_RESULT_ERROR_INVALID_STATE;
-  else if (resultClassAddr == kScResultErrorNotFound)
+  else if (resultClassAddr == sc_result_error_not_found)
     return SC_RESULT_ERROR_NOT_FOUND;
-  else if (resultClassAddr == kScResultErrorFullMemory)
+  else if (resultClassAddr == sc_result_error_full_memory)
     return SC_RESULT_ERROR_FULL_MEMORY;
-  else if (resultClassAddr == kScResultErrorAddrIsNotValid)
+  else if (resultClassAddr == sc_result_error_addr_is_not_valid)
     return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  else if (resultClassAddr == kScResultErrorElementIsNotNode)
+  else if (resultClassAddr == sc_result_error_element_is_not_node)
     return SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE;
-  else if (resultClassAddr == kScResultErrorElementIsNotLink)
+  else if (resultClassAddr == sc_result_error_element_is_not_link)
     return SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
-  else if (resultClassAddr == kScResultErrorElementIsNotConnector)
+  else if (resultClassAddr == sc_result_error_element_is_not_connector)
     return SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
-  else if (resultClassAddr == kScResultErrorFileMemoryIO)
+  else if (resultClassAddr == sc_result_error_file_memory_io)
     return SC_RESULT_ERROR_FILE_MEMORY_IO;
-  else if (resultClassAddr == kScResultErrorStreamIO)
+  else if (resultClassAddr == sc_result_error_stream_io)
     return SC_RESULT_ERROR_STREAM_IO;
-  else if (resultClassAddr == kScResultErrorInvalidSystemIdentifier)
+  else if (resultClassAddr == sc_result_error_invalid_system_identifier)
     return SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER;
-  else if (resultClassAddr == kScResultErrorDuplicatedSystemIdentifier)
+  else if (resultClassAddr == sc_result_error_duplicated_system_identifier)
     return SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER;
 
   return SC_RESULT_UNKNOWN;

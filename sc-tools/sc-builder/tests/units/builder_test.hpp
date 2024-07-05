@@ -86,6 +86,6 @@ protected:
   virtual void SetUp()
   {
     ScBuilderTest::InitializeWithUserMode();
-    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::kMySelf);
+    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::myself);
   }
 };

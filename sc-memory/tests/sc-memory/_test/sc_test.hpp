@@ -95,6 +95,6 @@ class ScMemoryTestWithUserMode : public ScMemoryTest
   virtual void SetUp()
   {
     ScMemoryTestWithUserMode::InitializeWithUserMode();
-    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::kMySelf);
+    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::myself);
   }
 };

@@ -14,5 +14,5 @@ ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr c
 
 sc_result ScWaitActionFinished::OnEvent(ScAddr const &, ScAddr const &, ScAddr const & actionAddr)
 {
-  return actionAddr == ScKeynodes::kQuestionFinished ? SC_RESULT_OK : SC_RESULT_NO;
+  return actionAddr == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
 }

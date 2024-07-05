@@ -140,33 +140,33 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 
-  ScAddrVector const & keynodesAddrs = {ScKeynodes::kScResult, ScKeynodes::kBinaryType};
+  ScAddrVector const & keynodesAddrs = {ScKeynodes::sc_result_class, ScKeynodes::binary_type};
 
   ScAddrVector const & resultCodes = {
-      ScKeynodes::kScResultOk,
-      ScKeynodes::kScResultNo,
-      ScKeynodes::kScResultUnknown,
-      ScKeynodes::kScResultError,
-      ScKeynodes::kScResultErrorInvalidParams,
-      ScKeynodes::kScResultErrorInvalidType,
-      ScKeynodes::kScResultInvalidState,
-      ScKeynodes::kScResultErrorNotFound,
-      ScKeynodes::kScResultErrorStreamIO,
+      ScKeynodes::sc_result_ok,
+      ScKeynodes::sc_result_no,
+      ScKeynodes::sc_result_unknown,
+      ScKeynodes::sc_result_error,
+      ScKeynodes::sc_result_error_invalid_params,
+      ScKeynodes::sc_result_error_invalid_type,
+      ScKeynodes::sc_result_invalid_state,
+      ScKeynodes::sc_result_error_not_found,
+      ScKeynodes::sc_result_error_stream_io,
   };
 
   ScAddrVector const & binaryTypes = {
-      ScKeynodes::kBinaryDouble,
-      ScKeynodes::kBinaryFloat,
-      ScKeynodes::kBinaryString,
-      ScKeynodes::kBinaryInt8,
-      ScKeynodes::kBinaryInt16,
-      ScKeynodes::kBinaryInt32,
-      ScKeynodes::kBinaryInt64,
-      ScKeynodes::kBinaryUInt8,
-      ScKeynodes::kBinaryUInt16,
-      ScKeynodes::kBinaryUInt32,
-      ScKeynodes::kBinaryUInt64,
-      ScKeynodes::kBinaryCustom};
+      ScKeynodes::binary_double,
+      ScKeynodes::binary_float,
+      ScKeynodes::binary_string,
+      ScKeynodes::binary_int8,
+      ScKeynodes::binary_int16,
+      ScKeynodes::binary_int32,
+      ScKeynodes::binary_int64,
+      ScKeynodes::binary_uint8,
+      ScKeynodes::binary_uint16,
+      ScKeynodes::binary_uint32,
+      ScKeynodes::binary_uint64,
+      ScKeynodes::binary_custom};
 
   std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, resultCodes, binaryTypes};
 

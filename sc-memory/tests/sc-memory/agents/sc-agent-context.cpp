@@ -101,7 +101,7 @@ TEST_F(ScAgentTest, FormActionAnswer)
 
   ScTemplate templ;
   templ.Quintuple(
-      actionAddr, ScType::EdgeDCommonVar, ScType::NodeVar, ScType::EdgeAccessVarPosPerm, ScKeynodes::kNrelAnswer);
+      actionAddr, ScType::EdgeDCommonVar, ScType::NodeVar, ScType::EdgeAccessVarPosPerm, ScKeynodes::nrel_answer);
   ScTemplateSearchResult result;
   context->HelperSearchTemplate(templ, result);
 

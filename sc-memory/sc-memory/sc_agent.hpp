@@ -284,7 +284,7 @@ protected:
  *         ScType::EdgeAccessConstPosPerm, nlp::ScNLPKeynodes::kSyntacticSynthesizeAction, addr);
  *     },
  *     [this](ScAddr const &, ScAddr const &, ScAddr const & actionAddr) -> sc_result {
- *       return m_memoryCtx.HelperCheckEdge(nlp::ScNLPKeynodes::kQuestionFinishedSucessfully, actionAddr,
+ *       return m_memoryCtx.HelperCheckEdge(nlp::ScNLPKeynodes::kActionFinishedSucessfully, actionAddr,
  ScType::EdgeAccessConstPosPerm)
  *         ? SC_RESULT_OK
  *         : SC_RESULT_NO;
@@ -293,7 +293,7 @@ protected:
  * }
  * \endcode
  */
-template <ScKeynodeClass const & actionClass = ScKeynodes::kEmptyClass>
+template <ScKeynodeClass const & actionClass = ScKeynodes::empty_class>
 class _SC_EXTERN ScActionAgent : public ScAgent<ScEvent::Type::AddOutputEdge>
 {
 public:
@@ -368,23 +368,23 @@ public:
         SC_LOG_INFO(agent.GetName() << " finished successfully");
         agent.OnSuccess(actionAddr);
         ScMemory::ms_globalContext->CreateEdge(
-            ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedSuccessfully, actionAddr);
+            ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_successfully, actionAddr);
       }
       else if (result == SC_RESULT_NO)
       {
         SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
         agent.OnUnsuccess(actionAddr);
         ScMemory::ms_globalContext->CreateEdge(
-            ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedUnsuccessfully, actionAddr);
+            ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_unsuccessfully, actionAddr);
       }
       else
       {
         SC_LOG_INFO(agent.GetName() << " finished with error");
         agent.OnError(actionAddr, result);
         ScMemory::ms_globalContext->CreateEdge(
-            ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinishedWithError, actionAddr);
+            ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_with_error, actionAddr);
       }
-      ScMemory::ms_globalContext->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::kQuestionFinished, actionAddr);
+      ScMemory::ms_globalContext->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, actionAddr);
 
       return result;
     };
