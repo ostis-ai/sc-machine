@@ -98,12 +98,15 @@ public:
   };
 
 public:
-  _SC_EXTERN explicit ScMemoryContext();
-  _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context);
-  _SC_EXTERN ~ScMemoryContext();
+  _SC_EXTERN explicit ScMemoryContext() noexcept;
+  _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context) noexcept;
+  _SC_EXTERN ~ScMemoryContext() noexcept;
 
-  _SC_EXTERN ScMemoryContext(ScMemoryContext const & other) = default;
-  _SC_EXTERN ScMemoryContext & operator=(ScMemoryContext const & other) = default;
+  _SC_EXTERN ScMemoryContext(ScMemoryContext const & other) = delete;
+  _SC_EXTERN ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
+
+  _SC_EXTERN ScMemoryContext(ScMemoryContext && other) noexcept;
+  _SC_EXTERN ScMemoryContext & operator=(ScMemoryContext && other) noexcept;
 
   _SC_EXTERN ScAddr GetUserAddr();
 
@@ -118,7 +121,7 @@ public:
   }
 
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
-  _SC_EXTERN void Destroy();
+  _SC_EXTERN void Destroy() noexcept;
 
   //! Begin events pending mode
   _SC_EXTERN void BeingEventsPending();
@@ -1273,7 +1276,7 @@ protected:
   friend class ScMemory;
   friend class ScServerMessageAction;
 
-  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr);
+  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr) noexcept;
 
 protected:
   sc_memory_context * m_context;

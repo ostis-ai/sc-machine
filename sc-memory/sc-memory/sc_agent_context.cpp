@@ -10,6 +10,36 @@
 
 #include "sc-memory/sc_keynodes.hpp"
 
+ScAgentContext::ScAgentContext() noexcept
+  : ScAgentContext(ScAddr::Empty)
+{
+}
+
+ScAgentContext::ScAgentContext(sc_memory_context * context) noexcept
+  : ScMemoryContext(context)
+  , m_cache(*this)
+{
+}
+
+ScAgentContext::ScAgentContext(ScAddr const & userAddr) noexcept
+  : ScMemoryContext(userAddr)
+  , m_cache(*this)
+{
+}
+
+ScAgentContext::ScAgentContext(ScAgentContext && other) noexcept
+  : ScMemoryContext(std::move(other))
+  , m_cache(*this) {};
+
+ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
+{
+  if (this == &other)
+    return *this;
+
+  ScMemoryContext::operator=(std::move(other));
+  return *this;
+}
+
 ScAddr ScAgentContext::GetActionArgument(ScAddr const & actionAddr, sc_uint16 number)
 {
   std::stringstream stream;
