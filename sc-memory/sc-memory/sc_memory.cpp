@@ -93,9 +93,9 @@ bool ScMemory::IsInitialized()
 
 bool ScMemory::Shutdown(bool saveState /* = true */)
 {
-  utils::ScLog::SetUp("Console", "", "Info");
-
   ScKeynodes().Shutdown(ms_globalContext);
+
+  utils::ScLog::SetUp("Console", "", "Info");
 
   sc_bool result = sc_memory_shutdown(saveState);
 

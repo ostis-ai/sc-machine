@@ -36,7 +36,7 @@ sc_result ScAgentAbstract::Shutdown(ScMemoryContext *)
 
 void ScAgentAbstract::SetContext(ScAddr const & userAddr)
 {
-  m_memoryCtx = std::move(ScAgentContext(userAddr));
+  m_memoryCtx = ScAgentContext(userAddr);
 }
 
 ScEvent::DelegateFuncWithUserAddr ScAgentAbstract::GetCallback()

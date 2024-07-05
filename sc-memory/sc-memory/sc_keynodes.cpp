@@ -67,7 +67,7 @@ sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemor
 
   internal::ScKeynodesRegister::m_instance.Register(ctx, initMemoryGeneratedStructureAddr);
 
-  sc_bool result;
+  sc_bool result = SC_TRUE;
 
   // init sc_result set
   for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
