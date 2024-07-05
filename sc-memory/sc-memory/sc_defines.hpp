@@ -13,3 +13,11 @@
 #define _SC_DELETED_FUNCTION
 
 #define SC_UNUSED(__X) (void)__X
+
+#if defined(__clang__) || defined(__GNUC__)
+#  define SC_FALLTHROUGH [[fallthrough]]
+#elif defined(_MSC_VER)
+#  define SC_FALLTHROUGH __fallthrough
+#else
+#  define SC_FALLTHROUGH /* fall through */
+#endif

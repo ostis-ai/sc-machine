@@ -50,9 +50,7 @@ namespace antlrcpp {
             break;
           }
           // else fall through
-#if __has_cpp_attribute(clang::fallthrough)
-          [[clang::fallthrough]];
-#endif
+          [[fallthrough]];
 
         default:
           result += c;
