@@ -13,6 +13,11 @@
 
 std::list<ScEvent *> ScAgentAbstract::m_events;
 
+ScAgentAbstract::ScAgentAbstract()
+  : m_memoryCtx(nullptr)
+{
+}
+
 ScAgentAbstract::~ScAgentAbstract()
 {
   m_memoryCtx.Destroy();

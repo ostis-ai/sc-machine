@@ -120,9 +120,9 @@ public:
     : m_event(
           ctx,
           addr,
-          [this](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) -> sc_result
+          [this](ScAddr const & sourceAddr, ScAddr const & connectorAddr, ScAddr const & targetAddr) -> sc_result
           {
-            if (OnEvent(listenAddr, edgeAddr, otherAddr) == SC_RESULT_OK)
+            if (OnEvent(sourceAddr, connectorAddr, targetAddr) == SC_RESULT_OK)
             {
               ScWait::Resolve();
               return SC_RESULT_OK;
@@ -133,7 +133,7 @@ public:
   }
 
 protected:
-  virtual sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
+  virtual sc_result OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
   {
     return SC_RESULT_OK;
   }
@@ -155,9 +155,9 @@ public:
   }
 
 private:
-  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
+  sc_result OnEvent(ScAddr const & sourceAddr, ScAddr const & connectorAddr, ScAddr const & targetAddr) override
   {
-    return m_checkFunc(listenAddr, edgeAddr, otherAddr);
+    return m_checkFunc(sourceAddr, connectorAddr, targetAddr);
   }
 
 private:
@@ -172,5 +172,5 @@ public:
   _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
 
 private:
-  sc_result OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
+  sc_result OnEvent(ScAddr const & sourceAddr, ScAddr const & connectorAddr, ScAddr const & targetAddr) override;
 };

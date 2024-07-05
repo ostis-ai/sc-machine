@@ -34,7 +34,7 @@ typedef std::list<sTemplateArcInfo> tTemplArcsList;
 typedef std::list<sc_addr> tElementsList;
 
 // -------------------- Event handlers --------------
-sc_result ui_command_generate_instance(sc_event const * event, sc_addr arg)
+sc_result ui_command_generate_instance(sc_event const *, sc_addr arg)
 {
   sc_addr command_addr;
   sc_addr args_addr;
@@ -270,7 +270,7 @@ sc_result ui_command_generate_instance(sc_event const * event, sc_addr arg)
   return SC_RESULT_OK;
 }
 
-sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
+sc_result ui_start_answer_translation(sc_event *, sc_addr arg)
 {
   sc_addr action_addr;
   sc_addr answer_addr;
@@ -379,7 +379,7 @@ sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
   return SC_RESULT_OK;
 }
 
-sc_result ui_remove_displayed_answer(sc_event * event, sc_addr arg)
+sc_result ui_remove_displayed_answer(sc_event *, sc_addr arg)
 {
   sc_addr answer_addr;
   sc_iterator5 * it5 = 0;

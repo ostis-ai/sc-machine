@@ -15,7 +15,7 @@ sc_uint8 _test_sc_dictionary_addr_hashes_children_size()
   return max_sc_char - min_sc_char + 1;
 }
 
-void _test_sc_dictionary_addr_hashes_char_to_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 const * mask)
+void _test_sc_dictionary_addr_hashes_char_to_int(sc_char ch, sc_uint8 * ch_num, sc_uint8 const *)
 {
   *ch_num = 128 + (sc_uint8)ch;
 }

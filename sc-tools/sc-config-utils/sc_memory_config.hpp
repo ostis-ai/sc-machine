@@ -29,7 +29,8 @@ public:
 
   ScParams();
 
-  ScParams(ScParams const & object) noexcept;
+  ScParams(ScParams const & object) = default;
+  ScParams & operator=(ScParams const & other) = default;
 
   void Insert(std::pair<std::string, std::string> const & pair);
 

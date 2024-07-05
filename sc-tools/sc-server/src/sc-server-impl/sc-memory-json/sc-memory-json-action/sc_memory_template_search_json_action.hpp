@@ -11,10 +11,8 @@
 class ScMemoryTemplateSearchJsonAction : public ScMemoryMakeTemplateJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(
-      ScMemoryContext * context,
-      ScMemoryJsonPayload requestPayload,
-      ScMemoryJsonPayload & errorsPayload) override
+  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
+      override
   {
     ScTemplateSearchResult result;
     auto const & pair = GetTemplate(context, requestPayload);

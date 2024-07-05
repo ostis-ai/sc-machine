@@ -85,7 +85,7 @@ void uiSc2SCgJsonTranslator::runImpl()
 }
 
 // ------------------------------------------------------------------------------
-sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(sc_event const * event, sc_addr arg)
+sc_result uiSc2SCgJsonTranslator::ui_translate_sc2scg_json(sc_event const *, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

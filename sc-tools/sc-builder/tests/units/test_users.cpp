@@ -44,8 +44,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&userContext, &isAuthenticated](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
@@ -77,8 +76,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
   ScEventAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](
-          ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr) -> sc_result
+      [&userContext, &isAuthenticated](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);

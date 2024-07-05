@@ -10,4 +10,6 @@
 
 #define _SC_EXTERN
 
+#define _SC_DELETED_FUNCTION
+
 #define SC_UNUSED(__X) (void)__X

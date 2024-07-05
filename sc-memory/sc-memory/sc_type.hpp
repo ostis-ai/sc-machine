@@ -39,15 +39,17 @@ class _SC_EXTERN ScType
 public:
   using RealType = sc_type;
 
-  explicit ScType()
+  explicit constexpr ScType()
     : m_realType(0)
   {
   }
 
-  ScType(RealType type) noexcept
+  constexpr ScType(RealType type) noexcept
     : m_realType(type)
   {
   }
+
+  ~ScType() = default;
 
   inline bool IsEdge() const
   {

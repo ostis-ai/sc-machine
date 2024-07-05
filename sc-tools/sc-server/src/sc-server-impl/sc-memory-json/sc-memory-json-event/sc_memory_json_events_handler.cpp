@@ -26,7 +26,7 @@ ScMemoryJsonEventsHandler::~ScMemoryJsonEventsHandler() = default;
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
     ScServerSessionId const & sessionId,
-    std::string const & requestType,
+    std::string const &,
     ScMemoryJsonPayload const & requestPayload,
     ScMemoryJsonPayload & errorsPayload,
     sc_bool & status,
@@ -53,7 +53,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScServerSessionId const & sessionId,
     ScMemoryJsonPayload const & message,
-    ScMemoryJsonPayload & errorsPayload)
+    ScMemoryJsonPayload &)
 {
   auto const & onEmitEvent = [](size_t id,
                                 ScServer * server,
@@ -99,12 +99,10 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
-    ScServerSessionId const & sessionId,
+    ScServerSessionId const &,
     ScMemoryJsonPayload const & message,
-    ScMemoryJsonPayload & errorsPayload)
+    ScMemoryJsonPayload &)
 {
-  SC_UNUSED(sessionId);
-
   for (auto & atom : message)
     delete m_manager->Remove(atom.get<size_t>());
 
