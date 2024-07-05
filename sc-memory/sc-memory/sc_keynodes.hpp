@@ -26,20 +26,18 @@ namespace internal
 class ScKeynodesRegister
 {
 public:
-  static internal::ScKeynodesRegister m_instance;
-
   /*!
    * @brief Remembers keynode data to register it after.
    * @param keynode Pointer to remembering keynode data.
    * @param idtf Keynode system identifier.
    * @param keynodeType Keynode syntactic type.
    */
-  void Remember(ScAddr * keynode, std::string const & idtf, ScType const & keynodeType)
+  static void Remember(ScAddr * keynode, std::string_view const & idtf, ScType const & keynodeType)
   {
     m_keynodes.insert({keynode, {idtf, keynodeType}});
   }
 
-  void Forget(ScAddr * keynode)
+  static void Forget(ScAddr * keynode)
   {
     m_keynodes.erase(keynode);
   }
@@ -48,14 +46,14 @@ public:
    * @brief Registers all reminded keynodes.
    * @param context Sc-memory context to resolve keynodes.
    */
-  void Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure)
+  static void Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure)
   {
     for (auto const & item : m_keynodes)
     {
       ScAddr * keynode = item.first;
       auto const & keynodeInfo = item.second;
       ScSystemIdentifierQuintuple fiver;
-      context->HelperResolveSystemIdtf(keynodeInfo.first, keynodeInfo.second, fiver);
+      context->HelperResolveSystemIdtf(std::string(keynodeInfo.first), keynodeInfo.second, fiver);
       *keynode = fiver.addr1;
 
       if (initMemoryGeneratedStructure.IsValid())
@@ -68,10 +66,10 @@ public:
     }
   }
 
-  void Unregister(ScMemoryContext *) {}
+  static void Unregister(ScMemoryContext *) {}
 
 protected:
-  std::map<ScAddr *, std::pair<std::string, ScType>> m_keynodes;
+  static inline std::map<ScAddr *, std::pair<std::string_view, ScType>> m_keynodes;
 };
 }  // namespace internal
 
@@ -79,18 +77,18 @@ protected:
  * @class A base class for keynodes. Use it to create keynode in ScKeynodes class to use in agent programs.
  * @example
  * \code
- * static ScKeynode<sc_type_node | sc_type_const> const keynode{"keynode_const_node"};
+ * static ScKeynode<ScType::NodeConst> const keynode{"keynode_const_node"};
  * \endcode
  * @warning Use it only for static objects declaration.
  */
-template <sc_type type>
+template <ScType const & type>
 class ScKeynode : public ScAddr
 {
 public:
-  explicit ScKeynode(std::string const & sysIdtf)
+  explicit ScKeynode(std::string_view const & sysIdtf)
     : ScAddr(ScAddr::Empty)
   {
-    internal::ScKeynodesRegister::m_instance.Remember(this, sysIdtf, type);
+    internal::ScKeynodesRegister::Remember(this, sysIdtf, type);
   }
 
   explicit ScKeynode(sc_addr const & addr)
@@ -100,7 +98,7 @@ public:
 
   ~ScKeynode()
   {
-    internal::ScKeynodesRegister::m_instance.Forget(this);
+    internal::ScKeynodesRegister::Forget(this);
   }
 
   ScKeynode(ScKeynode const & other)
@@ -119,11 +117,11 @@ public:
  * @class A base class for const class keynodes. Use it to create keynode in ScKeynodes class to use in agent programs.
  * @example
  * \code
- * static ScKeynodeClass const kQuestionClass{"question_class"};
+ * static ScKeynodeClass const kActionClass{"action_class"};
  * \endcode
  * @warning Use it only for static objects declaration.
  */
-class ScKeynodeClass : public ScKeynode<sc_type_node | sc_type_const | sc_type_node_class>
+class ScKeynodeClass : public ScKeynode<ScType::NodeConstClass>
 {
 public:
   explicit ScKeynodeClass()
@@ -131,7 +129,7 @@ public:
   {
   }
 
-  explicit ScKeynodeClass(std::string const & sysIdtf)
+  explicit ScKeynodeClass(std::string_view const & sysIdtf)
     : ScKeynode(sysIdtf)
   {
   }
@@ -146,10 +144,10 @@ public:
  * \endcode
  * @warning Use it only for static objects declaration.
  */
-class ScKeynodeNoRole : public ScKeynode<sc_type_node | sc_type_const | sc_type_node_norole>
+class ScKeynodeNoRole : public ScKeynode<ScType::NodeConstNoRole>
 {
 public:
-  explicit ScKeynodeNoRole(std::string const & sysIdtf)
+  explicit ScKeynodeNoRole(std::string_view const & sysIdtf)
     : ScKeynode(sysIdtf)
   {
   }
@@ -163,10 +161,10 @@ public:
  * \endcode
  * @warning Use it only for static objects declaration.
  */
-class ScKeynodeRole : public ScKeynode<sc_type_node | sc_type_const | sc_type_node_role>
+class ScKeynodeRole : public ScKeynode<ScType::NodeConstRole>
 {
 public:
-  explicit ScKeynodeRole(std::string const & sysIdtf)
+  explicit ScKeynodeRole(std::string_view const & sysIdtf)
     : ScKeynode(sysIdtf)
   {
   }
@@ -180,10 +178,10 @@ public:
  * \endcode
  * @warning Use it only for static objects declaration.
  */
-class ScKeynodeLink : public ScKeynode<sc_type_link | sc_type_const>
+class ScKeynodeLink : public ScKeynode<ScType::LinkConst>
 {
 public:
-  explicit ScKeynodeLink(std::string const & sysIdtf)
+  explicit ScKeynodeLink(std::string_view const & sysIdtf)
     : ScKeynode(sysIdtf)
   {
   }
@@ -197,20 +195,11 @@ public:
  * class ScNLPKeynodes : public ScKeynodes
  * {
  * public:
- *    SC_KEYNODES_BODY(ScNLPKeynodes) // define `std::string GetName()` method for class ScNLPKeynodes
- *
- *    static ScKeynodeClass const kConceptMessage;
- *    static ScKeynodeNoRole const kNrelHistory;
- *    static ScKeynodeNoRole const kNrelDecomposition;
- *    static ScKeynodeRole const kRrel1;
+ *   static inline ScKeynodeClass const kConceptMessage{"concept_message"};
+ *   static inline ScKeynodeNoRole const kNrelHistory{"nrel_history"};
+ *   static inline ScKeynodeNoRole const kNrelDecomposition{"nrel_decomposition"};
+ *   static inline ScKeynodeRole const kRrel1{"rrel_1"};
  * };
- * \endcode
- * File *.cpp:
- * \code
- * ScKeynodeClass const ScNLPKeynodes::MyModuleKeynodes::kConceptMessage("concept_message");
- * ScKeynodeNoRole const ScNLPKeynodes::kNrelHistory("nrel_history");
- * ScKeynodeNoRole const ScNLPKeynodes::kNrelDecomposition("nrel_decomposition");
- * ScKeynodeRole const ScNLPKeynodes::kRrel1("rrel_1");
  * \endcode
  * @see ScKeynode
  */
@@ -220,59 +209,61 @@ public:
   _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
   _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
 
+  _SC_EXTERN static inline ScKeynode<ScType::NodeConst> const myself{"myself"};
+
+  _SC_EXTERN static inline ScKeynodeClass const action{"action"};
+  _SC_EXTERN static inline ScKeynodeClass const action_state{"action_state"};
+  _SC_EXTERN static inline ScKeynodeClass const action_initiated{"action_initiated"};
+  _SC_EXTERN static inline ScKeynodeClass const action_finished{"action_finished"};
+  _SC_EXTERN static inline ScKeynodeClass const action_finished_successfully{"action_finished_successfully"};
+  _SC_EXTERN static inline ScKeynodeClass const action_finished_unsuccessfully{"action_finished_unsuccessfully"};
+  _SC_EXTERN static inline ScKeynodeClass const action_finished_with_error{"action_finished_with_error"};
+  _SC_EXTERN static inline ScKeynodeNoRole const nrel_answer{"nrel_answer"};
+
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_class{"sc_result"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_ok{"sc_result_ok"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_no{"sc_result_no"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_unknown{"sc_result_unknown"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error{"sc_result_error"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_invalid_params{"sc_result_error_invalid_params"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_invalid_type{"sc_result_error_invalid_type"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_io{"sc_result_error_io"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_invalid_state{"sc_result_error_invalid_state"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_not_found{"sc_result_error_not_found"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_full_memory{"sc_result_error_full_memory"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_addr_is_not_valid{"sc_result_error_addr_is_not_valid"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_element_is_not_node{
+      "sc_result_error_element_is_not_node"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_element_is_not_link{
+      "sc_result_error_element_is_not_link"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_element_is_not_connector{
+      "sc_result_error_element_is_not_corrector"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_file_memory_io{"sc_result_error_file_memory_io"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_stream_io{"sc_result_error_stream_io"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_invalid_system_identifier{
+      "sc_result_error_invalid_system_identifier"};
+  _SC_EXTERN static inline ScKeynodeClass const sc_result_error_duplicated_system_identifier{
+      "sc_result_error_duplicated_system_identifier"};
+
+  _SC_EXTERN static inline ScKeynodeClass const binary_type{"binary_type"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_float{"binary_float"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_double{"binary_double"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_int8{"binary_int8"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_int16{"binary_int16"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_int32{"binary_int32"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_int64{"binary_int64"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_uint8{"binary_uint8"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_uint16{"binary_uint16"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_uint32{"binary_uint32"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_uint64{"binary_uint64"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_string{"binary_string"};
+  _SC_EXTERN static inline ScKeynodeClass const binary_custom{"binary_custom"};
+
+  _SC_EXTERN static inline ScKeynodeClass const empty_class{};
+
+private:
   _SC_EXTERN static ScAddr const & GetResultCodeAddr(sc_result resCode);
   _SC_EXTERN static sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
   _SC_EXTERN static ScAddr const & GetRrelIndex(size_t idx);
   _SC_EXTERN static size_t GetRrelIndexNum();
-
-  _SC_EXTERN static ScKeynode<sc_type_node | sc_type_const> const kMySelf;
-
-  /// command keynodes
-  _SC_EXTERN static ScKeynodeClass const kQuestionState;
-  _SC_EXTERN static ScKeynodeClass const kQuestionInitiated;
-  _SC_EXTERN static ScKeynodeClass const kQuestionProgressed;
-  _SC_EXTERN static ScKeynodeClass const kQuestionStopped;
-  _SC_EXTERN static ScKeynodeClass const kQuestionFinished;
-  _SC_EXTERN static ScKeynodeClass const kQuestionFinishedSuccessfully;
-  _SC_EXTERN static ScKeynodeClass const kQuestionFinishedUnsuccessfully;
-  _SC_EXTERN static ScKeynodeClass const kQuestionFinishedWithError;
-  _SC_EXTERN static ScKeynodeNoRole const kNrelAnswer;
-
-  /// result codes
-  _SC_EXTERN static ScKeynodeClass const kScResult;
-  _SC_EXTERN static ScKeynodeClass const kScResultOk;
-  _SC_EXTERN static ScKeynodeClass const kScResultNo;
-  _SC_EXTERN static ScKeynodeClass const kScResultUnknown;
-  _SC_EXTERN static ScKeynodeClass const kScResultError;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorInvalidParams;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorInvalidType;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorIO;
-  _SC_EXTERN static ScKeynodeClass const kScResultInvalidState;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorNotFound;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorFullMemory;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorAddrIsNotValid;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorElementIsNotNode;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorElementIsNotLink;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorElementIsNotConnector;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorFileMemoryIO;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorStreamIO;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorInvalidSystemIdentifier;
-  _SC_EXTERN static ScKeynodeClass const kScResultErrorDuplicatedSystemIdentifier;
-
-  /// link binary types
-  _SC_EXTERN static ScKeynodeClass const kBinaryType;
-  _SC_EXTERN static ScKeynodeClass const kBinaryFloat;
-  _SC_EXTERN static ScKeynodeClass const kBinaryDouble;
-  _SC_EXTERN static ScKeynodeClass const kBinaryInt8;
-  _SC_EXTERN static ScKeynodeClass const kBinaryInt16;
-  _SC_EXTERN static ScKeynodeClass const kBinaryInt32;
-  _SC_EXTERN static ScKeynodeClass const kBinaryInt64;
-  _SC_EXTERN static ScKeynodeClass const kBinaryUInt8;
-  _SC_EXTERN static ScKeynodeClass const kBinaryUInt16;
-  _SC_EXTERN static ScKeynodeClass const kBinaryUInt32;
-  _SC_EXTERN static ScKeynodeClass const kBinaryUInt64;
-  _SC_EXTERN static ScKeynodeClass const kBinaryString;
-  _SC_EXTERN static ScKeynodeClass const kBinaryCustom;
-
-  _SC_EXTERN static ScKeynodeClass const kEmptyClass;
 };

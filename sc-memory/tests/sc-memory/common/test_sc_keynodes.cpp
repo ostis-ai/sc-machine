@@ -9,91 +9,87 @@ using ScKeynodesTest = ScMemoryTest;
 
 TEST_F(ScKeynodesTest, CoreKeynodes)
 {
-  EXPECT_TRUE(ScKeynodes::kQuestionState.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionState) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kQuestionInitiated.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionInitiated) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kQuestionProgressed.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionProgressed) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kQuestionStopped.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionStopped) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kQuestionFinished.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionFinished) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kQuestionFinishedSuccessfully.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionFinishedSuccessfully) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kQuestionFinishedUnsuccessfully.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionFinishedUnsuccessfully) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kQuestionFinishedWithError.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kQuestionFinishedWithError) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kNrelAnswer.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kNrelAnswer) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::action_state.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_state) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::action_initiated.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_initiated) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::action_finished.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::action_finished_successfully.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished_successfully) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::action_finished_unsuccessfully.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished_unsuccessfully) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::action_finished_with_error.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished_with_error) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::nrel_answer.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_answer) == ScType::NodeConstNoRole);
 
-  EXPECT_TRUE(ScKeynodes::kScResult.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResult) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultOk.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultOk) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultNo.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultNo) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultUnknown.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultUnknown) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultError.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultError) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultErrorInvalidParams.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultErrorInvalidParams) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultErrorInvalidType.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultErrorInvalidType) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultErrorIO.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultErrorIO) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultInvalidState.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultInvalidState) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kScResultErrorNotFound.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kScResultErrorNotFound) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_class.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_class) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_ok.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_ok) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_no.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_no) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_unknown.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_unknown) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_invalid_params.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_invalid_params) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_invalid_type.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_invalid_type) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_io.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_io) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_invalid_state.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_invalid_state) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_not_found.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_not_found) == ScType::NodeConstClass);
 
-  EXPECT_TRUE(ScKeynodes::kBinaryType.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryType) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryFloat.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryFloat) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryDouble.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryDouble) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryInt8.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryInt8) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryInt16.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryInt16) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryInt32.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryInt32) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryInt64.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryInt64) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryUInt8.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryUInt8) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryUInt16.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryUInt16) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryUInt16.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryUInt16) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryUInt64.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryUInt64) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryString.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryString) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::kBinaryCustom.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::kBinaryCustom) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_type.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_type) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_float.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_float) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_double.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_double) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_int8.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_int8) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_int16.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_int16) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_int32.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_int32) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_int64.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_int64) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_uint8.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_uint8) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_uint16.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_uint16) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_uint16.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_uint16) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_uint64.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_uint64) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_string.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_string) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::binary_custom.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_custom) == ScType::NodeConstClass);
 }
 
 TEST_F(ScKeynodesTest, binary_types)
 {
   ScAddr keynodes[] = {
-      ScKeynodes::kBinaryDouble,
-      ScKeynodes::kBinaryFloat,
-      ScKeynodes::kBinaryInt8,
-      ScKeynodes::kBinaryInt16,
-      ScKeynodes::kBinaryInt32,
-      ScKeynodes::kBinaryInt64,
-      ScKeynodes::kBinaryUInt8,
-      ScKeynodes::kBinaryUInt16,
-      ScKeynodes::kBinaryUInt32,
-      ScKeynodes::kBinaryUInt64,
-      ScKeynodes::kBinaryString};
+      ScKeynodes::binary_double,
+      ScKeynodes::binary_float,
+      ScKeynodes::binary_int8,
+      ScKeynodes::binary_int16,
+      ScKeynodes::binary_int32,
+      ScKeynodes::binary_custom,
+      ScKeynodes::binary_uint8,
+      ScKeynodes::binary_uint16,
+      ScKeynodes::binary_uint32,
+      ScKeynodes::binary_uint64,
+      ScKeynodes::binary_string};
 
   for (ScAddr a : keynodes)
-    EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::kBinaryType, a, ScType::EdgeAccessConstPosPerm));
+    EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::binary_type, a, ScType::EdgeAccessConstPosPerm));
 }
 
 TEST_F(ScKeynodesTest, cache)

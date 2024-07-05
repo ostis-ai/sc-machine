@@ -138,73 +138,73 @@ private:
 template <>
 inline ScAddr const & ScLink::Type2Addr<std::string>() const
 {
-  return ScKeynodes::kBinaryString;
+  return ScKeynodes::binary_string;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<float>() const
 {
-  return ScKeynodes::kBinaryFloat;
+  return ScKeynodes::binary_float;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<double>() const
 {
-  return ScKeynodes::kBinaryDouble;
+  return ScKeynodes::binary_double;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<int8_t>() const
 {
-  return ScKeynodes::kBinaryInt8;
+  return ScKeynodes::binary_int8;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<int16_t>() const
 {
-  return ScKeynodes::kBinaryInt16;
+  return ScKeynodes::binary_int16;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<int32_t>() const
 {
-  return ScKeynodes::kBinaryInt32;
+  return ScKeynodes::binary_int32;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<int64_t>() const
 {
-  return ScKeynodes::kBinaryInt64;
+  return ScKeynodes::binary_int64;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint8_t>() const
 {
-  return ScKeynodes::kBinaryUInt8;
+  return ScKeynodes::binary_uint8;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint16_t>() const
 {
-  return ScKeynodes::kBinaryUInt16;
+  return ScKeynodes::binary_uint16;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint32_t>() const
 {
-  return ScKeynodes::kBinaryUInt32;
+  return ScKeynodes::binary_uint32;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<uint64_t>() const
 {
-  return ScKeynodes::kBinaryUInt64;
+  return ScKeynodes::binary_uint64;
 }
 
 template <>
 inline ScAddr const & ScLink::Type2Addr<ScStreamPtr>() const
 {
-  return ScKeynodes::kBinaryCustom;
+  return ScKeynodes::binary_custom;
 }
 
 template <>

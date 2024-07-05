@@ -20,8 +20,6 @@ struct _sc_event
 {
   //! sc-addr of listened sc-element
   sc_addr subscription_addr;
-  sc_addr * addrs;
-  sc_uint32 addrs_count;
   //! Event type
   sc_event_type type;
   //! Pointer to user data

@@ -83,7 +83,7 @@ public:
     ScMemoryJsonPayload response;
     try
     {
-      auto * context = new ScMemoryContext(ScKeynodes::kMySelf);
+      auto * context = new ScMemoryContext(ScKeynodes::myself);
 
       ScAddr const & tempAddr = context->CreateNode(ScType::NodeConst);
       context->EraseElement(tempAddr);

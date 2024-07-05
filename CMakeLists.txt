@@ -4,6 +4,7 @@ project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
+set(CMAKE_BUILD_TYPE Debug)
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
 project_version(SC_MACHINE "0.9.0-Unlock")
