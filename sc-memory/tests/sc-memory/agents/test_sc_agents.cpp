@@ -3,6 +3,7 @@
 #include "sc-memory/sc_agent.hpp"
 
 #include "test_sc_agent.hpp"
+#include "test_sc_module.hpp"
 
 #include "agents_test_utils.hpp"
 
@@ -227,4 +228,19 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
   delete context;
 
   UnregisterAgent<ATestCheckResult>(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, RegisterAgentWithinModule)
+{
+  TestModule module;
+  module.Agent<ATestAddOutputEdge>(ATestAddOutputEdge::msAgentKeynode);
+  module.Register(&*m_ctx);
+
+  ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(node.IsValid());
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::msAgentKeynode, node);
+  EXPECT_TRUE(e.IsValid());
+  EXPECT_TRUE(ATestAddOutputEdge::msWaiter.Wait());
+
+  module.Unregister(&*m_ctx);
 }
