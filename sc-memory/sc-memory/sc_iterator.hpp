@@ -7,6 +7,7 @@
 #pragma once
 
 #include "sc_addr.hpp"
+#include "sc_type.hpp"
 #include "sc_utils.hpp"
 
 extern "C"
@@ -45,10 +46,33 @@ public:
 protected:
   IterType * m_iterator = nullptr;
   size_t m_tripleSize = tripleSize;
+
+  static sc_type Convert(sc_type const & s)
+  {
+    return s;
+  }
+
+  static sc_addr Convert(sc_addr const & s)
+  {
+    return s;
+  }
+
+  static sc_addr Convert(ScAddr const & addr)
+  {
+    return *addr;
+  }
+
+  static sc_type Convert(ScType const & type)
+  {
+    return *type;
+  }
 };
 
 using ScAddrTriple = std::array<ScAddr, 3>;
 using ScAddrQuintuple = std::array<ScAddr, 5>;
+
+template <typename P1, typename P2, typename P3>
+sc_iterator3 * CreateIterator3(ScMemoryContext const & context, P1 const & p1, P2 const & p2, P3 const & p3);
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
 class TIterator3 : public TIteratorBase<sc_iterator3, 3>
@@ -60,7 +84,10 @@ protected:
       ScMemoryContext const & context,
       ParamType1 const & p1,
       ParamType2 const & p2,
-      ParamType3 const & p3);
+      ParamType3 const & p3)
+  {
+    m_iterator = CreateIterator3(context, Convert(p1), Convert(p2), Convert(p3));
+  }
 
 public:
   _SC_EXTERN virtual ~TIterator3()
@@ -138,6 +165,16 @@ public:
 };
 
 // ---------------------------
+
+template <typename P1, typename P2, typename P3, typename P4, typename P5>
+sc_iterator5 * CreateIterator5(
+    ScMemoryContext const & context,
+    P1 const & p1,
+    P2 const & p2,
+    P3 const & p3,
+    P4 const & p4,
+    P5 const & p5);
+
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
 class TIterator5 : public TIteratorBase<sc_iterator5, 5>
 {
@@ -150,7 +187,10 @@ protected:
       ParamType2 const & p2,
       ParamType3 const & p3,
       ParamType4 const & p4,
-      ParamType5 const & p5);
+      ParamType5 const & p5)
+  {
+    m_iterator = CreateIterator5(context, Convert(p1), Convert(p2), Convert(p3), Convert(p4), Convert(p5));
+  }
 
 public:
   _SC_EXTERN ~TIterator5() override
