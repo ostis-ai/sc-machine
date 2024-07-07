@@ -45,3 +45,13 @@ sc_result ScModule::Unregister(ScMemoryContext * ctx)
 
   return SC_RESULT_OK;
 }
+
+sc_result ScModule::Initialize(ScMemoryContext *, ScAddr const &)
+{
+  return SC_RESULT_OK;
+}
+
+sc_result ScModule::Shutdown(ScMemoryContext *)
+{
+  return SC_RESULT_OK;
+}

@@ -55,12 +55,12 @@ public:
    * @param keynodes A pointer to dynamically created keynodes instance
    * @returns Pointer to module instance
    */
-  template <class KeynodesClass>
+  template <class TKeynodesClass>
   _SC_EXTERN ScModule * Keynodes()
   {
     static_assert(
-        std::is_base_of<ScKeynodes, KeynodesClass>::value, "KeynodesClass must be derivied from ScKeynodes class");
-    m_keynodes.push_back(new KeynodesClass());
+        std::is_base_of<ScKeynodes, TKeynodesClass>::value, "TKeynodesClass must be derivied from ScKeynodes class.");
+    m_keynodes.push_back(new TKeynodesClass());
     return this;
   }
 
@@ -68,47 +68,35 @@ public:
    * @param agentInfo A pointer to dynamically created agent instance and a vector of subscription addrs
    * @returns Pointer to module instance
    */
-  template <class AgentClass>
-  _SC_EXTERN ScModule * Agent(ScAddrVector const & addrs)
+  template <class TAgentClass, class... TScAddr>
+  _SC_EXTERN ScModule * Agent(TScAddr const &... addrs)
   {
     static_assert(
-        std::is_base_of<ScAgentAbstract, AgentClass>::value, "AgentClass must be derivied from ScAgentAbstract class");
-    m_agents.push_back({{GetAgentRegisterCallback<AgentClass>(), GetAgentUnregisterCallback<AgentClass>()}, addrs});
-    return this;
-  }
+        std::is_base_of<ScAgentAbstract, TAgentClass>::value,
+        "TAgentClass must be derivied from class ScAgent or ScActionAgent.");
+    static_assert(std::is_abstract<TAgentClass>::value == false, "TAgentClass must override all virtual functions.");
+    static_assert(
+        (std::is_base_of<ScAddr, TScAddr>::value && ...),
+        "Each argument in the parameter pack must be of class ScAddr.");
 
-  /*! Reminds agent and it initiation condition to register it with module after.
-   * @param agentInfo A pointer to dynamically created agent instance and a subscription addr
-   * @returns Pointer to module instance
-   */
-  template <class AgentClass>
-  _SC_EXTERN ScModule * Agent(ScAddr const & addr)
-  {
-    static_assert(
-        std::is_base_of<ScAgentAbstract, AgentClass>::value, "AgentClass must be derivied from ScAgentAbstract class");
-    m_agents.push_back({{GetAgentRegisterCallback<AgentClass>(), GetAgentUnregisterCallback<AgentClass>()}, {addr}});
+    m_agents.push_back(
+        {{GetAgentRegisterCallback<TAgentClass>(), GetAgentUnregisterCallback<TAgentClass>()}, {addrs...}});
     return this;
   }
 
   /*! Registers all module keynodes and agents
    * @returns Result of initializing
    */
-  _SC_EXTERN sc_result Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
+  _SC_EXTERN sc_result Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr = ScAddr::Empty);
 
   /*! Unregisters all module keynodes and agents
    * @returns Result of shutdown
    */
   _SC_EXTERN sc_result Unregister(ScMemoryContext * ctx);
 
-  _SC_EXTERN sc_result Initialize(ScMemoryContext *, ScAddr const &) override
-  {
-    return SC_RESULT_OK;
-  }
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
 
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext *) override
-  {
-    return SC_RESULT_OK;
-  }
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
 
 protected:
   /// Registered keynodes
@@ -118,21 +106,22 @@ protected:
   using ScAgentUnregisterCallback = std::function<void(ScMemoryContext *)>;
   std::list<std::pair<std::pair<ScAgentRegisterCallback, ScAgentUnregisterCallback>, ScAddrVector>> m_agents;
 
-  template <class AgentClass>
+  template <class TAgentClass>
   ScAgentRegisterCallback GetAgentRegisterCallback()
   {
     return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
     {
-      AgentClass::template Register<AgentClass>(ctx, addrs);
+      for (ScAddr const & addr : addrs)
+        TAgentClass::template Register<TAgentClass>(ctx, addr);
     };
   }
 
-  template <class AgentClass>
+  template <class TAgentClass>
   ScAgentUnregisterCallback GetAgentUnregisterCallback()
   {
     return [](ScMemoryContext * ctx)
     {
-      AgentClass::template Unegister<AgentClass>(ctx);
+      TAgentClass::template Unregister<TAgentClass>(ctx);
     };
   }
 };

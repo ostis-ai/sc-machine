@@ -85,8 +85,7 @@ public:
 
     SC_LOG_INFO("Register " << GetName<TAgentClass>());
 
-    ScAddrVector const & addrVector{addrs...};
-    for (auto const & addr : addrVector)
+    for (auto const & addr : ScAddrVector{addrs...})
       m_events.push_back(new ScEvent(*ctx, addr, eventType, TAgentClass::template GetCallback<TAgentClass>()));
   }
 
@@ -314,20 +313,20 @@ public:
    * @brief Completes defined logic if the agent finishes successfully (SC_RESULT_OK).
    * @param actionAddr An address of the action sc-element.
    */
-  _SC_EXTERN virtual void OnSuccess(ScAddr const &) {}
+  _SC_EXTERN virtual void OnSuccess(ScAddr const & /* actionAddr */) {}
 
   /*!
    * @brief Completes defined logic if the agent finishes unsuccessfully (SC_RESULT_NO).
    * @param actionAddr An address of the action sc-element.
    */
-  _SC_EXTERN virtual void OnUnsuccess(ScAddr const &) {}
+  _SC_EXTERN virtual void OnUnsuccess(ScAddr const & /* actionAddr */) {}
 
   /*!
    * @brief Completes defined logic if the agent finishes with an error.
    * @param actionAddr An address of the action element.
    * @param errorCode An error code indicating the type of error.
    */
-  _SC_EXTERN virtual void OnError(ScAddr const &, sc_result) {}
+  _SC_EXTERN virtual void OnError(ScAddr const & /* actionAddr */, sc_result /* result */) {}
 
   /*!
    * @brief Provides a callback function for handling events in the sc-memory.
@@ -347,12 +346,14 @@ public:
   template <class TAgentClass>
   static _SC_EXTERN ScEvent::DelegateFuncWithUserAddr GetCallback()
   {
-    return
-        [](ScAddr const & userAddr, ScAddr const &, ScAddr const &, ScType const & edgeType, ScAddr const & actionAddr)
-            -> sc_result
+    return [](ScAddr const & userAddr,
+              ScAddr const &,
+              ScAddr const &,
+              ScType const & connectorType,
+              ScAddr const & actionAddr) -> sc_result
     {
       sc_result result = SC_RESULT_ERROR;
-      if (!(edgeType.BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
+      if (!(connectorType.BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
           || (actionClass.IsValid()
               && !ScMemory::ms_globalContext->HelperCheckEdge(actionClass, actionAddr, ScType::EdgeAccessConstPosPerm)))
         return result;
@@ -393,23 +394,14 @@ public:
 private:
   _SC_EXTERN _SC_DELETED_FUNCTION sc_result OnEvent(ScAddr const &, ScAddr const &, ScAddr const &) final
   {
-    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Method OnEvent(3) is deleted in class ScActionAgent.");
+    return SC_RESULT_OK;
   }
 
-  _SC_EXTERN _SC_DELETED_FUNCTION void OnSuccess(ScAddr const &, ScAddr const &, ScAddr const &) final
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Method OnSuccess(3) is deleted in class ScActionAgent.");
-  }
+  _SC_EXTERN _SC_DELETED_FUNCTION void OnSuccess(ScAddr const &, ScAddr const &, ScAddr const &) final {}
 
-  _SC_EXTERN _SC_DELETED_FUNCTION void OnUnsuccess(ScAddr const &, ScAddr const &, ScAddr const &) final
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Method OnUnsuccess(3) is deleted in class ScActionAgent.");
-  }
+  _SC_EXTERN _SC_DELETED_FUNCTION void OnUnsuccess(ScAddr const &, ScAddr const &, ScAddr const &) final {}
 
-  _SC_EXTERN _SC_DELETED_FUNCTION void OnError(ScAddr const &, ScAddr const &, ScAddr const &, sc_result) final
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionNotImplemented, "Method OnError(4) is deleted in class ScActionAgent.");
-  }
+  _SC_EXTERN _SC_DELETED_FUNCTION void OnError(ScAddr const &, ScAddr const &, ScAddr const &, sc_result) final {}
 };
 
 /*!
