@@ -204,6 +204,8 @@ protected:
  *
  * File sc_syntactic_analysis_agent.hpp:
  * \code
+ * #pragma once
+ *
  * #include <sc-memory/sc_agent.hpp>
  *
  * #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
@@ -215,13 +217,15 @@ protected:
  *  *!
  *  * @details The `ScSyntacticAnalysisAgent` class inherits from `ScAgent` and overrides the `OnEvent` and `OnSuccess`
  *  * methods.
- *  * It uses the `SC_AGENT_BODY` macro and has a member `m_analyser` of type `nlp::ScSyntacticAnalyser`.
+ *  * It has a member `m_analyser` of type `nlp::ScSyntacticAnalyser`.
  *  * The main logic is implemented in the `OnEvent` method.
  *  *
- * class ScSyntacticAnalysisAgent : public ScActionAgent<ScKeynodes::kSyntacticAnalyseAction>
+ * class ScSyntacticAnalysisAgent : public ScActionAgent<ScKeynodes::syntactic_analyse_action>
  * {
  * public:
  *   ScSyntacticAnalysisAgent();
+ *
+ *   ~ScSyntacticAnalysisAgent();
  *
  *   sc_result OnEvent(ScAddr const & actionAddr) override;
  *
@@ -240,6 +244,11 @@ protected:
  * ScSyntacticAnalysisAgent::ScSyntacticAnalysisAgent()
  *   : m_analyser(new nlp::ScSyntacticAnalyser(m_memoryCtx))
  * {
+ * }
+ *
+ * ScSyntacticAnalysisAgent::~ScSyntacticAnalysisAgent()
+ * {
+ *   delete m_analyser;
  * }
  *
  * sc_result ScSyntacticAnalysisAgent::OnEvent(ScAddr const & actionAddr)
@@ -268,7 +277,7 @@ protected:
  *   }
  *
  *   SC_AGENT_LOG_INFO("Lexeme tree has been formed");
- *   ScAddr const & answerAddr = m_memoryCtx->FormStructure({lexemeTreeAddr});
+ *   ScAddr const & answerAddr = m_memoryCtx->FormStructure(lexemeTreeAddr);
  *   m_memoryCtx.FormAnswer(actionAddr, answerAddr);
  *   return SC_RESULT_OK;
  * }
@@ -276,14 +285,14 @@ protected:
  * void ScSyntacticAnalysisAgent::OnSuccess(ScAddr const & actionAddr)
  * {
  *   delete m_memoryCtx->InitializeEvent<ScEvent::Type::AddOutputEdge>(
- *   nlp::ScNLPKeynodes::kSyntacticSynthesizeAction,
+ *   nlp::ScNLPKeynodes::syntactic_synthesize_action,
  *     [this]() -> {
  *       ScAddr const & addr = m_memoryCtx.CreateNode(ScType::NodeConst);
  *       m_memoryCtx.CreateEdge(
- *         ScType::EdgeAccessConstPosPerm, nlp::ScNLPKeynodes::kSyntacticSynthesizeAction, addr);
+ *         ScType::EdgeAccessConstPosPerm, nlp::ScNLPKeynodes::syntactic_synthesize_action, addr);
  *     },
  *     [this](ScAddr const &, ScAddr const &, ScAddr const & actionAddr) -> sc_result {
- *       return m_memoryCtx.HelperCheckEdge(nlp::ScNLPKeynodes::kActionFinishedSucessfully, actionAddr,
+ *       return m_memoryCtx.HelperCheckEdge(nlp::ScNLPKeynodes::action_finished_sucessfully, actionAddr,
  ScType::EdgeAccessConstPosPerm)
  *         ? SC_RESULT_OK
  *         : SC_RESULT_NO;
