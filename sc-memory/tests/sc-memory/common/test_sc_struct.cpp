@@ -7,12 +7,9 @@
 
 using ScStructTest = ScMemoryTest;
 
-TEST_F(ScStructTest, common)
+TEST_F(ScStructTest, AppendIterateElements)
 {
-  ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_TRUE(structAddr.IsValid());
-
-  ScStruct st(*m_ctx, structAddr);
+  ScStruct structAddr(*m_ctx);
 
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConstClass);
   EXPECT_TRUE(addr1.IsValid());
@@ -20,27 +17,27 @@ TEST_F(ScStructTest, common)
   ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstMaterial);
   EXPECT_TRUE(addr2.IsValid());
 
-  st << addr1 << addr2;
-  EXPECT_TRUE(st.HasElement(addr1));
-  EXPECT_TRUE(st.HasElement(addr2));
+  structAddr << addr1 << addr2;
+  EXPECT_TRUE(structAddr.HasElement(addr1));
+  EXPECT_TRUE(structAddr.HasElement(addr2));
 
-  st >> addr1;
+  structAddr >> addr1;
 
-  EXPECT_FALSE(st.HasElement(addr1));
-  EXPECT_TRUE(st.HasElement(addr2));
+  EXPECT_FALSE(structAddr.HasElement(addr1));
+  EXPECT_TRUE(structAddr.HasElement(addr2));
 
-  st >> addr2;
+  structAddr >> addr2;
 
-  EXPECT_FALSE(st.HasElement(addr1));
-  EXPECT_FALSE(st.HasElement(addr2));
-  EXPECT_TRUE(st.IsEmpty());
+  EXPECT_FALSE(structAddr.HasElement(addr1));
+  EXPECT_FALSE(structAddr.HasElement(addr2));
+  EXPECT_TRUE(structAddr.IsEmpty());
 
   // attributes
   ScAddr const attrAddr = m_ctx->CreateNode(ScType::NodeConstRole);
   EXPECT_TRUE(attrAddr.IsValid());
 
-  EXPECT_TRUE(st.Append(addr1, attrAddr));
-  EXPECT_FALSE(st.Append(addr1, attrAddr));
+  EXPECT_TRUE(structAddr.Append(addr1, attrAddr));
+  EXPECT_FALSE(structAddr.Append(addr1, attrAddr));
   ScIterator5Ptr iter5 = m_ctx->Iterator5(
       structAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
 

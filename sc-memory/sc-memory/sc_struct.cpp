@@ -9,15 +9,29 @@
 #include "sc_template.hpp"
 
 ScSet::ScSet(ScMemoryContext & ctx, ScAddr const & structAddr)
-  : m_addr(structAddr)
-  , m_context(ctx)
+  : ScAddr(structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConst))
+  , m_ctx(&ctx)
 {
+}
+
+ScSet::ScSet(ScSet const & other)
+  : ScAddr(other)
+{
+  m_ctx = other.m_ctx;
+}
+
+ScSet & ScSet::operator=(ScSet const & other)
+{
+  ScAddr::operator=(other);
+  m_ctx = other.m_ctx;
+
+  return *this;
 }
 
 bool ScSet::Append(ScAddr const & elAddr)
 {
   if (!HasElement(elAddr))
-    return m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr).IsValid();
+    return m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, elAddr).IsValid();
 
   return false;
 }
@@ -27,8 +41,8 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
   if (HasElement(elAddr))
     return false;
 
-  ScAddr const edge = m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, m_addr, elAddr);
-  m_context.CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
+  ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, elAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
 
   return true;
 }
@@ -36,10 +50,10 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 bool ScSet::Remove(ScAddr const & elAddr)
 {
   bool found = false;
-  ScIterator3Ptr iter = m_context.Iterator3(m_addr, ScType::EdgeAccessConstPosPerm, elAddr);
+  ScIterator3Ptr iter = m_ctx->Iterator3(*this, ScType::EdgeAccessConstPosPerm, elAddr);
   while (iter->Next())
   {
-    m_context.EraseElement(iter->Get(1));
+    m_ctx->EraseElement(iter->Get(1));
     found = true;
   }
 
@@ -48,7 +62,7 @@ bool ScSet::Remove(ScAddr const & elAddr)
 
 bool ScSet::HasElement(ScAddr const & elAddr) const
 {
-  return m_context.HelperCheckEdge(m_addr, elAddr, ScType::EdgeAccessConstPosPerm);
+  return m_ctx->HelperCheckEdge(*this, elAddr, ScType::EdgeAccessConstPosPerm);
 }
 
 ScSet & ScSet::operator<<(ScAddr const & elAddr)
@@ -72,13 +86,14 @@ ScSet & ScSet::operator>>(ScAddr const & elAddr)
   return *this;
 }
 
-ScAddr const & ScSet::operator*() const
-{
-  return m_addr;
-}
-
 bool ScSet::IsEmpty() const
 {
-  ScIterator3Ptr const iter = m_context.Iterator3(m_addr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr const iter = m_ctx->Iterator3(*this, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   return !iter->Next();
+}
+
+ScStruct::ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr)
+  : ScSet(ctx, structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConstStruct))
+{
+  // TODO: check type of struct element
 }
