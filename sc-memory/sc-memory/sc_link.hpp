@@ -16,7 +16,7 @@
 /* This class wraps specified sc-link and provide functionality
  * to work with it. For example: get/set content, check content type
  */
-class ScLink
+class ScLink : public ScAddr
 {
 public:
   enum class Type : uint8_t
@@ -36,16 +36,16 @@ public:
     Custom
   };
 
-  _SC_EXTERN ScLink(ScMemoryContext & ctx, ScAddr const & addr);
+  _SC_EXTERN ScLink(ScMemoryContext & ctx, ScAddr const & linkAddr = ScAddr::Empty);
 
   // Check if this class has reference to sc-link element
-  bool IsValid() const;
+  _SC_EXTERN bool IsValid() const;
 
   template <typename Type>
-  inline ScAddr const & Type2Addr() const;
+  _SC_EXTERN inline ScAddr const & Type2Addr() const;
 
   template <typename Type>
-  inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
+  _SC_EXTERN inline void Value2Stream(Type const & value, ScStreamPtr & stream) const
   {
     std::stringstream stringStream;
     stringStream << value;
@@ -58,7 +58,7 @@ public:
   }
 
   template <typename Type>
-  inline bool Stream2Value(ScStreamPtr const & stream, Type & outValue) const
+  _SC_EXTERN inline bool Stream2Value(ScStreamPtr const & stream, Type & outValue) const
   {
     size_t size = stream->Size();
 
@@ -77,17 +77,17 @@ public:
   }
 
   template <typename Type>
-  inline bool IsType() const
+  _SC_EXTERN inline bool IsType() const
   {
-    return m_ctx.HelperCheckEdge(Type2Addr<Type>(), m_addr, ScType::EdgeAccessConstPosTemp);
+    return m_ctx->HelperCheckEdge(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
   }
 
   template <typename Type>
-  inline bool Set(Type const & value)
+  _SC_EXTERN inline bool Set(Type const & value)
   {
     ScStreamPtr stream;
     Value2Stream(value, stream);
-    if (!m_ctx.SetLinkContent(m_addr, stream))
+    if (!m_ctx->SetLinkContent(*this, stream))
       return false;
 
     ScAddr const newType = Type2Addr<Type>();
@@ -98,20 +98,20 @@ public:
       if (typeAddr == newType)
         needAppend = false;
       else
-        m_ctx.EraseElement(typeEdge);
+        m_ctx->EraseElement(typeEdge);
     }
 
     // append into set
     if (needAppend)
-      return m_ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, newType, m_addr).IsValid();
+      return m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
 
     return true;
   }
 
   template <typename Type>
-  Type Get() const
+  _SC_EXTERN Type Get() const
   {
-    ScStreamPtr const stream = m_ctx.GetLinkContent(m_addr);
+    ScStreamPtr const stream = m_ctx->GetLinkContent(*this);
 
     // Check for invalid address.
     if (!stream || !stream->IsValid())
@@ -119,7 +119,7 @@ public:
 
     Type result;
     if (!Stream2Value(stream, result))
-      SC_THROW_EXCEPTION(utils::ExceptionCritical, "Failed to get the value of " + std::to_string(m_addr.Hash()));
+      SC_THROW_EXCEPTION(utils::ExceptionCritical, "Failed to get the value of " + std::to_string(this->Hash()));
 
     return result;
   }
@@ -131,8 +131,7 @@ protected:
   _SC_EXTERN bool _DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const;
 
 private:
-  ScMemoryContext & m_ctx;
-  ScAddr m_addr;
+  ScMemoryContext * m_ctx;
 };
 
 template <>
