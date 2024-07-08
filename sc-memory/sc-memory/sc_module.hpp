@@ -16,28 +16,28 @@
  * @example
  * File sc_nlp_module.hpp:
  * \code
- * #include "sc-memory/kpm/sc_module.hpp"
+ * #pragma once
  *
- * #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
- * #include "nlp-module/agents/sc_syntactic_analysis_agent.hpp"
- * #include "nlp-module/agents/sc_semantic_analysis_agent.hpp"
+ * #include "sc-memory/sc_module.hpp"
  *
- * SC_MODULE(ScNLPModule)
- *   ->Keynodes(new nlp::ScNLPKeynodes())
- *   ->Agent(
- *      new nlp::ScSyntacticAnalysisAgent<ScEvent::Type::AddOutputEdge>(),
- *      nlp::ScNLPKeynodes::kSyntacticAnalysisAction,
- *   )
- *   ->Agent(
- *      new nlp::ScSemanticAnalysisAgent<ScEvent::Type::AddOutputEdge>(),
- *      nlp::ScNLPKeynodes::kSemanticAnalysisAction
- *   );
+ * class ScNLPModule final : public ScModule
+ * {
+ * };
+ *
  * \endcode
  * File sc_nlp_module.cpp:
  * \code
  * #include "nlp-module/sc_nlp_module.hpp"
  *
- * SC_MODULE_REGISTER(SC_NLP_MODULE);
+ * #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
+ * #include "nlp-module/agents/sc_syntactic_analysis_agent.hpp"
+ * #include "nlp-module/agents/sc_semantic_analysis_agent.hpp"
+ *
+ * SC_MODULE_REGISTER(ScNLPModule)
+ *   ->Keynodes<nlp::ScNLPKeynodes>()
+ *   ->Agent<nlp::ScSyntacticAnalysisAgent>()
+ *   ->Agent<nlp::ScSemanticAnalysisAgent>();
+ *
  * \endcode
  * @note Not recommended to use interface API to implement module classes. Use example defines instead of.
  */
