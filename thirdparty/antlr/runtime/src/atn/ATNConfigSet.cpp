@@ -131,7 +131,7 @@ void ATNConfigSet::optimizeConfigs(ATNSimulator *interpreter) {
   }
 }
 
-bool ATNConfigSet::operator == (const ATNConfigSet &other) {
+bool ATNConfigSet::operator == (const ATNConfigSet &other) const {
   if (&other == this) {
     return true;
   }

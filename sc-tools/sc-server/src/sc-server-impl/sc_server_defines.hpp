@@ -76,14 +76,14 @@ class ScServerDefaultLogger : public basic<concurrency, names>
 public:
   typedef basic<concurrency, names> base;
 
-  ScServerDefaultLogger<concurrency, names>(channel_type_hint::value hint = channel_type_hint::access)
+  ScServerDefaultLogger(channel_type_hint::value hint = channel_type_hint::access)
     : basic<concurrency, names>(hint)
     , m_out(&std::cout)
   {
   }
 
-  ScServerDefaultLogger<concurrency, names>(level channels, channel_type_hint::value hint = channel_type_hint::access)
-    : basic<concurrency, names>(0xffffffff, hint)
+  ScServerDefaultLogger(level channels, channel_type_hint::value hint = channel_type_hint::access)
+    : basic<concurrency, names>(channels, hint)
     , m_out(&std::cout)
   {
   }
