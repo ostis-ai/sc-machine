@@ -16,9 +16,11 @@ target_link_libraries(sc-builder-lib
 target_include_directories(sc-builder-lib
     PUBLIC ${SC_BUILDER_SRC}
 )
+set_target_properties(sc-builder-lib PROPERTIES CXX_STANDARD 20)
 
 add_executable(sc-builder "${SC_BUILDER_SRC}/src/main.cpp")
 target_link_libraries(sc-builder LINK_PRIVATE sc-builder-lib)
+target_compile_features(sc-builder PUBLIC cxx_std_20)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-builder)

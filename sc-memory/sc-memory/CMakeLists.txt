@@ -35,6 +35,7 @@ target_include_directories(sc-memory
     PUBLIC ${SC_MEMORY_SRC}
     PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
 )
+target_compile_features(sc-memory PUBLIC cxx_std_20)
 
 sc_codegen_ex(sc-memory ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/generated")
 

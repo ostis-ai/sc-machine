@@ -104,7 +104,8 @@ set_target_properties(antlr4_static
                                  SOVERSION ${ANTLR_VERSION}
                                  OUTPUT_NAME "antlr4-runtime${static_lib_suffix}"
                                  ARCHIVE_OUTPUT_DIRECTORY ${LIB_OUTPUT_DIR}
-                                 COMPILE_FLAGS "${disabled_compile_warnings} ${extra_static_compile_flags}")
+                                 COMPILE_FLAGS "${disabled_compile_warnings} ${extra_static_compile_flags}"
+                                 CXX_STANDARD 20)
 
 # install(TARGETS antlr4_shared
 #         DESTINATION lib 

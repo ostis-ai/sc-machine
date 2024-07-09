@@ -14,6 +14,8 @@ target_include_directories(sc-agents-common
     PRIVATE "${SC_AGENTS_COMMON_SRC}"
     PUBLIC "${SC_AGENTS_COMMON_SRC}/.."
 )
+target_compile_features(sc-agents-common PUBLIC cxx_std_20)
+
 sc_codegen_ex(sc-agents-common "${SC_AGENTS_COMMON_SRC}" "${SC_AGENTS_COMMON_SRC}/generated")
 
 if(${SC_CLANG_FORMAT_CODE})
