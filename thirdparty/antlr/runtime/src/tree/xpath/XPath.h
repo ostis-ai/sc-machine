@@ -59,7 +59,7 @@ namespace xpath {
     static const std::string NOT; // word for invert operator
 
     XPath(Parser *parser, const std::string &path);
-    virtual ~XPath() {}
+    virtual ~XPath();
 
     // TO_DO: check for invalid token/rule names, bad syntax
     virtual std::vector<XPathElement> split(const std::string &path);
