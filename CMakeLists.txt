@@ -48,6 +48,9 @@ endif()
 
 if(${SC_BUILD_TESTS})
     include(${CMAKE_MODULE_PATH}/tests.cmake)
+    if(${SC_BUILD_BENCH})
+        find_package(benchmark REQUIRED)
+    endif()
 endif()
 
 if(${SC_CLANG_FORMAT_CODE})

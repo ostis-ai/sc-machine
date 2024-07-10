@@ -42,6 +42,8 @@ packagelist_dev=(
   clang
   libclang-dev
   default-jre
+  libgtest-dev
+  libbenchmark-dev
   libcurl4-openssl-dev
   clang-format
   libwebsocketpp-dev
