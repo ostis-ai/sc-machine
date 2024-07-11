@@ -206,6 +206,7 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- Rewrite gwf-translator from py to cpp
 - Specify dependencies near targets, not in overall file
 - Make glib dependencies private
 - Replace public sc-base defines with methods
