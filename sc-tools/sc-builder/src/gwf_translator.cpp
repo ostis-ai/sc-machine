@@ -10,11 +10,8 @@
 
 #include <sc-memory/utils/sc_exec.hpp>
 
-#define PYTHON_INTERPRETER "python3"
-#define GWF_TRANSLATOR_SCRIPT SC_PREPARE_BUILD_SCRIPTS_PATH "/kb-scripts/gwf_to_scs.py"
-#define GWF_TRANSLATOR_ERRORS_LOG SC_PREPARE_BUILD_SCRIPTS_PATH "/prepare_kb.log"
-#define GWF_TRANSLATOR_INPUT_FILE_PARAM "--input="
-#define GWF_TRANSLATOR_ERRORS_LOG_PARAM "--errors_file="
+#include "gwf_parser.hpp"
+#include "sc_scs_writer.hpp"
 
 GWFTranslator::GWFTranslator(ScMemoryContext & context)
   : Translator(context)
@@ -22,48 +19,102 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 {
 }
 
-std::string GWFTranslator::ConvertToSCsPath(std::string const & path) const
+std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string filePath)
 {
-  return path + ".scs";
+  GwfParser parser;
+
+  std::vector<std::unordered_map<std::string, std::string>> elements = parser.Parse(xmlStr);
+
+  if (elements.empty())
+  {
+    throw std::runtime_error("There are no elements in this file " + filePath);
+  }
+
+  ScsWriter writer;
+  const std::string scsStr = writer.write(elements, filePath);
+
+  return scsStr;
 }
 
-bool GWFTranslator::ErrorsExist(std::string const & path) const
+std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::string const & filePath)
 {
-  return std::filesystem::is_regular_file(path) && std::filesystem::file_size(path) > 0;
+  const std::string scsSource = filePath + ".scs";
+
+  std::ofstream outputFile(scsSource, std::ios::binary);
+
+  if (!outputFile.is_open())
+  {
+    throw std::runtime_error("Error creating file for writing: " + scsSource);
+  }
+
+  outputFile << scsStr;
+
+  if (outputFile.fail())
+  {
+    throw std::runtime_error("Error writing to file: " + scsSource);
+  }
+
+  outputFile.close();
+
+  if (outputFile.fail())
+  {
+    throw std::runtime_error("Error closing the file: " + scsSource);
+  }
+
+  return scsSource;
 }
 
-std::string GWFTranslator::GetError(std::string const & path) const
+std::string GWFTranslator::m_XmlFileToString(std::string const & filename)
 {
-  std::string error;
-  GetFileContent(path, error);
-  return error;
+  xmlInitParser();
+
+  xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
+  if (doc == nullptr)
+  {
+    throw std::runtime_error("Failed to parse XML file");
+  }
+
+  xmlChar * xmlBuffer;
+  int bufferSize;
+  xmlDocDumpFormatMemory(doc, &xmlBuffer, &bufferSize, 1);
+
+  std::string xmlString((char *)xmlBuffer, bufferSize);
+
+  xmlFree(xmlBuffer);
+  xmlFreeDoc(doc);
+  xmlCleanupParser();
+
+  return xmlString;
 }
 
 bool GWFTranslator::TranslateImpl(Params const & params)
 {
-  std::string result;
-  ScExec exec{
-      {PYTHON_INTERPRETER,
-       GWF_TRANSLATOR_SCRIPT,
-       GWF_TRANSLATOR_INPUT_FILE_PARAM + params.m_fileName,
-       GWF_TRANSLATOR_ERRORS_LOG_PARAM GWF_TRANSLATOR_ERRORS_LOG}};
-  std::string const & scsSource = ConvertToSCsPath(params.m_fileName);
-
-  if (ErrorsExist(GWF_TRANSLATOR_ERRORS_LOG))
+  try
   {
-    std::string const & error = GetError(GWF_TRANSLATOR_ERRORS_LOG);
-    std::filesystem::remove(scsSource);
-    std::filesystem::remove(GWF_TRANSLATOR_ERRORS_LOG);
+    const std::string xmlStr = m_XmlFileToString(params.m_fileName);
+    if (xmlStr.empty())
+    {
+      throw std::runtime_error("Gwf file is empty: " + params.m_fileName);
+    }
 
-    SC_THROW_EXCEPTION(utils::ExceptionParseError, error);
+    const std::string scsStr = GwfToScs(xmlStr, params.m_fileName);
+
+    const std::string scsSource = WriteStringToFile(scsStr, params.m_fileName);
+
+    Params newParams;
+    newParams.m_fileName = scsSource;
+    newParams.m_autoFormatInfo = params.m_autoFormatInfo;
+    newParams.m_outputStructure = params.m_outputStructure;
+    bool status = m_scsTranslator.Translate(newParams);
+
+    // std::filesystem::remove(scsSource.c_str());
+
+    return status;
   }
+  catch (std::exception const & e)
+  {
+    std::cerr << "Error: " << e.what() << '\n';
 
-  Params newParams;
-  newParams.m_fileName = scsSource;
-  newParams.m_autoFormatInfo = params.m_autoFormatInfo;
-  newParams.m_outputStructure = params.m_outputStructure;
-
-  bool status = m_scsTranslator.Translate(newParams);
-  std::filesystem::remove(scsSource);
-  return status;
+    return false;
+  }
 }

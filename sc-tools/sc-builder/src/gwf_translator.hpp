@@ -11,6 +11,9 @@
 #include "scs_translator.hpp"
 #include "builder_defines.hpp"
 
+#include <vector>
+#include <string>
+
 class GWFTranslator : public Translator
 {
 public:
@@ -19,12 +22,11 @@ public:
 
   bool TranslateImpl(Params const & params) override;
 
+  std::string GwfToScs(const std::string xmlStr, const std::string filePath);
+  std::string m_XmlFileToString(std::string const & filename);
+
 private:
   SCsTranslator m_scsTranslator;
 
-  std::string ConvertToSCsPath(std::string const & path) const;
-
-  bool ErrorsExist(std::string const & path) const;
-
-  std::string GetError(std::string const & path) const;
+  std::string WriteStringToFile(std::string const & scsStr, std::string const & filePath);
 };
