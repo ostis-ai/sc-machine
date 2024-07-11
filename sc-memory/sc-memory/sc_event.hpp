@@ -29,15 +29,17 @@ public:
   public:
     sc_event_type m_realType;
 
-    explicit Type(sc_event_type type)
+    explicit constexpr Type(sc_event_type type)
       : m_realType(type)
     {
     }
 
-    Type(Type const & otherType)
+    constexpr Type(Type const & otherType)
       : Type(otherType.m_realType)
     {
     }
+
+    constexpr ~Type() = default;
 
     inline sc_event_type operator*() const
     {

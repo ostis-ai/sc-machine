@@ -301,7 +301,6 @@ void TestWriteActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & conte
   EXPECT_TRUE(userContext.CreateLink(ScType::LinkConst).IsValid());
   EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr).IsValid());
 
-  ScAddr nodeAddr1, nodeAddr2;
   EXPECT_TRUE(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst));
   EXPECT_TRUE(userContext.Save());
 }
@@ -314,7 +313,6 @@ void TestWriteActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & con
   EXPECT_THROW(
       userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr), utils::ExceptionInvalidState);
 
-  ScAddr nodeAddr1, nodeAddr2;
   EXPECT_THROW(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.Save(), utils::ExceptionInvalidState);
 }

@@ -31,9 +31,21 @@ public:
 
   static ScAddr const Empty;
 
-  ScAddr();
-  ScAddr(sc_addr const & addr);
-  explicit ScAddr(HashType const & hash);
+  constexpr ScAddr()
+  {
+    SC_ADDR_MAKE_EMPTY(m_realAddr);
+  }
+
+  constexpr ScAddr(sc_addr const & addr)
+    : m_realAddr(addr)
+  {
+  }
+
+  constexpr ScAddr(ScAddr::HashType const & hash)
+  {
+    m_realAddr.offset = hash & 0xffff;
+    m_realAddr.seg = (hash >> 16) & 0xffff;
+  }
 
   bool IsValid() const;
   void Reset();
@@ -45,7 +57,6 @@ public:
 
   ScRealAddr const & GetRealAddr() const;
 
-protected:
   ScRealAddr m_realAddr;
 };
 

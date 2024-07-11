@@ -109,10 +109,9 @@ protected:
   template <class TAgentClass>
   ScAgentRegisterCallback GetAgentRegisterCallback()
   {
-    return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
+    return [](ScMemoryContext * ctx, ScAddrVector const &)
     {
-      for (ScAddr const & addr : addrs)
-        TAgentClass::template Register<TAgentClass>(ctx, addr);
+      TAgentClass::template Register<TAgentClass>(ctx);
     };
   }
 
