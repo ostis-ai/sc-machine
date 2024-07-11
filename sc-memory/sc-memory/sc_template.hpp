@@ -468,9 +468,9 @@ public:
 
   ScTemplateResultItem(ScTemplateResultItem const & otherItem)
     : ScTemplateResultItem(
-          otherItem.m_context,
-          otherItem.m_replacementConstruction,
-          otherItem.m_templateItemsNamesToReplacementItemPositions)
+        otherItem.m_context,
+        otherItem.m_replacementConstruction,
+        otherItem.m_templateItemsNamesToReplacementItemPositions)
   {
   }
 
