@@ -43,6 +43,7 @@ encapsulated this logic;
 
 ### Changed
 
+- Rewrite gwf-translator from py to cpp
 - Reformat code style according to clang-format-18
 - Use runner-image `macos-14` instead of runner-image `macos-latest` in CI
 - Don't check extensions when loading dynamic modules (`g_open_module` does it automatically)
