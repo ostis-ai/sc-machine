@@ -9,7 +9,7 @@
 
 TEST_F(ScAgentTest, ATestAddInputEdge)
 {
-  RegisterAgent<ATestAddInputEdge>(&*m_ctx, ATestAddInputEdge::msAgentKeynode);
+  RegisterAgent<ATestAddInputEdge>(&*m_ctx);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -22,7 +22,7 @@ TEST_F(ScAgentTest, ATestAddInputEdge)
 
 TEST_F(ScAgentTest, ATestAddOutputEdge)
 {
-  RegisterAgent<ATestAddOutputEdge>(&*m_ctx, ATestAddOutputEdge::msAgentKeynode);
+  RegisterAgent<ATestAddOutputEdge>(&*m_ctx);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -40,7 +40,7 @@ TEST_F(ScAgentTest, ATestRemoveInputEdge)
   ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, node, ATestRemoveInputEdge::msAgentKeynode);
   EXPECT_TRUE(e.IsValid());
 
-  RegisterAgent<ATestRemoveInputEdge>(&*m_ctx, ATestRemoveInputEdge::msAgentKeynode);
+  RegisterAgent<ATestRemoveInputEdge>(&*m_ctx);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveInputEdge::msWaiter.Wait());
@@ -55,7 +55,7 @@ TEST_F(ScAgentTest, ATestRemoveOutputEdge)
   ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, ATestRemoveOutputEdge::msAgentKeynode, node);
   EXPECT_TRUE(e.IsValid());
 
-  RegisterAgent<ATestRemoveOutputEdge>(&*m_ctx, ATestRemoveOutputEdge::msAgentKeynode);
+  RegisterAgent<ATestRemoveOutputEdge>(&*m_ctx);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveOutputEdge::msWaiter.Wait());
@@ -65,7 +65,7 @@ TEST_F(ScAgentTest, ATestRemoveOutputEdge)
 
 TEST_F(ScAgentTest, ATestRemoveElement)
 {
-  RegisterAgent<ATestRemoveElement>(&*m_ctx, ATestRemoveElement::msAgentKeynode);
+  RegisterAgent<ATestRemoveElement>(&*m_ctx);
 
   EXPECT_TRUE(m_ctx->EraseElement(ATestRemoveElement::msAgentKeynode));
   EXPECT_TRUE(ATestRemoveElement::msWaiter.Wait());
@@ -77,7 +77,7 @@ TEST_F(ScAgentTest, ATestContentChanged)
 {
   ScAddr const link = ATestContentChanged::msAgentKeynode;
 
-  RegisterAgent<ATestContentChanged>(&*m_ctx, ATestContentChanged::msAgentKeynode);
+  RegisterAgent<ATestContentChanged>(&*m_ctx);
 
   uint32_t const value = 100;
   ScStreamPtr const stream = ScStreamMakeRead(value);
@@ -90,7 +90,7 @@ TEST_F(ScAgentTest, ATestContentChanged)
 TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
 {
   RegisterAgent<ATestAddMultipleOutputEdge>(
-      &*m_ctx, ATestAddMultipleOutputEdge::msAgentKeynode1, ATestAddMultipleOutputEdge::msAgentKeynode2);
+      &*m_ctx);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -110,7 +110,7 @@ TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
 
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestCheckResult::msAgentKeynode);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   auto * context = new ScAgentContext();
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
@@ -150,7 +150,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
 
 TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestCheckResult::msAgentKeynode);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   auto * context = new ScAgentContext();
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
@@ -190,7 +190,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
 
 TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestCheckResult::msAgentKeynode);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   auto * context = new ScAgentContext();
   ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
@@ -233,7 +233,7 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
 TEST_F(ScAgentTest, RegisterAgentWithinModule)
 {
   TestModule module;
-  module.Agent<ATestAddOutputEdge>(ATestAddOutputEdge::msAgentKeynode);
+  module.Agent<ATestAddOutputEdge>();
   module.Register(&*m_ctx);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);

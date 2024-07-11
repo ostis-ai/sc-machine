@@ -145,8 +145,6 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackForLoop)
       templ,
       [&](ScTemplateSearchResultItem const & item)
       {
-        ScAddr foundAddr;
-
         for (ScAddr const & addr : item)
         {
           EXPECT_TRUE(addr.IsValid());

@@ -57,11 +57,23 @@ private:
   _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
 };
 
+struct ScSubscription
+{
+  constexpr ScSubscription(ScEvent::Type const & type, ScAddr const & addr)
+    : eventType(type)
+    , addr(addr)
+  {
+  }
+
+  ScEvent::Type const & eventType;
+  ScAddr const & addr;
+};
+
 /*!
  * @interface An interface for implementing agents classes to subscribe its on any sc-events.
  * @note This class is an API to implement your own registration API of agents.
  */
-template <ScEvent::Type const & eventType>
+template <ScSubscription... subscriptions>
 class _SC_EXTERN ScAgent : public ScAgentAbstract
 {
 public:
@@ -70,23 +82,23 @@ public:
    * @tparam TAgentClass Name of agent class being registered. Specified agent class must be derivied from class ScAgent
    * or ScActionAgent.
    * @param ctx Context in which speficied agent class is being registered.
-   * @param addrs Enumeration of sc-element addresses to which the specified agent class is subscribed.
    */
-  template <class TAgentClass, class... TScAddr>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, TScAddr const &... addrs)
+  template <class TAgentClass>
+  static _SC_EXTERN void Register(ScMemoryContext * ctx)
   {
     static_assert(
         std::is_base_of<ScAgentAbstract, TAgentClass>::value,
         "TAgentClass must be derivied from class ScAgent or ScActionAgent.");
     static_assert(std::is_abstract<TAgentClass>::value == false, "TAgentClass must override all virtual functions.");
-    static_assert(
-        (std::is_base_of<ScAddr, TScAddr>::value && ...),
-        "Each argument in the parameter pack must be of class ScAddr.");
 
     SC_LOG_INFO("Register " << GetName<TAgentClass>());
 
-    for (auto const & addr : ScAddrVector{addrs...})
+    for (auto const & subscription : std::array{subscriptions...})
+    {
+      ScEvent::Type const & eventType = subscription.eventType;
+      ScAddr const & addr = subscription.addr;
       m_events.push_back(new ScEvent(*ctx, addr, eventType, TAgentClass::template GetCallback<TAgentClass>()));
+    }
   }
 
   /*!
@@ -302,11 +314,11 @@ protected:
  * \endcode
  */
 template <ScKeynodeClass const & actionClass = ScKeynodes::empty_class>
-class _SC_EXTERN ScActionAgent : public ScAgent<ScEvent::Type::AddOutputEdge>
+class _SC_EXTERN ScActionAgent : public ScAgent<ScSubscription{ScEvent::Type::AddOutputEdge, actionClass}>
 {
 public:
   _SC_EXTERN explicit ScActionAgent()
-    : ScAgent()
+    : ScAgent<ScSubscription{ScEvent::Type::AddOutputEdge, actionClass}>()
   {
   }
 
@@ -418,12 +430,11 @@ private:
  * @tparam TAgentClass Name of agent class being registered. Specified agent class must be derivied from class ScAgent
  * or ScActionAgent.
  * @param ctx Context in which speficied agent class is being registered.
- * @param addrs Enumeration of sc-element addresses to which the specified agent class is subscribed.
  */
-template <class TAgentClass, class... TScAddr>
-_SC_EXTERN void RegisterAgent(ScMemoryContext * ctx, TScAddr const &... addrs)
+template <class TAgentClass>
+_SC_EXTERN void RegisterAgent(ScMemoryContext * ctx)
 {
-  TAgentClass::template Register<TAgentClass, TScAddr...>(ctx, addrs...);
+  TAgentClass::template Register<TAgentClass>(ctx);
 }
 
 /*!

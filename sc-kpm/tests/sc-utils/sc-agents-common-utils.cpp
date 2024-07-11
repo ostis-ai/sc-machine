@@ -99,7 +99,7 @@ TEST_F(ScMemoryTest, formActionNode)
 
 TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, scAgentsCommon::CoreKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
@@ -129,7 +129,7 @@ TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
 
 TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, scAgentsCommon::CoreKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
 
@@ -155,7 +155,7 @@ TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 
 TEST_F(ScMemoryTest, applyGeneratedAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, scAgentsCommon::CoreKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
@@ -190,7 +190,7 @@ TEST_F(ScMemoryTest, applyGeneratedAction)
 
 TEST_F(ScMemoryTest, applyExistingAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, scAgentsCommon::CoreKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
 
