@@ -1,88 +1,86 @@
 #include "gwf_parser.hpp"
 
-std::string GwfParser::XmlCharToString(xmlChar const * xml)
+std::string GwfParser::XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr)
 {
-  return xml ? reinterpret_cast<char const *>(xml) : "";
+  return ptr ? std::string(reinterpret_cast<char const *>(ptr.get())) : "";
+}
+
+std::unique_ptr<xmlChar, XmlCharDeleter> GwfParser::GetXmlProp(xmlNodePtr node, char const * propName)
+{
+  return std::unique_ptr<xmlChar, XmlCharDeleter>(xmlGetProp(node, reinterpret_cast<xmlChar const *>(propName)));
 }
 
 void GwfParser::ProcessTag(xmlNodePtr child, std::unordered_map<std::string, std::string> & attributes)
 {
-  if (attributes["tag"] == "node")
+  std::string const & tag = attributes["tag"];
+  if (tag == "node")
   {
     ProcessNode(child, attributes);
   }
-  else if (attributes["tag"] == "pair" || attributes["tag"] == "arc")
+  else if (tag == "pair" || tag == "arc")
   {
     ProcessPair(child, attributes);
   }
-  else if (attributes["tag"] == "bus")
+  else if (tag == "bus")
   {
     ProcessBus(child, attributes);
   }
-  else if (attributes["tag"] == "contour")
+  else if (tag == "contour")
   {
   }
   else
   {
-    throw std::runtime_error("Tag is not supported: " + attributes["tag"]);
+    throw std::runtime_error("Tag is not supported: " + tag);
   }
 }
 
 void GwfParser::ProcessNode(xmlNodePtr node, std::unordered_map<std::string, std::string> & attributes)
 {
-  for (xmlNodePtr contentChild = node->children; contentChild != NULL; contentChild = contentChild->next)
+  for (xmlNodePtr contentChild = node->children; contentChild != nullptr; contentChild = contentChild->next)
   {
-    if (contentChild->type == XML_ELEMENT_NODE && xmlStrEqual(contentChild->name, (xmlChar const *)"content"))
+    if (contentChild->type == XML_ELEMENT_NODE
+        && xmlStrEqual(contentChild->name, reinterpret_cast<xmlChar const *>("content")))
     {
-      xmlChar * contentTypeAttr = xmlGetProp(contentChild, (xmlChar const *)"type");
-      xmlChar * mimeTypeAttr = xmlGetProp(contentChild, (xmlChar const *)"mime_type");
-      xmlChar * fileNameAttr = xmlGetProp(contentChild, (xmlChar const *)"file_name");
-      xmlChar * contentData = xmlNodeGetContent(contentChild);
+      auto const contentTypeAttr = GetXmlProp(contentChild, "type");
+      auto const mimeTypeAttr = GetXmlProp(contentChild, "mime_type");
+      auto const fileNameAttr = GetXmlProp(contentChild, "file_name");
+      auto const contentData = std::unique_ptr<xmlChar, XmlCharDeleter>(xmlNodeGetContent(contentChild));
 
       attributes["content_type"] = XmlCharToString(contentTypeAttr);
       attributes["mime_type"] = XmlCharToString(mimeTypeAttr);
       attributes["file_name"] = XmlCharToString(fileNameAttr);
 
-      if (std::stoi(attributes["content_type"]) < 4)
+      std::string const & contentType = attributes["content_type"];
+      if (!contentType.empty() && std::stoi(contentType) < 4)
       {
         attributes["content_data"] = XmlCharToString(contentData);
       }
-      else if (attributes["content_type"] == "4")
+      else if (contentType == "4")
       {
         attributes["content_data"] = ScBase64::Decode(XmlCharToString(contentData));
       }
       else
       {
-        throw std::runtime_error("Content type is not supported: " + attributes["content_type"]);
+        throw std::runtime_error("Content type is not supported: " + contentType);
       }
-
-      xmlFree(contentTypeAttr);
-      xmlFree(mimeTypeAttr);
-      xmlFree(fileNameAttr);
-      xmlFree(contentData);
     }
   }
 }
 
 void GwfParser::ProcessPair(xmlNodePtr node, std::unordered_map<std::string, std::string> & attributes)
 {
-  xmlChar * sourceAttr = xmlGetProp(node, (xmlChar const *)"id_b");
-  xmlChar * targetAttr = xmlGetProp(node, (xmlChar const *)"id_e");
+  auto const sourceAttr = GetXmlProp(node, "id_b");
+  auto const targetAttr = GetXmlProp(node, "id_e");
 
   attributes["source"] = XmlCharToString(sourceAttr);
   attributes["target"] = XmlCharToString(targetAttr);
-
-  xmlFree(sourceAttr);
-  xmlFree(targetAttr);
 }
 
 void GwfParser::ProcessBus(xmlNodePtr node, std::unordered_map<std::string, std::string> & attributes)
 {
-  xmlChar * node_id = xmlGetProp(node, (xmlChar const *)"owner");
+  auto const node_id = GetXmlProp(node, "owner");
 
   attributes["node_id"] = XmlCharToString(node_id);
-
-  xmlFree(node_id);
 }
 
 void GwfParser::ProcessStaticSector(
@@ -91,32 +89,27 @@ void GwfParser::ProcessStaticSector(
 {
   try
   {
-    for (xmlNodePtr child = staticSector->children; child != NULL; child = child->next)
+    for (xmlNodePtr child = staticSector->children; child != nullptr; child = child->next)
     {
       if (child->type == XML_ELEMENT_NODE)
       {
         std::unordered_map<std::string, std::string> attributes;
 
-        xmlChar * idAttr = xmlGetProp(child, (xmlChar const *)"id");
-        xmlChar * parentAttr = xmlGetProp(child, (xmlChar const *)"parent");
-        xmlChar * idtfAttr = xmlGetProp(child, (xmlChar const *)"idtf");
-        xmlChar * typeAttr = xmlGetProp(child, (xmlChar const *)"type");
+        auto const idAttr = GetXmlProp(child, "id");
+        auto const parentAttr = GetXmlProp(child, "parent");
+        auto const idtfAttr = GetXmlProp(child, "idtf");
+        auto const typeAttr = GetXmlProp(child, "type");
         xmlChar const * tagAttr = child->name;
 
         attributes["id"] = XmlCharToString(idAttr);
         attributes["parent"] = XmlCharToString(parentAttr);
         attributes["idtf"] = XmlCharToString(idtfAttr);
         attributes["type"] = XmlCharToString(typeAttr);
-        attributes["tag"] = XmlCharToString(tagAttr);
+        attributes["tag"] = reinterpret_cast<char const *>(tagAttr);
 
         ProcessTag(child, attributes);
 
         elements.push_back(attributes);
-
-        xmlFree(idAttr);
-        xmlFree(parentAttr);
-        xmlFree(idtfAttr);
-        xmlFree(typeAttr);
       }
     }
   }
@@ -132,40 +125,39 @@ std::vector<std::unordered_map<std::string, std::string>> GwfParser::Parse(std::
   {
     xmlInitParser();
 
-    xmlDocPtr xmlTree = xmlReadMemory(xmlStr.c_str(), xmlStr.size(), "noname.xml", NULL, 0);
+    auto xmlTree = std::unique_ptr<xmlDoc, decltype(&xmlFreeDoc)>(
+        xmlReadMemory(xmlStr.c_str(), xmlStr.size(), "noname.xml", nullptr, 0), xmlFreeDoc);
 
-    if (xmlTree == nullptr)
+    if (!xmlTree)
     {
       throw std::runtime_error("Failed to open XML xmlTree.");
     }
 
-    xmlNodePtr rootElement = xmlDocGetRootElement(xmlTree);
-
+    xmlNodePtr rootElement = xmlDocGetRootElement(xmlTree.get());
     xmlNodePtr staticSector = nullptr;
 
-    for (xmlNodePtr node = rootElement->children; node != NULL; node = node->next)
+    for (xmlNodePtr node = rootElement->children; node != nullptr; node = node->next)
     {
-      if (xmlStrEqual(node->name, (xmlChar const *)"staticSector"))
+      if (xmlStrEqual(node->name, reinterpret_cast<xmlChar const *>("staticSector")))
       {
         staticSector = node;
         break;
       }
     }
 
-    if (staticSector == nullptr)
+    if (!staticSector)
     {
       throw std::runtime_error("StaticSector not found in XML xmlTree.");
     }
-    else if (staticSector->children == nullptr)
+
+    if (!staticSector->children)
     {
       return {};
     }
 
     std::vector<std::unordered_map<std::string, std::string>> elements;
-
     ProcessStaticSector(staticSector, elements);
 
-    xmlFreeDoc(xmlTree);
     xmlCleanupParser();
 
     return elements;
@@ -173,9 +165,7 @@ std::vector<std::unordered_map<std::string, std::string>> GwfParser::Parse(std::
   catch (std::exception const & e)
   {
     std::cerr << "Error in parse: " << e.what() << std::endl;
-
     xmlCleanupParser();
-
     return {};
   }
 }
