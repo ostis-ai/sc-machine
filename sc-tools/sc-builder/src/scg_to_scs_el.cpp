@@ -1,6 +1,6 @@
 #include "scg_to_scs_el.hpp"
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::NodeTypeSets = {
+const std::unordered_map<std::string, std::string> ScgToScsElement::m_nodeTypeSets = {
     {"node/-/-/not_define", "sc_node"},
     {"node/-/not_define", "sc_node"},
 
@@ -63,7 +63,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::NodeTypeSets
     {"node/var/temp/group", "sc_node_class"},
 };
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::BackwardNodeTypes = {
+const std::unordered_map<std::string, std::string> ScgToScsElement::m_backwardNodeTypes = {
     {"node/-/not_define", "node/-/-/not_define"},
     {"node/var/symmetry", "node/var/perm/tuple"},
     {"node/const/general_node", "node/const/perm/general"},
@@ -83,7 +83,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::BackwardNode
     {"node/var/group", "node/var/perm/group"},
 };
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::UnsupportedNodeTypeSets = {
+const std::unordered_map<std::string, std::string> ScgToScsElement::m_unsupportedNodeTypeSets = {
     {"node/const/perm/super_group", "sc_node_super_group"},
 
     {"node/const/temp/general", "sc_node_temp"},
@@ -133,7 +133,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::UnsupportedN
     {"node/meta/temp/super_group", "sc_node_super_group_meta_temp"},
 };
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::EdgeTypes = {
+const std::unordered_map<std::string, std::string> ScgToScsElement::m_edgeTypes = {
     {"pair/const/-/perm/noorien", "<=>"},
     {"pair/const/-/perm/orient", "=>"},
     {"pair/const/fuz/perm/orient/membership", "-/>"},
@@ -183,7 +183,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::EdgeTypes = 
     {"pair/var/orient", "_=>"},
     {"pair/var/noorient", "_<=>"}};
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::BackwardEdgeTypes = {
+const std::unordered_map<std::string, std::string> ScgToScsElement::m_backwardEdgeTypes = {
     {"pair/const/synonym", "pair/const/-/perm/noorien"},
     {"pair/const/orient", "pair/const/-/perm/orient"},
     {"arc/const/fuz", "pair/const/fuz/perm/orient/membership"},
@@ -204,7 +204,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::BackwardEdge
     {"pair/orient", "pair/-/-/-/orient"},
     {"arc/-/-", "pair/-/-/-/orient"}};
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::UnsupportedEdgeTypes = {
+const std::unordered_map<std::string, std::string> ScgToScsElement::m_unsupportedEdgeTypes = {
     {"pair/var/-/temp/noorien", "sc_pair_var_temp_noorient"},
     {"pair/var/-/temp/orient", "sc_pair_var_temp_orient"},
 
@@ -224,38 +224,24 @@ std::string ScgToScsElement::m_FindValue(
     std::unordered_map<std::string, std::string> const & dictionary,
     std::string const & key)
 {
-  auto it = dictionary.find(key);
-  return (it != dictionary.end()) ? it->second : "";
+    auto it = dictionary.find(key);
+    return (it != dictionary.end()) ? it->second : "";
 }
 
 std::string ScgToScsElement::m_GetElement(std::string const & scgElement, std::string const & dict)
 {
-  if (dict == "NodeTypeSets")
-  {
-    return m_FindValue(NodeTypeSets, scgElement);
-  }
-  else if (dict == "BackwardNodeTypes")
-  {
-    return m_FindValue(BackwardNodeTypes, scgElement);
-  }
-  else if (dict == "UnsupportedNodeTypeSets")
-  {
-    return m_FindValue(UnsupportedNodeTypeSets, scgElement);
-  }
-  else if (dict == "EdgeTypes")
-  {
-    return m_FindValue(EdgeTypes, scgElement);
-  }
-  else if (dict == "BackwardEdgeTypes")
-  {
-    return m_FindValue(BackwardEdgeTypes, scgElement);
-  }
-  else if (dict == "UnsupportedEdgeTypes")
-  {
-    return m_FindValue(UnsupportedEdgeTypes, scgElement);
-  }
-  else
-  {
+    static const std::unordered_map<std::string, const std::unordered_map<std::string, std::string>*> dictMap = {
+        {"NodeTypeSets", &m_nodeTypeSets},
+        {"BackwardNodeTypes", &m_backwardNodeTypes},
+        {"UnsupportedNodeTypeSets", &m_unsupportedNodeTypeSets},
+        {"EdgeTypes", &m_edgeTypes},
+        {"BackwardEdgeTypes", &m_backwardEdgeTypes},
+        {"UnsupportedEdgeTypes", &m_unsupportedEdgeTypes}
+    };
+
+    auto it = dictMap.find(dict);
+    if (it != dictMap.end()) {
+        return m_FindValue(*(it->second), scgElement);
+    }
     return "";
-  }
 }

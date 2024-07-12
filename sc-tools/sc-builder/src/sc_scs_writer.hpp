@@ -15,10 +15,10 @@ class Buffer
 public:
   Buffer();
 
-  void write(std::string const & s);
-  void add_tabs(std::size_t count);
+  void Write(std::string const & s);
+  void AddTabs(std::size_t count);
 
-  std::string get_value() const;
+  std::string GetValue() const;
 
 private:
   std::string value;
@@ -27,11 +27,11 @@ private:
 class Utils
 {
 public:
-  static std::string make_alias(std::string const & prefix, std::string const & element_id);
+  static std::string m_MakeAlias(std::string const & prefix, std::string const & element_id);
 
-  static bool is_variable(std::string const & el_type);
+  static bool m_IsVariable(std::string const & el_type);
 
-  static std::string replace_all(std::string const & str, std::string const & from, std::string const & to);
+  static std::string m_ReplaceAll(std::string const & str, std::string const & from, std::string const & to);
 
 private:
 };
@@ -39,7 +39,7 @@ private:
 class ScsWriter
 {
 public:
-  std::string write(
+  std::string Write(
       std::vector<std::unordered_map<std::string, std::string>> & elementsList,
       std::string const & filePath);
 
@@ -47,34 +47,34 @@ private:
   std::string filePath;
   std::unordered_set<std::string> writtenElements;
 
-  static std::unordered_map<std::string, std::string> imageFormats;
+  static std::unordered_map<std::string, std::string> m_imageFormats;
 
-  static std::string getElementValue(
+  static std::string m_GetElementValue(
       std::unordered_map<std::string, std::string> const & element,
       std::string const & key);
 
-  void processElementsList(
+  void ProcessElementsList(
       std::vector<std::unordered_map<std::string, std::string>> const & elementsList,
       Buffer & buffer,
       std::string const & parent,
       std::size_t nestedLevel);
-  void writeNode(Buffer & buffer, std::unordered_map<std::string, std::string> const & element);
-  void writeEdge(
+  void WriteNode(Buffer & buffer, std::unordered_map<std::string, std::string> const & element);
+  void WriteEdge(
       Buffer & buffer,
       std::vector<std::unordered_map<std::string, std::string>> const & elementsList,
       std::vector<std::unordered_map<std::string, std::string>> & edgesList);
-  void writeContour(
+  void WriteContour(
       Buffer & buffer,
       std::unordered_map<std::string, std::string> const & element,
       std::vector<std::unordered_map<std::string, std::string>> const & elementsList,
       std::size_t nestedLevel);
-  void writeLink(Buffer & buffer, std::unordered_map<std::string, std::string> const & element);
-  void saveContentToFile(
+  void WriteLink(Buffer & buffer, std::unordered_map<std::string, std::string> const & element);
+  void SaveContentToFile(
       Buffer & buffer,
       std::string const & contentData,
       std::string const & contentFileNam,
       std::string const & elementIdtf,
       std::string const & elementType);
 
-  void correctIdtf(Buffer & buffer, std::unordered_map<std::string, std::string> & element);
+  void CorrectIdtf(Buffer & buffer, std::unordered_map<std::string, std::string> & element);
 };
