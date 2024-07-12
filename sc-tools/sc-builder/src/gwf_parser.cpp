@@ -49,7 +49,7 @@ void GwfParser::ProcessNode(xmlNodePtr node, std::unordered_map<std::string, std
       }
       else if (attributes["content_type"] == "4")
       {
-        attributes["content_data"] = base64::from_base64(XmlCharToString(contentData));
+        attributes["content_data"] = ScBase64::Decode(XmlCharToString(contentData));
       }
       else
       {

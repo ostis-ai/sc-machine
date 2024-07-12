@@ -31,7 +31,7 @@ std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string 
   }
 
   ScsWriter writer;
-  const std::string scsStr = writer.write(elements, filePath);
+  const std::string scsStr = writer.Write(elements, filePath);
 
   return scsStr;
 }
@@ -64,7 +64,7 @@ std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::st
   return scsSource;
 }
 
-std::string GWFTranslator::m_XmlFileToString(std::string const & filename)
+std::string GWFTranslator::XmlFileToString(std::string const & filename)
 {
   xmlInitParser();
 
@@ -91,7 +91,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
 {
   try
   {
-    const std::string xmlStr = m_XmlFileToString(params.m_fileName);
+    const std::string xmlStr = XmlFileToString(params.m_fileName);
     if (xmlStr.empty())
     {
       throw std::runtime_error("Gwf file is empty: " + params.m_fileName);
@@ -107,7 +107,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     newParams.m_outputStructure = params.m_outputStructure;
     bool status = m_scsTranslator.Translate(newParams);
 
-    // std::filesystem::remove(scsSource.c_str());
+    //std::filesystem::remove(scsSource.c_str());
 
     return status;
   }

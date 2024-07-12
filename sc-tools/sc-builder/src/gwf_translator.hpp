@@ -23,7 +23,7 @@ public:
   bool TranslateImpl(Params const & params) override;
 
   std::string GwfToScs(const std::string xmlStr, const std::string filePath);
-  std::string m_XmlFileToString(std::string const & filename);
+  std::string XmlFileToString(std::string const & filename);
 
 private:
   SCsTranslator m_scsTranslator;

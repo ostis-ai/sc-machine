@@ -7,12 +7,12 @@ Buffer::Buffer()
 {
 }
 
-void Buffer::write(std::string const & s)
+void Buffer::Write(std::string const & s)
 {
   value += s;
 }
 
-void Buffer::add_tabs(std::size_t count)
+void Buffer::AddTabs(std::size_t count)
 {
   std::istringstream iss(value);
   std::string line;
@@ -27,14 +27,14 @@ void Buffer::add_tabs(std::size_t count)
   value = new_value;
 }
 
-std::string Buffer::get_value() const
+std::string Buffer::GetValue() const
 {
   return value;
 }
 
 // UTILS CLASS
 
-std::string Utils::replace_all(std::string const & str, std::string const & from, std::string const & to)
+std::string Utils::m_ReplaceAll(std::string const & str, std::string const & from, std::string const & to)
 {
   std::string result = str;
   size_t start_pos = 0;
@@ -46,24 +46,24 @@ std::string Utils::replace_all(std::string const & str, std::string const & from
   return result;
 }
 
-std::string Utils::make_alias(std::string const & prefix, std::string const & element_id)
+std::string Utils::m_MakeAlias(std::string const & prefix, std::string const & element_id)
 {
-  return "@" + prefix + "_" + replace_all(element_id, "-", "_");
+  return "@" + prefix + "_" + m_ReplaceAll(element_id, "-", "_");
 }
 
-bool Utils::is_variable(std::string const & el_type)
+bool Utils::m_IsVariable(std::string const & el_type)
 {
   return el_type.find("/var/") != std::string::npos;
 }
 
 // SCS WRITER CLASS
 
-std::unordered_map<std::string, std::string> ScsWriter::imageFormats = {{"png", "format_png"}};
+std::unordered_map<std::string, std::string> ScsWriter::m_imageFormats = {{"png", "format_png"}};
 
 const std::string N_REL_SYSTEM_IDTF = "nrel_system_identifier";
 const std::string N_REL_MAIN_IDTF = "nrel_main_idtf";
 
-std::string ScsWriter::getElementValue(
+std::string ScsWriter::m_GetElementValue(
     std::unordered_map<std::string, std::string> const & element,
     std::string const & key)
 {
@@ -78,7 +78,7 @@ std::string ScsWriter::getElementValue(
   }
 }
 
-std::string ScsWriter::write(
+std::string ScsWriter::Write(
     std::vector<std::unordered_map<std::string, std::string>> & elementsList,
     std::string const & filePath)
 {
@@ -88,15 +88,15 @@ std::string ScsWriter::write(
 
   for (auto & el : elementsList)
   {
-    correctIdtf(buffer, el);
+    CorrectIdtf(buffer, el);
   }
 
-  processElementsList(elementsList, buffer, "0", 0);
+  ProcessElementsList(elementsList, buffer, "0", 0);
 
-  return buffer.get_value();
+  return buffer.GetValue();
 }
 
-void ScsWriter::processElementsList(
+void ScsWriter::ProcessElementsList(
     std::vector<std::unordered_map<std::string, std::string>> const & elementsList,
     Buffer & buffer,
     std::string const & parent,
@@ -109,9 +109,9 @@ void ScsWriter::processElementsList(
 
     for (auto const & el : elementsList)
     {
-      std::string const & elParent = ScsWriter::getElementValue(el, "parent");
-      std::string const & elTag = ScsWriter::getElementValue(el, "tag");
-      std::string const & elId = ScsWriter::getElementValue(el, "id");
+      std::string const & elParent = ScsWriter::m_GetElementValue(el, "parent");
+      std::string const & elTag = ScsWriter::m_GetElementValue(el, "tag");
+      std::string const & elId = ScsWriter::m_GetElementValue(el, "id");
 
       if (elTag == "node" || elTag == "bus")
       {
@@ -119,10 +119,10 @@ void ScsWriter::processElementsList(
         {
           if (elTag == "node")
           {
-            writeNode(buffer, el);
+            WriteNode(buffer, el);
           }
           ScsWriter::writtenElements.insert(elId);
-          buffer.write("\n");
+          buffer.Write("\n");
         }
       }
       else if (elTag == "contour")
@@ -142,13 +142,13 @@ void ScsWriter::processElementsList(
     }
     for (auto const & contour : contoursList)
     {
-      writeContour(buffer, contour, elementsList, nestedLevel);
-      const std::string contourId = ScsWriter::getElementValue(contour, "id");
+      WriteContour(buffer, contour, elementsList, nestedLevel);
+      const std::string contourId = ScsWriter::m_GetElementValue(contour, "id");
       ScsWriter::writtenElements.insert(contourId);
-      buffer.write("\n");
+      buffer.Write("\n");
     }
 
-    writeEdge(buffer, elementsList, edgesList);
+    WriteEdge(buffer, elementsList, edgesList);
   }
   catch (std::exception const & e)
   {
@@ -156,14 +156,14 @@ void ScsWriter::processElementsList(
   }
 }
 
-void ScsWriter::writeNode(Buffer & buffer, std::unordered_map<std::string, std::string> const & element)
+void ScsWriter::WriteNode(Buffer & buffer, std::unordered_map<std::string, std::string> const & element)
 {
-  int const elContentType = std::stoi(ScsWriter::getElementValue(element, "content_type"));
+  int const elContentType = std::stoi(ScsWriter::m_GetElementValue(element, "content_type"));
 
   if (elContentType == 0)
   {
-    const std::string scgElType = ScsWriter::getElementValue(element, "type");
-    const std::string elIdtf = ScsWriter::getElementValue(element, "idtf");
+    const std::string scgElType = ScsWriter::m_GetElementValue(element, "type");
+    const std::string elIdtf = ScsWriter::m_GetElementValue(element, "idtf");
 
     std::string scsElType = ScgToScsElement::m_GetElement(scgElType, "NodeTypeSets");
 
@@ -182,15 +182,15 @@ void ScsWriter::writeNode(Buffer & buffer, std::unordered_map<std::string, std::
       scsElType = "?" + scgElType + "?";
     }
 
-    buffer.write(elIdtf + "\n  <- " + scsElType + ";;\n");
+    buffer.Write(elIdtf + "\n  <- " + scsElType + ";;\n");
   }
   else
   {
-    writeLink(buffer, element);
+    WriteLink(buffer, element);
   }
 }
 
-void ScsWriter::writeEdge(
+void ScsWriter::WriteEdge(
     Buffer & buffer,
     std::vector<std::unordered_map<std::string, std::string>> const & elementsList,
     std::vector<std::unordered_map<std::string, std::string>> & edgesList)
@@ -207,8 +207,8 @@ void ScsWriter::writeEdge(
 
     for (auto & el : processList)
     {
-      const std::string srcId = ScsWriter::getElementValue(el, "source");
-      const std::string trgId = ScsWriter::getElementValue(el, "target");
+      const std::string srcId = ScsWriter::m_GetElementValue(el, "source");
+      const std::string trgId = ScsWriter::m_GetElementValue(el, "target");
 
       if (writtenElements.find(srcId) == writtenElements.end() || writtenElements.find(trgId) == writtenElements.end())
       {
@@ -229,7 +229,7 @@ void ScsWriter::writeEdge(
       {
         throw std::runtime_error("Can't find source element with id: " + srcId);
       }
-      if (ScsWriter::getElementValue(srcElement, "tag") == "bus")
+      if (ScsWriter::m_GetElementValue(srcElement, "tag") == "bus")
       {
         std::string node_id = srcElement["node_id"];
         for (auto const & element : elementsList)
@@ -256,18 +256,18 @@ void ScsWriter::writeEdge(
         throw std::runtime_error("Can't find target element with id: " + trgId);
       }
 
-      if (ScsWriter::getElementValue(srcElement, "tag") == "pair"
-          || ScsWriter::getElementValue(srcElement, "tag") == "arc")
+      if (ScsWriter::m_GetElementValue(srcElement, "tag") == "pair"
+          || ScsWriter::m_GetElementValue(srcElement, "tag") == "arc")
       {
-        srcElement["idtf"] = Utils::make_alias("edge", srcId);
+        srcElement["idtf"] = Utils::m_MakeAlias("edge", srcId);
       }
-      if (ScsWriter::getElementValue(trgElement, "tag") == "pair"
-          || ScsWriter::getElementValue(trgElement, "tag") == "arc")
+      if (ScsWriter::m_GetElementValue(trgElement, "tag") == "pair"
+          || ScsWriter::m_GetElementValue(trgElement, "tag") == "arc")
       {
-        trgElement["idtf"] = Utils::make_alias("edge", trgId);
+        trgElement["idtf"] = Utils::m_MakeAlias("edge", trgId);
       }
 
-      const std::string edgeType = ScsWriter::getElementValue(el, "type");
+      const std::string edgeType = ScsWriter::m_GetElementValue(el, "type");
       bool isUnsupported = false;
       std::string symbol = ScgToScsElement::m_GetElement(edgeType, "EdgeTypes");
 
@@ -287,23 +287,23 @@ void ScsWriter::writeEdge(
         symbol = "?" + edgeType + "?";
       }
 
-      const std::string alias = Utils::make_alias("edge", ScsWriter::getElementValue(el, "id"));
+      const std::string alias = Utils::m_MakeAlias("edge", ScsWriter::m_GetElementValue(el, "id"));
       if (isUnsupported)
       {
-        buffer.write(
-            alias + " = (" + ScsWriter::getElementValue(srcElement, "idtf") + " => "
-            + ScsWriter::getElementValue(trgElement, "idtf") + ");;\n");
-        buffer.write(symbol + " -> " + alias + ";;\n");
+        buffer.Write(
+            alias + " = (" + ScsWriter::m_GetElementValue(srcElement, "idtf") + " => "
+            + ScsWriter::m_GetElementValue(trgElement, "idtf") + ");;\n");
+        buffer.Write(symbol + " -> " + alias + ";;\n");
       }
       else
       {
-        buffer.write(
-            alias + " = (" + ScsWriter::getElementValue(srcElement, "idtf") + " " + symbol + " "
-            + ScsWriter::getElementValue(trgElement, "idtf") + ");;\n");
+        buffer.Write(
+            alias + " = (" + ScsWriter::m_GetElementValue(srcElement, "idtf") + " " + symbol + " "
+            + ScsWriter::m_GetElementValue(trgElement, "idtf") + ");;\n");
       }
 
       processedEdge = true;
-      writtenElements.insert(ScsWriter::getElementValue(el, "id"));
+      writtenElements.insert(ScsWriter::m_GetElementValue(el, "id"));
       el["idtf"] = alias;
     }
 
@@ -311,8 +311,8 @@ void ScsWriter::writeEdge(
     {
       for (auto & el : edgesList)
       {
-        const std::string srcId = ScsWriter::getElementValue(el, "source");
-        const std::string trgId = ScsWriter::getElementValue(el, "target");
+        const std::string srcId = ScsWriter::m_GetElementValue(el, "source");
+        const std::string trgId = ScsWriter::m_GetElementValue(el, "target");
 
         std::unordered_map<std::string, std::string> srcElement;
         for (auto const & element : elementsList)
@@ -346,26 +346,26 @@ void ScsWriter::writeEdge(
   }
 }
 
-void ScsWriter::writeContour(
+void ScsWriter::WriteContour(
     Buffer & buffer,
     std::unordered_map<std::string, std::string> const & element,
     std::vector<std::unordered_map<std::string, std::string>> const & elementsList,
     std::size_t nestedLevel)
 {
-  const std::string elementId = ScsWriter::getElementValue(element, "id");
+  const std::string elementId = ScsWriter::m_GetElementValue(element, "id");
   Buffer contourBuff;
-  processElementsList(elementsList, contourBuff, elementId, nestedLevel + 1);
-  contourBuff.add_tabs(nestedLevel + 1);
+  ProcessElementsList(elementsList, contourBuff, elementId, nestedLevel + 1);
+  contourBuff.AddTabs(nestedLevel + 1);
 
-  buffer.write(element.at("idtf") + " = [*\n" + contourBuff.get_value() + "\n*];;\n");
+  buffer.Write(element.at("idtf") + " = [*\n" + contourBuff.GetValue() + "\n*];;\n");
 }
 
-void ScsWriter::writeLink(Buffer & buffer, std::unordered_map<std::string, std::string> const & element)
+void ScsWriter::WriteLink(Buffer & buffer, std::unordered_map<std::string, std::string> const & element)
 {
-  const std::string contentData = ScsWriter::getElementValue(element, "content_data");
-  int const contentType = std::stoi(ScsWriter::getElementValue(element, "content_type"));
-  const std::string elementIdtf = ScsWriter::getElementValue(element, "idtf");
-  const std::string elementType = ScsWriter::getElementValue(element, "type");
+  const std::string contentData = ScsWriter::m_GetElementValue(element, "content_data");
+  int const contentType = std::stoi(ScsWriter::m_GetElementValue(element, "content_type"));
+  const std::string elementIdtf = ScsWriter::m_GetElementValue(element, "idtf");
+  const std::string elementType = ScsWriter::m_GetElementValue(element, "type");
 
   bool isUrl = false;
   bool isImage = false;
@@ -386,7 +386,7 @@ void ScsWriter::writeLink(Buffer & buffer, std::unordered_map<std::string, std::
   }
   else if (contentType == 4)
   {
-    const std::string contentFileName = ScsWriter::getElementValue(element, "file_name");
+    const std::string contentFileName = ScsWriter::m_GetElementValue(element, "file_name");
     contentRes = filePath.substr(0, ScsWriter::filePath.find_last_of("/")) + "/" + contentFileName;
 
     std::ofstream file(contentRes, std::ios::binary);
@@ -402,16 +402,16 @@ void ScsWriter::writeLink(Buffer & buffer, std::unordered_map<std::string, std::
 
     std::string fileExtension = contentRes.substr(contentRes.find_last_of(".") + 1);
 
-    if (imageFormats.find(fileExtension) != imageFormats.end())
+    if (m_imageFormats.find(fileExtension) != m_imageFormats.end())
     {
-      imageFormat = imageFormats[fileExtension];
+      imageFormat = m_imageFormats[fileExtension];
       isImage = true;
     }
   }
   else
   {
     throw std::runtime_error(
-        "Content type of this node is not supported: " + ScsWriter::getElementValue(element, "id"));
+        "Content type of this node is not supported: " + ScsWriter::m_GetElementValue(element, "id"));
     contentRes = "?Content type is not supported?";
   }
 
@@ -419,23 +419,23 @@ void ScsWriter::writeLink(Buffer & buffer, std::unordered_map<std::string, std::
   {
     if (isImage)
     {
-      buffer.write(elementIdtf + " = \"" + contentRes + "\";;\n");
-      buffer.write("@format_edge = (" + elementIdtf + " => " + imageFormat + ");;\n");
-      buffer.write("@nrel_format_edge = (nrel_format -> @format_edge);;\n");
+      buffer.Write(elementIdtf + " = \"" + contentRes + "\";;\n");
+      buffer.Write("@format_edge = (" + elementIdtf + " => " + imageFormat + ");;\n");
+      buffer.Write("@nrel_format_edge = (nrel_format -> @format_edge);;\n");
     }
     else
     {
-      buffer.write(elementIdtf + " = \"" + contentRes + "\";;\n");
+      buffer.Write(elementIdtf + " = \"" + contentRes + "\";;\n");
     }
   }
   else
   {
-    std::string isVar = Utils::is_variable(elementType) ? "_" : "";
-    buffer.write(elementIdtf + " = " + isVar + "[" + contentRes + "];;\n");
+    std::string isVar = Utils::m_IsVariable(elementType) ? "_" : "";
+    buffer.Write(elementIdtf + " = " + isVar + "[" + contentRes + "];;\n");
   }
 }
 
-void ScsWriter::saveContentToFile(
+void ScsWriter::SaveContentToFile(
     Buffer & buffer,
     std::string const & contentData,
     std::string const & contentFileName,
@@ -458,9 +458,9 @@ void ScsWriter::saveContentToFile(
   bool isImage = false;
   std::string fileExtension = contentRes.substr(contentRes.find_last_of(".") + 1);
   std::string imageFormat = "";
-  if (imageFormats.find(fileExtension) != imageFormats.end())
+  if (m_imageFormats.find(fileExtension) != m_imageFormats.end())
   {
-    imageFormat = imageFormats[fileExtension];
+    imageFormat = m_imageFormats[fileExtension];
     isImage = true;
   }
 
@@ -468,29 +468,29 @@ void ScsWriter::saveContentToFile(
   {
     if (isImage)
     {
-      buffer.write(elementIdtf + " = \"" + contentRes + "\";;\n");
-      buffer.write("@format_edge = (" + elementIdtf + " => " + imageFormat + ");;\n");
-      buffer.write("@nrel_format_edge = (nrel_format -> @format_edge);;\n");
+      buffer.Write(elementIdtf + " = \"" + contentRes + "\";;\n");
+      buffer.Write("@format_edge = (" + elementIdtf + " => " + imageFormat + ");;\n");
+      buffer.Write("@nrel_format_edge = (nrel_format -> @format_edge);;\n");
     }
     else
     {
-      buffer.write(elementIdtf + " = \"" + contentRes + "\";;\n");
+      buffer.Write(elementIdtf + " = \"" + contentRes + "\";;\n");
     }
   }
   else
   {
-    std::string isVar = Utils::is_variable(elementType) ? "_" : "";
-    buffer.write(elementIdtf + " = " + isVar + "[" + contentRes + "];;\n");
+    std::string isVar = Utils::m_IsVariable(elementType) ? "_" : "";
+    buffer.Write(elementIdtf + " = " + isVar + "[" + contentRes + "];;\n");
   }
 }
 
-void ScsWriter::correctIdtf(Buffer & buffer, std::unordered_map<std::string, std::string> & element)
+void ScsWriter::CorrectIdtf(Buffer & buffer, std::unordered_map<std::string, std::string> & element)
 {
   std::regex idtfPatternEng("^[0-9a-zA-Z_]*$");
   std::regex idtfPatternRus("^[0-9a-zA-Z_а-яёА-ЯЁ*' ]*$");
 
-  std::string systemIdtf = ScsWriter::getElementValue(element, "idtf");
-  bool isVar = Utils::is_variable(ScsWriter::getElementValue(element, "type"));
+  std::string systemIdtf = ScsWriter::m_GetElementValue(element, "idtf");
+  bool isVar = Utils::m_IsVariable(ScsWriter::m_GetElementValue(element, "type"));
 
   std::string mainIdtf;
   if (!std::regex_match(systemIdtf, idtfPatternEng))
@@ -506,18 +506,18 @@ void ScsWriter::correctIdtf(Buffer & buffer, std::unordered_map<std::string, std
   {
     if (isVar)
     {
-      element["idtf"] = ".._el_" + Utils::replace_all(element["id"], "-", "_");
+      element["idtf"] = ".._el_" + Utils::m_ReplaceAll(element["id"], "-", "_");
     }
     else
     {
-      element["idtf"] = "..el_" + Utils::replace_all(element["id"], "-", "_");
+      element["idtf"] = "..el_" + Utils::m_ReplaceAll(element["id"], "-", "_");
     }
   }
   else if (isVar)
   {
     if (systemIdtf[0] != '_')
     {
-      element["idtf"] = "_" + Utils::replace_all(systemIdtf, "-", "_");
+      element["idtf"] = "_" + Utils::m_ReplaceAll(systemIdtf, "-", "_");
     }
   }
   else
@@ -525,7 +525,7 @@ void ScsWriter::correctIdtf(Buffer & buffer, std::unordered_map<std::string, std
     if (systemIdtf[0] == '_')
     {
       element["idtf"] = systemIdtf.substr(1);
-      element["idtf"] = Utils::replace_all(element["idtf"], "-", "_");
+      element["idtf"] = Utils::m_ReplaceAll(element["idtf"], "-", "_");
     }
   }
 
@@ -540,6 +540,6 @@ void ScsWriter::correctIdtf(Buffer & buffer, std::unordered_map<std::string, std
     {
       output = "\n" + element["idtf"] + "\n => " + N_REL_SYSTEM_IDTF + ": [" + mainIdtf + "];;\n";
     }
-    buffer.write(output);
+    buffer.Write(output);
   }
 }
