@@ -68,19 +68,10 @@ public:
    * @param agentInfo A pointer to dynamically created agent instance and a vector of subscription addrs
    * @returns Pointer to module instance
    */
-  template <class TAgentClass, class... TScAddr>
+  template <class TScAgent, ScAddrClass... TScAddr>
   _SC_EXTERN ScModule * Agent(TScAddr const &... addrs)
   {
-    static_assert(
-        std::is_base_of<ScAgentAbstract, TAgentClass>::value,
-        "TAgentClass must be derivied from class ScAgent or ScActionAgent.");
-    static_assert(std::is_abstract<TAgentClass>::value == false, "TAgentClass must override all virtual functions.");
-    static_assert(
-        (std::is_base_of<ScAddr, TScAddr>::value && ...),
-        "Each argument in the parameter pack must be of class ScAddr.");
-
-    m_agents.push_back(
-        {{GetAgentRegisterCallback<TAgentClass>(), GetAgentUnregisterCallback<TAgentClass>()}, {addrs...}});
+    m_agents.push_back({{GetAgentRegisterCallback<TScAgent>(), GetAgentUnregisterCallback<TScAgent>()}, {addrs...}});
     return this;
   }
 
@@ -103,24 +94,26 @@ protected:
   std::list<ScKeynodes *> m_keynodes;
   /// Registered agents
   using ScAgentRegisterCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
-  using ScAgentUnregisterCallback = std::function<void(ScMemoryContext *)>;
+  using ScAgentUnregisterCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
   std::list<std::pair<std::pair<ScAgentRegisterCallback, ScAgentUnregisterCallback>, ScAddrVector>> m_agents;
 
-  template <class TAgentClass>
+  template <class TScAgent>
   ScAgentRegisterCallback GetAgentRegisterCallback()
   {
-    return [](ScMemoryContext * ctx, ScAddrVector const &)
+    return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
     {
-      TAgentClass::template Register<TAgentClass>(ctx);
+      for (ScAddr const & addr : addrs)
+        TScAgent::template Register<TScAgent>(ctx, addr);
     };
   }
 
-  template <class TAgentClass>
+  template <class TScAgent>
   ScAgentUnregisterCallback GetAgentUnregisterCallback()
   {
-    return [](ScMemoryContext * ctx)
+    return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
     {
-      TAgentClass::template Unregister<TAgentClass>(ctx);
+      for (ScAddr const & addr : addrs)
+        TScAgent::template Unregister<TScAgent>(ctx, addr);
     };
   }
 };

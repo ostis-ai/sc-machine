@@ -6,13 +6,50 @@
 
 #include "sc_memory_json_events_handler.hpp"
 
-std::map<std::string, ScEvent::Type> ScMemoryJsonEventsHandler::events = {
-    {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},
-    {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
-    {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
-    {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
-    {"content_change", ScEvent::Type::ChangeContent},
-    {"delete_element", ScEvent::Type::RemoveElement},
+template <sc_event_type eventType>
+ScEventSubscription * CreateSubscription(
+    ScMemoryContext * context,
+    ScAddr const & addr,
+    ScMemoryJsonEventsManager * manager,
+    ScServer * server,
+    ScServerSessionId const & sessionId)
+{
+  auto const & onEmitEvent =
+      [server](size_t id, ScServerSessionId const & handle, ScElementaryEvent const & event) -> sc_result
+  {
+    std::array<ScAddr, 3> const & eventTriple = event.GetTriple();
+
+    ScMemoryJsonPayload const & responsePayload{
+        eventTriple.at(0).Hash(), eventTriple.at(1).Hash(), eventTriple.at(2).Hash()};
+    ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
+    sc_bool const isEvent = SC_TRUE;
+    sc_bool const status = SC_TRUE;
+
+    ScMemoryJsonPayload const & responseTextJson =
+        ScMemoryJsonHandler::FormResponseMessage(id, isEvent, status, errorsPayload, responsePayload);
+    std::string const responseText = responseTextJson.dump();
+
+    if (server != nullptr)
+      server->OnEvent(handle, responseText);
+
+    return SC_RESULT_OK;
+  };
+
+  return new ScEventSubscriptionType<eventType>(
+      *context,
+      addr,
+      (std::function<sc_result(ScEventTypeClass<eventType> const & event)>)bind(
+          onEmitEvent, manager->Next(), sessionId, ::_1));
+};
+
+std::map<std::string, ScMemoryJsonEventsHandler::ScEventSubscriptionCreateCallback> const
+    ScMemoryJsonEventsHandler::events = {
+        {"add_outgoing_edge", CreateSubscription<sc_event_add_input_arc>},
+        {"add_ingoing_edge", CreateSubscription<sc_event_add_output_arc>},
+        {"remove_outgoing_edge", CreateSubscription<sc_event_remove_input_arc>},
+        {"remove_ingoing_edge", CreateSubscription<sc_event_remove_output_arc>},
+        {"content_change", CreateSubscription<sc_event_remove_element>},
+        {"delete_element", CreateSubscription<sc_event_change_content>},
 };
 
 ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx)
@@ -55,28 +92,6 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScMemoryJsonPayload const & message,
     ScMemoryJsonPayload &)
 {
-  auto const & onEmitEvent = [](size_t id,
-                                ScServer * server,
-                                ScServerSessionId const & handle,
-                                ScAddr const & addr,
-                                ScAddr const & edgeAddr,
-                                ScAddr const & otherAddr) -> sc_result
-  {
-    ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
-    ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
-    sc_bool const event = SC_TRUE;
-    sc_bool const status = SC_TRUE;
-
-    ScMemoryJsonPayload const & responseTextJson =
-        FormResponseMessage(id, event, status, errorsPayload, responsePayload);
-    std::string const responseText = responseTextJson.dump();
-
-    if (server != nullptr)
-      server->OnEvent(handle, responseText);
-
-    return SC_RESULT_OK;
-  };
-
   ScMemoryJsonPayload responsePayload;
   for (auto & atom : message)
   {
@@ -86,12 +101,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     auto const & it = events.find(type);
     if (it != events.end())
     {
-      auto * event = new ScEvent(
-          *m_context,
-          addr,
-          it->second,
-          (ScEvent::DelegateFunc)bind(onEmitEvent, m_manager->Next(), m_server, sessionId, ::_1, ::_2, ::_3));
-      responsePayload.push_back(m_manager->Add(event));
+      ScEventSubscription * subscription = it->second(m_context, addr, m_manager, m_server, sessionId);
+      responsePayload.push_back(m_manager->Add(subscription));
     }
   }
 

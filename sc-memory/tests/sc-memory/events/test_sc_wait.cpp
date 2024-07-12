@@ -93,7 +93,7 @@ TEST_F(ScWaitTest, CondValid)
   ScWaitCondition<ScEventAddInputEdge> waiter(
       *m_ctx,
       m_addr,
-      [](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
+      [](ScEventAddInputEdge const &) -> sc_result
       {
         return SC_RESULT_OK;
       });
@@ -115,7 +115,7 @@ TEST_F(ScWaitTest, CondValidFalse)
   ScWaitCondition<ScEventAddInputEdge> waiter(
       *m_ctx,
       m_addr,
-      [](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
+      [](ScEventAddInputEdge const &) -> sc_result
       {
         return SC_RESULT_NO;
       });

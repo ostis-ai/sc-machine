@@ -5,14 +5,3 @@
  */
 
 #include "sc_wait.hpp"
-#include "sc_agent.hpp"
-
-ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
-  : ScWaitEvent<ScEventAddInputEdge>(ctx, actionAddr)
-{
-}
-
-sc_result ScWaitActionFinished::OnEvent(ScAddr const &, ScAddr const &, ScAddr const & actionAddr)
-{
-  return actionAddr == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
-}

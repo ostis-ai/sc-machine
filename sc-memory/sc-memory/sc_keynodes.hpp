@@ -104,7 +104,6 @@ public:
   ScKeynode(ScKeynode const & other)
     : ScAddr(other)
   {
-    m_realAddr = other.m_realAddr;
   }
 
   ScKeynode & operator=(ScKeynode const &)

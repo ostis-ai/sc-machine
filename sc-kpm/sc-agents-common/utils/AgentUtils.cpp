@@ -82,8 +82,9 @@ bool AgentUtils::applyAction(
   if (!onEventClassAddr.IsValid())
     onEventClassAddr = scAgentsCommon::CoreKeynodes::action_initiated;
 
-  auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) {
-    return otherAddr == scAgentsCommon::CoreKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_ERROR;
+  auto check = [](ScEventAddOutputEdge const & event)
+  {
+    return event.GetOtherElement() == scAgentsCommon::CoreKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_ERROR;
   };
 
   auto initialize = [ms_context, onEventClassAddr, actionNode]()
@@ -91,7 +92,7 @@ bool AgentUtils::applyAction(
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, onEventClassAddr, actionNode);
   };
 
-  ScWaitCondition<ScEventAddInputEdge> waiter(*ms_context, actionNode, check);
+  ScWaitCondition<ScEventAddOutputEdge> waiter(*ms_context, actionNode, check);
   initialize();
   return waiter.Wait(waitTime);
 }

@@ -8,6 +8,8 @@
 
 #include <thread>
 
+#include <sc-memory/sc_event.hpp>
+
 #include "sc-core/sc_keynodes.h"
 
 #include "builder_test.hpp"
@@ -41,10 +43,10 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
+  ScEventSubscriptionAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
+      [&userContext, &isAuthenticated](ScEventAddOutputEdge const &) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
@@ -73,10 +75,10 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
+  ScEventSubscriptionAddOutputEdge event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
+      [&userContext, &isAuthenticated](ScEventAddOutputEdge const &) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);

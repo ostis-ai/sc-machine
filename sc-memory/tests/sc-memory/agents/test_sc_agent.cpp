@@ -1,83 +1,67 @@
 #include "test_sc_agent.hpp"
 
 /// --------------------------------------
-ScKeynodeClass const ATestAddInputEdge::msAgentKeynode("ATestAddInputEdge");
-TestWaiter ATestAddInputEdge::msWaiter;
 
-sc_result ATestAddInputEdge::OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+sc_result ATestAddInputEdge::OnEvent(ScEventAddInputEdge const &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
 }
 
 /// --------------------------------------
-ScKeynodeClass const ATestAddOutputEdge::msAgentKeynode("ATestAddOutputEdge");
-TestWaiter ATestAddOutputEdge::msWaiter;
 
-sc_result ATestAddOutputEdge::OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+sc_result ATestAddOutputEdge::OnEvent(ScEventAddOutputEdge const &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
 }
 
 /// --------------------------------------
-ScKeynodeClass const ATestRemoveInputEdge::msAgentKeynode("ATestRemoveInputEdge");
-TestWaiter ATestRemoveInputEdge::msWaiter;
 
-sc_result ATestRemoveInputEdge::OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+sc_result ATestRemoveInputEdge::OnEvent(ScEventRemoveInputEdge const &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
 }
 
 /// --------------------------------------
-ScKeynodeClass const ATestRemoveOutputEdge::msAgentKeynode("ATestRemoveOutputEdge");
-TestWaiter ATestRemoveOutputEdge::msWaiter;
 
-sc_result ATestRemoveOutputEdge::OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+sc_result ATestRemoveOutputEdge::OnEvent(ScEventRemoveOutputEdge const &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
 }
 
 /// --------------------------------------
-ScKeynodeClass const ATestRemoveElement::msAgentKeynode("ATestRemoveElement");
-TestWaiter ATestRemoveElement::msWaiter;
 
-sc_result ATestRemoveElement::OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+sc_result ATestRemoveElement::OnEvent(ScEventRemoveElement const &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
 }
 
 /// --------------------------------------
-ScKeynodeLink const ATestContentChanged::msAgentKeynode("ATestContentChanged");
-TestWaiter ATestContentChanged::msWaiter;
 
-sc_result ATestContentChanged::OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+sc_result ATestContentChanged::OnEvent(ScEventChangeContent const &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
 }
 
 /// --------------------------------------
-ScKeynodeClass const ATestAddMultipleOutputEdge::msAgentKeynode1("ATestAddMultipleOutputEdge1");
-ScKeynodeClass const ATestAddMultipleOutputEdge::msAgentKeynode2("ATestAddMultipleOutputEdge2");
-TestWaiter ATestAddMultipleOutputEdge::msWaiter;
 
-sc_result ATestAddMultipleOutputEdge::OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+sc_result ATestAddMultipleOutputEdge::OnEvent(ScEventAddOutputEdge const &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
 }
 
 /// --------------------------------------
-ScKeynodeClass const ATestCheckResult::msAgentKeynode("ATestCheckResult");
-ScKeynodeClass const ATestCheckResult::msAgentSet("ATestCheckResultSet");
-TestWaiter ATestCheckResult::msWaiter;
 
-sc_result ATestCheckResult::OnEvent(ScAddr const & actionAddr)
+sc_result ATestCheckResult::OnEvent(ScEventAddOutputEdge const & event)
 {
+  ScAddr const & actionAddr = event.GetOtherElement();
+
   ScAddr const & firstArgument = m_memoryCtx.GetActionArgument(actionAddr, 1);
   ScAddr const & secondArgument = m_memoryCtx.GetActionArgument(actionAddr, 2);
 
@@ -97,17 +81,17 @@ sc_result ATestCheckResult::OnEvent(ScAddr const & actionAddr)
   return SC_RESULT_OK;
 }
 
-void ATestCheckResult::OnSuccess(ScAddr const &)
+void ATestCheckResult::OnSuccess(ScEventAddOutputEdge const &)
 {
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msAgentSet, msAgentKeynode);
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msAgentSet, ATestAddOutputEdge::add_output_edge_action);
 }
 
-void ATestCheckResult::OnUnsuccess(ScAddr const &)
+void ATestCheckResult::OnUnsuccess(ScEventAddOutputEdge const &)
 {
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstFuzPerm, msAgentSet, msAgentKeynode);
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstFuzPerm, msAgentSet, ATestAddOutputEdge::add_output_edge_action);
 }
 
-void ATestCheckResult::OnError(ScAddr const &, sc_result)
+void ATestCheckResult::OnError(ScEventAddOutputEdge const &, sc_result)
 {
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstNegPerm, msAgentSet, msAgentKeynode);
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstNegPerm, msAgentSet, ATestAddOutputEdge::add_output_edge_action);
 }
