@@ -224,24 +224,24 @@ std::string ScgToScsElement::m_FindValue(
     std::unordered_map<std::string, std::string> const & dictionary,
     std::string const & key)
 {
-    auto it = dictionary.find(key);
-    return (it != dictionary.end()) ? it->second : "";
+  auto it = dictionary.find(key);
+  return (it != dictionary.end()) ? it->second : "";
 }
 
 std::string ScgToScsElement::m_GetElement(std::string const & scgElement, std::string const & dict)
 {
-    static const std::unordered_map<std::string, const std::unordered_map<std::string, std::string>*> dictMap = {
-        {"NodeTypeSets", &m_nodeTypeSets},
-        {"BackwardNodeTypes", &m_backwardNodeTypes},
-        {"UnsupportedNodeTypeSets", &m_unsupportedNodeTypeSets},
-        {"EdgeTypes", &m_edgeTypes},
-        {"BackwardEdgeTypes", &m_backwardEdgeTypes},
-        {"UnsupportedEdgeTypes", &m_unsupportedEdgeTypes}
-    };
+  static const std::unordered_map<std::string, std::unordered_map<std::string, std::string> const *> dictMap = {
+      {"NodeTypeSets", &m_nodeTypeSets},
+      {"BackwardNodeTypes", &m_backwardNodeTypes},
+      {"UnsupportedNodeTypeSets", &m_unsupportedNodeTypeSets},
+      {"EdgeTypes", &m_edgeTypes},
+      {"BackwardEdgeTypes", &m_backwardEdgeTypes},
+      {"UnsupportedEdgeTypes", &m_unsupportedEdgeTypes}};
 
-    auto it = dictMap.find(dict);
-    if (it != dictMap.end()) {
-        return m_FindValue(*(it->second), scgElement);
-    }
-    return "";
+  auto it = dictMap.find(dict);
+  if (it != dictMap.end())
+  {
+    return m_FindValue(*(it->second), scgElement);
+  }
+  return "";
 }

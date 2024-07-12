@@ -107,7 +107,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     newParams.m_outputStructure = params.m_outputStructure;
     bool status = m_scsTranslator.Translate(newParams);
 
-    //std::filesystem::remove(scsSource.c_str());
+    std::filesystem::remove(scsSource.c_str());
 
     return status;
   }
