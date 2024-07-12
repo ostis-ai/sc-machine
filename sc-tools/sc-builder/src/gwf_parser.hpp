@@ -9,7 +9,7 @@
 #include <libxml2/libxml/parser.h>
 #include <libxml2/libxml/tree.h>
 
-#include "base64.hpp"
+#include "/home/iromanchuk/sc-machine/sc-memory/sc-memory/utils/sc_base64.hpp"
 
 class GwfParser
 {

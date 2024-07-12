@@ -14,10 +14,10 @@ private:
       std::unordered_map<std::string, std::string> const & dictionary,
       std::string const & key);
 
-  static const std::unordered_map<std::string, std::string> NodeTypeSets;
-  static const std::unordered_map<std::string, std::string> BackwardNodeTypes;
-  static const std::unordered_map<std::string, std::string> UnsupportedNodeTypeSets;
-  static const std::unordered_map<std::string, std::string> EdgeTypes;
-  static const std::unordered_map<std::string, std::string> BackwardEdgeTypes;
-  static const std::unordered_map<std::string, std::string> UnsupportedEdgeTypes;
+  static const std::unordered_map<std::string, std::string> m_nodeTypeSets;
+  static const std::unordered_map<std::string, std::string> m_backwardNodeTypes;
+  static const std::unordered_map<std::string, std::string> m_unsupportedNodeTypeSets;
+  static const std::unordered_map<std::string, std::string> m_edgeTypes;
+  static const std::unordered_map<std::string, std::string> m_backwardEdgeTypes;
+  static const std::unordered_map<std::string, std::string> m_unsupportedEdgeTypes;
 };

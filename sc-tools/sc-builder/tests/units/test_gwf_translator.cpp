@@ -69,7 +69,7 @@ TEST_F(GWFTranslatorTest, EmptyStaticSector)
 
   const std::string filePath = BASE_TEST_PATH "empty_static.gwf";
 
-  const std::string gwfStr = translator.m_XmlFileToString(filePath);
+  const std::string gwfStr = translator.XmlFileToString(filePath);
 
   EXPECT_THROW({ translator.GwfToScs(gwfStr, filePath); }, std::runtime_error);
 }
@@ -80,7 +80,7 @@ TEST_F(GWFTranslatorTest, EmptyFile)
 
   const std::string filePath = BASE_TEST_PATH "empty.gwf";
 
-  EXPECT_THROW({ translator.m_XmlFileToString(filePath); }, std::runtime_error);
+  EXPECT_THROW({ translator.XmlFileToString(filePath); }, std::runtime_error);
 }
 
 TEST_F(GWFTranslatorTest, ContentTypes)
@@ -89,7 +89,7 @@ TEST_F(GWFTranslatorTest, ContentTypes)
 
   const std::string filePath = BASE_TEST_PATH "content_types.gwf";
 
-  const std::string gwfStr = translator.m_XmlFileToString(filePath);
+  const std::string gwfStr = translator.XmlFileToString(filePath);
 
   const std::string scsStr = translator.GwfToScs(gwfStr, filePath);
 
@@ -105,7 +105,7 @@ TEST_F(GWFTranslatorTest, LotOfContours)
 
   const std::string filePath = BASE_TEST_PATH "lot_of_contours.gwf";
 
-  const std::string gwfStr = translator.m_XmlFileToString(filePath);
+  const std::string gwfStr = translator.XmlFileToString(filePath);
 
   const std::string scsStr = translator.GwfToScs(gwfStr, filePath);
 
@@ -118,7 +118,7 @@ TEST_F(GWFTranslatorTest, EmptyContour)
 
   const std::string filePath = BASE_TEST_PATH "empty_contour.gwf";
 
-  const std::string gwfStr = translator.m_XmlFileToString(filePath);
+  const std::string gwfStr = translator.XmlFileToString(filePath);
 
   const std::string scsStr = translator.GwfToScs(gwfStr, filePath);
 
