@@ -31,7 +31,7 @@ public:
   _SC_EXTERN std::shared_ptr<ScWaitCondition<ScEventClass>> InitializeEvent(
       ScAddr const & descriptionAddr,
       std::function<void(void)> const & cause,
-      std::function<sc_result(ScAddr const &, ScAddr const &, ScAddr const &)> check)
+      std::function<sc_result(ScEventClass const &)> check)
   {
     cause();
     return std::make_shared<ScWaitCondition<ScEventClass>>(*this, descriptionAddr, check);
@@ -85,6 +85,7 @@ public:
 protected:
   utils::ScKeynodeCache m_cache;
 
+  template <ScEventClass TScEvent>
   friend class ScAgentAbstract;
 
   _SC_EXTERN explicit ScAgentContext(ScAddr const & userAddr) noexcept;

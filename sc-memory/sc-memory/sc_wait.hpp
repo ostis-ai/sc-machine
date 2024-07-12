@@ -10,6 +10,8 @@
 #include "sc-memory/sc_timer.hpp"
 #include "sc-memory/sc_object.hpp"
 
+#include "sc-memory/sc_keynodes.hpp"
+
 #include <condition_variable>
 #include <chrono>
 #include <mutex>
@@ -109,7 +111,7 @@ private:
 /* Class implements event wait logic.
  * Should be alive, while Memory context is alive.
  */
-template <class ScEventClassT>
+template <class TScEvent>
 class ScWaitEvent : public ScWait
 {
 public:
@@ -117,9 +119,9 @@ public:
     : m_event(
           ctx,
           addr,
-          [this](ScAddr const & sourceAddr, ScAddr const & connectorAddr, ScAddr const & targetAddr) -> sc_result
+          [this](TScEvent const & event) -> sc_result
           {
-            if (OnEvent(sourceAddr, connectorAddr, targetAddr) == SC_RESULT_OK)
+            if (OnEvent(event) == SC_RESULT_OK)
             {
               ScWait::Resolve();
               return SC_RESULT_OK;
@@ -130,31 +132,31 @@ public:
   }
 
 protected:
-  virtual sc_result OnEvent(ScAddr const &, ScAddr const &, ScAddr const &)
+  virtual sc_result OnEvent(TScEvent const &)
   {
     return SC_RESULT_OK;
   }
 
 private:
-  ScEventClassT m_event;
+  ScElementaryEventSubscription<TScEvent> m_event;
 };
 
-template <class ScEventClassT>
-class ScWaitCondition final : public ScWaitEvent<ScEventClassT>
+template <class TScEvent>
+class ScWaitCondition final : public ScWaitEvent<TScEvent>
 {
 public:
-  using DelegateCheckFunc = std::function<sc_result(ScAddr const &, ScAddr const &, ScAddr const &)>;
+  using DelegateCheckFunc = std::function<sc_result(TScEvent const &)>;
 
   ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func)
-    : ScWaitEvent<ScEventClassT>(ctx, addr)
+    : ScWaitEvent<TScEvent>(ctx, addr)
     , m_checkFunc(std::move(func))
   {
   }
 
 private:
-  sc_result OnEvent(ScAddr const & sourceAddr, ScAddr const & connectorAddr, ScAddr const & targetAddr) override
+  sc_result OnEvent(TScEvent const & event) override
   {
-    return m_checkFunc(sourceAddr, connectorAddr, targetAddr);
+    return m_checkFunc(event);
   }
 
 private:
@@ -166,8 +168,14 @@ private:
 class ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputEdge>
 {
 public:
-  _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
+  _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
+    : ScWaitEvent<ScEventAddInputEdge>(ctx, actionAddr)
+  {
+  }
 
 private:
-  sc_result OnEvent(ScAddr const & sourceAddr, ScAddr const & connectorAddr, ScAddr const & targetAddr) override;
+  sc_result OnEvent(ScEventAddInputEdge const & event) override
+  {
+    return event.GetOtherElement() == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
+  }
 };

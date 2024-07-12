@@ -36,7 +36,8 @@ sc_result ScModule::Unregister(ScMemoryContext * ctx)
   for (auto const & agentInfo : m_agents)
   {
     ScAgentUnregisterCallback const & unregisterCallback = agentInfo.first.second;
-    unregisterCallback(ctx);
+    ScAddrVector const & addrs = agentInfo.second;
+    unregisterCallback(ctx, addrs);
   }
   m_agents.clear();
 

@@ -22,184 +22,158 @@
  * @interface An interface for agents classes
  * @note This class is an API to implement your own registration API of agents.
  */
+template <ScEventClass TScEvent>
 class _SC_EXTERN ScAgentAbstract : public ScObject
 {
 public:
-  _SC_EXTERN ScAgentAbstract();
+  _SC_EXTERN ScAgentAbstract()
+    : m_memoryCtx(nullptr)
+  {
+  }
 
-  _SC_EXTERN ~ScAgentAbstract() override;
+  _SC_EXTERN ~ScAgentAbstract() override
+  {
+    m_memoryCtx.Destroy();
+  }
 
   /*! @details It will be called, if the event the agent is subscribed to has been initialized. In this method,
    * the logic implemented by the agent starts running. Depending on the event type, the number of valid arguments to
    * this method changes.
-   * @param[in] listenAddr An address of a subscripting element (can be empty address)
-   * @param[in] edgeAddr An address of an edge element that come in or from subscripting element (can be empty address)
-   * @param[in] otherAddr An address of the element incident to the edge (can be empty address)
    * @return sc_result A status code of agent on it finish
    */
-  _SC_EXTERN virtual sc_result OnEvent(
-      ScAddr const & listenAddr,
-      ScAddr const & edgeAddr,
-      ScAddr const & otherAddr) = 0;
+  _SC_EXTERN virtual sc_result OnEvent(TScEvent const & event) = 0;
+
+  /*!
+   * @brief Complete defined logic after finishe method OnEvent if agent is finished successfully (SC_RESULT_OK).
+   * @return A pointer to agent instance.
+   */
+  _SC_EXTERN virtual void OnSuccess(TScEvent const & /* event */) {}
+
+  /*!
+   * @brief Complete defined logic after finished method OnEvent if agent is finished unsuccessfully (SC_RESULT_NO).
+   * @return A pointer to agent instance.
+   */
+  _SC_EXTERN virtual void OnUnsuccess(TScEvent const & /* event */) {}
+
+  /*!
+   * @brief Complete defined logic after finished method OnEvent if agent is finished with error.
+   * @return A pointer to agent instance.
+   */
+  _SC_EXTERN virtual void OnError(TScEvent const & /* event */, sc_result /* result */) {}
 
 protected:
   mutable ScAgentContext m_memoryCtx;
 
-  static std::list<ScEvent *> m_events;
+  static inline std::
+      unordered_map<ScAddr, ScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc<sc_uint32>, ScAddrLessFunc>
+          m_events;
 
-  _SC_EXTERN void SetContext(ScAddr const & userAddr);
-
-  static _SC_EXTERN ScEvent::DelegateFuncWithUserAddr GetCallback();
-
-private:
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
-};
-
-struct ScSubscription
-{
-  constexpr ScSubscription(ScEvent::Type const & type, ScAddr const & addr)
-    : eventType(type)
-    , addr(addr)
+  _SC_EXTERN void SetContext(ScAddr const & userAddr)
   {
+    m_memoryCtx = ScAgentContext(userAddr);
   }
 
-  ScEvent::Type const & eventType;
-  ScAddr const & addr;
+  static _SC_EXTERN std::function<sc_result(ScEvent const &)> GetCallback()
+  {
+    return {};
+  }
+
+private:
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override
+  {
+    internal::ScKeynodesRegister::Register(ctx, initMemoryGeneratedStructureAddr);
+    return SC_RESULT_OK;
+  }
+
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext *) override
+  {
+    return SC_RESULT_OK;
+  }
 };
+
+template <class TScAgent, class TScEvent>
+concept ScAgentClass = requires {
+  requires std::derived_from<TScAgent, ScAgentAbstract<TScEvent>>;
+  requires !std::is_abstract_v<TScAgent>;
+};
+
+template <class TScAddr>
+concept ScAddrClass = std::derived_from<TScAddr, ScAddr>;
 
 /*!
  * @interface An interface for implementing agents classes to subscribe its on any sc-events.
  * @note This class is an API to implement your own registration API of agents.
  */
-template <ScSubscription... subscriptions>
-class _SC_EXTERN ScAgent : public ScAgentAbstract
+template <ScEventClass TScEvent>
+class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent>
 {
 public:
   /*!
    * @brief Registers an agent class in sc-memory.
-   * @tparam TAgentClass Name of agent class being registered. Specified agent class must be derivied from class ScAgent
+   * @tparam TScAgent Name of agent class being registered. Specified agent class must be derivied from class ScAgent
    * or ScActionAgent.
    * @param ctx Context in which speficied agent class is being registered.
    */
-  template <class TAgentClass>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx)
+  template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
+  static _SC_EXTERN void Register(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
   {
-    static_assert(
-        std::is_base_of<ScAgentAbstract, TAgentClass>::value,
-        "TAgentClass must be derivied from class ScAgent or ScActionAgent.");
-    static_assert(std::is_abstract<TAgentClass>::value == false, "TAgentClass must override all virtual functions.");
+    SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
 
-    SC_LOG_INFO("Register " << GetName<TAgentClass>());
-
-    for (auto const & subscription : std::array{subscriptions...})
-    {
-      ScEvent::Type const & eventType = subscription.eventType;
-      ScAddr const & addr = subscription.addr;
-      m_events.push_back(new ScEvent(*ctx, addr, eventType, TAgentClass::template GetCallback<TAgentClass>()));
-    }
+    for (ScAddr const & subscriptionAddr : ScAddrVector{subscriptionAddrs...})
+      ScAgentAbstract<TScEvent>::m_events.insert(
+          {subscriptionAddr,
+           new ScElementaryEventSubscription<TScEvent>(
+               *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>())});
   }
 
   /*!
    * @brief Unregisters an agent class in sc-memory.
-   * @tparam TAgentClass Name of agent class being unregistered.
+   * @tparam TScAgent Name of agent class being unregistered.
    * @param ctx Сontext in which agent class is being unregistered.
    */
-  template <class TAgentClass>
-  static _SC_EXTERN void Unregister(ScMemoryContext *)
+  template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
+  static _SC_EXTERN void Unregister(ScMemoryContext *, TScAddr const &... subscriptionAddrs)
   {
-    static_assert(
-        std::is_base_of<ScAgentAbstract, TAgentClass>::value,
-        "TAgentClass must be derivied from class ScAgent or ScActionAgent.");
-    static_assert(std::is_abstract<TAgentClass>::value == false, "TAgentClass must override all virtual functions.");
+    SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
 
-    SC_LOG_INFO("Unregister " << GetName<TAgentClass>());
-
-    for (auto * event : m_events)
-      delete event;
-
-    m_events.clear();
-  }
-
-  /*!
-   * @brief Complete defined logic after finishe method OnEvent if agent is finished successfully (SC_RESULT_OK).
-   * @param sourceAddr An address of a source sc-element.
-   * @param connectorAddr An address of an sc-connector between source and target sc-elements.
-   * @param targetAddr An address of a target sc-element.
-   * @return A pointer to agent instance.
-   */
-  _SC_EXTERN virtual void OnSuccess(
-      ScAddr const & /* sourceAddr */,
-      ScAddr const & /* connectorAddr */,
-      ScAddr const & /* targetAddr */)
-  {
-  }
-
-  /*!
-   * @brief Complete defined logic after finished method OnEvent if agent is finished unsuccessfully (SC_RESULT_NO).
-   * @param sourceAddr An address of a source sc-element.
-   * @param connectorAddr An address of an sc-connector between source and target sc-elements.
-   * @param targetAddr An address of a target sc-element.
-   * @return A pointer to agent instance.
-   */
-  _SC_EXTERN virtual void OnUnsuccess(
-      ScAddr const & /* sourceAddr */,
-      ScAddr const & /* connectorAddr */,
-      ScAddr const & /* targetAddr */)
-  {
-  }
-
-  /*!
-   * @brief Complete defined logic after finished method OnEvent if agent is finished with error.
-   * @param sourceAddr An address of a source sc-element.
-   * @param connectorAddr An address of an sc-connector between source and target sc-elements.
-   * @param targetAddr An address of a target sc-element.
-   * @param errorCode An error code of agent.
-   * @return A pointer to agent instance.
-   */
-  _SC_EXTERN virtual void OnError(
-      ScAddr const & /* sourceAddr */,
-      ScAddr const & /* connectorAddr */,
-      ScAddr const & /* targetAddr */,
-      sc_result /* result */)
-  {
+    for (ScAddr const & subscriptionAddr : ScAddrVector{subscriptionAddrs...})
+    {
+      auto const & it = ScAgentAbstract<TScEvent>::m_events.find(subscriptionAddr);
+      if (it != ScAgentAbstract<TScEvent>::m_events.cend())
+        delete it->second;
+    }
   }
 
 protected:
   _SC_EXTERN explicit ScAgent()
-    : ScAgentAbstract(){};
+    : ScAgentAbstract<TScEvent>(){};
 
-  template <class TAgentClass>
-  static _SC_EXTERN ScEvent::DelegateFuncWithUserAddr GetCallback()
+  template <ScAgentClass<TScEvent> TScAgent>
+  static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback()
   {
-    return [](ScAddr const & userAddr,
-              ScAddr const & sourceAddr,
-              ScAddr const & connectorAddr,
-              ScType const &,
-              ScAddr const & targetAddr) -> sc_result
+    return [](TScEvent const & event) -> sc_result
     {
-      TAgentClass agent;
-      agent.SetContext(userAddr);
+      TScAgent agent;
+      agent.SetContext(event.GetUser());
 
       SC_LOG_INFO(agent.GetName() << " started");
-      sc_result const result = agent.OnEvent(sourceAddr, connectorAddr, targetAddr);
+      sc_result const result = agent.OnEvent(event);
 
       // finish agent
       if (result == SC_RESULT_OK)
       {
         SC_LOG_INFO(agent.GetName() << " finished successfully");
-        agent.OnSuccess(sourceAddr, connectorAddr, targetAddr);
+        agent.OnSuccess(event);
       }
       else if (result == SC_RESULT_NO)
       {
         SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
-        agent.OnUnsuccess(sourceAddr, connectorAddr, targetAddr);
+        agent.OnUnsuccess(event);
       }
       else
       {
         SC_LOG_INFO(agent.GetName() << " finished with error");
-        agent.OnError(sourceAddr, connectorAddr, targetAddr, result);
+        agent.OnError(event, result);
       }
 
       return result;
@@ -314,45 +288,18 @@ protected:
  * \endcode
  */
 template <ScKeynodeClass const & actionClass = ScKeynodes::empty_class>
-class _SC_EXTERN ScActionAgent : public ScAgent<ScSubscription{ScEvent::Type::AddOutputEdge, actionClass}>
+class _SC_EXTERN ScActionAgent : public ScAgent<ScEventAddOutputEdge>
 {
 public:
   _SC_EXTERN explicit ScActionAgent()
-    : ScAgent<ScSubscription{ScEvent::Type::AddOutputEdge, actionClass}>()
+    : ScAgent<ScEventAddOutputEdge>()
   {
   }
 
   /*!
-   * @details This method is called when the event the agent is subscribed to is initialized.
-   * It implements the main logic of the agent.
-   * @param[in] actionAddr An address of the action sc-element.
-   * @return sc_result A status code indicating the result of the agent's execution.
-   */
-  _SC_EXTERN virtual sc_result OnEvent(ScAddr const & actionAddr) = 0;
-
-  /*!
-   * @brief Completes defined logic if the agent finishes successfully (SC_RESULT_OK).
-   * @param actionAddr An address of the action sc-element.
-   */
-  _SC_EXTERN virtual void OnSuccess(ScAddr const & /* actionAddr */) {}
-
-  /*!
-   * @brief Completes defined logic if the agent finishes unsuccessfully (SC_RESULT_NO).
-   * @param actionAddr An address of the action sc-element.
-   */
-  _SC_EXTERN virtual void OnUnsuccess(ScAddr const & /* actionAddr */) {}
-
-  /*!
-   * @brief Completes defined logic if the agent finishes with an error.
-   * @param actionAddr An address of the action element.
-   * @param errorCode An error code indicating the type of error.
-   */
-  _SC_EXTERN virtual void OnError(ScAddr const & /* actionAddr */, sc_result /* result */) {}
-
-  /*!
    * @brief Provides a callback function for handling events in the sc-memory.
    *
-   * @tparam TAgentClass The class of the agent that will handle the event.
+   * @tparam TScAgent The class of the agent that will handle the event.
    * @return ScEvent::DelegateFuncWithUserAddr A delegate function that processes the event.
    *
    * @details This function template returns a lambda function that serves as a callback for event handling.
@@ -364,45 +311,43 @@ public:
    * methods of the agent.
    *          - Logs the status of the agent's execution and creates corresponding edges in the sc-memory.
    */
-  template <class TAgentClass>
-  static _SC_EXTERN ScEvent::DelegateFuncWithUserAddr GetCallback()
+  template <class TScAgent>
+  static _SC_EXTERN std::function<sc_result(ScEventAddOutputEdge const &)> GetCallback()
   {
-    return [](ScAddr const & userAddr,
-              ScAddr const &,
-              ScAddr const &,
-              ScType const & connectorType,
-              ScAddr const & actionAddr) -> sc_result
+    return [](ScEventAddOutputEdge const & event) -> sc_result
     {
+      ScAddr const & actionAddr = event.GetOtherElement();
+
       sc_result result = SC_RESULT_ERROR;
-      if (!(connectorType.BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
+      if (!(event.GetAddedConnectorType().BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
           || (actionClass.IsValid()
               && !ScMemory::ms_globalContext->HelperCheckEdge(actionClass, actionAddr, ScType::EdgeAccessConstPosPerm)))
         return result;
 
-      TAgentClass agent;
-      agent.SetContext(userAddr);
+      TScAgent agent;
+      agent.SetContext(event.GetUser());
       SC_LOG_INFO(agent.GetName() << " started");
-      result = agent.OnEvent(actionAddr);
+      result = agent.OnEvent(event);
 
       // finish agent
       if (result == SC_RESULT_OK)
       {
         SC_LOG_INFO(agent.GetName() << " finished successfully");
-        agent.OnSuccess(actionAddr);
+        agent.OnSuccess(event);
         ScMemory::ms_globalContext->CreateEdge(
             ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_successfully, actionAddr);
       }
       else if (result == SC_RESULT_NO)
       {
         SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
-        agent.OnUnsuccess(actionAddr);
+        agent.OnUnsuccess(event);
         ScMemory::ms_globalContext->CreateEdge(
             ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_unsuccessfully, actionAddr);
       }
       else
       {
         SC_LOG_INFO(agent.GetName() << " finished with error");
-        agent.OnError(actionAddr, result);
+        agent.OnError(event, result);
         ScMemory::ms_globalContext->CreateEdge(
             ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_with_error, actionAddr);
       }
@@ -411,18 +356,6 @@ public:
       return result;
     };
   }
-
-private:
-  _SC_EXTERN _SC_DELETED_FUNCTION sc_result OnEvent(ScAddr const &, ScAddr const &, ScAddr const &) final
-  {
-    return SC_RESULT_OK;
-  }
-
-  _SC_EXTERN _SC_DELETED_FUNCTION void OnSuccess(ScAddr const &, ScAddr const &, ScAddr const &) final {}
-
-  _SC_EXTERN _SC_DELETED_FUNCTION void OnUnsuccess(ScAddr const &, ScAddr const &, ScAddr const &) final {}
-
-  _SC_EXTERN _SC_DELETED_FUNCTION void OnError(ScAddr const &, ScAddr const &, ScAddr const &, sc_result) final {}
 };
 
 /*!
@@ -431,10 +364,10 @@ private:
  * or ScActionAgent.
  * @param ctx Context in which speficied agent class is being registered.
  */
-template <class TAgentClass>
-_SC_EXTERN void RegisterAgent(ScMemoryContext * ctx)
+template <class TAgentClass, ScAddrClass... TScAddr>
+_SC_EXTERN void RegisterAgent(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
 {
-  TAgentClass::template Register<TAgentClass>(ctx);
+  TAgentClass::template Register<TAgentClass>(ctx, subscriptionAddrs...);
 }
 
 /*!
@@ -442,8 +375,8 @@ _SC_EXTERN void RegisterAgent(ScMemoryContext * ctx)
  * @tparam TAgentClass Name of agent class being unregistered.
  * @param ctx Сontext in which agent class is being unregistered.
  */
-template <class TAgentClass>
-_SC_EXTERN void UnregisterAgent(ScMemoryContext * ctx)
+template <class TAgentClass, ScAddrClass... TScAddr>
+_SC_EXTERN void UnregisterAgent(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
 {
-  TAgentClass::template Unregister<TAgentClass>(ctx);
+  TAgentClass::template Unregister<TAgentClass>(ctx, subscriptionAddrs...);
 }

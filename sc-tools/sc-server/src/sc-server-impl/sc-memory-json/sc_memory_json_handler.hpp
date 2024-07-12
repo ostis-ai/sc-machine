@@ -46,6 +46,7 @@ protected:
       sc_bool & status,
       sc_bool & isEvent) = 0;
 
+public:
   static ScMemoryJsonPayload FormResponseMessage(
       size_t requestId,
       sc_bool event,

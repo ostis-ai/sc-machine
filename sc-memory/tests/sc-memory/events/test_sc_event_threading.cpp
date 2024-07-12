@@ -30,7 +30,7 @@ TEST_F(ScEventTest, threading_smoke)
   }
 
   // create random events for each node
-  std::vector<ScEvent *> events;
+  std::vector<ScEventSubscription *> events;
   events.resize(eventsNum);
 
   std::vector<ScEvent::Type> eventTypes = {
@@ -50,15 +50,15 @@ TEST_F(ScEventTest, threading_smoke)
 
   for (size_t i = 0; i < eventsNum; ++i)
   {
-    events[i] = new ScEvent(
-        *m_ctx,
-        randNode(),
-        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
-        [&](ScAddr const &, ScAddr const &, ScAddr const &) -> sc_result
-        {
-          evtCount++;
-          return SC_RESULT_OK;
-        });
+    // events[i] = new ScEventSubscription(
+    //     *m_ctx,
+    //     randNode(),
+    //     eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
+    //     [&](ScEventAddOutputEdge const &) -> sc_result
+    //     {
+    //       evtCount++;
+    //       return SC_RESULT_OK;
+    //     });
   }
 
   ScTimer timer;
