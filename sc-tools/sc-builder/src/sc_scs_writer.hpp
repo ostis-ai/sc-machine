@@ -7,6 +7,7 @@
 #include <regex>
 #include <fstream>
 #include <unordered_set>
+#include <filesystem>
 
 #include "scg_to_scs_el.hpp"
 
@@ -47,11 +48,7 @@ private:
   std::string filePath;
   std::unordered_set<std::string> writtenElements;
 
-  static std::unordered_map<std::string, std::string> m_imageFormats;
-
-  static std::string m_GetElementValue(
-      std::unordered_map<std::string, std::string> const & element,
-      std::string const & key);
+  std::string GetElementValue(std::unordered_map<std::string, std::string> const & element, std::string const & key);
 
   void ProcessElementsList(
       std::vector<std::unordered_map<std::string, std::string>> const & elementsList,
