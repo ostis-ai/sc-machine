@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include "sc_event.hpp"
 
 #include "utils/sc_lock.hpp"
