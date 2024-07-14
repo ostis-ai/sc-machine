@@ -287,7 +287,7 @@ protected:
  * }
  * \endcode
  */
-template <ScKeynodeClass const & actionClass = ScKeynodes::empty_class>
+template <ScKeynode const & actionClass = ScKeynodes::empty_class>
 class _SC_EXTERN ScActionAgent : public ScAgent<ScEventAddOutputEdge>
 {
 public:

@@ -37,7 +37,7 @@ private:
 class ATestAddInputEdge : public ScAgent<ScEventAddInputEdge>
 {
 public:
-  static inline ScKeynodeClass const add_input_edge_action{"add_input_edge_action"};
+  static inline ScKeynode const add_input_edge_action{"add_input_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
   sc_result OnEvent(ScEventAddInputEdge const & event) override;
@@ -46,7 +46,7 @@ public:
 class ATestAddOutputEdge : public ScAgent<ScEventAddOutputEdge>
 {
 public:
-  static inline ScKeynodeClass const add_output_edge_action{"add_output_edge_action"};
+  static inline ScKeynode const add_output_edge_action{"add_output_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
   sc_result OnEvent(ScEventAddOutputEdge const & event) override;
@@ -55,7 +55,7 @@ public:
 class ATestRemoveInputEdge : public ScAgent<ScEventRemoveInputEdge>
 {
 public:
-  static inline ScKeynodeClass const remove_input_edge_action{"remove_input_edge_action"};
+  static inline ScKeynode const remove_input_edge_action{"remove_input_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
   sc_result OnEvent(ScEventRemoveInputEdge const & event) override;
@@ -64,7 +64,7 @@ public:
 class ATestRemoveOutputEdge : public ScAgent<ScEventRemoveOutputEdge>
 {
 public:
-  static inline ScKeynodeClass const remove_output_edge_action{"remove_output_edge_action"};
+  static inline ScKeynode const remove_output_edge_action{"remove_output_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
   sc_result OnEvent(ScEventRemoveOutputEdge const & event) override;
@@ -73,7 +73,7 @@ public:
 class ATestRemoveElement : public ScAgent<ScEventRemoveElement>
 {
 public:
-  static inline ScKeynodeClass const remove_element_action{"remove_element_action"};
+  static inline ScKeynode const remove_element_action{"remove_element_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
   sc_result OnEvent(ScEventRemoveElement const & event) override;
@@ -82,7 +82,7 @@ public:
 class ATestContentChanged : public ScAgent<ScEventChangeContent>
 {
 public:
-  static inline ScKeynodeLink const content_change_action{"content_change_action"};
+  static inline ScKeynode const content_change_action{"content_change_action", ScType::LinkConst};
   static inline TestWaiter msWaiter;
 
   sc_result OnEvent(ScEventChangeContent const & event) override;
@@ -103,7 +103,7 @@ public:
   void OnUnsuccess(ScEventAddOutputEdge const & event) override;
   void OnError(ScEventAddOutputEdge const & event, sc_result errorCode) override;
 
-  static inline ScKeynodeClass const msAgentSet{"agents_set"};
+  static inline ScKeynode const msAgentSet{"agents_set", ScType::NodeConstClass};
 
   static inline TestWaiter msWaiter;
 
