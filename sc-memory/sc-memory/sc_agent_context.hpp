@@ -47,7 +47,7 @@ public:
     ScAddr const & structureAddr = CreateNode(ScType::NodeConstStruct);
 
     ScAddrVector const & addrVector{addrs...};
-    std::ranges::for_each(
+    std::for_each(
         addrVector.begin(),
         addrVector.end(),
         [this, &structureAddr](ScAddr const & addr)
@@ -69,7 +69,7 @@ public:
       structureAddr = CreateNode(ScType::NodeConstStruct);
 
     ScAddrVector const & addrVector{addrs...};
-    std::ranges::for_each(
+    std::for_each(
         addrVector.begin(),
         addrVector.end(),
         [this, &structureAddr](ScAddr const & addr)
