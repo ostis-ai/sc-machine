@@ -6,8 +6,10 @@
 
 #pragma once
 
-#include "sc-memory/sc_object.hpp"
-#include "sc-memory/sc_addr.hpp"
+#include "sc_object.hpp"
+
+#include "sc_addr.hpp"
+
 #include "sc_agent.hpp"
 
 /*!
@@ -44,36 +46,23 @@
 class _SC_EXTERN ScModule : public ScObject
 {
 public:
-  _SC_EXTERN ~ScModule() override = default;
+  _SC_EXTERN ~ScModule() override;
 
-  _SC_EXTERN static ScModule * Create(ScModule * module)
-  {
-    return module;
-  }
+  _SC_EXTERN static ScModule * Create(ScModule * module);
 
   /*! Reminds keynodes to register it with module after.
    * @param keynodes A pointer to dynamically created keynodes instance
    * @returns Pointer to module instance
    */
   template <class TKeynodesClass>
-  _SC_EXTERN ScModule * Keynodes()
-  {
-    static_assert(
-        std::is_base_of<ScKeynodes, TKeynodesClass>::value, "TKeynodesClass must be derivied from ScKeynodes class.");
-    m_keynodes.push_back(new TKeynodesClass());
-    return this;
-  }
+  _SC_EXTERN ScModule * Keynodes();
 
   /*! Reminds agent and it initiation condition to register it with module after.
    * @param agentInfo A pointer to dynamically created agent instance and a vector of subscription addrs
    * @returns Pointer to module instance
    */
   template <class TScAgent, ScAddrClass... TScAddr>
-  _SC_EXTERN ScModule * Agent(TScAddr const &... addrs)
-  {
-    m_agents.push_back({{GetAgentRegisterCallback<TScAgent>(), GetAgentUnregisterCallback<TScAgent>()}, {addrs...}});
-    return this;
-  }
+  _SC_EXTERN ScModule * Agent(TScAddr const &... addrs);
 
   /*! Registers all module keynodes and agents
    * @returns Result of initializing
@@ -98,24 +87,10 @@ protected:
   std::list<std::pair<std::pair<ScAgentRegisterCallback, ScAgentUnregisterCallback>, ScAddrVector>> m_agents;
 
   template <class TScAgent>
-  ScAgentRegisterCallback GetAgentRegisterCallback()
-  {
-    return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
-    {
-      for (ScAddr const & addr : addrs)
-        TScAgent::template Register<TScAgent>(ctx, addr);
-    };
-  }
+  ScAgentRegisterCallback GetAgentRegisterCallback();
 
   template <class TScAgent>
-  ScAgentUnregisterCallback GetAgentUnregisterCallback()
-  {
-    return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
-    {
-      for (ScAddr const & addr : addrs)
-        TScAgent::template Unregister<TScAgent>(ctx, addr);
-    };
-  }
+  ScAgentUnregisterCallback GetAgentUnregisterCallback();
 };
 
 /// Registers module class instance
@@ -140,3 +115,5 @@ protected:
   } \
   } \
   ScModule * __ModuleName__##Dummy::ms_module = __ModuleName__::Create(new __ModuleName__())
+
+#include "sc_module.tpp"

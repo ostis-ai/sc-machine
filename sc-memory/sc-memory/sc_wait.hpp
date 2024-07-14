@@ -6,45 +6,26 @@
 
 #pragma once
 
-#include "sc-memory/sc_event.hpp"
-#include "sc-memory/sc_timer.hpp"
-#include "sc-memory/sc_object.hpp"
-
-#include "sc-memory/sc_keynodes.hpp"
-
 #include <condition_variable>
 #include <chrono>
 #include <mutex>
 #include <utility>
 
+#include "sc_event_subscription.hpp"
+
 /* Class implements common wait logic.
  */
-class ScWait : public ScObject
+class _SC_EXTERN ScWait : public ScObject
 {
   class Impl
   {
   public:
-    Impl() = default;
-    virtual ~Impl() = default;
+    Impl();
+    virtual ~Impl();
 
-    void Resolve()
-    {
-      std::unique_lock<std::mutex> lock(m_mutex);
-      m_isResolved = SC_TRUE;
-      m_cond.notify_one();
-    }
+    void Resolve();
 
-    sc_bool Wait(sc_uint32 timeout_ms)
-    {
-      std::unique_lock<std::mutex> lock(m_mutex);
-      while (!m_isResolved)
-      {
-        if (m_cond.wait_for(lock, std::chrono::milliseconds(timeout_ms)) == std::cv_status::timeout)
-          return SC_FALSE;
-      }
-
-      return SC_TRUE;
-    }
+    sc_bool Wait(sc_uint32 timeout_ms);
 
   private:
     std::mutex m_mutex;
@@ -55,53 +36,21 @@ class ScWait : public ScObject
 public:
   using DelegateFunc = std::function<void(void)>;
 
-  ~ScWait() override = default;
+  _SC_EXTERN ~ScWait() override;
 
-  void Resolve()
-  {
-    m_impl.Resolve();
-  }
+  _SC_EXTERN void Resolve();
 
-  ScWait & SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
-  {
-    m_waitStartDelegate = startDelegate;
-    return *this;
-  }
+  _SC_EXTERN ScWait & SetOnWaitStartDelegate(DelegateFunc const & startDelegate);
 
-  sc_bool Wait(
+  _SC_EXTERN sc_bool Wait(
       sc_uint32 timeout_ms = 5000,
       std::function<void(void)> const & onWaitSuccess = {},
-      std::function<void(void)> const & onWaitUnsuccess = {})
-  {
-    if (m_waitStartDelegate)
-      m_waitStartDelegate();
-
-    sc_bool const result = m_impl.Wait(timeout_ms);
-
-    if (result == SC_TRUE)
-    {
-      if (onWaitSuccess)
-        onWaitSuccess();
-    }
-    else
-    {
-      if (onWaitUnsuccess)
-        onWaitUnsuccess();
-    }
-
-    return result;
-  }
+      std::function<void(void)> const & onWaitUnsuccess = {});
 
 protected:
-  sc_result Initialize(ScMemoryContext *, ScAddr const &) override
-  {
-    return SC_RESULT_OK;
-  }
+  sc_result Initialize(ScMemoryContext *, ScAddr const &) override;
 
-  sc_result Shutdown(ScMemoryContext *) override
-  {
-    return SC_RESULT_OK;
-  }
+  sc_result Shutdown(ScMemoryContext *) override;
 
 private:
   Impl m_impl;
@@ -112,52 +61,28 @@ private:
  * Should be alive, while Memory context is alive.
  */
 template <class TScEvent>
-class ScWaitEvent : public ScWait
+class _SC_EXTERN ScWaitEvent : public ScWait
 {
 public:
-  ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr)
-    : m_event(
-          ctx,
-          addr,
-          [this](TScEvent const & event) -> sc_result
-          {
-            if (OnEvent(event) == SC_RESULT_OK)
-            {
-              ScWait::Resolve();
-              return SC_RESULT_OK;
-            }
-            return SC_RESULT_ERROR;
-          })
-  {
-  }
+  _SC_EXTERN ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr);
 
 protected:
-  virtual sc_result OnEvent(TScEvent const &)
-  {
-    return SC_RESULT_OK;
-  }
+  virtual sc_result OnEvent(TScEvent const &);
 
 private:
   ScElementaryEventSubscription<TScEvent> m_event;
 };
 
 template <class TScEvent>
-class ScWaitCondition final : public ScWaitEvent<TScEvent>
+class _SC_EXTERN ScWaitCondition final : public ScWaitEvent<TScEvent>
 {
 public:
   using DelegateCheckFunc = std::function<sc_result(TScEvent const &)>;
 
-  ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func)
-    : ScWaitEvent<TScEvent>(ctx, addr)
-    , m_checkFunc(std::move(func))
-  {
-  }
+  _SC_EXTERN ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func);
 
 private:
-  sc_result OnEvent(TScEvent const & event) override
-  {
-    return m_checkFunc(event);
-  }
+  sc_result OnEvent(TScEvent const & event) override;
 
 private:
   DelegateCheckFunc m_checkFunc;
@@ -165,17 +90,13 @@ private:
 
 /* Implements waiting for action finish
  */
-class ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputEdge>
+class _SC_EXTERN ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputEdge>
 {
 public:
-  _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
-    : ScWaitEvent<ScEventAddInputEdge>(ctx, actionAddr)
-  {
-  }
+  _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
 
 private:
-  sc_result OnEvent(ScEventAddInputEdge const & event) override
-  {
-    return event.GetOtherElement() == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
-  }
+  sc_result OnEvent(ScEventAddInputEdge const & event) override;
 };
+
+#include "sc_wait.tpp"

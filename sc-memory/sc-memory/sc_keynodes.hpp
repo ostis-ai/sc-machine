@@ -9,12 +9,11 @@
 #include <string>
 #include <utility>
 
-#include "sc_type.hpp"
-#include "sc_defines.hpp"
-
 #include "sc_object.hpp"
+
 #include "sc_addr.hpp"
-#include "sc_memory.hpp"
+
+#include "sc_type.hpp"
 
 namespace internal
 {
@@ -32,41 +31,17 @@ public:
    * @param idtf Keynode system identifier.
    * @param keynodeType Keynode syntactic type.
    */
-  static void Remember(ScAddr * keynode, std::string_view const & idtf, ScType const & keynodeType)
-  {
-    m_keynodes.insert({keynode, {idtf, keynodeType}});
-  }
+  static void Remember(ScAddr * keynode, std::string_view const & idtf, ScType const & keynodeType);
 
-  static void Forget(ScAddr * keynode)
-  {
-    m_keynodes.erase(keynode);
-  }
+  static void Forget(ScAddr * keynode);
 
   /*!
    * @brief Registers all reminded keynodes.
    * @param context Sc-memory context to resolve keynodes.
    */
-  static void Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure)
-  {
-    for (auto const & item : m_keynodes)
-    {
-      ScAddr * keynode = item.first;
-      auto const & keynodeInfo = item.second;
-      ScSystemIdentifierQuintuple fiver;
-      context->HelperResolveSystemIdtf(std::string(keynodeInfo.first), keynodeInfo.second, fiver);
-      *keynode = fiver.addr1;
+  static void Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure);
 
-      if (initMemoryGeneratedStructure.IsValid())
-      {
-        context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr1);
-        context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr2);
-        context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr3);
-        context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr4);
-      }
-    }
-  }
-
-  static void Unregister(ScMemoryContext *) {}
+  static void Unregister(ScMemoryContext *);
 
 protected:
   static inline std::map<ScAddr *, std::pair<std::string_view, ScType>> m_keynodes;
@@ -81,35 +56,18 @@ protected:
  * \endcode
  * @warning Use it only for static objects declaration.
  */
-class ScKeynode final : public ScAddr
+class _SC_EXTERN ScKeynode final : public ScAddr
 {
 public:
-  explicit ScKeynode(std::string_view const & sysIdtf = "", ScType const & type = ScType::NodeConst)
-    : ScAddr(ScAddr::Empty)
-  {
-    if (!sysIdtf.empty())
-      internal::ScKeynodesRegister::Remember(this, sysIdtf, type);
-  }
+  _SC_EXTERN explicit ScKeynode(std::string_view const & sysIdtf = "", ScType const & type = ScType::NodeConst);
 
-  explicit ScKeynode(sc_addr const & addr)
-    : ScAddr(addr)
-  {
-  }
+  _SC_EXTERN explicit ScKeynode(sc_addr const & addr);
 
-  ~ScKeynode()
-  {
-    internal::ScKeynodesRegister::Forget(this);
-  }
+  _SC_EXTERN ~ScKeynode();
 
-  ScKeynode(ScKeynode const & other)
-    : ScAddr(other)
-  {
-  }
+  _SC_EXTERN ScKeynode(ScKeynode const & other);
 
-  ScKeynode & operator=(ScKeynode const &)
-  {
-    return *this;
-  }
+  _SC_EXTERN ScKeynode & operator=(ScKeynode const & other);
 };
 
 /*!
@@ -128,7 +86,7 @@ public:
  * \endcode
  * @see ScKeynode
  */
-class ScKeynodes : public ScObject
+class _SC_EXTERN ScKeynodes : public ScObject
 {
 public:
   _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;

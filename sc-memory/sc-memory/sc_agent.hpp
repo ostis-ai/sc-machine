@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include "sc-memory/sc_object.hpp"
-#include "sc-memory/sc_keynodes.hpp"
+#include "sc_object.hpp"
+
+#include "sc_event.hpp"
+#include "sc_event_subscription.hpp"
 
 #include "sc_agent_context.hpp"
 
-#include "sc-memory/utils/sc_log.hpp"
+#include "utils/sc_log.hpp"
 
 #define SC_AGENT_LOG_DEBUG(__msg__) SC_LOG_DEBUG(GetName() << ": " << __msg__)
 #define SC_AGENT_LOG_INFO(__msg__) SC_LOG_INFO(GetName() << ": " << __msg__)
@@ -26,15 +28,9 @@ template <ScEventClass TScEvent>
 class _SC_EXTERN ScAgentAbstract : public ScObject
 {
 public:
-  _SC_EXTERN ScAgentAbstract()
-    : m_memoryCtx(nullptr)
-  {
-  }
+  _SC_EXTERN ScAgentAbstract();
 
-  _SC_EXTERN ~ScAgentAbstract() override
-  {
-    m_memoryCtx.Destroy();
-  }
+  _SC_EXTERN ~ScAgentAbstract() override;
 
   /*! @details It will be called, if the event the agent is subscribed to has been initialized. In this method,
    * the logic implemented by the agent starts running. Depending on the event type, the number of valid arguments to
@@ -68,27 +64,14 @@ protected:
       unordered_map<ScAddr, ScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc<sc_uint32>, ScAddrLessFunc>
           m_events;
 
-  _SC_EXTERN void SetContext(ScAddr const & userAddr)
-  {
-    m_memoryCtx = ScAgentContext(userAddr);
-  }
+  _SC_EXTERN void SetContext(ScAddr const & userAddr);
 
-  static _SC_EXTERN std::function<sc_result(ScEvent const &)> GetCallback()
-  {
-    return {};
-  }
+  static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback();
 
 private:
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override
-  {
-    internal::ScKeynodesRegister::Register(ctx, initMemoryGeneratedStructureAddr);
-    return SC_RESULT_OK;
-  }
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
 
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext *) override
-  {
-    return SC_RESULT_OK;
-  }
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext *) override;
 };
 
 template <class TScAgent, class TScEvent>
@@ -115,16 +98,7 @@ public:
    * @param ctx Context in which speficied agent class is being registered.
    */
   template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
-  {
-    SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
-
-    for (ScAddr const & subscriptionAddr : ScAddrVector{subscriptionAddrs...})
-      ScAgentAbstract<TScEvent>::m_events.insert(
-          {subscriptionAddr,
-           new ScElementaryEventSubscription<TScEvent>(
-               *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>())});
-  }
+  static _SC_EXTERN void Register(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs);
 
   /*!
    * @brief Unregisters an agent class in sc-memory.
@@ -132,53 +106,13 @@ public:
    * @param ctx Сontext in which agent class is being unregistered.
    */
   template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
-  static _SC_EXTERN void Unregister(ScMemoryContext *, TScAddr const &... subscriptionAddrs)
-  {
-    SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
-
-    for (ScAddr const & subscriptionAddr : ScAddrVector{subscriptionAddrs...})
-    {
-      auto const & it = ScAgentAbstract<TScEvent>::m_events.find(subscriptionAddr);
-      if (it != ScAgentAbstract<TScEvent>::m_events.cend())
-        delete it->second;
-    }
-  }
+  static _SC_EXTERN void Unregister(ScMemoryContext *, TScAddr const &... subscriptionAddrs);
 
 protected:
-  _SC_EXTERN explicit ScAgent()
-    : ScAgentAbstract<TScEvent>(){};
+  _SC_EXTERN explicit ScAgent();
 
   template <ScAgentClass<TScEvent> TScAgent>
-  static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback()
-  {
-    return [](TScEvent const & event) -> sc_result
-    {
-      TScAgent agent;
-      agent.SetContext(event.GetUser());
-
-      SC_LOG_INFO(agent.GetName() << " started");
-      sc_result const result = agent.OnEvent(event);
-
-      // finish agent
-      if (result == SC_RESULT_OK)
-      {
-        SC_LOG_INFO(agent.GetName() << " finished successfully");
-        agent.OnSuccess(event);
-      }
-      else if (result == SC_RESULT_NO)
-      {
-        SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
-        agent.OnUnsuccess(event);
-      }
-      else
-      {
-        SC_LOG_INFO(agent.GetName() << " finished with error");
-        agent.OnError(event, result);
-      }
-
-      return result;
-    };
-  }
+  static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback();
 };
 
 /*!
@@ -290,11 +224,6 @@ protected:
 class _SC_EXTERN ScActionAgent : public ScAgent<ScEventAddOutputEdge>
 {
 public:
-  _SC_EXTERN explicit ScActionAgent()
-    : ScAgent<ScEventAddOutputEdge>()
-  {
-  }
-
   /*!
    * @brief Registers an agent class in sc-memory.
    * @tparam TScAgent Name of agent class being registered. Specified agent class must be derivied from class ScAgent
@@ -302,15 +231,7 @@ public:
    * @param ctx Context in which speficied agent class is being registered.
    */
   template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & actionClassAddr)
-  {
-    SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
-
-    ScActionAgent::m_events.insert(
-        {actionClassAddr,
-         new ScEventSubscriptionAddOutputEdge(
-             *ctx, ScKeynodes::action_initiated, TScAgent::template GetCallback<TScAgent>(actionClassAddr))});
-  }
+  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & actionClassAddr);
 
   /*!
    * @brief Unregisters an agent class in sc-memory.
@@ -318,14 +239,7 @@ public:
    * @param ctx Сontext in which agent class is being unregistered.
    */
   template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
-  static _SC_EXTERN void Unregister(ScMemoryContext *, ScAddr const & actionClassAddr)
-  {
-    SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
-
-    auto const & it = ScActionAgent::m_events.find(actionClassAddr);
-    if (it != ScActionAgent::m_events.cend())
-      delete it->second;
-  }
+  static _SC_EXTERN void Unregister(ScMemoryContext *, ScAddr const & actionClassAddr);
 
 protected:
   /*!
@@ -344,53 +258,10 @@ protected:
    *          - Logs the status of the agent's execution and creates corresponding edges in the sc-memory.
    */
   template <class TScAgent>
-  static _SC_EXTERN std::function<sc_result(ScEventAddOutputEdge const &)> GetCallback(ScAddr const & actionClassAddr)
-  {
-    return [actionClassAddr](ScEventAddOutputEdge const & event) -> sc_result
-    {
-      ScAddr const & actionAddr = event.GetOtherElement();
-
-      sc_result result = SC_RESULT_ERROR;
-      if (!(event.GetAddedConnectorType().BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
-          || (!ScMemory::ms_globalContext->HelperCheckEdge(
-              actionClassAddr, actionAddr, ScType::EdgeAccessConstPosPerm)))
-        return result;
-
-      TScAgent agent;
-      agent.SetContext(event.GetUser());
-      SC_LOG_INFO(agent.GetName() << " started");
-      result = agent.OnEvent(event);
-
-      std::cout << actionAddr.Hash() << std::endl;
-
-      // finish agent
-      if (result == SC_RESULT_OK)
-      {
-        SC_LOG_INFO(agent.GetName() << " finished successfully");
-        agent.OnSuccess(event);
-        ScMemory::ms_globalContext->CreateEdge(
-            ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_successfully, actionAddr);
-      }
-      else if (result == SC_RESULT_NO)
-      {
-        SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
-        agent.OnUnsuccess(event);
-        ScMemory::ms_globalContext->CreateEdge(
-            ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_unsuccessfully, actionAddr);
-      }
-      else
-      {
-        SC_LOG_INFO(agent.GetName() << " finished with error");
-        agent.OnError(event, result);
-        ScMemory::ms_globalContext->CreateEdge(
-            ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_with_error, actionAddr);
-      }
-      ScMemory::ms_globalContext->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, actionAddr);
-
-      return result;
-    };
-  }
+  static _SC_EXTERN std::function<sc_result(ScEventAddOutputEdge const &)> GetCallback(ScAddr const & actionClassAddr);
 };
+
+#include "sc_agent.tpp"
 
 /*!
  * @brief Registers an agent class in sc-memory.

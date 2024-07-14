@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "sc-memory/sc_memory.hpp"
-
-#include "sc-memory/utils/sc_keynode_cache.hpp"
+#include "sc_memory.hpp"
 
 #include "sc_wait.hpp"
+
+#include "utils/sc_keynode_cache.hpp"
 
 class ScAgentContext : public ScMemoryContext
 {

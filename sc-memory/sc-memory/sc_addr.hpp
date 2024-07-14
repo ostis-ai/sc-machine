@@ -60,7 +60,7 @@ public:
   ScRealAddr m_realAddr;
 };
 
-struct RealAddrLessFunc
+struct _SC_EXTERN RealAddrLessFunc
 {
   bool operator()(ScRealAddr const & a, ScRealAddr const & b) const
   {
@@ -74,7 +74,7 @@ struct RealAddrLessFunc
   }
 };
 
-struct ScAddrLessFunc
+struct _SC_EXTERN ScAddrLessFunc
 {
   bool operator()(ScAddr const & a, ScAddr const & b) const
   {
