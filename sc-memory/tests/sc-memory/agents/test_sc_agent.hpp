@@ -96,7 +96,7 @@ public:
   sc_result OnEvent(ScEventAddOutputEdge const &) override;
 };
 
-class ATestCheckResult : public ScActionAgent<>
+class ATestCheckResult : public ScActionAgent
 {
 public:
   void OnSuccess(ScEventAddOutputEdge const & event) override;

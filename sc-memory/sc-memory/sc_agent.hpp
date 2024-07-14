@@ -287,7 +287,6 @@ protected:
  * }
  * \endcode
  */
-template <ScKeynode const & actionClass = ScKeynodes::empty_class>
 class _SC_EXTERN ScActionAgent : public ScAgent<ScEventAddOutputEdge>
 {
 public:
@@ -296,6 +295,39 @@ public:
   {
   }
 
+  /*!
+   * @brief Registers an agent class in sc-memory.
+   * @tparam TScAgent Name of agent class being registered. Specified agent class must be derivied from class ScAgent
+   * or ScActionAgent.
+   * @param ctx Context in which speficied agent class is being registered.
+   */
+  template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
+  static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & actionClassAddr)
+  {
+    SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
+
+    ScActionAgent::m_events.insert(
+        {actionClassAddr,
+         new ScEventSubscriptionAddOutputEdge(
+             *ctx, ScKeynodes::action_initiated, TScAgent::template GetCallback<TScAgent>(actionClassAddr))});
+  }
+
+  /*!
+   * @brief Unregisters an agent class in sc-memory.
+   * @tparam TScAgent Name of agent class being unregistered.
+   * @param ctx Сontext in which agent class is being unregistered.
+   */
+  template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
+  static _SC_EXTERN void Unregister(ScMemoryContext *, ScAddr const & actionClassAddr)
+  {
+    SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
+
+    auto const & it = ScActionAgent::m_events.find(actionClassAddr);
+    if (it != ScActionAgent::m_events.cend())
+      delete it->second;
+  }
+
+protected:
   /*!
    * @brief Provides a callback function for handling events in the sc-memory.
    *
@@ -312,22 +344,24 @@ public:
    *          - Logs the status of the agent's execution and creates corresponding edges in the sc-memory.
    */
   template <class TScAgent>
-  static _SC_EXTERN std::function<sc_result(ScEventAddOutputEdge const &)> GetCallback()
+  static _SC_EXTERN std::function<sc_result(ScEventAddOutputEdge const &)> GetCallback(ScAddr const & actionClassAddr)
   {
-    return [](ScEventAddOutputEdge const & event) -> sc_result
+    return [actionClassAddr](ScEventAddOutputEdge const & event) -> sc_result
     {
       ScAddr const & actionAddr = event.GetOtherElement();
 
       sc_result result = SC_RESULT_ERROR;
       if (!(event.GetAddedConnectorType().BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
-          || (actionClass.IsValid()
-              && !ScMemory::ms_globalContext->HelperCheckEdge(actionClass, actionAddr, ScType::EdgeAccessConstPosPerm)))
+          || (!ScMemory::ms_globalContext->HelperCheckEdge(
+              actionClassAddr, actionAddr, ScType::EdgeAccessConstPosPerm)))
         return result;
 
       TScAgent agent;
       agent.SetContext(event.GetUser());
       SC_LOG_INFO(agent.GetName() << " started");
       result = agent.OnEvent(event);
+
+      std::cout << actionAddr.Hash() << std::endl;
 
       // finish agent
       if (result == SC_RESULT_OK)

@@ -6,7 +6,7 @@
 namespace scUtilsTestAgents
 {
 
-class FinishActionTestAgent : public ScActionAgent<ScKeynodes::action_initiated>
+class FinishActionTestAgent : public ScActionAgent
 {
 public:
   sc_result OnEvent(ScEventAddOutputEdge const & event) override;

@@ -107,21 +107,22 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
 {
   RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
 
-  auto * context = new ScAgentContext();
-  ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
+  ScAgentContext context;
+  ScAddr const & actionAddr = context.CreateNode(ScType::NodeConst);
 
   EXPECT_TRUE(context
-                  ->InitializeEvent<ScEventAddInputEdge>(
+                  .InitializeEvent<ScEventAddInputEdge>(
                       actionAddr,
-                      [context, &actionAddr]()
+                      [&context, &actionAddr]()
                       {
-                        context->SetActionArgument(actionAddr, actionAddr, 1);
-                        context->CreateEdge(
+                        context.SetActionArgument(actionAddr, actionAddr, 1);
+                        context.CreateEdge(
                             ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::add_output_edge_action, actionAddr);
+                        context.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, actionAddr);
                       },
-                      [context](ScEventAddInputEdge const & event) -> sc_result
+                      [&context](ScEventAddInputEdge const & event) -> sc_result
                       {
-                        return context->HelperCheckEdge(
+                        return context.HelperCheckEdge(
                                    ScKeynodes::action_finished_unsuccessfully,
                                    event.GetSubscriptionElement(),
                                    ScType::EdgeAccessConstPosPerm)
@@ -131,18 +132,13 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
                   ->Wait(
                       2000,
                       {},
-                      [context, &actionAddr]()
+                      [&context]()
                       {
-                        EXPECT_TRUE(context->HelperCheckEdge(
-                            ScKeynodes::action_finished_unsuccessfully, actionAddr, ScType::EdgeAccessConstPosPerm));
-                        EXPECT_TRUE(context->HelperCheckEdge(
+                        EXPECT_TRUE(context.HelperCheckEdge(
                             ATestCheckResult::msAgentSet,
                             ATestAddOutputEdge::add_output_edge_action,
                             ScType::EdgeAccessConstFuzPerm));
                       }));
-
-  context->Destroy();
-  delete context;
 
   UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
 }
@@ -151,21 +147,22 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
 {
   RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
 
-  auto * context = new ScAgentContext();
-  ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
+  ScAgentContext context;
+  ScAddr const & actionAddr = context.CreateNode(ScType::NodeConst);
 
   EXPECT_TRUE(context
-                  ->InitializeEvent<ScEventAddInputEdge>(
+                  .InitializeEvent<ScEventAddInputEdge>(
                       actionAddr,
-                      [context, &actionAddr]()
+                      [&context, &actionAddr]()
                       {
-                        context->SetActionArgument(actionAddr, actionAddr, 2);
-                        context->CreateEdge(
+                        context.SetActionArgument(actionAddr, actionAddr, 2);
+                        context.CreateEdge(
                             ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::add_output_edge_action, actionAddr);
+                        context.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, actionAddr);
                       },
-                      [context](ScEventAddInputEdge const & event) -> sc_result
+                      [&context](ScEventAddInputEdge const & event) -> sc_result
                       {
-                        return context->HelperCheckEdge(
+                        return context.HelperCheckEdge(
                                    ScKeynodes::action_finished_with_error,
                                    event.GetSubscriptionElement(),
                                    ScType::EdgeAccessConstPosPerm)
@@ -175,18 +172,13 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
                   ->Wait(
                       2000,
                       {},
-                      [context, &actionAddr]()
+                      [&context]()
                       {
-                        EXPECT_TRUE(context->HelperCheckEdge(
-                            ScKeynodes::action_finished_with_error, actionAddr, ScType::EdgeAccessConstPosPerm));
-                        EXPECT_TRUE(context->HelperCheckEdge(
+                        EXPECT_TRUE(context.HelperCheckEdge(
                             ATestCheckResult::msAgentSet,
                             ATestAddOutputEdge::add_output_edge_action,
                             ScType::EdgeAccessConstFuzPerm));
                       }));
-
-  context->Destroy();
-  delete context;
 
   UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
 }
@@ -195,44 +187,40 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
 {
   RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
 
-  auto * context = new ScAgentContext();
-  ScAddr const & actionAddr = context->CreateNode(ScType::NodeConst);
+  ScAgentContext context;
+  ScAddr const & actionAddr = context.CreateNode(ScType::NodeConst);
 
   EXPECT_TRUE(context
-                  ->InitializeEvent<ScEventAddInputEdge>(
+                  .InitializeEvent<ScEventAddInputEdge>(
                       actionAddr,
-                      [context, &actionAddr]()
+                      [&context, &actionAddr]()
                       {
-                        ScAddr const & addr1 = context->CreateNode(ScType::NodeConst);
-                        ScAddr const & addr2 = context->CreateNode(ScType::NodeConst);
-                        context->SetActionArgument(actionAddr, addr1, 1);
-                        context->SetActionArgument(actionAddr, addr2, 2);
-                        context->CreateEdge(
+                        ScAddr const & addr1 = context.CreateNode(ScType::NodeConst);
+                        ScAddr const & addr2 = context.CreateNode(ScType::NodeConst);
+                        context.SetActionArgument(actionAddr, addr1, 1);
+                        context.SetActionArgument(actionAddr, addr2, 2);
+                        context.CreateEdge(
                             ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::add_output_edge_action, actionAddr);
+                        context.CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, actionAddr);
                       },
-                      [context](ScEventAddInputEdge const & event) -> sc_result
+                      [&context](ScEventAddInputEdge const & event) -> sc_result
                       {
-                        return context->HelperCheckEdge(
+                        return context.HelperCheckEdge(
                                    ScKeynodes::action_finished_successfully,
-                                   event.GetOtherElement(),
+                                   event.GetSubscriptionElement(),
                                    ScType::EdgeAccessConstPosPerm)
                                    ? SC_RESULT_OK
                                    : SC_RESULT_NO;
                       })
                   ->Wait(
                       2000,
-                      [context, &actionAddr]()
+                      [&context]()
                       {
-                        EXPECT_TRUE(context->HelperCheckEdge(
-                            ScKeynodes::action_finished_successfully, actionAddr, ScType::EdgeAccessConstPosPerm));
-                        EXPECT_TRUE(context->HelperCheckEdge(
+                        EXPECT_TRUE(context.HelperCheckEdge(
                             ATestCheckResult::msAgentSet,
                             ATestAddOutputEdge::add_output_edge_action,
                             ScType::EdgeAccessConstPosPerm));
                       }));
-
-  context->Destroy();
-  delete context;
 
   UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
 }

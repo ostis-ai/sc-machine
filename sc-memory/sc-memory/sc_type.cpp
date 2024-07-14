@@ -13,12 +13,18 @@ ScType constexpr ScType::EdgeUCommonConst(sc_type_edge_common | sc_type_const);
 ScType constexpr ScType::EdgeDCommonConst(sc_type_arc_common | sc_type_const);
 
 ScType constexpr ScType::EdgeAccess(sc_type_arc_access);
-ScType constexpr ScType::EdgeAccessConstPosPerm(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
-ScType constexpr ScType::EdgeAccessConstNegPerm(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
-ScType constexpr ScType::EdgeAccessConstFuzPerm(sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
-ScType constexpr ScType::EdgeAccessConstPosTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
-ScType constexpr ScType::EdgeAccessConstNegTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
-ScType constexpr ScType::EdgeAccessConstFuzTemp(sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
+ScType constexpr ScType::EdgeAccessConstPosPerm(
+    sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_pos);
+ScType constexpr ScType::EdgeAccessConstNegPerm(
+    sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_neg);
+ScType constexpr ScType::EdgeAccessConstFuzPerm(
+    sc_type_const | sc_type_arc_access | sc_type_arc_perm | sc_type_arc_fuz);
+ScType constexpr ScType::EdgeAccessConstPosTemp(
+    sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_pos);
+ScType constexpr ScType::EdgeAccessConstNegTemp(
+    sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_neg);
+ScType constexpr ScType::EdgeAccessConstFuzTemp(
+    sc_type_const | sc_type_arc_access | sc_type_arc_temp | sc_type_arc_fuz);
 
 ScType constexpr ScType::EdgeUCommonVar(sc_type_edge_common | sc_type_var);
 ScType constexpr ScType::EdgeDCommonVar(sc_type_arc_common | sc_type_var);
