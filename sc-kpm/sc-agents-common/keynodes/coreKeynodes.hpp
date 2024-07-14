@@ -14,25 +14,25 @@ namespace scAgentsCommon
 class CoreKeynodes : public ScKeynodes
 {
 public:
-  static inline ScKeynodeNoRole const nrel_inclusion{"nrel_inclusion"};
-  static inline ScKeynodeNoRole const nrel_idtf{"nrel_idtf"};
-  static inline ScKeynodeNoRole const nrel_main_idtf{"nrel_main_idtf"};
-  static inline ScKeynodeNoRole const nrel_lexicographically_more{"nrel_lexicographically_more"};
-  static inline ScKeynodeNoRole const nrel_lexicographically_less{"nrel_lexicographically_less"};
-  static inline ScKeynodeNoRole const nrel_equal_strings{"nrel_equal_strings"};
-  static inline ScKeynodeRole const rrel_1{"rrel_1"};
-  static inline ScKeynodeRole const rrel_2{"rrel_2"};
-  static inline ScKeynodeRole const rrel_3{"rrel_3"};
-  static inline ScKeynodeRole const rrel_last_added_sc_element{"rrel_last_added_sc_element"};
-  static inline ScKeynodeClass const number{"number"};
-  static inline ScKeynodeNoRole const nrel_equal_numbers{"nrel_equal_numbers"};
-  static inline ScKeynodeNoRole const nrel_be_more{"nrel_be_more"};
-  static inline ScKeynodeRole const rrel_key_sc_element{"rrel_key_sc_element"};
-  static inline ScKeynodeNoRole const nrel_sc_text_translation{"nrel_sc_text_translation"};
-  static inline ScKeynodeRole const rrel_main_key_sc_element{"rrel_main_key_sc_element"};
-  static inline ScKeynodeClass const cardinality{"cardinality"};
-  static inline ScKeynodeClass const lang_ru{"lang_ru"};
-  static inline ScKeynodeNoRole const nrel_basic_sequence{"nrel_basic_sequence"};
+  static inline ScKeynode const nrel_inclusion{"nrel_inclusion", ScType::NodeConstNoRole};
+  static inline ScKeynode const nrel_idtf{"nrel_idtf", ScType::NodeConstNoRole};
+  static inline ScKeynode const nrel_main_idtf{"nrel_main_idtf", ScType::NodeConstNoRole};
+  static inline ScKeynode const nrel_lexicographically_more{"nrel_lexicographically_more", ScType::NodeConstNoRole};
+  static inline ScKeynode const nrel_lexicographically_less{"nrel_lexicographically_less", ScType::NodeConstNoRole};
+  static inline ScKeynode const nrel_equal_strings{"nrel_equal_strings", ScType::NodeConstNoRole};
+  static inline ScKeynode const rrel_1{"rrel_1", ScType::NodeConstRole};
+  static inline ScKeynode const rrel_2{"rrel_2", ScType::NodeConstRole};
+  static inline ScKeynode const rrel_3{"rrel_3", ScType::NodeConstRole};
+  static inline ScKeynode const rrel_last_added_sc_element{"rrel_last_added_sc_element", ScType::NodeConstRole};
+  static inline ScKeynode const number{"number", ScType::NodeConstClass};
+  static inline ScKeynode const nrel_equal_numbers{"nrel_equal_numbers", ScType::NodeConstNoRole};
+  static inline ScKeynode const nrel_be_more{"nrel_be_more", ScType::NodeConstNoRole};
+  static inline ScKeynode const rrel_key_sc_element{"rrel_key_sc_element", ScType::NodeConstRole};
+  static inline ScKeynode const nrel_sc_text_translation{"nrel_sc_text_translation", ScType::NodeConstNoRole};
+  static inline ScKeynode const rrel_main_key_sc_element{"rrel_main_key_sc_element", ScType::NodeConstRole};
+  static inline ScKeynode const cardinality{"cardinality", ScType::NodeConstClass};
+  static inline ScKeynode const lang_ru{"lang_ru", ScType::NodeConstClass};
+  static inline ScKeynode const nrel_basic_sequence{"nrel_basic_sequence", ScType::NodeConstNoRole};
 };
 
 }  // namespace scAgentsCommon
