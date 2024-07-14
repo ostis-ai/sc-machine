@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "sc-memory/sc_event.hpp"
+#include <algorithm>
 
-#include "algorithm"
+#include "sc-memory/sc_event_subscription.hpp"
 
 class ScMemoryJsonEventsManager
 {

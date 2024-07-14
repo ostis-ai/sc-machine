@@ -8,7 +8,7 @@
 
 #include <thread>
 
-#include <sc-memory/sc_event.hpp>
+#include <sc-memory/sc_event_subscription.hpp>
 
 #include "sc-core/sc_keynodes.h"
 

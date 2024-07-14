@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "sc_type.hpp"
+#include "sc_addr.hpp"
 
 /**
  * Base class for all objects that has meta data.
@@ -17,17 +17,11 @@
 class ScObject
 {
 public:
-  _SC_EXTERN ScObject & operator=(ScObject const & other) = default;
+  _SC_EXTERN ScObject & operator=(ScObject const & other);
 
-  _SC_EXTERN virtual ~ScObject() = default;
+  _SC_EXTERN virtual ~ScObject();
 
-  _SC_EXTERN std::string GetName()
-  {
-    if (m_name.empty())
-      m_name = Demangle(typeid(*this).name());
-
-    return m_name;
-  }
+  _SC_EXTERN std::string GetName();
 
   template <class Class>
   static _SC_EXTERN std::string GetName()
@@ -35,46 +29,13 @@ public:
     return Demangle(typeid(Class).name());
   }
 
-  _SC_EXTERN virtual sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) = 0;
-  _SC_EXTERN virtual sc_result Shutdown(ScMemoryContext * ctx) = 0;
+  _SC_EXTERN virtual sc_result Initialize(
+      class ScMemoryContext * ctx,
+      ScAddr const & initMemoryGeneratedStructureAddr) = 0;
+  _SC_EXTERN virtual sc_result Shutdown(class ScMemoryContext * ctx) = 0;
 
 private:
   std::string m_name;
 
-  static _SC_EXTERN std::string Demangle(std::string const & mangled_name)
-  {
-    std::string demangled;
-    size_t i = 0;
-
-    if (mangled_name[0] == 'N')
-      ++i;
-
-    while (i < mangled_name.size() && std::isdigit(mangled_name[i]))
-    {
-      // Read the length of the next part
-      size_t len = 0;
-      while (i < mangled_name.size() && std::isdigit(mangled_name[i]))
-      {
-        len = len * 10 + (mangled_name[i] - '0');
-        ++i;
-      }
-
-      // Extract the part of the name
-      if (i + len <= mangled_name.size())
-      {
-        if (!demangled.empty())
-          demangled += "::";
-
-        demangled += mangled_name.substr(i, len);
-        i += len;
-      }
-      else
-      {
-        // If the length is invalid, return the original mangled name
-        return mangled_name;
-      }
-    }
-
-    return demangled;
-  }
+  static _SC_EXTERN std::string Demangle(std::string const & mangled_name);
 };

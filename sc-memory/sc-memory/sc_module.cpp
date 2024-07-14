@@ -6,6 +6,13 @@
 
 #include "sc-memory/sc_module.hpp"
 
+ScModule::~ScModule() = default;
+
+ScModule * ScModule::Create(ScModule * module)
+{
+  return module;
+}
+
 sc_result ScModule::Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
   SC_LOG_INFO("Initialize " << this->GetName());

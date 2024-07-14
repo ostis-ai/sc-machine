@@ -8,7 +8,7 @@
 
 #include "sc_agent_context.hpp"
 
-#include "sc-memory/sc_keynodes.hpp"
+#include "sc_keynodes.hpp"
 
 ScAgentContext::ScAgentContext() noexcept
   : ScAgentContext(ScAddr::Empty)

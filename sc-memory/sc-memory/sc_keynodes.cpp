@@ -5,7 +5,70 @@
  */
 
 #include "sc_keynodes.hpp"
+
+#include "sc_memory.hpp"
+
 #include "sc_struct.hpp"
+
+void internal::ScKeynodesRegister::Remember(ScAddr * keynode, std::string_view const & idtf, ScType const & keynodeType)
+{
+  m_keynodes.insert({keynode, {idtf, keynodeType}});
+}
+
+void internal::ScKeynodesRegister::Forget(ScAddr * keynode)
+{
+  m_keynodes.erase(keynode);
+}
+
+void internal::ScKeynodesRegister::Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure)
+{
+  for (auto const & item : m_keynodes)
+  {
+    ScAddr * keynode = item.first;
+    auto const & keynodeInfo = item.second;
+    ScSystemIdentifierQuintuple fiver;
+    context->HelperResolveSystemIdtf(std::string(keynodeInfo.first), keynodeInfo.second, fiver);
+    *keynode = fiver.addr1;
+
+    if (initMemoryGeneratedStructure.IsValid())
+    {
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr1);
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr2);
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr3);
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr4);
+    }
+  }
+}
+
+void internal::ScKeynodesRegister::Unregister(ScMemoryContext *) {}
+
+ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type)
+  : ScAddr(ScAddr::Empty)
+{
+  if (!sysIdtf.empty())
+    internal::ScKeynodesRegister::Remember(this, sysIdtf, type);
+}
+
+ScKeynode::ScKeynode(sc_addr const & addr)
+  : ScAddr(addr)
+{
+}
+
+ScKeynode::~ScKeynode()
+{
+  internal::ScKeynodesRegister::Forget(this);
+}
+
+ScKeynode::ScKeynode(ScKeynode const & other)
+  : ScAddr(other)
+{
+}
+
+ScKeynode & ScKeynode::operator=(ScKeynode const & other)
+{
+  this->m_realAddr = other.m_realAddr;
+  return *this;
+}
 
 size_t const kKeynodeRrelListNum = 20;
 std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
