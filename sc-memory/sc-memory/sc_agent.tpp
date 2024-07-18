@@ -110,21 +110,21 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
   };
 }
 
-template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
+template <ScAgentClass<ScActionEvent> TScAgent>
 void ScActionAgent::Register(ScMemoryContext * ctx, ScAddr const & actionClassAddr)
 {
-  SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
+  SC_LOG_INFO("Register " << TScAgent::template GetName<TScAgent>());
 
   ScActionAgent::m_events.insert(
       {actionClassAddr,
-       new ScEventSubscriptionAddOutputEdge(
+       new ScActionEventSubscription(
            *ctx, ScKeynodes::action_initiated, TScAgent::template GetCallback<TScAgent>(actionClassAddr))});
 }
 
-template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
+template <ScAgentClass<ScActionEvent> TScAgent>
 void ScActionAgent::Unregister(ScMemoryContext *, ScAddr const & actionClassAddr)
 {
-  SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
+  SC_LOG_INFO("Unregister " << TScAgent::template GetName<TScAgent>());
 
   auto const & it = ScActionAgent::m_events.find(actionClassAddr);
   if (it != ScActionAgent::m_events.cend())
@@ -132,15 +132,14 @@ void ScActionAgent::Unregister(ScMemoryContext *, ScAddr const & actionClassAddr
 }
 
 template <class TScAgent>
-std::function<sc_result(ScEventAddOutputEdge const &)> ScActionAgent::GetCallback(ScAddr const & actionClassAddr)
+std::function<sc_result(ScActionEvent const &)> ScActionAgent::GetCallback(ScAddr const & actionClassAddr)
 {
-  return [actionClassAddr](ScEventAddOutputEdge const & event) -> sc_result
+  return [actionClassAddr](ScActionEvent const & event) -> sc_result
   {
-    ScAddr const & actionAddr = event.GetOtherElement();
-
     sc_result result = SC_RESULT_ERROR;
     if (!(event.GetAddedConnectorType().BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
-        || (!ScMemory::ms_globalContext->HelperCheckEdge(actionClassAddr, actionAddr, ScType::EdgeAccessConstPosPerm)))
+        || (!ScMemory::ms_globalContext->HelperCheckEdge(
+            actionClassAddr, event.GetOtherElement(), ScType::EdgeAccessConstPosPerm)))
       return result;
 
     TScAgent agent;
@@ -153,24 +152,17 @@ std::function<sc_result(ScEventAddOutputEdge const &)> ScActionAgent::GetCallbac
     {
       SC_LOG_INFO(agent.GetName() << " finished successfully");
       agent.OnSuccess(event);
-      ScMemory::ms_globalContext->CreateEdge(
-          ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_successfully, actionAddr);
     }
     else if (result == SC_RESULT_NO)
     {
       SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
       agent.OnUnsuccess(event);
-      ScMemory::ms_globalContext->CreateEdge(
-          ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_unsuccessfully, actionAddr);
     }
     else
     {
       SC_LOG_INFO(agent.GetName() << " finished with error");
       agent.OnError(event, result);
-      ScMemory::ms_globalContext->CreateEdge(
-          ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_with_error, actionAddr);
     }
-    ScMemory::ms_globalContext->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, actionAddr);
 
     return result;
   };

@@ -9,7 +9,7 @@ namespace scUtilsTestAgents
 class FinishActionTestAgent : public ScActionAgent
 {
 public:
-  sc_result OnEvent(ScEventAddOutputEdge const & event) override;
+  sc_result OnEvent(ScActionEvent const & event) override;
 };
 
 }  // namespace scUtilsTestAgents

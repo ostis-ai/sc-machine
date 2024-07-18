@@ -10,6 +10,7 @@
 
 #include "sc_event.hpp"
 #include "sc_event_subscription.hpp"
+#include "sc_action.hpp"
 
 #include "sc_agent_context.hpp"
 
@@ -79,9 +80,6 @@ concept ScAgentClass = requires {
   requires std::derived_from<TScAgent, ScAgentAbstract<TScEvent>>;
   requires !std::is_abstract_v<TScAgent>;
 };
-
-template <class TScAddr>
-concept ScAddrClass = std::derived_from<TScAddr, ScAddr>;
 
 /*!
  * @interface An interface for implementing agents classes to subscribe its on any sc-events.
@@ -221,7 +219,7 @@ protected:
  * }
  * \endcode
  */
-class _SC_EXTERN ScActionAgent : public ScAgent<ScEventAddOutputEdge>
+class _SC_EXTERN ScActionAgent : public ScAgent<ScActionEvent>
 {
 public:
   /*!
@@ -230,7 +228,7 @@ public:
    * or ScActionAgent.
    * @param ctx Context in which speficied agent class is being registered.
    */
-  template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
+  template <ScAgentClass<ScActionEvent> TScAgent>
   static _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & actionClassAddr);
 
   /*!
@@ -238,7 +236,7 @@ public:
    * @tparam TScAgent Name of agent class being unregistered.
    * @param ctx Сontext in which agent class is being unregistered.
    */
-  template <ScAgentClass<ScEventAddOutputEdge> TScAgent>
+  template <ScAgentClass<ScActionEvent> TScAgent>
   static _SC_EXTERN void Unregister(ScMemoryContext *, ScAddr const & actionClassAddr);
 
 protected:
@@ -258,7 +256,7 @@ protected:
    *          - Logs the status of the agent's execution and creates corresponding edges in the sc-memory.
    */
   template <class TScAgent>
-  static _SC_EXTERN std::function<sc_result(ScEventAddOutputEdge const &)> GetCallback(ScAddr const & actionClassAddr);
+  static _SC_EXTERN std::function<sc_result(ScActionEvent const &)> GetCallback(ScAddr const & actionClassAddr);
 };
 
 #include "sc_agent.tpp"

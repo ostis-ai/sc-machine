@@ -58,40 +58,38 @@ sc_result ATestAddMultipleOutputEdge::OnEvent(ScEventAddOutputEdge const &)
 
 /// --------------------------------------
 
-sc_result ATestCheckResult::OnEvent(ScEventAddOutputEdge const & event)
+sc_result ATestCheckResult::OnEvent(ScActionEvent const & event)
 {
-  ScAddr const & actionAddr = event.GetOtherElement();
-
-  ScAddr const & firstArgument = m_memoryCtx.GetActionArgument(actionAddr, 1);
-  ScAddr const & secondArgument = m_memoryCtx.GetActionArgument(actionAddr, 2);
+  ScAction action = event.GetAction();
+  auto [firstArgument, secondArgument] = action.GetArguments<2>();
 
   if (firstArgument.IsValid() == SC_FALSE)
   {
     msWaiter.Unlock();
-    return SC_RESULT_ERROR;
+    return action.FinishWithError();
   }
 
   if (secondArgument.IsValid() == SC_FALSE)
   {
     msWaiter.Unlock();
-    return SC_RESULT_NO;
+    return action.FinishUnsuccessfully();
   }
 
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
-void ATestCheckResult::OnSuccess(ScEventAddOutputEdge const &)
+void ATestCheckResult::OnSuccess(ScActionEvent const & event)
 {
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msAgentSet, ATestAddOutputEdge::add_output_edge_action);
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msAgentSet, event.GetSubscriptionElement());
 }
 
-void ATestCheckResult::OnUnsuccess(ScEventAddOutputEdge const &)
+void ATestCheckResult::OnUnsuccess(ScActionEvent const & event)
 {
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstFuzPerm, msAgentSet, ATestAddOutputEdge::add_output_edge_action);
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstFuzPerm, msAgentSet, event.GetSubscriptionElement());
 }
 
-void ATestCheckResult::OnError(ScEventAddOutputEdge const &, sc_result)
+void ATestCheckResult::OnError(ScActionEvent const & event, sc_result)
 {
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstNegPerm, msAgentSet, ATestAddOutputEdge::add_output_edge_action);
+  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstNegPerm, msAgentSet, event.GetSubscriptionElement());
 }

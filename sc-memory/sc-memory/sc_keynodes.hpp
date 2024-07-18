@@ -171,7 +171,6 @@ public:
 
   _SC_EXTERN static inline ScKeynode const empty_class{};
 
-private:
   _SC_EXTERN static ScAddr const & GetResultCodeAddr(sc_result resCode);
   _SC_EXTERN static sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
   _SC_EXTERN static ScAddr const & GetRrelIndex(size_t idx);
