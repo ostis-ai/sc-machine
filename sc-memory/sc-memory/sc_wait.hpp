@@ -17,6 +17,10 @@
  */
 class _SC_EXTERN ScWait : public ScObject
 {
+public:
+  using DelegateFunc = std::function<void(void)>;
+
+private:
   class Impl
   {
   public:
@@ -25,7 +29,7 @@ class _SC_EXTERN ScWait : public ScObject
 
     void Resolve();
 
-    sc_bool Wait(sc_uint32 timeout_ms);
+    sc_bool Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate);
 
   private:
     std::mutex m_mutex;
@@ -34,13 +38,11 @@ class _SC_EXTERN ScWait : public ScObject
   };
 
 public:
-  using DelegateFunc = std::function<void(void)>;
-
   _SC_EXTERN ~ScWait() override;
 
   _SC_EXTERN void Resolve();
 
-  _SC_EXTERN ScWait & SetOnWaitStartDelegate(DelegateFunc const & startDelegate);
+  _SC_EXTERN ScWait * SetOnWaitStartDelegate(DelegateFunc const & startDelegate);
 
   _SC_EXTERN sc_bool Wait(
       sc_uint32 timeout_ms = 5000,

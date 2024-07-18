@@ -13,7 +13,7 @@
 #include "sc-core/sc-store/sc-event/sc_event_types.h"
 
 template <class TScEvent>
-concept _SC_EXTERN ScEventClass = std::derived_from<TScEvent, class ScEvent>;
+concept _SC_EXTERN ScEventClass = std::is_base_of_v<class ScEvent, TScEvent>;
 
 class _SC_EXTERN ScEvent : public ScObject
 {
@@ -159,7 +159,7 @@ protected:
       ScAddr const & otherAddr);
 };
 
-class _SC_EXTERN ScEventAddOutputEdge final : public ScEventAddEdge
+class _SC_EXTERN ScEventAddOutputEdge : public ScEventAddEdge
 {
 protected:
   _SC_EXTERN ScEventAddOutputEdge(

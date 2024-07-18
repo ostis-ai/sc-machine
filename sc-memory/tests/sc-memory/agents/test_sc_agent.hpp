@@ -99,13 +99,13 @@ public:
 class ATestCheckResult : public ScActionAgent
 {
 public:
-  void OnSuccess(ScEventAddOutputEdge const & event) override;
-  void OnUnsuccess(ScEventAddOutputEdge const & event) override;
-  void OnError(ScEventAddOutputEdge const & event, sc_result errorCode) override;
+  void OnSuccess(ScActionEvent const & event) override;
+  void OnUnsuccess(ScActionEvent const & event) override;
+  void OnError(ScActionEvent const & event, sc_result errorCode) override;
 
   static inline ScKeynode const msAgentSet{"agents_set", ScType::NodeConstClass};
 
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventAddOutputEdge const & event) override;
+  sc_result OnEvent(ScActionEvent const & event) override;
 };

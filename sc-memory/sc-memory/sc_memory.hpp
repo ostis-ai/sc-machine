@@ -1254,6 +1254,7 @@ public:
 protected:
   friend class ScMemory;
   friend class ScServerMessageAction;
+  friend class ScAction;
 
   _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr) noexcept;
 
