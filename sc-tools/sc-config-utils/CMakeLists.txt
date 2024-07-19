@@ -6,9 +6,9 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 add_library(sc-config-utils SHARED ${SOURCES})
-target_link_libraries(sc-config-utils LINK_PUBLIC sc-memory)
+target_link_libraries(sc-config-utils LINK_PUBLIC sc-memory-interface)
 target_include_directories(sc-config-utils PUBLIC ${SC_CONFIG_UTILS_SRC})
-target_compile_features(sc-config-utils PUBLIC cxx_std_20)
+target_compile_features(sc-config-utils PUBLIC cxx_std_17)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-config-utils)
