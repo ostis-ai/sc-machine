@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.12)
 project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)

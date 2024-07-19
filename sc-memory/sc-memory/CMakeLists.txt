@@ -35,11 +35,11 @@ target_include_directories(sc-memory
     PUBLIC ${SC_MEMORY_SRC}
     PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
 )
-target_compile_features(sc-memory PRIVATE cxx_std_20)
-
-add_library(sc-memory-interface INTERFACE)
-target_link_libraries(sc-memory-interface INTERFACE sc-memory)
-target_compile_features(sc-memory-interface INTERFACE cxx_std_17)
+set_target_properties(sc-memory PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
 
 sc_codegen_ex(sc-memory ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/generated")
 
