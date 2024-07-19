@@ -2,15 +2,18 @@
 
 using namespace scUtilsTestAgents;
 
-sc_result FinishActionTestAgent::OnEvent(ScActionEvent const & event)
+ScAddr FinishActionTestAgent::GetActionClass() const
 {
-  ScAction const & action = event.GetAction();
+  return FinishActionTestAgent::finish_action_test_action;
+}
 
+sc_result FinishActionTestAgent::DoProgram(ScActionEvent const &, ScAction & action)
+{
   ScTemplate actionDescriptionTemplate;
   actionDescriptionTemplate.Quintuple(
       action, ScType::EdgeDCommonVar, ScType::NodeVarStruct, ScType::EdgeAccessVarPosPerm, scAgentsCommon::CoreKeynodes::nrel_answer);
   ScTemplateGenResult actionDescriptionGenResult;
   m_memoryCtx.HelperGenTemplate(actionDescriptionTemplate, actionDescriptionGenResult);
 
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }

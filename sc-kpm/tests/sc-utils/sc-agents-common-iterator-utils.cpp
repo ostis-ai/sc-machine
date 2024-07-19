@@ -16,9 +16,9 @@
 TEST_F(ScMemoryTest, getNextFromSet)
 {
   std::string const data =
-        "@p1 = (set -> rrel_1: element_1);;"
-        "@p2 = (set -> element_2);;"
-        "@p1 => nrel_basic_sequence: @p2;;";
+      "@p1 = (set -> rrel_1: element_1);;"
+      "@p2 = (set -> element_2);;"
+      "@p1 => nrel_basic_sequence: @p2;;";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
@@ -42,11 +42,11 @@ TEST_F(ScMemoryTest, getNextFromSet)
 TEST_F(ScMemoryTest, getNextFromSetDouble)
 {
   std::string const data =
-        "@p1 = (set -> rrel_1: element_1);;"
-        "@p2 = (set -> element_2);;"
-        "@p3 = (set -> element_3);;"
-        "@p1 => nrel_basic_sequence: @p2;;"
-        "@p2 => nrel_basic_sequence: @p3;;";
+      "@p1 = (set -> rrel_1: element_1);;"
+      "@p2 = (set -> element_2);;"
+      "@p3 = (set -> element_3);;"
+      "@p1 => nrel_basic_sequence: @p2;;"
+      "@p2 => nrel_basic_sequence: @p3;;";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
@@ -75,8 +75,8 @@ TEST_F(ScMemoryTest, getNextFromSetDouble)
 TEST_F(ScMemoryTest, getNextFromSetNoSequence)
 {
   std::string const data =
-        "@p1 = (set -> rrel_1: element_1);;"
-        "@p2 = (set -> element_2);;";
+      "@p1 = (set -> rrel_1: element_1);;"
+      "@p2 = (set -> element_2);;";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
@@ -93,10 +93,10 @@ TEST_F(ScMemoryTest, getNextFromSetNoSequence)
 TEST_F(ScMemoryTest, getAnyByOutRelation)
 {
   std::string const data =
-        "dialog"
-        "  <- concept_dialog;"
-        "  -> rrel_last: message; "
-        "  -> rrel_1: message;; ";
+      "dialog"
+      "  <- concept_dialog;"
+      "  -> rrel_last: message; "
+      "  -> rrel_1: message;; ";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));

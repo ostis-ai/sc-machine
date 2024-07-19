@@ -40,7 +40,9 @@ public:
   static inline ScKeynode const add_input_edge_action{"add_input_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventAddInputEdge const & event) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventAddInputEdge const & event, ScAction & action) override;
 };
 
 class ATestAddOutputEdge : public ScAgent<ScEventAddOutputEdge>
@@ -49,7 +51,9 @@ public:
   static inline ScKeynode const add_output_edge_action{"add_output_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventAddOutputEdge const & event) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventAddOutputEdge const & event, ScAction & action) override;
 };
 
 class ATestRemoveInputEdge : public ScAgent<ScEventRemoveInputEdge>
@@ -58,7 +62,9 @@ public:
   static inline ScKeynode const remove_input_edge_action{"remove_input_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventRemoveInputEdge const & event) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventRemoveInputEdge const & event, ScAction & action) override;
 };
 
 class ATestRemoveOutputEdge : public ScAgent<ScEventRemoveOutputEdge>
@@ -67,7 +73,9 @@ public:
   static inline ScKeynode const remove_output_edge_action{"remove_output_edge_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventRemoveOutputEdge const & event) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventRemoveOutputEdge const & event, ScAction & action) override;
 };
 
 class ATestRemoveElement : public ScAgent<ScEventRemoveElement>
@@ -76,16 +84,20 @@ public:
   static inline ScKeynode const remove_element_action{"remove_element_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventRemoveElement const & event) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventRemoveElement const & event, ScAction & action) override;
 };
 
 class ATestContentChanged : public ScAgent<ScEventChangeContent>
 {
 public:
-  static inline ScKeynode const content_change_action{"content_change_action", ScType::LinkConst};
+  static inline ScKeynode const content_change_action{"content_change_action", ScType::NodeConstClass};
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventChangeContent const & event) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventChangeContent const & event, ScAction & action) override;
 };
 
 class ATestAddMultipleOutputEdge : public ScAgent<ScEventAddOutputEdge>
@@ -93,19 +105,17 @@ class ATestAddMultipleOutputEdge : public ScAgent<ScEventAddOutputEdge>
 public:
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScEventAddOutputEdge const &) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventAddOutputEdge const & event, ScAction & action) override;
 };
 
 class ATestCheckResult : public ScActionAgent
 {
 public:
-  void OnSuccess(ScActionEvent const & event) override;
-  void OnUnsuccess(ScActionEvent const & event) override;
-  void OnError(ScActionEvent const & event, sc_result errorCode) override;
-
-  static inline ScKeynode const msAgentSet{"agents_set", ScType::NodeConstClass};
-
   static inline TestWaiter msWaiter;
 
-  sc_result OnEvent(ScActionEvent const & event) override;
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
