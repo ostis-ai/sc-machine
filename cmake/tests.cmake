@@ -14,7 +14,7 @@ function(make_tests_from_folder folder)
   file(GLOB_RECURSE SOURCES "${folder}/*.cpp" "${folder}/*.hpp")
 
   add_executable(${target} ${SOURCES})
-  target_link_libraries(${target} ${GTEST_MAIN_LIBRARIES} ${TEST_DEPENDS})
+  target_link_libraries(${target} gtest gtest_main ${TEST_DEPENDS})
   target_include_directories(${target} PRIVATE ${GTEST_INCLUDE_DIRS} ${TEST_INCLUDES})
 
   add_test(NAME ${target} COMMAND ${target} ${TEST_ARGUMENTS})
