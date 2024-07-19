@@ -14,7 +14,7 @@
 
 using namespace scUtilsTestAgents;
 
-TEST_F(ScMemoryTest, wrapInOrientedSetBySequenceRelation)
+TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
 {
   std::string const data =
       "concept_message"
@@ -67,18 +67,19 @@ TEST_F(ScMemoryTest, wrapInOrientedSetBySequenceRelation)
   EXPECT_TRUE(searchResult.Size() == 1);
 }
 
-TEST_F(ScMemoryTest, formActionNode)
+TEST_F(ScMemoryTest, FormActionNode)
 {
-  ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
 
-  ScAddr const & actionNode = utils::AgentUtils::formActionNode(m_ctx.get(), actionClass, params);
+  ScAddr const & actionNode =
+      utils::AgentUtils::formActionNode(m_ctx.get(), FinishActionTestAgent::finish_action_test_action, params);
   EXPECT_TRUE(actionNode.IsValid());
 
   std::string const actionAlias = "_action";
 
   ScTemplate generatedActionTemplate;
-  generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
+  generatedActionTemplate.Triple(
+      FinishActionTestAgent::finish_action_test_action, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
   generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeAccessVarPosPerm,
@@ -97,20 +98,21 @@ TEST_F(ScMemoryTest, formActionNode)
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 }
 
-TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
+TEST_F(ScMemoryTest, GetActionResultIfExistForGeneratedAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
-  ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
 
-  ScAddr const & answerNode = utils::AgentUtils::applyActionAndGetResultIfExists(m_ctx.get(), actionClass, params);
+  ScAddr const & answerNode = utils::AgentUtils::applyActionAndGetResultIfExists(
+      m_ctx.get(), FinishActionTestAgent::finish_action_test_action, params);
   EXPECT_TRUE(answerNode.IsValid());
 
   std::string const actionAlias = "_action";
 
   ScTemplate generatedActionTemplate;
-  generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
+  generatedActionTemplate.Triple(
+      FinishActionTestAgent::finish_action_test_action, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
   generatedActionTemplate.Triple(
       scAgentsCommon::CoreKeynodes::action_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
   generatedActionTemplate.Quintuple(
@@ -124,14 +126,15 @@ TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
 }
 
-TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
+TEST_F(ScMemoryTest, GetActionResultIfExistForExistingAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, FinishActionTestAgent::finish_action_test_action, actionNode);
 
   ScAddr const & answerNode = utils::AgentUtils::applyActionAndGetResultIfExists(m_ctx.get(), actionNode);
   EXPECT_TRUE(answerNode.IsValid());
@@ -150,22 +153,22 @@ TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
 }
 
-TEST_F(ScMemoryTest, applyGeneratedAction)
+TEST_F(ScMemoryTest, ApplyGeneratedAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
-  ScAddr actionClass = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
 
-  EXPECT_TRUE(utils::AgentUtils::applyAction(m_ctx.get(), actionClass, params));
+  EXPECT_TRUE(utils::AgentUtils::applyAction(m_ctx.get(), FinishActionTestAgent::finish_action_test_action, params));
 
   std::string const actionAlias = "_action";
 
   ScTemplate generatedActionTemplate;
-  generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
+  generatedActionTemplate.Triple(
+      FinishActionTestAgent::finish_action_test_action, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
   generatedActionTemplate.Triple(
       scAgentsCommon::CoreKeynodes::action_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
   generatedActionTemplate.Quintuple(
@@ -185,19 +188,20 @@ TEST_F(ScMemoryTest, applyGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
 }
 
-TEST_F(ScMemoryTest, applyExistingAction)
+TEST_F(ScMemoryTest, ApplyExistingAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, FinishActionTestAgent::finish_action_test_action, actionNode);
 
   EXPECT_TRUE(utils::AgentUtils::applyAction(m_ctx.get(), actionNode));
 
   EXPECT_TRUE(m_ctx->HelperCheckEdge(
       scAgentsCommon::CoreKeynodes::action_finished, actionNode, ScType::EdgeAccessConstPosPerm));
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx, ScKeynodes::action_initiated);
+  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
 }

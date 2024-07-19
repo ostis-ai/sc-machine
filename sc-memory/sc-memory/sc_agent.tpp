@@ -23,6 +23,18 @@ ScAgentAbstract<TScEvent>::~ScAgentAbstract()
 }
 
 template <ScEventClass TScEvent>
+sc_bool ScAgentAbstract<TScEvent>::CheckInitiationCondition(TScEvent const &)
+{
+  return SC_TRUE;
+}
+
+template <ScEventClass TScEvent>
+sc_bool ScAgentAbstract<TScEvent>::CheckResult(TScEvent const &, ScAction &)
+{
+  return SC_TRUE;
+}
+
+template <ScEventClass TScEvent>
 void ScAgentAbstract<TScEvent>::SetContext(ScAddr const & userAddr)
 {
   m_memoryCtx = ScAgentContext(userAddr);
@@ -56,9 +68,10 @@ void ScAgent<TScEvent>::Register(ScMemoryContext * ctx, TScAddr const &... subsc
 {
   SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
 
+  std::string const & agentName = TScAgent::template GetName<TScAgent>();
   for (ScAddr const & subscriptionAddr : ScAddrVector{subscriptionAddrs...})
     ScAgentAbstract<TScEvent>::m_events.insert(
-        {subscriptionAddr,
+        {agentName,
          new ScElementaryEventSubscription<TScEvent>(
              *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>())});
 }
@@ -69,11 +82,17 @@ void ScAgent<TScEvent>::Unregister(ScMemoryContext *, TScAddr const &... subscri
 {
   SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
 
-  for (ScAddr const & subscriptionAddr : ScAddrVector{subscriptionAddrs...})
+  std::string const & agentName = TScAgent::template GetName<TScAgent>();
+  for (ScAddr const & _ : ScAddrVector{subscriptionAddrs...})
   {
-    auto const & it = ScAgentAbstract<TScEvent>::m_events.find(subscriptionAddr);
+    SC_UNUSED(_);
+
+    auto const & it = ScAgentAbstract<TScEvent>::m_events.find(agentName);
     if (it != ScAgentAbstract<TScEvent>::m_events.cend())
+    {
       delete it->second;
+      it->second = nullptr;
+    }
   }
 }
 
@@ -83,87 +102,62 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
 {
   return [](TScEvent const & event) -> sc_result
   {
+    auto const & CreateAction = [](TScEvent const & event, ScAgent & agent) -> ScAction
+    {
+      if constexpr (std::is_base_of<class ScActionAgent, TScAgent>::value)
+        return ScAction(&agent.m_memoryCtx, event.GetOtherElement(), agent.GetActionClass());
+
+      return ScAction(&agent.m_memoryCtx, agent.GetActionClass());
+      ;
+    };
+
     TScAgent agent;
     agent.SetContext(event.GetUser());
 
+    ScAction action = CreateAction(event, agent);
+    if (!agent.CheckInitiationCondition(event))
+      return SC_RESULT_OK;
+
     SC_LOG_INFO(agent.GetName() << " started");
-    sc_result const result = agent.OnEvent(event);
+    sc_result result = agent.DoProgram(event, action);
 
     // finish agent
     if (result == SC_RESULT_OK)
-    {
       SC_LOG_INFO(agent.GetName() << " finished successfully");
-      agent.OnSuccess(event);
-    }
     else if (result == SC_RESULT_NO)
-    {
       SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
-      agent.OnUnsuccess(event);
-    }
     else
-    {
       SC_LOG_INFO(agent.GetName() << " finished with error");
-      agent.OnError(event, result);
-    }
+
+    if (!agent.CheckResult(event, action))
+      return SC_RESULT_OK;
 
     return result;
   };
 }
 
 template <ScAgentClass<ScActionEvent> TScAgent>
-void ScActionAgent::Register(ScMemoryContext * ctx, ScAddr const & actionClassAddr)
+void ScActionAgent::Register(ScMemoryContext * ctx)
 {
   SC_LOG_INFO("Register " << TScAgent::template GetName<TScAgent>());
 
+  std::string const & agentName = TScAgent::template GetName<TScAgent>();
   ScActionAgent::m_events.insert(
-      {actionClassAddr,
-       new ScActionEventSubscription(
-           *ctx, ScKeynodes::action_initiated, TScAgent::template GetCallback<TScAgent>(actionClassAddr))});
+      {agentName,
+       new ScElementaryEventSubscription<ScActionEvent>(
+           *ctx, ScKeynodes::action_initiated, TScAgent::template GetCallback<TScAgent>())});
 }
 
 template <ScAgentClass<ScActionEvent> TScAgent>
-void ScActionAgent::Unregister(ScMemoryContext *, ScAddr const & actionClassAddr)
+void ScActionAgent::Unregister(ScMemoryContext *)
 {
   SC_LOG_INFO("Unregister " << TScAgent::template GetName<TScAgent>());
 
-  auto const & it = ScActionAgent::m_events.find(actionClassAddr);
+  std::string const & agentName = TScAgent::template GetName<TScAgent>();
+  auto const & it = ScActionAgent::m_events.find(agentName);
   if (it != ScActionAgent::m_events.cend())
-    delete it->second;
-}
-
-template <class TScAgent>
-std::function<sc_result(ScActionEvent const &)> ScActionAgent::GetCallback(ScAddr const & actionClassAddr)
-{
-  return [actionClassAddr](ScActionEvent const & event) -> sc_result
   {
-    sc_result result = SC_RESULT_ERROR;
-    if (!(event.GetAddedConnectorType().BitAnd(ScType::EdgeAccess) == ScType::EdgeAccess)
-        || (!ScMemory::ms_globalContext->HelperCheckEdge(
-            actionClassAddr, event.GetOtherElement(), ScType::EdgeAccessConstPosPerm)))
-      return result;
-
-    TScAgent agent;
-    agent.SetContext(event.GetUser());
-    SC_LOG_INFO(agent.GetName() << " started");
-    result = agent.OnEvent(event);
-
-    // finish agent
-    if (result == SC_RESULT_OK)
-    {
-      SC_LOG_INFO(agent.GetName() << " finished successfully");
-      agent.OnSuccess(event);
-    }
-    else if (result == SC_RESULT_NO)
-    {
-      SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
-      agent.OnUnsuccess(event);
-    }
-    else
-    {
-      SC_LOG_INFO(agent.GetName() << " finished with error");
-      agent.OnError(event, result);
-    }
-
-    return result;
-  };
+    delete it->second;
+    it->second = nullptr;
+  }
 }

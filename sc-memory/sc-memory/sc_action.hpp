@@ -89,7 +89,7 @@ protected:
 
   ScStruct m_answer;
 
-  _SC_EXTERN ScAction(ScAddr const & userAddr, ScAddr const & actionAddr, ScAddr const & actionClassAddr);
+  _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const & actionClassAddr);
 
   _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr);
 
@@ -101,37 +101,8 @@ protected:
 
 private:
   friend class ScAgentContext;
-  friend class ScActionAgent;
-  friend class ScActionEvent;
-};
-
-class _SC_EXTERN ScActionEvent : public ScEventAddOutputEdge
-{
-public:
-  _SC_EXTERN ScAction GetAction() const;
-
-protected:
-  _SC_EXTERN ScActionEvent(
-      ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
-      ScAddr const & connectorAddr,
-      ScType const & connectorType,
-      ScAddr const & otherAddr);
-
-private:
   template <ScEventClass TScEvent>
-  friend class ScElementaryEventSubscription;
-
-  friend class ScActionAgent;
-
-  static inline Type const type = Type::AddOutputEdge;
+  friend class ScAgent;
 };
 
-class _SC_EXTERN ScActionEventSubscription final : public ScElementaryEventSubscription<ScActionEvent>
-{
-public:
-  _SC_EXTERN ScActionEventSubscription(
-      ScMemoryContext const & ctx,
-      ScAddr const & addr,
-      std::function<sc_result(ScActionEvent const &)> const & func);
-};
+using ScActionEvent = ScEventAddOutputEdge;

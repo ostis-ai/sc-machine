@@ -103,7 +103,7 @@ TEST_F(ScMemoryTest, test_successfull_result)
   json expectedJson = json::parse(expected);
   json resultJson = json::parse(result);
   // TODO: implement mocked sc-addrs for json
-  //EXPECT_EQ(expectedJson, resultJson);
+  // EXPECT_EQ(expectedJson, resultJson);
 
   sc_module_shutdown();
 }
@@ -126,7 +126,6 @@ TEST_F(ScMemoryTest, test_command_no_class)
 
   sc_module_shutdown();
 }
-
 
 TEST_F(ScMemoryTest, test_command_no_lang)
 {

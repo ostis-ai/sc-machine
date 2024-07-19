@@ -8,10 +8,10 @@
 
 #include "sc_agent_context.hpp"
 
-ScAction::ScAction(ScAddr const & userAddr, ScAddr const & actionAddr, ScAddr const & actionClassAddr)
+ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const & actionClassAddr)
   : ScAddr(actionAddr)
-  , m_ctx(new ScAgentContext(userAddr))
-  , m_userAddr(userAddr)
+  , m_ctx(ctx)
+  , m_userAddr(ctx->GetUserAddr())
   , m_actionClassAddr(actionClassAddr)
   , m_answer(*m_ctx) {};
 
@@ -166,24 +166,3 @@ sc_result ScAction::FinishWithError() noexcept(false)
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
   return SC_RESULT_ERROR;
 }
-
-ScActionEvent::ScActionEvent(
-    ScAddr const & userAddr,
-    ScAddr const & subscriptionAddr,
-    ScAddr const & connectorAddr,
-    ScType const & connectorType,
-    ScAddr const & otherAddr)
-  : ScEventAddOutputEdge(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr)
-{
-}
-
-ScAction ScActionEvent::GetAction() const
-{
-  return ScAction{m_userAddr, m_otherAddr, m_subscriptionAddr};
-}
-
-ScActionEventSubscription::ScActionEventSubscription(
-    ScMemoryContext const & ctx,
-    ScAddr const & addr,
-    std::function<sc_result(ScActionEvent const &)> const & func)
-  : ScElementaryEventSubscription<ScActionEvent>(ctx, addr, func) {};

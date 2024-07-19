@@ -2,7 +2,12 @@
 
 /// --------------------------------------
 
-sc_result ATestAddInputEdge::OnEvent(ScEventAddInputEdge const &)
+ScAddr ATestAddInputEdge::GetActionClass() const
+{
+  return ATestAddInputEdge::add_input_edge_action;
+}
+
+sc_result ATestAddInputEdge::DoProgram(ScEventAddInputEdge const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -10,7 +15,12 @@ sc_result ATestAddInputEdge::OnEvent(ScEventAddInputEdge const &)
 
 /// --------------------------------------
 
-sc_result ATestAddOutputEdge::OnEvent(ScEventAddOutputEdge const &)
+ScAddr ATestAddOutputEdge::GetActionClass() const
+{
+  return ATestAddOutputEdge::add_output_edge_action;
+}
+
+sc_result ATestAddOutputEdge::DoProgram(ScEventAddOutputEdge const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -18,7 +28,12 @@ sc_result ATestAddOutputEdge::OnEvent(ScEventAddOutputEdge const &)
 
 /// --------------------------------------
 
-sc_result ATestRemoveInputEdge::OnEvent(ScEventRemoveInputEdge const &)
+ScAddr ATestRemoveInputEdge::GetActionClass() const
+{
+  return ATestRemoveInputEdge::remove_input_edge_action;
+}
+
+sc_result ATestRemoveInputEdge::DoProgram(ScEventRemoveInputEdge const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -26,7 +41,12 @@ sc_result ATestRemoveInputEdge::OnEvent(ScEventRemoveInputEdge const &)
 
 /// --------------------------------------
 
-sc_result ATestRemoveOutputEdge::OnEvent(ScEventRemoveOutputEdge const &)
+ScAddr ATestRemoveOutputEdge::GetActionClass() const
+{
+  return ATestRemoveOutputEdge::remove_output_edge_action;
+}
+
+sc_result ATestRemoveOutputEdge::DoProgram(ScEventRemoveOutputEdge const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -34,7 +54,12 @@ sc_result ATestRemoveOutputEdge::OnEvent(ScEventRemoveOutputEdge const &)
 
 /// --------------------------------------
 
-sc_result ATestRemoveElement::OnEvent(ScEventRemoveElement const &)
+ScAddr ATestRemoveElement::GetActionClass() const
+{
+  return ATestRemoveElement::remove_element_action;
+}
+
+sc_result ATestRemoveElement::DoProgram(ScEventRemoveElement const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -42,7 +67,12 @@ sc_result ATestRemoveElement::OnEvent(ScEventRemoveElement const &)
 
 /// --------------------------------------
 
-sc_result ATestContentChanged::OnEvent(ScEventChangeContent const &)
+ScAddr ATestContentChanged::GetActionClass() const
+{
+  return ATestContentChanged::content_change_action;
+}
+
+sc_result ATestContentChanged::DoProgram(ScEventChangeContent const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -50,7 +80,12 @@ sc_result ATestContentChanged::OnEvent(ScEventChangeContent const &)
 
 /// --------------------------------------
 
-sc_result ATestAddMultipleOutputEdge::OnEvent(ScEventAddOutputEdge const &)
+ScAddr ATestAddMultipleOutputEdge::GetActionClass() const
+{
+  return ATestAddOutputEdge::add_output_edge_action;
+}
+
+sc_result ATestAddMultipleOutputEdge::DoProgram(ScEventAddOutputEdge const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;
@@ -58,9 +93,13 @@ sc_result ATestAddMultipleOutputEdge::OnEvent(ScEventAddOutputEdge const &)
 
 /// --------------------------------------
 
-sc_result ATestCheckResult::OnEvent(ScActionEvent const & event)
+ScAddr ATestCheckResult::GetActionClass() const
 {
-  ScAction action = event.GetAction();
+  return ATestAddOutputEdge::add_output_edge_action;
+}
+
+sc_result ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
+{
   auto [firstArgument, secondArgument] = action.GetArguments<2>();
 
   if (firstArgument.IsValid() == SC_FALSE)
@@ -77,19 +116,4 @@ sc_result ATestCheckResult::OnEvent(ScActionEvent const & event)
 
   msWaiter.Unlock();
   return action.FinishSuccessfully();
-}
-
-void ATestCheckResult::OnSuccess(ScActionEvent const & event)
-{
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, msAgentSet, event.GetSubscriptionElement());
-}
-
-void ATestCheckResult::OnUnsuccess(ScActionEvent const & event)
-{
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstFuzPerm, msAgentSet, event.GetSubscriptionElement());
-}
-
-void ATestCheckResult::OnError(ScActionEvent const & event, sc_result)
-{
-  m_memoryCtx.CreateEdge(ScType::EdgeAccessConstNegPerm, msAgentSet, event.GetSubscriptionElement());
 }

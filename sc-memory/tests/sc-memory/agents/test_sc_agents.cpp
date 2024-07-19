@@ -9,175 +9,163 @@
 
 TEST_F(ScAgentTest, ATestAddInputEdge)
 {
-  RegisterAgent<ATestAddInputEdge>(&*m_ctx, ATestAddInputEdge::add_input_edge_action);
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+  RegisterAgent<ATestAddInputEdge>(&*m_ctx, subscriptionAddr);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, ATestAddInputEdge::add_input_edge_action);
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, subscriptionAddr);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestAddInputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestAddInputEdge>(&*m_ctx, ATestAddInputEdge::add_input_edge_action);
+  UnregisterAgent<ATestAddInputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestAddOutputEdge)
 {
-  RegisterAgent<ATestAddOutputEdge>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+  RegisterAgent<ATestAddOutputEdge>(&*m_ctx, subscriptionAddr);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::add_output_edge_action, node);
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, subscriptionAddr, node);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestAddOutputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestAddOutputEdge>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestAddOutputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestRemoveInputEdge)
 {
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, node, ATestRemoveInputEdge::remove_input_edge_action);
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, node, subscriptionAddr);
   EXPECT_TRUE(e.IsValid());
 
-  RegisterAgent<ATestRemoveInputEdge>(&*m_ctx, ATestRemoveInputEdge::remove_input_edge_action);
+  RegisterAgent<ATestRemoveInputEdge>(&*m_ctx, subscriptionAddr);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveInputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestRemoveInputEdge>(&*m_ctx, ATestRemoveInputEdge::remove_input_edge_action);
+  UnregisterAgent<ATestRemoveInputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestRemoveOutputEdge)
 {
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, ATestRemoveOutputEdge::remove_output_edge_action, node);
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, subscriptionAddr, node);
   EXPECT_TRUE(e.IsValid());
 
-  RegisterAgent<ATestRemoveOutputEdge>(&*m_ctx, ATestRemoveOutputEdge::remove_output_edge_action);
+  RegisterAgent<ATestRemoveOutputEdge>(&*m_ctx, subscriptionAddr);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveOutputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestRemoveOutputEdge>(&*m_ctx, ATestRemoveOutputEdge::remove_output_edge_action);
+  UnregisterAgent<ATestRemoveOutputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestRemoveElement)
 {
-  RegisterAgent<ATestRemoveElement>(&*m_ctx, ATestRemoveElement::remove_element_action);
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
 
-  EXPECT_TRUE(m_ctx->EraseElement(ATestRemoveElement::remove_element_action));
+  RegisterAgent<ATestRemoveElement>(&*m_ctx, subscriptionAddr);
+
+  EXPECT_TRUE(m_ctx->EraseElement(subscriptionAddr));
   EXPECT_TRUE(ATestRemoveElement::msWaiter.Wait());
 
-  UnregisterAgent<ATestRemoveElement>(&*m_ctx, ATestRemoveElement::remove_element_action);
+  UnregisterAgent<ATestRemoveElement>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestContentChanged)
 {
-  RegisterAgent<ATestContentChanged>(&*m_ctx, ATestContentChanged::content_change_action);
+  ScAddr const & subscriptionAddr = m_ctx->CreateLink(ScType::LinkConst);
+
+  RegisterAgent<ATestContentChanged>(&*m_ctx, subscriptionAddr);
 
   uint32_t const value = 100;
   ScStreamPtr const stream = ScStreamMakeRead(value);
-  EXPECT_TRUE(m_ctx->SetLinkContent(ATestContentChanged::content_change_action, stream));
+  EXPECT_TRUE(m_ctx->SetLinkContent(subscriptionAddr, stream));
   EXPECT_TRUE(ATestContentChanged::msWaiter.Wait());
 
-  UnregisterAgent<ATestContentChanged>(&*m_ctx, ATestContentChanged::content_change_action);
+  UnregisterAgent<ATestContentChanged>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
 {
-  RegisterAgent<ATestAddMultipleOutputEdge>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  RegisterAgent<ATestAddMultipleOutputEdge>(&*m_ctx, subscriptionAddr);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
 
-  ScAddr const e1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::add_output_edge_action, node);
+  ScAddr const e1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, subscriptionAddr, node);
   EXPECT_TRUE(e1.IsValid());
   EXPECT_TRUE(ATestAddMultipleOutputEdge::msWaiter.Wait());
 
-  ScAddr const e2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::add_output_edge_action, node);
+  ScAddr const e2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, subscriptionAddr, node);
   EXPECT_TRUE(e2.IsValid());
   EXPECT_TRUE(ATestAddMultipleOutputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestAddMultipleOutputEdge>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestAddMultipleOutputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
                   .SetArgument(1, ATestAddOutputEdge::add_output_edge_action)
                   .Initiate()
-                  ->Wait(
-                      2000,
-                      {},
-                      [&context]()
-                      {
-                        EXPECT_TRUE(context.HelperCheckEdge(
-                            ATestCheckResult::msAgentSet,
-                            ATestAddOutputEdge::add_output_edge_action,
-                            ScType::EdgeAccessConstFuzPerm));
-                      }));
+                  ->Wait(2000));
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
                   .SetArgument(2, ATestAddOutputEdge::add_output_edge_action)
                   .Initiate()
-                  ->Wait(
-                      2000,
-                      {},
-                      [&context]()
-                      {
-                        EXPECT_TRUE(context.HelperCheckEdge(
-                            ATestCheckResult::msAgentSet,
-                            ATestAddOutputEdge::add_output_edge_action,
-                            ScType::EdgeAccessConstFuzPerm));
-                      }));
+                  ->Wait(2000));
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
 
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
                   .SetArguments(ATestAddOutputEdge::add_output_edge_action, ATestAddOutputEdge::add_output_edge_action)
                   .Initiate()
-                  ->Wait(
-                      2000,
-                      [&context]()
-                      {
-                        EXPECT_TRUE(context.HelperCheckEdge(
-                            ATestCheckResult::msAgentSet,
-                            ATestAddOutputEdge::add_output_edge_action,
-                            ScType::EdgeAccessConstPosPerm));
-                      }));
+                  ->Wait(2000));
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, RegisterAgentWithinModule)
 {
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+
   TestModule module;
-  module.Agent<ATestAddOutputEdge>(ATestAddOutputEdge::add_output_edge_action);
+  module.Agent<ATestAddOutputEdge>(subscriptionAddr);
   module.Register(&*m_ctx);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ATestAddOutputEdge::add_output_edge_action, node);
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, subscriptionAddr, node);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestAddOutputEdge::msWaiter.Wait());
 

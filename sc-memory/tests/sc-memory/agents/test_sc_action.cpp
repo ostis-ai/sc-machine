@@ -73,9 +73,9 @@ TEST_F(ScAgentTest, CreateActionAndSetGetArguments)
   }
 }
 
-TEST_F(ScAgentTest, InitiateAndWaitActionV1)
+TEST_F(ScAgentTest, InitiateAndWaitAction)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action =
@@ -86,31 +86,12 @@ TEST_F(ScAgentTest, InitiateAndWaitActionV1)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
-}
-
-TEST_F(ScAgentTest, InitiateAndWaitActionV2)
-{
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
-
-  ScAgentContext context;
-  ScAction action =
-      context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
-          .SetArguments(ATestAddOutputEdge::add_output_edge_action, ATestAddOutputEdge::add_output_edge_action);
-  EXPECT_TRUE(action.Initiate());
-
-  EXPECT_TRUE(ScWaitActionFinished(context, action).Wait());
-
-  EXPECT_TRUE(action.IsInitiated());
-  EXPECT_TRUE(action.IsFinished());
-  EXPECT_TRUE(action.IsFinishedSuccessfully());
-
-  UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, InitiateWaitAndFinishAction)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputEdge::add_output_edge_action);
@@ -124,12 +105,12 @@ TEST_F(ScAgentTest, InitiateWaitAndFinishAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, InitiateWaitAndInitiateAction)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  RegisterAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputEdge::add_output_edge_action);
@@ -143,5 +124,5 @@ TEST_F(ScAgentTest, InitiateWaitAndInitiateAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx, ATestAddOutputEdge::add_output_edge_action);
+  UnregisterAgent<ATestCheckResult>(&*m_ctx);
 }

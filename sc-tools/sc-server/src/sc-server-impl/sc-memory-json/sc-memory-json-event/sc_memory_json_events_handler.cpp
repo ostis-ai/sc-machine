@@ -44,10 +44,10 @@ ScEventSubscription * CreateSubscription(
 
 std::map<std::string, ScMemoryJsonEventsHandler::ScEventSubscriptionCreateCallback> const
     ScMemoryJsonEventsHandler::events = {
-        {"add_outgoing_edge", CreateSubscription<sc_event_add_input_arc>},
-        {"add_ingoing_edge", CreateSubscription<sc_event_add_output_arc>},
-        {"remove_outgoing_edge", CreateSubscription<sc_event_remove_input_arc>},
-        {"remove_ingoing_edge", CreateSubscription<sc_event_remove_output_arc>},
+        {"add_outgoing_edge", CreateSubscription<sc_event_add_output_arc>},
+        {"add_ingoing_edge", CreateSubscription<sc_event_add_input_arc>},
+        {"remove_outgoing_edge", CreateSubscription<sc_event_remove_output_arc>},
+        {"remove_ingoing_edge", CreateSubscription<sc_event_remove_input_arc>},
         {"content_change", CreateSubscription<sc_event_remove_element>},
         {"delete_element", CreateSubscription<sc_event_change_content>},
 };

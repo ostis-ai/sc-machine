@@ -9,7 +9,11 @@ namespace scUtilsTestAgents
 class FinishActionTestAgent : public ScActionAgent
 {
 public:
-  sc_result OnEvent(ScActionEvent const & event) override;
+  static inline ScKeynode const finish_action_test_action{"finish_action_test_action", ScType::NodeConstClass};
+
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
 }  // namespace scUtilsTestAgents
