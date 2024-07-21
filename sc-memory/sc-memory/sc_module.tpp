@@ -22,26 +22,26 @@ ScModule * ScModule::Agent(TScAddr const &... addrs)
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  m_agents.push_back({{GetAgentRegisterCallback<TScAgent>(), GetAgentUnregisterCallback<TScAgent>()}, {addrs...}});
+  m_agents.push_back({{GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>()}, {addrs...}});
   return this;
 }
 
 template <class TScAgent>
-ScModule::ScAgentRegisterCallback ScModule::GetAgentRegisterCallback()
+ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback()
 {
   return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
   {
     for (ScAddr const & addr : addrs)
-      TScAgent::template Register<TScAgent>(ctx, addr);
+      TScAgent::template Subscribe<TScAgent>(ctx, addr);
   };
 }
 
 template <class TScAgent>
-ScModule::ScAgentUnregisterCallback ScModule::GetAgentUnregisterCallback()
+ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback()
 {
   return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
   {
     for (ScAddr const & addr : addrs)
-      TScAgent::template Unregister<TScAgent>(ctx, addr);
+      TScAgent::template Unsubscribe<TScAgent>(ctx, addr);
   };
 }

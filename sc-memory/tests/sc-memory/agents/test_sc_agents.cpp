@@ -10,7 +10,7 @@
 TEST_F(ScAgentTest, ATestAddInputEdge)
 {
   ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
-  RegisterAgent<ATestAddInputEdge>(&*m_ctx, subscriptionAddr);
+  SubscribeAgent<ATestAddInputEdge>(&*m_ctx, subscriptionAddr);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -18,13 +18,13 @@ TEST_F(ScAgentTest, ATestAddInputEdge)
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestAddInputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestAddInputEdge>(&*m_ctx, subscriptionAddr);
+  UnsubscribeAgent<ATestAddInputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestAddOutputEdge)
 {
   ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
-  RegisterAgent<ATestAddOutputEdge>(&*m_ctx, subscriptionAddr);
+  SubscribeAgent<ATestAddOutputEdge>(&*m_ctx, subscriptionAddr);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -32,7 +32,7 @@ TEST_F(ScAgentTest, ATestAddOutputEdge)
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestAddOutputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestAddOutputEdge>(&*m_ctx, subscriptionAddr);
+  UnsubscribeAgent<ATestAddOutputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestRemoveInputEdge)
@@ -44,12 +44,12 @@ TEST_F(ScAgentTest, ATestRemoveInputEdge)
   ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, node, subscriptionAddr);
   EXPECT_TRUE(e.IsValid());
 
-  RegisterAgent<ATestRemoveInputEdge>(&*m_ctx, subscriptionAddr);
+  SubscribeAgent<ATestRemoveInputEdge>(&*m_ctx, subscriptionAddr);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveInputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestRemoveInputEdge>(&*m_ctx, subscriptionAddr);
+  UnsubscribeAgent<ATestRemoveInputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestRemoveOutputEdge)
@@ -61,45 +61,45 @@ TEST_F(ScAgentTest, ATestRemoveOutputEdge)
   ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, subscriptionAddr, node);
   EXPECT_TRUE(e.IsValid());
 
-  RegisterAgent<ATestRemoveOutputEdge>(&*m_ctx, subscriptionAddr);
+  SubscribeAgent<ATestRemoveOutputEdge>(&*m_ctx, subscriptionAddr);
 
   EXPECT_TRUE(m_ctx->EraseElement(e));
   EXPECT_TRUE(ATestRemoveOutputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestRemoveOutputEdge>(&*m_ctx, subscriptionAddr);
+  UnsubscribeAgent<ATestRemoveOutputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestRemoveElement)
 {
   ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
 
-  RegisterAgent<ATestRemoveElement>(&*m_ctx, subscriptionAddr);
+  SubscribeAgent<ATestRemoveElement>(&*m_ctx, subscriptionAddr);
 
   EXPECT_TRUE(m_ctx->EraseElement(subscriptionAddr));
   EXPECT_TRUE(ATestRemoveElement::msWaiter.Wait());
 
-  UnregisterAgent<ATestRemoveElement>(&*m_ctx, subscriptionAddr);
+  UnsubscribeAgent<ATestRemoveElement>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestContentChanged)
 {
   ScAddr const & subscriptionAddr = m_ctx->CreateLink(ScType::LinkConst);
 
-  RegisterAgent<ATestContentChanged>(&*m_ctx, subscriptionAddr);
+  SubscribeAgent<ATestContentChanged>(&*m_ctx, subscriptionAddr);
 
   uint32_t const value = 100;
   ScStreamPtr const stream = ScStreamMakeRead(value);
   EXPECT_TRUE(m_ctx->SetLinkContent(subscriptionAddr, stream));
   EXPECT_TRUE(ATestContentChanged::msWaiter.Wait());
 
-  UnregisterAgent<ATestContentChanged>(&*m_ctx, subscriptionAddr);
+  UnsubscribeAgent<ATestContentChanged>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
 {
   ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
 
-  RegisterAgent<ATestAddMultipleOutputEdge>(&*m_ctx, subscriptionAddr);
+  SubscribeAgent<ATestAddMultipleOutputEdge>(&*m_ctx, subscriptionAddr);
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
@@ -112,12 +112,12 @@ TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
   EXPECT_TRUE(e2.IsValid());
   EXPECT_TRUE(ATestAddMultipleOutputEdge::msWaiter.Wait());
 
-  UnregisterAgent<ATestAddMultipleOutputEdge>(&*m_ctx, subscriptionAddr);
+  UnsubscribeAgent<ATestAddMultipleOutputEdge>(&*m_ctx, subscriptionAddr);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
@@ -125,12 +125,12 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
                   .Initiate()
                   ->Wait(2000));
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
@@ -138,12 +138,12 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
                   .Initiate()
                   ->Wait(2000));
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
 {
-  RegisterAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
 
@@ -152,7 +152,7 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
                   .Initiate()
                   ->Wait(2000));
 
-  UnregisterAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, RegisterAgentWithinModule)

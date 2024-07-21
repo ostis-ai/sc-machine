@@ -21,9 +21,14 @@
 #define SC_AGENT_LOG_WARNING(__msg__) SC_LOG_WARNING(GetName() << ": " << __msg__)
 #define SC_AGENT_LOG_ERROR(__msg__) SC_LOG_ERROR(GetName() << ": " << __msg__)
 
-/*!
- * @interface An interface for agents classes
- * @note This class is an API to implement your own registration API of agents.
+/**
+ * @class ScAgentAbstract
+ * @brief An abstract base class for sc-agents.
+ *
+ * This class provides a base implementation for sc-agents, offering methods for initialization, shutdown, and handling
+ * events.
+ *
+ * @tparam TScEvent The type of sc-event this agent handles.
  */
 template <class TScEvent>
 class _SC_EXTERN ScAgentAbstract : public ScObject
@@ -37,11 +42,6 @@ public:
 
   _SC_EXTERN virtual sc_bool CheckInitiationCondition(TScEvent const & event);
 
-  /*! @details It will be called, if the event the agent is subscribed to has been initialized. In this method,
-   * the logic implemented by the agent starts running. Depending on the event type, the number of valid arguments to
-   * this method changes.
-   * @return sc_result A status code of agent on it finish
-   */
   _SC_EXTERN virtual sc_result DoProgram(TScEvent const & event, ScAction & action) = 0;
 
   _SC_EXTERN virtual sc_bool CheckResult(TScEvent const & event, ScAction & action);
@@ -49,7 +49,10 @@ public:
 protected:
   mutable ScAgentContext m_memoryCtx;
 
-  static inline std::unordered_map<std::string, ScElementaryEventSubscription<TScEvent> *> m_events;
+  static inline std::unordered_map<
+      std::string,
+      std::unordered_map<ScAddr, ScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc<sc_uint64>>>
+      m_events;
 
   _SC_EXTERN ScAgentAbstract();
 
@@ -80,7 +83,7 @@ public:
    * @param ctx Context in which speficied agent class is being registered.
    */
   template <class TScAgent, class... TScAddr>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs);
+  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs);
 
   /*!
    * @brief Unregisters an agent class in sc-memory.
@@ -88,7 +91,7 @@ public:
    * @param ctx Сontext in which agent class is being unregistered.
    */
   template <class TScAgent, class... TScAddr>
-  static _SC_EXTERN void Unregister(ScMemoryContext *, TScAddr const &... subscriptionAddrs);
+  static _SC_EXTERN void Unsubscribe(ScMemoryContext *, TScAddr const &... subscriptionAddrs);
 
 protected:
   _SC_EXTERN explicit ScAgent();
@@ -213,7 +216,7 @@ public:
    * @param ctx Context in which speficied agent class is being registered.
    */
   template <class TScAgent>
-  static _SC_EXTERN void Register(ScMemoryContext * ctx);
+  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx);
 
   /*!
    * @brief Unregisters an agent class in sc-memory.
@@ -221,7 +224,7 @@ public:
    * @param ctx Сontext in which agent class is being unregistered.
    */
   template <class TScAgent>
-  static _SC_EXTERN void Unregister(ScMemoryContext * ctx);
+  static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx);
 
   _SC_EXTERN sc_bool CheckInitiationCondition(ScActionEvent const & event) override;
 };
@@ -234,18 +237,21 @@ public:
  * or ScActionAgent.
  * @param ctx Context in which specified agent class is being registered.
  */
-template <class TAgentClass, class... TScAddr>
-typename std::enable_if<!std::is_base_of<ScActionAgent, TAgentClass>::value>::type RegisterAgent(
+template <class TScAgent, class... TScAddr>
+typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(
     ScMemoryContext * ctx,
     TScAddr const &... subscriptionAddrs)
 {
-  TAgentClass::template Register<TAgentClass>(ctx, subscriptionAddrs...);
+  static_assert(
+      (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
+  TScAgent::template Subscribe<TScAgent>(ctx, subscriptionAddrs...);
 }
 
-template <class TAgentClass>
-typename std::enable_if<std::is_base_of<ScActionAgent, TAgentClass>::value>::type RegisterAgent(ScMemoryContext * ctx)
+template <class TScAgent>
+typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(ScMemoryContext * ctx)
 {
-  ScActionAgent::template Register<TAgentClass>(ctx);
+  ScActionAgent::template Subscribe<TScAgent>(ctx);
 }
 
 /*!
@@ -253,16 +259,19 @@ typename std::enable_if<std::is_base_of<ScActionAgent, TAgentClass>::value>::typ
  * @tparam TAgentClass Name of agent class being unregistered.
  * @param ctx Context in which agent class is being unregistered.
  */
-template <class TAgentClass, class... TScAddr>
-typename std::enable_if<!std::is_base_of<ScActionAgent, TAgentClass>::value>::type UnregisterAgent(
+template <class TScAgent, class... TScAddr>
+typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(
     ScMemoryContext * ctx,
     TScAddr const &... subscriptionAddrs)
 {
-  TAgentClass::template Unregister<TAgentClass>(ctx, subscriptionAddrs...);
+  static_assert(
+      (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
+  TScAgent::template Unsubscribe<TScAgent>(ctx, subscriptionAddrs...);
 }
 
-template <class TAgentClass>
-typename std::enable_if<std::is_base_of<ScActionAgent, TAgentClass>::value>::type UnregisterAgent(ScMemoryContext * ctx)
+template <class TScAgent>
+typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(ScMemoryContext * ctx)
 {
-  ScActionAgent::template Unregister<TAgentClass>(ctx);
+  ScActionAgent::template Unsubscribe<TScAgent>(ctx);
 }

@@ -100,7 +100,7 @@ TEST_F(ScMemoryTest, FormActionNode)
 
 TEST_F(ScMemoryTest, GetActionResultIfExistForGeneratedAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
+  SubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
 
@@ -126,12 +126,12 @@ TEST_F(ScMemoryTest, GetActionResultIfExistForGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
+  UnsubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 }
 
 TEST_F(ScMemoryTest, GetActionResultIfExistForExistingAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
+  SubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, FinishActionTestAgent::finish_action_test_action, actionNode);
@@ -153,12 +153,12 @@ TEST_F(ScMemoryTest, GetActionResultIfExistForExistingAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
+  UnsubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 }
 
 TEST_F(ScMemoryTest, ApplyGeneratedAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
+  SubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddrVector params = {m_ctx->CreateNode(ScType::NodeConst), m_ctx->CreateNode(ScType::NodeConst)};
 
@@ -188,12 +188,12 @@ TEST_F(ScMemoryTest, ApplyGeneratedAction)
 
   EXPECT_TRUE(generatedActionSearchResult.Size() == 1);
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
+  UnsubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 }
 
 TEST_F(ScMemoryTest, ApplyExistingAction)
 {
-  RegisterAgent<FinishActionTestAgent>(&*m_ctx);
+  SubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 
   ScAddr actionNode = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, FinishActionTestAgent::finish_action_test_action, actionNode);
@@ -203,5 +203,5 @@ TEST_F(ScMemoryTest, ApplyExistingAction)
   EXPECT_TRUE(m_ctx->HelperCheckEdge(
       scAgentsCommon::CoreKeynodes::action_finished, actionNode, ScType::EdgeAccessConstPosPerm));
 
-  UnregisterAgent<FinishActionTestAgent>(&*m_ctx);
+  UnsubscribeAgent<FinishActionTestAgent>(&*m_ctx);
 }

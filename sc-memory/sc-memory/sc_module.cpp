@@ -23,7 +23,7 @@ sc_result ScModule::Register(ScMemoryContext * ctx, ScAddr const & initMemoryGen
 
   for (auto const & agentInfo : m_agents)
   {
-    ScAgentRegisterCallback const & registerCallback = agentInfo.first.first;
+    ScAgentSubscribeCallback const & registerCallback = agentInfo.first.first;
     ScAddrVector const & addrs = agentInfo.second;
     registerCallback(ctx, addrs);
   }
@@ -42,7 +42,7 @@ sc_result ScModule::Unregister(ScMemoryContext * ctx)
 
   for (auto const & agentInfo : m_agents)
   {
-    ScAgentUnregisterCallback const & unregisterCallback = agentInfo.first.second;
+    ScAgentUnsubscribeCallback const & unregisterCallback = agentInfo.first.second;
     ScAddrVector const & addrs = agentInfo.second;
     unregisterCallback(ctx, addrs);
   }
