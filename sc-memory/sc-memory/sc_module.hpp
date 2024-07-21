@@ -41,7 +41,7 @@
  *   ->Agent<nlp::ScSemanticAnalysisAgent>();
  *
  * \endcode
- * @note Not recommended to use interface API to implement module classes. Use example defines instead of.
+ * @note Not recommended to use interface API to implement module classes. Use example defines instead.
  */
 class _SC_EXTERN ScModule : public ScObject
 {
@@ -51,26 +51,40 @@ public:
   _SC_EXTERN static ScModule * Create(ScModule * module);
 
   /*! Reminds keynodes to register it with module after.
-   * @param keynodes A pointer to dynamically created keynodes instance
-   * @returns Pointer to module instance
+   * @param TKeynodesClass A keynodes class to be initialized in this module.
+   * @returns Pointer to module instance.
    */
   template <class TKeynodesClass>
   _SC_EXTERN ScModule * Keynodes();
 
   /*! Reminds agent and it initiation condition to register it with module after.
-   * @param agentInfo A pointer to dynamically created agent instance and a vector of subscription addrs
-   * @returns Pointer to module instance
+   * @param TScAgent An agent class to be subscribe to.
+   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
+   *
+   * @returns Pointer to module instance.
    */
-  template <class TScAgent, class... TScAddr>
-  _SC_EXTERN ScModule * Agent(TScAddr const &... addrs);
+  template <
+      class TScAgent,
+      class... TScAddr,
+      typename = std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>>
+  _SC_EXTERN ScModule * Agent(TScAddr const &... subscriptionAddrs);
 
-  /*! Registers all module keynodes and agents
-   * @returns Result of initializing
+  /*! Reminds action agent and it initiation condition to register it with module after.
+   * @param TScAgent An agent class to be subscribe to.
+   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
+   *
+   * @returns Pointer to module instance.
+   */
+  template <class TScAgent, typename = std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>>
+  _SC_EXTERN ScModule * Agent();
+
+  /*! Registers all module keynodes and agents.
+   * @returns Result of initializing.
    */
   _SC_EXTERN sc_result Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr = ScAddr::Empty);
 
-  /*! Unregisters all module keynodes and agents
-   * @returns Result of shutdown
+  /*! Unregisters all module keynodes and agents.
+   * @returns Result of shutdown.
    */
   _SC_EXTERN sc_result Unregister(ScMemoryContext * ctx);
 

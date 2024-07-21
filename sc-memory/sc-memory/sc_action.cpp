@@ -11,14 +11,12 @@
 ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const & actionClassAddr)
   : ScAddr(actionAddr)
   , m_ctx(ctx)
-  , m_userAddr(ctx->GetUserAddr())
   , m_actionClassAddr(actionClassAddr)
   , m_answer(*m_ctx) {};
 
 ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr)
   : ScAddr(ctx->CreateNode(ScType::NodeConst))
   , m_ctx(ctx)
-  , m_userAddr(ctx->GetUserAddr())
   , m_actionClassAddr(actionClassAddr)
   , m_answer(*m_ctx)
 {

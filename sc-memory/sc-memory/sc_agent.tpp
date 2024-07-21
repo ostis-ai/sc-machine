@@ -168,7 +168,6 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
     SC_LOG_INFO(agent.GetName() << " started");
     sc_result result = agent.DoProgram(event, action);
 
-    // finish agent
     if (result == SC_RESULT_OK)
       SC_LOG_INFO(agent.GetName() << " finished successfully");
     else if (result == SC_RESULT_NO)

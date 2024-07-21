@@ -36,3 +36,9 @@ ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
   ScMemoryContext::operator=(std::move(other));
   return *this;
 }
+
+ScAction ScAgentContext::CreateAction(ScAddr const & actionAddrClass)
+{
+  ScAction action{this, actionAddrClass};
+  return action;
+}
