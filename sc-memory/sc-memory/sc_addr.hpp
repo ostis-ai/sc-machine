@@ -31,21 +31,9 @@ public:
 
   static ScAddr const Empty;
 
-  ScAddr()
-  {
-    SC_ADDR_MAKE_EMPTY(m_realAddr);
-  }
-
-  ScAddr(sc_addr const & addr)
-    : m_realAddr(addr)
-  {
-  }
-
-  ScAddr(ScAddr::HashType const & hash)
-  {
-    m_realAddr.offset = hash & 0xffff;
-    m_realAddr.seg = (hash >> 16) & 0xffff;
-  }
+  ScAddr();
+  ScAddr(sc_addr const & addr);
+  ScAddr(ScAddr::HashType const & hash);
 
   bool IsValid() const;
   void Reset();

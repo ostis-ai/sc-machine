@@ -8,6 +8,22 @@
 
 ScAddr const ScAddr::Empty;
 
+ScAddr::ScAddr()
+{
+  SC_ADDR_MAKE_EMPTY(m_realAddr);
+}
+
+ScAddr::ScAddr(sc_addr const & addr)
+  : m_realAddr(addr)
+{
+}
+
+ScAddr::ScAddr(ScAddr::HashType const & hash)
+{
+  m_realAddr.offset = hash & 0xffff;
+  m_realAddr.seg = (hash >> 16) & 0xffff;
+}
+
 bool ScAddr::IsValid() const
 {
   return !SC_ADDR_IS_EMPTY(m_realAddr);

@@ -64,43 +64,80 @@ ScAgent<TScEvent>::ScAgent()
 
 template <class TScEvent>
 template <class TScAgent, class... TScAddr>
-void ScAgent<TScEvent>::Register(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
+void ScAgent<TScEvent>::Subscribe(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
 {
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
-
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
-  for (ScAddr const & subscriptionAddr : ScAddrVector{subscriptionAddrs...})
-    ScAgentAbstract<TScEvent>::m_events.insert(
-        {agentName,
+  if (!ScAgentAbstract<TScEvent>::m_events.count(agentName))
+    ScAgentAbstract<TScEvent>::m_events.insert({agentName, {}});
+
+  std::string const & eventName = ScEvent::GetName<TScEvent>();
+  auto & subscriptionsMap = ScAgentAbstract<TScEvent>::m_events.find(agentName)->second;
+  for (ScAddr const & subscriptionAddr : {subscriptionAddrs...})
+  {
+    if (!ctx->IsElement(subscriptionAddr))
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Not able to subscribe `" << agentName << "` to event `" << eventName
+                                    << "due subscription sc-element with address `" << subscriptionAddr.Hash()
+                                    << "` is not valid.");
+    if (subscriptionsMap.find(subscriptionAddr) != subscriptionsMap.cend())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "`" << agentName << "` has already been subscribed to event `" << eventName << "(" << subscriptionAddr.Hash()
+              << ")`.");
+
+    SC_LOG_INFO("Subscribe `" << agentName << "` to event `" << eventName << "(" << subscriptionAddr.Hash() << ")`.");
+
+    subscriptionsMap.insert(
+        {subscriptionAddr,
          new ScElementaryEventSubscription<TScEvent>(
              *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>())});
+  }
 }
 
 template <class TScEvent>
 template <class TScAgent, class... TScAddr>
-void ScAgent<TScEvent>::Unregister(ScMemoryContext *, TScAddr const &... subscriptionAddrs)
+void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
 {
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
-
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
-  for (ScAddr const & _ : ScAddrVector{subscriptionAddrs...})
-  {
-    SC_UNUSED(_);
+  auto const & agentsMapIt = ScAgentAbstract<TScEvent>::m_events.find(agentName);
+  if (agentsMapIt == ScAgentAbstract<TScEvent>::m_events.cend())
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, agentName << " has not been subscribed to any events yet.");
 
-    auto const & it = ScAgentAbstract<TScEvent>::m_events.find(agentName);
-    if (it != ScAgentAbstract<TScEvent>::m_events.cend())
+  std::string const & eventName = ScEvent::GetName<TScEvent>();
+  auto & subscriptionsMap = agentsMapIt->second;
+  for (ScAddr const & subscriptionAddr : {subscriptionAddrs...})
+  {
+    if constexpr (!std::is_same<TScEvent, ScEventRemoveElement>::value)
     {
-      delete it->second;
-      it->second = nullptr;
+      if (!ctx->IsElement(subscriptionAddr))
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidParams,
+            "Not able to unsubscribe `" << agentName << "` from event `" << eventName
+                                        << "due subscription sc-element with address `" << subscriptionAddr.Hash()
+                                        << "` is not valid.");
     }
+
+    auto const & it = subscriptionsMap.find(subscriptionAddr);
+    if (it == subscriptionsMap.cend())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "`" << agentName << "` has not been subscribed to event `" << eventName << "(" << subscriptionAddr.Hash()
+              << ")` yet.");
+
+    SC_LOG_INFO(
+        "Unsubscribe `" << agentName << "` from event `" << eventName << "(" << subscriptionAddr.Hash() << ")`.");
+
+    delete it->second;
+    subscriptionsMap.erase(subscriptionAddr);
   }
 }
 
@@ -147,33 +184,13 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
 }
 
 template <class TScAgent>
-void ScActionAgent::Register(ScMemoryContext * ctx)
+void ScActionAgent::Subscribe(ScMemoryContext * ctx)
 {
-  static_assert(
-      std::is_base_of<ScActionAgent, TScAgent>::value, "TScAgent type must be derived from ScActionAgent type.");
-
-  SC_LOG_INFO("Register " << TScAgent::template GetName<TScAgent>());
-
-  std::string const & agentName = TScAgent::template GetName<TScAgent>();
-  ScActionAgent::m_events.insert(
-      {agentName,
-       new ScElementaryEventSubscription<ScActionEvent>(
-           *ctx, ScKeynodes::action_initiated, TScAgent::template GetCallback<TScAgent>())});
+  ScAgent<ScActionEvent>::Subscribe<TScAgent>(ctx, ScKeynodes::action_initiated);
 }
 
 template <class TScAgent>
-void ScActionAgent::Unregister(ScMemoryContext *)
+void ScActionAgent::Unsubscribe(ScMemoryContext * ctx)
 {
-  static_assert(
-      std::is_base_of<ScActionAgent, TScAgent>::value, "TScAgent type must be derived from ScActionAgent type.");
-
-  SC_LOG_INFO("Unregister " << TScAgent::template GetName<TScAgent>());
-
-  std::string const & agentName = TScAgent::template GetName<TScAgent>();
-  auto const & it = ScActionAgent::m_events.find(agentName);
-  if (it != ScActionAgent::m_events.cend())
-  {
-    delete it->second;
-    it->second = nullptr;
-  }
+  ScAgent<ScActionEvent>::Unsubscribe<TScAgent>(ctx, ScKeynodes::action_initiated);
 }

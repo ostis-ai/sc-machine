@@ -82,15 +82,15 @@ protected:
   /// Registered keynodes
   std::list<ScKeynodes *> m_keynodes;
   /// Registered agents
-  using ScAgentRegisterCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
-  using ScAgentUnregisterCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
-  std::list<std::pair<std::pair<ScAgentRegisterCallback, ScAgentUnregisterCallback>, ScAddrVector>> m_agents;
+  using ScAgentSubscribeCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
+  using ScAgentUnsubscribeCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
+  std::list<std::pair<std::pair<ScAgentSubscribeCallback, ScAgentUnsubscribeCallback>, ScAddrVector>> m_agents;
 
   template <class TScAgent>
-  ScAgentRegisterCallback GetAgentRegisterCallback();
+  ScAgentSubscribeCallback GetAgentSubscribeCallback();
 
   template <class TScAgent>
-  ScAgentUnregisterCallback GetAgentUnregisterCallback();
+  ScAgentUnsubscribeCallback GetAgentUnsubscribeCallback();
 };
 
 /// Registers module class instance
