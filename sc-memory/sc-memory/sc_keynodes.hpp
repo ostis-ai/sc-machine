@@ -78,10 +78,10 @@ public:
  * class ScNLPKeynodes : public ScKeynodes
  * {
  * public:
- *   static inline ScKeynodeClass const kConceptMessage{"concept_message"};
- *   static inline ScKeynodeNoRole const kNrelHistory{"nrel_history"};
- *   static inline ScKeynodeNoRole const kNrelDecomposition{"nrel_decomposition"};
- *   static inline ScKeynodeRole const kRrel1{"rrel_1"};
+ *   static inline ScKeynode const kConceptMessage{"concept_message", ScType::NodeConstClass};
+ *   static inline ScKeynode const kNrelHistory{"nrel_history", ScType::NodeConstNoRole};
+ *   static inline ScKeynode const kNrelDecomposition{"nrel_decomposition", ScType::NodeConstNoRole};
+ *   static inline ScKeynode const kRrel1{"rrel_1", ScType::NodeConstRole};
  * };
  * \endcode
  * @see ScKeynode
@@ -89,9 +89,6 @@ public:
 class _SC_EXTERN ScKeynodes : public ScObject
 {
 public:
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
-
   _SC_EXTERN static inline ScKeynode const myself{"myself"};
 
   _SC_EXTERN static inline ScKeynode const action{"action", ScType::NodeConstClass};
@@ -171,8 +168,16 @@ public:
 
   _SC_EXTERN static inline ScKeynode const empty_class{};
 
-  _SC_EXTERN static ScAddr const & GetResultCodeAddr(sc_result resCode);
-  _SC_EXTERN static sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
   _SC_EXTERN static ScAddr const & GetRrelIndex(size_t idx);
   _SC_EXTERN static size_t GetRrelIndexNum();
+
+private:
+  friend class ScMemory;
+  friend class ScModule;
+
+  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
+
+  _SC_EXTERN static ScAddr const & GetResultCodeAddr(sc_result resCode);
+  _SC_EXTERN static sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
 };

@@ -16,12 +16,13 @@
 
 #include "utils/sc_log.hpp"
 
+//! Log functions to be used in agent class methods.
 #define SC_AGENT_LOG_DEBUG(__msg__) SC_LOG_DEBUG(GetName() << ": " << __msg__)
 #define SC_AGENT_LOG_INFO(__msg__) SC_LOG_INFO(GetName() << ": " << __msg__)
 #define SC_AGENT_LOG_WARNING(__msg__) SC_LOG_WARNING(GetName() << ": " << __msg__)
 #define SC_AGENT_LOG_ERROR(__msg__) SC_LOG_ERROR(GetName() << ": " << __msg__)
 
-/**
+/*!
  * @class ScAgentAbstract
  * @brief An abstract base class for sc-agents.
  *
@@ -40,10 +41,23 @@ public:
 
   _SC_EXTERN virtual ScAddr GetActionClass() const = 0;
 
+  /*!
+   * @brief Checks the initiation condition for agent of this class.
+   *
+   * @param event The sc-event to check.
+   * @return SC_TRUE if the condition is met, otherwise SC_FALSE.
+   */
   _SC_EXTERN virtual sc_bool CheckInitiationCondition(TScEvent const & event);
 
   _SC_EXTERN virtual sc_result DoProgram(TScEvent const & event, ScAction & action) = 0;
 
+  /*!
+   * @brief Checks the result of the agent's execution.
+   *
+   * @param event The sc-event.
+   * @param action The sc-action.
+   * @return SC_TRUE if the result is valid, otherwise SC_FALSE.
+   */
   _SC_EXTERN virtual sc_bool CheckResult(TScEvent const & event, ScAction & action);
 
 protected:
@@ -67,8 +81,13 @@ private:
 };
 
 /*!
- * @interface An interface for implementing agents classes to subscribe its on any sc-events.
- * @note This class is an API to implement your own registration API of agents.
+ * @class ScAgent
+ * @brief A class for sc-agents that can subscribe to events.
+ *
+ * This class extends ScAgentAbstract and provides methods for subscribing and unsubscribing
+ * to sc-events.
+ *
+ * @tparam TScEvent The type of sc-event this agent class handles.
  */
 template <class TScEvent>
 class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent>
@@ -77,18 +96,23 @@ class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent>
 
 public:
   /*!
-   * @brief Registers an agent class in sc-memory.
-   * @tparam TScAgent Name of agent class being registered. Specified agent class must be derivied from class ScAgent
-   * or ScActionAgent.
-   * @param ctx Context in which speficied agent class is being registered.
+   * @brief Subscribes agent class to specified sc-events.
+   *
+   * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+   * ScAgent.
+   * @param ctx A sc-memory context.
+   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    */
   template <class TScAgent, class... TScAddr>
   static _SC_EXTERN void Subscribe(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs);
 
   /*!
-   * @brief Unregisters an agent class in sc-memory.
-   * @tparam TScAgent Name of agent class being unregistered.
-   * @param ctx Сontext in which agent class is being unregistered.
+   * @brief Unsubscribes agent class from specified sc-events.
+   *
+   * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+   * ScAgent.
+   * @param ctx A sc-memory context.
+   * @param subscriptionAddrs A list of sc-addresses of sc-elements to unsubscribe from.
    */
   template <class TScAgent, class... TScAddr>
   static _SC_EXTERN void Unsubscribe(ScMemoryContext *, TScAddr const &... subscriptionAddrs);
@@ -96,16 +120,26 @@ public:
 protected:
   _SC_EXTERN explicit ScAgent();
 
+  /*!
+   * @brief Gets the callback function for agent class.
+   *
+   * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+   * ScAgent.
+   * @return A function that takes an sc-event and returns an sc-result.
+   */
   template <class TScAgent>
   static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback();
 };
 
 /*!
- * @interface This interface is an API to implement your own agent classes interpreting action classes.
- * @details The `sc_result OnEvent(ScAddr const & actionAddr)` procedure should be implemented in the child class.
- * You can also override methods `void OnSuccess(ScAddr const & actionAddr)`, `void OnUnsuccess(ScAddr const &
- * actionAddr)` and `void OnError(ScAddr const & actionAddr, sc_result errorCode)`.
- * They are executed depending on the agent error code returned in the function `OnEvent`.
+ * @class ScActionAgent
+ * @brief A specialized agent class for handling sc-actions.
+ *
+ * This class extends ScAgent and provides methods for subscribing and unsubscribing
+ * to sc-action events.
+ *
+ * @details The `sc_result DoProgram(ScEventAddOutputEdge const & event, ScAction & action)` procedure should be
+ * implemented in the child class.
  *
  * File sc_syntactic_analysis_agent.hpp:
  * \code
@@ -113,32 +147,29 @@ protected:
  *
  * #include <sc-memory/sc_agent.hpp>
  *
- * #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
- *
  * #include "nlp-module/analyser/sc_syntactic_analyser.hpp"
  *
  * namespace nlp
  * {
  *  *!
- *  * @details The `ScSyntacticAnalysisAgent` class inherits from `ScAgent` and overrides the `OnEvent` and `OnSuccess`
- *  * methods.
+ *  * @details The `ScSyntacticAnalysisAgent` class inherits from `ScAgent` and overrides the `DoProgram`.
  *  * It has a member `m_analyser` of type `nlp::ScSyntacticAnalyser`.
- *  * The main logic is implemented in the `OnEvent` method.
+ *  * The main logic is implemented in the `DoProgram` method.
  *  *
- * class ScSyntacticAnalysisAgent : public ScActionAgent<ScKeynodes::syntactic_analyse_action>
+ * class ScSyntacticAnalysisAgent : public ScActionAgent
  * {
  * public:
  *   ScSyntacticAnalysisAgent();
  *
  *   ~ScSyntacticAnalysisAgent();
  *
- *   sc_result OnEvent(ScAddr const & actionAddr) override;
+ *   ScAddr GetActionClass() const override;
  *
- *   void OnSuccess(ScAddr const & actionAddr) override;
+ *   sc_result DoProgram(ScEventAddOutputEdge const & event, ScAction & action) override;
  * };
  *
  * private:
- *   nlp::ScSyntacticAnalyser * m_analyser;
+ *   ScSyntacticAnalyser * m_analyser;
  * }
  * \endcode
  *
@@ -146,8 +177,10 @@ protected:
  * \code
  * #include "nlp-module/agents/sc_syntactic_analysis_agent.hpp"
  *
+ * #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
+ *
  * ScSyntacticAnalysisAgent::ScSyntacticAnalysisAgent()
- *   : m_analyser(new nlp::ScSyntacticAnalyser(m_memoryCtx))
+ *   : m_analyser(new ScSyntacticAnalyser(m_memoryCtx))
  * {
  * }
  *
@@ -156,53 +189,39 @@ protected:
  *   delete m_analyser;
  * }
  *
- * sc_result ScSyntacticAnalysisAgent::OnEvent(ScAddr const & actionAddr)
+ * ScAddr ScSyntacticAnalysisAgent::GetActionClass() const
  * {
- *   ScAddr const textAddr = m_memoryCtx.GetArgument(actionAddr, 1);
+ *   return ScNLPKeynodes::action_syntactic_analysis;
+ * }
+ *
+ * sc_result ScSyntacticAnalysisAgent::DoProgram(ScEventAddOutputEdge const &, ScAction & action)
+ * {
+ *   ScAddr const textAddr = action.GetArgument(1);
  *   if (!textAddr.IsValid())
  *   {
- *     SC_AGENT_LOG_ERROR("Invalid text link addr");
- *     return SC_RESULT_ERROR_INVALID_PARAMS;
+ *     SC_AGENT_LOG_ERROR("Text link is not specified as the first argument.");
+ *     return action.FinishWithError();
  *   }
  *
  *   try
  *   {
  *     ScAddr const lexemeTreeAddr = m_analyser->Analyse(textAddr);
  *   }
- *   catch(utils::ScException const & e)
+ *   catch (utils::ScException const & e)
  *   {
  *     SC_AGENT_LOG_ERROR("Error occurred: " << e.Message());
- *     return SC_RESULT_ERROR_INVALID_STATE;
+ *     return action.FinishWithError();
  *   }
  *
  *   if (!lexemeTreeAddr.IsValid())
  *   {
  *     SC_AGENT_LOG_INFO("Lexeme tree hasn't been formed");
- *     return SC_RESULT_NO;
+ *     return action.FinishUnsuccessfully();
  *   }
  *
  *   SC_AGENT_LOG_INFO("Lexeme tree has been formed");
- *   ScAddr const & answerAddr = m_memoryCtx->FormStructure(lexemeTreeAddr);
- *   m_memoryCtx.FormAnswer(actionAddr, answerAddr);
- *   return SC_RESULT_OK;
- * }
- *
- * void ScSyntacticAnalysisAgent::OnSuccess(ScAddr const & actionAddr)
- * {
- *   delete m_memoryCtx->InitializeEvent<ScEvent::Type::AddOutputEdge>(
- *   nlp::ScNLPKeynodes::syntactic_synthesize_action,
- *     [this]() -> {
- *       ScAddr const & addr = m_memoryCtx.CreateNode(ScType::NodeConst);
- *       m_memoryCtx.CreateEdge(
- *         ScType::EdgeAccessConstPosPerm, nlp::ScNLPKeynodes::syntactic_synthesize_action, addr);
- *     },
- *     [this](ScAddr const &, ScAddr const &, ScAddr const & actionAddr) -> sc_result {
- *       return m_memoryCtx.HelperCheckEdge(nlp::ScNLPKeynodes::action_finished_sucessfully, actionAddr,
- ScType::EdgeAccessConstPosPerm)
- *         ? SC_RESULT_OK
- *         : SC_RESULT_NO;
- *     }
- *   )->Wait(10000);
+ *   action.AssignAnswer(answerAddr);
+ *   return action.FinishSuccessfully();
  * }
  * \endcode
  */
@@ -210,32 +229,44 @@ class _SC_EXTERN ScActionAgent : public ScAgent<ScActionEvent>
 {
 public:
   /*!
-   * @brief Registers an agent class in sc-memory.
-   * @tparam TScAgent Name of agent class being registered. Specified agent class must be derivied from class ScAgent
-   * or ScActionAgent.
-   * @param ctx Context in which speficied agent class is being registered.
+   * @brief Subscribes agent class to sc-event of adding output arc from `action_initiated` to some formed sc-action.
+   *
+   * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+   * ScAgentAction.
+   * @param ctx A sc-memory context.
    */
   template <class TScAgent>
   static _SC_EXTERN void Subscribe(ScMemoryContext * ctx);
 
   /*!
-   * @brief Unregisters an agent class in sc-memory.
-   * @tparam TScAgent Name of agent class being unregistered.
-   * @param ctx Сontext in which agent class is being unregistered.
+   * @brief Unsubscribes agent class from sc-event of adding output arc from `action_initiated` to some formed
+   * sc-action.
+   *
+   * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+   * ScAgentAction.
+   * @param ctx A sc-memory context.
    */
   template <class TScAgent>
   static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx);
 
+  /*!
+   * @brief Checks that initiated sc-action belongs to action class that this agent class interpreters.
+   *
+   * @param event The sc-event to check.
+   * @return SC_TRUE if the condition is met, otherwise SC_FALSE.
+   */
   _SC_EXTERN sc_bool CheckInitiationCondition(ScActionEvent const & event) override;
 };
 
 #include "sc_agent.tpp"
 
 /*!
- * @brief Registers an agent class in sc-memory.
- * @tparam TAgentClass Name of agent class being registered. Specified agent class must be derivied from class ScAgent
- * or ScActionAgent.
- * @param ctx Context in which specified agent class is being registered.
+ * @brief Subscribes agent class to specified sc-events.
+ *
+ * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+ * ScAgent.
+ * @param ctx A sc-memory context.
+ * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
  */
 template <class TScAgent, class... TScAddr>
 typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(
@@ -248,6 +279,13 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
   TScAgent::template Subscribe<TScAgent>(ctx, subscriptionAddrs...);
 }
 
+/*!
+ * @brief Subscribes agent class to sc-event of adding output arc from `action_initiated` to some formed sc-action.
+ *
+ * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+ * ScAgentAction.
+ * @param ctx A sc-memory context.
+ */
 template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(ScMemoryContext * ctx)
 {
@@ -255,9 +293,12 @@ typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type S
 }
 
 /*!
- * @brief Unregisters an agent class in sc-memory.
- * @tparam TAgentClass Name of agent class being unregistered.
- * @param ctx Context in which agent class is being unregistered.
+ * @brief Unsubscribes agent class from specified sc-events.
+ *
+ * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+ * ScAgent.
+ * @param ctx A sc-memory context.
+ * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe from.
  */
 template <class TScAgent, class... TScAddr>
 typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(
@@ -270,6 +311,14 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
   TScAgent::template Unsubscribe<TScAgent>(ctx, subscriptionAddrs...);
 }
 
+/*!
+ * @brief Unsubscribes agent class from sc-event of adding output arc from `action_initiated` to some formed
+ * sc-action.
+ *
+ * @tparam TScAgent An agent class to be subscribed to the event. Specified agent class must be derivied from class
+ * ScAgentAction.
+ * @param ctx A sc-memory context.
+ */
 template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(ScMemoryContext * ctx)
 {

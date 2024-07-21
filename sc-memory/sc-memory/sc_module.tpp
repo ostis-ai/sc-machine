@@ -16,13 +16,21 @@ ScModule * ScModule::Keynodes()
   return this;
 }
 
-template <class TScAgent, class... TScAddr>
-ScModule * ScModule::Agent(TScAddr const &... addrs)
+template <class TScAgent, class... TScAddr, typename>
+ScModule * ScModule::Agent(TScAddr const &... subscriptionAddrs)
 {
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  m_agents.push_back({{GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>()}, {addrs...}});
+  m_agents.push_back(
+      {{GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>()}, {subscriptionAddrs...}});
+  return this;
+}
+
+template <class TScAgent, typename>
+ScModule * ScModule::Agent()
+{
+  m_agents.push_back({{GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>()}, {}});
   return this;
 }
 
