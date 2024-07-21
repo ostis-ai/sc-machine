@@ -65,6 +65,8 @@ private:
 template <class TScEvent>
 class _SC_EXTERN ScWaitEvent : public ScWait
 {
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
 public:
   _SC_EXTERN ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr);
 
@@ -78,6 +80,8 @@ private:
 template <class TScEvent>
 class _SC_EXTERN ScWaitCondition final : public ScWaitEvent<TScEvent>
 {
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
 public:
   using DelegateCheckFunc = std::function<sc_result(TScEvent const &)>;
 

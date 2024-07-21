@@ -25,12 +25,14 @@ public:
 
   _SC_EXTERN ScAgentContext & operator=(ScAgentContext && other) noexcept;
 
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   _SC_EXTERN std::shared_ptr<ScWaitCondition<TScEvent>> InitializeEvent(
       ScAddr const & descriptionAddr,
       std::function<void(void)> const & cause,
       std::function<sc_result(TScEvent const &)> check)
   {
+    static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
     cause();
     return std::make_shared<ScWaitCondition<TScEvent>>(*this, descriptionAddr, check);
   }
@@ -42,7 +44,7 @@ public:
   }
 
 protected:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScAgentAbstract;
 
   friend class ScAction;

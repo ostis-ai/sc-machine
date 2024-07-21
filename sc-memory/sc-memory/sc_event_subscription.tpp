@@ -8,7 +8,7 @@
 
 #include "sc_memory.hpp"
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
@@ -24,26 +24,26 @@ ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
       &ScElementaryEventSubscription::HandlerDelete);
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 ScElementaryEventSubscription<TScEvent>::~ScElementaryEventSubscription()
 {
   if (m_event)
     sc_event_destroy(m_event);
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 void ScElementaryEventSubscription<TScEvent>::SetDelegate(DelegateFunc && func)
 {
   m_delegate = func;
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 void ScElementaryEventSubscription<TScEvent>::RemoveDelegate()
 {
   m_delegate = DelegateFunc();
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 sc_result ScElementaryEventSubscription<TScEvent>::Handler(
     sc_event const * event,
     sc_addr userAddr,
@@ -77,7 +77,7 @@ result:
   return result;
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 sc_result ScElementaryEventSubscription<TScEvent>::HandlerDelete(sc_event const * event)
 {
   auto * eventObj = (ScElementaryEventSubscription *)sc_event_get_data(event);

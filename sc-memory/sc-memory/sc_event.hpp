@@ -12,9 +12,6 @@
 
 #include "sc-core/sc-store/sc-event/sc_event_types.h"
 
-template <class TScEvent>
-concept _SC_EXTERN ScEventClass = std::is_base_of_v<class ScEvent, TScEvent>;
-
 class _SC_EXTERN ScEvent : public ScObject
 {
 public:
@@ -25,7 +22,7 @@ public:
   _SC_EXTERN virtual ScAddr GetSubscriptionElement() const = 0;
 
 protected:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
 public:
@@ -50,7 +47,7 @@ public:
       return *this;
     }
 
-    constexpr ~Type() = default;
+    ~Type() = default;
 
     constexpr operator sc_event_type() const
     {
@@ -135,7 +132,7 @@ protected:
   ScAddr m_otherAddr;
 
 private:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
   static inline Type const type = Type::Unknown;
@@ -170,7 +167,7 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
   static inline Type const type = Type::AddOutputEdge;
@@ -187,7 +184,7 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
   static inline Type const type = Type::AddInputEdge;
@@ -220,7 +217,7 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
   static inline Type const type = Type::RemoveOutputEdge;
@@ -237,7 +234,7 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
   static inline Type const type = Type::RemoveInputEdge;
@@ -257,7 +254,7 @@ private:
   _SC_EXTERN ScAddr GetSubscriptionElement() const final;
 
 private:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
   static inline Type const type = Type::RemoveElement;
@@ -274,7 +271,7 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 
   static inline Type const type = Type::ChangeContent;
