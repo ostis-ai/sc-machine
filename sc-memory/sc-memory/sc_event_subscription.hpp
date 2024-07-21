@@ -35,9 +35,11 @@ protected:
   _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) final;
 };
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 class _SC_EXTERN ScElementaryEventSubscription : public ScEventSubscription
 {
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
 public:
   using DelegateFunc = std::function<sc_result(TScEvent const & event)>;
 

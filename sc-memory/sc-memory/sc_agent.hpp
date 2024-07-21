@@ -25,9 +25,11 @@
  * @interface An interface for agents classes
  * @note This class is an API to implement your own registration API of agents.
  */
-template <ScEventClass TScEvent>
+template <class TScEvent>
 class _SC_EXTERN ScAgentAbstract : public ScObject
 {
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
 public:
   _SC_EXTERN ~ScAgentAbstract() override;
 
@@ -61,19 +63,15 @@ private:
   _SC_EXTERN sc_result Shutdown(ScMemoryContext *) override;
 };
 
-template <class TScAgent, class TScEvent>
-concept ScAgentClass = requires {
-  requires std::derived_from<TScAgent, ScAgentAbstract<TScEvent>>;
-  requires !std::is_abstract_v<TScAgent>;
-};
-
 /*!
  * @interface An interface for implementing agents classes to subscribe its on any sc-events.
  * @note This class is an API to implement your own registration API of agents.
  */
-template <ScEventClass TScEvent>
+template <class TScEvent>
 class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent>
 {
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
 public:
   /*!
    * @brief Registers an agent class in sc-memory.
@@ -81,7 +79,7 @@ public:
    * or ScActionAgent.
    * @param ctx Context in which speficied agent class is being registered.
    */
-  template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
+  template <class TScAgent, class... TScAddr>
   static _SC_EXTERN void Register(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs);
 
   /*!
@@ -89,13 +87,13 @@ public:
    * @tparam TScAgent Name of agent class being unregistered.
    * @param ctx Сontext in which agent class is being unregistered.
    */
-  template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
+  template <class TScAgent, class... TScAddr>
   static _SC_EXTERN void Unregister(ScMemoryContext *, TScAddr const &... subscriptionAddrs);
 
 protected:
   _SC_EXTERN explicit ScAgent();
 
-  template <ScAgentClass<TScEvent> TScAgent>
+  template <class TScAgent>
   static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback();
 };
 
@@ -214,7 +212,7 @@ public:
    * or ScActionAgent.
    * @param ctx Context in which speficied agent class is being registered.
    */
-  template <ScAgentClass<ScActionEvent> TScAgent>
+  template <class TScAgent>
   static _SC_EXTERN void Register(ScMemoryContext * ctx);
 
   /*!
@@ -222,7 +220,7 @@ public:
    * @tparam TScAgent Name of agent class being unregistered.
    * @param ctx Сontext in which agent class is being unregistered.
    */
-  template <ScAgentClass<ScActionEvent> TScAgent>
+  template <class TScAgent>
   static _SC_EXTERN void Unregister(ScMemoryContext * ctx);
 
   _SC_EXTERN sc_bool CheckInitiationCondition(ScActionEvent const & event) override;

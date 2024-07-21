@@ -61,7 +61,7 @@ public:
    * @param agentInfo A pointer to dynamically created agent instance and a vector of subscription addrs
    * @returns Pointer to module instance
    */
-  template <class TScAgent, ScAddrClass... TScAddr>
+  template <class TScAgent, class... TScAddr>
   _SC_EXTERN ScModule * Agent(TScAddr const &... addrs);
 
   /*! Registers all module keynodes and agents

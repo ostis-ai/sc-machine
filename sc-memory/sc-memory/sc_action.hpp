@@ -13,9 +13,6 @@
 
 #include "sc_struct.hpp"
 
-template <class TScAddr>
-concept ScAddrClass = std::derived_from<TScAddr, ScAddr>;
-
 class _SC_EXTERN ScAction final : public ScAddr
 {
 public:
@@ -36,9 +33,12 @@ public:
 
   _SC_EXTERN ScAction & SetArgument(ScAddr const & orderRelationAddr, ScAddr const & argumentAddr);
 
-  template <ScAddrClass... TScAddr>
+  template <class... TScAddr>
   _SC_EXTERN ScAction & SetArguments(TScAddr const &... arguments)
   {
+    static_assert(
+        (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
     size_t i = 0;
     for (ScAddr const & argumentAddr : ScAddrVector{arguments...})
       SetArgument(++i, argumentAddr);
@@ -48,16 +48,19 @@ public:
 
   _SC_EXTERN ScStruct GetAnswer() const;
 
-  template <ScAddrClass... TScAddr>
+  template <class... TScAddr>
   _SC_EXTERN ScAction & FormAnswer(TScAddr const &... addrs)
   {
+    static_assert(
+        (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
     for (ScAddr const & addr : ScAddrVector(addrs...))
       m_answer << addr;
 
     return *this;
   }
 
-  template <ScAddrClass... TScAddr>
+  template <class... TScAddr>
   _SC_EXTERN ScAction & UpdateAnswer(TScAddr const &... addrs)
   {
     return FormAnswer(addrs...);
@@ -101,7 +104,7 @@ protected:
 
 private:
   friend class ScAgentContext;
-  template <ScEventClass TScEvent>
+  template <class TScEvent>
   friend class ScAgent;
 };
 

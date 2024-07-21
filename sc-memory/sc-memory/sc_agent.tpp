@@ -10,62 +10,66 @@
 
 #include "sc_keynodes.hpp"
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 ScAgentAbstract<TScEvent>::ScAgentAbstract()
   : m_memoryCtx(nullptr)
 {
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 ScAgentAbstract<TScEvent>::~ScAgentAbstract()
 {
   m_memoryCtx.Destroy();
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 sc_bool ScAgentAbstract<TScEvent>::CheckInitiationCondition(TScEvent const &)
 {
   return SC_TRUE;
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 sc_bool ScAgentAbstract<TScEvent>::CheckResult(TScEvent const &, ScAction &)
 {
   return SC_TRUE;
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 void ScAgentAbstract<TScEvent>::SetContext(ScAddr const & userAddr)
 {
   m_memoryCtx = ScAgentContext(userAddr);
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 std::function<sc_result(TScEvent const &)> ScAgentAbstract<TScEvent>::GetCallback()
 {
   return {};
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 sc_result ScAgentAbstract<TScEvent>::Initialize(ScMemoryContext *, ScAddr const &)
 {
   return SC_RESULT_OK;
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 sc_result ScAgentAbstract<TScEvent>::Shutdown(ScMemoryContext *)
 {
   return SC_RESULT_OK;
 }
 
-template <ScEventClass TScEvent>
+template <class TScEvent>
 ScAgent<TScEvent>::ScAgent()
   : ScAgentAbstract<TScEvent>(){};
 
-template <ScEventClass TScEvent>
-template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
+template <class TScEvent>
+template <class TScAgent, class... TScAddr>
 void ScAgent<TScEvent>::Register(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
 {
+  static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
+  static_assert(
+      (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
   SC_LOG_INFO("Register " << ScAgent::template GetName<TScAgent>());
 
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
@@ -76,10 +80,14 @@ void ScAgent<TScEvent>::Register(ScMemoryContext * ctx, TScAddr const &... subsc
              *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>())});
 }
 
-template <ScEventClass TScEvent>
-template <ScAgentClass<TScEvent> TScAgent, ScAddrClass... TScAddr>
+template <class TScEvent>
+template <class TScAgent, class... TScAddr>
 void ScAgent<TScEvent>::Unregister(ScMemoryContext *, TScAddr const &... subscriptionAddrs)
 {
+  static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
+  static_assert(
+      (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
   SC_LOG_INFO("Unregister " << ScAgent::template GetName<TScAgent>());
 
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
@@ -96,10 +104,12 @@ void ScAgent<TScEvent>::Unregister(ScMemoryContext *, TScAddr const &... subscri
   }
 }
 
-template <ScEventClass TScEvent>
-template <ScAgentClass<TScEvent> TScAgent>
+template <class TScEvent>
+template <class TScAgent>
 std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
 {
+  static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
+
   return [](TScEvent const & event) -> sc_result
   {
     auto const & CreateAction = [](TScEvent const & event, ScAgent & agent) -> ScAction
@@ -136,9 +146,12 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
   };
 }
 
-template <ScAgentClass<ScActionEvent> TScAgent>
+template <class TScAgent>
 void ScActionAgent::Register(ScMemoryContext * ctx)
 {
+  static_assert(
+      std::is_base_of<ScActionAgent, TScAgent>::value, "TScAgent type must be derived from ScActionAgent type.");
+
   SC_LOG_INFO("Register " << TScAgent::template GetName<TScAgent>());
 
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
@@ -148,9 +161,12 @@ void ScActionAgent::Register(ScMemoryContext * ctx)
            *ctx, ScKeynodes::action_initiated, TScAgent::template GetCallback<TScAgent>())});
 }
 
-template <ScAgentClass<ScActionEvent> TScAgent>
+template <class TScAgent>
 void ScActionAgent::Unregister(ScMemoryContext *)
 {
+  static_assert(
+      std::is_base_of<ScActionAgent, TScAgent>::value, "TScAgent type must be derived from ScActionAgent type.");
+
   SC_LOG_INFO("Unregister " << TScAgent::template GetName<TScAgent>());
 
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
