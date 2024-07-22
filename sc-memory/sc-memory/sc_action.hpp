@@ -183,6 +183,14 @@ protected:
   template <std::size_t... Is>
   _SC_EXTERN auto GetArgumentsImpl(std::index_sequence<Is...>);
 
+  /*!
+   * @brief Marks the action as finished and add action state class to the action.
+   * @param actionStateAddr An address of action state class.
+   * @return Result of the operation.
+   * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
+   */
+  void Finish(ScAddr const & actionStateAddr);
+
 private:
   friend class ScAgentContext;
   template <class TScEvent>

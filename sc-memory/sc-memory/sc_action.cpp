@@ -55,7 +55,7 @@ ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const 
       *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
 
   if (it->Next())
-    m_ctx->EraseElement(it->Get(2));
+    m_ctx->EraseElement(it->Get(1));
 
   ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, argumentAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, orderRelationAddr, edgeAddr);
@@ -94,6 +94,22 @@ std::shared_ptr<ScWaitActionFinished> ScAction::Initiate() noexcept(false)
   return wait;
 };
 
+void ScAction::Finish(ScAddr const & actionStateAddr)
+{
+  if (!IsInitiated())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` wasn't initiated yet.");
+
+  if (IsFinished())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` had already been initiated.");
+
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, actionStateAddr, *this);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
+}
+
 sc_bool ScAction::IsFinished() const
 {
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished, *this, ScType::EdgeAccessConstPosPerm);
@@ -106,18 +122,7 @@ sc_bool ScAction::IsFinishedSuccessfully() const
 
 sc_result ScAction::FinishSuccessfully() noexcept(false)
 {
-  if (!IsInitiated())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` wasn't initiated yet.");
-
-  if (IsFinished())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` had already been initiated.");
-
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_successfully, *this);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
+  Finish(ScKeynodes::action_finished_successfully);
   return SC_RESULT_OK;
 }
 
@@ -128,18 +133,7 @@ sc_bool ScAction::IsFinishedUnsuccessfully() const
 
 sc_result ScAction::FinishUnsuccessfully() noexcept(false)
 {
-  if (!IsInitiated())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` wasn't initiated yet.");
-
-  if (IsFinished())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` had already been initiated.");
-
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_unsuccessfully, *this);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
+  Finish(ScKeynodes::action_finished_unsuccessfully);
   return SC_RESULT_NO;
 }
 
@@ -150,17 +144,6 @@ sc_bool ScAction::IsFinishedWithError() const
 
 sc_result ScAction::FinishWithError() noexcept(false)
 {
-  if (!IsInitiated())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` wasn't initiated yet.");
-
-  if (IsFinished())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` had already been initiated.");
-
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished_with_error, *this);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
+  Finish(ScKeynodes::action_finished_with_error);
   return SC_RESULT_ERROR;
 }
