@@ -6,6 +6,7 @@
 
 #include "sc_agent.hpp"
 
+#include "sc_event.hpp"
 #include "sc_keynodes.hpp"
 
 sc_bool ScActionAgent::CheckInitiationCondition(ScActionEvent const & event)

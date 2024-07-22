@@ -8,10 +8,6 @@
 
 #include "sc_object.hpp"
 
-#include "sc_event.hpp"
-#include "sc_event_subscription.hpp"
-#include "sc_action.hpp"
-
 #include "sc_agent_context.hpp"
 
 #include "utils/sc_log.hpp"
@@ -21,6 +17,10 @@
 #define SC_AGENT_LOG_INFO(__msg__) SC_LOG_INFO(GetName() << ": " << __msg__)
 #define SC_AGENT_LOG_WARNING(__msg__) SC_LOG_WARNING(GetName() << ": " << __msg__)
 #define SC_AGENT_LOG_ERROR(__msg__) SC_LOG_ERROR(GetName() << ": " << __msg__)
+
+template <class TScEvent>
+class ScElementaryEventSubscription;
+class ScAction;
 
 /*!
  * @class ScAgentAbstract
@@ -34,7 +34,7 @@
 template <class TScEvent>
 class _SC_EXTERN ScAgentAbstract : public ScObject
 {
-  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+  static_assert(std::is_base_of<class ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
 public:
   _SC_EXTERN ~ScAgentAbstract() override;

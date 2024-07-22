@@ -798,7 +798,7 @@ public:
    * bool hasEdge = ctx.HelperCheckEdge(node1, node2, edgeType);
    * @endcode
    */
-  _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) noexcept(false);
+  _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.

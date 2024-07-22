@@ -12,7 +12,9 @@
 class ScSet : public ScAddr
 {
 public:
-  _SC_EXTERN ScSet(class ScMemoryContext & ctx, ScAddr const & setAddr = ScAddr::Empty);
+  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr = ScAddr::Empty);
+
+  _SC_EXTERN ScSet(ScMemoryContext & ctx, ScAddr const & setAddr = ScAddr::Empty);
 
   _SC_EXTERN ~ScSet() = default;
 
@@ -49,5 +51,7 @@ private:
 class ScStruct : public ScSet
 {
 public:
+  _SC_EXTERN ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr = ScAddr::Empty);
+
   _SC_EXTERN ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr = ScAddr::Empty);
 };

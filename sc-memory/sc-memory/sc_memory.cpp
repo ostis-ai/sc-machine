@@ -936,7 +936,7 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   return systemIdtf;
 }
 
-bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType)
+bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const
 {
   CHECK_CONTEXT;
 

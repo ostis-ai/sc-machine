@@ -276,3 +276,5 @@ private:
 
   static inline Type const type = Type::ChangeContent;
 };
+
+using ScActionEvent = ScEventAddOutputEdge;
