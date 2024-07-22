@@ -8,6 +8,9 @@
 
 #include "sc_agent.hpp"
 
+#include "sc_action.hpp"
+#include "sc_agent_context.hpp"
+#include "sc_event_subscription.hpp"
 #include "sc_keynodes.hpp"
 
 template <class TScEvent>

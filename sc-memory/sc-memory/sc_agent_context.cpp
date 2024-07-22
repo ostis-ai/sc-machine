@@ -4,10 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <algorithm>
-
 #include "sc_agent_context.hpp"
 
+#include <algorithm>
+
+#include "sc_action.hpp"
 #include "sc_keynodes.hpp"
 
 ScAgentContext::ScAgentContext() noexcept

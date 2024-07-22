@@ -4,9 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#pragma once
-
 #include "sc_agent_context.hpp"
+
+#include "sc_wait.hpp"
 
 template <class TScEvent>
 std::shared_ptr<ScWaitCondition<TScEvent>> ScAgentContext::InitializeEvent(

@@ -115,42 +115,80 @@ TEST_F(ScAgentTest, ATestAddMultipleOutputEdge)
   UnsubscribeAgent<ATestAddMultipleOutputEdge>(&*m_ctx, subscriptionAddr);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgument)
+TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
+{
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+
+  ScAgentContext context;
+  context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
+      .SetArgument(1, ATestAddOutputEdge::add_output_edge_action)
+      .Initiate();
+
+  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV2)
 {
   SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
                   .SetArgument(1, ATestAddOutputEdge::add_output_edge_action)
-                  .Initiate()
-                  ->Wait(2000));
+                  .InitiateAndWait(2000));
 
   UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgument)
+TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV1)
+{
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+
+  ScAgentContext context;
+  context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
+      .SetArgument(2, ATestAddOutputEdge::add_output_edge_action)
+      .Initiate();
+
+  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV2)
 {
   SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
                   .SetArgument(2, ATestAddOutputEdge::add_output_edge_action)
-                  .Initiate()
-                  ->Wait(2000));
+                  .InitiateAndWait(2000));
 
   UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultTwoArguments)
+TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV1)
 {
   SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
+  context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
+      .SetArguments(ATestAddOutputEdge::add_output_edge_action, ATestAddOutputEdge::add_output_edge_action)
+      .Initiate();
 
+  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV2)
+{
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+
+  ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
                   .SetArguments(ATestAddOutputEdge::add_output_edge_action, ATestAddOutputEdge::add_output_edge_action)
-                  .Initiate()
-                  ->Wait(2000));
+                  .InitiateAndWait(2000));
 
   UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }

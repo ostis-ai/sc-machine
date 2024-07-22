@@ -6,12 +6,11 @@
 
 #pragma once
 
-#include "sc_event.hpp"
-#include "sc_event_subscription.hpp"
+#include <utility>
 
-#include "sc_wait.hpp"
+#include "sc_addr.hpp"
 
-#include "sc_struct.hpp"
+class ScStruct;
 
 /*!
  * @class ScAction
@@ -79,7 +78,14 @@ public:
    * @brief Gets answer structure of the action.
    * @return ScStruct representing answer.
    */
-  _SC_EXTERN ScStruct GetAnswer() const;
+  _SC_EXTERN ScStruct GetAnswer() noexcept(false);
+
+  /*!
+   * @brief Sets answer structure for the action.
+   * @param structureAddr ScAddr representing answer.
+   * @return Reference to the current ScAction object.
+   */
+  _SC_EXTERN ScAction & SetAnswer(ScAddr const & structureAddr);
 
   /*!
    * @brief Forms answer structure of the action.
@@ -101,14 +107,22 @@ public:
    * @brief Checks if the action is initiated.
    * @return True if the action is initiated, false otherwise.
    */
-  _SC_EXTERN sc_bool IsInitiated();
+  _SC_EXTERN sc_bool IsInitiated() const;
+
+  /*!
+   * @brief Initiates and waits the action.
+   * @param waitTime_ms Wait time (in milliseconds) of action being finished. Be default, it equals to 5000
+   * milliseconds.
+   * @return SC_TRUE if the action has been waited, otherwise SC_FALSE.
+   * @throws utils::ExceptionInvalidState if the action is already initiated or finished.
+   */
+  _SC_EXTERN sc_bool InitiateAndWait(sc_uint32 waitTime_ms = 5000u) noexcept(false);
 
   /*!
    * @brief Initiates the action.
-   * @return Shared pointer to ScWaitActionFinished.
    * @throws utils::ExceptionInvalidState if the action is already initiated or finished.
    */
-  _SC_EXTERN std::shared_ptr<ScWaitActionFinished> Initiate() noexcept(false);
+  _SC_EXTERN void Initiate() noexcept(false);
 
   /*!
    * @brief Checks if the action is finished.
@@ -158,7 +172,7 @@ public:
 protected:
   class ScAgentContext * m_ctx;  ///< Context of the agent.
   ScAddr m_actionClassAddr;      ///< Class of the action.
-  ScStruct m_answer;             ///< Answer structure of the action.
+  ScAddr m_answerAddr;           ///< Answer structure of the action.
 
   /*!
    * @brief Constructor for ScAction.
@@ -196,7 +210,5 @@ private:
   template <class TScEvent>
   friend class ScAgent;
 };
-
-using ScActionEvent = ScEventAddOutputEdge;
 
 #include "sc_action.tpp"

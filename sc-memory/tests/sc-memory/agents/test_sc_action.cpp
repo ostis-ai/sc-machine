@@ -21,7 +21,75 @@ TEST_F(ScAgentTest, CreateActionAndGetAnswer)
   ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
   ScAction action = context.CreateAction(testClassAddr);
 
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_FALSE(action.InitiateAndWait(1));
+
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+
+  action.FinishSuccessfully();
   EXPECT_TRUE(action.GetAnswer().IsEmpty());
+}
+
+TEST_F(ScAgentTest, CreateActionAndSetGetAnswer)
+{
+  ScAgentContext context;
+  ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
+  ScAction action = context.CreateAction(testClassAddr);
+
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_FALSE(action.InitiateAndWait(1));
+
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
+  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
+
+  ScAddr const & structureAddr2 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_NO_THROW(action.SetAnswer(structureAddr2));
+  EXPECT_FALSE(m_ctx->IsElement(structureAddr1));
+  EXPECT_THROW(action.SetAnswer(structureAddr1), utils::ExceptionInvalidParams);
+  EXPECT_NO_THROW(action.SetAnswer(structureAddr2));
+
+  action.FinishSuccessfully();
+  ScStruct const & answer = action.GetAnswer();
+  EXPECT_TRUE(answer.IsEmpty());
+  EXPECT_EQ(answer, action.GetAnswer());
+  EXPECT_EQ(answer, structureAddr2);
+}
+
+TEST_F(ScAgentTest, CreateActionAndSetFormUpdateGetAnswer)
+{
+  ScAgentContext context;
+  ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
+  ScAction action = context.CreateAction(testClassAddr);
+
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_FALSE(action.InitiateAndWait(1));
+
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
+
+  ScAddr const & structureAddr2 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_NO_THROW(action.SetAnswer(structureAddr2));
+  EXPECT_FALSE(m_ctx->IsElement(structureAddr1));
+
+  EXPECT_NO_THROW(action.FormAnswer());
+  EXPECT_FALSE(m_ctx->IsElement(structureAddr2));
+  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_NO_THROW(action.FormAnswer(elementAddr1));
+
+  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_NO_THROW(action.UpdateAnswer(elementAddr2));
+
+  action.FinishSuccessfully();
+  EXPECT_THROW(action.FormAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.UpdateAnswer(), utils::ExceptionInvalidState);
+  ScStruct const & answer = action.GetAnswer();
+  EXPECT_FALSE(answer.IsEmpty());
+
+  EXPECT_TRUE(answer.HasElement(elementAddr1));
+  EXPECT_TRUE(answer.HasElement(elementAddr2));
 }
 
 TEST_F(ScAgentTest, CreateActionAndSetGetArgument)
@@ -120,7 +188,7 @@ TEST_F(ScAgentTest, InitiateAndWaitAction)
   ScAction action =
       context.CreateAction(ATestAddOutputEdge::add_output_edge_action)
           .SetArguments(ATestAddOutputEdge::add_output_edge_action, ATestAddOutputEdge::add_output_edge_action);
-  EXPECT_TRUE(action.Initiate()->Wait());
+  EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
@@ -182,7 +250,7 @@ TEST_F(ScAgentTest, InitiateWaitAndFinishSuccessfullyFinishedAction)
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputEdge::add_output_edge_action);
-  EXPECT_TRUE(action.Initiate()->Wait());
+  EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
@@ -201,7 +269,7 @@ TEST_F(ScAgentTest, InitiateWaitAndFinishUnsuccessfullyFinishedAction)
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputEdge::add_output_edge_action);
-  EXPECT_TRUE(action.Initiate()->Wait());
+  EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
@@ -220,7 +288,7 @@ TEST_F(ScAgentTest, InitiateWaitAndFinishWithErrorFinishedAction)
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputEdge::add_output_edge_action);
-  EXPECT_TRUE(action.Initiate()->Wait());
+  EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
@@ -239,12 +307,12 @@ TEST_F(ScAgentTest, InitiateWaitAndInitiateInitiatedAction)
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputEdge::add_output_edge_action);
-  EXPECT_TRUE(action.Initiate()->Wait());
+  EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  EXPECT_THROW(action.Initiate(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.InitiateAndWait(), utils::ExceptionInvalidState);
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());

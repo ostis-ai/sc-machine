@@ -8,8 +8,9 @@
 
 #include "sc_memory.hpp"
 
-#include "sc_action.hpp"
-#include "sc_wait.hpp"
+template <class TScEvent>
+class ScWaitCondition;
+class ScAction;
 
 /*!
  * @class ScAgentContext

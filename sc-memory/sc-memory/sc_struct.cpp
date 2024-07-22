@@ -8,8 +8,14 @@
 #include "sc_memory.hpp"
 #include "sc_template.hpp"
 
-ScSet::ScSet(ScMemoryContext & ctx, ScAddr const & structAddr)
-  : ScAddr(structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConst))
+ScSet::ScSet(ScMemoryContext * ctx, ScAddr const & setAddr)
+  : ScAddr(setAddr.IsValid() ? setAddr : ctx->CreateNode(ScType::NodeConst))
+  , m_ctx(ctx)
+{
+}
+
+ScSet::ScSet(ScMemoryContext & ctx, ScAddr const & setAddr)
+  : ScAddr(setAddr.IsValid() ? setAddr : ctx.CreateNode(ScType::NodeConst))
   , m_ctx(&ctx)
 {
 }
@@ -92,8 +98,14 @@ bool ScSet::IsEmpty() const
   return !iter->Next();
 }
 
+ScStruct::ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
+  : ScSet(ctx, structAddr.IsValid() ? structAddr : ctx->CreateNode(ScType::NodeConstStruct))
+{
+  // TODO: check type of struct element
+}
+
 ScStruct::ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr)
-  : ScSet(ctx, structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConstStruct))
+  : ScSet(&ctx, structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConstStruct))
 {
   // TODO: check type of struct element
 }
