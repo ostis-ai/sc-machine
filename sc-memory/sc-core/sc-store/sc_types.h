@@ -7,6 +7,10 @@
 #ifndef _sc_types_h_
 #  define _sc_types_h_
 
+#  include <stdint.h>
+#  include <stddef.h>
+#  include <inttypes.h>
+
 #  include "sc_defines.h"
 
 #  ifndef null_ptr
@@ -15,22 +19,25 @@
 
 #  define sc_unused(object) (void)object
 
-// base types
-typedef signed char sc_int8;
-typedef unsigned char sc_uint8;
-typedef signed short sc_int16;
-typedef unsigned short sc_uint16;
-typedef signed int sc_int32;
-typedef unsigned int sc_uint32;
-typedef long long sc_int64;
-typedef unsigned long long sc_uint64;
+// Base types
+// Fixed-width integer types
+typedef int8_t sc_int8;
+typedef uint8_t sc_uint8;
+typedef int16_t sc_int16;
+typedef uint16_t sc_uint16;
+typedef int32_t sc_int32;
+typedef uint32_t sc_uint32;
+typedef int64_t sc_int64;
+typedef uint64_t sc_uint64;
+
+// Floating-point type
 typedef float sc_float;
 
-typedef unsigned long sc_ulong;
-typedef unsigned int sc_uint;
-typedef int sc_int;
+// Other types
+typedef unsigned long sc_ulong;  // This may vary in size between platforms
+typedef unsigned int sc_uint;    // This is already platform-independent
+typedef int sc_int;              // This is already platform-independent
 
-typedef sc_uint32 sc_uint;
 typedef char sc_char;
 typedef unsigned char sc_uchar;
 

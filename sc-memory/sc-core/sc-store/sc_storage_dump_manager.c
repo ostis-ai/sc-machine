@@ -73,10 +73,13 @@ void _sc_storage_dump_statistics_timer()
   sc_storage_get_elements_stat(&statistics);
 
   sc_uint64 const allElements = statistics.node_count + statistics.link_count + statistics.arc_count;
-  sc_message("Nodes: %llu (%f)", statistics.node_count, (sc_float)statistics.node_count / (sc_float)allElements * 100);
-  sc_message("Links: %llu (%f)", statistics.link_count, (sc_float)statistics.link_count / (sc_float)allElements * 100);
-  sc_message("Edges: %llu (%f)", statistics.arc_count, (sc_float)statistics.arc_count / (sc_float)allElements * 100);
-  sc_message("Total: %llu", allElements);
+  sc_message(
+      "Nodes: %" PRIu64 "(%f)", statistics.node_count, (sc_float)statistics.node_count / (sc_float)allElements * 100);
+  sc_message(
+      "Links: %" PRIu64 "(%f)", statistics.link_count, (sc_float)statistics.link_count / (sc_float)allElements * 100);
+  sc_message(
+      "Edges: %" PRIu64 "(%f)", statistics.arc_count, (sc_float)statistics.arc_count / (sc_float)allElements * 100);
+  sc_message("Total: %" PRIu64, allElements);
 }
 
 void sc_storage_dump_manager_initialize(sc_storage_dump_manager ** manager, sc_memory_params const * params)

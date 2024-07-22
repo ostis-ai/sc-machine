@@ -1406,7 +1406,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings)
   EXPECT_EQ(sc_dictionary_fs_memory_initialize_ext(&memory, &params), SC_FS_MEMORY_OK);
 
   {
-    sc_char const string_template[] = "This is string number %llu";
+    sc_char const string_template[] = "This is string number %" PRIu64;
     sc_char string[50];
 
     sc_uint64 const STRING_COUNT = 1000;
@@ -1446,7 +1446,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings_with
   EXPECT_EQ(sc_dictionary_fs_memory_initialize_ext(&memory, &params), SC_FS_MEMORY_OK);
 
   {
-    sc_char const string_template[] = "This is string number %llu";
+    sc_char const string_template[] = "This is string number %" PRIu64;
     sc_char string[50];
 
     sc_uint64 const STRING_COUNT = 1000;
