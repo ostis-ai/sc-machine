@@ -134,7 +134,7 @@ class MyAgent : public ScAgent
   // Specify action class and sc-event type on which this sc-agent will be called.
   SC_CLASS(
       Agent, 
-      Event(ScKeynodes::my_action_class, ScEvent::Type::AddOutputEdge)
+      Event(ScKeynodes::my_action_class, ScEvent::Type::AddOutputArc)
   )
   // This sc-agent can be called if sc-connector is created from sc-element 
   // with sc-address `ScKeynodes::my_action_class` to some sc-element.
@@ -170,10 +170,10 @@ SC_AGENT_IMPLEMENTATION(MyAgent)
 
 * `listenAddr` - sc-address of sc-element listening for sc-events in sc-memory (see [ScEvent](#scevent));
 * `edgeAddr` - sc-address of sc-connector that will be created to or from listening sc-element with sc-address 
-`listenAddr` (if sc-event type is `ScEventEraseElement` or `ScEventContentChanged`, then value of this variable is empty 
+`listenAddr` (if sc-event type is `ScEventEraseElement` or `ScEventChangeContent`, then value of this variable is empty 
 sc-address);
 * `otherAddr` - sc-address of target or source sc-element of sc-connector with sc-address `edgeAddr` (if sc-event type 
-is `ScEventEraseElement` or `ScEventContentChanged`, then value of this variable is empty sc-address);
+is `ScEventEraseElement` or `ScEventChangeContent`, then value of this variable is empty sc-address);
 * `m_memoryCtx` - sc-memory context of calling sc-agent that can be used to work with sc-memory.
 
 If sc-agent finished work without any errors, then it must return `SC_RESULT_OK`, otherwise - one of code error
@@ -222,12 +222,12 @@ metadata. This include must be the last one in a file.
 This type of objects allows you to subscribe to any events in sc-memory. There are C++ classes that correspond to
 specified event types:
 
-* `ScEventAddOutputEdge` - emits each time, when output (outgoing) sc-connector (from specified sc-element) is created;
-* `ScEventAddInputEdge` - emits each time, when input (ingoing) sc-connector (into specified sc-element) is created;
-* `ScEventRemoveOutputEdge` - emits each time, when output (outgoing) sc-connector (from specified sc-element) is erased;
-* `ScEventRemoveInputEdge` - emits each time, when input (ingoing) sc-connector (into specified sc-element) is erased;
+* `ScEventAddOutputArc` - emits each time, when output (outgoing) sc-connector (from specified sc-element) is created;
+* `ScEventAddInputArc` - emits each time, when input (ingoing) sc-connector (into specified sc-element) is created;
+* `ScEventRemoveOutputArc` - emits each time, when output (outgoing) sc-connector (from specified sc-element) is erased;
+* `ScEventRemoveInputArc` - emits each time, when input (ingoing) sc-connector (into specified sc-element) is erased;
 * `ScEventEraseElement` - emits, when specified sc-element is erased;
-* `ScEventContentChanged` - emits each time, when content of specified sc-link is changed.
+* `ScEventChangeContent` - emits each time, when content of specified sc-link is changed.
 
 Each event constructor takes 3 parameters:
 
@@ -249,9 +249,9 @@ then it's would have an empty value):
   </tr>
 
   <tr>
-    <td><strong>ScEventAddOutputEdge</strong></td>
+    <td><strong>ScEventAddOutputArc</strong></td>
     <td>
-      <scg src="../images/sc-events/sc_event_output_edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_output_arc.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between listening sc-element with <code>listenAddr</code> and some sc-element with <code>otherAddr</code> is created.
       <hr/>
@@ -269,15 +269,15 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventAddOutputEdge event(context, addr, callback);
+ScEventAddOutputArc event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
 
   <tr>
-    <td><strong>ScEventAddInputEdge</strong></td>
+    <td><strong>ScEventAddInputArc</strong></td>
     <td>
-      <scg src="../images/sc-events/sc_event_input_edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_input_arc.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between some sc-element with <code>otherAddr</code> and listening sc-element with <code>listenAddr</code> is created.
       <hr/>
@@ -295,15 +295,15 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventAddInputEdge event(context, addr, callback);
+ScEventAddInputArc event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveOutputEdge</strong></td>
+    <td><strong>ScEventRemoveOutputArc</strong></td>
     <td>
-      <scg src="../images/sc-events/sc_event_output_edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_output_arc.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between listening sc-element with <code>listenAddr</code> and some sc-element with <code>otherAddr</code> is erased.
       <hr/>
@@ -321,15 +321,15 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventRemoveOutputEdge event(context, addr, callback);
+ScEventRemoveOutputArc event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveInputEdge</strong></td>
+    <td><strong>ScEventRemoveInputArc</strong></td>
     <td>
-      <scg src="../images/sc-events/sc_event_input_edge.gwf"></scg>
+      <scg src="../images/sc-events/sc_event_input_arc.gwf"></scg>
       <br/>
       Callback calls each time, when some sc-connector <code>edgeAddr</code> between some sc-element with <code>otherAddr</code> and listening sc-element with <code>listenAddr</code> is erased.
       <hr/>
@@ -347,7 +347,7 @@ auto const callback = [](ScAddr const & listenAddr,
     ...
     return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventRemoveOutputEdge event(context, addr, callback);
+ScEventRemoveOutputArc event(context, addr, callback);
       </code></pre>
     </td>
   </tr>
@@ -376,7 +376,7 @@ ScEventEraseElement event(context, addr, callback);
   </tr>
 
   <tr>
-    <td><strong>ScEventContentChanged</strong></td>
+    <td><strong>ScEventChangeContent</strong></td>
     <td>
       <scg src="../images/sc-events/sc_event_content.gwf"></scg>
       <br/>
@@ -395,7 +395,7 @@ auto const callback = [](ScAddr const & listenAddr,
   ...
   return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventContentChanged evt(context, addr, callback);
+ScEventChangeContent evt(context, addr, callback);
       </code></pre>
     </td>
   </tr>
@@ -417,7 +417,7 @@ There are some examples of usage for specified `ScWait` objects:
 * Wait input sc-connector into sc-element with `addr`:
 
 ```cpp
-ScWait<ScEventAddInputEdge> waiter(context, addr);
+ScWait<ScEventAddInputArc> waiter(context, addr);
 waiter.Wait();
 ```
 
@@ -432,7 +432,7 @@ auto const check = [](ScAddr const & listenAddr,
   // Return SC_TRUE or SC_FALSE depending on condition.
   return SC_FALSE;
 };
-ScWaitCondition<ScEventAddInputEdge> waiter(context, addr, SC_WAIT_CHECK(check));
+ScWaitCondition<ScEventAddInputArc> waiter(context, addr, SC_WAIT_CHECK(check));
 // Provide wait time value.
 waiter.Wait(10000);
 // By default, wait time value is 5000.

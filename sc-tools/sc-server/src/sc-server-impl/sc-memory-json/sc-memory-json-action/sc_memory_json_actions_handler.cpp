@@ -26,7 +26,7 @@ void ScMemoryJsonActionsHandler::InitializeActionClasses()
       {"create_elements", new ScMemoryCreateElementsJsonAction()},
       {"create_elements_by_scs", new ScMemoryCreateElementsByScsJsonAction()},
       {"check_elements", new ScMemoryCheckElementsJsonAction()},
-      {"delete_elements", new ScMemoryDeleteElementsJsonAction()},
+      {"delete_elements", new ScMemoryEraseElementsJsonAction()},
       {"search_template", new ScMemoryTemplateSearchJsonAction()},
       {"generate_template", new ScMemoryTemplateGenerateJsonAction()},
       {"content", new ScMemoryHandleLinkContentJsonAction()},

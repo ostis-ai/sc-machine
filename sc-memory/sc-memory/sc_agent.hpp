@@ -138,7 +138,7 @@ protected:
  * This class extends ScAgent and provides methods for subscribing and unsubscribing
  * to sc-action events.
  *
- * @details The `sc_result DoProgram(ScEventAddOutputEdge const & event, ScAction & action)` procedure should be
+ * @details The `sc_result DoProgram(ScEventAddOutputArc const & event, ScAction & action)` procedure should be
  * implemented in the child class.
  *
  * File sc_syntactic_analysis_agent.hpp:
@@ -165,7 +165,7 @@ protected:
  *
  *   ScAddr GetActionClass() const override;
  *
- *   sc_result DoProgram(ScEventAddOutputEdge const & event, ScAction & action) override;
+ *   sc_result DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
  * };
  *
  * private:
@@ -194,7 +194,7 @@ protected:
  *   return ScNLPKeynodes::action_syntactic_analysis;
  * }
  *
- * sc_result ScSyntacticAnalysisAgent::DoProgram(ScEventAddOutputEdge const &, ScAction & action)
+ * sc_result ScSyntacticAnalysisAgent::DoProgram(ScEventAddOutputArc const &, ScAction & action)
  * {
  *   ScAddr const textAddr = action.GetArgument(1);
  *   if (!textAddr.IsValid())

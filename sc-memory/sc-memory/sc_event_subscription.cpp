@@ -30,34 +30,34 @@ sc_result ScEventSubscription::Shutdown(ScMemoryContext *)
   return SC_RESULT_OK;
 }
 
-ScEventSubscriptionAddOutputEdge::ScEventSubscriptionAddOutputEdge(
+ScEventSubscriptionAddOutputArc::ScEventSubscriptionAddOutputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventAddOutputEdge const &)> const & func)
+    std::function<sc_result(ScEventAddOutputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
 
-ScEventSubscriptionAddInputEdge::ScEventSubscriptionAddInputEdge(
+ScEventSubscriptionAddInputArc::ScEventSubscriptionAddInputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventAddInputEdge const &)> const & func)
+    std::function<sc_result(ScEventAddInputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
 
-ScEventSubscriptionRemoveOutputEdge::ScEventSubscriptionRemoveOutputEdge(
+ScEventSubscriptionRemoveOutputArc::ScEventSubscriptionRemoveOutputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventRemoveOutputEdge const &)> const & func)
+    std::function<sc_result(ScEventRemoveOutputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
 
-ScEventSubscriptionRemoveInputEdge::ScEventSubscriptionRemoveInputEdge(
+ScEventSubscriptionRemoveInputArc::ScEventSubscriptionRemoveInputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventRemoveInputEdge const &)> const & func)
+    std::function<sc_result(ScEventRemoveInputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -65,12 +65,12 @@ ScEventSubscriptionRemoveInputEdge::ScEventSubscriptionRemoveInputEdge(
 ScEventSubscriptionEraseElement::ScEventSubscriptionEraseElement(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventRemoveElement const &)> const & func)
+    std::function<sc_result(ScEventEraseElement const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
 
-ScEventSubscriptionContentChanged::ScEventSubscriptionContentChanged(
+ScEventSubscriptionChangeContent::ScEventSubscriptionChangeContent(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
     std::function<sc_result(ScEventChangeContent const &)> const & func)
@@ -89,19 +89,19 @@ std::unordered_map<ScAddr, ScEvent::Type, ScAddrHashFunc<sc_uint32>> ScEventSubs
 sc_result ScEventSubscriptionFactory::Initialize(ScMemoryContext *, ScAddr const &)
 {
   m_eventTypesToCreateSubscriptionCallbacks = {
-      {ScEvent::Type::AddOutputEdge, CreateEventSubscriptionWrapper<sc_event_add_output_arc>()},
-      {ScEvent::Type::AddInputEdge, CreateEventSubscriptionWrapper<sc_event_add_input_arc>()},
-      {ScEvent::Type::RemoveOutputEdge, CreateEventSubscriptionWrapper<sc_event_remove_output_arc>()},
-      {ScEvent::Type::RemoveInputEdge, CreateEventSubscriptionWrapper<sc_event_remove_input_arc>()},
-      {ScEvent::Type::RemoveElement, CreateEventSubscriptionWrapper<sc_event_remove_element>()},
+      {ScEvent::Type::AddOutputArc, CreateEventSubscriptionWrapper<sc_event_add_output_arc>()},
+      {ScEvent::Type::AddInputArc, CreateEventSubscriptionWrapper<sc_event_add_input_arc>()},
+      {ScEvent::Type::RemoveOutputArc, CreateEventSubscriptionWrapper<sc_event_remove_output_arc>()},
+      {ScEvent::Type::RemoveInputArc, CreateEventSubscriptionWrapper<sc_event_remove_input_arc>()},
+      {ScEvent::Type::EraseElement, CreateEventSubscriptionWrapper<sc_event_erase_element>()},
       {ScEvent::Type::ChangeContent, CreateEventSubscriptionWrapper<sc_event_change_content>()},
   };
   m_namesToEventTypes = {
-      {ScKeynodes::event_add_output_arc, ScEvent::Type::AddOutputEdge},
-      {ScKeynodes::event_add_input_arc, ScEvent::Type::AddInputEdge},
-      {ScKeynodes::event_remove_output_arc, ScEvent::Type::RemoveOutputEdge},
-      {ScKeynodes::event_remove_input_arc, ScEvent::Type::RemoveInputEdge},
-      {ScKeynodes::event_remove_element, ScEvent::Type::RemoveElement},
+      {ScKeynodes::event_add_output_arc, ScEvent::Type::AddOutputArc},
+      {ScKeynodes::event_add_input_arc, ScEvent::Type::AddInputArc},
+      {ScKeynodes::event_remove_output_arc, ScEvent::Type::RemoveOutputArc},
+      {ScKeynodes::event_remove_input_arc, ScEvent::Type::RemoveInputArc},
+      {ScKeynodes::event_erase_element, ScEvent::Type::EraseElement},
       {ScKeynodes::event_change_content, ScEvent::Type::ChangeContent},
   };
   return SC_RESULT_OK;

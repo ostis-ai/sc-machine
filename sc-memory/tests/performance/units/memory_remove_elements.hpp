@@ -8,7 +8,7 @@
 
 #include "memory_test.hpp"
 
-class TestRemoveElements : public TestMemory
+class TestEraseElements : public TestMemory
 {
 public:
   void Run()

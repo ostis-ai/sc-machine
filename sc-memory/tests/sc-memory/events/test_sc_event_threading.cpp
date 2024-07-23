@@ -34,11 +34,11 @@ TEST_F(ScEventTest, threading_smoke)
   events.resize(eventsNum);
 
   std::vector<ScEvent::Type> eventTypes = {
-      ScEvent::Type::AddOutputEdge,
-      ScEvent::Type::AddInputEdge,
-      ScEvent::Type::RemoveOutputEdge,
-      ScEvent::Type::RemoveInputEdge,
-      ScEvent::Type::RemoveElement,
+      ScEvent::Type::AddOutputArc,
+      ScEvent::Type::AddInputArc,
+      ScEvent::Type::RemoveOutputArc,
+      ScEvent::Type::RemoveInputArc,
+      ScEvent::Type::EraseElement,
       ScEvent::Type::ChangeContent};
 
   auto const randNode = [&nodes]()
@@ -52,7 +52,7 @@ TEST_F(ScEventTest, threading_smoke)
   {
     events[i] = ScEventSubscriptionFactory::CreateSubscription(
         &*m_ctx,
-        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
+        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ChangeContent event
         randNode(),
         [&](ScElementaryEvent const &) -> sc_result
         {

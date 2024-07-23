@@ -9,11 +9,11 @@
 // Should be equal to C values
 
 ScEvent::Type constexpr ScEvent::Type::Unknown(sc_event_unknown);
-ScEvent::Type constexpr ScEvent::Type::AddInputEdge(sc_event_add_input_arc);
-ScEvent::Type constexpr ScEvent::Type::AddOutputEdge(sc_event_add_output_arc);
-ScEvent::Type constexpr ScEvent::Type::RemoveInputEdge(sc_event_remove_input_arc);
-ScEvent::Type constexpr ScEvent::Type::RemoveOutputEdge(sc_event_remove_output_arc);
-ScEvent::Type constexpr ScEvent::Type::RemoveElement(sc_event_remove_element);
+ScEvent::Type constexpr ScEvent::Type::AddInputArc(sc_event_add_input_arc);
+ScEvent::Type constexpr ScEvent::Type::AddOutputArc(sc_event_add_output_arc);
+ScEvent::Type constexpr ScEvent::Type::RemoveInputArc(sc_event_remove_input_arc);
+ScEvent::Type constexpr ScEvent::Type::RemoveOutputArc(sc_event_remove_output_arc);
+ScEvent::Type constexpr ScEvent::Type::EraseElement(sc_event_erase_element);
 ScEvent::Type constexpr ScEvent::Type::ChangeContent(sc_event_change_content);
 
 ScEvent::~ScEvent() = default;
@@ -78,7 +78,7 @@ ScEventAddEdge::ScEventAddEdge(
     ScAddr const & otherAddr)
   : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
-ScEventAddOutputEdge::ScEventAddOutputEdge(
+ScEventAddOutputArc::ScEventAddOutputArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
@@ -86,7 +86,7 @@ ScEventAddOutputEdge::ScEventAddOutputEdge(
     ScAddr const & otherAddr)
   : ScEventAddEdge(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
-_SC_EXTERN ScEventAddInputEdge::ScEventAddInputEdge(
+_SC_EXTERN ScEventAddInputArc::ScEventAddInputArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
@@ -112,7 +112,7 @@ ScEventRemoveEdge::ScEventRemoveEdge(
     ScAddr const & otherAddr)
   : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
-ScEventRemoveOutputEdge::ScEventRemoveOutputEdge(
+ScEventRemoveOutputArc::ScEventRemoveOutputArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
@@ -120,7 +120,7 @@ ScEventRemoveOutputEdge::ScEventRemoveOutputEdge(
     ScAddr const & otherAddr)
   : ScEventRemoveEdge(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
-ScEventRemoveInputEdge::ScEventRemoveInputEdge(
+ScEventRemoveInputArc::ScEventRemoveInputArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
@@ -128,7 +128,7 @@ ScEventRemoveInputEdge::ScEventRemoveInputEdge(
     ScAddr const & otherAddr)
   : ScEventRemoveEdge(userAddr, otherAddr, connectorAddr, connectorType, subscriptionAddr) {};
 
-ScEventRemoveElement::ScEventRemoveElement(
+ScEventEraseElement::ScEventEraseElement(
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
@@ -136,7 +136,7 @@ ScEventRemoveElement::ScEventRemoveElement(
     ScAddr const & otherAddr)
   : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
-ScAddr ScEventRemoveElement::GetSubscriptionElement() const
+ScAddr ScEventEraseElement::GetSubscriptionElement() const
 {
   return m_subscriptionAddr;
 }

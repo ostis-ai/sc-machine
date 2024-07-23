@@ -82,11 +82,11 @@ sc_result ScWait::Shutdown(ScMemoryContext *)
 }
 
 ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
-  : ScWaitEvent<ScEventAddInputEdge>(ctx, actionAddr)
+  : ScWaitEvent<ScEventAddInputArc>(ctx, actionAddr)
 {
 }
 
-sc_result ScWaitActionFinished::OnEvent(ScEventAddInputEdge const & event)
+sc_result ScWaitActionFinished::OnEvent(ScEventAddInputArc const & event)
 {
   return event.GetOtherElement() == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
 }
