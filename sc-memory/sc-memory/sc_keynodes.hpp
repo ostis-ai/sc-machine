@@ -184,9 +184,9 @@ private:
   friend class ScMemory;
   friend class ScModule;
 
-  _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-  _SC_EXTERN void Shutdown(ScMemoryContext * ctx) override;
+  static _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
+  static _SC_EXTERN void Shutdown(ScMemoryContext * ctx);
 
-  _SC_EXTERN static ScAddr const & GetResultCodeAddr(sc_result resCode);
-  _SC_EXTERN static sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
+  static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);
+  static _SC_EXTERN sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
 };

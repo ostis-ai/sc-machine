@@ -20,8 +20,4 @@ private:
   _SC_EXTERN ScResult(sc_result code);
 
   _SC_EXTERN operator sc_result();
-
-  _SC_EXTERN void Initialize(ScMemoryContext *, ScAddr const &) override;
-
-  _SC_EXTERN void Shutdown(ScMemoryContext *) override;
 };

@@ -72,10 +72,6 @@ public:
       std::function<void(void)> const & onWaitSuccess = {},
       std::function<void(void)> const & onWaitUnsuccess = {});
 
-protected:
-  void Initialize(ScMemoryContext *, ScAddr const &) override;
-  void Shutdown(ScMemoryContext *) override;
-
 private:
   Impl m_impl;                       ///< Implementation of the wait logic.
   DelegateFunc m_waitStartDelegate;  ///< Delegate function for wait start.

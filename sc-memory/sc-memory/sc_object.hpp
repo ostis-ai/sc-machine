@@ -30,9 +30,6 @@ public:
     return Demangle(typeid(Class).name());
   }
 
-  _SC_EXTERN virtual void Initialize(class ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) = 0;
-  _SC_EXTERN virtual void Shutdown(class ScMemoryContext * ctx) = 0;
-
 private:
   std::string m_name;
 

@@ -71,10 +71,6 @@ sc_bool ScWait::Wait(
   return result;
 }
 
-void ScWait::Initialize(ScMemoryContext *, ScAddr const &) {}
-
-void ScWait::Shutdown(ScMemoryContext *) {}
-
 ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
   : ScWaitEvent<ScEventAddInputArc>(ctx, actionAddr)
 {

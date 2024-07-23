@@ -88,9 +88,9 @@ public:
    */
   _SC_EXTERN void Unregister(ScMemoryContext * ctx);
 
-  _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
 
-  _SC_EXTERN void Shutdown(ScMemoryContext * ctx) override;
+  _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx);
 
 protected:
   /// Registered keynodes

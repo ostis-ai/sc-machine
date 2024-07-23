@@ -20,10 +20,6 @@ sc_result ScEventSubscription::HandlerDelete(sc_event const *)
   return SC_RESULT_OK;
 }
 
-void ScEventSubscription::Initialize(ScMemoryContext *, ScAddr const &) {}
-
-void ScEventSubscription::Shutdown(ScMemoryContext *) {}
-
 ScEventSubscriptionAddOutputArc::ScEventSubscriptionAddOutputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,

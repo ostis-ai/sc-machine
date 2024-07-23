@@ -75,7 +75,7 @@ std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 
 void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
-  SC_LOG_INFO("Initialize " << this->GetName());
+  SC_LOG_INFO("Initialize " << GetName<ScKeynodes>());
 
   internal::ScKeynodesRegister::Register(ctx, initMemoryGeneratedStructureAddr);
 
@@ -131,7 +131,7 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGene
 
 void ScKeynodes::Shutdown(ScMemoryContext * ctx)
 {
-  SC_LOG_INFO("Shutdown " << this->GetName());
+  SC_LOG_INFO("Shutdown " << GetName<ScKeynodes>());
   internal::ScKeynodesRegister::Unregister(ctx);
 }
 
