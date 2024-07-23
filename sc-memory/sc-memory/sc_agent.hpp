@@ -74,11 +74,6 @@ protected:
   _SC_EXTERN void SetContext(ScAddr const & userAddr);
 
   static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback();
-
-private:
-  _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-
-  _SC_EXTERN void Shutdown(ScMemoryContext *) override;
 };
 
 /*!

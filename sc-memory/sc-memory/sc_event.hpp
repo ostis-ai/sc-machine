@@ -60,21 +60,6 @@ protected:
 
 protected:
   static inline Type const type = Type::Unknown;
-
-  /*!
-   * @brief Initializes the event.
-   * @param context A memory context.
-   * @param addr An address of the event.
-   * @return Result of the initialization.
-   */
-  _SC_EXTERN void Initialize(ScMemoryContext *, ScAddr const &) final;
-
-  /*!
-   * @brief Shuts down the event.
-   * @param context A memory context.
-   * @return Result of the shutdown.
-   */
-  _SC_EXTERN void Shutdown(ScMemoryContext *) final;
 };
 
 class _SC_EXTERN ScElementaryEvent : public ScEvent

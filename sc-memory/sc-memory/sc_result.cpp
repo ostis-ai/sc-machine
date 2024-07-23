@@ -15,7 +15,3 @@ ScResult::operator sc_result()
 {
   return m_code;
 }
-
-void ScResult::Initialize(ScMemoryContext *, ScAddr const &) {}
-
-void ScResult::Shutdown(ScMemoryContext *) {}

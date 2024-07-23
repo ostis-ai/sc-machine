@@ -28,24 +28,13 @@ public:
 protected:
   static sc_result Handler(sc_event const *, sc_addr, sc_addr, sc_type, sc_addr);
 
-  static sc_result HandlerDelete(sc_event const *);
-
   /*!
-   * @brief Initializes an event subscription.
+   * @brief Handles the deletion of an event.
    *
-   * @param ctx Pointer to an sc-memory context.
-   * @param initMemoryGeneratedStructureAddr Address of the initial memory generated structure.
-   * @return Result of the initialization.
+   * @param event Pointer to an sc-event.
+   * @return Result of the event deletion handling.
    */
-  void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) final;
-
-  /*!
-   * @brief Shuts down an event subscription.
-   *
-   * @param ctx Pointer to an sc-memory context.
-   * @return Result of the shutdown.
-   */
-  void Shutdown(ScMemoryContext * ctx) final;
+  static sc_result HandlerDelete(sc_event const * event);
 };
 
 template <class TScEvent>

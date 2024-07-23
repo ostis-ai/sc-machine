@@ -51,16 +51,6 @@ std::function<void(TScEvent const &)> ScAgentAbstract<TScEvent>::GetCallback()
 }
 
 template <class TScEvent>
-void ScAgentAbstract<TScEvent>::Initialize(ScMemoryContext *, ScAddr const &)
-{
-}
-
-template <class TScEvent>
-void ScAgentAbstract<TScEvent>::Shutdown(ScMemoryContext *)
-{
-}
-
-template <class TScEvent>
 ScAgent<TScEvent>::ScAgent()
   : ScAgentAbstract<TScEvent>(){};
 
