@@ -9,6 +9,8 @@
 #include "sc_event.hpp"
 #include "sc_keynodes.hpp"
 
+ScActionAgent::ScActionAgent() = default;
+
 ScTemplate ScActionAgent::GetInitiationCondition(ScActionEvent const & event)
 {
   ScTemplate templ;

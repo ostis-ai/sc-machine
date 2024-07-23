@@ -90,56 +90,56 @@ sc_result ScElementaryEventSubscription<TScEvent>::HandlerDelete(sc_event const 
 }
 
 template <>
-struct ScEventTypeConverter<sc_event_add_input_arc>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_add_input_arc>
 {
   using SubscriptionType = ScEventSubscriptionAddInputArc;
   using EventTypeClass = ScEventAddInputArc;
 };
 
 template <>
-struct ScEventTypeConverter<sc_event_add_output_arc>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_add_output_arc>
 {
   using SubscriptionType = ScEventSubscriptionAddOutputArc;
   using EventTypeClass = ScEventAddOutputArc;
 };
 
 template <>
-struct ScEventTypeConverter<sc_event_add_edge>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_add_edge>
 {
   using SubscriptionType = ScEventSubscriptionAddEdge;
   using EventTypeClass = ScEventAddEdge;
 };
 
 template <>
-struct ScEventTypeConverter<sc_event_remove_input_arc>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_remove_input_arc>
 {
   using SubscriptionType = ScEventSubscriptionRemoveInputArc;
   using EventTypeClass = ScEventRemoveInputArc;
 };
 
 template <>
-struct ScEventTypeConverter<sc_event_remove_output_arc>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_remove_output_arc>
 {
   using SubscriptionType = ScEventSubscriptionRemoveOutputArc;
   using EventTypeClass = ScEventRemoveOutputArc;
 };
 
 template <>
-struct ScEventTypeConverter<sc_event_remove_edge>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_remove_edge>
 {
   using SubscriptionType = ScEventSubscriptionRemoveEdge;
   using EventTypeClass = ScEventRemoveEdge;
 };
 
 template <>
-struct ScEventTypeConverter<sc_event_erase_element>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_erase_element>
 {
   using SubscriptionType = ScEventSubscriptionEraseElement;
   using EventTypeClass = ScEventEraseElement;
 };
 
 template <>
-struct ScEventTypeConverter<sc_event_change_content>
+struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_change_content>
 {
   using SubscriptionType = ScEventSubscriptionChangeContent;
   using EventTypeClass = ScEventChangeContent;

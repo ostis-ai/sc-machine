@@ -161,26 +161,25 @@ public:
       std::function<void(ScEventChangeContent const &)> const & func);
 };
 
-template <sc_event_type eventType>
-struct _SC_EXTERN ScEventTypeConverter;
-
-template <sc_event_type eventType>
-using _SC_EXTERN ScEventSubscriptionType = typename ScEventTypeConverter<eventType>::SubscriptionType;
-
-template <sc_event_type eventType>
-using _SC_EXTERN ScEventTypeClass = typename ScEventTypeConverter<eventType>::EventTypeClass;
-
+/*!
+ * @brief Factory class for creating sc-event subscriptions.
+ *
+ * This class provides methods to create subscriptions for different types of sc-events.
+ */
 class _SC_EXTERN ScEventSubscriptionFactory
 {
 public:
   using ScEventCallback = std::function<void(ScElementaryEvent const &)>;
 
-  static _SC_EXTERN ScEventSubscription * CreateSubscription(
-      ScMemoryContext * context,
-      ScEvent::Type const & eventType,
-      ScAddr const & subscriptionAddr,
-      ScEventCallback const & onEventCallback);
-
+  /*!
+   * @brief Creates an event subscription using the event type address.
+   *
+   * @param context Pointer to an sc-memory context.
+   * @param evenTypeAddr Address of the event type.
+   * @param subscriptionAddr Address of a subscription.
+   * @param onEventCallback Callback function to be called on event emission.
+   * @return Pointer to the created event subscription.
+   */
   static _SC_EXTERN ScEventSubscription * CreateSubscription(
       ScMemoryContext * context,
       ScAddr const & evenTypeAddr,
@@ -196,13 +195,17 @@ public:
 protected:
   friend class ScMemory;
 
+  template <sc_event_type eventType>
+  struct _SC_EXTERN ScEventTypeConverter;
+
+  template <sc_event_type eventType>
+  using _SC_EXTERN ScEventSubscriptionType = typename ScEventTypeConverter<eventType>::SubscriptionType;
+
+  template <sc_event_type eventType>
+  using _SC_EXTERN ScEventTypeClass = typename ScEventTypeConverter<eventType>::EventTypeClass;
+
   using ScCreateEventSubscriptionCallback =
       std::function<ScEventSubscription *(ScMemoryContext *, ScAddr const &, ScEventCallback const &)>;
-
-  struct ScEventTypeHashFunc
-  {
-    sc_event_type operator()(ScEvent::Type const & eventType) const;
-  };
 
   template <sc_event_type eventType>
   static ScEventSubscription * CreateEventSubscription(
@@ -213,15 +216,13 @@ protected:
   template <sc_event_type eventType>
   static ScCreateEventSubscriptionCallback CreateEventSubscriptionWrapper();
 
-  static sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
-
-  static sc_result Shutdown(ScMemoryContext * ctx);
+  static void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
+  static void Shutdown(ScMemoryContext * ctx);
 
 private:
-  static std::unordered_map<ScEvent::Type, ScCreateEventSubscriptionCallback, ScEventTypeHashFunc>
-      m_eventTypesToCreateSubscriptionCallbacks;
-
-  static std::unordered_map<ScAddr, ScEvent::Type, ScAddrHashFunc<sc_uint32>> m_namesToEventTypes;
+  static std::
+      unordered_map<ScAddr, ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback, ScAddrHashFunc>
+          m_eventTypesToCreateSubscriptionCallbacks;
 };
 
 #include "sc_event_subscription.tpp"

@@ -88,53 +88,35 @@ ScEventSubscriptionChangeContent::ScEventSubscriptionChangeContent(
 {
 }
 
-std::unordered_map<
-    ScEvent::Type,
-    ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback,
-    ScEventSubscriptionFactory::ScEventTypeHashFunc>
+std::unordered_map<ScAddr, ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback, ScAddrHashFunc<sc_uint32>>
     ScEventSubscriptionFactory::m_eventTypesToCreateSubscriptionCallbacks;
 
-std::unordered_map<ScAddr, ScEvent::Type, ScAddrHashFunc<sc_uint32>> ScEventSubscriptionFactory::m_namesToEventTypes;
-
-sc_result ScEventSubscriptionFactory::Initialize(ScMemoryContext *, ScAddr const &)
+void ScEventSubscriptionFactory::Initialize(ScMemoryContext *, ScAddr const &)
 {
   m_eventTypesToCreateSubscriptionCallbacks = {
-      {ScEvent::Type::AddOutputArc, CreateEventSubscriptionWrapper<sc_event_add_output_arc>()},
-      {ScEvent::Type::AddInputArc, CreateEventSubscriptionWrapper<sc_event_add_input_arc>()},
-      {ScEvent::Type::AddEdge, CreateEventSubscriptionWrapper<sc_event_add_edge>()},
-      {ScEvent::Type::RemoveOutputArc, CreateEventSubscriptionWrapper<sc_event_remove_output_arc>()},
-      {ScEvent::Type::RemoveInputArc, CreateEventSubscriptionWrapper<sc_event_remove_input_arc>()},
-      {ScEvent::Type::RemoveEdge, CreateEventSubscriptionWrapper<sc_event_remove_edge>()},
-      {ScEvent::Type::EraseElement, CreateEventSubscriptionWrapper<sc_event_erase_element>()},
-      {ScEvent::Type::ChangeContent, CreateEventSubscriptionWrapper<sc_event_change_content>()},
+      {ScKeynodes::event_add_output_arc, CreateEventSubscriptionWrapper<sc_event_add_output_arc>()},
+      {ScKeynodes::event_add_input_arc, CreateEventSubscriptionWrapper<sc_event_add_input_arc>()},
+      {ScKeynodes::event_add_edge, CreateEventSubscriptionWrapper<sc_event_add_edge>()},
+      {ScKeynodes::event_remove_output_arc, CreateEventSubscriptionWrapper<sc_event_remove_output_arc>()},
+      {ScKeynodes::event_remove_input_arc, CreateEventSubscriptionWrapper<sc_event_remove_input_arc>()},
+      {ScKeynodes::event_remove_edge, CreateEventSubscriptionWrapper<sc_event_remove_edge>()},
+      {ScKeynodes::event_erase_element, CreateEventSubscriptionWrapper<sc_event_erase_element>()},
+      {ScKeynodes::event_erase_element, CreateEventSubscriptionWrapper<sc_event_change_content>()},
   };
-  m_namesToEventTypes = {
-      {ScKeynodes::event_add_output_arc, ScEvent::Type::AddOutputArc},
-      {ScKeynodes::event_add_input_arc, ScEvent::Type::AddInputArc},
-      {ScKeynodes::event_add_edge, ScEvent::Type::AddEdge},
-      {ScKeynodes::event_remove_output_arc, ScEvent::Type::RemoveOutputArc},
-      {ScKeynodes::event_remove_input_arc, ScEvent::Type::RemoveInputArc},
-      {ScKeynodes::event_remove_edge, ScEvent::Type::RemoveEdge},
-      {ScKeynodes::event_erase_element, ScEvent::Type::EraseElement},
-      {ScKeynodes::event_change_content, ScEvent::Type::ChangeContent},
-  };
-  return SC_RESULT_OK;
 }
 
-sc_result ScEventSubscriptionFactory::Shutdown(ScMemoryContext *)
+void ScEventSubscriptionFactory::Shutdown(ScMemoryContext *)
 {
   m_eventTypesToCreateSubscriptionCallbacks.clear();
-  m_namesToEventTypes.clear();
-  return SC_RESULT_OK;
 }
 
 ScEventSubscription * ScEventSubscriptionFactory::CreateSubscription(
     ScMemoryContext * context,
-    ScEvent::Type const & eventType,
+    ScAddr const & evenTypeAddr,
     ScAddr const & subscriptionAddr,
     ScEventCallback const & onEventCallback)
 {
-  auto const & it = m_eventTypesToCreateSubscriptionCallbacks.find(eventType);
+  auto const & it = m_eventTypesToCreateSubscriptionCallbacks.find(evenTypeAddr);
   if (it == m_eventTypesToCreateSubscriptionCallbacks.cend())
     return nullptr;
 
@@ -144,37 +126,13 @@ ScEventSubscription * ScEventSubscriptionFactory::CreateSubscription(
 
 ScEventSubscription * ScEventSubscriptionFactory::CreateSubscription(
     ScMemoryContext * context,
-    ScAddr const & evenTypeAddr,
-    ScAddr const & subscriptionAddr,
-    ScEventCallback const & onEventCallback)
-{
-  auto const & it = m_namesToEventTypes.find(evenTypeAddr);
-  if (it == m_namesToEventTypes.cend())
-    return nullptr;
-
-  ScEvent::Type const & eventType = it->second;
-  return CreateSubscription(context, eventType, subscriptionAddr, onEventCallback);
-}
-
-ScEventSubscription * ScEventSubscriptionFactory::CreateSubscription(
-    ScMemoryContext * context,
     std::string const & eventTypeSystemIdtf,
     ScAddr const & subscriptionAddr,
     ScEventCallback const & onEventCallback)
 {
-  ScAddr const & evenTypeAddr = context->HelperFindBySystemIdtf(eventTypeSystemIdtf);
-  if (!evenTypeAddr.IsValid())
+  ScAddr const & eventTypeAddr = context->HelperFindBySystemIdtf(eventTypeSystemIdtf);
+  if (!eventTypeAddr.IsValid())
     return nullptr;
 
-  auto const & it = m_namesToEventTypes.find(evenTypeAddr);
-  if (it == m_namesToEventTypes.cend())
-    return nullptr;
-
-  ScEvent::Type const & eventType = it->second;
-  return CreateSubscription(context, eventType, subscriptionAddr, onEventCallback);
-}
-
-sc_event_type ScEventSubscriptionFactory::ScEventTypeHashFunc::operator()(ScEvent::Type const & eventType) const
-{
-  return eventType.m_realType;
+  return CreateSubscription(context, eventTypeAddr, subscriptionAddr, onEventCallback);
 }

@@ -128,13 +128,13 @@ ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
 {
   auto [firstArgument, secondArgument] = action.GetArguments<2>();
 
-  if (firstArgument.IsValid() == SC_FALSE)
+  if (!firstArgument.IsValid())
   {
     msWaiter.Unlock();
     return action.FinishWithError();
   }
 
-  if (secondArgument.IsValid() == SC_FALSE)
+  if (!secondArgument.IsValid())
   {
     msWaiter.Unlock();
     return action.FinishUnsuccessfully();

@@ -257,6 +257,9 @@ public:
    * @return SC_TRUE if the condition is met, otherwise SC_FALSE.
    */
   _SC_EXTERN ScTemplate GetInitiationCondition(ScActionEvent const & event) override;
+
+protected:
+  ScActionAgent();
 };
 
 #include "sc_agent.tpp"

@@ -24,8 +24,12 @@ public:
 protected:
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
+  friend class ScEventSubscriptionFactory;
 
-public:
+  /*!
+   * @class Type
+   * @brief Represents a type of an sc-event.
+   */
   class Type
   {
   public:
@@ -36,59 +40,11 @@ public:
     {
     }
 
-    constexpr Type(Type const & otherType)
-      : Type(otherType.m_realType)
-    {
-    }
-
-    Type & operator()(Type const & other)
-    {
-      m_realType |= other.m_realType;
-      return *this;
-    }
-
     ~Type() = default;
 
     constexpr operator sc_event_type() const
     {
       return m_realType;
-    }
-
-    inline constexpr sc_event_type operator*() const
-    {
-      return m_realType;
-    }
-
-    inline sc_bool operator==(Type const & other) const
-    {
-      return (m_realType == other.m_realType);
-    }
-
-    inline sc_bool operator!=(Type const & other) const
-    {
-      return (m_realType != other.m_realType);
-    }
-
-    inline Type operator|(Type const & other) const
-    {
-      return Type(m_realType | other.m_realType);
-    }
-
-    inline Type operator&(Type const & other) const
-    {
-      return Type(m_realType & other.m_realType);
-    }
-
-    inline Type & operator|=(Type const & other)
-    {
-      m_realType |= other.m_realType;
-      return *this;
-    }
-
-    inline Type & operator&=(Type const & other)
-    {
-      m_realType &= other.m_realType;
-      return *this;
     }
 
     static Type const Unknown;
