@@ -73,8 +73,8 @@ public:
       std::function<void(void)> const & onWaitUnsuccess = {});
 
 protected:
-  sc_result Initialize(ScMemoryContext *, ScAddr const &) override;
-  sc_result Shutdown(ScMemoryContext *) override;
+  void Initialize(ScMemoryContext *, ScAddr const &) override;
+  void Shutdown(ScMemoryContext *) override;
 
 private:
   Impl m_impl;                       ///< Implementation of the wait logic.
@@ -106,7 +106,7 @@ protected:
    * @param event Event object.
    * @return Result of the event handling.
    */
-  virtual sc_result OnEvent(TScEvent const &);
+  virtual sc_bool OnEvent(TScEvent const &);
 
 private:
   ScElementaryEventSubscription<TScEvent> m_event;
@@ -123,7 +123,7 @@ class _SC_EXTERN ScWaitCondition final : public ScWaitEvent<TScEvent>
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
 public:
-  using DelegateCheckFunc = std::function<sc_result(TScEvent const &)>;
+  using DelegateCheckFunc = std::function<sc_bool(TScEvent const &)>;
 
   /*!
    * @brief Constructor for ScWaitCondition.
@@ -137,9 +137,8 @@ private:
   /*!
    * @brief Event handler.
    * @param event Event object.
-   * @return Result of the event handling.
    */
-  sc_result OnEvent(TScEvent const & event) override;
+  sc_bool OnEvent(TScEvent const & event) override;
 
 private:
   DelegateCheckFunc m_checkFunc;
@@ -165,7 +164,7 @@ private:
    * @param event Event object.
    * @return Result of the event handling.
    */
-  sc_result OnEvent(ScEventAddInputArc const & event) override;
+  sc_bool OnEvent(ScEventAddInputArc const & event) override;
 };
 
 #include "sc_wait.tpp"

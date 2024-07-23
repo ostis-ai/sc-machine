@@ -31,7 +31,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
   ScEventSubscriptionAddOutputArc evt(
       ctx,
       node,
-      [node, node2, count](ScEventAddOutputArc const &) -> sc_result
+      [node, node2, count](ScEventAddOutputArc const &)
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -40,17 +40,14 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
           result = true;
 
         EXPECT_TRUE(result);
-
         for (size_t i = 0; i < count; ++i)
           localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node2, node);
-
-        return result ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
   ScEventSubscriptionAddOutputArc evt2(
       ctx,
       node2,
-      [node3, node2, count](ScEventAddOutputArc const &) -> sc_result
+      [node3, node2, count](ScEventAddOutputArc const &)
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -61,14 +58,12 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
         EXPECT_TRUE(result);
         for (size_t i = 0; i < count; ++i)
           localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node3, node2);
-
-        return result ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
   ScEventSubscriptionAddOutputArc evt3(
       ctx,
       node3,
-      [node3](ScEventAddOutputArc const &) -> sc_result
+      [node3](ScEventAddOutputArc const &)
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -77,8 +72,6 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
           result = true;
 
         EXPECT_TRUE(result);
-
-        return result ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
   for (size_t i = 0; i < count; ++i)
@@ -100,10 +93,9 @@ void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepar
   prepare();
 
   bool volatile isDone = false;
-  auto const callback = [&isDone](ScEvent const &) -> sc_result
+  auto const callback = [&isDone](ScEvent const &)
   {
     isDone = true;
-    return SC_RESULT_OK;
   };
 
   EventClassT evt(ctx, addr, callback);
@@ -272,18 +264,12 @@ TEST_F(ScEventTest, EraseElement)
   testEventsFuncT<ScEventSubscriptionEraseElement>(*m_ctx, addr, prepare, emitEvent);
 }
 
-TEST_F(ScEventTest, destroy_order)
+TEST_F(ScEventTest, DestroyOrder)
 {
   ScAddr const node = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(node.IsValid());
 
-  auto * evt = new ScEventSubscriptionAddOutputArc(
-      *m_ctx,
-      node,
-      [](ScEventAddOutputArc const &) -> sc_result
-      {
-        return SC_RESULT_OK;
-      });
+  auto * evt = new ScEventSubscriptionAddOutputArc(*m_ctx, node, [](ScEventAddOutputArc const &) {});
 
   m_ctx.reset();
 
@@ -291,7 +277,7 @@ TEST_F(ScEventTest, destroy_order)
   delete evt;
 }
 
-TEST_F(ScEventTest, events_lock)
+TEST_F(ScEventTest, EventsLock)
 {
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
@@ -299,7 +285,7 @@ TEST_F(ScEventTest, events_lock)
   ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [node](ScEventAddOutputArc const &) -> sc_result
+      [node](ScEventAddOutputArc const &)
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -308,15 +294,13 @@ TEST_F(ScEventTest, events_lock)
           result = true;
 
         EXPECT_TRUE(result);
-
-        return result ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
-TEST_F(ScEventTest, parallel_create_edges)
+TEST_F(ScEventTest, ParallelCreateEdges)
 {
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
@@ -324,7 +308,7 @@ TEST_F(ScEventTest, parallel_create_edges)
   ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [node](ScEventAddOutputArc const & event) -> sc_result
+      [node](ScEventAddOutputArc const & event)
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -336,15 +320,13 @@ TEST_F(ScEventTest, parallel_create_edges)
           localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, event.GetArcTargetElement());
 
         EXPECT_TRUE(result);
-
-        return result ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
-TEST_F(ScEventTest, parallel_create_remove_edges)
+TEST_F(ScEventTest, ParallelCreateRemoveEdges)
 {
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
@@ -352,21 +334,19 @@ TEST_F(ScEventTest, parallel_create_remove_edges)
   ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [node](ScEventAddOutputArc const &) -> sc_result
+      [node](ScEventAddOutputArc const &)
       {
         ScMemoryContext localCtx;
         ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
         while (it->Next())
           localCtx.EraseElement(it->Get(1));
-
-        return SC_RESULT_OK;
       });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
-TEST_F(ScEventTest, parallel_create_remove_edges2)
+TEST_F(ScEventTest, ParallelCreateRemoveEdges2)
 {
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
@@ -374,19 +354,17 @@ TEST_F(ScEventTest, parallel_create_remove_edges2)
   ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [](ScEventAddOutputArc const & event) -> sc_result
+      [](ScEventAddOutputArc const & event)
       {
         ScMemoryContext localCtx;
         localCtx.EraseElement(event.GetAddedArc());
-
-        return SC_RESULT_OK;
       });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
 }
 
-TEST_F(ScEventTest, pend_events)
+TEST_F(ScEventTest, PendEvents)
 {
   /* Main idea of test: create two sets with N elements, and add edges to relations.
    * Everytime, when event emits, we should check, that whole construction exist
@@ -416,7 +394,7 @@ TEST_F(ScEventTest, pend_events)
   ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       set1,
-      [&passedCount, &eventsCount, &set1, &elements, &rel](ScEventAddOutputArc const &) -> sc_result
+      [&passedCount, &eventsCount, &set1, &elements, &rel](ScEventAddOutputArc const &)
       {
         std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
         size_t step = 100;
@@ -437,8 +415,6 @@ TEST_F(ScEventTest, pend_events)
           passedCount.fetch_add(1);
 
         eventsCount.fetch_add(1);
-
-        return SC_RESULT_OK;
       });
 
   ScTemplateGenResult genResult;
@@ -459,10 +435,9 @@ TEST_F(ScEventTest, BlockEventsAndNotEmitAfter)
   ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScEventAddOutputArc const &) -> sc_result
+      [&isCalled](ScEventAddOutputArc const &)
       {
         isCalled = true;
-        return SC_RESULT_OK;
       });
 
   m_ctx->BeingEventsBlocking();
@@ -487,7 +462,6 @@ TEST_F(ScEventTest, BlockEventsAndEmitAfter)
       [&isCalled](ScEventAddOutputArc const &)
       {
         isCalled = true;
-        return SC_RESULT_OK;
       });
 
   m_ctx->BeingEventsBlocking();
@@ -518,7 +492,6 @@ TEST_F(ScEventTest, BlockEventsGuardAndNotEmitAfter)
       [&isCalled](ScEventAddOutputArc const &)
       {
         isCalled = true;
-        return SC_RESULT_OK;
       });
 
   ScMemoryContextEventsBlockingGuard guard(*m_ctx);
@@ -541,7 +514,6 @@ TEST_F(ScEventTest, BlockEventsGuardAndEmitAfter)
       [&isCalled](ScEventAddOutputArc const &)
       {
         isCalled = true;
-        return SC_RESULT_OK;
       });
   {
     ScMemoryContextEventsBlockingGuard guard(*m_ctx);

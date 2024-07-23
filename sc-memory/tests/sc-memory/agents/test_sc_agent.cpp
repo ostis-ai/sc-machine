@@ -7,10 +7,10 @@ ScAddr ATestAddInputArc::GetActionClass() const
   return ATestAddInputArc::add_input_arc_action;
 }
 
-sc_result ATestAddInputArc::DoProgram(ScEventAddInputArc const &, ScAction &)
+ScResult ATestAddInputArc::DoProgram(ScEventAddInputArc const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -20,10 +20,10 @@ ScAddr ATestAddOutputArc::GetActionClass() const
   return ATestAddOutputArc::add_output_arc_action;
 }
 
-sc_result ATestAddOutputArc::DoProgram(ScEventAddOutputArc const &, ScAction &)
+ScResult ATestAddOutputArc::DoProgram(ScEventAddOutputArc const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -33,10 +33,10 @@ ScAddr ATestAddEdge::GetActionClass() const
   return ATestAddEdge::add_edge_action;
 }
 
-sc_result ATestAddEdge::DoProgram(ScEventAddEdge const &, ScAction &)
+ScResult ATestAddEdge::DoProgram(ScEventAddEdge const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -46,10 +46,10 @@ ScAddr ATestRemoveInputArc::GetActionClass() const
   return ATestRemoveInputArc::remove_input_arc_action;
 }
 
-sc_result ATestRemoveInputArc::DoProgram(ScEventRemoveInputArc const &, ScAction &)
+ScResult ATestRemoveInputArc::DoProgram(ScEventRemoveInputArc const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -59,10 +59,10 @@ ScAddr ATestRemoveOutputArc::GetActionClass() const
   return ATestRemoveOutputArc::remove_output_arc_action;
 }
 
-sc_result ATestRemoveOutputArc::DoProgram(ScEventRemoveOutputArc const &, ScAction &)
+ScResult ATestRemoveOutputArc::DoProgram(ScEventRemoveOutputArc const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -72,10 +72,10 @@ ScAddr ATestRemoveEdge::GetActionClass() const
   return ATestRemoveEdge::remove_edge_action;
 }
 
-sc_result ATestRemoveEdge::DoProgram(ScEventRemoveEdge const &, ScAction &)
+ScResult ATestRemoveEdge::DoProgram(ScEventRemoveEdge const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -85,10 +85,10 @@ ScAddr ATestEraseElement::GetActionClass() const
   return ATestEraseElement::erase_element_action;
 }
 
-sc_result ATestEraseElement::DoProgram(ScEventEraseElement const &, ScAction &)
+ScResult ATestEraseElement::DoProgram(ScEventEraseElement const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -98,10 +98,10 @@ ScAddr ATestChangeContent::GetActionClass() const
   return ATestChangeContent::content_change_action;
 }
 
-sc_result ATestChangeContent::DoProgram(ScEventChangeContent const &, ScAction &)
+ScResult ATestChangeContent::DoProgram(ScEventChangeContent const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -111,10 +111,10 @@ ScAddr ATestAddMultipleOutputArc::GetActionClass() const
   return ATestAddOutputArc::add_output_arc_action;
 }
 
-sc_result ATestAddMultipleOutputArc::DoProgram(ScEventAddOutputArc const &, ScAction &)
+ScResult ATestAddMultipleOutputArc::DoProgram(ScEventAddOutputArc const &, ScAction & action)
 {
   msWaiter.Unlock();
-  return SC_RESULT_OK;
+  return action.FinishSuccessfully();
 }
 
 /// --------------------------------------
@@ -124,7 +124,7 @@ ScAddr ATestCheckResult::GetActionClass() const
   return ATestAddOutputArc::add_output_arc_action;
 }
 
-sc_result ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
 {
   auto [firstArgument, secondArgument] = action.GetArguments<2>();
 

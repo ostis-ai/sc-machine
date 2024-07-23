@@ -30,9 +30,22 @@ protected:
 
   static sc_result HandlerDelete(sc_event const *);
 
-  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) final;
+  /*!
+   * @brief Initializes an event subscription.
+   *
+   * @param ctx Pointer to an sc-memory context.
+   * @param initMemoryGeneratedStructureAddr Address of the initial memory generated structure.
+   * @return Result of the initialization.
+   */
+  void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) final;
 
-  sc_result Shutdown(ScMemoryContext * ctx) final;
+  /*!
+   * @brief Shuts down an event subscription.
+   *
+   * @param ctx Pointer to an sc-memory context.
+   * @return Result of the shutdown.
+   */
+  void Shutdown(ScMemoryContext * ctx) final;
 };
 
 template <class TScEvent>
@@ -41,7 +54,7 @@ class _SC_EXTERN ScElementaryEventSubscription : public ScEventSubscription
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
 public:
-  using DelegateFunc = std::function<sc_result(TScEvent const & event)>;
+  using DelegateFunc = std::function<void(TScEvent const & event)>;
 
   explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
@@ -82,7 +95,7 @@ public:
   _SC_EXTERN ScEventSubscriptionAddOutputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventAddOutputArc const &)> const & func);
+      std::function<void(ScEventAddOutputArc const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionAddInputArc final : public ScElementaryEventSubscription<ScEventAddInputArc>
@@ -91,7 +104,7 @@ public:
   _SC_EXTERN ScEventSubscriptionAddInputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventAddInputArc const &)> const & func);
+      std::function<void(ScEventAddInputArc const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionAddEdge final : public ScElementaryEventSubscription<ScEventAddEdge>
@@ -100,7 +113,7 @@ public:
   _SC_EXTERN ScEventSubscriptionAddEdge(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventAddEdge const &)> const & func);
+      std::function<void(ScEventAddEdge const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionRemoveOutputArc final : public ScElementaryEventSubscription<ScEventRemoveOutputArc>
@@ -109,7 +122,7 @@ public:
   _SC_EXTERN ScEventSubscriptionRemoveOutputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventRemoveOutputArc const &)> const & func);
+      std::function<void(ScEventRemoveOutputArc const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionRemoveInputArc final : public ScElementaryEventSubscription<ScEventRemoveInputArc>
@@ -118,7 +131,7 @@ public:
   _SC_EXTERN ScEventSubscriptionRemoveInputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventRemoveInputArc const &)> const & func);
+      std::function<void(ScEventRemoveInputArc const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionRemoveEdge final : public ScElementaryEventSubscription<ScEventRemoveEdge>
@@ -127,7 +140,7 @@ public:
   _SC_EXTERN ScEventSubscriptionRemoveEdge(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventRemoveEdge const &)> const & func);
+      std::function<void(ScEventRemoveEdge const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionEraseElement final : public ScElementaryEventSubscription<ScEventEraseElement>
@@ -136,7 +149,7 @@ public:
   _SC_EXTERN ScEventSubscriptionEraseElement(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventEraseElement const &)> const & func);
+      std::function<void(ScEventEraseElement const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionChangeContent final : public ScElementaryEventSubscription<ScEventChangeContent>
@@ -145,7 +158,7 @@ public:
   _SC_EXTERN ScEventSubscriptionChangeContent(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<sc_result(ScEventChangeContent const &)> const & func);
+      std::function<void(ScEventChangeContent const &)> const & func);
 };
 
 template <sc_event_type eventType>
@@ -160,7 +173,7 @@ using _SC_EXTERN ScEventTypeClass = typename ScEventTypeConverter<eventType>::Ev
 class _SC_EXTERN ScEventSubscriptionFactory
 {
 public:
-  using ScEventCallback = std::function<sc_result(ScElementaryEvent const &)>;
+  using ScEventCallback = std::function<void(ScElementaryEvent const &)>;
 
   static _SC_EXTERN ScEventSubscription * CreateSubscription(
       ScMemoryContext * context,

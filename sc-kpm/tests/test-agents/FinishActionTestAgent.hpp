@@ -13,7 +13,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
 }  // namespace scUtilsTestAgents

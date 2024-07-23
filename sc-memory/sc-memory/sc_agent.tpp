@@ -10,6 +10,7 @@
 
 #include "sc_action.hpp"
 #include "sc_agent_context.hpp"
+#include "sc_result.hpp"
 #include "sc_event_subscription.hpp"
 #include "sc_keynodes.hpp"
 
@@ -44,21 +45,19 @@ void ScAgentAbstract<TScEvent>::SetContext(ScAddr const & userAddr)
 }
 
 template <class TScEvent>
-std::function<sc_result(TScEvent const &)> ScAgentAbstract<TScEvent>::GetCallback()
+std::function<void(TScEvent const &)> ScAgentAbstract<TScEvent>::GetCallback()
 {
   return {};
 }
 
 template <class TScEvent>
-sc_result ScAgentAbstract<TScEvent>::Initialize(ScMemoryContext *, ScAddr const &)
+void ScAgentAbstract<TScEvent>::Initialize(ScMemoryContext *, ScAddr const &)
 {
-  return SC_RESULT_OK;
 }
 
 template <class TScEvent>
-sc_result ScAgentAbstract<TScEvent>::Shutdown(ScMemoryContext *)
+void ScAgentAbstract<TScEvent>::Shutdown(ScMemoryContext *)
 {
-  return SC_RESULT_OK;
 }
 
 template <class TScEvent>
@@ -146,19 +145,18 @@ void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... su
 
 template <class TScEvent>
 template <class TScAgent>
-std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
+std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
 {
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
 
-  return [](TScEvent const & event) -> sc_result
+  return [](TScEvent const & event) -> void
   {
     auto const & CreateAction = [](TScEvent const & event, ScAgent & agent) -> ScAction
     {
       if constexpr (std::is_base_of<class ScActionAgent, TScAgent>::value)
         return ScAction(&agent.m_memoryCtx, event.GetArcTargetElement(), agent.GetActionClass());
 
-      return ScAction(&agent.m_memoryCtx, agent.GetActionClass());
-      ;
+      return ScAction(&agent.m_memoryCtx, agent.GetActionClass()).Initiate();
     };
 
     TScAgent agent;
@@ -169,10 +167,10 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
     ScTemplateSearchResult searchResult;
     if (initiationConditionTemplate.Size() > 0
         && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
-      return SC_RESULT_OK;
+      return;
 
     SC_LOG_INFO(agent.GetName() << " started");
-    sc_result result = agent.DoProgram(event, action);
+    ScResult result = agent.DoProgram(event, action);
 
     if (result == SC_RESULT_OK)
       SC_LOG_INFO(agent.GetName() << " finished successfully");
@@ -184,9 +182,9 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
     ScTemplate && resultConditionTemplate = agent.GetResultCondition(event, action);
     if (resultConditionTemplate.Size() > 0
         && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
-      return SC_RESULT_OK;
+      return;
 
-    return result;
+    return;
   };
 }
 

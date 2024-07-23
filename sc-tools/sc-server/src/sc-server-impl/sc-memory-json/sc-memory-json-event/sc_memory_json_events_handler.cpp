@@ -47,7 +47,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScMemoryJsonPayload &)
 {
   auto const & onEmitEvent =
-      [](ScServer * server, size_t id, ScServerSessionId const & handle, ScElementaryEvent const & event) -> sc_result
+      [](ScServer * server, size_t id, ScServerSessionId const & handle, ScElementaryEvent const & event)
   {
     std::array<ScAddr, 3> const & eventTriple = event.GetTriple();
 
@@ -63,8 +63,6 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
 
     if (server != nullptr)
       server->OnEvent(handle, responseText);
-
-    return SC_RESULT_OK;
   };
 
   ScMemoryJsonPayload responsePayload;

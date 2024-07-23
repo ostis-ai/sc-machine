@@ -13,7 +13,7 @@ ScModule * ScModule::Create(ScModule * module)
   return module;
 }
 
-sc_result ScModule::Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
+void ScModule::Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
   SC_LOG_INFO("Initialize " << this->GetName());
   Initialize(ctx, initMemoryGeneratedStructureAddr);
@@ -27,11 +27,9 @@ sc_result ScModule::Register(ScMemoryContext * ctx, ScAddr const & initMemoryGen
     ScAddrVector const & addrs = agentInfo.second;
     registerCallback(ctx, addrs);
   }
-
-  return SC_RESULT_OK;
 }
 
-sc_result ScModule::Unregister(ScMemoryContext * ctx)
+void ScModule::Unregister(ScMemoryContext * ctx)
 {
   for (auto * keynodes : m_keynodes)
   {
@@ -50,16 +48,8 @@ sc_result ScModule::Unregister(ScMemoryContext * ctx)
 
   SC_LOG_INFO("Shutdown " << this->GetName());
   Shutdown(ctx);
-
-  return SC_RESULT_OK;
 }
 
-sc_result ScModule::Initialize(ScMemoryContext *, ScAddr const &)
-{
-  return SC_RESULT_OK;
-}
+void ScModule::Initialize(ScMemoryContext *, ScAddr const &) {}
 
-sc_result ScModule::Shutdown(ScMemoryContext *)
-{
-  return SC_RESULT_OK;
-}
+void ScModule::Shutdown(ScMemoryContext *) {}

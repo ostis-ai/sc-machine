@@ -7,7 +7,7 @@ ScAddr FinishActionTestAgent::GetActionClass() const
   return FinishActionTestAgent::finish_action_test_action;
 }
 
-sc_result FinishActionTestAgent::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult FinishActionTestAgent::DoProgram(ScActionEvent const &, ScAction & action)
 {
   ScTemplate actionDescriptionTemplate;
   actionDescriptionTemplate.Quintuple(

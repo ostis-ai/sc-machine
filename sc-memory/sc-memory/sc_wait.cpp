@@ -71,22 +71,16 @@ sc_bool ScWait::Wait(
   return result;
 }
 
-sc_result ScWait::Initialize(ScMemoryContext *, ScAddr const &)
-{
-  return SC_RESULT_OK;
-}
+void ScWait::Initialize(ScMemoryContext *, ScAddr const &) {}
 
-sc_result ScWait::Shutdown(ScMemoryContext *)
-{
-  return SC_RESULT_OK;
-}
+void ScWait::Shutdown(ScMemoryContext *) {}
 
 ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
   : ScWaitEvent<ScEventAddInputArc>(ctx, actionAddr)
 {
 }
 
-sc_result ScWaitActionFinished::OnEvent(ScEventAddInputArc const & event)
+sc_bool ScWaitActionFinished::OnEvent(ScEventAddInputArc const & event)
 {
-  return event.GetArcSourceElement() == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
+  return event.GetArcSourceElement() == ScKeynodes::action_finished;
 }

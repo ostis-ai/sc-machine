@@ -21,6 +21,7 @@
 template <class TScEvent>
 class ScElementaryEventSubscription;
 class ScAction;
+class ScResult;
 
 /*!
  * @class ScAgentAbstract
@@ -49,7 +50,7 @@ public:
    */
   _SC_EXTERN virtual ScTemplate GetInitiationCondition(TScEvent const & event);
 
-  _SC_EXTERN virtual sc_result DoProgram(TScEvent const & event, ScAction & action) = 0;
+  _SC_EXTERN virtual ScResult DoProgram(TScEvent const & event, ScAction & action) = 0;
 
   /*!
    * @brief Gets the result of the agent's execution.
@@ -72,12 +73,12 @@ protected:
 
   _SC_EXTERN void SetContext(ScAddr const & userAddr);
 
-  static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback();
+  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback();
 
 private:
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
 
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext *) override;
+  _SC_EXTERN void Shutdown(ScMemoryContext *) override;
 };
 
 /*!
@@ -128,7 +129,7 @@ protected:
    * @return A function that takes an sc-event and returns an sc-result.
    */
   template <class TScAgent>
-  static _SC_EXTERN std::function<sc_result(TScEvent const &)> GetCallback();
+  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback();
 };
 
 /*!
@@ -138,7 +139,7 @@ protected:
  * This class extends ScAgent and provides methods for subscribing and unsubscribing
  * to sc-action events.
  *
- * @details The `sc_result DoProgram(ScEventAddOutputArc const & event, ScAction & action)` procedure should be
+ * @details The `ScResult DoProgram(ScEventAddOutputArc const & event, ScAction & action)` procedure should be
  * implemented in the child class.
  *
  * File sc_syntactic_analysis_agent.hpp:
@@ -165,7 +166,7 @@ protected:
  *
  *   ScAddr GetActionClass() const override;
  *
- *   sc_result DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
+ *   ScResult DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
  * };
  *
  * private:
@@ -194,7 +195,7 @@ protected:
  *   return ScNLPKeynodes::action_syntactic_analysis;
  * }
  *
- * sc_result ScSyntacticAnalysisAgent::DoProgram(ScEventAddOutputArc const &, ScAction & action)
+ * ScResult ScSyntacticAnalysisAgent::DoProgram(ScEventAddOutputArc const &, ScAction & action)
  * {
  *   ScAddr const textAddr = action.GetArgument(1);
  *   if (!textAddr.IsValid())

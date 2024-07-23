@@ -20,15 +20,9 @@ ScEvent::Type constexpr ScEvent::Type::ChangeContent(sc_event_change_content);
 
 ScEvent::~ScEvent() = default;
 
-sc_result ScEvent::Initialize(ScMemoryContext *, ScAddr const &)
-{
-  return SC_RESULT_OK;
-}
+void ScEvent::Initialize(ScMemoryContext *, ScAddr const &) {}
 
-sc_result ScEvent::Shutdown(ScMemoryContext *)
-{
-  return SC_RESULT_OK;
-}
+void ScEvent::Shutdown(ScMemoryContext *) {}
 
 ScAddr ScElementaryEvent::GetUser() const
 {

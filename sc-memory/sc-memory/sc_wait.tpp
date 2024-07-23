@@ -17,22 +17,18 @@ ScWaitEvent<TScEvent>::ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & a
   : m_event(
         ctx,
         addr,
-        [this](TScEvent const & event) -> sc_result
+        [this](TScEvent const & event)
         {
-          if (OnEvent(event) == SC_RESULT_OK)
-          {
+          if (OnEvent(event))
             ScWait::Resolve();
-            return SC_RESULT_OK;
-          }
-          return SC_RESULT_ERROR;
         })
 {
 }
 
 template <class TScEvent>
-sc_result ScWaitEvent<TScEvent>::OnEvent(TScEvent const &)
+sc_bool ScWaitEvent<TScEvent>::OnEvent(TScEvent const &)
 {
-  return SC_RESULT_OK;
+  return SC_TRUE;
 }
 
 template <class TScEvent>
@@ -43,7 +39,7 @@ ScWaitCondition<TScEvent>::ScWaitCondition(ScMemoryContext const & ctx, ScAddr c
 }
 
 template <class TScEvent>
-sc_result ScWaitCondition<TScEvent>::OnEvent(TScEvent const & event)
+sc_bool ScWaitCondition<TScEvent>::OnEvent(TScEvent const & event)
 {
   return m_checkFunc(event);
 }
