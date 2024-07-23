@@ -329,7 +329,9 @@ public:
     std::string m_msg;      ///< An error message.
   };
 
-  SC_DISALLOW_COPY_AND_MOVE(ScTemplate);
+public:
+  SC_DISALLOW_COPY(ScTemplate);
+  ScTemplate(ScTemplate && other);
 
   using ScTemplateItemsToReplacementsItemsPositions = std::unordered_map<std::string, size_t>;
   using ScTemplateTriplesVector = std::vector<class ScTemplateTriple *>;

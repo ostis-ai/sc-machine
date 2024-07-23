@@ -251,6 +251,15 @@ ScTemplate::~ScTemplate()
   m_templateTriples.clear();
 }
 
+ScTemplate::ScTemplate(ScTemplate && other)
+  : m_templateItemsNamesToReplacementItemsPositions(std::move(other.m_templateItemsNamesToReplacementItemsPositions))
+  , m_templateTriples(std::move(other.m_templateTriples))
+  , m_priorityOrderedTemplateTriples(std::move(other.m_priorityOrderedTemplateTriples))
+  , m_templateItemsNamesToReplacementItemsAddrs(std::move(other.m_templateItemsNamesToReplacementItemsAddrs))
+  , m_templateItemsNamesToTypes(std::move(other.m_templateItemsNamesToTypes))
+{
+}
+
 ScTemplate & ScTemplate::operator()(
     ScTemplateItem const & param1,
     ScTemplateItem const & param2,
