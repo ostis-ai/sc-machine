@@ -50,15 +50,15 @@ TEST_F(ScEventTest, threading_smoke)
 
   for (size_t i = 0; i < eventsNum; ++i)
   {
-    // events[i] = new ScEventSubscription(
-    //     *m_ctx,
-    //     randNode(),
-    //     eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
-    //     [&](ScEventAddOutputEdge const &) -> sc_result
-    //     {
-    //       evtCount++;
-    //       return SC_RESULT_OK;
-    //     });
+    events[i] = ScEventSubscriptionFactory::CreateSubscription(
+        &*m_ctx,
+        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
+        randNode(),
+        [&](ScElementaryEvent const &) -> sc_result
+        {
+          evtCount++;
+          return SC_RESULT_OK;
+        });
   }
 
   ScTimer timer;
