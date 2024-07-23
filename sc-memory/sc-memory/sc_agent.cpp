@@ -9,8 +9,9 @@
 #include "sc_event.hpp"
 #include "sc_keynodes.hpp"
 
-sc_bool ScActionAgent::CheckInitiationCondition(ScActionEvent const & event)
+ScTemplate ScActionAgent::GetInitiationCondition(ScActionEvent const & event)
 {
-  return ScMemory::ms_globalContext->HelperCheckEdge(
-      GetActionClass(), event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm);
+  ScTemplate templ;
+  templ.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, event.GetArcTargetElement());
+  return templ;
 }

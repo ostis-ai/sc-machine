@@ -26,15 +26,15 @@ ScAgentAbstract<TScEvent>::~ScAgentAbstract()
 }
 
 template <class TScEvent>
-sc_bool ScAgentAbstract<TScEvent>::CheckInitiationCondition(TScEvent const &)
+ScTemplate ScAgentAbstract<TScEvent>::GetInitiationCondition(TScEvent const &)
 {
-  return SC_TRUE;
+  return ScTemplate();
 }
 
 template <class TScEvent>
-sc_bool ScAgentAbstract<TScEvent>::CheckResult(TScEvent const &, ScAction &)
+ScTemplate ScAgentAbstract<TScEvent>::GetResultCondition(TScEvent const &, ScAction &)
 {
-  return SC_TRUE;
+  return ScTemplate();
 }
 
 template <class TScEvent>
@@ -163,9 +163,12 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
 
     TScAgent agent;
     agent.SetContext(event.GetUser());
-
     ScAction action = CreateAction(event, agent);
-    if (!agent.CheckInitiationCondition(event))
+
+    ScTemplate && initiationConditionTemplate = agent.GetInitiationCondition(event);
+    ScTemplateSearchResult searchResult;
+    if (initiationConditionTemplate.Size() > 0
+        && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
       return SC_RESULT_OK;
 
     SC_LOG_INFO(agent.GetName() << " started");
@@ -178,7 +181,9 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
     else
       SC_LOG_INFO(agent.GetName() << " finished with error");
 
-    if (!agent.CheckResult(event, action))
+    ScTemplate && resultConditionTemplate = agent.GetResultCondition(event, action);
+    if (resultConditionTemplate.Size() > 0
+        && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
       return SC_RESULT_OK;
 
     return result;

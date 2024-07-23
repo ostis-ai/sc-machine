@@ -45,20 +45,20 @@ public:
    * @brief Checks the initiation condition for agent of this class.
    *
    * @param event The sc-event to check.
-   * @return SC_TRUE if the condition is met, otherwise SC_FALSE.
+   * @return ScTemplate of action initiation condition.
    */
-  _SC_EXTERN virtual sc_bool CheckInitiationCondition(TScEvent const & event);
+  _SC_EXTERN virtual ScTemplate GetInitiationCondition(TScEvent const & event);
 
   _SC_EXTERN virtual sc_result DoProgram(TScEvent const & event, ScAction & action) = 0;
 
   /*!
-   * @brief Checks the result of the agent's execution.
+   * @brief Gets the result of the agent's execution.
    *
    * @param event The sc-event.
    * @param action The sc-action.
-   * @return SC_TRUE if the result is valid, otherwise SC_FALSE.
+   * @return ScTemplate of sucessfully finished action result condition.
    */
-  _SC_EXTERN virtual sc_bool CheckResult(TScEvent const & event, ScAction & action);
+  _SC_EXTERN virtual ScTemplate GetResultCondition(TScEvent const & event, ScAction & action);
 
 protected:
   mutable ScAgentContext m_memoryCtx;
@@ -255,7 +255,7 @@ public:
    * @param event The sc-event to check.
    * @return SC_TRUE if the condition is met, otherwise SC_FALSE.
    */
-  _SC_EXTERN sc_bool CheckInitiationCondition(ScActionEvent const & event) override;
+  _SC_EXTERN ScTemplate GetInitiationCondition(ScActionEvent const & event) override;
 };
 
 #include "sc_agent.tpp"
