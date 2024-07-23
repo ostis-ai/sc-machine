@@ -133,3 +133,24 @@ struct ScEventTypeConverter<sc_event_change_content>
   using SubscriptionType = ScEventSubscriptionContentChanged;
   using EventTypeClass = ScEventChangeContent;
 };
+
+template <sc_event_type eventType>
+ScEventSubscription * ScEventSubscriptionFactory::CreateEventSubscription(
+    ScMemoryContext * context,
+    ScAddr const & subscriptionAddr,
+    ScEventCallback const & onEventFunc)
+{
+  return new ScEventSubscriptionType<eventType>(*context, subscriptionAddr, onEventFunc);
+}
+
+template <sc_event_type eventType>
+ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback ScEventSubscriptionFactory::
+    CreateEventSubscriptionWrapper()
+{
+  return [](ScMemoryContext * context,
+            ScAddr const & subscriptionAddr,
+            ScEventCallback const & onEventCallback) -> ScEventSubscription *
+  {
+    return CreateEventSubscription<eventType>(context, subscriptionAddr, onEventCallback);
+  };
+}

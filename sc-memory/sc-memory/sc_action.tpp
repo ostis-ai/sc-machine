@@ -44,7 +44,7 @@ ScAction & ScAction::FormAnswer(TScAddr const &... addrs)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to form answer for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
-                                       << "` due it had already been finished.");
+                                        << "` due it had already been finished.");
 
   if (m_answerAddr.IsValid())
   {
@@ -69,7 +69,7 @@ _SC_EXTERN ScAction & ScAction::UpdateAnswer(TScAddr const &... addrs)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to update answer for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
-                                       << "` due it had already been finished.");
+                                          << "` due it had already been finished.");
 
   if (!m_answerAddr.IsValid())
     m_answerAddr = m_ctx->CreateNode(ScType::NodeConstStruct);

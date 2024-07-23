@@ -35,8 +35,6 @@ private:
   ScMemoryContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
 
-  static std::map<std::string, ScEventSubscriptionCreateCallback> const events;
-
   ScMemoryJsonPayload HandleRequestPayload(
       ScServerSessionId const & sessionId,
       std::string const & requestType,
