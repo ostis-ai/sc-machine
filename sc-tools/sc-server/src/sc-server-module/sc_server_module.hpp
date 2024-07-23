@@ -20,6 +20,6 @@ public:
   static std::shared_ptr<ScServer> m_server;
   static ScParams ms_serverParams;
 
-  sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
-  sc_result Shutdown(ScMemoryContext * ctx) override;
+  void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  void Shutdown(ScMemoryContext * ctx) override;
 };

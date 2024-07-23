@@ -46,7 +46,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
   ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScEventAddOutputArc const &) -> sc_result
+      [&userContext, &isAuthenticated](ScEventAddOutputArc const &)
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
@@ -57,7 +57,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
         EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
         EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr));
 
-        return (isAuthenticated = true) ? SC_RESULT_OK : SC_RESULT_ERROR;
+        isAuthenticated = true;
       });
 
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -78,7 +78,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
   ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScEventAddOutputArc const &) -> sc_result
+      [&userContext, &isAuthenticated](ScEventAddOutputArc const &)
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
@@ -91,7 +91,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
             userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr),
             utils::ExceptionInvalidState);
 
-        return (isAuthenticated = true) ? SC_RESULT_OK : SC_RESULT_ERROR;
+        isAuthenticated = true;
       });
 
   TestAuthenticationRequestUser(m_ctx, userAddr);

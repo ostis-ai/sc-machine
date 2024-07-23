@@ -81,16 +81,16 @@ public:
   /*! Registers all module keynodes and agents.
    * @returns Result of initializing.
    */
-  _SC_EXTERN sc_result Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr = ScAddr::Empty);
+  _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr = ScAddr::Empty);
 
   /*! Unregisters all module keynodes and agents.
    * @returns Result of shutdown.
    */
-  _SC_EXTERN sc_result Unregister(ScMemoryContext * ctx);
+  _SC_EXTERN void Unregister(ScMemoryContext * ctx);
 
-  _SC_EXTERN sc_result Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
 
-  _SC_EXTERN sc_result Shutdown(ScMemoryContext * ctx) override;
+  _SC_EXTERN void Shutdown(ScMemoryContext * ctx) override;
 
 protected:
   /// Registered keynodes
@@ -118,13 +118,29 @@ protected:
   _SC_EXTERN sc_result \
   sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure_addr) \
   { \
-    __ModuleName__##Dummy::ms_module->Register(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
+    try \
+    { \
+      __ModuleName__##Dummy::ms_module->Register(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
+    } \
+    catch (utils::ScException const & e) \
+    { \
+      SC_LOG_ERROR(__ModuleName__##Dummy::ms_module->GetName() << ": " << e.Message()); \
+      return SC_RESULT_ERROR; \
+    } \
     return SC_RESULT_OK; \
   } \
 \
   _SC_EXTERN sc_result sc_module_shutdown() \
   { \
-    __ModuleName__##Dummy::ms_module->Unregister(ScMemory::ms_globalContext); \
+    try \
+    { \
+      __ModuleName__##Dummy::ms_module->Unregister(ScMemory::ms_globalContext); \
+    } \
+    catch (utils::ScException const & e) \
+    { \
+      SC_LOG_ERROR(__ModuleName__##Dummy::ms_module->GetName() << ": " << e.Message()); \
+      return SC_RESULT_ERROR; \
+    } \
     return SC_RESULT_OK; \
   } \
   } \

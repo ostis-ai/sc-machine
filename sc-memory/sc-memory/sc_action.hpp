@@ -11,6 +11,7 @@
 #include "sc_addr.hpp"
 
 class ScStruct;
+class ScResult;
 
 /*!
  * @class ScAction
@@ -56,7 +57,7 @@ public:
    * @param argumentAddr An address of the argument to set.
    * @return Reference to the current ScAction object.
    */
-  _SC_EXTERN ScAction & SetArgument(size_t idx, ScAddr const & argumentAddr);
+  _SC_EXTERN ScAction & SetArgument(size_t idx, ScAddr const & argumentAddr) noexcept(false);
 
   /*!
    * @brief Sets argument of the action by order relation.
@@ -64,7 +65,7 @@ public:
    * @param argumentAddr An address of argument to set.
    * @return Reference to the current ScAction object.
    */
-  _SC_EXTERN ScAction & SetArgument(ScAddr const & orderRelationAddr, ScAddr const & argumentAddr);
+  _SC_EXTERN ScAction & SetArgument(ScAddr const & orderRelationAddr, ScAddr const & argumentAddr) noexcept(false);
 
   /*!
    * @brief Sets multiple arguments of the action.
@@ -72,7 +73,7 @@ public:
    * @return Reference to the current ScAction object.
    */
   template <class... TScAddr>
-  _SC_EXTERN ScAction & SetArguments(TScAddr const &... arguments);
+  _SC_EXTERN ScAction & SetArguments(TScAddr const &... arguments) noexcept(false);
 
   /*!
    * @brief Gets answer structure of the action.
@@ -85,7 +86,7 @@ public:
    * @param structureAddr ScAddr representing answer.
    * @return Reference to the current ScAction object.
    */
-  _SC_EXTERN ScAction & SetAnswer(ScAddr const & structureAddr);
+  _SC_EXTERN ScAction & SetAnswer(ScAddr const & structureAddr) noexcept(false);
 
   /*!
    * @brief Forms answer structure of the action.
@@ -93,7 +94,7 @@ public:
    * @return Reference to the current ScAction object.
    */
   template <class... TScAddr>
-  _SC_EXTERN ScAction & FormAnswer(TScAddr const &... addrs);
+  _SC_EXTERN ScAction & FormAnswer(TScAddr const &... addrs) noexcept(false);
 
   /*!
    * @brief Updates answer structure of the action.
@@ -101,7 +102,7 @@ public:
    * @return Reference to the current ScAction object.
    */
   template <class... TScAddr>
-  _SC_EXTERN ScAction & UpdateAnswer(TScAddr const &... addrs);
+  _SC_EXTERN ScAction & UpdateAnswer(TScAddr const &... addrs) noexcept(false);
 
   /*!
    * @brief Checks if the action is initiated.
@@ -121,8 +122,9 @@ public:
   /*!
    * @brief Initiates the action.
    * @throws utils::ExceptionInvalidState if the action is already initiated or finished.
+   * @return Reference to the current ScAction object.
    */
-  _SC_EXTERN void Initiate() noexcept(false);
+  _SC_EXTERN ScAction & Initiate() noexcept(false);
 
   /*!
    * @brief Checks if the action is finished.
@@ -141,7 +143,7 @@ public:
    * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
    */
-  _SC_EXTERN sc_result FinishSuccessfully() noexcept(false);
+  _SC_EXTERN ScResult FinishSuccessfully() noexcept(false);
 
   /*!
    * @brief Checks if the action is finished unsuccessfully.
@@ -154,7 +156,7 @@ public:
    * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
    */
-  _SC_EXTERN sc_result FinishUnsuccessfully() noexcept(false);
+  _SC_EXTERN ScResult FinishUnsuccessfully() noexcept(false);
 
   /*!
    * @brief Checks if the action is finished with an error.
@@ -167,7 +169,7 @@ public:
    * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
    */
-  _SC_EXTERN sc_result FinishWithError() noexcept(false);
+  _SC_EXTERN ScResult FinishWithError() noexcept(false);
 
 protected:
   class ScAgentContext * m_ctx;  ///< Context of the agent.

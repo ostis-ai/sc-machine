@@ -42,7 +42,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventAddInputArc const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventAddInputArc const & event, ScAction & action) override;
 };
 
 class ATestAddOutputArc : public ScAgent<ScEventAddOutputArc>
@@ -53,7 +53,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
 };
 
 class ATestAddEdge : public ScAgent<ScEventAddEdge>
@@ -64,7 +64,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventAddEdge const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventAddEdge const & event, ScAction & action) override;
 };
 
 class ATestRemoveInputArc : public ScAgent<ScEventRemoveInputArc>
@@ -75,7 +75,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventRemoveInputArc const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventRemoveInputArc const & event, ScAction & action) override;
 };
 
 class ATestRemoveOutputArc : public ScAgent<ScEventRemoveOutputArc>
@@ -86,7 +86,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventRemoveOutputArc const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventRemoveOutputArc const & event, ScAction & action) override;
 };
 
 class ATestRemoveEdge : public ScAgent<ScEventRemoveEdge>
@@ -97,7 +97,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventRemoveEdge const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventRemoveEdge const & event, ScAction & action) override;
 };
 
 class ATestEraseElement : public ScAgent<ScEventEraseElement>
@@ -108,7 +108,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventEraseElement const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventEraseElement const & event, ScAction & action) override;
 };
 
 class ATestChangeContent : public ScAgent<ScEventChangeContent>
@@ -119,7 +119,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventChangeContent const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventChangeContent const & event, ScAction & action) override;
 };
 
 class ATestAddMultipleOutputArc : public ScAgent<ScEventAddOutputArc>
@@ -129,7 +129,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
 };
 
 class ATestCheckResult : public ScActionAgent
@@ -139,5 +139,5 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_result DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };

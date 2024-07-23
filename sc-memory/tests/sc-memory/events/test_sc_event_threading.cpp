@@ -10,7 +10,7 @@
 #include <ctime>
 #include <thread>
 
-TEST_F(ScEventTest, threading_smoke)
+TEST_F(ScEventTest, ThreadingSmoke)
 {
   std::srand(unsigned(std::time(0)));
 
@@ -56,10 +56,9 @@ TEST_F(ScEventTest, threading_smoke)
         &*m_ctx,
         eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ChangeContent event
         randNode(),
-        [&](ScElementaryEvent const &) -> sc_result
+        [&](ScElementaryEvent const &)
         {
           evtCount++;
-          return SC_RESULT_OK;
         });
   }
 

@@ -60,21 +60,18 @@ sc_result ScElementaryEventSubscription<TScEvent>::Handler(
 
   DelegateFunc delegateFunc = eventObj->m_delegate;
   if (delegateFunc == nullptr)
-    goto result;
+    return result;
 
   try
   {
-    result = delegateFunc(TScEvent(userAddr, sc_event_get_element(event), connectorAddr, connectorType, otherAddr))
-                 ? SC_RESULT_OK
-                 : SC_RESULT_ERROR;
+    delegateFunc(TScEvent(userAddr, sc_event_get_element(event), connectorAddr, connectorType, otherAddr));
   }
   catch (utils::ScException & e)
   {
     SC_LOG_ERROR("Uncaught exception: " << e.Message());
   }
 
-result:
-  return result;
+  return SC_RESULT_OK;
 }
 
 template <class TScEvent>

@@ -20,20 +20,14 @@ sc_result ScEventSubscription::HandlerDelete(sc_event const *)
   return SC_RESULT_OK;
 }
 
-sc_result ScEventSubscription::Initialize(ScMemoryContext *, ScAddr const &)
-{
-  return SC_RESULT_OK;
-}
+void ScEventSubscription::Initialize(ScMemoryContext *, ScAddr const &) {}
 
-sc_result ScEventSubscription::Shutdown(ScMemoryContext *)
-{
-  return SC_RESULT_OK;
-}
+void ScEventSubscription::Shutdown(ScMemoryContext *) {}
 
 ScEventSubscriptionAddOutputArc::ScEventSubscriptionAddOutputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventAddOutputArc const &)> const & func)
+    std::function<void(ScEventAddOutputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -41,7 +35,7 @@ ScEventSubscriptionAddOutputArc::ScEventSubscriptionAddOutputArc(
 ScEventSubscriptionAddInputArc::ScEventSubscriptionAddInputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventAddInputArc const &)> const & func)
+    std::function<void(ScEventAddInputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -49,7 +43,7 @@ ScEventSubscriptionAddInputArc::ScEventSubscriptionAddInputArc(
 ScEventSubscriptionAddEdge::ScEventSubscriptionAddEdge(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventAddEdge const &)> const & func)
+    std::function<void(ScEventAddEdge const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -57,7 +51,7 @@ ScEventSubscriptionAddEdge::ScEventSubscriptionAddEdge(
 ScEventSubscriptionRemoveOutputArc::ScEventSubscriptionRemoveOutputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventRemoveOutputArc const &)> const & func)
+    std::function<void(ScEventRemoveOutputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -65,7 +59,7 @@ ScEventSubscriptionRemoveOutputArc::ScEventSubscriptionRemoveOutputArc(
 ScEventSubscriptionRemoveInputArc::ScEventSubscriptionRemoveInputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventRemoveInputArc const &)> const & func)
+    std::function<void(ScEventRemoveInputArc const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -73,7 +67,7 @@ ScEventSubscriptionRemoveInputArc::ScEventSubscriptionRemoveInputArc(
 ScEventSubscriptionRemoveEdge::ScEventSubscriptionRemoveEdge(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventRemoveEdge const &)> const & func)
+    std::function<void(ScEventRemoveEdge const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -81,7 +75,7 @@ ScEventSubscriptionRemoveEdge::ScEventSubscriptionRemoveEdge(
 ScEventSubscriptionEraseElement::ScEventSubscriptionEraseElement(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventEraseElement const &)> const & func)
+    std::function<void(ScEventEraseElement const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -89,7 +83,7 @@ ScEventSubscriptionEraseElement::ScEventSubscriptionEraseElement(
 ScEventSubscriptionChangeContent::ScEventSubscriptionChangeContent(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<sc_result(ScEventChangeContent const &)> const & func)
+    std::function<void(ScEventChangeContent const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }

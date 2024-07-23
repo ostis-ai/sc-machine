@@ -93,9 +93,9 @@ TEST_F(ScWaitTest, CondValid)
   ScWaitCondition<ScEventAddInputArc> waiter(
       *m_ctx,
       m_addr,
-      [](ScEventAddInputArc const &) -> sc_result
+      [](ScEventAddInputArc const &) -> sc_bool
       {
-        return SC_RESULT_OK;
+        return SC_TRUE;
       });
 
   waiter.SetOnWaitStartDelegate(
@@ -115,9 +115,9 @@ TEST_F(ScWaitTest, CondValidFalse)
   ScWaitCondition<ScEventAddInputArc> waiter(
       *m_ctx,
       m_addr,
-      [](ScEventAddInputArc const &) -> sc_result
+      [](ScEventAddInputArc const &) -> sc_bool
       {
-        return SC_RESULT_NO;
+        return SC_FALSE;
       });
 
   waiter.SetOnWaitStartDelegate(

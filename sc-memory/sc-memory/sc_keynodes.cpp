@@ -73,27 +73,22 @@ ScKeynode & ScKeynode::operator=(ScKeynode const & other)
 size_t const kKeynodeRrelListNum = 20;
 std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 
-sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
+void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
   SC_LOG_INFO("Initialize " << this->GetName());
 
   internal::ScKeynodesRegister::Register(ctx, initMemoryGeneratedStructureAddr);
 
-  sc_bool result = SC_TRUE;
-
   // init sc_result set
   for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
   {
     ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
-    result = result && resAddr.IsValid();
     if (!ctx->HelperCheckEdge(sc_result_class, resAddr, ScType::EdgeAccessConstPosPerm))
     {
-      ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sc_result_class, resAddr);
-      result = result && edge.IsValid();
+      ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sc_result_class, resAddr);
 
-      if (initMemoryGeneratedStructureAddr.IsValid()
-          && !ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, edge).IsValid())
-        result = SC_FALSE;
+      if (initMemoryGeneratedStructureAddr.IsValid())
+        ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
     }
   }
 
@@ -102,16 +97,13 @@ sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemor
   {
     ScAddr & item = kKeynodeRrelList[i];
     item = ctx->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
-    if (!item.IsValid())
-      result = SC_FALSE;
   }
 
   // command states
   ScAddr states[] = {action_initiated, action_finished};
   for (auto const & a : states)
   {
-    if (!ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, action_state, a).IsValid())
-      result = SC_FALSE;
+    ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, action_state, a);
   }
 
   // binary types
@@ -130,24 +122,17 @@ sc_result ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemor
       binary_custom};
   for (auto const & b : binaryTypes)
   {
-    ScAddr const & edge = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, binary_type, b);
-    if (!edge.IsValid())
-      result = SC_FALSE;
+    ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, binary_type, b);
 
-    if (initMemoryGeneratedStructureAddr.IsValid()
-        && !ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, edge).IsValid())
-      result = SC_FALSE;
+    if (initMemoryGeneratedStructureAddr.IsValid())
+      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
   }
-
-  return result ? SC_RESULT_OK : SC_RESULT_ERROR;
 }
 
-sc_result ScKeynodes::Shutdown(ScMemoryContext * ctx)
+void ScKeynodes::Shutdown(ScMemoryContext * ctx)
 {
   SC_LOG_INFO("Shutdown " << this->GetName());
   internal::ScKeynodesRegister::Unregister(ctx);
-
-  return SC_RESULT_OK;
 }
 
 ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)

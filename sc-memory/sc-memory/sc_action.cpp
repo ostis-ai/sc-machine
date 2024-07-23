@@ -7,6 +7,7 @@
 #include "sc_action.hpp"
 
 #include "sc_agent_context.hpp"
+#include "sc_result.hpp"
 #include "sc_wait.hpp"
 #include "sc_struct.hpp"
 
@@ -93,7 +94,7 @@ ScStruct ScAction::GetAnswer() noexcept(false)
   return ScStruct{m_ctx, m_answerAddr};
 }
 
-ScAction & ScAction::SetAnswer(ScAddr const & structureAddr)
+ScAction & ScAction::SetAnswer(ScAddr const & structureAddr) noexcept(false)
 {
   if (IsFinished())
     SC_THROW_EXCEPTION(
@@ -145,7 +146,7 @@ sc_bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
   return wait->Wait(waitTime_ms);
 };
 
-void ScAction::Initiate() noexcept(false)
+ScAction & ScAction::Initiate() noexcept(false)
 {
   if (IsInitiated())
     SC_THROW_EXCEPTION(
@@ -160,9 +161,11 @@ void ScAction::Initiate() noexcept(false)
                                         << "` due it had already been finished.");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
+
+  return *this;
 };
 
-void ScAction::Finish(ScAddr const & actionStateAddr)
+void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
 {
   if (!IsInitiated())
     SC_THROW_EXCEPTION(
@@ -196,7 +199,7 @@ sc_bool ScAction::IsFinishedSuccessfully() const
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished_successfully, *this, ScType::EdgeAccessConstPosPerm);
 }
 
-sc_result ScAction::FinishSuccessfully() noexcept(false)
+ScResult ScAction::FinishSuccessfully() noexcept(false)
 {
   Finish(ScKeynodes::action_finished_successfully);
   return SC_RESULT_OK;
@@ -207,7 +210,7 @@ sc_bool ScAction::IsFinishedUnsuccessfully() const
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished_unsuccessfully, *this, ScType::EdgeAccessConstPosPerm);
 }
 
-sc_result ScAction::FinishUnsuccessfully() noexcept(false)
+ScResult ScAction::FinishUnsuccessfully() noexcept(false)
 {
   Finish(ScKeynodes::action_finished_unsuccessfully);
   return SC_RESULT_NO;
@@ -218,7 +221,7 @@ sc_bool ScAction::IsFinishedWithError() const
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished_with_error, *this, ScType::EdgeAccessConstPosPerm);
 }
 
-sc_result ScAction::FinishWithError() noexcept(false)
+ScResult ScAction::FinishWithError() noexcept(false)
 {
   Finish(ScKeynodes::action_finished_with_error);
   return SC_RESULT_ERROR;
