@@ -305,7 +305,7 @@ TEST_F(ScServerTest, CheckElements)
   client.Stop();
 }
 
-TEST_F(ScServerTest, DeleteElements)
+TEST_F(ScServerTest, EraseElements)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));

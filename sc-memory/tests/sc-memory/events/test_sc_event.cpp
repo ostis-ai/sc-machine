@@ -28,10 +28,10 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
 
   size_t count = 10;
 
-  ScEventSubscriptionAddOutputEdge evt(
+  ScEventSubscriptionAddOutputArc evt(
       ctx,
       node,
-      [node, node2, count](ScEventAddOutputEdge const &) -> sc_result
+      [node, node2, count](ScEventAddOutputArc const &) -> sc_result
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -47,10 +47,10 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
         return result ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
-  ScEventSubscriptionAddOutputEdge evt2(
+  ScEventSubscriptionAddOutputArc evt2(
       ctx,
       node2,
-      [node3, node2, count](ScEventAddOutputEdge const &) -> sc_result
+      [node3, node2, count](ScEventAddOutputArc const &) -> sc_result
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -65,10 +65,10 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
         return result ? SC_RESULT_OK : SC_RESULT_ERROR;
       });
 
-  ScEventSubscriptionAddOutputEdge evt3(
+  ScEventSubscriptionAddOutputArc evt3(
       ctx,
       node3,
-      [node3](ScEventAddOutputEdge const &) -> sc_result
+      [node3](ScEventAddOutputArc const &) -> sc_result
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -119,7 +119,7 @@ void testEventsFuncT(ScMemoryContext & ctx, ScAddr const & addr, PrepareF prepar
 
 }  // namespace
 
-TEST_F(ScEventTest, AddInputEdge)
+TEST_F(ScEventTest, AddInputArc)
 {
   ScAddr addr;
   auto const CreateNode = [this, &addr]()
@@ -137,10 +137,10 @@ TEST_F(ScEventTest, AddInputEdge)
     EXPECT_TRUE(edge.IsValid());
   };
 
-  testEventsFuncT<ScEventSubscriptionAddInputEdge>(*m_ctx, addr, CreateNode, emitEvent);
+  testEventsFuncT<ScEventSubscriptionAddInputArc>(*m_ctx, addr, CreateNode, emitEvent);
 }
 
-TEST_F(ScEventTest, AddOutputEdge)
+TEST_F(ScEventTest, AddOutputArc)
 {
   ScAddr addr;
   auto const CreateNode = [this, &addr]()
@@ -158,10 +158,10 @@ TEST_F(ScEventTest, AddOutputEdge)
     EXPECT_TRUE(edge.IsValid());
   };
 
-  testEventsFuncT<ScEventSubscriptionAddOutputEdge>(*m_ctx, addr, CreateNode, emitEvent);
+  testEventsFuncT<ScEventSubscriptionAddOutputArc>(*m_ctx, addr, CreateNode, emitEvent);
 }
 
-TEST_F(ScEventTest, RemoveInputEdge)
+TEST_F(ScEventTest, RemoveInputArc)
 {
   ScAddr const addr = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(addr.IsValid());
@@ -178,10 +178,10 @@ TEST_F(ScEventTest, RemoveInputEdge)
     EXPECT_TRUE(m_ctx->EraseElement(edge));
   };
 
-  testEventsFuncT<ScEventSubscriptionRemoveInputEdge>(*m_ctx, addr2, prepare, emitEvent);
+  testEventsFuncT<ScEventSubscriptionRemoveInputArc>(*m_ctx, addr2, prepare, emitEvent);
 }
 
-TEST_F(ScEventTest, RemoveOutputEdge)
+TEST_F(ScEventTest, RemoveOutputArc)
 {
   ScAddr const addr = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(addr.IsValid());
@@ -198,10 +198,10 @@ TEST_F(ScEventTest, RemoveOutputEdge)
     EXPECT_TRUE(m_ctx->EraseElement(edge));
   };
 
-  testEventsFuncT<ScEventSubscriptionRemoveOutputEdge>(*m_ctx, addr, prepare, emitEvent);
+  testEventsFuncT<ScEventSubscriptionRemoveOutputArc>(*m_ctx, addr, prepare, emitEvent);
 }
 
-TEST_F(ScEventTest, ContentChanged)
+TEST_F(ScEventTest, ChangeContent)
 {
   ScAddr const addr = m_ctx->CreateLink();
   EXPECT_TRUE(addr.IsValid());
@@ -214,7 +214,7 @@ TEST_F(ScEventTest, ContentChanged)
     EXPECT_TRUE(m_ctx->SetLinkContent(addr, stream));
   };
 
-  testEventsFuncT<ScEventSubscriptionContentChanged>(*m_ctx, addr, prepare, emitEvent);
+  testEventsFuncT<ScEventSubscriptionChangeContent>(*m_ctx, addr, prepare, emitEvent);
 }
 
 TEST_F(ScEventTest, EraseElement)
@@ -236,10 +236,10 @@ TEST_F(ScEventTest, destroy_order)
   ScAddr const node = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(node.IsValid());
 
-  auto * evt = new ScEventSubscriptionAddOutputEdge(
+  auto * evt = new ScEventSubscriptionAddOutputArc(
       *m_ctx,
       node,
-      [](ScEventAddOutputEdge const &) -> sc_result
+      [](ScEventAddOutputArc const &) -> sc_result
       {
         return SC_RESULT_OK;
       });
@@ -255,10 +255,10 @@ TEST_F(ScEventTest, events_lock)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventSubscriptionAddOutputEdge evt(
+  ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [node](ScEventAddOutputEdge const &) -> sc_result
+      [node](ScEventAddOutputArc const &) -> sc_result
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -280,10 +280,10 @@ TEST_F(ScEventTest, parallel_create_edges)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventSubscriptionAddOutputEdge evt(
+  ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [node](ScEventAddOutputEdge const & event) -> sc_result
+      [node](ScEventAddOutputArc const & event) -> sc_result
       {
         bool result = false;
         ScMemoryContext localCtx;
@@ -308,10 +308,10 @@ TEST_F(ScEventTest, parallel_create_remove_edges)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventSubscriptionAddOutputEdge evt(
+  ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [node](ScEventAddOutputEdge const &) -> sc_result
+      [node](ScEventAddOutputArc const &) -> sc_result
       {
         ScMemoryContext localCtx;
         ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
@@ -330,10 +330,10 @@ TEST_F(ScEventTest, parallel_create_remove_edges2)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  ScEventSubscriptionAddOutputEdge evt(
+  ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       node,
-      [](ScEventAddOutputEdge const & event) -> sc_result
+      [](ScEventAddOutputArc const & event) -> sc_result
       {
         ScMemoryContext localCtx;
         localCtx.EraseElement(event.GetAddedConnector());
@@ -372,10 +372,10 @@ TEST_F(ScEventTest, pend_events)
   std::atomic_uint eventsCount(0);
   std::atomic_uint passedCount(0);
 
-  ScEventSubscriptionAddOutputEdge evt(
+  ScEventSubscriptionAddOutputArc evt(
       *m_ctx,
       set1,
-      [&passedCount, &eventsCount, &set1, &elements, &rel](ScEventAddOutputEdge const &) -> sc_result
+      [&passedCount, &eventsCount, &set1, &elements, &rel](ScEventAddOutputArc const &) -> sc_result
       {
         std::shared_ptr<ScTemplate> checkTempl(new ScTemplate());
         size_t step = 100;
@@ -415,10 +415,10 @@ TEST_F(ScEventTest, BlockEventsAndNotEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  ScEventSubscriptionAddOutputEdge event(
+  ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScEventAddOutputEdge const &) -> sc_result
+      [&isCalled](ScEventAddOutputArc const &) -> sc_result
       {
         isCalled = true;
         return SC_RESULT_OK;
@@ -440,10 +440,10 @@ TEST_F(ScEventTest, BlockEventsAndEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  ScEventSubscriptionAddOutputEdge event(
+  ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScEventAddOutputEdge const &)
+      [&isCalled](ScEventAddOutputArc const &)
       {
         isCalled = true;
         return SC_RESULT_OK;
@@ -471,10 +471,10 @@ TEST_F(ScEventTest, BlockEventsGuardAndNotEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  ScEventSubscriptionAddOutputEdge event(
+  ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScEventAddOutputEdge const &)
+      [&isCalled](ScEventAddOutputArc const &)
       {
         isCalled = true;
         return SC_RESULT_OK;
@@ -494,10 +494,10 @@ TEST_F(ScEventTest, BlockEventsGuardAndEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  ScEventSubscriptionAddOutputEdge event(
+  ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       nodeAddr,
-      [&isCalled](ScEventAddOutputEdge const &)
+      [&isCalled](ScEventAddOutputArc const &)
       {
         isCalled = true;
         return SC_RESULT_OK;

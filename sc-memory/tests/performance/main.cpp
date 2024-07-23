@@ -14,7 +14,7 @@
 #include "units/memory_remove_diff_elements.hpp"
 #include "units/memory_remove_set_elements.hpp"
 
-#include "units/memory_remove_elements.hpp"
+#include "units/memory_erase_elements.hpp"
 
 #include "units/sc_code_base_vs_extend.hpp"
 
@@ -505,7 +505,7 @@ BENCHMARK_TEMPLATE(BM_MemoryRanged, TestCreateEdge)
 ->Arg(1000)
 ->Iterations(5000000);
 
-BENCHMARK_TEMPLATE(BM_MemoryRanged, TestRemoveElements)
+BENCHMARK_TEMPLATE(BM_MemoryRanged, TestEraseElements)
 ->Unit(benchmark::TimeUnit::kMicrosecond)
 ->Arg(10)->Arg(100)->Arg(1000)
 ->Iterations(5000);

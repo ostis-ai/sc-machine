@@ -119,7 +119,7 @@ void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... su
   auto & subscriptionsMap = agentsMapIt->second;
   for (ScAddr const & subscriptionAddr : {subscriptionAddrs...})
   {
-    if constexpr (!std::is_same<TScEvent, ScEventRemoveElement>::value)
+    if constexpr (!std::is_same<TScEvent, ScEventEraseElement>::value)
     {
       if (!ctx->IsElement(subscriptionAddr))
         SC_THROW_EXCEPTION(

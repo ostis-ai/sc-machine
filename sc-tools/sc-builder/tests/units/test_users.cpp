@@ -43,10 +43,10 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventSubscriptionAddOutputEdge event(
+  ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScEventAddOutputEdge const &) -> sc_result
+      [&userContext, &isAuthenticated](ScEventAddOutputArc const &) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
@@ -75,10 +75,10 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventSubscriptionAddOutputEdge event(
+  ScEventSubscriptionAddOutputArc event(
       *m_ctx,
       conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScEventAddOutputEdge const &) -> sc_result
+      [&userContext, &isAuthenticated](ScEventAddOutputArc const &) -> sc_result
       {
         ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
         ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);

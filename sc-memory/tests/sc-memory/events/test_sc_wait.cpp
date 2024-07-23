@@ -67,7 +67,7 @@ TEST_F(ScWaitTest, smoke)
 TEST_F(ScWaitTest, valid)
 {
   WaitTestData data(m_addr);
-  ScWaitEvent<ScEventAddInputEdge> waiter(*m_ctx, m_addr);
+  ScWaitEvent<ScEventAddInputArc> waiter(*m_ctx, m_addr);
   waiter.SetOnWaitStartDelegate(
       [&data]()
       {
@@ -84,16 +84,16 @@ TEST_F(ScWaitTest, valid)
 
 TEST_F(ScWaitTest, TimeOut)
 {
-  EXPECT_FALSE(ScWaitEvent<ScEventAddOutputEdge>(*m_ctx, m_addr).Wait(1000));
+  EXPECT_FALSE(ScWaitEvent<ScEventAddOutputArc>(*m_ctx, m_addr).Wait(1000));
 }
 
 TEST_F(ScWaitTest, CondValid)
 {
   WaitTestData data(m_addr);
-  ScWaitCondition<ScEventAddInputEdge> waiter(
+  ScWaitCondition<ScEventAddInputArc> waiter(
       *m_ctx,
       m_addr,
-      [](ScEventAddInputEdge const &) -> sc_result
+      [](ScEventAddInputArc const &) -> sc_result
       {
         return SC_RESULT_OK;
       });
@@ -112,10 +112,10 @@ TEST_F(ScWaitTest, CondValidFalse)
 {
   WaitTestData data(m_addr);
 
-  ScWaitCondition<ScEventAddInputEdge> waiter(
+  ScWaitCondition<ScEventAddInputArc> waiter(
       *m_ctx,
       m_addr,
-      [](ScEventAddInputEdge const &) -> sc_result
+      [](ScEventAddInputArc const &) -> sc_result
       {
         return SC_RESULT_NO;
       });
