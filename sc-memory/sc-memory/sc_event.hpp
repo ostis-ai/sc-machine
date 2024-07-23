@@ -94,8 +94,10 @@ public:
     static Type const Unknown;
     static Type const AddInputArc;
     static Type const AddOutputArc;
+    static Type const AddEdge;
     static Type const RemoveInputArc;
     static Type const RemoveOutputArc;
+    static Type const RemoveEdge;
     static Type const EraseElement;
     static Type const ChangeContent;
   };
@@ -138,14 +140,36 @@ private:
   static inline Type const type = Type::Unknown;
 };
 
+class _SC_EXTERN ScEventAddArc : public ScElementaryEvent
+{
+public:
+  _SC_EXTERN virtual ScAddr GetAddedArc() const;
+
+  _SC_EXTERN virtual ScType GetAddedArcType() const;
+
+  _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
+
+  _SC_EXTERN virtual ScAddr GetArcTargetElement() const;
+
+protected:
+  _SC_EXTERN ScEventAddArc(
+      ScAddr const & userAddr,
+      ScAddr const & subscriptionAddr,
+      ScAddr const & connectorAddr,
+      ScType const & connectorType,
+      ScAddr const & otherAddr);
+};
+
 class _SC_EXTERN ScEventAddEdge : public ScElementaryEvent
 {
 public:
-  _SC_EXTERN virtual ScAddr GetAddedConnector() const;
+  _SC_EXTERN virtual ScAddr GetAddedEdge() const;
 
-  _SC_EXTERN virtual ScType GetAddedConnectorType() const;
+  _SC_EXTERN virtual ScType GetAddedEdgeType() const;
 
-  _SC_EXTERN virtual ScAddr GetOtherElement() const;
+  _SC_EXTERN virtual ScAddr GetEdgeSourceElement() const;
+
+  _SC_EXTERN virtual ScAddr GetEdgeTargetElement() const;
 
 protected:
   _SC_EXTERN ScEventAddEdge(
@@ -154,9 +178,15 @@ protected:
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
+
+private:
+  template <class TScEvent>
+  friend class ScElementaryEventSubscription;
+
+  static inline Type const type = Type::AddEdge;
 };
 
-class _SC_EXTERN ScEventAddOutputArc : public ScEventAddEdge
+class _SC_EXTERN ScEventAddOutputArc : public ScEventAddArc
 {
 protected:
   _SC_EXTERN ScEventAddOutputArc(
@@ -173,7 +203,7 @@ private:
   static inline Type const type = Type::AddOutputArc;
 };
 
-class _SC_EXTERN ScEventAddInputArc final : public ScEventAddEdge
+class _SC_EXTERN ScEventAddInputArc final : public ScEventAddArc
 {
 protected:
   _SC_EXTERN ScEventAddInputArc(
@@ -190,12 +220,32 @@ private:
   static inline Type const type = Type::AddInputArc;
 };
 
+class _SC_EXTERN ScEventRemoveArc : public ScElementaryEvent
+{
+public:
+  _SC_EXTERN virtual ScType GetRemovedArcType() const;
+
+  _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
+
+  _SC_EXTERN virtual ScAddr GetArcTargetElement() const;
+
+protected:
+  _SC_EXTERN ScEventRemoveArc(
+      ScAddr const & userAddr,
+      ScAddr const & subscriptionAddr,
+      ScAddr const & connectorAddr,
+      ScType const & connectorType,
+      ScAddr const & otherAddr);
+};
+
 class _SC_EXTERN ScEventRemoveEdge : public ScElementaryEvent
 {
 public:
-  _SC_EXTERN virtual ScType GetRemovedConnectorType() const;
+  _SC_EXTERN virtual ScType GetRemovedEdgeType() const;
 
-  _SC_EXTERN virtual ScAddr GetOtherElement() const;
+  _SC_EXTERN virtual ScAddr GetEdgeSourceElement() const;
+
+  _SC_EXTERN virtual ScAddr GetEdgeTargetElement() const;
 
 protected:
   _SC_EXTERN ScEventRemoveEdge(
@@ -204,9 +254,15 @@ protected:
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
+
+private:
+  template <class TScEvent>
+  friend class ScElementaryEventSubscription;
+
+  static inline Type const type = Type::RemoveEdge;
 };
 
-class _SC_EXTERN ScEventRemoveOutputArc final : public ScEventRemoveEdge
+class _SC_EXTERN ScEventRemoveOutputArc final : public ScEventRemoveArc
 {
 protected:
   _SC_EXTERN ScEventRemoveOutputArc(
@@ -223,7 +279,7 @@ private:
   static inline Type const type = Type::RemoveOutputArc;
 };
 
-class _SC_EXTERN ScEventRemoveInputArc final : public ScEventRemoveEdge
+class _SC_EXTERN ScEventRemoveInputArc final : public ScEventRemoveArc
 {
 protected:
   _SC_EXTERN ScEventRemoveInputArc(

@@ -11,8 +11,10 @@
 ScEvent::Type constexpr ScEvent::Type::Unknown(sc_event_unknown);
 ScEvent::Type constexpr ScEvent::Type::AddInputArc(sc_event_add_input_arc);
 ScEvent::Type constexpr ScEvent::Type::AddOutputArc(sc_event_add_output_arc);
+ScEvent::Type constexpr ScEvent::Type::AddEdge(sc_event_add_edge);
 ScEvent::Type constexpr ScEvent::Type::RemoveInputArc(sc_event_remove_input_arc);
 ScEvent::Type constexpr ScEvent::Type::RemoveOutputArc(sc_event_remove_output_arc);
+ScEvent::Type constexpr ScEvent::Type::RemoveEdge(sc_event_remove_edge);
 ScEvent::Type constexpr ScEvent::Type::EraseElement(sc_event_erase_element);
 ScEvent::Type constexpr ScEvent::Type::ChangeContent(sc_event_change_content);
 
@@ -55,20 +57,33 @@ ScElementaryEvent::ScElementaryEvent(
   , m_connectorType(connectorType)
   , m_otherAddr(otherAddr) {};
 
-ScAddr ScEventAddEdge::GetAddedConnector() const
+ScAddr ScEventAddArc::GetAddedArc() const
 {
   return m_connectorAddr;
 }
 
-ScType ScEventAddEdge::GetAddedConnectorType() const
+ScType ScEventAddArc::GetAddedArcType() const
 {
   return m_connectorType;
 }
 
-ScAddr ScEventAddEdge::GetOtherElement() const
+ScAddr ScEventAddArc::GetArcSourceElement() const
+{
+  return m_subscriptionAddr;
+}
+
+ScAddr ScEventAddArc::GetArcTargetElement() const
 {
   return m_otherAddr;
 }
+
+ScEventAddArc::ScEventAddArc(
+    ScAddr const & userAddr,
+    ScAddr const & subscriptionAddr,
+    ScAddr const & connectorAddr,
+    ScType const & connectorType,
+    ScAddr const & otherAddr)
+  : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
 ScEventAddEdge::ScEventAddEdge(
     ScAddr const & userAddr,
@@ -78,13 +93,33 @@ ScEventAddEdge::ScEventAddEdge(
     ScAddr const & otherAddr)
   : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
+ScAddr ScEventAddEdge::GetAddedEdge() const
+{
+  return m_connectorAddr;
+}
+
+ScType ScEventAddEdge::GetAddedEdgeType() const
+{
+  return m_connectorType;
+}
+
+ScAddr ScEventAddEdge::GetEdgeSourceElement() const
+{
+  return m_otherAddr;
+}
+
+ScAddr ScEventAddEdge::GetEdgeTargetElement() const
+{
+  return m_subscriptionAddr;
+}
+
 ScEventAddOutputArc::ScEventAddOutputArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventAddEdge(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : ScEventAddArc(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
 _SC_EXTERN ScEventAddInputArc::ScEventAddInputArc(
     ScAddr const & userAddr,
@@ -92,14 +127,42 @@ _SC_EXTERN ScEventAddInputArc::ScEventAddInputArc(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventAddEdge(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : ScEventAddArc(userAddr, otherAddr, connectorAddr, connectorType, subscriptionAddr) {};
 
-ScType ScEventRemoveEdge::GetRemovedConnectorType() const
+ScType ScEventRemoveArc::GetRemovedArcType() const
 {
   return m_connectorType;
 }
 
-ScAddr ScEventRemoveEdge::GetOtherElement() const
+ScAddr ScEventRemoveArc::GetArcSourceElement() const
+{
+  return m_subscriptionAddr;
+}
+
+ScAddr ScEventRemoveArc::GetArcTargetElement() const
+{
+  return m_otherAddr;
+}
+
+ScEventRemoveArc::ScEventRemoveArc(
+    ScAddr const & userAddr,
+    ScAddr const & subscriptionAddr,
+    ScAddr const & connectorAddr,
+    ScType const & connectorType,
+    ScAddr const & otherAddr)
+  : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+
+ScType ScEventRemoveEdge::GetRemovedEdgeType() const
+{
+  return m_connectorType;
+}
+
+ScAddr ScEventRemoveEdge::GetEdgeSourceElement() const
+{
+  return m_subscriptionAddr;
+}
+
+ScAddr ScEventRemoveEdge::GetEdgeTargetElement() const
 {
   return m_otherAddr;
 }
@@ -118,7 +181,7 @@ ScEventRemoveOutputArc::ScEventRemoveOutputArc(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventRemoveEdge(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : ScEventRemoveArc(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
 ScEventRemoveInputArc::ScEventRemoveInputArc(
     ScAddr const & userAddr,
@@ -126,7 +189,7 @@ ScEventRemoveInputArc::ScEventRemoveInputArc(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventRemoveEdge(userAddr, otherAddr, connectorAddr, connectorType, subscriptionAddr) {};
+  : ScEventRemoveArc(userAddr, otherAddr, connectorAddr, connectorType, subscriptionAddr) {};
 
 ScEventEraseElement::ScEventEraseElement(
     ScAddr const & userAddr,

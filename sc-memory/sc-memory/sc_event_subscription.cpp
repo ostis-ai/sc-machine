@@ -46,6 +46,14 @@ ScEventSubscriptionAddInputArc::ScEventSubscriptionAddInputArc(
 {
 }
 
+ScEventSubscriptionAddEdge::ScEventSubscriptionAddEdge(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<sc_result(ScEventAddEdge const &)> const & func)
+  : ScElementaryEventSubscription(ctx, addr, func)
+{
+}
+
 ScEventSubscriptionRemoveOutputArc::ScEventSubscriptionRemoveOutputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
@@ -58,6 +66,14 @@ ScEventSubscriptionRemoveInputArc::ScEventSubscriptionRemoveInputArc(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
     std::function<sc_result(ScEventRemoveInputArc const &)> const & func)
+  : ScElementaryEventSubscription(ctx, addr, func)
+{
+}
+
+ScEventSubscriptionRemoveEdge::ScEventSubscriptionRemoveEdge(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<sc_result(ScEventRemoveEdge const &)> const & func)
   : ScElementaryEventSubscription(ctx, addr, func)
 {
 }
@@ -91,16 +107,20 @@ sc_result ScEventSubscriptionFactory::Initialize(ScMemoryContext *, ScAddr const
   m_eventTypesToCreateSubscriptionCallbacks = {
       {ScEvent::Type::AddOutputArc, CreateEventSubscriptionWrapper<sc_event_add_output_arc>()},
       {ScEvent::Type::AddInputArc, CreateEventSubscriptionWrapper<sc_event_add_input_arc>()},
+      {ScEvent::Type::AddEdge, CreateEventSubscriptionWrapper<sc_event_add_edge>()},
       {ScEvent::Type::RemoveOutputArc, CreateEventSubscriptionWrapper<sc_event_remove_output_arc>()},
       {ScEvent::Type::RemoveInputArc, CreateEventSubscriptionWrapper<sc_event_remove_input_arc>()},
+      {ScEvent::Type::RemoveEdge, CreateEventSubscriptionWrapper<sc_event_remove_edge>()},
       {ScEvent::Type::EraseElement, CreateEventSubscriptionWrapper<sc_event_erase_element>()},
       {ScEvent::Type::ChangeContent, CreateEventSubscriptionWrapper<sc_event_change_content>()},
   };
   m_namesToEventTypes = {
       {ScKeynodes::event_add_output_arc, ScEvent::Type::AddOutputArc},
       {ScKeynodes::event_add_input_arc, ScEvent::Type::AddInputArc},
+      {ScKeynodes::event_add_edge, ScEvent::Type::AddEdge},
       {ScKeynodes::event_remove_output_arc, ScEvent::Type::RemoveOutputArc},
       {ScKeynodes::event_remove_input_arc, ScEvent::Type::RemoveInputArc},
+      {ScKeynodes::event_remove_edge, ScEvent::Type::RemoveEdge},
       {ScKeynodes::event_erase_element, ScEvent::Type::EraseElement},
       {ScKeynodes::event_change_content, ScEvent::Type::ChangeContent},
   };

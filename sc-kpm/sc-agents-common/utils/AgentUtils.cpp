@@ -84,7 +84,7 @@ bool AgentUtils::applyAction(
 
   auto const & check = [](ScEventAddInputArc const & event)
   {
-    return event.GetOtherElement() == scAgentsCommon::CoreKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_ERROR;
+    return event.GetArcSourceElement() == scAgentsCommon::CoreKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_ERROR;
   };
 
   auto const & initialize = [ms_context, onEventClassAddr, actionNode]()

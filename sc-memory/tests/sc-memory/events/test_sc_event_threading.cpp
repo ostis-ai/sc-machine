@@ -36,8 +36,10 @@ TEST_F(ScEventTest, threading_smoke)
   std::vector<ScEvent::Type> eventTypes = {
       ScEvent::Type::AddOutputArc,
       ScEvent::Type::AddInputArc,
+      ScEvent::Type::AddEdge,
       ScEvent::Type::RemoveOutputArc,
       ScEvent::Type::RemoveInputArc,
+      ScEvent::Type::RemoveEdge,
       ScEvent::Type::EraseElement,
       ScEvent::Type::ChangeContent};
 

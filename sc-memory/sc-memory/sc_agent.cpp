@@ -12,5 +12,5 @@
 sc_bool ScActionAgent::CheckInitiationCondition(ScActionEvent const & event)
 {
   return ScMemory::ms_globalContext->HelperCheckEdge(
-      GetActionClass(), event.GetOtherElement(), ScType::EdgeAccessConstPosPerm);
+      GetActionClass(), event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm);
 }

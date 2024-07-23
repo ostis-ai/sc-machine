@@ -35,19 +35,19 @@ sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr cons
     return SC_RESULT_ERROR;
 
   event_action_search_all_output_arcs = sc_event_new(
-      s_default_ctx, keynode_action_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_output_arc, 0);
+      s_default_ctx, keynode_action_initiated, sc_event_add_output_arc, 0, agent_search_all_const_pos_output_arc, 0);
   if (event_action_search_all_output_arcs == null_ptr)
     return SC_RESULT_ERROR;
 
   event_action_search_all_input_arcs = sc_event_new(
-      s_default_ctx, keynode_action_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_const_pos_input_arc, 0);
+      s_default_ctx, keynode_action_initiated, sc_event_add_output_arc, 0, agent_search_all_const_pos_input_arc, 0);
   if (event_action_search_all_input_arcs == null_ptr)
     return SC_RESULT_ERROR;
 
   event_action_search_all_output_arcs_with_rel = sc_event_new(
       s_default_ctx,
       keynode_action_initiated,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_add_output_arc,
       0,
       agent_search_all_const_pos_output_arc_with_rel,
       0);
@@ -57,7 +57,7 @@ sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr cons
   event_action_search_all_input_arcs_with_rel = sc_event_new(
       s_default_ctx,
       keynode_action_initiated,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_add_output_arc,
       0,
       agent_search_all_const_pos_input_arc_with_rel,
       0);
@@ -65,29 +65,29 @@ sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr cons
     return SC_RESULT_ERROR;
 
   event_action_search_full_semantic_neighborhood = sc_event_new(
-      s_default_ctx, keynode_action_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_full_semantic_neighborhood, 0);
+      s_default_ctx, keynode_action_initiated, sc_event_add_output_arc, 0, agent_search_full_semantic_neighborhood, 0);
   if (event_action_search_full_semantic_neighborhood == null_ptr)
     return SC_RESULT_ERROR;
 
   event_action_search_decomposition =
-      sc_event_new(s_default_ctx, keynode_action_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_decomposition, 0);
+      sc_event_new(s_default_ctx, keynode_action_initiated, sc_event_add_output_arc, 0, agent_search_decomposition, 0);
   if (event_action_search_decomposition == null_ptr)
     return SC_RESULT_ERROR;
 
   event_action_search_all_identifiers = sc_event_new(
-      s_default_ctx, keynode_action_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_identifiers, 0);
+      s_default_ctx, keynode_action_initiated, sc_event_add_output_arc, 0, agent_search_all_identifiers, 0);
   if (event_action_search_all_identifiers == null_ptr)
     return SC_RESULT_ERROR;
 
   event_action_search_all_identified_elements = sc_event_new(
-      s_default_ctx, keynode_action_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, agent_search_all_identified_elements, 0);
+      s_default_ctx, keynode_action_initiated, sc_event_add_output_arc, 0, agent_search_all_identified_elements, 0);
   if (event_action_search_all_identified_elements == null_ptr)
     return SC_RESULT_ERROR;
 
   event_action_search_all_subclasses_in_quasybinary_relation = sc_event_new(
       s_default_ctx,
       keynode_action_initiated,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_add_output_arc,
       0,
       agent_search_all_subclasses_in_quasybinary_relation,
       0);
@@ -97,7 +97,7 @@ sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr cons
   event_action_search_all_superclasses_in_quasybinary_relation = sc_event_new(
       s_default_ctx,
       keynode_action_initiated,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_add_output_arc,
       0,
       agent_search_all_superclasses_in_quasybinary_relation,
       0);
@@ -107,7 +107,7 @@ sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr cons
   event_action_search_links_of_relation_connected_with_element = sc_event_new(
       s_default_ctx,
       keynode_action_initiated,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_add_output_arc,
       0,
       agent_search_links_of_relation_connected_with_element,
       0);

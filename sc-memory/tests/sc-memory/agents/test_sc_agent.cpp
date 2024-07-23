@@ -28,6 +28,19 @@ sc_result ATestAddOutputArc::DoProgram(ScEventAddOutputArc const &, ScAction &)
 
 /// --------------------------------------
 
+ScAddr ATestAddEdge::GetActionClass() const
+{
+  return ATestAddEdge::add_edge_action;
+}
+
+sc_result ATestAddEdge::DoProgram(ScEventAddEdge const &, ScAction &)
+{
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
+}
+
+/// --------------------------------------
+
 ScAddr ATestRemoveInputArc::GetActionClass() const
 {
   return ATestRemoveInputArc::remove_input_arc_action;
@@ -47,6 +60,19 @@ ScAddr ATestRemoveOutputArc::GetActionClass() const
 }
 
 sc_result ATestRemoveOutputArc::DoProgram(ScEventRemoveOutputArc const &, ScAction &)
+{
+  msWaiter.Unlock();
+  return SC_RESULT_OK;
+}
+
+/// --------------------------------------
+
+ScAddr ATestRemoveEdge::GetActionClass() const
+{
+  return ATestRemoveEdge::remove_edge_action;
+}
+
+sc_result ATestRemoveEdge::DoProgram(ScEventRemoveEdge const &, ScAction &)
 {
   msWaiter.Unlock();
   return SC_RESULT_OK;

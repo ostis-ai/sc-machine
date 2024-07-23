@@ -155,7 +155,7 @@ std::function<sc_result(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
     auto const & CreateAction = [](TScEvent const & event, ScAgent & agent) -> ScAction
     {
       if constexpr (std::is_base_of<class ScActionAgent, TScAgent>::value)
-        return ScAction(&agent.m_memoryCtx, event.GetOtherElement(), agent.GetActionClass());
+        return ScAction(&agent.m_memoryCtx, event.GetArcTargetElement(), agent.GetActionClass());
 
       return ScAction(&agent.m_memoryCtx, agent.GetActionClass());
       ;
