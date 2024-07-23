@@ -30,7 +30,7 @@ SC_CLASS(CmdClass("command_generate_text_from_template"), Agent)
 SC_PROPERTY(Keynode("nrel_real_energy_usage"), ForceCreate)
 ```
 ```cpp
-SC_CLASS(Agent, Event(ActionManager::msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
+SC_CLASS(Agent, Event(ActionManager::msActionPeriodical, sc_event_add_output_arc))
 ```
 
 You should to use **SC_CLASS** and **SC_GENERATED_BODY** in class declaration:
@@ -87,9 +87,9 @@ class AAddContentAgent : public ScAgentAction
       </ul>
       Another words, we specify sc-element and event on it, that runs implementation of sc-agent. Possible event types:
       <ul>
-        <li>SC_EVENT_ADD_OUTPUT_ARC</li>
+        <li>sc_event_add_output_arc</li>
         <li>SC_EVENT_ADD_INPUT_ARC</li>
-        <li>SC_EVENT_REMOVE_OUTPUT_ARC</li>
+        <li>sc_event_remove_output_arc</li>
         <li>SC_EVENT_REMOVE_INPUT_ARC</li>
         <li>SC_EVENT_REMOVE_ELEMENT</li>
         <li>SC_EVENT_CONTENT_CHANGED</li>
@@ -98,7 +98,7 @@ class AAddContentAgent : public ScAgentAction
       <pre><code class="cpp">
 class ANewPeriodicalActionAgent : public ScAgent
 {
-  SC_CLASS(Agent, Event(msActionPeriodical, SC_EVENT_ADD_OUTPUT_ARC))
+  SC_CLASS(Agent, Event(msActionPeriodical, sc_event_add_output_arc))
   SC_GENERATED_BODY()
 }
       </code></pre>

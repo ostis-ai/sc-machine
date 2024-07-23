@@ -88,5 +88,5 @@ ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr c
 
 sc_result ScWaitActionFinished::OnEvent(ScEventAddInputArc const & event)
 {
-  return event.GetOtherElement() == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
+  return event.GetArcSourceElement() == ScKeynodes::action_finished ? SC_RESULT_OK : SC_RESULT_NO;
 }

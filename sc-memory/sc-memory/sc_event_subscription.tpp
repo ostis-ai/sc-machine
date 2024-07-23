@@ -107,6 +107,13 @@ struct ScEventTypeConverter<sc_event_add_output_arc>
 };
 
 template <>
+struct ScEventTypeConverter<sc_event_add_edge>
+{
+  using SubscriptionType = ScEventSubscriptionAddEdge;
+  using EventTypeClass = ScEventAddEdge;
+};
+
+template <>
 struct ScEventTypeConverter<sc_event_remove_input_arc>
 {
   using SubscriptionType = ScEventSubscriptionRemoveInputArc;
@@ -118,6 +125,13 @@ struct ScEventTypeConverter<sc_event_remove_output_arc>
 {
   using SubscriptionType = ScEventSubscriptionRemoveOutputArc;
   using EventTypeClass = ScEventRemoveOutputArc;
+};
+
+template <>
+struct ScEventTypeConverter<sc_event_remove_edge>
+{
+  using SubscriptionType = ScEventSubscriptionRemoveEdge;
+  using EventTypeClass = ScEventRemoveEdge;
 };
 
 template <>

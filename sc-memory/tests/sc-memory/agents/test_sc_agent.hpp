@@ -56,6 +56,17 @@ public:
   sc_result DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
 };
 
+class ATestAddEdge : public ScAgent<ScEventAddEdge>
+{
+public:
+  static inline ScKeynode const add_edge_action{"add_edge_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventAddEdge const & event, ScAction & action) override;
+};
+
 class ATestRemoveInputArc : public ScAgent<ScEventRemoveInputArc>
 {
 public:
@@ -76,6 +87,17 @@ public:
   ScAddr GetActionClass() const override;
 
   sc_result DoProgram(ScEventRemoveOutputArc const & event, ScAction & action) override;
+};
+
+class ATestRemoveEdge : public ScAgent<ScEventRemoveEdge>
+{
+public:
+  static inline ScKeynode const remove_edge_action{"remove_edge_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  sc_result DoProgram(ScEventRemoveEdge const & event, ScAction & action) override;
 };
 
 class ATestEraseElement : public ScAgent<ScEventEraseElement>

@@ -94,6 +94,15 @@ public:
       std::function<sc_result(ScEventAddInputArc const &)> const & func);
 };
 
+class _SC_EXTERN ScEventSubscriptionAddEdge final : public ScElementaryEventSubscription<ScEventAddEdge>
+{
+public:
+  _SC_EXTERN ScEventSubscriptionAddEdge(
+      ScMemoryContext const & ctx,
+      ScAddr const & addr,
+      std::function<sc_result(ScEventAddEdge const &)> const & func);
+};
+
 class _SC_EXTERN ScEventSubscriptionRemoveOutputArc final : public ScElementaryEventSubscription<ScEventRemoveOutputArc>
 {
 public:
@@ -110,6 +119,15 @@ public:
       ScMemoryContext const & ctx,
       ScAddr const & addr,
       std::function<sc_result(ScEventRemoveInputArc const &)> const & func);
+};
+
+class _SC_EXTERN ScEventSubscriptionRemoveEdge final : public ScElementaryEventSubscription<ScEventRemoveEdge>
+{
+public:
+  _SC_EXTERN ScEventSubscriptionRemoveEdge(
+      ScMemoryContext const & ctx,
+      ScAddr const & addr,
+      std::function<sc_result(ScEventRemoveEdge const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionEraseElement final : public ScElementaryEventSubscription<ScEventEraseElement>

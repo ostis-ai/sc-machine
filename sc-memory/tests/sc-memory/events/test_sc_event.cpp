@@ -161,6 +161,27 @@ TEST_F(ScEventTest, AddOutputArc)
   testEventsFuncT<ScEventSubscriptionAddOutputArc>(*m_ctx, addr, CreateNode, emitEvent);
 }
 
+TEST_F(ScEventTest, AddEdge)
+{
+  ScAddr addr;
+  auto const CreateNode = [this, &addr]()
+  {
+    addr = m_ctx->CreateNode(ScType::Unknown);
+    EXPECT_TRUE(addr.IsValid());
+  };
+
+  auto const emitEvent = [this, &addr]()
+  {
+    ScAddr const addr2 = m_ctx->CreateNode(ScType::Unknown);
+    EXPECT_TRUE(addr2.IsValid());
+
+    ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeUCommon, addr, addr2);
+    EXPECT_TRUE(edge.IsValid());
+  };
+
+  testEventsFuncT<ScEventSubscriptionAddEdge>(*m_ctx, addr, CreateNode, emitEvent);
+}
+
 TEST_F(ScEventTest, RemoveInputArc)
 {
   ScAddr const addr = m_ctx->CreateNode(ScType::Unknown);
@@ -199,6 +220,26 @@ TEST_F(ScEventTest, RemoveOutputArc)
   };
 
   testEventsFuncT<ScEventSubscriptionRemoveOutputArc>(*m_ctx, addr, prepare, emitEvent);
+}
+
+TEST_F(ScEventTest, RemoveEdge)
+{
+  ScAddr const addr = m_ctx->CreateNode(ScType::Unknown);
+  EXPECT_TRUE(addr.IsValid());
+
+  ScAddr const addr2 = m_ctx->CreateNode(ScType::Unknown);
+  EXPECT_TRUE(addr2.IsValid());
+
+  ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeUCommon, addr, addr2);
+  EXPECT_TRUE(edge.IsValid());
+
+  auto const prepare = []() {};
+  auto const emitEvent = [this, &edge]()
+  {
+    EXPECT_TRUE(m_ctx->EraseElement(edge));
+  };
+
+  testEventsFuncT<ScEventSubscriptionRemoveEdge>(*m_ctx, addr, prepare, emitEvent);
 }
 
 TEST_F(ScEventTest, ChangeContent)
@@ -292,7 +333,7 @@ TEST_F(ScEventTest, parallel_create_edges)
           result = true;
 
         for (size_t i = 0; i < 10000; i++)
-          localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, event.GetOtherElement());
+          localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, event.GetArcTargetElement());
 
         EXPECT_TRUE(result);
 
@@ -336,7 +377,7 @@ TEST_F(ScEventTest, parallel_create_remove_edges2)
       [](ScEventAddOutputArc const & event) -> sc_result
       {
         ScMemoryContext localCtx;
-        localCtx.EraseElement(event.GetAddedConnector());
+        localCtx.EraseElement(event.GetAddedArc());
 
         return SC_RESULT_OK;
       });

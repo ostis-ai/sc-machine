@@ -427,7 +427,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestActionsSuccessfully(m_ctx, userContext);
         TestIteratorsSuccessfully(m_ctx, userContext);
@@ -463,7 +463,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestActionsSuccessfully(m_ctx, userContext);
         TestIteratorsSuccessfully(m_ctx, userContext);
@@ -490,7 +490,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeA
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestActionsSuccessfully(m_ctx, userContext);
         TestIteratorsSuccessfully(m_ctx, userContext);
@@ -520,7 +520,7 @@ TEST_F(
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestActionsUnsuccessfully(m_ctx, userContext);
         isAuthenticated = true;
@@ -562,7 +562,7 @@ TEST_F(
       usersSetAddr,
       [this, &userContext, &isChecked](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstNegTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstNegTemp);
 
         TestActionsUnsuccessfully(m_ctx, userContext);
         isChecked = true;
@@ -709,7 +709,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedAfter)
       conceptAuthenticatedUserAddr,
       [this, &isChecked](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestScMemoryContext userContext{event.GetUser()};
         TestActionsSuccessfully(m_ctx, userContext);
@@ -738,7 +738,7 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
       conceptAuthenticatedUserAddr,
       [this, &isChecked](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestScMemoryContext userContext{event.GetUser()};
         TestActionsSuccessfully(m_ctx, userContext);
@@ -784,7 +784,7 @@ TEST_F(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
         {
-          EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+          EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
           TestActionsSuccessfully(m_ctx, userContext);
           TestIteratorsSuccessfully(m_ctx, userContext);
@@ -807,7 +807,7 @@ TEST_F(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
         {
-          EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstNegTemp);
+          EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstNegTemp);
 
           TestActionsUnsuccessfully(m_ctx, userContext);
           TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(m_ctx, userContext);
@@ -833,7 +833,7 @@ TEST_F(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
         {
-          EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+          EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
           TestActionsSuccessfully(m_ctx, userContext);
           TestIteratorsSuccessfully(m_ctx, userContext);
@@ -866,7 +866,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutPermiss
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestActionsUnsuccessfully(m_ctx, userContext);
 
@@ -890,7 +890,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWriteAn
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsSuccessfully(m_ctx, userContext);
         TestWriteActionsUnsuccessfully(m_ctx, userContext);
@@ -919,7 +919,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutErasePe
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsSuccessfully(m_ctx, userContext);
         TestWriteActionsSuccessfully(m_ctx, userContext);
@@ -949,7 +949,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWritePe
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsSuccessfully(m_ctx, userContext);
         TestWriteActionsUnsuccessfully(m_ctx, userContext);
@@ -979,7 +979,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsUnsuccessfully(m_ctx, userContext);
         TestWriteActionsSuccessfully(m_ctx, userContext);
@@ -1008,7 +1008,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadPer
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsUnsuccessfully(m_ctx, userContext);
         TestWriteActionsSuccessfully(m_ctx, userContext);
@@ -1038,7 +1038,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsUnsuccessfully(m_ctx, userContext);
         TestWriteActionsUnsuccessfully(m_ctx, userContext);
@@ -1068,7 +1068,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc const & event) -> sc_result
         {
-          EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+          EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
           TestReadActionsSuccessfully(m_ctx, userContext);
           TestWriteActionsUnsuccessfully(m_ctx, userContext);
@@ -1094,7 +1094,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
       nrelUserActionClassAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstNegTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstNegTemp);
 
         TestReadActionsUnsuccessfully(m_ctx, userContext);
         TestWriteActionsUnsuccessfully(m_ctx, userContext);
@@ -1128,7 +1128,7 @@ TEST_F(
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc const & event) -> sc_result
         {
-          EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+          EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
           TestReadActionsSuccessfully(m_ctx, userContext);
           TestWriteActionsUnsuccessfully(m_ctx, userContext);
@@ -1154,7 +1154,7 @@ TEST_F(
       nrelUsersSetActionClassAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstNegTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstNegTemp);
 
         TestReadActionsUnsuccessfully(m_ctx, userContext);
         TestWriteActionsUnsuccessfully(m_ctx, userContext);
@@ -1297,7 +1297,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithou
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
         {
-          EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+          EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
           TestActionsSuccessfully(m_ctx, userContext);
 
@@ -1329,7 +1329,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithPe
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc const & event) -> sc_result
         {
-          EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+          EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
           TestActionsSuccessfully(m_ctx, userContext);
 
@@ -1732,7 +1732,7 @@ TEST_F(
       usersSetAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstNegTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstNegTemp);
 
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
@@ -1766,7 +1766,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
         TestWriteActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
@@ -1799,7 +1799,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalErase
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
         TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
@@ -1832,7 +1832,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
         TestWriteActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
@@ -2059,7 +2059,7 @@ TEST_F(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsWithinStructureWithConnectorAndSourceSuccessfully(userContext, nodeAddr1);
         TestReadActionsWithinStructureWithConnectorAndSourceUnsuccessfully(userContext, nodeAddr2);
@@ -2146,7 +2146,7 @@ TEST_F(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsWithinStructureWithConnectorAndTargetSuccessfully(userContext, linkAddr);
         TestReadActionsWithinStructureWithConnectorAndTargetUnsuccessfully(userContext, nodeAddr2);
@@ -2221,7 +2221,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsWithinStructureWithConnectorSuccessfully(userContext, edgeAddr);
         TestReadActionsWithinStructureWithConnectorUnsuccessfully(userContext, nodeAddr2);
@@ -2286,7 +2286,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc const & event) -> sc_result
       {
-        EXPECT_EQ(event.GetAddedConnectorType(), ScType::EdgeAccessConstPosTemp);
+        EXPECT_EQ(event.GetAddedArcType(), ScType::EdgeAccessConstPosTemp);
 
         TestReadActionsWithinStructureWithLinksSuccessfully(userContext, linkAddr1);
         TestReadActionsWithinStructureWithLinksUnsuccessfully(userContext);
