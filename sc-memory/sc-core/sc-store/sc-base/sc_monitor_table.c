@@ -86,7 +86,7 @@ void _sc_monitor_table_destroy(sc_monitor_table * table)
 
 sc_monitor * sc_monitor_table_get_monitor_for_addr(sc_monitor_table * table, sc_addr addr)
 {
-  sc_pointer key = (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(addr);
+  sc_pointer key = (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(addr);
   return key == null_ptr ? null_ptr : sc_monitor_table_get_monitor_from_table(table, key);
 }
 

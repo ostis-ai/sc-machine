@@ -76,7 +76,10 @@ typedef sc_uint8 sc_bool;
 typedef sc_uint16 sc_addr_seg;
 typedef sc_uint16 sc_addr_offset;
 
-typedef sc_uint64 sc_addr_hash;
+typedef sc_uint32 sc_addr_hash;
+
+#  define sc_addr_hash_to_sc_pointer sc_pointer)(sc_uint64
+#  define sc_pointer_to_sc_addr_hash sc_addr_hash)(sc_uint64
 
 //! Structure to store sc-element address
 struct _sc_addr

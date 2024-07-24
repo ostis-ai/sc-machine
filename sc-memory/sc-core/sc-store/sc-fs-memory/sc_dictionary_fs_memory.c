@@ -286,13 +286,13 @@ void _sc_dictionary_fs_memory_append_link_string_unique(
 
   {
     if (!is_content_new && content->link_hashes != link_hashes)
-      sc_list_remove_if(content->link_hashes, (void *)link_hash, _sc_addr_hash_compare);
+      sc_list_remove_if(content->link_hashes, (sc_addr_hash_to_sc_pointer)link_hash, _sc_addr_hash_compare);
 
     if (content->link_hashes != link_hashes)
     {
       content->string_offset = string_offset + 1;
       content->link_hashes = link_hashes;
-      sc_list_push_back(content->link_hashes, (void *)link_hash);
+      sc_list_push_back(content->link_hashes, (sc_addr_hash_to_sc_pointer)link_hash);
     }
   }
 }
@@ -541,7 +541,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_unlink_string(
     if (link_hash_content == null_ptr)
       goto result;
 
-    sc_list_remove_if(link_hash_content->link_hashes, (void *)link_hash, _sc_addr_hash_compare);
+    sc_list_remove_if(link_hash_content->link_hashes, (sc_addr_hash_to_sc_pointer)link_hash, _sc_addr_hash_compare);
     sc_mem_free(link_hash_content);
   }
 
@@ -743,7 +743,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
     sc_iterator * data_it = sc_list_iterator(_data);
     while (sc_iterator_next(data_it))
     {
-      sc_addr_hash link_hash = (sc_addr_hash)sc_iterator_get(data_it);
+      sc_addr_hash link_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(data_it);
       sc_addr link_addr;
       SC_ADDR_LOCAL_FROM_INT(link_hash, link_addr);
       callback(data, link_addr);
@@ -1097,7 +1097,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_terms
 
   void * arguments[3];
   arguments[0] = (void *)memory;
-  arguments[1] = intersect ? (void *)(sc_uint64)terms->size : 0;
+  arguments[1] = intersect ? (sc_addr_hash_to_sc_pointer)terms->size : 0;
   arguments[2] = *link_hashes;
   sc_dictionary_fs_memory_status const status = sc_dictionary_visit_down_nodes(
       string_offsets_terms_dictionary, _sc_dictionary_fs_memory_get_link_hashes_by_string_offsets, arguments);
@@ -1171,7 +1171,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_terms(
 
   void * arguments[3];
   arguments[0] = (void *)memory;
-  arguments[1] = intersect ? (void *)(sc_uint64)terms->size : 0;
+  arguments[1] = intersect ? (sc_addr_hash_to_sc_pointer)terms->size : 0;
   arguments[2] = *strings;
   sc_dictionary_visit_down_nodes(
       term_string_offsets_dictionary, _sc_dictionary_fs_memory_get_string_by_string_offsets, arguments);
@@ -1395,7 +1395,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_load(sc_dictionary_fs_mem
   if (_sc_dictionary_fs_memory_load_deprecated_dictionaries(memory) != SC_FS_MEMORY_OK)
     _sc_dictionary_fs_memory_load_terms_offsets(memory);
 
-  sc_message("\tLast string offset: %lld", memory->last_string_offset);
+  sc_message("\tLast string offset: %" PRIu64, memory->last_string_offset);
 
   _sc_dictionary_fs_memory_load_string_offsets_link_hashes(memory);
 
@@ -1590,7 +1590,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_save(sc_dictionary_fs_mem
   if (status != SC_FS_MEMORY_OK)
     return status;
 
-  sc_message("\tLast string offset: %lld", memory->last_string_offset);
+  sc_message("\tLast string offset: %" PRIu64, memory->last_string_offset);
 
   sc_fs_memory_info("All sc-fs-memory dictionaries saved");
   return status;

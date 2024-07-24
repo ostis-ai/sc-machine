@@ -54,9 +54,9 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key)
   sc_addr_hash hash1 = 1024;
   sc_char string1[] = "string1";
   sc_uint32 string1_size = sc_str_len(string1);
-  sc_dictionary_append(dictionary, string1, string1_size, (void *)hash1);
+  sc_dictionary_append(dictionary, string1, string1_size, (sc_addr_hash_to_sc_pointer)hash1);
 
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
 
   EXPECT_TRUE(_test_sc_uchar_dictionary_destroy(dictionary));
   EXPECT_FALSE(_test_sc_uchar_dictionary_destroy(nullptr));
@@ -70,13 +70,13 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_reset)
   sc_addr_hash hash1 = 1024;
   sc_char string1[] = "string1";
   sc_uint32 string1_size = sc_str_len(string1);
-  sc_dictionary_append(dictionary, string1, string1_size, (void *)hash1);
+  sc_dictionary_append(dictionary, string1, string1_size, (sc_addr_hash_to_sc_pointer)hash1);
 
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
 
   hash1 = 216;
-  sc_dictionary_append(dictionary, string1, string1_size, (void *)hash1);
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
+  sc_dictionary_append(dictionary, string1, string1_size, (sc_addr_hash_to_sc_pointer)hash1);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
 
   EXPECT_TRUE(_test_sc_uchar_dictionary_destroy(dictionary));
 }
@@ -111,36 +111,36 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_keys_smoke)
   sc_addr_hash hash1 = 1;
   sc_char string1[] = "string1";
   sc_uint32 string1_size = sc_str_len(string1);
-  sc_dictionary_append(dictionary, string1, string1_size, (void *)hash1);
+  sc_dictionary_append(dictionary, string1, string1_size, (sc_addr_hash_to_sc_pointer)hash1);
 
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
 
   sc_addr_hash hash2 = 2;
   sc_char string2[] = "string2";
   sc_uint32 string2_size = sc_str_len(string2);
-  sc_dictionary_append(dictionary, string2, string2_size, (void *)hash2);
+  sc_dictionary_append(dictionary, string2, string2_size, (sc_addr_hash_to_sc_pointer)hash2);
 
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string2, string2_size), hash2);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string2, string2_size), hash2);
 
   sc_addr_hash hash3 = 3;
   sc_char string3[] = "str_to_int";
   sc_uint32 string3_size = sc_str_len(string3);
-  sc_dictionary_append(dictionary, string3, string3_size, (void *)hash3);
+  sc_dictionary_append(dictionary, string3, string3_size, (sc_addr_hash_to_sc_pointer)hash3);
 
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string2, string2_size), hash2);
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string3, string3_size), hash3);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string2, string2_size), hash2);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string3, string3_size), hash3);
 
   sc_addr_hash hash4 = 4;
   sc_char string4[] = "";
   sc_uint32 string4_size = sc_str_len(string4);
-  sc_dictionary_append(dictionary, string4, string4_size, (void *)hash4);
+  sc_dictionary_append(dictionary, string4, string4_size, (sc_addr_hash_to_sc_pointer)hash4);
 
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string2, string2_size), hash2);
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string3, string3_size), hash3);
-  EXPECT_EQ((sc_addr_hash)sc_dictionary_get_by_key(dictionary, string4, string4_size), hash4);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string1, string1_size), hash1);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string2, string2_size), hash2);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string3, string3_size), hash3);
+  EXPECT_EQ((sc_pointer_to_sc_addr_hash)sc_dictionary_get_by_key(dictionary, string4, string4_size), hash4);
 
   EXPECT_TRUE(_test_sc_uchar_dictionary_destroy(dictionary));
 }
@@ -164,17 +164,17 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_prefix)
   sc_addr_hash hash1 = 1;
   sc_char string1[] = "string1";
   sc_uint32 string1_size = sc_str_len(string1);
-  sc_dictionary_append(dictionary, string1, string1_size, (void *)hash1);
+  sc_dictionary_append(dictionary, string1, string1_size, (sc_addr_hash_to_sc_pointer)hash1);
 
   sc_addr_hash hash2 = 2;
   sc_char string2[] = "string2";
   sc_uint32 string2_size = sc_str_len(string2);
-  sc_dictionary_append(dictionary, string2, string2_size, (void *)hash2);
+  sc_dictionary_append(dictionary, string2, string2_size, (sc_addr_hash_to_sc_pointer)hash2);
 
   sc_addr_hash hash3 = 3;
   sc_char string3[] = "str_to_int";
   sc_uint32 string3_size = sc_str_len(string3);
-  sc_dictionary_append(dictionary, string3, string3_size, (void *)hash3);
+  sc_dictionary_append(dictionary, string3, string3_size, (sc_addr_hash_to_sc_pointer)hash3);
 
   sc_char search_string1[] = "str";
   sc_uint32 search_string1_size = sc_str_len(search_string1);
@@ -185,9 +185,9 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_prefix)
       dictionary, search_string1, search_string1_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
   EXPECT_EQ(hashes->size, 3u);
 
-  EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash1, _test_sc_hashes_compare));
-  EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash2, _test_sc_hashes_compare));
-  EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash3, _test_sc_hashes_compare));
+  EXPECT_TRUE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash1, _test_sc_hashes_compare));
+  EXPECT_TRUE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash2, _test_sc_hashes_compare));
+  EXPECT_TRUE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash3, _test_sc_hashes_compare));
   EXPECT_EQ(hashes->size, 0u);
   sc_list_destroy(hashes);
 
@@ -199,9 +199,9 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_prefix)
       dictionary, search_string2, search_string2_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
   EXPECT_EQ(hashes->size, 2u);
 
-  EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash1, _test_sc_hashes_compare));
-  EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash2, _test_sc_hashes_compare));
-  EXPECT_FALSE(sc_list_remove_if(hashes, (void *)hash3, _test_sc_hashes_compare));
+  EXPECT_TRUE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash1, _test_sc_hashes_compare));
+  EXPECT_TRUE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash2, _test_sc_hashes_compare));
+  EXPECT_FALSE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash3, _test_sc_hashes_compare));
   EXPECT_EQ(hashes->size, 0u);
   sc_list_destroy(hashes);
 
@@ -213,9 +213,9 @@ TEST(ScDictionaryTest, sc_dictionary_append_get_by_key_prefix)
       dictionary, search_string3, search_string3_size, _test_visit_nodes_by_key_prefix, (void **)&hashes);
   EXPECT_EQ(hashes->size, 1u);
 
-  EXPECT_FALSE(sc_list_remove_if(hashes, (void *)hash1, _test_sc_hashes_compare));
-  EXPECT_FALSE(sc_list_remove_if(hashes, (void *)hash2, _test_sc_hashes_compare));
-  EXPECT_TRUE(sc_list_remove_if(hashes, (void *)hash3, _test_sc_hashes_compare));
+  EXPECT_FALSE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash1, _test_sc_hashes_compare));
+  EXPECT_FALSE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash2, _test_sc_hashes_compare));
+  EXPECT_TRUE(sc_list_remove_if(hashes, (sc_addr_hash_to_sc_pointer)hash3, _test_sc_hashes_compare));
   EXPECT_EQ(hashes->size, 0u);
   sc_list_destroy(hashes);
 

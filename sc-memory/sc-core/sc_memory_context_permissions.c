@@ -408,7 +408,7 @@ sc_result _sc_memory_context_manager_on_new_user_in_users_set(
   while (sc_hash_table_iterator_next(&local_permissions_iterator, &key, &value))
   {
     sc_addr structure_addr;
-    SC_ADDR_LOCAL_FROM_INT((sc_addr_hash)key, structure_addr);
+    SC_ADDR_LOCAL_FROM_INT((sc_pointer_to_sc_addr_hash)key, structure_addr);
     sc_permissions const permissions = (sc_uint64)value;
 
     _sc_context_add_local_permissions(user_addr, permissions, structure_addr);
@@ -457,7 +457,7 @@ sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
   while (sc_hash_table_iterator_next(&local_permissions_iterator, &key, &value))
   {
     sc_addr structure_addr;
-    SC_ADDR_LOCAL_FROM_INT((sc_addr_hash)key, structure_addr);
+    SC_ADDR_LOCAL_FROM_INT((sc_pointer_to_sc_addr_hash)key, structure_addr);
     sc_permissions const permissions = (sc_uint64)value;
 
     _sc_context_remove_local_permissions(user_addr, permissions, structure_addr);

@@ -21,13 +21,8 @@ class _SC_EXTERN ScAddr
 {
   friend class ScMemoryContext;
 
-  template <typename ParamType1, typename ParamType2, typename ParamType3>
-  friend class TIterator3;
-  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-  friend class TIterator5;
-
 public:
-  using HashType = uint64_t;
+  using HashType = sc_addr_hash;
 
   static ScAddr const Empty;
 
@@ -74,27 +69,10 @@ struct ScAddrLessFunc
   }
 };
 
-// hash functions
-template <typename HashType>
 struct ScAddrHashFunc
 {
-  HashType operator()(ScAddr const & addr);
-};
-
-template <>
-struct ScAddrHashFunc<uint32_t>
-{
-  uint32_t operator()(ScAddr const & addr) const
+  ScAddr::HashType operator()(ScAddr const & addr) const
   {
     return SC_ADDR_LOCAL_TO_INT(*addr);
-  }
-};
-
-template <>
-struct ScAddrHashFunc<uint64_t>
-{
-  uint64_t operator()(ScAddr const & addr) const
-  {
-    return addr.Hash();
   }
 };

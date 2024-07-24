@@ -603,7 +603,7 @@ private:
     return {};
   }
 
-  using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc<uint32_t>>;
+  using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc>;
 
   void DoIterationOnNextEqualTriples(
       ScTemplateTriples const & templateTriples,

@@ -479,7 +479,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   while (!sc_queue_empty(&iter_queue))
   {
     // get sc-addr for removing
-    sc_addr_hash addr_int = (sc_addr_hash)sc_queue_pop(&iter_queue);
+    sc_addr_hash addr_int = (sc_pointer_to_sc_addr_hash)sc_queue_pop(&iter_queue);
     sc_addr _addr;
     _addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     _addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
@@ -539,7 +539,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
   while (!sc_queue_empty(&remove_queue))
   {
-    sc_addr_hash addr_int = (sc_addr_hash)sc_queue_pop(&remove_queue);
+    sc_addr_hash addr_int = (sc_pointer_to_sc_addr_hash)sc_queue_pop(&remove_queue);
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
 

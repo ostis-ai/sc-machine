@@ -22,7 +22,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_with_content_string)
   sc_iterator * it = sc_list_iterator(link_hashes);
   while (sc_iterator_next(it))
   {
-    auto found_link_hash = (sc_addr_hash)sc_iterator_get(it);
+    auto found_link_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(it);
     sc_addr found_addr;
     SC_ADDR_LOCAL_FROM_INT(found_link_hash, found_addr);
     EXPECT_TRUE(SC_ADDR_IS_EQUAL(found_addr, link_addr));
@@ -47,7 +47,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_by_content_substring)
   sc_iterator * it = sc_list_iterator(link_hashes);
   while (sc_iterator_next(it))
   {
-    auto found_link_hash = (sc_addr_hash)sc_iterator_get(it);
+    auto found_link_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(it);
     sc_addr found_addr;
     SC_ADDR_LOCAL_FROM_INT(found_link_hash, found_addr);
     EXPECT_TRUE(SC_ADDR_IS_EQUAL(found_addr, link_addr));

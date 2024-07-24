@@ -513,7 +513,7 @@ sc_result sc_memory_get_link_content(sc_memory_context const * ctx, sc_addr addr
 
 void _push_link_hash(void * data, sc_addr const link_addr)
 {
-  sc_list_push_back((sc_list *)data, (sc_pointer)(sc_uint64)SC_ADDR_LOCAL_TO_INT(link_addr));
+  sc_list_push_back((sc_list *)data, (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(link_addr));
 }
 
 sc_result sc_memory_find_links_with_content_string(
