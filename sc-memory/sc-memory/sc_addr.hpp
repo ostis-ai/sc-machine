@@ -7,8 +7,12 @@
 #pragma once
 
 #include <cstdint>
-#include <list>
 #include <vector>
+#include <list>
+#include <stack>
+#include <queue>
+#include <set>
+#include <unordered_set>
 
 extern "C"
 {
@@ -44,9 +48,6 @@ protected:
   ScRealAddr m_realAddr;
 };
 
-using ScAddrVector = std::vector<ScAddr>;
-using ScAddrList = std::list<ScAddr>;
-
 struct RealAddrLessFunc
 {
   bool operator()(ScRealAddr const & a, ScRealAddr const & b) const
@@ -76,3 +77,10 @@ struct ScAddrHashFunc
     return SC_ADDR_LOCAL_TO_INT(*addr);
   }
 };
+
+using ScAddrVector = std::vector<ScAddr>;
+using ScAddrList = std::list<ScAddr>;
+using ScAddrStack = std::stack<ScAddr>;
+using ScAddrQueue = std::queue<ScAddr>;
+using ScAddrSet = std::set<ScAddr, ScAddrLessFunc>;
+using ScAddrUnorderedSet = std::unordered_set<ScAddr, ScAddrHashFunc, ScAddrLessFunc>;

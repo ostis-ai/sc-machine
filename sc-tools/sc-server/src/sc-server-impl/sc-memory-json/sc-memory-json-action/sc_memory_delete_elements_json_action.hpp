@@ -18,7 +18,7 @@ public:
   {
     for (auto & hash : requestPayload)
     {
-      ScAddr const addr{hash.get<size_t>()};
+      ScAddr const addr{hash.get<ScAddr::HashType>()};
       context->EraseElement(addr);
     }
 
