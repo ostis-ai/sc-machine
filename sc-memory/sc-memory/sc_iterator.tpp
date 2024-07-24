@@ -26,25 +26,25 @@ sc_iterator5 * CreateIterator5(
 // ---------------------------
 
 template <typename IterType, sc_uint8 tripleSize>
-sc_type TIteratorBase<IterType, tripleSize>::Convert(sc_type const & type)
+sc_type ScIterator<IterType, tripleSize>::Convert(sc_type const & type)
 {
   return type;
 }
 
 template <typename IterType, sc_uint8 tripleSize>
-sc_addr TIteratorBase<IterType, tripleSize>::Convert(sc_addr const & addr)
+sc_addr ScIterator<IterType, tripleSize>::Convert(sc_addr const & addr)
 {
   return addr;
 }
 
 template <typename IterType, sc_uint8 tripleSize>
-sc_addr TIteratorBase<IterType, tripleSize>::Convert(ScAddr const & addr)
+sc_addr ScIterator<IterType, tripleSize>::Convert(ScAddr const & addr)
 {
   return *addr;
 }
 
 template <typename IterType, sc_uint8 tripleSize>
-sc_type TIteratorBase<IterType, tripleSize>::Convert(ScType const & type)
+sc_type ScIterator<IterType, tripleSize>::Convert(ScType const & type)
 {
   return *type;
 }
@@ -52,7 +52,7 @@ sc_type TIteratorBase<IterType, tripleSize>::Convert(ScType const & type)
 // ---------------------------
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-TIterator3<ParamType1, ParamType2, ParamType3>::TIterator3(
+ScIterator3<ParamType1, ParamType2, ParamType3>::ScIterator3(
     ScMemoryContext const & context,
     ParamType1 const & p1,
     ParamType2 const & p2,
@@ -62,26 +62,26 @@ TIterator3<ParamType1, ParamType2, ParamType3>::TIterator3(
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-TIterator3<ParamType1, ParamType2, ParamType3>::~TIterator3()
+ScIterator3<ParamType1, ParamType2, ParamType3>::~ScIterator3()
 {
   Destroy();
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-TIterator3<ParamType1, ParamType2, ParamType3>::TIterator3(TIterator3 const & other)
+ScIterator3<ParamType1, ParamType2, ParamType3>::ScIterator3(ScIterator3 const & other)
 {
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-TIterator3<ParamType1, ParamType2, ParamType3> & TIterator3<ParamType1, ParamType2, ParamType3>::operator=(
-    TIterator3 const & other)
+ScIterator3<ParamType1, ParamType2, ParamType3> & ScIterator3<ParamType1, ParamType2, ParamType3>::operator=(
+    ScIterator3 const & other)
 {
   TakeOwnership(other);
   return *this;
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-void TIterator3<ParamType1, ParamType2, ParamType3>::Destroy()
+void ScIterator3<ParamType1, ParamType2, ParamType3>::Destroy()
 {
   if (m_iterator)
   {
@@ -91,7 +91,7 @@ void TIterator3<ParamType1, ParamType2, ParamType3>::Destroy()
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-bool TIterator3<ParamType1, ParamType2, ParamType3>::Next() const
+bool ScIterator3<ParamType1, ParamType2, ParamType3>::Next() const
 {
   sc_result result;
   sc_bool status = sc_iterator3_next_ext(m_iterator, &result);
@@ -111,7 +111,7 @@ bool TIterator3<ParamType1, ParamType2, ParamType3>::Next() const
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-ScAddr TIterator3<ParamType1, ParamType2, ParamType3>::Get(size_t index) const
+ScAddr ScIterator3<ParamType1, ParamType2, ParamType3>::Get(size_t index) const
 {
   sc_result result;
   sc_addr const addr = sc_iterator3_value_ext(m_iterator, index, &result);
@@ -139,7 +139,7 @@ ScAddr TIterator3<ParamType1, ParamType2, ParamType3>::Get(size_t index) const
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-ScAddrTriple TIterator3<ParamType1, ParamType2, ParamType3>::Get() const
+ScAddrTriple ScIterator3<ParamType1, ParamType2, ParamType3>::Get() const
 {
   return {Get(0), Get(1), Get(2)};
 }
@@ -147,7 +147,7 @@ ScAddrTriple TIterator3<ParamType1, ParamType2, ParamType3>::Get() const
 // ---------------------------
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::TIterator5(
+ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::ScIterator5(
     ScMemoryContext const & context,
     ParamType1 const & p1,
     ParamType2 const & p2,
@@ -159,13 +159,13 @@ TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::TIterato
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::~TIterator5()
+ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::~ScIterator5()
 {
   Destroy();
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-void TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Destroy()
+void ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Destroy()
 {
   if (m_iterator)
   {
@@ -175,7 +175,7 @@ void TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Des
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-bool TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Next() const
+bool ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Next() const
 {
   sc_result result;
   sc_bool status = sc_iterator5_next_ext(m_iterator, &result);
@@ -195,7 +195,7 @@ bool TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Nex
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-ScAddr TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Get(size_t index) const
+ScAddr ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Get(size_t index) const
 {
   sc_result result;
   sc_addr const addr = sc_iterator5_value_ext(m_iterator, index, &result);
@@ -223,7 +223,7 @@ ScAddr TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::G
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-ScAddrQuintuple TIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Get() const
+ScAddrQuintuple ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Get() const
 {
   return {Get(0), Get(1), Get(2), Get(3), Get(4)};
 }
