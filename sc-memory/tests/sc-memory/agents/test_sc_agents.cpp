@@ -41,7 +41,7 @@ TEST_F(ScAgentTest, ATestRemoveInputArc)
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, node, subscriptionAddr);
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, subscriptionAddr);
   EXPECT_TRUE(e.IsValid());
 
   SubscribeAgent<ATestRemoveInputArc>(&*m_ctx, subscriptionAddr);
@@ -58,7 +58,7 @@ TEST_F(ScAgentTest, ATestRemoveOutputArc)
 
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccess, subscriptionAddr, node);
+  ScAddr const e = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, subscriptionAddr, node);
   EXPECT_TRUE(e.IsValid());
 
   SubscribeAgent<ATestRemoveOutputArc>(&*m_ctx, subscriptionAddr);

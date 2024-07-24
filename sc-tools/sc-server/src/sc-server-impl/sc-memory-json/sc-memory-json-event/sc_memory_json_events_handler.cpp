@@ -46,13 +46,14 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScMemoryJsonPayload const & message,
     ScMemoryJsonPayload &)
 {
-  auto const & onEmitEvent =
-      [](ScServer * server, size_t id, ScServerSessionId const & handle, ScElementaryEvent const & event)
+  auto const & onEmitEvent = [](ScServer * server,
+                                size_t id,
+                                ScServerSessionId const & handle,
+                                ScElementaryEvent<ScType::Unknown> const & event)
   {
-    std::array<ScAddr, 3> const & eventTriple = event.GetTriple();
+    auto const & [sourceAddr, connectorAddr, targetAddr] = event.GetTriple();
 
-    ScMemoryJsonPayload const & responsePayload{
-        eventTriple.at(0).Hash(), eventTriple.at(1).Hash(), eventTriple.at(2).Hash()};
+    ScMemoryJsonPayload const & responsePayload{sourceAddr.Hash(), connectorAddr.Hash(), targetAddr.Hash()};
     ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
     sc_bool const isEvent = SC_TRUE;
     sc_bool const status = SC_TRUE;

@@ -82,6 +82,7 @@ _SC_EXTERN sc_event * sc_event_with_user_new(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
     sc_event_type type,
+    sc_type event_element_type,
     sc_pointer data,
     sc_event_callback_with_user callback,
     sc_event_delete_function delete_callback);

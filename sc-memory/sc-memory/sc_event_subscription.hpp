@@ -78,58 +78,71 @@ private:
   utils::ScLock m_lock;
 };
 
-class _SC_EXTERN ScEventSubscriptionAddOutputArc final : public ScElementaryEventSubscription<ScEventAddOutputArc>
+// Specific event subscription classes follow the same pattern as ScElementaryEventSubscription.
+// They are specialized for different types of sc-events.
+
+template <ScType const & arcType>
+class _SC_EXTERN ScEventSubscriptionAddOutputArc final
+  : public ScElementaryEventSubscription<ScEventAddOutputArc<arcType>>
 {
 public:
   _SC_EXTERN ScEventSubscriptionAddOutputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventAddOutputArc const &)> const & func);
+      std::function<void(ScEventAddOutputArc<arcType> const &)> const & func);
 };
 
-class _SC_EXTERN ScEventSubscriptionAddInputArc final : public ScElementaryEventSubscription<ScEventAddInputArc>
+template <ScType const & arcType>
+class _SC_EXTERN ScEventSubscriptionAddInputArc final
+  : public ScElementaryEventSubscription<ScEventAddInputArc<arcType>>
 {
 public:
   _SC_EXTERN ScEventSubscriptionAddInputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventAddInputArc const &)> const & func);
+      std::function<void(ScEventAddInputArc<arcType> const &)> const & func);
 };
 
-class _SC_EXTERN ScEventSubscriptionAddEdge final : public ScElementaryEventSubscription<ScEventAddEdge>
+template <ScType const & edgeType>
+class _SC_EXTERN ScEventSubscriptionAddEdge final : public ScElementaryEventSubscription<ScEventAddEdge<edgeType>>
 {
 public:
   _SC_EXTERN ScEventSubscriptionAddEdge(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventAddEdge const &)> const & func);
+      std::function<void(ScEventAddEdge<edgeType> const &)> const & func);
 };
 
-class _SC_EXTERN ScEventSubscriptionRemoveOutputArc final : public ScElementaryEventSubscription<ScEventRemoveOutputArc>
+template <ScType const & arcType>
+class _SC_EXTERN ScEventSubscriptionRemoveOutputArc final
+  : public ScElementaryEventSubscription<ScEventRemoveOutputArc<arcType>>
 {
 public:
   _SC_EXTERN ScEventSubscriptionRemoveOutputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventRemoveOutputArc const &)> const & func);
+      std::function<void(ScEventRemoveOutputArc<arcType> const &)> const & func);
 };
 
-class _SC_EXTERN ScEventSubscriptionRemoveInputArc final : public ScElementaryEventSubscription<ScEventRemoveInputArc>
+template <ScType const & arcType>
+class _SC_EXTERN ScEventSubscriptionRemoveInputArc final
+  : public ScElementaryEventSubscription<ScEventRemoveInputArc<arcType>>
 {
 public:
   _SC_EXTERN ScEventSubscriptionRemoveInputArc(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventRemoveInputArc const &)> const & func);
+      std::function<void(ScEventRemoveInputArc<arcType> const &)> const & func);
 };
 
-class _SC_EXTERN ScEventSubscriptionRemoveEdge final : public ScElementaryEventSubscription<ScEventRemoveEdge>
+template <ScType const & edgeType>
+class _SC_EXTERN ScEventSubscriptionRemoveEdge final : public ScElementaryEventSubscription<ScEventRemoveEdge<edgeType>>
 {
 public:
   _SC_EXTERN ScEventSubscriptionRemoveEdge(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventRemoveEdge const &)> const & func);
+      std::function<void(ScEventRemoveEdge<edgeType> const &)> const & func);
 };
 
 class _SC_EXTERN ScEventSubscriptionEraseElement final : public ScElementaryEventSubscription<ScEventEraseElement>
@@ -158,7 +171,7 @@ public:
 class _SC_EXTERN ScEventSubscriptionFactory
 {
 public:
-  using ScEventCallback = std::function<void(ScElementaryEvent const &)>;
+  using ScEventCallback = std::function<void(ScElementaryEvent<ScType::Unknown> const &)>;
 
   /*!
    * @brief Creates an event subscription using the event type address.

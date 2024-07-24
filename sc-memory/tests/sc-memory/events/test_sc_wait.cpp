@@ -59,15 +59,15 @@ protected:
   ScAddr m_addr;
 };
 
-TEST_F(ScWaitTest, smoke)
+TEST_F(ScWaitTest, Smoke)
 {
   EXPECT_TRUE(m_addr.IsValid());
 }
 
-TEST_F(ScWaitTest, valid)
+TEST_F(ScWaitTest, Valid)
 {
   WaitTestData data(m_addr);
-  ScWaitEvent<ScEventAddInputArc> waiter(*m_ctx, m_addr);
+  ScWaitEvent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>> waiter(*m_ctx, m_addr);
   waiter.SetOnWaitStartDelegate(
       [&data]()
       {
@@ -84,16 +84,16 @@ TEST_F(ScWaitTest, valid)
 
 TEST_F(ScWaitTest, TimeOut)
 {
-  EXPECT_FALSE(ScWaitEvent<ScEventAddOutputArc>(*m_ctx, m_addr).Wait(1000));
+  EXPECT_FALSE(ScWaitEvent<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(*m_ctx, m_addr).Wait(1000));
 }
 
 TEST_F(ScWaitTest, CondValid)
 {
   WaitTestData data(m_addr);
-  ScWaitCondition<ScEventAddInputArc> waiter(
+  ScWaitCondition<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>> waiter(
       *m_ctx,
       m_addr,
-      [](ScEventAddInputArc const &) -> sc_bool
+      [](ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
       {
         return SC_TRUE;
       });
@@ -112,10 +112,10 @@ TEST_F(ScWaitTest, CondValidFalse)
 {
   WaitTestData data(m_addr);
 
-  ScWaitCondition<ScEventAddInputArc> waiter(
+  ScWaitCondition<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>> waiter(
       *m_ctx,
       m_addr,
-      [](ScEventAddInputArc const &) -> sc_bool
+      [](ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
       {
         return SC_FALSE;
       });

@@ -155,7 +155,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
 
     ScTemplate && initiationConditionTemplate = agent.GetInitiationCondition(event);
     ScTemplateSearchResult searchResult;
-    if (initiationConditionTemplate.Size() > 0
+    if (!initiationConditionTemplate.IsEmpty()
         && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
       return;
 
@@ -170,7 +170,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
       SC_LOG_INFO(agent.GetName() << " finished with error");
 
     ScTemplate && resultConditionTemplate = agent.GetResultCondition(event, action);
-    if (resultConditionTemplate.Size() > 0
+    if (!resultConditionTemplate.IsEmpty()
         && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
       return;
 

@@ -20,54 +20,6 @@ sc_result ScEventSubscription::HandlerDelete(sc_event const *)
   return SC_RESULT_OK;
 }
 
-ScEventSubscriptionAddOutputArc::ScEventSubscriptionAddOutputArc(
-    ScMemoryContext const & ctx,
-    ScAddr const & addr,
-    std::function<void(ScEventAddOutputArc const &)> const & func)
-  : ScElementaryEventSubscription(ctx, addr, func)
-{
-}
-
-ScEventSubscriptionAddInputArc::ScEventSubscriptionAddInputArc(
-    ScMemoryContext const & ctx,
-    ScAddr const & addr,
-    std::function<void(ScEventAddInputArc const &)> const & func)
-  : ScElementaryEventSubscription(ctx, addr, func)
-{
-}
-
-ScEventSubscriptionAddEdge::ScEventSubscriptionAddEdge(
-    ScMemoryContext const & ctx,
-    ScAddr const & addr,
-    std::function<void(ScEventAddEdge const &)> const & func)
-  : ScElementaryEventSubscription(ctx, addr, func)
-{
-}
-
-ScEventSubscriptionRemoveOutputArc::ScEventSubscriptionRemoveOutputArc(
-    ScMemoryContext const & ctx,
-    ScAddr const & addr,
-    std::function<void(ScEventRemoveOutputArc const &)> const & func)
-  : ScElementaryEventSubscription(ctx, addr, func)
-{
-}
-
-ScEventSubscriptionRemoveInputArc::ScEventSubscriptionRemoveInputArc(
-    ScMemoryContext const & ctx,
-    ScAddr const & addr,
-    std::function<void(ScEventRemoveInputArc const &)> const & func)
-  : ScElementaryEventSubscription(ctx, addr, func)
-{
-}
-
-ScEventSubscriptionRemoveEdge::ScEventSubscriptionRemoveEdge(
-    ScMemoryContext const & ctx,
-    ScAddr const & addr,
-    std::function<void(ScEventRemoveEdge const &)> const & func)
-  : ScElementaryEventSubscription(ctx, addr, func)
-{
-}
-
 ScEventSubscriptionEraseElement::ScEventSubscriptionEraseElement(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
