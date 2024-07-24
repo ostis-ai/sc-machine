@@ -1,4 +1,4 @@
-answer_addr <- question_addr;;
+answer_addr <- action_addr;;
 answer_addr = [*
 section_subjdomain_knowledges
 => nrel_main_idtf:

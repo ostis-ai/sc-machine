@@ -14,23 +14,23 @@
 
 sc_result agent_search_all_identifiers(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer;
+  sc_addr action, answer;
   sc_iterator3 *it1, *it2;
   sc_iterator5 * it5;
   sc_bool found = SC_FALSE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
-  if (sc_helper_check_arc(s_default_ctx, keynode_question_all_identifiers, question, sc_type_arc_pos_const_perm)
+  // check action type
+  if (sc_helper_check_arc(s_default_ctx, keynode_action_all_identifiers, action, sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
 
   // get operation argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     found = SC_TRUE;
@@ -79,23 +79,23 @@ sc_result agent_search_all_identifiers(sc_event const * event, sc_addr arg)
   if (found == SC_TRUE)
     appendIntoAnswer(answer, keynode_nrel_identification);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }
 
 sc_result agent_search_all_identified_elements(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer, begin, end;
+  sc_addr action, answer, begin, end;
   sc_iterator3 * it1;
   sc_bool found = SC_FALSE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
-  if (sc_helper_check_arc(s_default_ctx, keynode_question_all_identified_elements, question, sc_type_arc_pos_const_perm)
+  // check action type
+  if (sc_helper_check_arc(s_default_ctx, keynode_action_all_identified_elements, action, sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
@@ -119,8 +119,8 @@ sc_result agent_search_all_identified_elements(sc_event const * event, sc_addr a
   if (found == SC_TRUE)
     appendIntoAnswer(answer, keynode_nrel_main_idtf);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }

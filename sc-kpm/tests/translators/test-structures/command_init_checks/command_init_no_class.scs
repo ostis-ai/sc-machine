@@ -1,5 +1,5 @@
 system_element -> trans_cmd_addr;
-question_addr;
+action_addr;
 answer_addr;
 lang_ru;
 format_scn_json;
@@ -15,4 +15,4 @@ system_element -> (ui_rrel_user_lang-> @edge2);;
 @edge3 = (trans_cmd_addr -> format_scn_json);;
 system_element -> @edge3;;
 system_element -> (ui_rrel_output_format-> @edge3);;
-question_addr => nrel_answer: answer_addr;;
+action_addr => nrel_answer: answer_addr;;

@@ -18,9 +18,9 @@ sc_addr create_answer_node()
   return res;
 }
 
-void connect_answer_to_question(sc_addr question, sc_addr answer)
+void connect_answer_to_action(sc_addr action, sc_addr answer)
 {
-  sc_addr arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_common | sc_type_const, question, answer);
+  sc_addr arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_common | sc_type_const, action, answer);
   SYSTEM_ELEMENT(arc);
   arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_nrel_answer, arc);
   SYSTEM_ELEMENT(arc);
@@ -36,20 +36,20 @@ void appendIntoAnswer(sc_addr answer, sc_addr el)
   SYSTEM_ELEMENT(arc);
 }
 
-void finish_question(sc_addr question)
+void finish_action(sc_addr action)
 {
   sc_addr arc;
 
-  arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_question_finished, question);
+  arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_action_finished, action);
   SYSTEM_ELEMENT(arc);
 }
 
-void finish_question_successfully(sc_memory_context * ctx, sc_addr question)
+void finish_action_successfully(sc_memory_context * ctx, sc_addr action)
 {
-  sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, keynode_question_finished_successfully, question);
+  sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, keynode_action_finished_successfully, action);
 }
 
-void finish_question_unsuccessfully(sc_memory_context * ctx, sc_addr question)
+void finish_action_unsuccessfully(sc_memory_context * ctx, sc_addr action)
 {
-  sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, keynode_question_finished_unsuccessfully, question);
+  sc_memory_arc_new(ctx, sc_type_arc_pos_const_perm, keynode_action_finished_unsuccessfully, action);
 }

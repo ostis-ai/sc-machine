@@ -14,11 +14,11 @@
  */
 sc_addr create_answer_node();
 
-/*! Connect answer with question by specified releation
- * @param question sc-addr of question node
+/*! Connect answer with action by specified releation
+ * @param action sc-addr of action node
  * @param answer sc-addr of answer node
  */
-void connect_answer_to_question(sc_addr question, sc_addr answer);
+void connect_answer_to_action(sc_addr action, sc_addr answer);
 
 /*! Append element into answer. It mark accessory arc from answer node to
  * appended element as system. Also it provides uniques inclusion of element into answer set
@@ -28,22 +28,22 @@ void connect_answer_to_question(sc_addr question, sc_addr answer);
 void appendIntoAnswer(sc_addr answer, sc_addr el);
 
 /*!
- * Remove question from question_initiated set and append it into
- * question_finished set.
- * @param question sc-add of question node
+ * Remove action from action_initiated set and append it into
+ * action_finished set.
+ * @param action sc-add of action node
  */
-void finish_question(sc_addr question);
+void finish_action(sc_addr action);
 
 /*!
- * Append question into question_finished_successfully set.
- * @param question sc-add of question node
+ * Append action into action_finished_successfully set.
+ * @param action sc-add of action node
  */
-void finish_question_successfully(sc_memory_context * ctx, sc_addr question);
+void finish_action_successfully(sc_memory_context * ctx, sc_addr action);
 
 /*!
- * Append question into question_finished_unsuccessfully set.
- * @param question sc-add of question node
+ * Append action into action_finished_unsuccessfully set.
+ * @param action sc-add of action node
  */
-void finish_question_unsuccessfully(sc_memory_context * ctx, sc_addr question);
+void finish_action_unsuccessfully(sc_memory_context * ctx, sc_addr action);
 
 #endif

@@ -272,7 +272,7 @@ sc_result ui_command_generate_instance(sc_event const * event, sc_addr arg)
 
 sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
 {
-  sc_addr question_addr;
+  sc_addr action_addr;
   sc_addr answer_addr;
   sc_addr author_addr;
   sc_addr output_formats_addr;
@@ -282,16 +282,16 @@ sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
   sc_iterator5 * it5 = (sc_iterator5 *)null_ptr;
   sc_iterator3 * it3 = (sc_iterator3 *)null_ptr;
 
-  if (sc_memory_get_arc_end(s_default_ctx, arg, &question_addr) != SC_RESULT_OK)
+  if (sc_memory_get_arc_end(s_default_ctx, arg, &action_addr) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   it5 = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
-      question_addr,
+      action_addr,
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_question_nrel_answer);
+      keynode_action_nrel_answer);
   if (sc_iterator5_next(it5) == SC_FALSE)
   {
     sc_iterator5_free(it5);
@@ -300,10 +300,10 @@ sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
 
   answer_addr = sc_iterator5_value(it5, 2);
 
-  // find author of this question
+  // find author of this action
   it5 = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
-      question_addr,
+      action_addr,
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
@@ -322,7 +322,7 @@ sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
       // get answer output formats
       it5 = sc_iterator5_f_a_a_a_f_new(
           s_default_ctx,
-          question_addr,
+          action_addr,
           sc_type_arc_common | sc_type_const,
           sc_type_node | sc_type_const,
           sc_type_arc_pos_const_perm,
@@ -413,14 +413,14 @@ sc_result ui_remove_displayed_answer(sc_event * event, sc_addr arg)
     sc_memory_element_free(s_default_ctx, sc_iterator5_value(it5, 2));
   sc_iterator5_free(it5);
 
-  // find question, and remove all connected information
+  // find action, and remove all connected information
   it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
       sc_type_arc_common | sc_type_const,
       answer_addr,
       sc_type_arc_pos_const_perm,
-      keynode_question_nrel_answer);
+      keynode_action_nrel_answer);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
     it5Res =
@@ -456,7 +456,7 @@ sc_result ui_remove_displayed_answer(sc_event * event, sc_addr arg)
 // -------------------- Module ----------------------
 sc_result ui_initialize_commands()
 {
-  /*event_ui_start_answer_translation = sc_event_new(keynode_question_finished, SC_EVENT_ADD_OUTPUT_ARC, 0,
+  /*event_ui_start_answer_translation = sc_event_new(keynode_action_finished, SC_EVENT_ADD_OUTPUT_ARC, 0,
     ui_start_answer_translation, 0); if (event_ui_start_answer_translation == null) return SC_RESULT_ERROR;*/
 
   event_ui_command_generate_instance = sc_event_new(

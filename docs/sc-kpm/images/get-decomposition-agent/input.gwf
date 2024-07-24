@@ -19,10 +19,10 @@
         <node type="node/const/perm/general" idtf="" shapeColor="0" id="40648000" parent="0" x="270" y="390" haveBus="false" idtf_pos="0">
             <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[2]]></content>
         </node>
-        <node type="node/const/perm/group" idtf="question" shapeColor="0" id="32153360" parent="0" left="0" top="0" right="53.4688" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="165" y="105" haveBus="false" idtf_pos="3">
+        <node type="node/const/perm/group" idtf="action" shapeColor="0" id="32153360" parent="0" left="0" top="0" right="53.4688" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="165" y="105" haveBus="false" idtf_pos="3">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
-        <node type="node/const/perm/group" idtf="question_initiated" shapeColor="0" id="40617600" parent="0" left="0" top="0" right="104" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="270" y="30" haveBus="false" idtf_pos="3">
+        <node type="node/const/perm/group" idtf="action_initiated" shapeColor="0" id="40617600" parent="0" left="0" top="0" right="104" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="270" y="30" haveBus="false" idtf_pos="3">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/group" idtf="action_get_decomposition" shapeColor="0" id="33173440" parent="0" left="0" top="0" right="147.313" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="345" y="90" haveBus="false" idtf_pos="3">

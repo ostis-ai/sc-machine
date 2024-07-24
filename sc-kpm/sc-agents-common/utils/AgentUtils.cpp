@@ -19,14 +19,14 @@ sc_uint32 const AgentUtils::DEFAULT_WAIT_TIME = 30000;
 
 void AgentUtils::assignParamsToQuestionNode(
     ScMemoryContext * ms_context,
-    ScAddr const & questionNode,
+    ScAddr const & actionNode,
     ScAddrVector const & params)
 {
-  SC_CHECK_PARAM(questionNode, "Invalid question node address passed to `assignParamsToQuestionNode`");
+  SC_CHECK_PARAM(actionNode, "Invalid action node address passed to `assignParamsToQuestionNode`");
 
   for (size_t i = 0; i < params.size(); i++)
   {
-    ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, questionNode, params.at(i));
+    ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, actionNode, params.at(i));
     ScAddr relation = IteratorUtils::getRoleRelation(ms_context, i + 1);
     ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, relation, edge);
   }
@@ -34,9 +34,9 @@ void AgentUtils::assignParamsToQuestionNode(
 
 ScAddr AgentUtils::createQuestionNode(ScMemoryContext * ms_context)
 {
-  ScAddr questionNode = ms_context->CreateNode(ScType::NodeConst);
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question, questionNode);
-  return questionNode;
+  ScAddr actionNode = ms_context->CreateNode(ScType::NodeConst);
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::action, actionNode);
+  return actionNode;
 }
 
 ScAddr AgentUtils::formActionNode(ScMemoryContext * ms_context, ScAddr const & actionClass, ScAddrVector const & params)
@@ -51,15 +51,15 @@ ScAddr AgentUtils::formActionNode(ScMemoryContext * ms_context, ScAddr const & a
   return actionNode;
 }
 
-ScAddr AgentUtils::initAction(ScMemoryContext * ms_context, ScAddr const & questionClass, ScAddrVector const & params)
+ScAddr AgentUtils::initAction(ScMemoryContext * ms_context, ScAddr const & actionClass, ScAddrVector const & params)
 {
-  SC_CHECK_PARAM(questionClass, "Invalid question class address passed to `initAction`");
+  SC_CHECK_PARAM(actionClass, "Invalid action class address passed to `initAction`");
 
-  ScAddr questionNode = formActionNode(ms_context, questionClass, params);
+  ScAddr actionNode = formActionNode(ms_context, actionClass, params);
 
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_initiated, questionNode);
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::action_initiated, actionNode);
 
-  return questionNode;
+  return actionNode;
 }
 
 bool AgentUtils::applyAction(
@@ -80,11 +80,11 @@ bool AgentUtils::applyAction(
     ScAddr onEventClassAddr)
 {
   if (!onEventClassAddr.IsValid())
-    onEventClassAddr = scAgentsCommon::CoreKeynodes::question_initiated;
+    onEventClassAddr = scAgentsCommon::CoreKeynodes::action_initiated;
 
   auto check = [](ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
   {
-    return otherAddr == scAgentsCommon::CoreKeynodes::question_finished;
+    return otherAddr == scAgentsCommon::CoreKeynodes::action_finished;
   };
 
   auto initialize = [ms_context, onEventClassAddr, actionNode]()
@@ -146,27 +146,27 @@ ScAddr AgentUtils::applyActionAndGetResultIfExists(
 
 void AgentUtils::finishAgentWork(
     ScMemoryContext * ms_context,
-    ScAddr const & questionNode,
+    ScAddr const & actionNode,
     ScAddrVector const & answerElements,
     bool isSuccess)
 {
-  SC_CHECK_PARAM(questionNode, "Invalid question node address passed to `finishAgentWork`");
+  SC_CHECK_PARAM(actionNode, "Invalid action node address passed to `finishAgentWork`");
 
   ScAddr answerNode = GenerationUtils::wrapInSet(ms_context, answerElements, ScType::NodeConstStruct);
-  ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, questionNode, answerNode);
+  ScAddr edgeToAnswer = ms_context->CreateEdge(ScType::EdgeDCommonConst, actionNode, answerNode);
   ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_answer, edgeToAnswer);
 
-  finishAgentWork(ms_context, questionNode, isSuccess);
+  finishAgentWork(ms_context, actionNode, isSuccess);
 }
 
-void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr const & questionNode, bool isSuccess)
+void AgentUtils::finishAgentWork(ScMemoryContext * ms_context, ScAddr const & actionNode, bool isSuccess)
 {
-  SC_CHECK_PARAM(questionNode, "Invalid question node address passed to `finishAgentWork`");
+  SC_CHECK_PARAM(actionNode, "Invalid action node address passed to `finishAgentWork`");
 
   ScAddr statusNode =
-      isSuccess ? CoreKeynodes::question_finished_successfully : CoreKeynodes::question_finished_unsuccessfully;
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, statusNode, questionNode);
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::question_finished, questionNode);
+      isSuccess ? CoreKeynodes::action_finished_successfully : CoreKeynodes::action_finished_unsuccessfully;
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, statusNode, actionNode);
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::action_finished, actionNode);
 }
 
 }  // namespace utils

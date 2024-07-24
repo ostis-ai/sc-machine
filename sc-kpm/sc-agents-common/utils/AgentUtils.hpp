@@ -60,22 +60,22 @@ public:
 
   static ScAddr formActionNode(ScMemoryContext * ms_context, ScAddr const & actionClass, ScAddrVector const & params);
 
-  static ScAddr initAction(ScMemoryContext * ms_context, ScAddr const & questionClass, ScAddrVector const & params);
+  static ScAddr initAction(ScMemoryContext * ms_context, ScAddr const & actionClass, ScAddrVector const & params);
 
   static ScAddr createQuestionNode(ScMemoryContext * ms_context);
 
   static void assignParamsToQuestionNode(
       ScMemoryContext * ms_context,
-      ScAddr const & questionNode,
+      ScAddr const & actionNode,
       ScAddrVector const & params);
 
   static void finishAgentWork(
       ScMemoryContext * ms_context,
-      ScAddr const & questionNode,
+      ScAddr const & actionNode,
       ScAddrVector const & answerElements,
       bool isSuccess = true);
 
-  static void finishAgentWork(ScMemoryContext * ms_context, ScAddr const & questionNode, bool isSuccess = true);
+  static void finishAgentWork(ScMemoryContext * ms_context, ScAddr const & actionNode, bool isSuccess = true);
 
 private:
   static sc_uint32 const DEFAULT_WAIT_TIME;

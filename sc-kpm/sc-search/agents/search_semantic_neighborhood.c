@@ -278,26 +278,25 @@ void search_element_identifiers(sc_addr el, sc_addr answer)
 
 sc_result agent_search_full_semantic_neighborhood(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer;
+  sc_addr action, answer;
   sc_iterator3 *it1, *it2, *it3, *it4, *it6;
   sc_iterator5 *it5, *it_order, *it_order2;
   sc_type el_type;
   sc_bool sys_off = SC_TRUE;
   sc_bool key_order_found = SC_FALSE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
-  if (sc_helper_check_arc(
-          s_default_ctx, keynode_question_full_semantic_neighborhood, question, sc_type_arc_pos_const_perm)
+  // check action type
+  if (sc_helper_check_arc(s_default_ctx, keynode_action_full_semantic_neighborhood, action, sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
 
-  // get question argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
+  // get action argument
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     sc_addr const element = sc_iterator3_value(it1, 2);
@@ -316,8 +315,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event const * event, sc_add
 
       search_element_identifiers(element, answer);
 
-      connect_answer_to_question(question, answer);
-      finish_question(question);
+      connect_answer_to_action(action, answer);
+      finish_action(action);
       sc_iterator3_free(sysElementIt3);
       return SC_RESULT_OK;
     }
@@ -565,38 +564,38 @@ sc_result agent_search_full_semantic_neighborhood(sc_event const * event, sc_add
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }
 
 sc_result agent_search_links_of_relation_connected_with_element(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer, param_elem, param_rel;
+  sc_addr action, answer, param_elem, param_rel;
   sc_iterator3 *it1, *it2, *it3, *it4;
   sc_iterator5 *it5, *it_order;
   sc_type el_type;
   sc_bool sys_off = SC_TRUE;
   sc_bool param_elem_found = SC_FALSE, param_rel_found = SC_FALSE, found = SC_FALSE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
+  // check action type
   if (sc_helper_check_arc(
           s_default_ctx,
-          keynode_question_search_links_of_relation_connected_with_element,
-          question,
+          keynode_action_search_links_of_relation_connected_with_element,
+          action,
           sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
 
-  // get question arguments
+  // get action arguments
   it5 = sc_iterator5_f_a_a_a_a_new(
-      s_default_ctx, question, sc_type_arc_pos_const_perm, 0, sc_type_arc_pos_const_perm, sc_type_node | sc_type_const);
+      s_default_ctx, action, sc_type_arc_pos_const_perm, 0, sc_type_arc_pos_const_perm, sc_type_node | sc_type_const);
   while (sc_iterator5_next(it5) == SC_TRUE)
   {
     if (SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 4), keynode_rrel_1))
@@ -875,8 +874,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event const *
     appendIntoAnswer(answer, param_rel);
   }
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }

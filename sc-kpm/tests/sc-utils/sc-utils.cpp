@@ -22,14 +22,14 @@ TEST_F(ScMemoryTest, erase_elements_success)
 
   sc_addr const testAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
 
-  sc_addr const question = sc_memory_node_new(context, sc_type_node | sc_type_const);
+  sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, question, setAddr);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, testAddr);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_erase_elements, question);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_initiated, question);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
 
   sleep(2);
 
@@ -51,15 +51,15 @@ TEST_F(ScMemoryTest, erase_elements_from_init_struct)
 
   sc_addr const testAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
 
-  sc_addr const question = sc_memory_node_new(context, sc_type_node | sc_type_const);
+  sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, question, setAddr);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, testAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, structAddr, testAddr);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_erase_elements, question);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_initiated, question);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
 
   sleep(2);
 
@@ -80,18 +80,18 @@ TEST_F(ScMemoryTest, erase_elements_self_erase)
   search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
-  sc_addr const question = sc_memory_node_new(context, sc_type_node | sc_type_const);
+  sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, question, setAddr);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, question);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, action);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_erase_elements, question);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_initiated, question);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
 
   sleep(2);
 
-  sc_iterator3 * it = sc_iterator3_f_a_f_new(context, setAddr, 0, question);
+  sc_iterator3 * it = sc_iterator3_f_a_f_new(context, setAddr, 0, action);
   EXPECT_TRUE(sc_iterator3_next(it));
   sc_iterator3_free(it);
 
@@ -109,14 +109,14 @@ TEST_F(ScMemoryTest, erase_elements_erase_keynode)
 
   sc_addr const testAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
 
-  sc_addr const question = sc_memory_node_new(context, sc_type_node | sc_type_const);
+  sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, question, setAddr);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
   sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, testAddr);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_erase_elements, question);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_initiated, question);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
 
   sleep(2);
 
