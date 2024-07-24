@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv` or use `scripts/healthcheck.sh` 
 encapsulated this logic;
   - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
+- All questions was renamed to actions.
 
 ### Added
 
@@ -49,6 +50,7 @@ encapsulated this logic;
 
 ### Changed
 
+- Rename questions to actions
 - Use queues in monitors statically
 - Implement array-based sc-queue
 - Clarify error message for building sc-template, generating and searching by sc-template: provide sc-template item features in error message
