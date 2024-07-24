@@ -57,7 +57,7 @@ TEST_F(ScEventTest, ThreadingSmoke)
         &*m_ctx,
         eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ChangeContent event
         randNode(),
-        [&](ScElementaryEvent const &)
+        [&](ScEvent const &)
         {
           evtCount++;
         });

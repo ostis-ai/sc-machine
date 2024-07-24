@@ -19,6 +19,7 @@ ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
       *ctx,
       *addr,
       TScEvent::type,
+      TScEvent::elementType,
       (sc_pointer)this,
       &ScElementaryEventSubscription::Handler,
       &ScElementaryEventSubscription::HandlerDelete);
@@ -89,46 +90,100 @@ sc_result ScElementaryEventSubscription<TScEvent>::HandlerDelete(sc_event const 
   return SC_RESULT_OK;
 }
 
+template <ScType const & arcType>
+ScEventSubscriptionAddOutputArc<arcType>::ScEventSubscriptionAddOutputArc(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<void(ScEventAddOutputArc<arcType> const &)> const & func)
+  : ScElementaryEventSubscription<ScEventAddOutputArc<arcType>>(ctx, addr, func)
+{
+}
+
+template <ScType const & arcType>
+ScEventSubscriptionAddInputArc<arcType>::ScEventSubscriptionAddInputArc(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<void(ScEventAddInputArc<arcType> const &)> const & func)
+  : ScElementaryEventSubscription<ScEventAddInputArc<arcType>>(ctx, addr, func)
+{
+}
+
+template <ScType const & edgeType>
+ScEventSubscriptionAddEdge<edgeType>::ScEventSubscriptionAddEdge(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<void(ScEventAddEdge<edgeType> const &)> const & func)
+  : ScElementaryEventSubscription<ScEventAddEdge<edgeType>>(ctx, addr, func)
+{
+}
+
+template <ScType const & arcType>
+ScEventSubscriptionRemoveOutputArc<arcType>::ScEventSubscriptionRemoveOutputArc(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<void(ScEventRemoveOutputArc<arcType> const &)> const & func)
+  : ScElementaryEventSubscription<ScEventRemoveOutputArc<arcType>>(ctx, addr, func)
+{
+}
+
+template <ScType const & arcType>
+ScEventSubscriptionRemoveInputArc<arcType>::ScEventSubscriptionRemoveInputArc(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<void(ScEventRemoveInputArc<arcType> const &)> const & func)
+  : ScElementaryEventSubscription<ScEventRemoveInputArc<arcType>>(ctx, addr, func)
+{
+}
+
+template <ScType const & edgeType>
+ScEventSubscriptionRemoveEdge<edgeType>::ScEventSubscriptionRemoveEdge(
+    ScMemoryContext const & ctx,
+    ScAddr const & addr,
+    std::function<void(ScEventRemoveEdge<edgeType> const &)> const & func)
+  : ScElementaryEventSubscription<ScEventRemoveEdge<edgeType>>(ctx, addr, func)
+{
+}
+
 template <>
 struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_add_input_arc>
 {
-  using SubscriptionType = ScEventSubscriptionAddInputArc;
-  using EventTypeClass = ScEventAddInputArc;
+  using SubscriptionType = ScEventSubscriptionAddInputArc<ScType::Unknown>;
+  using EventTypeClass = ScEventAddInputArc<ScType::Unknown>;
 };
 
 template <>
 struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_add_output_arc>
 {
-  using SubscriptionType = ScEventSubscriptionAddOutputArc;
-  using EventTypeClass = ScEventAddOutputArc;
+  using SubscriptionType = ScEventSubscriptionAddOutputArc<ScType::Unknown>;
+  using EventTypeClass = ScEventAddOutputArc<ScType::Unknown>;
 };
 
 template <>
 struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_add_edge>
 {
-  using SubscriptionType = ScEventSubscriptionAddEdge;
-  using EventTypeClass = ScEventAddEdge;
+  using SubscriptionType = ScEventSubscriptionAddEdge<ScType::Unknown>;
+  using EventTypeClass = ScEventAddEdge<ScType::Unknown>;
 };
 
 template <>
 struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_remove_input_arc>
 {
-  using SubscriptionType = ScEventSubscriptionRemoveInputArc;
-  using EventTypeClass = ScEventRemoveInputArc;
+  using SubscriptionType = ScEventSubscriptionRemoveInputArc<ScType::Unknown>;
+  using EventTypeClass = ScEventRemoveInputArc<ScType::Unknown>;
 };
 
 template <>
 struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_remove_output_arc>
 {
-  using SubscriptionType = ScEventSubscriptionRemoveOutputArc;
-  using EventTypeClass = ScEventRemoveOutputArc;
+  using SubscriptionType = ScEventSubscriptionRemoveOutputArc<ScType::Unknown>;
+  using EventTypeClass = ScEventRemoveOutputArc<ScType::Unknown>;
 };
 
 template <>
 struct ScEventSubscriptionFactory::ScEventTypeConverter<sc_event_remove_edge>
 {
-  using SubscriptionType = ScEventSubscriptionRemoveEdge;
-  using EventTypeClass = ScEventRemoveEdge;
+  using SubscriptionType = ScEventSubscriptionRemoveEdge<ScType::Unknown>;
+  using EventTypeClass = ScEventRemoveEdge<ScType::Unknown>;
 };
 
 template <>

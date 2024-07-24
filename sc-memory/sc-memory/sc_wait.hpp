@@ -144,7 +144,7 @@ private:
  * @class ScWaitActionFinished
  * @brief Implements waiting for an action to finish.
  */
-class _SC_EXTERN ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputArc>
+class _SC_EXTERN ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   /*!
@@ -160,7 +160,7 @@ private:
    * @param event Event object.
    * @return Result of the event handling.
    */
-  sc_bool OnEvent(ScEventAddInputArc const & event) override;
+  sc_bool OnEvent(ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event) override;
 };
 
 #include "sc_wait.tpp"

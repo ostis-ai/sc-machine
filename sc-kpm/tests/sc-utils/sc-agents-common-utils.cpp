@@ -12,8 +12,6 @@
 
 #include "tests/test-agents/FinishActionTestAgent.hpp"
 
-using namespace scUtilsTestAgents;
-
 TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
 {
   std::string const data =

@@ -22,6 +22,7 @@ struct _sc_event
   sc_addr subscription_addr;
   //! Event type
   sc_event_type type;
+  sc_type event_element_type;
   //! Pointer to user data
   sc_pointer data;
   //! Pointer to callback function, that calls on event emit (for backward compatibility)
