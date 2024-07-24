@@ -253,6 +253,7 @@ public:
     }
     catch (std::exception const &)
     {
+      outValue = 0;
     }
 
     return false;
