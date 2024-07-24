@@ -8,14 +8,24 @@ if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-core-agents-tests)
 endif()
 
-make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-utils
+make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-common-utils
     NAME sc-kpm-agent-common-utils-tests
-    DEPENDS sc-agents-common sc-kpm-common sc-search sc-utils
+    DEPENDS sc-agents-common
     INCLUDES ${SC_MEMORY_SRC}/tests/sc-memory/_test
 )
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-agent-common-utils-tests)
+endif()
+
+make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/sc-utils
+    NAME sc-kpm-utils-tests
+    DEPENDS sc-memory sc-utils sc-search
+    INCLUDES ${SC_MEMORY_SRC}/tests/sc-memory/_test
+)
+
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-kpm-utils-tests)
 endif()
 
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/translators
