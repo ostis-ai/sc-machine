@@ -22,7 +22,7 @@ set(SOURCES_PARSER
 )
 
 file(GLOB SOURCES CONFIGURE_DEPENDS
-    "*.cpp" "*.hpp"
+    "*.cpp" "*.tpp" "*.hpp"
     "*/*.cpp" "*/*.hpp"
 )
 

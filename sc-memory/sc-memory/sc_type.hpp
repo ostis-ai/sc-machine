@@ -6,11 +6,6 @@
 
 #pragma once
 
-extern "C"
-{
-#include "sc-core/sc_memory.h"
-}
-
 #include <string>
 #include <sstream>
 #include <map>
@@ -24,6 +19,11 @@ extern "C"
 #include <cstdint>
 
 #include <fstream>
+
+extern "C"
+{
+#include "sc-core/sc-store/sc_types.h"
+}
 
 #include "sc_defines.hpp"
 
