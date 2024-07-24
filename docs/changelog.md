@@ -14,9 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 encapsulated this logic;
   - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
 - All questions was renamed to actions.
+- ScAddrHashFunc with template argument was removed. Use non-template ScAddrHashFunc without arguments. It is more safe in use.
 
 ### Added
 
+- Usings `ScAddrStack`, `ScAddrQueue`, `ScAddrSet` and `ScAddrHashSet`
 - Clean monitor tables by size threshold
 - Compile option to optimize checking local user permissions
 - Check incidence between sc-connectors and sc-elements substituted into sc-template from sc-template params
@@ -66,6 +68,8 @@ encapsulated this logic;
 
 ### Fixed
 
+- Make sc_addr_hash equal to sc_uint32
+- Make core literal types platform-independent
 - Erasing sc-connectors during iterating
 - Clear result of generating by sc-template if error is occurred
 - Check that template params sc-type can be extended to template item sc-type
@@ -82,6 +86,7 @@ encapsulated this logic;
 
 ### Removed
 
+- Template argument for `ScAddrHashFunc`
 - Throw `utils::ExceptionInvalidParams` if template params have sc-connectors substitution for generating by sc-template
 - GetDecompositionAgent
 - Config option `sync_actions` in `[sc-server]` deprecated in 0.9.0
