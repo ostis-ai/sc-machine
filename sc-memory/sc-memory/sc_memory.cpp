@@ -128,19 +128,6 @@ void ScMemory::LogUnmute()
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext(sc_permissions permissions, std::string const & name)
-  : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
-{
-  SC_UNUSED(permissions);
-  SC_UNUSED(name);
-}
-
-ScMemoryContext::ScMemoryContext(std::string const & name)
-  : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
-{
-  SC_UNUSED(name);
-}
-
 ScMemoryContext::ScMemoryContext()
   : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
 {
@@ -1067,15 +1054,6 @@ void ScMemoryContext::HelperSmartSearchTemplate(
 {
   CHECK_CONTEXT;
   templ.Search(*this, callback, {}, checkCallback);
-}
-
-ScTemplate::Result ScMemoryContext::HelperSearchTemplateInStruct(
-    ScTemplate const & templ,
-    ScAddr const & scStruct,
-    ScTemplateSearchResult & result)
-{
-  CHECK_CONTEXT;
-  return templ.SearchInStruct(*this, scStruct, result);
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(

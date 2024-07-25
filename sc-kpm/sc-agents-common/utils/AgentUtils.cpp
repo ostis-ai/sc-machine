@@ -96,15 +96,6 @@ bool AgentUtils::applyAction(
   return waiter.Wait(waitTime, initialize);
 }
 
-ScAddr AgentUtils::getActionResultIfExists(
-    ScMemoryContext * ms_context,
-    ScAddr const & actionClass,
-    ScAddrVector const & params,
-    sc_uint32 const & waitTime)
-{
-  return applyActionAndGetResultIfExists(ms_context, actionClass, params, waitTime);
-}
-
 ScAddr AgentUtils::applyActionAndGetResultIfExists(
     ScMemoryContext * ms_context,
     ScAddr const & actionClass,
@@ -120,14 +111,6 @@ ScAddr AgentUtils::applyActionAndGetResultIfExists(
     result = IteratorUtils::getAnyByOutRelation(ms_context, actionNode, CoreKeynodes::nrel_answer);
 
   return result;
-}
-
-ScAddr AgentUtils::getActionResultIfExists(
-    ScMemoryContext * ms_context,
-    ScAddr const & actionNode,
-    sc_uint32 const & waitTime)
-{
-  return applyActionAndGetResultIfExists(ms_context, actionNode, waitTime);
 }
 
 ScAddr AgentUtils::applyActionAndGetResultIfExists(

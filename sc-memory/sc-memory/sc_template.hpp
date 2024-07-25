@@ -406,13 +406,6 @@ protected:
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) const noexcept(false);
 
-  SC_DEPRECATED(
-      0.8.0,
-      "Use ScTemplate::Search(ScMemoryContext & ctx, ScTemplateSearchResultCallback const & callback, "
-      "ScTemplateSearchResultCheckCallback const & checkCallback) instead.")
-  Result SearchInStruct(ScMemoryContext & ctx, ScAddr const & scStruct, ScTemplateSearchResult & result) const
-      noexcept(false);
-
   // Builds template based on template in sc-memory
   Result FromScTemplate(
       ScMemoryContext & ctx,

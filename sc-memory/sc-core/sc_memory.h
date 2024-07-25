@@ -94,24 +94,6 @@ _SC_EXTERN sc_result sc_memory_shutdown(sc_bool save_state);
 _SC_EXTERN void sc_memory_shutdown_ext();
 
 /*!
- * @brief Creates a new memory context with specified permissions.
- *
- * This function creates a new sc-memory context with the specified permissions.
- *
- * @param permissions Permissions, created using the `sc_access_level_make` macro.
- *
- * @return Returns a pointer to the created memory context. If there were any errors during
- * context creation, the function returns NULL.
- *
- * @see sc_memory_context_free
- */
-SC_DEPRECATED(
-    0.10.0,
-    "Don't use this method for creating sc-memory context. Use one with `user_addr` params instead of. "
-    "This function will be deleted in 0.11.0")
-_SC_EXTERN sc_memory_context * sc_memory_context_new(sc_uint8 permissions);
-
-/*!
  * Creates a new sc-memory context for a specified user.
  *
  * @param user_addr sc_addr representing the user for whom the context is created.

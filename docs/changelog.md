@@ -15,6 +15,9 @@ encapsulated this logic;
   - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
 - All questions was renamed to actions.
 - ScAddrHashFunc with template argument was removed. Use non-template ScAddrHashFunc without arguments. It is more safe in use.
+- Constructors for ScMemoryContext with string and int parameters were removed. Use the one without parameters instead.
+- HelperSearchTemplateInStruct was removed from ScMemoryContext API. Use HelperSearchTemplate with callbacks.
+- Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
 
 ### Added
 
@@ -86,6 +89,9 @@ encapsulated this logic;
 
 ### Removed
 
+- Deprecated sc-utils in 0.9.0
+- Constructors for ScMemoryContext with string and int parameters
+- HelperSearchTemplateInStruct from ScMemoryContext
 - Template argument for `ScAddrHashFunc`
 - Throw `utils::ExceptionInvalidParams` if template params have sc-connectors substitution for generating by sc-template
 - GetDecompositionAgent

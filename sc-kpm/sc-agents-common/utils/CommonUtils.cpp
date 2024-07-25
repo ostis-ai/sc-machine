@@ -21,24 +21,6 @@ bool CommonUtils::checkType(ScMemoryContext * ms_context, ScAddr const & element
   return (elementType & scType) == scType;
 }
 
-std::string CommonUtils::getLinkContent(ScMemoryContext * ms_context, ScAddr const & scLink)
-{
-  SC_CHECK_PARAM(scLink, "Invalid link address passed to `getLinkContent`");
-
-  std::string result;
-  ScStreamPtr const stream = ms_context->GetLinkContent(scLink);
-  if (stream->IsValid())
-  {
-    std::string str;
-    if (ScStreamConverter::StreamToString(stream, str))
-    {
-      std::stringstream streamString(str);
-      result = streamString.str();
-    }
-  }
-  return result;
-}
-
 std::string CommonUtils::getIdtf(
     ScMemoryContext * ms_context,
     ScAddr const & node,

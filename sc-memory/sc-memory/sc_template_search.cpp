@@ -1139,12 +1139,3 @@ void ScTemplate::Search(
   search.SetCheckCallback(checkCallback);
   search();
 }
-
-ScTemplate::Result ScTemplate::SearchInStruct(
-    ScMemoryContext & ctx,
-    ScAddr const & scStruct,
-    ScTemplateSearchResult & result) const
-{
-  ScTemplateSearch search(const_cast<ScTemplate &>(*this), ctx, scStruct);
-  return search(result);
-}
