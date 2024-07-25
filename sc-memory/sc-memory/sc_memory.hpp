@@ -36,9 +36,6 @@ typedef struct
   ScAddr addr5;
 } ScSystemIdentifierQuintuple;
 
-SC_DEPRECATED(0.9.0, "Use ScSystemIdentifierQuintuple instead of. It will be removed in 0.10.0")
-typedef ScSystemIdentifierQuintuple ScSystemIdentifierFiver;
-
 class ScMemory
 {
   friend class ScMemoryContext;
@@ -101,16 +98,6 @@ public:
   };
 
 public:
-  SC_DEPRECATED(
-      0.10.0,
-      "Don't use this method for creating sc-memory context. Use one without params instead of. "
-      "This function will be deleted in 0.11.0")
-  _SC_EXTERN explicit ScMemoryContext(sc_permissions permissions, std::string const & name = "");
-  SC_DEPRECATED(
-      0.10.0,
-      "Don't use this method for creating sc-memory context. Use one without params instead of. "
-      "This function will be deleted in 0.11.0")
-  _SC_EXTERN explicit ScMemoryContext(std::string const & name);
   _SC_EXTERN explicit ScMemoryContext();
   _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context);
   _SC_EXTERN ~ScMemoryContext();
@@ -1158,16 +1145,6 @@ public:
       ScTemplate const & templ,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
-
-  SC_DEPRECATED(
-      0.8.0,
-      "Use callback-based ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, "
-      "ScTemplateSearchResultCallback const & callback, ScTemplateSearchResultCheckCallback const & checkCallback) "
-      "instead.")
-  _SC_EXTERN ScTemplate::Result HelperSearchTemplateInStruct(
-      ScTemplate const & templ,
-      ScAddr const & scStruct,
-      ScTemplateSearchResult & result) noexcept(false);
 
   /*!
    * Builds a program object of isomorphic template from existing in sc-memory sc-address of sc-structure. After
