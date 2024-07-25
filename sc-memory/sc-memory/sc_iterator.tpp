@@ -68,7 +68,7 @@ ScIterator3<ParamType1, ParamType2, ParamType3>::~ScIterator3()
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-ScIterator3<ParamType1, ParamType2, ParamType3>::ScIterator3(ScIterator3 const & other)
+ScIterator3<ParamType1, ParamType2, ParamType3>::ScIterator3(ScIterator3 const &)
 {
 }
 

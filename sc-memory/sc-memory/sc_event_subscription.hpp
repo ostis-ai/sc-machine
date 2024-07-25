@@ -222,9 +222,8 @@ protected:
   static void Shutdown(ScMemoryContext * ctx);
 
 private:
-  static std::
-      unordered_map<ScAddr, ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback, ScAddrHashFunc>
-          m_eventTypesToCreateSubscriptionCallbacks;
+  static std::unordered_map<ScAddr, ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback, ScAddrHashFunc>
+      m_eventTypesToCreateSubscriptionCallbacks;
 };
 
 #include "sc_event_subscription.tpp"
