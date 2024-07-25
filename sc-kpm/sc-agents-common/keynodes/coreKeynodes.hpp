@@ -19,20 +19,20 @@ class CoreKeynodes : public ScObject
   SC_GENERATED_BODY()
 
 public:
-  SC_PROPERTY(Keynode("question"), ForceCreate)
-  static ScAddr question;
+  SC_PROPERTY(Keynode("action"), ForceCreate)
+  static ScAddr action;
 
-  SC_PROPERTY(Keynode("question_initiated"), ForceCreate)
-  static ScAddr question_initiated;
+  SC_PROPERTY(Keynode("action_initiated"), ForceCreate)
+  static ScAddr action_initiated;
 
-  SC_PROPERTY(Keynode("question_finished"), ForceCreate)
-  static ScAddr question_finished;
+  SC_PROPERTY(Keynode("action_finished"), ForceCreate)
+  static ScAddr action_finished;
 
-  SC_PROPERTY(Keynode("question_finished_successfully"), ForceCreate)
-  static ScAddr question_finished_successfully;
+  SC_PROPERTY(Keynode("action_finished_successfully"), ForceCreate)
+  static ScAddr action_finished_successfully;
 
-  SC_PROPERTY(Keynode("question_finished_unsuccessfully"), ForceCreate)
-  static ScAddr question_finished_unsuccessfully;
+  SC_PROPERTY(Keynode("action_finished_unsuccessfully"), ForceCreate)
+  static ScAddr action_finished_unsuccessfully;
 
   SC_PROPERTY(Keynode("nrel_answer"), ForceCreate)
   static ScAddr nrel_answer;

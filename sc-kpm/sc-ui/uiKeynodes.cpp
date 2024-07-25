@@ -22,8 +22,8 @@ char const keynode_rrel_output_format_str[] = "ui_rrel_output_format";
 char const keynode_rrel_user_lang_str[] = "ui_rrel_user_lang";
 char const keynode_rrel_filter_list_str[] = "ui_rrel_filter_list";
 
-char const keynode_question_nrel_answer_str[] = "nrel_answer";
-char const keynode_question_finished_str[] = "question_finished";
+char const keynode_action_nrel_answer_str[] = "nrel_answer";
+char const keynode_action_finished_str[] = "action_finished";
 char const keynode_nrel_authors_str[] = "nrel_authors";
 char const keynode_nrel_translation_str[] = "nrel_translation";
 char const keynode_nrel_format_str[] = "nrel_format";
@@ -61,8 +61,8 @@ sc_addr keynode_rrel_output_format;
 sc_addr keynode_rrel_user_lang;
 sc_addr keynode_rrel_filter_list;
 
-sc_addr keynode_question_nrel_answer;
-sc_addr keynode_question_finished;
+sc_addr keynode_action_nrel_answer;
+sc_addr keynode_action_finished;
 sc_addr keynode_nrel_authors;
 sc_addr keynode_nrel_translation;
 sc_addr keynode_nrel_format;
@@ -99,8 +99,8 @@ sc_addr ui_keynode_arg[UI_ARG_COUNT];
 sc_bool initialize_keynodes(sc_addr const init_memory_generated_structure)
 {
   RESOLVE_KEYNODE(s_default_ctx, keynode_user, init_memory_generated_structure);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_question_nrel_answer, init_memory_generated_structure);
-  RESOLVE_KEYNODE(s_default_ctx, keynode_question_finished, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_action_nrel_answer, init_memory_generated_structure);
+  RESOLVE_KEYNODE(s_default_ctx, keynode_action_finished, init_memory_generated_structure);
   RESOLVE_KEYNODE(s_default_ctx, keynode_command_translate_from_sc, init_memory_generated_structure);
   RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_authors, init_memory_generated_structure);
   RESOLVE_KEYNODE(s_default_ctx, keynode_nrel_user_answer_formats, init_memory_generated_structure);

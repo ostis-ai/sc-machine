@@ -1,4 +1,4 @@
-section_subjdomain_knowledges <- question_addr;;
+section_subjdomain_knowledges <- action_addr;;
 answer_addr = [*
 
 section_subjdomain_knowledges

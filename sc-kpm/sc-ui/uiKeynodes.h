@@ -20,8 +20,8 @@ extern sc_addr keynode_rrel_user_lang;
 extern sc_addr keynode_rrel_output_format;
 extern sc_addr keynode_rrel_filter_list;
 
-extern sc_addr keynode_question_nrel_answer;
-extern sc_addr keynode_question_finished;
+extern sc_addr keynode_action_nrel_answer;
+extern sc_addr keynode_action_finished;
 extern sc_addr keynode_nrel_authors;
 extern sc_addr keynode_nrel_translation;
 extern sc_addr keynode_nrel_format;

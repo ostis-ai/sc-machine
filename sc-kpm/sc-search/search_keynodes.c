@@ -15,25 +15,25 @@
 
 #include <glib.h>
 
-sc_addr keynode_question_all_output_const_pos_arc;
-sc_addr keynode_question_all_input_const_pos_arc;
-sc_addr keynode_question_all_output_const_pos_arc_with_rel;
-sc_addr keynode_question_all_input_const_pos_arc_with_rel;
-sc_addr keynode_question_full_semantic_neighborhood;
-sc_addr keynode_question_decomposition;
-sc_addr keynode_question_all_identifiers;
-sc_addr keynode_question_all_identified_elements;
-sc_addr keynode_question_search_all_superclasses_in_quasybinary_relation;
-sc_addr keynode_question_search_all_subclasses_in_quasybinary_relation;
-sc_addr keynode_question_search_links_of_relation_connected_with_element;
-sc_addr keynode_question_search_full_pattern;
+sc_addr keynode_action_all_output_const_pos_arc;
+sc_addr keynode_action_all_input_const_pos_arc;
+sc_addr keynode_action_all_output_const_pos_arc_with_rel;
+sc_addr keynode_action_all_input_const_pos_arc_with_rel;
+sc_addr keynode_action_full_semantic_neighborhood;
+sc_addr keynode_action_decomposition;
+sc_addr keynode_action_all_identifiers;
+sc_addr keynode_action_all_identified_elements;
+sc_addr keynode_action_search_all_superclasses_in_quasybinary_relation;
+sc_addr keynode_action_search_all_subclasses_in_quasybinary_relation;
+sc_addr keynode_action_search_links_of_relation_connected_with_element;
+sc_addr keynode_action_search_full_pattern;
 
-sc_addr keynode_question;
-sc_addr keynode_question_initiated;
+sc_addr keynode_action;
+sc_addr keynode_action_initiated;
 sc_addr keynode_nrel_answer;
-sc_addr keynode_question_finished;
-sc_addr keynode_question_finished_successfully;
-sc_addr keynode_question_finished_unsuccessfully;
+sc_addr keynode_action_finished;
+sc_addr keynode_action_finished_successfully;
+sc_addr keynode_action_finished_unsuccessfully;
 sc_addr keynode_quasybinary_relation;
 sc_addr keynode_decomposition_relation;
 sc_addr keynode_taxonomy_relation;
@@ -57,33 +57,31 @@ sc_addr keynode_languages;
 sc_addr keynode_rrel_1;
 sc_addr keynode_rrel_2;
 
-char const keynode_question_all_output_const_pos_arc_str[] = "question_search_all_output_const_pos_arcs";
-char const keynode_question_all_input_const_pos_arc_str[] = "question_search_all_input_const_pos_arcs";
-char const keynode_question_all_output_const_pos_arc_with_rel_str[] =
-    "question_search_all_output_const_pos_arcs_with_rel";
-char const keynode_question_all_input_const_pos_arc_with_rel_str[] =
-    "question_search_all_input_const_pos_arcs_with_rel";
-char const keynode_question_full_semantic_neighborhood_str[] = "question_search_full_semantic_neighborhood";
-char const keynode_question_decomposition_str[] = "question_search_decomposition";
-char const keynode_question_all_identifiers_str[] = "question_search_all_identifiers";
-char const keynode_question_all_identified_elements_str[] = "question_search_all_identified_elements";
-char const keynode_question_search_full_pattern_str[] = "question_full_pattern_search";
+char const keynode_action_all_output_const_pos_arc_str[] = "action_search_all_output_const_pos_arcs";
+char const keynode_action_all_input_const_pos_arc_str[] = "action_search_all_input_const_pos_arcs";
+char const keynode_action_all_output_const_pos_arc_with_rel_str[] = "action_search_all_output_const_pos_arcs_with_rel";
+char const keynode_action_all_input_const_pos_arc_with_rel_str[] = "action_search_all_input_const_pos_arcs_with_rel";
+char const keynode_action_full_semantic_neighborhood_str[] = "action_search_full_semantic_neighborhood";
+char const keynode_action_decomposition_str[] = "action_search_decomposition";
+char const keynode_action_all_identifiers_str[] = "action_search_all_identifiers";
+char const keynode_action_all_identified_elements_str[] = "action_search_all_identified_elements";
+char const keynode_action_search_full_pattern_str[] = "action_full_pattern_search";
 
-char const keynode_question_search_all_subclasses_in_quasybinary_relation_str[] =
-    "question_search_all_subclasses_in_quasybinary_relation";
-char const keynode_question_search_all_superclasses_in_quasybinary_relation_str[] =
-    "question_search_all_superclasses_in_quasybinary_relation";
-char const keynode_question_search_links_of_relation_connected_with_element_str[] =
-    "question_search_links_of_relation_connected_with_element";
+char const keynode_action_search_all_subclasses_in_quasybinary_relation_str[] =
+    "action_search_all_subclasses_in_quasybinary_relation";
+char const keynode_action_search_all_superclasses_in_quasybinary_relation_str[] =
+    "action_search_all_superclasses_in_quasybinary_relation";
+char const keynode_action_search_links_of_relation_connected_with_element_str[] =
+    "action_search_links_of_relation_connected_with_element";
 
-char const keynode_question_initiated_str[] = "question_initiated";
-char const keynode_question_str[] = "question";
+char const keynode_action_initiated_str[] = "action_initiated";
+char const keynode_action_str[] = "action";
 char const keynode_rrel_1_str[] = "rrel_1";
 char const keynode_rrel_2_str[] = "rrel_2";
 char const keynode_nrel_answer_str[] = "nrel_answer";
-char const keynode_question_finished_str[] = "question_finished";
-char const keynode_question_finished_successfully_str[] = "question_finished_successfully";
-char const keynode_question_finished_unsuccessfully_str[] = "question_finished_unsuccessfully";
+char const keynode_action_finished_str[] = "action_finished";
+char const keynode_action_finished_successfully_str[] = "action_finished_successfully";
+char const keynode_action_finished_unsuccessfully_str[] = "action_finished_unsuccessfully";
 char const keynode_quasybinary_relation_str[] = "quasybinary_relation";
 char const keynode_decomposition_relation_str[] = "decomposition_relation";
 char const keynode_taxonomy_relation_str[] = "taxonomy_relation";
@@ -105,27 +103,25 @@ char const keynode_languages_str[] = "languages";
 
 sc_result search_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_memory_generated_structure)
 {
-  RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_output_const_pos_arc_with_rel, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_input_const_pos_arc_with_rel, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_full_semantic_neighborhood, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_decomposition, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_all_output_const_pos_arc, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_all_input_const_pos_arc, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_all_output_const_pos_arc_with_rel, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_all_input_const_pos_arc_with_rel, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_full_semantic_neighborhood, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_decomposition, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_nrel_answer, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_identifiers, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_all_identified_elements, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_all_subclasses_in_quasybinary_relation, init_memory_generated_structure);
-  RESOLVE_KEYNODE(
-      ctx, keynode_question_search_all_superclasses_in_quasybinary_relation, init_memory_generated_structure);
-  RESOLVE_KEYNODE(
-      ctx, keynode_question_search_links_of_relation_connected_with_element, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_search_full_pattern, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_all_identifiers, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_all_identified_elements, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_search_all_subclasses_in_quasybinary_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_search_all_superclasses_in_quasybinary_relation, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_search_links_of_relation_connected_with_element, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_search_full_pattern, init_memory_generated_structure);
 
-  RESOLVE_KEYNODE(ctx, keynode_question_initiated, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_finished, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_finished_successfully, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_question_finished_unsuccessfully, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_initiated, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_finished, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_finished_successfully, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_action_finished_unsuccessfully, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_quasybinary_relation, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_decomposition_relation, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_taxonomy_relation, init_memory_generated_structure);

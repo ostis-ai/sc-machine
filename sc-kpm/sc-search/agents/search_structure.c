@@ -15,24 +15,23 @@
 
 sc_result agent_search_decomposition(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer;
+  sc_addr action, answer;
   sc_iterator3 *it1, *it2, *it3;
   sc_iterator5 *it5, *it_order;
   sc_bool sys_off = SC_TRUE;
   sc_type el_type;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
-  if (sc_helper_check_arc(s_default_ctx, keynode_question_decomposition, question, sc_type_arc_pos_const_perm)
-      == SC_FALSE)
+  // check action type
+  if (sc_helper_check_arc(s_default_ctx, keynode_action_decomposition, action, sc_type_arc_pos_const_perm) == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
 
   // get operation argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -135,8 +134,8 @@ sc_result agent_search_decomposition(sc_event const * event, sc_addr arg)
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }
@@ -270,18 +269,18 @@ void search_subclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
 
 sc_result agent_search_all_subclasses_in_quasybinary_relation(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer;
+  sc_addr action, answer;
   sc_iterator3 * it1;
   sc_bool sys_off = SC_TRUE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
+  // check action type
   if (sc_helper_check_arc(
           s_default_ctx,
-          keynode_question_search_all_subclasses_in_quasybinary_relation,
-          question,
+          keynode_action_search_all_subclasses_in_quasybinary_relation,
+          action,
           sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
@@ -289,7 +288,7 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(sc_event const * e
   answer = create_answer_node();
 
   // get operation argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -301,8 +300,8 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(sc_event const * e
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }
@@ -394,18 +393,18 @@ void search_superclasses_rec(sc_addr elem, sc_addr answer, sc_bool sys_off)
 
 sc_result agent_search_all_superclasses_in_quasybinary_relation(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer;
+  sc_addr action, answer;
   sc_iterator3 * it1;
   sc_bool sys_off = SC_TRUE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
+  // check action type
   if (sc_helper_check_arc(
           s_default_ctx,
-          keynode_question_search_all_superclasses_in_quasybinary_relation,
-          question,
+          keynode_action_search_all_superclasses_in_quasybinary_relation,
+          action,
           sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
@@ -413,7 +412,7 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(sc_event const *
   answer = create_answer_node();
 
   // get operation argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -425,8 +424,8 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(sc_event const *
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }

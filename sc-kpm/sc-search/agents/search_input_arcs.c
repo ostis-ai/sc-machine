@@ -15,22 +15,22 @@
 
 sc_result agent_search_all_const_pos_input_arc(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer;
+  sc_addr action, answer;
   sc_iterator3 *it1, *it2;
   sc_bool sys_off = SC_TRUE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
-  if (sc_helper_check_arc(s_default_ctx, keynode_question_all_input_const_pos_arc, question, sc_type_arc_pos_const_perm)
+  // check action type
+  if (sc_helper_check_arc(s_default_ctx, keynode_action_all_input_const_pos_arc, action, sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
 
   // find argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -53,8 +53,8 @@ sc_result agent_search_all_const_pos_input_arc(sc_event const * event, sc_addr a
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }
@@ -63,23 +63,23 @@ sc_result agent_search_all_const_pos_input_arc(sc_event const * event, sc_addr a
 
 sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event const * event, sc_addr arg)
 {
-  sc_addr question, answer;
+  sc_addr action, answer;
   sc_iterator3 *it1, *it2, *it3;
   sc_bool sys_off = SC_TRUE;
 
-  if (!sc_memory_get_arc_end(s_default_ctx, arg, &question))
+  if (!sc_memory_get_arc_end(s_default_ctx, arg, &action))
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
-  // check question type
+  // check action type
   if (sc_helper_check_arc(
-          s_default_ctx, keynode_question_all_input_const_pos_arc_with_rel, question, sc_type_arc_pos_const_perm)
+          s_default_ctx, keynode_action_all_input_const_pos_arc_with_rel, action, sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   answer = create_answer_node();
 
-  // get question argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, question, sc_type_arc_pos_const_perm, 0);
+  // get action argument
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -115,8 +115,8 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event const * event, 
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_question(question, answer);
-  finish_question(question);
+  connect_answer_to_action(action, answer);
+  finish_action(action);
 
   return SC_RESULT_OK;
 }

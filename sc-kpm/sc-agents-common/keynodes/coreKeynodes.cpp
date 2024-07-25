@@ -8,11 +8,11 @@
 
 namespace scAgentsCommon
 {
-ScAddr CoreKeynodes::question;
-ScAddr CoreKeynodes::question_initiated;
-ScAddr CoreKeynodes::question_finished;
-ScAddr CoreKeynodes::question_finished_successfully;
-ScAddr CoreKeynodes::question_finished_unsuccessfully;
+ScAddr CoreKeynodes::action;
+ScAddr CoreKeynodes::action_initiated;
+ScAddr CoreKeynodes::action_finished;
+ScAddr CoreKeynodes::action_finished_successfully;
+ScAddr CoreKeynodes::action_finished_unsuccessfully;
 ScAddr CoreKeynodes::nrel_answer;
 ScAddr CoreKeynodes::nrel_inclusion;
 ScAddr CoreKeynodes::nrel_idtf;

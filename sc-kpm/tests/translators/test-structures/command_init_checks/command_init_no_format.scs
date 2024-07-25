@@ -1,5 +1,5 @@
 system_element -> trans_cmd_addr;
-question_addr;
+action_addr;
 answer_addr;
 lang_ru;
 ui_command_translate_from_sc;
@@ -13,4 +13,4 @@ system_element -> (ui_rrel_source_sc_construction-> @edge1);;
 system_element -> @edge2;;
 system_element -> (ui_rrel_user_lang-> @edge2);;
 system_element -> (trans_cmd_addr <- ui_command_translate_from_sc);;
-question_addr => nrel_answer: answer_addr;;
+action_addr => nrel_answer: answer_addr;;

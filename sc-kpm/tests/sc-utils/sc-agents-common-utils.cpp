@@ -114,7 +114,7 @@ TEST_F(ScMemoryTest, getActionResultIfExistForGeneratedAction)
   ScTemplate generatedActionTemplate;
   generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
   generatedActionTemplate.Triple(
-      scAgentsCommon::CoreKeynodes::question_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
+      scAgentsCommon::CoreKeynodes::action_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
   generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeDCommonVar,
@@ -147,7 +147,7 @@ TEST_F(ScMemoryTest, getActionResultIfExistForExistingAction)
       ScType::EdgeAccessVarPosPerm,
       scAgentsCommon::CoreKeynodes::nrel_answer);
   generatedActionTemplate.Triple(
-      scAgentsCommon::CoreKeynodes::question_finished, ScType::EdgeAccessVarPosPerm, actionNode);
+      scAgentsCommon::CoreKeynodes::action_finished, ScType::EdgeAccessVarPosPerm, actionNode);
   ScTemplateSearchResult generatedActionSearchResult;
   m_ctx->HelperSearchTemplate(generatedActionTemplate, generatedActionSearchResult);
 
@@ -171,7 +171,7 @@ TEST_F(ScMemoryTest, applyGeneratedAction)
   ScTemplate generatedActionTemplate;
   generatedActionTemplate.Triple(actionClass, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> actionAlias);
   generatedActionTemplate.Triple(
-      scAgentsCommon::CoreKeynodes::question_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
+      scAgentsCommon::CoreKeynodes::action_finished, ScType::EdgeAccessVarPosPerm, actionAlias);
   generatedActionTemplate.Quintuple(
       actionAlias,
       ScType::EdgeAccessVarPosPerm,
@@ -202,7 +202,7 @@ TEST_F(ScMemoryTest, applyExistingAction)
   EXPECT_TRUE(utils::AgentUtils::applyAction(m_ctx.get(), actionNode));
 
   EXPECT_TRUE(m_ctx->HelperCheckEdge(
-      scAgentsCommon::CoreKeynodes::question_finished, actionNode, ScType::EdgeAccessConstPosPerm));
+      scAgentsCommon::CoreKeynodes::action_finished, actionNode, ScType::EdgeAccessConstPosPerm));
 
   SC_AGENT_UNREGISTER(scUtilsTestAgents::FinishActionTestAgent)
 }

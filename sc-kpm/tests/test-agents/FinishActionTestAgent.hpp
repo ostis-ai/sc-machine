@@ -10,7 +10,7 @@ namespace scUtilsTestAgents
 
 class FinishActionTestAgent : public ScAgent
 {
-  SC_CLASS(Agent, Event(scAgentsCommon::CoreKeynodes::question_initiated, ScEvent::Type::AddOutputEdge))
+  SC_CLASS(Agent, Event(scAgentsCommon::CoreKeynodes::action_initiated, ScEvent::Type::AddOutputEdge))
   SC_GENERATED_BODY()
 };
 

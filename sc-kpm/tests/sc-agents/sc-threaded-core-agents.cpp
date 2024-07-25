@@ -29,12 +29,12 @@ sc_addr test_generate_elements_and_call_agent_search_all_const_pos_input_arc(
     sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr2, addr);
   }
 
-  sc_addr const question_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, question_addr, addr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_all_input_const_pos_arc, question_addr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_initiated, question_addr);
+  sc_addr const action_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action_addr, addr);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_all_input_const_pos_arc, action_addr);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action_addr);
 
-  return question_addr;
+  return action_addr;
 }
 
 sc_addr test_generate_elements_and_call_agent_search_all_const_pos_output_arc(
@@ -56,12 +56,12 @@ sc_addr test_generate_elements_and_call_agent_search_all_const_pos_output_arc(
     sc_memory_arc_new(context, sc_type_arc_pos_const_perm, addr, setAddr2);
   }
 
-  sc_addr const question_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, question_addr, addr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_all_output_const_pos_arc, question_addr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_question_initiated, question_addr);
+  sc_addr const action_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action_addr, addr);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_all_output_const_pos_arc, action_addr);
+  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action_addr);
 
-  return question_addr;
+  return action_addr;
 }
 
 sc_addr test_generate_elements_and_call_agent_search_full_semantic_neighborhood(
@@ -123,44 +123,44 @@ sc_addr test_generate_elements_and_call_agent_search_full_semantic_neighborhood(
       decomposition_addr,
       decomposition_link_addr2);  // decomposition -> decomposition_link2
 
-  sc_addr const question_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);  // question_addr
+  sc_addr const action_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);  // action_addr
   sc_addr const edge_addr =
-      sc_memory_arc_new(context, sc_type_arc_pos_const_perm, question_addr, addr);  // question_addr -> addr
+      sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action_addr, addr);  // action_addr -> addr
   sc_memory_arc_new(
       context,
       sc_type_arc_pos_const_perm,
       keynode_rrel_key_sc_element,
-      edge_addr);  // question_addr -> keynode_rrel_key_sc_element: addr
+      edge_addr);  // action_addr -> keynode_rrel_key_sc_element: addr
   sc_memory_arc_new(
       context,
       sc_type_arc_pos_const_perm,
-      keynode_question_full_semantic_neighborhood,
-      question_addr);  // keynode_question_full_semantic_neighborhood -> question_addr
+      keynode_action_full_semantic_neighborhood,
+      action_addr);  // keynode_action_full_semantic_neighborhood -> action_addr
   sc_memory_arc_new(
       context,
       sc_type_arc_pos_const_perm,
-      keynode_question_initiated,
-      question_addr);  // keynode_question_initiated -> question_addr
+      keynode_action_initiated,
+      action_addr);  // keynode_action_initiated -> action_addr
 
-  return question_addr;
+  return action_addr;
 }
 
-sc_bool test_agent_finished(sc_memory_context * context, sc_addr const question_addr)
+sc_bool test_agent_finished(sc_memory_context * context, sc_addr const action_addr)
 {
-  return sc_helper_check_arc(context, keynode_question_finished, question_addr, sc_type_arc_pos_const_perm);
+  return sc_helper_check_arc(context, keynode_action_finished, action_addr, sc_type_arc_pos_const_perm);
 }
 
-sc_bool test_agent_has_result(sc_memory_context * context, sc_addr const question_addr)
+sc_bool test_agent_has_result(sc_memory_context * context, sc_addr const action_addr)
 {
-  sc_iterator5 * question_addr_it5 = sc_iterator5_f_a_a_a_f_new(
+  sc_iterator5 * action_addr_it5 = sc_iterator5_f_a_a_a_f_new(
       context,
-      question_addr,
+      action_addr,
       sc_type_arc_common | sc_type_const,
-      sc_type_node | sc_type_const,  // question_addr -> keynode_nrel_answer {}
+      sc_type_node | sc_type_const,  // action_addr -> keynode_nrel_answer {}
       sc_type_arc_pos_const_perm,
       keynode_nrel_answer);
-  sc_bool const result = sc_iterator5_next(question_addr_it5);
-  sc_iterator5_free(question_addr_it5);
+  sc_bool const result = sc_iterator5_next(action_addr_it5);
+  sc_iterator5_free(action_addr_it5);
 
   return result;
 }
@@ -175,21 +175,21 @@ TEST_F(ScMemoryTest, agents_parallel_work1)
   sc_module_initialize_with_init_memory_generated_structure(init_memory_generated_structure);
 
   sc_addr const addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const question_addr1 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
-  sc_addr const question_addr2 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
-  sc_addr const question_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
-  sc_addr const question_addr4 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
+  sc_addr const action_addr1 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
+  sc_addr const action_addr2 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
+  sc_addr const action_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
+  sc_addr const action_addr4 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
 
   sleep(2);
 
-  EXPECT_TRUE(test_agent_finished(context, question_addr1));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr1));
-  EXPECT_TRUE(test_agent_finished(context, question_addr2));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr2));
-  EXPECT_TRUE(test_agent_finished(context, question_addr3));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr3));
-  EXPECT_TRUE(test_agent_finished(context, question_addr4));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr4));
+  EXPECT_TRUE(test_agent_finished(context, action_addr1));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr1));
+  EXPECT_TRUE(test_agent_finished(context, action_addr2));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr2));
+  EXPECT_TRUE(test_agent_finished(context, action_addr3));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr3));
+  EXPECT_TRUE(test_agent_finished(context, action_addr4));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr4));
 
   sc_module_shutdown();
 }
@@ -204,30 +204,30 @@ TEST_F(ScMemoryTest, agents_parallel_work2)
   sc_module_initialize_with_init_memory_generated_structure(init_memory_generated_structure);
 
   sc_addr const addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const question_addr1 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
-  sc_addr const question_addr2 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
-  sc_addr const question_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
-  sc_addr const question_addr4 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
-  sc_addr const question_addr5 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
-  sc_addr const question_addr6 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
-  sc_addr const question_addr7 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
+  sc_addr const action_addr1 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
+  sc_addr const action_addr2 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
+  sc_addr const action_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
+  sc_addr const action_addr4 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
+  sc_addr const action_addr5 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
+  sc_addr const action_addr6 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
+  sc_addr const action_addr7 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
 
   sleep(2);
 
-  EXPECT_TRUE(test_agent_finished(context, question_addr1));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr1));
-  EXPECT_TRUE(test_agent_finished(context, question_addr2));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr2));
-  EXPECT_TRUE(test_agent_finished(context, question_addr3));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr3));
-  EXPECT_TRUE(test_agent_finished(context, question_addr4));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr4));
-  EXPECT_TRUE(test_agent_finished(context, question_addr5));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr5));
-  EXPECT_TRUE(test_agent_finished(context, question_addr6));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr6));
-  EXPECT_TRUE(test_agent_finished(context, question_addr7));
-  EXPECT_TRUE(test_agent_has_result(context, question_addr7));
+  EXPECT_TRUE(test_agent_finished(context, action_addr1));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr1));
+  EXPECT_TRUE(test_agent_finished(context, action_addr2));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr2));
+  EXPECT_TRUE(test_agent_finished(context, action_addr3));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr3));
+  EXPECT_TRUE(test_agent_finished(context, action_addr4));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr4));
+  EXPECT_TRUE(test_agent_finished(context, action_addr5));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr5));
+  EXPECT_TRUE(test_agent_finished(context, action_addr6));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr6));
+  EXPECT_TRUE(test_agent_finished(context, action_addr7));
+  EXPECT_TRUE(test_agent_has_result(context, action_addr7));
 
   sc_module_shutdown();
 }
