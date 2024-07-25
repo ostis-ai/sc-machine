@@ -64,10 +64,9 @@ public:
 protected:
   mutable ScAgentContext m_memoryCtx;
 
-  static inline std::unordered_map<
-      std::string,
-      std::unordered_map<ScAddr, ScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc<sc_uint64>>>
-      m_events;
+  static inline std::
+      unordered_map<std::string, std::unordered_map<ScAddr, ScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc>>
+          m_events;
 
   _SC_EXTERN ScAgentAbstract();
 

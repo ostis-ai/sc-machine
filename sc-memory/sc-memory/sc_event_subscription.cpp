@@ -36,7 +36,7 @@ ScEventSubscriptionChangeContent::ScEventSubscriptionChangeContent(
 {
 }
 
-std::unordered_map<ScAddr, ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback, ScAddrHashFunc<sc_uint32>>
+std::unordered_map<ScAddr, ScEventSubscriptionFactory::ScCreateEventSubscriptionCallback, ScAddrHashFunc>
     ScEventSubscriptionFactory::m_eventTypesToCreateSubscriptionCallbacks;
 
 void ScEventSubscriptionFactory::Initialize(ScMemoryContext *, ScAddr const &)
