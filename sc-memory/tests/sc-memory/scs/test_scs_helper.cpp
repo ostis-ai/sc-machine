@@ -427,14 +427,19 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   });
 
   result.Clear();
-  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithRuMainIdtf, result));
-  EXPECT_EQ(result.Size(), 1u);
-  result.ForEach([this, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
-    for (size_t i = 0; i < item.Size(); ++i)
-    {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
-    }
-  });
+  {
+    sc_bool isFound = false;
+    m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
+      isFound = true;
+      for (size_t i = 0; i < item.Size(); ++i)
+      {
+        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      }
+    }, [this, outputStructureWithRuMainIdtf](ScAddr const & elementAddr) -> sc_bool {
+      return m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+    });
+    EXPECT_TRUE(isFound);
+  }
 
   templ.Clear();
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(
@@ -453,14 +458,19 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   });
 
   result.Clear();
-  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithEnMainIdtf, result));
-  EXPECT_EQ(result.Size(), 1u);
-  result.ForEach([this, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
-    for (size_t i = 0; i < item.Size(); ++i)
-    {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
-    }
-  });
+  {
+    sc_bool isFound = false;
+    m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
+      isFound = true;
+      for (size_t i = 0; i < item.Size(); ++i)
+      {
+        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      }
+    }, [this, outputStructureWithEnMainIdtf](ScAddr const & elementAddr) -> sc_bool {
+      return m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+    });
+    EXPECT_TRUE(isFound);
+  }
 
   templ.Clear();
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(
@@ -479,14 +489,20 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   });
 
   result.Clear();
-  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithRuIdtf, result));
-  EXPECT_EQ(result.Size(), 1u);
-  result.ForEach([this, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
-    for (size_t i = 0; i < item.Size(); ++i)
-    {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
-    }
-  });
+  {
+    sc_bool isFound = false;
+    m_ctx->HelperSearchTemplate(templ,[this, &isFound, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
+      isFound = true;
+      for (size_t i = 0; i < item.Size(); ++i)
+      {
+        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      }
+    }, 
+    [this, outputStructureWithRuIdtf](ScAddr const & elementAddr) -> sc_bool {
+      return m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+    });
+    EXPECT_TRUE(isFound);
+  }
 
   templ.Clear();
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(
@@ -505,14 +521,20 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   });
 
   result.Clear();
-  EXPECT_TRUE(m_ctx->HelperSearchTemplateInStruct(templ, outputStructureWithEnIdtf, result));
-  EXPECT_EQ(result.Size(), 1u);
-  result.ForEach([this, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
-    for (size_t i = 0; i < item.Size(); ++i)
-    {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
-    }
-  });
+  {
+    sc_bool isFound = false;
+    m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
+      isFound = true;
+      for (size_t i = 0; i < item.Size(); ++i)
+      {
+        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      }
+    }, 
+    [this, outputStructureWithEnIdtf](ScAddr const & elementAddr) -> sc_bool {
+      return m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+    });
+    EXPECT_TRUE(isFound);
+  }
 }
 
 SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
