@@ -7,8 +7,12 @@
 #pragma once
 
 #include <cstdint>
-#include <list>
 #include <vector>
+#include <list>
+#include <stack>
+#include <queue>
+#include <set>
+#include <unordered_set>
 
 extern "C"
 {
@@ -21,13 +25,8 @@ class _SC_EXTERN ScAddr
 {
   friend class ScMemoryContext;
 
-  template <typename ParamType1, typename ParamType2, typename ParamType3>
-  friend class TIterator3;
-  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
-  friend class TIterator5;
-
 public:
-  using HashType = uint64_t;
+  using HashType = sc_addr_hash;
 
   static ScAddr const Empty;
 
@@ -48,9 +47,6 @@ public:
 protected:
   ScRealAddr m_realAddr;
 };
-
-using ScAddrVector = std::vector<ScAddr>;
-using ScAddrList = std::list<ScAddr>;
 
 struct RealAddrLessFunc
 {
@@ -74,27 +70,17 @@ struct ScAddrLessFunc
   }
 };
 
-// hash functions
-template <typename HashType>
 struct ScAddrHashFunc
 {
-  HashType operator()(ScAddr const & addr);
-};
-
-template <>
-struct ScAddrHashFunc<uint32_t>
-{
-  uint32_t operator()(ScAddr const & addr) const
+  ScAddr::HashType operator()(ScAddr const & addr) const
   {
     return SC_ADDR_LOCAL_TO_INT(*addr);
   }
 };
 
-template <>
-struct ScAddrHashFunc<uint64_t>
-{
-  uint64_t operator()(ScAddr const & addr) const
-  {
-    return addr.Hash();
-  }
-};
+using ScAddrVector = std::vector<ScAddr>;
+using ScAddrList = std::list<ScAddr>;
+using ScAddrStack = std::stack<ScAddr>;
+using ScAddrQueue = std::queue<ScAddr>;
+using ScAddrSet = std::set<ScAddr, ScAddrLessFunc>;
+using ScAddrUnorderedSet = std::unordered_set<ScAddr, ScAddrHashFunc, ScAddrLessFunc>;

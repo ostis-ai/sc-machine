@@ -60,7 +60,7 @@ TEST_F(ScMemoryTest, InvalidElements)
 {
   ScMemoryContext ctx;
 
-  ScAddr const node{454545454455444};
+  ScAddr const node{475585172};
   EXPECT_FALSE(ctx.IsElement(node));
 
   ScAddr const edge{454};

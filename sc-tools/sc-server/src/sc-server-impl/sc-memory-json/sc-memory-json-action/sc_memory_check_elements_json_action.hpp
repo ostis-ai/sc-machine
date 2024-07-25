@@ -20,7 +20,7 @@ public:
 
     for (auto & hash : requestPayload)
     {
-      ScAddr const addr{hash.get<size_t>()};
+      ScAddr const addr{hash.get<ScAddr::HashType>()};
 
       size_t type = 0;
       if (addr.IsValid())

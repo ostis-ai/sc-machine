@@ -37,7 +37,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
   sc_iterator * system_idtf_addr_it = sc_list_iterator(found_links);
   while (sc_iterator_next(system_idtf_addr_it))
   {
-    sc_addr_hash addr_hash = (sc_addr_hash)sc_iterator_get(system_idtf_addr_it);
+    sc_addr_hash addr_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(system_idtf_addr_it);
     sc_addr addr;
     SC_ADDR_LOCAL_FROM_INT(addr_hash, addr);
 
@@ -226,7 +226,7 @@ sc_result sc_helper_find_element_by_system_identifier_ext(
   sc_iterator * links_it = sc_list_iterator(found_links);
   while (sc_iterator_next(links_it))
   {
-    sc_addr_hash addr_hash = (sc_addr_hash)sc_iterator_get(links_it);
+    sc_addr_hash addr_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(links_it);
     sc_addr addr;
     SC_ADDR_LOCAL_FROM_INT(addr_hash, addr);
 

@@ -283,7 +283,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
                "ScAddr const & otherAddr)";
     outCode << "\\\n	{";
     outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "userAddr);";
-    outCode << "\\\n		" << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
+    outCode << "\\\n " << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
     outCode << "\\\n	}";
 
     // register/unregister

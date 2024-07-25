@@ -32,7 +32,7 @@
 #define sc_str_len(string) strlen(string)
 
 #define sc_int_to_str_int(number, string, size) \
-  snprintf(string, 20, "%llu", number); \
+  snprintf(string, 20, _Generic((number), uint32_t: "%" PRIu32, uint64_t: "%" PRIu64, default: "%u"), number); \
   size = sc_str_len(string)
 
 #define sc_str_int_to_int(string, number) number = atoi(string)
