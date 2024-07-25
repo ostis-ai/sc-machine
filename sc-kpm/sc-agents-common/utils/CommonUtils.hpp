@@ -16,12 +16,6 @@ class CommonUtils
 public:
   static bool checkType(ScMemoryContext * ms_context, ScAddr const & element, ScType scType);
 
-  SC_DEPRECATED(
-      0.9.0,
-      "Use bool GetLinkContent(ScAddr const & addr, TContentType & typedContent) instead of. It will be removed in "
-      "sc-machine 0.10.0.")
-  static std::string getLinkContent(ScMemoryContext * ms_context, ScAddr const & scLink);
-
   static std::string getIdtf(
       ScMemoryContext * ms_context,
       ScAddr const & node,
