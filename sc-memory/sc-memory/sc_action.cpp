@@ -15,7 +15,7 @@ ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const
   : ScAddr(actionAddr)
   , m_ctx(ctx)
   , m_actionClassAddr(actionClassAddr)
-  , m_answerAddr(ScAddr::Empty) {};
+  , m_answerAddr(ScAddr::Empty){};
 
 ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr)
   : ScAddr(ctx->CreateNode(ScType::NodeConst))

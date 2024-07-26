@@ -10,6 +10,8 @@
 #include "../sc-search/search_keynodes.h"
 
 #include "sc-core/sc_memory_context_manager.h"
+#include "sc-core/sc_memory.h"
+#include "sc-core/sc_keynodes.h"
 
 sc_memory_context * s_erase_elements_ctx = 0;
 
@@ -26,7 +28,7 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
   event_erase_elements = sc_event_new(
       s_erase_elements_ctx,
       keynode_action_initiated,
-      sc_event_add_output_arc,
+      sc_event_add_output_arc_addr,
       null_ptr,
       agent_erase_elements,
       null_ptr);

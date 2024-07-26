@@ -10,10 +10,7 @@
 
 #include "sc_type.hpp"
 
-extern "C"
-{
-#include "sc-core/sc-store/sc-event/sc_event_types.h"
-}
+#include "sc_keynodes.hpp"
 
 /*!
  * @class ScEvent
@@ -32,53 +29,16 @@ public:
   _SC_EXTERN virtual ScAddr GetSubscriptionElement() const = 0;
 
 protected:
-  template <class TScEvent>
   friend class ScElementaryEventSubscription;
   friend class ScEventSubscriptionFactory;
-
-  /*!
-   * @class Type
-   * @brief Represents a type of an sc-event.
-   */
-  class Type
-  {
-  public:
-    sc_event_type m_realType;
-
-    explicit constexpr Type(sc_event_type type)
-      : m_realType(type)
-    {
-    }
-
-    ~Type() = default;
-
-    constexpr operator sc_event_type() const
-    {
-      return m_realType;
-    }
-
-    static Type const Unknown;
-    static Type const AddInputArc;
-    static Type const AddOutputArc;
-    static Type const AddEdge;
-    static Type const RemoveInputArc;
-    static Type const RemoveOutputArc;
-    static Type const RemoveEdge;
-    static Type const EraseElement;
-    static Type const ChangeContent;
-  };
-
-protected:
-  static inline Type const type = Type::Unknown;
 };
 
 /*!
- * @class ScElementaryEvent
+ * @class ScEvent
  * @brief Represents a basic sc-event.
  *
- * ScElementaryEvent is a subclass of ScEvent that represents basic events in the sc-memory.
+ * ScEvent is a subclass of ScEvent that represents basic events in the sc-memory.
  */
-template <ScType const & _elementType>
 class _SC_EXTERN ScElementaryEvent : public ScEvent
 {
 public:
@@ -126,11 +86,32 @@ protected:
   ScAddr m_otherAddr;
 
 private:
-  template <class TScEvent>
   friend class ScElementaryEventSubscription;
+};
+
+/*!
+ * @class ScElementaryEvent
+ * @brief Represents a basic sc-event.
+ *
+ * ScElementaryEvent is a subclass of ScEvent that represents basic events in the sc-memory.
+ */
+template <ScType const & _elementType>
+class _SC_EXTERN TScElementaryEvent : public ScElementaryEvent
+{
+protected:
+  _SC_EXTERN TScElementaryEvent(
+      ScAddr const & userAddr,
+      ScAddr const & subscriptionAddr,
+      ScAddr const & connectorAddr,
+      ScType const & connectorType,
+      ScAddr const & otherAddr);
+
+private:
+  template <class TScEvent>
+  friend class TScElementaryEventSubscription;
 
   static inline ScType const & elementType = _elementType;
-  static inline Type const type = Type::Unknown;
+  static inline ScAddr const & eventType = ScKeynodes::empty_class;
 };
 
 /*!
@@ -138,7 +119,7 @@ private:
  * @brief Represents an event where an arc is added.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventAddArc : public ScElementaryEvent<arcType>
+class _SC_EXTERN ScEventAddArc : public TScElementaryEvent<arcType>
 {
 public:
   _SC_EXTERN virtual ScAddr GetAddedArc() const;
@@ -163,7 +144,7 @@ protected:
  * @brief Represents an event where an edge is added.
  */
 template <ScType const & edgeType>
-class _SC_EXTERN ScEventAddEdge : public ScElementaryEvent<edgeType>
+class _SC_EXTERN ScEventAddEdge : public TScElementaryEvent<edgeType>
 {
 public:
   _SC_EXTERN virtual ScAddr GetAddedEdge() const;
@@ -184,9 +165,9 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::AddEdge;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_add_edge;
 };
 
 /*!
@@ -206,9 +187,9 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::AddOutputArc;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_add_output_arc;
 };
 
 /*!
@@ -228,9 +209,9 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::AddInputArc;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_add_input_arc;
 };
 
 /*!
@@ -238,7 +219,7 @@ private:
  * @brief Represents an event where an arc is removed.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventRemoveArc : public ScElementaryEvent<arcType>
+class _SC_EXTERN ScEventRemoveArc : public TScElementaryEvent<arcType>
 {
 public:
   _SC_EXTERN virtual ScType GetRemovedArcType() const;
@@ -261,7 +242,7 @@ protected:
  * @brief Represents an event where an edge is removed.
  */
 template <ScType const & edgeType>
-class _SC_EXTERN ScEventRemoveEdge : public ScElementaryEvent<edgeType>
+class _SC_EXTERN ScEventRemoveEdge : public TScElementaryEvent<edgeType>
 {
 public:
   _SC_EXTERN virtual ScType GetRemovedEdgeType() const;
@@ -280,9 +261,9 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::RemoveEdge;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_edge;
 };
 
 /*!
@@ -302,9 +283,9 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::RemoveOutputArc;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_output_arc;
 };
 
 /*!
@@ -324,9 +305,9 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::RemoveInputArc;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_input_arc;
 };
 
 #include "sc_event.tpp"
@@ -335,7 +316,7 @@ private:
  * @class ScEventEraseElement
  * @brief Represents an event where an element is erased.
  */
-class _SC_EXTERN ScEventEraseElement final : public ScElementaryEvent<ScType::Unknown>
+class _SC_EXTERN ScEventEraseElement final : public TScElementaryEvent<ScType::Unknown>
 {
 protected:
   _SC_EXTERN ScEventEraseElement(
@@ -350,16 +331,16 @@ private:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::EraseElement;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_erase_element;
 };
 
 /*!
  * @class ScEventChangeContent
  * @brief Represents an event where the content of an element is changed.
  */
-class _SC_EXTERN ScEventChangeContent final : public ScElementaryEvent<ScType::Unknown>
+class _SC_EXTERN ScEventChangeContent final : public TScElementaryEvent<ScType::Unknown>
 {
 protected:
   _SC_EXTERN ScEventChangeContent(
@@ -371,9 +352,9 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class ScElementaryEventSubscription;
+  friend class TScElementaryEventSubscription;
 
-  static inline ScEvent::Type const type = ScEvent::Type::ChangeContent;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_change_content;
 };
 
 using ScActionEvent = ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>;

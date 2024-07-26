@@ -240,6 +240,7 @@ typedef struct _sc_memory_context sc_memory_context;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;
+typedef sc_addr sc_event_type;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator_result sc_iterator_result;
 typedef struct _sc_iterator3 sc_iterator3;

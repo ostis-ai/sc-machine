@@ -83,7 +83,6 @@ bool ScMemory::Initialize(sc_memory_params const & params)
         ms_globalContext->HelperResolveSystemIdtf(params.init_memory_generated_structure, ScType::NodeConstStruct);
 
   ScKeynodes::Initialize(ms_globalContext, initMemoryGeneratedStructureAddr);
-  ScEventSubscriptionFactory::Initialize(ms_globalContext, initMemoryGeneratedStructureAddr);
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
@@ -97,7 +96,6 @@ bool ScMemory::IsInitialized()
 
 bool ScMemory::Shutdown(bool saveState /* = true */)
 {
-  ScEventSubscriptionFactory::Shutdown(ms_globalContext);
   ScKeynodes::Shutdown(ms_globalContext);
 
   utils::ScLog::SetUp("Console", "", "Info");

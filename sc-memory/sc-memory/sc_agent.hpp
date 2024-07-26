@@ -19,7 +19,7 @@
 #define SC_AGENT_LOG_ERROR(__msg__) SC_LOG_ERROR(GetName() << ": " << __msg__)
 
 template <class TScEvent>
-class ScElementaryEventSubscription;
+class TScElementaryEventSubscription;
 class ScAction;
 class ScResult;
 
@@ -65,7 +65,7 @@ protected:
   mutable ScAgentContext m_memoryCtx;
 
   static inline std::
-      unordered_map<std::string, std::unordered_map<ScAddr, ScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc>>
+      unordered_map<std::string, std::unordered_map<ScAddr, TScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc>>
           m_events;
 
   _SC_EXTERN ScAgentAbstract();

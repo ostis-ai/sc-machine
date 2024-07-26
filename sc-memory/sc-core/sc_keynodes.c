@@ -10,6 +10,16 @@
 
 #include "sc-store/sc-container/sc-string/sc_string.h"
 
+sc_addr sc_event_unknown_addr;
+sc_addr sc_event_add_input_arc_addr;
+sc_addr sc_event_add_output_arc_addr;
+sc_addr sc_event_add_edge_addr;
+sc_addr sc_event_remove_input_arc_addr;
+sc_addr sc_event_remove_output_arc_addr;
+sc_addr sc_event_remove_edge_addr;
+sc_addr sc_event_erase_element_addr;
+sc_addr sc_event_change_content_addr;
+
 sc_addr myself_addr;
 sc_addr concept_guest_user_addr;
 sc_addr nrel_identified_user_addr;
@@ -46,6 +56,13 @@ sc_result sc_keynodes_resolve_keynode(
   return result;
 }
 
+#define SC_RESOLVE_EVENT(ctx, keynode, keynode_system_idtf, init_memory_generated_structure) \
+  ({ \
+    if (sc_keynodes_resolve_keynode(ctx, keynode_system_idtf, init_memory_generated_structure, &keynode) \
+        != SC_RESULT_OK) \
+      return SC_RESULT_ERROR; \
+  })
+
 #define SC_RESOLVE_KEYNODE(ctx, keynode, init_memory_generated_structure) \
   ({ \
     sc_char const keynode_identifier[] = #keynode; \
@@ -60,6 +77,16 @@ sc_result sc_keynodes_resolve_keynode(
 
 sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_memory_generated_structure)
 {
+  SC_RESOLVE_EVENT(ctx, sc_event_unknown_addr, "unknown_event", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_add_input_arc_addr, "add_ingoing_edge", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_add_output_arc_addr, "add_outgoing_edge", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_add_edge_addr, "add_edge", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_remove_input_arc_addr, "remove_ingoing_edge", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_remove_output_arc_addr, "remove_outgoing_edge", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_remove_edge_addr, "remove_edge", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_erase_element_addr, "delete_element", init_memory_generated_structure);
+  SC_RESOLVE_EVENT(ctx, sc_event_change_content_addr, "content_change", init_memory_generated_structure);
+
   SC_RESOLVE_KEYNODE(ctx, myself_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, concept_guest_user_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, nrel_identified_user_addr, init_memory_generated_structure);

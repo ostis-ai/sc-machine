@@ -245,7 +245,7 @@ sc_result sc_event_destroy(sc_event * event)
 
   event->ref_count = SC_EVENT_REQUEST_DESTROY;
   event->subscription_addr = SC_ADDR_EMPTY;
-  event->type = 0;
+  event->type = SC_ADDR_EMPTY;
   event->event_element_type = 0;
   event->callback = null_ptr;
   event->callback_ext = null_ptr;
@@ -369,7 +369,8 @@ sc_result sc_event_emit_impl(
   {
     event = (sc_event *)element_events_list->data;
 
-    if (event->type == type && ((event->event_element_type & connector_type) == event->event_element_type))
+    if (SC_ADDR_IS_EQUAL(event->type, type)
+        && ((event->event_element_type & connector_type) == event->event_element_type))
       _sc_event_emission_manager_add(
           emission_manager, event, ctx->user_addr, connector_addr, connector_type, other_addr);
 

@@ -46,10 +46,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScMemoryJsonPayload const & message,
     ScMemoryJsonPayload &)
 {
-  auto const & onEmitEvent = [](ScServer * server,
-                                size_t id,
-                                ScServerSessionId const & handle,
-                                ScElementaryEvent<ScType::Unknown> const & event)
+  auto const & onEmitEvent =
+      [](ScServer * server, size_t id, ScServerSessionId const & handle, ScElementaryEvent const & event)
   {
     auto const & [sourceAddr, connectorAddr, targetAddr] = event.GetTriple();
 
@@ -72,8 +70,16 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     std::string const & eventType = atom["type"];
     ScAddr const & subscriptionAddr = ScAddr(atom["addr"].get<size_t>());
 
-    ScEventSubscription * subscription = ScEventSubscriptionFactory::CreateSubscription(
-        m_context, eventType, subscriptionAddr, bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
+    ScAddr const & eventTypeAddr = m_context->HelperFindBySystemIdtf(eventType);
+    if (!eventTypeAddr.IsValid())
+      return responsePayload;
+
+    ScEventSubscription * subscription = new ScElementaryEventSubscription(
+        *m_context,
+        eventTypeAddr,
+        ScType::Unknown,
+        subscriptionAddr,
+        bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
     responsePayload.push_back(m_manager->Add(subscription));
   }
 
