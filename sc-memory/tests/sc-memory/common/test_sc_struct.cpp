@@ -19,6 +19,7 @@ TEST_F(ScStructTest, AppendIterateElements)
 
   structAddr << addr1 << addr2;
   EXPECT_TRUE(structAddr.HasElement(addr1));
+  EXPECT_FALSE(structAddr.Append(addr1));
   EXPECT_TRUE(structAddr.HasElement(addr2));
 
   structAddr >> addr1;
@@ -51,4 +52,26 @@ TEST_F(ScStructTest, AppendIterateElements)
     found = true;
   }
   EXPECT_TRUE(found);
+}
+
+TEST_F(ScStructTest, AppendItSelf)
+{
+  ScSet set = ScSet(*m_ctx);
+  ScSet setCopy = set;
+
+  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  setCopy << nodeAddr;
+
+  ScTemplate templ;
+  templ.Triple(setCopy, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+
+  result.ForEach(
+      [&](ScTemplateSearchResultItem const & item)
+      {
+        setCopy << item;
+      });
+
+  EXPECT_TRUE(setCopy.HasElement(setCopy));
 }
