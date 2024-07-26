@@ -13,7 +13,7 @@
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
 
-sc_result agent_search_all_const_pos_output_arc(sc_event const * event, sc_addr arg)
+sc_result agent_search_all_const_pos_output_arc(sc_event_subscription const * event, sc_addr arg)
 {
   sc_addr action, answer;
   sc_iterator3 *it1, *it2;
@@ -61,7 +61,7 @@ sc_result agent_search_all_const_pos_output_arc(sc_event const * event, sc_addr 
 }
 
 // ---------------------------------------------
-sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event const * event, sc_addr arg)
+sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event_subscription const * event, sc_addr arg)
 {
   sc_addr action, answer;
   sc_iterator3 *it1, *it2, *it3;

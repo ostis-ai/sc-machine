@@ -6,7 +6,7 @@
 
 #include "sc_event_queue.h"
 
-#include "../sc_event.h"
+#include "../sc_event_subscription.h"
 #include "sc_event_private.h"
 
 #include "../sc_storage.h"
@@ -15,33 +15,33 @@
 
 #include "../sc-base/sc_allocator.h"
 
-/*! Structure representing data for a worker in the event emission pool.
+/*! Structure representing elementary sc-event.
  * @note This structure holds information required for processing events in a worker thread.
  */
 typedef struct
 {
-  sc_event * event;        ///< Pointer to the sc-event associated with the worker.
-  sc_addr user_addr;       ///< sc-address representing user that initiated this sc-event
-  sc_addr connector_addr;  ///< sc-address representing the sc-connector associated with the event.
-  sc_type connector_type;  ///< sc-type of the sc-connector associated with the event.
-  sc_addr other_addr;      ///< sc-address representing the other element associated with the event.
-} sc_event_emission_pool_worker_data;
+  sc_event_subscription * event_subscription;  ///< Pointer to the sc-event associated with the worker.
+  sc_addr user_addr;                           ///< sc-address representing user that initiated this sc-event
+  sc_addr connector_addr;                      ///< sc-address representing the sc-connector associated with the event.
+  sc_type connector_type;                      ///< sc-type of the sc-connector associated with the event.
+  sc_addr other_addr;                          ///< sc-address representing the other element associated with the event.
+} sc_event;
 
-/*! Function that creates a new instance of sc_event_emission_pool_worker_data.
+/*! Function that creates a new instance of sc_event.
  * @param event Pointer to the sc-event associated with the worker.
  * @param connector_addr sc-address representing the sc-connector associated with the event.
  * @param other_addr sc-address representing the other element associated with the event.
- * @returns Returns a pointer to the newly created sc_event_emission_pool_worker_data.
+ * @returns Returns a pointer to the newly created sc_event.
  */
-sc_event_emission_pool_worker_data * _sc_event_emission_pool_worker_data_new(
-    sc_event * event,
+sc_event * _sc_event_new(
+    sc_event_subscription * event_subscription,
     sc_addr user_addr,
     sc_addr connector_addr,
     sc_type connector_type,
     sc_addr other_addr)
 {
-  sc_event_emission_pool_worker_data * data = sc_mem_new(sc_event_emission_pool_worker_data, 1);
-  data->event = event;
+  sc_event * data = sc_mem_new(sc_event, 1);
+  data->event_subscription = event_subscription;
   data->user_addr = user_addr;
   data->connector_addr = connector_addr;
   data->connector_type = connector_type;
@@ -50,25 +50,25 @@ sc_event_emission_pool_worker_data * _sc_event_emission_pool_worker_data_new(
   return data;
 }
 
-/*! Function that destroys an instance of sc_event_emission_pool_worker_data.
- * @param data Pointer to the sc_event_emission_pool_worker_data to be destroyed.
+/*! Function that destroys an instance of sc_event.
+ * @param data Pointer to the sc_event to be destroyed.
  */
-void _sc_event_emission_pool_worker_data_destroy(sc_event_emission_pool_worker_data * data)
+void _sc_event_emission_pool_worker_data_destroy(sc_event * data)
 {
   sc_mem_free(data);
 }
 
-/*! Function that represents the work performed by a worker in the event emission pool.
- * @param data Pointer to the sc_event_emission_pool_worker_data containing information about the work.
- * @param user_data Pointer to the sc_event_emission_manager managing the event emission.
+/*! Function that represents the work performed by a worker in the sc-event emission pool.
+ * @param data Pointer to the sc_event containing information about the work.
+ * @param user_data Pointer to the sc_event_emission_manager managing the sc-event emission.
  */
 void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
 {
-  sc_event_emission_pool_worker_data * work_data = (sc_event_emission_pool_worker_data *)data;
+  sc_event * work_data = (sc_event *)data;
   sc_event_emission_manager * queue = user_data;
 
-  sc_event * event = work_data->event;
-  if (event == null_ptr)
+  sc_event_subscription * event_subscription = work_data->event_subscription;
+  if (event_subscription == null_ptr)
     goto destroy;
 
   sc_monitor_acquire_read(&queue->destroy_monitor);
@@ -76,30 +76,34 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
   if (queue->running == SC_FALSE)
     goto end;
 
-  sc_monitor_acquire_read(&event->monitor);
-  if (sc_event_is_deletable(event))
+  sc_monitor_acquire_read(&event_subscription->monitor);
+  if (sc_event_subscription_is_deletable(event_subscription))
   {
-    sc_monitor_release_read(&event->monitor);
+    sc_monitor_release_read(&event_subscription->monitor);
     goto end;
   }
 
-  sc_event_callback callback = event->callback;
-  sc_event_callback_ext callback_ext = event->callback_ext;
-  sc_event_callback_with_user callback_ext2 = event->callback_with_user;
+  sc_event_callback callback = event_subscription->callback;
+  sc_event_callback_ext callback_ext = event_subscription->callback_ext;
+  sc_event_callback_with_user callback_ext2 = event_subscription->callback_with_user;
 
   sc_storage_start_new_process();
 
   if (callback != null_ptr)
-    callback(event, work_data->connector_addr);
+    callback(event_subscription, work_data->connector_addr);
   else if (callback_ext != null_ptr)
-    callback_ext(event, work_data->connector_addr, work_data->other_addr);
+    callback_ext(event_subscription, work_data->connector_addr, work_data->other_addr);
   else if (callback_ext2 != null_ptr)
     callback_ext2(
-        event, work_data->user_addr, work_data->connector_addr, work_data->connector_type, work_data->other_addr);
+        event_subscription,
+        work_data->user_addr,
+        work_data->connector_addr,
+        work_data->connector_type,
+        work_data->other_addr);
 
   sc_storage_end_new_process();
 
-  sc_monitor_release_read(&event->monitor);
+  sc_monitor_release_read(&event_subscription->monitor);
 
 end:
   sc_monitor_release_read(&queue->destroy_monitor);
@@ -110,7 +114,7 @@ destroy:
 void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, sc_memory_params const * params)
 {
   *manager = sc_mem_new(sc_event_emission_manager, 1);
-  sc_queue_init(&(*manager)->deletable_events);
+  sc_queue_init(&(*manager)->deletable_events_subscriptions);
 
   (*manager)->limit_max_threads_by_max_physical_cores = params->limit_max_threads_by_max_physical_cores;
   (*manager)->max_events_and_agents_threads =
@@ -168,13 +172,13 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager)
     manager->thread_pool = null_ptr;
   }
 
-  while (!sc_queue_empty(&manager->deletable_events))
+  while (!sc_queue_empty(&manager->deletable_events_subscriptions))
   {
-    sc_event * event = sc_queue_pop(&manager->deletable_events);
-    sc_monitor_destroy(&event->monitor);
-    sc_mem_free(event);
+    sc_event_subscription * event_subscription = sc_queue_pop(&manager->deletable_events_subscriptions);
+    sc_monitor_destroy(&event_subscription->monitor);
+    sc_mem_free(event_subscription);
   }
-  sc_queue_destroy(&manager->deletable_events);
+  sc_queue_destroy(&manager->deletable_events_subscriptions);
 
   sc_monitor_release_write(&manager->pool_monitor);
 
@@ -185,7 +189,7 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager)
 
 void _sc_event_emission_manager_add(
     sc_event_emission_manager * manager,
-    sc_event * event,
+    sc_event_subscription * event_subscription,
     sc_addr user_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -194,10 +198,9 @@ void _sc_event_emission_manager_add(
   if (manager == null_ptr)
     return;
 
-  sc_event_emission_pool_worker_data * data =
-      _sc_event_emission_pool_worker_data_new(event, user_addr, connector_addr, connector_type, other_addr);
+  sc_event * event = _sc_event_new(event_subscription, user_addr, connector_addr, connector_type, other_addr);
 
   sc_monitor_acquire_write(&manager->pool_monitor);
-  g_thread_pool_push(manager->thread_pool, data, null_ptr);
+  g_thread_pool_push(manager->thread_pool, event, null_ptr);
   sc_monitor_release_write(&manager->pool_monitor);
 }

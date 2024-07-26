@@ -12,18 +12,18 @@
 
 ScEventSubscription::~ScEventSubscription() = default;
 
-sc_result ScEventSubscription::Handler(sc_event const *, sc_addr, sc_addr, sc_type, sc_addr)
+sc_result ScEventSubscription::Handler(sc_event_subscription const *, sc_addr, sc_addr, sc_type, sc_addr)
 {
   return SC_RESULT_OK;
 }
 
-sc_result ScEventSubscription::HandlerDelete(sc_event const *)
+sc_result ScEventSubscription::HandlerDelete(sc_event_subscription const *)
 {
   return SC_RESULT_OK;
 }
 
 ScElementaryEventSubscription::ScElementaryEventSubscription()
-  : m_event(nullptr)
+  : m_event_subscription(nullptr)
   , m_delegate(nullptr)
 {
 }
@@ -36,7 +36,7 @@ ScElementaryEventSubscription::ScElementaryEventSubscription(
     DelegateFunc const & func)
 {
   m_delegate = func;
-  m_event = sc_event_with_user_new(
+  m_event_subscription = sc_event_subscription_with_user_new(
       *ctx,
       *subscriptionAddr,
       *eventTypeAddr,
@@ -48,8 +48,8 @@ ScElementaryEventSubscription::ScElementaryEventSubscription(
 
 ScElementaryEventSubscription::~ScElementaryEventSubscription()
 {
-  if (m_event)
-    sc_event_destroy(m_event);
+  if (m_event_subscription)
+    sc_event_subscription_destroy(m_event_subscription);
 }
 
 void ScElementaryEventSubscription::SetDelegate(DelegateFunc && func)
@@ -63,7 +63,7 @@ void ScElementaryEventSubscription::RemoveDelegate()
 }
 
 sc_result ScElementaryEventSubscription::Handler(
-    sc_event const * event,
+    sc_event_subscription const * event_subscription,
     sc_addr userAddr,
     sc_addr connectorAddr,
     sc_type connectorType,
@@ -71,18 +71,19 @@ sc_result ScElementaryEventSubscription::Handler(
 {
   sc_result result = SC_RESULT_ERROR;
 
-  auto * eventObj = (ScElementaryEventSubscription *)sc_event_get_data(event);
+  auto * eventSubscription = (ScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
 
-  if (eventObj == nullptr)
+  if (eventSubscription == nullptr)
     return result;
 
-  DelegateFunc delegateFunc = eventObj->m_delegate;
+  DelegateFunc delegateFunc = eventSubscription->m_delegate;
   if (delegateFunc == nullptr)
     return result;
 
   try
   {
-    delegateFunc(ScElementaryEvent(userAddr, sc_event_get_element(event), connectorAddr, connectorType, otherAddr));
+    delegateFunc(ScElementaryEvent(
+        userAddr, sc_event_subscription_get_element(event_subscription), connectorAddr, connectorType, otherAddr));
   }
   catch (utils::ScException & e)
   {
@@ -92,15 +93,15 @@ sc_result ScElementaryEventSubscription::Handler(
   return SC_RESULT_OK;
 }
 
-sc_result ScElementaryEventSubscription::HandlerDelete(sc_event const * event)
+sc_result ScElementaryEventSubscription::HandlerDelete(sc_event_subscription const * event_subscription)
 {
-  auto * eventObj = (ScElementaryEventSubscription *)sc_event_get_data(event);
+  auto * eventSubscription = (ScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
 
-  utils::ScLockScope lock(eventObj->m_lock);
-  if (eventObj->m_event)
+  utils::ScLockScope lock(eventSubscription->m_lock);
+  if (eventSubscription->m_event_subscription)
   {
-    eventObj->m_delegate = nullptr;
-    eventObj->m_event = nullptr;
+    eventSubscription->m_delegate = nullptr;
+    eventSubscription->m_event_subscription = nullptr;
   }
 
   return SC_RESULT_OK;

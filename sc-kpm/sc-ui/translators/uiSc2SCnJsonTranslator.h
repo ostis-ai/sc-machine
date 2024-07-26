@@ -36,7 +36,7 @@ public:
   explicit uiSc2SCnJsonTranslator();
   virtual ~uiSc2SCnJsonTranslator();
 
-  static sc_result ui_translate_sc2scn(sc_event const * event, sc_addr arg);
+  static sc_result ui_translate_sc2scn(sc_event_subscription const * event_subscription, sc_addr arg);
 
 protected:
   //! @copydoc uiTranslateFromSc::runImpl

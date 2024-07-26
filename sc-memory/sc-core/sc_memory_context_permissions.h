@@ -8,7 +8,7 @@
 #define _sc_memory_context_permissions_h_
 
 #include "sc_memory.h"
-#include "sc-store/sc_event.h"
+#include "sc-store/sc_event_subscription.h"
 
 #include "sc-store/sc-base/sc_monitor_table.h"
 
