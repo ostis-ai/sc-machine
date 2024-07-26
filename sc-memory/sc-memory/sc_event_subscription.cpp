@@ -109,16 +109,30 @@ sc_result ScElementaryEventSubscription::HandlerDelete(sc_event_subscription con
 
 ScEventSubscriptionRemoveElement::ScEventSubscriptionRemoveElement(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventRemoveElement const &)> const & func)
-  : TScElementaryEventSubscription(ctx, addr, func)
+  : TScElementaryEventSubscription(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of removing sc-element due subscription sc-element is not valid.");
 }
 
 ScEventSubscriptionChangeLinkContent::ScEventSubscriptionChangeLinkContent(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventChangeLinkContent const &)> const & func)
-  : TScElementaryEventSubscription(ctx, addr, func)
+  : TScElementaryEventSubscription(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of changing link content due subscription sc-element is not valid.");
+
+  if (!ctx.GetElementType(subscriptionAddr).IsLink())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of changing link content due subscription sc-element is not "
+        "sc-link.");
 }

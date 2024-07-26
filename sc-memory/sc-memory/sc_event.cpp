@@ -60,7 +60,7 @@ ScEventRemoveElement::ScEventRemoveElement(
 
 ScAddr ScEventRemoveElement::GetSubscriptionElement() const
 {
-  return m_subscriptionAddr;
+  return ScAddr::Empty;
 }
 
 ScEventChangeLinkContent::ScEventChangeLinkContent(

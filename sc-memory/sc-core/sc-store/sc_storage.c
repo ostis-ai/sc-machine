@@ -977,12 +977,15 @@ sc_addr sc_storage_arc_new_ext(
 #endif
 
   // emit events
-  sc_event_emit(ctx, beg_addr, sc_event_add_output_arc_addr, arc_addr, type, end_addr);
-  sc_event_emit(ctx, end_addr, sc_event_add_input_arc_addr, arc_addr, type, beg_addr);
   if (is_edge && is_not_loop)
   {
     sc_event_emit(ctx, end_addr, sc_event_add_edge_addr, arc_addr, type, beg_addr);
     sc_event_emit(ctx, beg_addr, sc_event_add_edge_addr, arc_addr, type, end_addr);
+  }
+  else
+  {
+    sc_event_emit(ctx, beg_addr, sc_event_add_output_arc_addr, arc_addr, type, end_addr);
+    sc_event_emit(ctx, end_addr, sc_event_add_input_arc_addr, arc_addr, type, beg_addr);
   }
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);

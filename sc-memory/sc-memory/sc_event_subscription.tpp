@@ -82,53 +82,77 @@ sc_result TScElementaryEventSubscription<TScEvent>::HandlerDelete(sc_event_subsc
 template <ScType const & arcType>
 ScEventSubscriptionAddOutputArc<arcType>::ScEventSubscriptionAddOutputArc(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventAddOutputArc<arcType> const &)> const & func)
-  : TScElementaryEventSubscription<ScEventAddOutputArc<arcType>>(ctx, addr, func)
+  : TScElementaryEventSubscription<ScEventAddOutputArc<arcType>>(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of adding output sc-arc due subscription sc-element is not valid.");
 }
 
 template <ScType const & arcType>
 ScEventSubscriptionAddInputArc<arcType>::ScEventSubscriptionAddInputArc(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventAddInputArc<arcType> const &)> const & func)
-  : TScElementaryEventSubscription<ScEventAddInputArc<arcType>>(ctx, addr, func)
+  : TScElementaryEventSubscription<ScEventAddInputArc<arcType>>(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of adding input sc-arc due subscription sc-element is not valid.");
 }
 
 template <ScType const & edgeType>
 ScEventSubscriptionAddEdge<edgeType>::ScEventSubscriptionAddEdge(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventAddEdge<edgeType> const &)> const & func)
-  : TScElementaryEventSubscription<ScEventAddEdge<edgeType>>(ctx, addr, func)
+  : TScElementaryEventSubscription<ScEventAddEdge<edgeType>>(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of adding sc-edge due subscription sc-element is not valid.");
 }
 
 template <ScType const & arcType>
 ScEventSubscriptionRemoveOutputArc<arcType>::ScEventSubscriptionRemoveOutputArc(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventRemoveOutputArc<arcType> const &)> const & func)
-  : TScElementaryEventSubscription<ScEventRemoveOutputArc<arcType>>(ctx, addr, func)
+  : TScElementaryEventSubscription<ScEventRemoveOutputArc<arcType>>(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of removing output sc-arc due subscription sc-element is not valid.");
 }
 
 template <ScType const & arcType>
 ScEventSubscriptionRemoveInputArc<arcType>::ScEventSubscriptionRemoveInputArc(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventRemoveInputArc<arcType> const &)> const & func)
-  : TScElementaryEventSubscription<ScEventRemoveInputArc<arcType>>(ctx, addr, func)
+  : TScElementaryEventSubscription<ScEventRemoveInputArc<arcType>>(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of removing input sc-arc due subscription sc-element is not valid.");
 }
 
 template <ScType const & edgeType>
 ScEventSubscriptionRemoveEdge<edgeType>::ScEventSubscriptionRemoveEdge(
     ScMemoryContext const & ctx,
-    ScAddr const & addr,
+    ScAddr const & subscriptionAddr,
     std::function<void(ScEventRemoveEdge<edgeType> const &)> const & func)
-  : TScElementaryEventSubscription<ScEventRemoveEdge<edgeType>>(ctx, addr, func)
+  : TScElementaryEventSubscription<ScEventRemoveEdge<edgeType>>(ctx, subscriptionAddr, func)
 {
+  if (!ctx.IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of removing sc-edge due subscription sc-element is not valid.");
 }
