@@ -20,6 +20,8 @@ ScSet::ScSet(ScMemoryContext & ctx, ScAddr const & setAddr)
 {
 }
 
+ScSet::~ScSet() = default;
+
 ScSet::ScSet(ScSet const & other)
   : ScAddr(other)
 {

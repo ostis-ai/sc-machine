@@ -14,14 +14,14 @@
 
 #include "utils/sc_log.hpp"
 
-#include <iostream>
-
 extern "C"
 {
 #include "sc-core/sc_keynodes.h"
 #include "sc-core/sc_memory_private.h"
 #include "sc-core/sc_memory_context_private.h"
 #include "sc-core/sc_memory_context_permissions.h"
+#include "sc-core/sc_memory_headers.h"
+#include "sc-core/sc_helper.h"
 }
 
 SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
@@ -175,6 +175,16 @@ ScAddr ScMemoryContext::GetUserAddr()
 {
   CHECK_CONTEXT;
   return sc_memory_context_get_user_addr(m_context);
+}
+
+sc_memory_context * ScMemoryContext::operator*() const
+{
+  return m_context;
+}
+
+sc_memory_context * ScMemoryContext::GetRealContext() const
+{
+  return m_context;
 }
 
 void ScMemoryContext::BeingEventsPending()

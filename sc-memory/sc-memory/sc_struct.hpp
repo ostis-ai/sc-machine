@@ -7,6 +7,7 @@
 #pragma once
 
 #include "sc_addr.hpp"
+
 #include "sc_utils.hpp"
 
 class ScSet : public ScAddr
@@ -16,7 +17,7 @@ public:
 
   _SC_EXTERN ScSet(ScMemoryContext & ctx, ScAddr const & setAddr = ScAddr::Empty);
 
-  _SC_EXTERN ~ScSet() = default;
+  _SC_EXTERN ~ScSet();
 
   _SC_EXTERN ScSet(ScSet const & other);
 

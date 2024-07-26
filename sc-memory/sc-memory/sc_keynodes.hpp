@@ -12,7 +12,6 @@
 #include "sc_object.hpp"
 
 #include "sc_addr.hpp"
-
 #include "sc_type.hpp"
 
 namespace internal
