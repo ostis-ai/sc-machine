@@ -199,6 +199,11 @@ private:
 template <ScType const & arcType>
 class _SC_EXTERN ScEventAddInputArc final : public ScEventAddArc<arcType>
 {
+public:
+  _SC_EXTERN ScAddr GetArcSourceElement() const override;
+
+  _SC_EXTERN ScAddr GetArcTargetElement() const override;
+
 protected:
   _SC_EXTERN ScEventAddInputArc(
       ScAddr const & userAddr,
@@ -295,6 +300,11 @@ private:
 template <ScType const & arcType>
 class _SC_EXTERN ScEventRemoveInputArc final : public ScEventRemoveArc<arcType>
 {
+public:
+  _SC_EXTERN ScAddr GetArcSourceElement() const override;
+
+  _SC_EXTERN ScAddr GetArcTargetElement() const override;
+
 protected:
   _SC_EXTERN ScEventRemoveInputArc(
       ScAddr const & userAddr,
