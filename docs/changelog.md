@@ -22,6 +22,7 @@ encapsulated this logic;
 ### Added
 
 - Usings `ScAddrStack`, `ScAddrQueue`, `ScAddrSet` and `ScAddrHashSet`
+- Doc strings for iterator classes
 - Clean monitor tables by size threshold
 - Compile option to optimize checking local user permissions
 - Check incidence between sc-connectors and sc-elements substituted into sc-template from sc-template params
@@ -71,6 +72,8 @@ encapsulated this logic;
 
 ### Fixed
 
+- Separate specializations from declarations in iterators
+- Fix duplication of iterator specializations
 - Make sc_addr_hash equal to sc_uint32
 - Make core literal types platform-independent
 - Erasing sc-connectors during iterating
