@@ -7,6 +7,35 @@
 
 #include "agents_test_utils.hpp"
 
+TEST_F(ScAgentTest, InvalidSubscription)
+{
+  ScAddr const & subscriptionAddr{1233241};
+  EXPECT_THROW(SubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(UnsubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScAgentTest, SubscribeAgentTwice)
+{
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_NO_THROW(SubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr));
+  EXPECT_THROW(SubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr), utils::ExceptionInvalidState);
+  EXPECT_NO_THROW(UnsubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr));
+}
+
+TEST_F(ScAgentTest, UnsubscribeAgentTwice)
+{
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_NO_THROW(SubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr));
+  EXPECT_NO_THROW(UnsubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr));
+  EXPECT_THROW(UnsubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr), utils::ExceptionInvalidState);
+}
+
+TEST_F(ScAgentTest, UnsubscribeNotSubscribedAgent)
+{
+  ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_THROW(UnsubscribeAgent<ATestAddInputArc>(&*m_ctx, subscriptionAddr), utils::ExceptionInvalidState);
+}
+
 TEST_F(ScAgentTest, ATestAddInputArc)
 {
   ScAddr const & subscriptionAddr = m_ctx->CreateNode(ScType::NodeConst);
