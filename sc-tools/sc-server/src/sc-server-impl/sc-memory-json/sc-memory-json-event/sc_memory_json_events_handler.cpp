@@ -6,6 +6,16 @@
 
 #include "sc_memory_json_events_handler.hpp"
 
+std::unordered_map<std::string, std::string> const
+    ScMemoryJsonEventsHandler::m_deprecatedEventsIdtfsToSystemEventsIdtfs = {
+        {"add_ingoing_edge", "sc_event_add_input_arc"},
+        {"add_outgoing_edge", "sc_event_add_output_arc"},
+        {"remove_ingoing_edge", "sc_event_remove_input_arc"},
+        {"remove_outgoing_edge", "sc_event_remove_output_arc"},
+        {"delete_element", "sc_event_erase_element"},
+        {"content_change", "sc_event_change_content"},
+};
+
 ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx)
   : ScMemoryJsonHandler(server)
   , m_context(processCtx)
@@ -67,13 +77,14 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
   ScMemoryJsonPayload responsePayload;
   for (auto & atom : message)
   {
-    std::string const & eventType = atom["type"];
+    std::string eventType = atom["type"];
     ScAddr const & subscriptionAddr = ScAddr(atom["addr"].get<size_t>());
 
-    ScAddr const & eventTypeAddr = m_context->HelperFindBySystemIdtf(eventType);
-    if (!eventTypeAddr.IsValid())
-      return responsePayload;
+    auto const & it = m_deprecatedEventsIdtfsToSystemEventsIdtfs.find(eventType);
+    if (it != m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
+      eventType = it->second;
 
+    ScAddr const & eventTypeAddr = m_context->HelperFindBySystemIdtf(eventType);
     ScEventSubscription * subscription = new ScElementaryEventSubscription(
         *m_context,
         eventTypeAddr,
