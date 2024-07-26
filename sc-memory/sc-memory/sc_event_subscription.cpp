@@ -72,7 +72,6 @@ sc_result ScElementaryEventSubscription::Handler(
   sc_result result = SC_RESULT_ERROR;
 
   auto * eventSubscription = (ScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
-
   if (eventSubscription == nullptr)
     return result;
 
