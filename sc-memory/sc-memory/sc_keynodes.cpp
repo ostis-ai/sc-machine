@@ -49,11 +49,6 @@ ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type)
     internal::ScKeynodesRegister::Remember(this, sysIdtf, type);
 }
 
-ScKeynode::ScKeynode(sc_addr const & addr)
-  : ScAddr(addr)
-{
-}
-
 ScKeynode::~ScKeynode()
 {
   internal::ScKeynodesRegister::Forget(this);
@@ -164,47 +159,6 @@ ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)
   }
 
   return sc_result_error;
-}
-
-sc_result ScKeynodes::GetResultCodeByAddr(ScAddr const & resultClassAddr)
-{
-  if (!resultClassAddr.IsValid())
-    return SC_RESULT_UNKNOWN;
-
-  if (resultClassAddr == sc_result_error)
-    return SC_RESULT_ERROR;
-  else if (resultClassAddr == sc_result_ok)
-    return SC_RESULT_OK;
-  else if (resultClassAddr == sc_result_no)
-    return SC_RESULT_NO;
-  else if (resultClassAddr == sc_result_error_invalid_params)
-    return SC_RESULT_ERROR_INVALID_PARAMS;
-  else if (resultClassAddr == sc_result_error_invalid_type)
-    return SC_RESULT_ERROR_INVALID_TYPE;
-  else if (resultClassAddr == sc_result_invalid_state)
-    return SC_RESULT_ERROR_INVALID_STATE;
-  else if (resultClassAddr == sc_result_error_not_found)
-    return SC_RESULT_ERROR_NOT_FOUND;
-  else if (resultClassAddr == sc_result_error_full_memory)
-    return SC_RESULT_ERROR_FULL_MEMORY;
-  else if (resultClassAddr == sc_result_error_addr_is_not_valid)
-    return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-  else if (resultClassAddr == sc_result_error_element_is_not_node)
-    return SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE;
-  else if (resultClassAddr == sc_result_error_element_is_not_link)
-    return SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
-  else if (resultClassAddr == sc_result_error_element_is_not_connector)
-    return SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
-  else if (resultClassAddr == sc_result_error_file_memory_io)
-    return SC_RESULT_ERROR_FILE_MEMORY_IO;
-  else if (resultClassAddr == sc_result_error_stream_io)
-    return SC_RESULT_ERROR_STREAM_IO;
-  else if (resultClassAddr == sc_result_error_invalid_system_identifier)
-    return SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER;
-  else if (resultClassAddr == sc_result_error_duplicated_system_identifier)
-    return SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER;
-
-  return SC_RESULT_UNKNOWN;
 }
 
 ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)

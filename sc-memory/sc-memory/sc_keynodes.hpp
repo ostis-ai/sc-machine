@@ -60,8 +60,6 @@ class _SC_EXTERN ScKeynode final : public ScAddr
 public:
   _SC_EXTERN explicit ScKeynode(std::string_view const & sysIdtf = "", ScType const & type = ScType::NodeConst);
 
-  _SC_EXTERN explicit ScKeynode(sc_addr const & addr);
-
   _SC_EXTERN ~ScKeynode();
 
   _SC_EXTERN ScKeynode(ScKeynode const & other);
@@ -105,6 +103,7 @@ public:
       ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const nrel_answer{"nrel_answer", ScType::NodeConstNoRole};
 
+  _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_add_input_arc{"sc_event_add_input_arc", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_add_output_arc{"sc_event_add_output_arc", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_add_edge{"sc_event_add_edge", ScType::NodeConstClass};
@@ -178,18 +177,16 @@ public:
   _SC_EXTERN static inline ScKeynode const binary_string{"binary_string", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const binary_custom{"binary_custom", ScType::NodeConstClass};
 
-  _SC_EXTERN static inline ScKeynode const empty_class{};
-
   _SC_EXTERN static ScAddr const & GetRrelIndex(size_t idx);
   _SC_EXTERN static size_t GetRrelIndexNum();
 
 private:
   friend class ScMemory;
   friend class ScModule;
+  friend class ScLink;
 
   static _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
   static _SC_EXTERN void Shutdown(ScMemoryContext * ctx);
 
   static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);
-  static _SC_EXTERN sc_result GetResultCodeByAddr(ScAddr const & resultClassAddr);
 };

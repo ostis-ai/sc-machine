@@ -111,7 +111,7 @@ private:
   friend class TScElementaryEventSubscription;
 
   static inline ScType const & elementType = _elementType;
-  static inline ScAddr const & eventType = ScKeynodes::empty_class;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_unknown;
 };
 
 /*!
