@@ -4,6 +4,7 @@
 
 extern "C"
 {
+#include "sc-core/sc_helper.h"
 #include "sc-search/search.h"
 #include "sc-search/search_keynodes.h"
 #include "sc-search/search_agents.h"

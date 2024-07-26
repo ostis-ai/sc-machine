@@ -10,7 +10,10 @@
 #include "utils/sc_message.hpp"
 #include "utils/sc_console.hpp"
 
+extern "C"
+{
 #include "sc-core/sc-store/sc_types.h"
+}
 
 namespace utils
 {

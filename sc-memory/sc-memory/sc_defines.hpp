@@ -6,7 +6,10 @@
 
 #pragma once
 
+extern "C"
+{
 #include "sc-core/sc-store/sc_defines.h"
+}
 
 #define _SC_EXTERN
 

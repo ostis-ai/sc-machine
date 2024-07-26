@@ -4,16 +4,22 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include "uiSc2SCnJsonTranslator.h"
+
+#include <algorithm>
+#include <string_view>
+
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_stream.hpp"
 
-#include "uiSc2SCnJsonTranslator.h"
+extern "C"
+{
+#include "sc-core/sc_helper.h"
+}
 
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
 #include "uiUtils.h"
-#include <algorithm>
-#include <string_view>
 
 namespace ScnTranslatorConstants
 {

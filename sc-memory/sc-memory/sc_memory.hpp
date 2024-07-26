@@ -12,17 +12,13 @@
 
 #pragma once
 
-extern "C"
-{
-#include "sc-core/sc_memory_headers.h"
-#include "sc-core/sc_helper.h"
-}
-
 #include "sc_addr.hpp"
-#include "sc_iterator.hpp"
-#include "sc_stream.hpp"
-#include "sc_template.hpp"
 #include "sc_type.hpp"
+
+#include "sc_iterator.hpp"
+#include "sc_template.hpp"
+
+#include "sc_stream.hpp"
 
 class ScMemoryContext;
 
@@ -109,15 +105,9 @@ public:
 
   _SC_EXTERN ScAddr GetUserAddr();
 
-  _SC_EXTERN sc_memory_context * operator*() const
-  {
-    return m_context;
-  }
+  _SC_EXTERN sc_memory_context * operator*() const;
 
-  _SC_EXTERN sc_memory_context * GetRealContext() const
-  {
-    return m_context;
-  }
+  _SC_EXTERN sc_memory_context * GetRealContext() const;
 
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
   _SC_EXTERN void Destroy() noexcept;
