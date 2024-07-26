@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.11)
 set(CMAKE_CXX_STANDARD 17)
 project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
-set(CMAKE_BUILD_TYPE Debug)
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
 project_version(SC_MACHINE "0.9.0-Unlock")
@@ -36,11 +35,11 @@ set(SC_MEMORY_SRC "${SC_MACHINE_ROOT}/sc-memory")
 set(SC_KPM_SRC "${SC_MACHINE_ROOT}/sc-kpm")
 set(SC_TOOLS_SRC "${SC_MACHINE_ROOT}/sc-tools")
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE -Wall -Wno-unknown-pragmas")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE -Wall -Wextra -Wno-unknown-pragmas")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG -Wall -Wno-unknown-pragmas")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG -Wall -Wextra -Wno-unknown-pragmas")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 
 option(AUTO_CCACHE "Use ccache to speed up rebuilds" ON)
 
