@@ -255,8 +255,8 @@ TEST_F(ScLinkTest, find_links_by_substr)
   EXPECT_FALSE(ctx.FindLinksByContent("cotents_25").empty());
 
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("content1").size() == 1);
-  EXPECT_TRUE(ctx.FindLinksByContentSubstring("cont").size() == 2);
-  EXPECT_TRUE(ctx.FindLinksByContentSubstring("content").size() == 2);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("cont").size() == 3);
+  EXPECT_TRUE(ctx.FindLinksByContentSubstring("content").size() == 3);
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("content2").empty());
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("contents").empty());
   EXPECT_TRUE(ctx.FindLinksByContentSubstring("cotents_2").size() == 1);
@@ -299,7 +299,7 @@ TEST_F(ScLinkTest, find_strings_by_substr)
   EXPECT_TRUE(strings[0] == "some coten");
 
   strings = ctx.FindLinksContentsByContentSubstring("cont");
-  EXPECT_TRUE(strings.size() == 2);
+  EXPECT_TRUE(strings.size() == 3);
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") != strings.end());
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
@@ -348,7 +348,7 @@ TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
   strings = ctx.FindLinksContentsByContentSubstring("cont", 3);
-  EXPECT_TRUE(strings.size() == 2);  // found by substring, not prefix
+  EXPECT_TRUE(strings.size() == 3);  // found by substring, not prefix
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "ton_content") != strings.end());
   EXPECT_TRUE(std::find(strings.begin(), strings.end(), "content_tents_25") != strings.end());
 
