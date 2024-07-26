@@ -12,16 +12,6 @@
 
 ScEventSubscription::~ScEventSubscription() = default;
 
-sc_result ScEventSubscription::Handler(sc_event_subscription const *, sc_addr, sc_addr, sc_type, sc_addr)
-{
-  return SC_RESULT_OK;
-}
-
-sc_result ScEventSubscription::HandlerDelete(sc_event_subscription const *)
-{
-  return SC_RESULT_OK;
-}
-
 ScElementaryEventSubscription::ScElementaryEventSubscription()
   : m_event_subscription(nullptr)
   , m_delegate(nullptr)
@@ -72,8 +62,6 @@ sc_result ScElementaryEventSubscription::Handler(
   sc_result result = SC_RESULT_ERROR;
 
   auto * eventSubscription = (ScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
-  if (eventSubscription == nullptr)
-    return result;
 
   DelegateFunc delegateFunc = eventSubscription->m_delegate;
   if (delegateFunc == nullptr)

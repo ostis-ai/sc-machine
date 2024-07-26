@@ -55,8 +55,6 @@ sc_result TScElementaryEventSubscription<TScEvent>::Handler(
   sc_result result = SC_RESULT_ERROR;
 
   auto * eventSubscription = (TScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
-  if (eventSubscription == nullptr)
-    return result;
 
   DelegateFunc delegateFunc = eventSubscription->m_delegate;
   if (delegateFunc == nullptr)

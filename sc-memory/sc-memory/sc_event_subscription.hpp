@@ -24,17 +24,6 @@ public:
   _SC_EXTERN void SetDelegate(FuncT &&);
 
   _SC_EXTERN virtual void RemoveDelegate() = 0;
-
-protected:
-  static sc_result Handler(sc_event_subscription const *, sc_addr, sc_addr, sc_type, sc_addr);
-
-  /*!
-   * @brief Handles the deletion of an event.
-   *
-   * @param event Pointer to an sc-event.
-   * @return Result of the event deletion handling.
-   */
-  static sc_result HandlerDelete(sc_event_subscription const * event_subscription);
 };
 
 class _SC_EXTERN ScElementaryEventSubscription : public ScEventSubscription
