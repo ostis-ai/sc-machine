@@ -78,7 +78,7 @@ void ScAgent<TScEvent>::Subscribe(ScMemoryContext * ctx, TScAddr const &... subs
                                     << "` is not valid.");
     if (subscriptionsMap.find(subscriptionAddr) != subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
+          utils::ExceptionInvalidState,
           "`" << agentName << "` has already been subscribed to event `" << eventName << "(" << subscriptionAddr.Hash()
               << ")`.");
 
@@ -102,7 +102,7 @@ void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... su
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
   auto const & agentsMapIt = ScAgentAbstract<TScEvent>::m_events.find(agentName);
   if (agentsMapIt == ScAgentAbstract<TScEvent>::m_events.cend())
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, agentName << " has not been subscribed to any events yet.");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, agentName << " has not been subscribed to any events yet.");
 
   std::string const & eventName = ScEvent::GetName<TScEvent>();
   auto & subscriptionsMap = agentsMapIt->second;
@@ -121,7 +121,7 @@ void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... su
     auto const & it = subscriptionsMap.find(subscriptionAddr);
     if (it == subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
+          utils::ExceptionInvalidState,
           "`" << agentName << "` has not been subscribed to event `" << eventName << "(" << subscriptionAddr.Hash()
               << ")` yet.");
 
