@@ -313,13 +313,13 @@ private:
 #include "sc_event.tpp"
 
 /*!
- * @class ScEventEraseElement
+ * @class ScEventRemoveElement
  * @brief Represents an event where an element is erased.
  */
-class _SC_EXTERN ScEventEraseElement final : public TScElementaryEvent<ScType::Unknown>
+class _SC_EXTERN ScEventRemoveElement final : public TScElementaryEvent<ScType::Unknown>
 {
 protected:
-  _SC_EXTERN ScEventEraseElement(
+  _SC_EXTERN ScEventRemoveElement(
       ScAddr const & userAddr,
       ScAddr const & subscriptionAddr,
       ScAddr const & connectorAddr,
@@ -333,17 +333,17 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_erase_element;
+  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_element;
 };
 
 /*!
- * @class ScEventChangeContent
+ * @class ScEventChangeLinkContent
  * @brief Represents an event where the content of an element is changed.
  */
-class _SC_EXTERN ScEventChangeContent final : public TScElementaryEvent<ScType::Unknown>
+class _SC_EXTERN ScEventChangeLinkContent final : public TScElementaryEvent<ScType::Unknown>
 {
 protected:
-  _SC_EXTERN ScEventChangeContent(
+  _SC_EXTERN ScEventChangeLinkContent(
       ScAddr const & userAddr,
       ScAddr const & subscriptionAddr,
       ScAddr const & connectorAddr,

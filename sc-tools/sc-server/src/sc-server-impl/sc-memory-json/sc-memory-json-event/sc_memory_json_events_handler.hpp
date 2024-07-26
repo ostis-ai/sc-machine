@@ -35,6 +35,8 @@ private:
   ScMemoryContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
 
+  static std::unordered_map<std::string, std::string> const m_deprecatedEventsIdtfsToSystemEventsIdtfs;
+
   ScMemoryJsonPayload HandleRequestPayload(
       ScServerSessionId const & sessionId,
       std::string const & requestType,

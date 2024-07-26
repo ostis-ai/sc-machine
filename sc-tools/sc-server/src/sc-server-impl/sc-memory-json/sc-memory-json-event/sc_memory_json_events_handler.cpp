@@ -12,7 +12,7 @@ std::unordered_map<std::string, std::string> const
         {"add_outgoing_edge", "sc_event_add_output_arc"},
         {"remove_ingoing_edge", "sc_event_remove_input_arc"},
         {"remove_outgoing_edge", "sc_event_remove_output_arc"},
-        {"delete_element", "sc_event_erase_element"},
+        {"delete_element", "sc_event_remove_element"},
         {"content_change", "sc_event_change_content"},
 };
 

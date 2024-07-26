@@ -17,7 +17,7 @@ sc_addr sc_event_add_edge_addr;
 sc_addr sc_event_remove_input_arc_addr;
 sc_addr sc_event_remove_output_arc_addr;
 sc_addr sc_event_remove_edge_addr;
-sc_addr sc_event_erase_element_addr;
+sc_addr sc_event_remove_element_addr;
 sc_addr sc_event_change_content_addr;
 
 sc_addr myself_addr;
@@ -77,7 +77,7 @@ sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_mem
   SC_RESOLVE_KEYNODE(ctx, sc_event_remove_input_arc_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, sc_event_remove_output_arc_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, sc_event_remove_edge_addr, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, sc_event_erase_element_addr, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, sc_event_remove_element_addr, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, sc_event_change_content_addr, init_memory_generated_structure);
 
   SC_RESOLVE_KEYNODE(ctx, myself_addr, init_memory_generated_structure);

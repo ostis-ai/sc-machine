@@ -15,7 +15,7 @@
 
 sc_memory_context * s_erase_elements_ctx = 0;
 
-sc_event * event_erase_elements;
+sc_event * event_remove_elements;
 
 _SC_EXT_EXTERN sc_result
 sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
@@ -25,14 +25,14 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
   if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
-  event_erase_elements = sc_event_new(
+  event_remove_elements = sc_event_new(
       s_erase_elements_ctx,
       keynode_action_initiated,
       sc_event_add_output_arc_addr,
       null_ptr,
       agent_erase_elements,
       null_ptr);
-  if (event_erase_elements == null_ptr)
+  if (event_remove_elements == null_ptr)
     return SC_RESULT_ERROR;
 
   return SC_RESULT_OK;
@@ -47,8 +47,8 @@ _SC_EXT_EXTERN sc_result sc_module_shutdown()
 {
   sc_result res = SC_RESULT_OK;
 
-  if (event_erase_elements)
-    sc_event_destroy(event_erase_elements);
+  if (event_remove_elements)
+    sc_event_destroy(event_remove_elements);
 
   return res;
 }

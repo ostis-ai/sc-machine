@@ -746,7 +746,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       sc_monitor_release_write_n(2, beg_monitor, end_monitor);
     }
 
-    sc_event_emit(ctx, addr, sc_event_erase_element_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
+    sc_event_emit(ctx, addr, sc_event_remove_element_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
 
     sc_monitor_acquire_write(monitor);
     sc_storage_free_element(addr);

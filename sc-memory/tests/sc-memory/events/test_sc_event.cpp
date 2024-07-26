@@ -247,7 +247,7 @@ TEST_F(ScEventTest, ChangeContent)
     EXPECT_TRUE(m_ctx->SetLinkContent(addr, stream));
   };
 
-  testEventsFuncT<ScEventSubscriptionChangeContent>(*m_ctx, addr, prepare, emitEvent);
+  testEventsFuncT<ScEventSubscriptionChangeLinkContent>(*m_ctx, addr, prepare, emitEvent);
 }
 
 TEST_F(ScEventTest, EraseElement)
@@ -261,7 +261,7 @@ TEST_F(ScEventTest, EraseElement)
     EXPECT_TRUE(m_ctx->EraseElement(addr));
   };
 
-  testEventsFuncT<ScEventSubscriptionEraseElement>(*m_ctx, addr, prepare, emitEvent);
+  testEventsFuncT<ScEventSubscriptionRemoveElement>(*m_ctx, addr, prepare, emitEvent);
 }
 
 TEST_F(ScEventTest, DestroyOrder)

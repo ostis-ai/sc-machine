@@ -40,7 +40,7 @@ TEST_F(ScEventTest, ThreadingSmoke)
       ScKeynodes::sc_event_remove_input_arc,
       ScKeynodes::sc_event_remove_output_arc,
       ScKeynodes::sc_event_remove_edge,
-      ScKeynodes::sc_event_erase_element,
+      ScKeynodes::sc_event_remove_element,
       ScKeynodes::sc_event_change_content,
   };
 

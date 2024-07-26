@@ -184,22 +184,23 @@ public:
       std::function<void(ScEventRemoveEdge<edgeType> const &)> const & func);
 };
 
-class _SC_EXTERN ScEventSubscriptionEraseElement final : public TScElementaryEventSubscription<ScEventEraseElement>
+class _SC_EXTERN ScEventSubscriptionRemoveElement final : public TScElementaryEventSubscription<ScEventRemoveElement>
 {
 public:
-  _SC_EXTERN ScEventSubscriptionEraseElement(
+  _SC_EXTERN ScEventSubscriptionRemoveElement(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventEraseElement const &)> const & func);
+      std::function<void(ScEventRemoveElement const &)> const & func);
 };
 
-class _SC_EXTERN ScEventSubscriptionChangeContent final : public TScElementaryEventSubscription<ScEventChangeContent>
+class _SC_EXTERN ScEventSubscriptionChangeLinkContent final
+  : public TScElementaryEventSubscription<ScEventChangeLinkContent>
 {
 public:
-  _SC_EXTERN ScEventSubscriptionChangeContent(
+  _SC_EXTERN ScEventSubscriptionChangeLinkContent(
       ScMemoryContext const & ctx,
       ScAddr const & addr,
-      std::function<void(ScEventChangeContent const &)> const & func);
+      std::function<void(ScEventChangeLinkContent const &)> const & func);
 };
 
 #include "sc_event_subscription.tpp"

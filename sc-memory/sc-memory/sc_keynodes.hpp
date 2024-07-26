@@ -116,7 +116,7 @@ public:
       "sc_event_remove_output_arc",
       ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_remove_edge{"sc_event_remove_edge", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_erase_element{"sc_event_erase_element", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_remove_element{"sc_event_remove_element", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_change_content{"sc_event_change_content", ScType::NodeConstClass};
 
   _SC_EXTERN static inline ScKeynode const sc_result_class{"sc_result", ScType::NodeConstClass};

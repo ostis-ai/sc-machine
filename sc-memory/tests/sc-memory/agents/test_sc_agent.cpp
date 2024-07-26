@@ -89,7 +89,7 @@ ScAddr ATestEraseElement::GetActionClass() const
   return ATestEraseElement::erase_element_action;
 }
 
-ScResult ATestEraseElement::DoProgram(ScEventEraseElement const &, ScAction & action)
+ScResult ATestEraseElement::DoProgram(ScEventRemoveElement const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -102,7 +102,7 @@ ScAddr ATestChangeContent::GetActionClass() const
   return ATestChangeContent::content_change_action;
 }
 
-ScResult ATestChangeContent::DoProgram(ScEventChangeContent const &, ScAction & action)
+ScResult ATestChangeContent::DoProgram(ScEventChangeLinkContent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
