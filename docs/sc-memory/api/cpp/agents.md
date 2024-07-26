@@ -170,10 +170,10 @@ SC_AGENT_IMPLEMENTATION(MyAgent)
 
 * `listenAddr` - sc-address of sc-element listening for sc-events in sc-memory (see [ScEvent](#scevent));
 * `edgeAddr` - sc-address of sc-connector that will be created to or from listening sc-element with sc-address 
-`listenAddr` (if sc-event type is `ScEventEraseElement` or `ScEventChangeContent`, then value of this variable is empty 
+`listenAddr` (if sc-event type is `ScEventRemoveElement` or `ScEventChangeLinkContent`, then value of this variable is empty 
 sc-address);
 * `otherAddr` - sc-address of target or source sc-element of sc-connector with sc-address `edgeAddr` (if sc-event type 
-is `ScEventEraseElement` or `ScEventChangeContent`, then value of this variable is empty sc-address);
+is `ScEventRemoveElement` or `ScEventChangeLinkContent`, then value of this variable is empty sc-address);
 * `m_memoryCtx` - sc-memory context of calling sc-agent that can be used to work with sc-memory.
 
 If sc-agent finished work without any errors, then it must return `SC_RESULT_OK`, otherwise - one of code error
@@ -226,8 +226,8 @@ specified event types:
 * `ScEventAddInputArc` - emits each time, when input (ingoing) sc-connector (into specified sc-element) is created;
 * `ScEventRemoveOutputArc` - emits each time, when output (outgoing) sc-connector (from specified sc-element) is erased;
 * `ScEventRemoveInputArc` - emits each time, when input (ingoing) sc-connector (into specified sc-element) is erased;
-* `ScEventEraseElement` - emits, when specified sc-element is erased;
-* `ScEventChangeContent` - emits each time, when content of specified sc-link is changed.
+* `ScEventRemoveElement` - emits, when specified sc-element is erased;
+* `ScEventChangeLinkContent` - emits each time, when content of specified sc-link is changed.
 
 Each event constructor takes 3 parameters:
 
@@ -353,7 +353,7 @@ ScEventRemoveOutputArc event(context, addr, callback);
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseElement</strong></td>
+    <td><strong>ScEventRemoveElement</strong></td>
     <td>
     Callback calls when listening sc-element with <code>listenAddr</code> is erased.
     <hr/>
@@ -370,13 +370,13 @@ auto const callback = [](ScAddr const & listenAddr,
   ...
   return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventEraseElement event(context, addr, callback);
+ScEventRemoveElement event(context, addr, callback);
     </code></pre>
     </td>
   </tr>
 
   <tr>
-    <td><strong>ScEventChangeContent</strong></td>
+    <td><strong>ScEventChangeLinkContent</strong></td>
     <td>
       <scg src="../images/sc-events/sc_event_content.gwf"></scg>
       <br/>
@@ -395,7 +395,7 @@ auto const callback = [](ScAddr const & listenAddr,
   ...
   return SC_TRUE; // if failed, then return SC_FALSE
 };
-ScEventChangeContent evt(context, addr, callback);
+ScEventChangeLinkContent evt(context, addr, callback);
       </code></pre>
     </td>
   </tr>

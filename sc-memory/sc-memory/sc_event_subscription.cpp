@@ -24,7 +24,7 @@ sc_result ScEventSubscription::HandlerDelete(sc_event const *)
 
 ScElementaryEventSubscription::ScElementaryEventSubscription()
   : m_event(nullptr)
-  , m_delegate()
+  , m_delegate(nullptr)
 {
 }
 
@@ -106,18 +106,18 @@ sc_result ScElementaryEventSubscription::HandlerDelete(sc_event const * event)
   return SC_RESULT_OK;
 }
 
-ScEventSubscriptionEraseElement::ScEventSubscriptionEraseElement(
+ScEventSubscriptionRemoveElement::ScEventSubscriptionRemoveElement(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<void(ScEventEraseElement const &)> const & func)
+    std::function<void(ScEventRemoveElement const &)> const & func)
   : TScElementaryEventSubscription(ctx, addr, func)
 {
 }
 
-ScEventSubscriptionChangeContent::ScEventSubscriptionChangeContent(
+ScEventSubscriptionChangeLinkContent::ScEventSubscriptionChangeLinkContent(
     ScMemoryContext const & ctx,
     ScAddr const & addr,
-    std::function<void(ScEventChangeContent const &)> const & func)
+    std::function<void(ScEventChangeLinkContent const &)> const & func)
   : TScElementaryEventSubscription(ctx, addr, func)
 {
 }

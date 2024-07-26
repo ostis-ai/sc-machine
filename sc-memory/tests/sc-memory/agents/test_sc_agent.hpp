@@ -100,7 +100,7 @@ public:
   ScResult DoProgram(ScEventRemoveEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
-class ATestEraseElement : public ScAgent<ScEventEraseElement>
+class ATestEraseElement : public ScAgent<ScEventRemoveElement>
 {
 public:
   static inline ScKeynode const erase_element_action{"erase_element_action", ScType::NodeConstClass};
@@ -108,10 +108,10 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventEraseElement const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventRemoveElement const & event, ScAction & action) override;
 };
 
-class ATestChangeContent : public ScAgent<ScEventChangeContent>
+class ATestChangeContent : public ScAgent<ScEventChangeLinkContent>
 {
 public:
   static inline ScKeynode const content_change_action{"content_change_action", ScType::NodeConstClass};
@@ -119,7 +119,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventChangeContent const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventChangeLinkContent const & event, ScAction & action) override;
 };
 
 class ATestAddMultipleOutputArc : public ScAgent<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>
