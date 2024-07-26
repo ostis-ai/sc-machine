@@ -38,7 +38,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_by_content_substring)
   sc_memory_context * context = **m_ctx;
   sc_addr const link_addr = sc_memory_link_new2(context, sc_type_link | sc_type_const);
 
-  sc_char content[] = "content";
+  sc_char content[] = "context";
   sc_stream * stream = sc_stream_memory_new(content, sc_str_len(content), SC_STREAM_FLAG_READ, SC_FALSE);
   EXPECT_EQ(sc_memory_set_link_content(context, link_addr, stream), SC_RESULT_OK);
 
@@ -63,7 +63,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_contents_by_content_substring)
   sc_memory_context * context = **m_ctx;
   sc_addr const link_addr = sc_memory_link_new2(context, sc_type_link | sc_type_const);
 
-  sc_char content[] = "content";
+  sc_char content[] = "context";
   sc_stream * stream = sc_stream_memory_new(content, sc_str_len(content), SC_STREAM_FLAG_READ, SC_FALSE);
   EXPECT_EQ(sc_memory_set_link_content(context, link_addr, stream), SC_RESULT_OK);
 
