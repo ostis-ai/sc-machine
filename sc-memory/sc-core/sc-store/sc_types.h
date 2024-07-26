@@ -245,6 +245,6 @@ typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator_result sc_iterator_result;
 typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_iterator5 sc_iterator5;
-typedef struct _sc_event sc_event;
+typedef struct _sc_event_subscription sc_event_subscription;
 typedef enum _sc_result sc_result;
 typedef struct _sc_stat sc_stat;

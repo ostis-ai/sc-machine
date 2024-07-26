@@ -12,11 +12,11 @@
 /*!
  * Function that implement sc-agent to search all identifiers of specified sc-elements
  */
-sc_result agent_search_all_identifiers(sc_event const * event, sc_addr arg);
+sc_result agent_search_all_identifiers(sc_event_subscription const * event, sc_addr arg);
 
 /*!
  * Function that implement sc-agent to search all sc-elements identified with main identifier
  */
-sc_result agent_search_all_identified_elements(sc_event const * event, sc_addr arg);
+sc_result agent_search_all_identified_elements(sc_event_subscription const * event, sc_addr arg);
 
 #endif

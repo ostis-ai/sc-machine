@@ -52,11 +52,11 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   sc_monitor_init(&(*manager)->user_local_permissions_monitor);
 
   (*manager)->on_new_users_in_sets_events =
-      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_destroy);
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_subscription_destroy);
   sc_monitor_init(&(*manager)->on_new_users_in_sets_events_monitor);
 
   (*manager)->on_remove_users_from_sets_events =
-      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_destroy);
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_subscription_destroy);
   sc_monitor_init(&(*manager)->on_remove_users_from_sets_events_monitor);
 
   s_memory_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);

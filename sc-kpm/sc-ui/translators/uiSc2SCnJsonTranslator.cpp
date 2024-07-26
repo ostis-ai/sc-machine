@@ -713,7 +713,7 @@ sc_addr uiSc2SCnJsonTranslator::GetNextElementArc(sc_addr elementArc)
 }
 
 // -------------------------------------
-sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event const *, sc_addr arg)
+sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event_subscription const *, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

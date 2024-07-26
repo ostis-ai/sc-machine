@@ -13,11 +13,11 @@
  * Function that implement sc-agent to search all positive, constant and permanent
  * output arcs for specified sc-element
  */
-sc_result agent_search_all_const_pos_output_arc(sc_event const * event, sc_addr arg);
+sc_result agent_search_all_const_pos_output_arc(sc_event_subscription const * event, sc_addr arg);
 
 /*! Function that implemets sc-agent to search all positive, constant and permanent
  * output arcs with relations for specified sc-element
  */
-sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event const * event, sc_addr arg);
+sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event_subscription const * event, sc_addr arg);
 
 #endif

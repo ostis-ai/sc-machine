@@ -229,7 +229,7 @@ sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager *
 }
 
 sc_result _sc_memory_context_manager_on_identified_user(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -247,7 +247,7 @@ sc_result _sc_memory_context_manager_on_identified_user(
       != SC_RESULT_OK)
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, quest_user_addr);
 
   sc_monitor_acquire_write(&ctx->monitor);
@@ -277,7 +277,7 @@ sc_result _sc_memory_context_manager_on_identified_user(
  * for an authenticated user and establishing a connection between user and the context.
  */
 sc_result _sc_memory_context_manager_on_authentication_request_user(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -292,7 +292,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
   _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
   _sc_context_set_permissions_for_element(user_addr, SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS);
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_context_add_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
 
   sc_memory_element_free(s_memory_default_ctx, connector_addr);
@@ -322,7 +322,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
  * for user and its associated memory context.
  */
 sc_result _sc_memory_context_manager_on_unauthentication_request_user(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -335,7 +335,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_context_remove_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
 
   sc_addr const auth_arc_addr = sc_memory_arc_new(
@@ -379,7 +379,7 @@ void _sc_memory_context_manager_handle_user_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_new_user_in_users_set(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -428,7 +428,7 @@ end:
 }
 
 sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -495,11 +495,11 @@ void _sc_memory_context_manager_handle_users_set_action_class(
   updater(manager, users_set_addr, action_class_addr, structure_addr);
 
   sc_monitor_acquire_write(&manager->on_new_users_in_sets_events_monitor);
-  sc_event * event =
+  sc_event_subscription * event =
       sc_hash_table_get(manager->on_new_users_in_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)));
   if (event == null_ptr)
   {
-    event = sc_event_with_user_new(
+    event = sc_event_subscription_with_user_new(
         s_memory_default_ctx,
         users_set_addr,
         sc_event_add_output_arc_addr,
@@ -517,7 +517,7 @@ void _sc_memory_context_manager_handle_users_set_action_class(
       manager->on_remove_users_from_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)));
   if (event == null_ptr)
   {
-    event = sc_event_with_user_new(
+    event = sc_event_subscription_with_user_new(
         s_memory_default_ctx,
         users_set_addr,
         sc_event_remove_output_arc_addr,
@@ -588,7 +588,7 @@ void _sc_memory_context_manager_add_user_action_class(
  * permissions to this sc-arc.
  */
 sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -604,14 +604,14 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
 
   _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_memory_context_manager_add_user_action_class(manager, connector_addr, arc_to_action_class_addr, updater);
 
   return SC_RESULT_OK;
 }
 
 sc_result _sc_memory_context_manager_on_new_user_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -627,7 +627,7 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_new_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -689,7 +689,7 @@ void _sc_memory_context_manager_remove_user_action_class(
  * @return Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  */
 sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -703,7 +703,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_memory_context_manager_remove_user_action_class(manager, connector_addr, arc_to_action_class_addr, updater);
 
   sc_addr const action_arc_addr = sc_memory_arc_new(
@@ -714,7 +714,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_remove_user_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -730,7 +730,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_remove_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -860,7 +860,7 @@ void _sc_memory_context_manager_remove_user_action_class_within_structure(
  * (or set of users) action class within a structure.
  */
 sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -869,7 +869,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_withi
 {
   sc_unused(&initiator_addr);
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
 
   // Only positive access sc-arcs can be used
   if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_pos_const))
@@ -890,7 +890,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_withi
 }
 
 sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -906,7 +906,7 @@ sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
 }
 
 sc_result _sc_memory_context_manager_on_new_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -935,7 +935,7 @@ sc_result _sc_memory_context_manager_on_new_users_set_action_class_within_struct
  * (or set of users) action class within a structure.
  */
 sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -949,7 +949,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_memory_context_manager_remove_user_action_class_within_structure(
       manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr, updater);
 
@@ -964,7 +964,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
 }
 
 sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -980,7 +980,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
 }
 
 sc_result _sc_memory_context_manager_on_remove_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -1078,9 +1078,10 @@ void _sc_memory_context_handle_all_user_permissions(sc_memory_context_manager * 
       _sc_memory_context_manager_remove_user_action_class_within_structure);
 }
 
-#define sc_context_manager_register_user_event(...) manager->user_mode ? sc_event_with_user_new(__VA_ARGS__) : null_ptr
+#define sc_context_manager_register_user_event(...) \
+  manager->user_mode ? sc_event_subscription_with_user_new(__VA_ARGS__) : null_ptr
 
-#define sc_context_manager_unregister_user_event(...) sc_event_destroy(__VA_ARGS__)
+#define sc_context_manager_unregister_user_event(...) sc_event_subscription_destroy(__VA_ARGS__)
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
 {

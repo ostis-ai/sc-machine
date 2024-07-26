@@ -26,7 +26,7 @@ public:
   _SC_EXTERN virtual void RemoveDelegate() = 0;
 
 protected:
-  static sc_result Handler(sc_event const *, sc_addr, sc_addr, sc_type, sc_addr);
+  static sc_result Handler(sc_event_subscription const *, sc_addr, sc_addr, sc_type, sc_addr);
 
   /*!
    * @brief Handles the deletion of an event.
@@ -34,7 +34,7 @@ protected:
    * @param event Pointer to an sc-event.
    * @return Result of the event deletion handling.
    */
-  static sc_result HandlerDelete(sc_event const * event);
+  static sc_result HandlerDelete(sc_event_subscription const * event_subscription);
 };
 
 class _SC_EXTERN ScElementaryEventSubscription : public ScEventSubscription
@@ -65,16 +65,16 @@ protected:
   explicit _SC_EXTERN ScElementaryEventSubscription();
 
   _SC_EXTERN static sc_result Handler(
-      sc_event const * event,
+      sc_event_subscription const * event_subscription,
       sc_addr userAddr,
       sc_addr connectorAddr,
       sc_type connectorType,
       sc_addr otherAddr);
 
-  _SC_EXTERN static sc_result HandlerDelete(sc_event const * event);
+  _SC_EXTERN static sc_result HandlerDelete(sc_event_subscription const * event_subscription);
 
 protected:
-  sc_event * m_event;
+  sc_event_subscription * m_event_subscription;
 
 private:
   DelegateFunc m_delegate;
@@ -103,13 +103,13 @@ protected:
   friend class ScMemoryContext;
 
   _SC_EXTERN static sc_result Handler(
-      sc_event const * event,
+      sc_event_subscription const * event_subscription,
       sc_addr userAddr,
       sc_addr connectorAddr,
       sc_type connectorType,
       sc_addr otherAddr);
 
-  _SC_EXTERN static sc_result HandlerDelete(sc_event const * event);
+  _SC_EXTERN static sc_result HandlerDelete(sc_event_subscription const * event);
 
 private:
   DelegateFunc m_delegate;

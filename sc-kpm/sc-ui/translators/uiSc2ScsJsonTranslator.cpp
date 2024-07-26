@@ -143,7 +143,7 @@ bool uiSc2ScsTranslator::getIdentifier(sc_addr const & addr, sc_addr const & lan
 }
 
 // -------------------------------------------------------
-sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event const *, sc_addr arg)
+sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event_subscription const *, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

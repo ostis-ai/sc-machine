@@ -9,14 +9,14 @@
 
 #include "sc_event_queue.h"
 
-#include "../sc_event.h"
+#include "../sc_event_subscription.h"
 #include "../sc_types.h"
 
 #define SC_EVENT_REQUEST_DESTROY (sc_uint32)(1 << 31)
 
 /*! Structure that contains information about event
  */
-struct _sc_event
+struct _sc_event_subscription
 {
   //! sc-addr of listened sc-element
   sc_addr subscription_addr;
@@ -31,7 +31,7 @@ struct _sc_event
   sc_event_callback_ext callback_ext;
   sc_event_callback_with_user callback_with_user;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
-  sc_event_delete_function delete_callback;
+  sc_event_subscription_delete_function delete_callback;
   sc_monitor monitor;
   sc_uint32 ref_count;
 };

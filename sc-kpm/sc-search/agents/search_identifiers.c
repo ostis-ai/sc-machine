@@ -12,7 +12,7 @@
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
 
-sc_result agent_search_all_identifiers(sc_event const * event, sc_addr arg)
+sc_result agent_search_all_identifiers(sc_event_subscription const * event, sc_addr arg)
 {
   sc_addr action, answer;
   sc_iterator3 *it1, *it2;
@@ -85,7 +85,7 @@ sc_result agent_search_all_identifiers(sc_event const * event, sc_addr arg)
   return SC_RESULT_OK;
 }
 
-sc_result agent_search_all_identified_elements(sc_event const * event, sc_addr arg)
+sc_result agent_search_all_identified_elements(sc_event_subscription const * event, sc_addr arg)
 {
   sc_addr action, answer, begin, end;
   sc_iterator3 * it1;

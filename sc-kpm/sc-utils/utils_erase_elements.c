@@ -15,7 +15,7 @@
 /*!
  *  Erase sc-elements from memory if they dont belong to init memory structure
  */
-sc_result agent_erase_elements(sc_event const * event, sc_addr arg)
+sc_result agent_erase_elements(sc_event_subscription const * event, sc_addr arg)
 {
   sc_addr action_addr;
 
