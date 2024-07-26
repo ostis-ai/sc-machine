@@ -9,6 +9,8 @@
 #include "uiKeynodes.h"
 #include "uiDefines.h"
 
+#include "sc-core/sc_keynodes.h"
+
 // -------------------- Events ----------------------
 sc_event * event_ui_start_answer_translation = 0;
 sc_event * event_ui_command_generate_instance = 0;
@@ -460,7 +462,7 @@ sc_result ui_initialize_commands()
     ui_start_answer_translation, 0); if (event_ui_start_answer_translation == null) return SC_RESULT_ERROR;*/
 
   event_ui_command_generate_instance = sc_event_new(
-      s_default_ctx, keynode_command_initiated, sc_event_add_output_arc, 0, ui_command_generate_instance, 0);
+      s_default_ctx, keynode_command_initiated, sc_event_add_output_arc_addr, 0, ui_command_generate_instance, 0);
   if (event_ui_command_generate_instance == null_ptr)
     return SC_RESULT_ERROR;
 

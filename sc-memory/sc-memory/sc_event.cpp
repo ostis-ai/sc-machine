@@ -6,19 +6,49 @@
 
 #include "sc_event.hpp"
 
-// Should be equal to C values
-
-ScEvent::Type const ScEvent::Type::Unknown(sc_event_unknown);
-ScEvent::Type const ScEvent::Type::AddInputArc(sc_event_add_input_arc);
-ScEvent::Type const ScEvent::Type::AddOutputArc(sc_event_add_output_arc);
-ScEvent::Type const ScEvent::Type::AddEdge(sc_event_add_edge);
-ScEvent::Type const ScEvent::Type::RemoveInputArc(sc_event_remove_input_arc);
-ScEvent::Type const ScEvent::Type::RemoveOutputArc(sc_event_remove_output_arc);
-ScEvent::Type const ScEvent::Type::RemoveEdge(sc_event_remove_edge);
-ScEvent::Type const ScEvent::Type::EraseElement(sc_event_erase_element);
-ScEvent::Type const ScEvent::Type::ChangeContent(sc_event_change_content);
-
 ScEvent::~ScEvent() = default;
+
+ScElementaryEvent::ScElementaryEvent(
+    ScAddr const & userAddr,
+    ScAddr const & subscriptionAddr,
+    ScAddr const & connectorAddr,
+    ScType const & connectorType,
+    ScAddr const & otherAddr)
+  : m_userAddr(userAddr)
+  , m_subscriptionAddr(subscriptionAddr)
+  , m_connectorAddr(connectorAddr)
+  , m_connectorType(connectorType)
+  , m_otherAddr(otherAddr){};
+
+ScAddr ScElementaryEvent::GetUser() const
+{
+  return m_userAddr;
+}
+
+ScAddr ScElementaryEvent::GetSubscriptionElement() const
+{
+  return m_subscriptionAddr;
+}
+
+std::tuple<ScAddr, ScAddr, ScAddr> ScElementaryEvent::GetTriple() const
+{
+  return {m_subscriptionAddr, m_connectorAddr, m_otherAddr};
+}
+
+ScAddr ScElementaryEvent::GetConnector() const
+{
+  return m_connectorAddr;
+}
+
+ScType ScElementaryEvent::GetConnectorType() const
+{
+  return m_connectorType;
+}
+
+ScAddr ScElementaryEvent::GetOtherElement() const
+{
+  return m_otherAddr;
+}
 
 ScEventEraseElement::ScEventEraseElement(
     ScAddr const & userAddr,
@@ -26,7 +56,7 @@ ScEventEraseElement::ScEventEraseElement(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : TScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
 
 ScAddr ScEventEraseElement::GetSubscriptionElement() const
 {
@@ -39,4 +69,4 @@ ScEventChangeContent::ScEventChangeContent(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : TScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};

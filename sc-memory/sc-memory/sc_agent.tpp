@@ -86,7 +86,7 @@ void ScAgent<TScEvent>::Subscribe(ScMemoryContext * ctx, TScAddr const &... subs
 
     subscriptionsMap.insert(
         {subscriptionAddr,
-         new ScElementaryEventSubscription<TScEvent>(
+         new TScElementaryEventSubscription<TScEvent>(
              *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>())});
   }
 }

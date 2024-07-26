@@ -15,6 +15,8 @@
 #include "sc_storage_private.h"
 #include "../sc_memory_private.h"
 
+#include "../sc_keynodes.h"
+
 #include "sc_stream_memory.h"
 #include "sc-base/sc_allocator.h"
 #include "sc-container/sc-string/sc_string.h"
@@ -662,9 +664,9 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       }
 
       if (is_edge)
-        sc_event_emit(ctx, begin_addr, sc_event_remove_edge, addr, type, end_addr);
+        sc_event_emit(ctx, begin_addr, sc_event_remove_edge_addr, addr, type, end_addr);
       else
-        sc_event_emit(ctx, begin_addr, sc_event_remove_output_arc, addr, type, end_addr);
+        sc_event_emit(ctx, begin_addr, sc_event_remove_output_arc_addr, addr, type, end_addr);
 
       if (SC_ADDR_IS_NOT_EMPTY(prev_in_arc_addr))
       {
@@ -724,9 +726,9 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       }
 
       if (is_edge)
-        sc_event_emit(ctx, end_addr, sc_event_remove_edge, addr, type, begin_addr);
+        sc_event_emit(ctx, end_addr, sc_event_remove_edge_addr, addr, type, begin_addr);
       else
-        sc_event_emit(ctx, end_addr, sc_event_remove_input_arc, addr, type, begin_addr);
+        sc_event_emit(ctx, end_addr, sc_event_remove_input_arc_addr, addr, type, begin_addr);
 
 #ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
       sc_monitor_release_write_n(
@@ -744,7 +746,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       sc_monitor_release_write_n(2, beg_monitor, end_monitor);
     }
 
-    sc_event_emit(ctx, addr, sc_event_erase_element, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
+    sc_event_emit(ctx, addr, sc_event_erase_element_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
 
     sc_monitor_acquire_write(monitor);
     sc_storage_free_element(addr);
@@ -975,12 +977,12 @@ sc_addr sc_storage_arc_new_ext(
 #endif
 
   // emit events
-  sc_event_emit(ctx, beg_addr, sc_event_add_output_arc, arc_addr, type, end_addr);
-  sc_event_emit(ctx, end_addr, sc_event_add_input_arc, arc_addr, type, beg_addr);
+  sc_event_emit(ctx, beg_addr, sc_event_add_output_arc_addr, arc_addr, type, end_addr);
+  sc_event_emit(ctx, end_addr, sc_event_add_input_arc_addr, arc_addr, type, beg_addr);
   if (is_edge && is_not_loop)
   {
-    sc_event_emit(ctx, end_addr, sc_event_add_edge, arc_addr, type, beg_addr);
-    sc_event_emit(ctx, beg_addr, sc_event_add_edge, arc_addr, type, end_addr);
+    sc_event_emit(ctx, end_addr, sc_event_add_edge_addr, arc_addr, type, beg_addr);
+    sc_event_emit(ctx, beg_addr, sc_event_add_edge_addr, arc_addr, type, end_addr);
   }
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
@@ -1201,7 +1203,7 @@ sc_result sc_storage_set_link_content(
     goto error;
   }
 
-  sc_event_emit(ctx, addr, sc_event_change_content, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
+  sc_event_emit(ctx, addr, sc_event_change_content_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY);
 
   sc_monitor_release_write(monitor);
   sc_mem_free(string);
