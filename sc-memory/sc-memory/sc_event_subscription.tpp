@@ -33,6 +33,18 @@ TScElementaryEventSubscription<TScEvent>::~TScElementaryEventSubscription()
 }
 
 template <class TScEvent>
+void TScElementaryEventSubscription<TScEvent>::SetDelegate(DelegateFunc && func)
+{
+  m_delegate = func;
+}
+
+template <class TScEvent>
+void TScElementaryEventSubscription<TScEvent>::RemoveDelegate()
+{
+  m_delegate = DelegateFunc();
+}
+
+template <class TScEvent>
 sc_result TScElementaryEventSubscription<TScEvent>::Handler(
     sc_event_subscription const * event_subscription,
     sc_addr userAddr,
@@ -43,7 +55,6 @@ sc_result TScElementaryEventSubscription<TScEvent>::Handler(
   sc_result result = SC_RESULT_ERROR;
 
   auto * eventSubscription = (TScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
-
   if (eventSubscription == nullptr)
     return result;
 

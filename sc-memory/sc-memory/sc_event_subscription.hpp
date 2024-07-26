@@ -99,6 +99,11 @@ public:
   // Don't allow copying of events
   _SC_EXTERN TScElementaryEventSubscription(TScElementaryEventSubscription const & other) = delete;
 
+  /* Set specified function as a delegate that will be calls on event emit */
+  _SC_EXTERN void SetDelegate(DelegateFunc && func);
+
+  _SC_EXTERN void RemoveDelegate() override;
+
 protected:
   friend class ScMemoryContext;
 

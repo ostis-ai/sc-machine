@@ -521,6 +521,40 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEvent)
   EXPECT_TRUE(isDone);
 }
 
+TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRemovedElementType)
+{
+  ScAddr nodeAddr1;
+  auto const & CreateNode = [this, &nodeAddr1]()
+  {
+    nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+    EXPECT_TRUE(nodeAddr1.IsValid());
+  };
+
+  auto const & EmitEvent = [this, &nodeAddr1]()
+  {
+    m_ctx->EraseElement(nodeAddr1);
+  };
+
+  bool isDone = false;
+  auto const & OnEvent = [&](ScEventRemoveElement const & event)
+  {
+    EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
+    m_ctx->GetElementType(nodeAddr1);
+  };
+
+  CreateNode();
+
+  ScEventSubscriptionRemoveElement subscription(*m_ctx, nodeAddr1, OnEvent);
+  ScTimer timer(kTestTimeout);
+
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_FALSE(isDone);
+}
+
 TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEvent)
 {
   ScAddr linkAddr;
@@ -574,6 +608,119 @@ TEST_F(ScEventTest, InvalidSubscriptions)
 
   nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(ScEventSubscriptionChangeLinkContent(*m_ctx, nodeAddr, {}), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScEventTest, SetRemoveDelegateFunc)
+{
+  ScAddr linkAddr;
+  auto const & CreateNode = [this, &linkAddr]()
+  {
+    linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+    m_ctx->SetLinkContent(linkAddr, "old content");
+    EXPECT_TRUE(linkAddr.IsValid());
+  };
+
+  auto const & EmitEvent = [this, &linkAddr]()
+  {
+    m_ctx->SetLinkContent(linkAddr, "new content");
+  };
+
+  bool isDone = false;
+  auto const & OnEvent = [&](ScEventChangeLinkContent const & event)
+  {
+    EXPECT_EQ(event.GetSubscriptionElement(), linkAddr);
+    isDone = true;
+  };
+
+  CreateNode();
+
+  ScEventSubscriptionChangeLinkContent subscription(*m_ctx, linkAddr, {});
+
+  ScTimer timer = ScTimer(kTestTimeout);
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_FALSE(isDone);
+
+  subscription.SetDelegate(OnEvent);
+
+  timer = ScTimer(kTestTimeout);
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_TRUE(isDone);
+  isDone = false;
+
+  subscription.RemoveDelegate();
+
+  timer = ScTimer(kTestTimeout);
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_FALSE(isDone);
+}
+
+TEST_F(ScEventTest, SetRemoveDelegateFuncV2)
+{
+  ScAddr linkAddr;
+  auto const & CreateNode = [this, &linkAddr]()
+  {
+    linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+    m_ctx->SetLinkContent(linkAddr, "old content");
+    EXPECT_TRUE(linkAddr.IsValid());
+  };
+
+  auto const & EmitEvent = [this, &linkAddr]()
+  {
+    m_ctx->SetLinkContent(linkAddr, "new content");
+  };
+
+  bool isDone = false;
+  auto const & OnEvent = [&](ScElementaryEvent const & event)
+  {
+    EXPECT_EQ(event.GetSubscriptionElement(), linkAddr);
+    isDone = true;
+  };
+
+  CreateNode();
+
+  ScElementaryEventSubscription subscription(
+      *m_ctx, ScKeynodes::sc_event_change_content, ScType::Unknown, linkAddr, {});
+
+  ScTimer timer = ScTimer(kTestTimeout);
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_FALSE(isDone);
+
+  subscription.SetDelegate(OnEvent);
+
+  timer = ScTimer(kTestTimeout);
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_TRUE(isDone);
+  isDone = false;
+
+  subscription.RemoveDelegate();
+
+  timer = ScTimer(kTestTimeout);
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_FALSE(isDone);
 }
 
 TEST_F(ScEventTest, DestroyOrder)
