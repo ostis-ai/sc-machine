@@ -84,12 +84,12 @@ ScResult ATestRemoveEdge::DoProgram(ScEventRemoveEdge<ScType::EdgeUCommonConst> 
 
 /// --------------------------------------
 
-ScAddr ATestEraseElement::GetActionClass() const
+ScAddr ATestRemoveElement::GetActionClass() const
 {
-  return ATestEraseElement::erase_element_action;
+  return ATestRemoveElement::erase_element_action;
 }
 
-ScResult ATestEraseElement::DoProgram(ScEventRemoveElement const &, ScAction & action)
+ScResult ATestRemoveElement::DoProgram(ScEventRemoveElement const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -97,12 +97,12 @@ ScResult ATestEraseElement::DoProgram(ScEventRemoveElement const &, ScAction & a
 
 /// --------------------------------------
 
-ScAddr ATestChangeContent::GetActionClass() const
+ScAddr ATestChangeLinkContent::GetActionClass() const
 {
-  return ATestChangeContent::content_change_action;
+  return ATestChangeLinkContent::content_change_action;
 }
 
-ScResult ATestChangeContent::DoProgram(ScEventChangeLinkContent const &, ScAction & action)
+ScResult ATestChangeLinkContent::DoProgram(ScEventChangeLinkContent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
