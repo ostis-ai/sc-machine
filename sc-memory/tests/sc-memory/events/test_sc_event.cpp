@@ -555,6 +555,41 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRe
   EXPECT_FALSE(isDone);
 }
 
+TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRemovedElementTypeV2)
+{
+  ScAddr nodeAddr1;
+  auto const & CreateNode = [this, &nodeAddr1]()
+  {
+    nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+    EXPECT_TRUE(nodeAddr1.IsValid());
+  };
+
+  auto const & EmitEvent = [this, &nodeAddr1]()
+  {
+    m_ctx->EraseElement(nodeAddr1);
+  };
+
+  bool isDone = false;
+  auto const & OnEvent = [&](ScElementaryEvent const & event)
+  {
+    EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
+    m_ctx->GetElementType(nodeAddr1);
+  };
+
+  CreateNode();
+
+  ScElementaryEventSubscription subscription(
+      *m_ctx, ScKeynodes::sc_event_remove_element, ScType::Unknown, nodeAddr1, OnEvent);
+  ScTimer timer(kTestTimeout);
+
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_FALSE(isDone);
+}
+
 TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEvent)
 {
   ScAddr linkAddr;

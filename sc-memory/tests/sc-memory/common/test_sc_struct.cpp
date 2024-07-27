@@ -57,7 +57,19 @@ TEST_F(ScStructTest, AppendIterateElements)
 TEST_F(ScStructTest, AppendItSelf)
 {
   ScSet set = ScSet(*m_ctx);
+  EXPECT_TRUE(set.IsValid());
+
   ScSet setCopy = set;
+  EXPECT_TRUE(setCopy.IsValid());
+  EXPECT_TRUE(set.IsValid());
+
+  setCopy = set;
+  EXPECT_TRUE(setCopy.IsValid());
+  EXPECT_TRUE(set.IsValid());
+
+  setCopy = setCopy;
+  EXPECT_TRUE(setCopy.IsValid());
+  EXPECT_TRUE(set.IsValid());
 
   ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   setCopy << nodeAddr;

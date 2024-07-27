@@ -58,10 +58,14 @@ ScEventRemoveElement::ScEventRemoveElement(
     ScAddr const & otherAddr)
   : TScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
+//! This method is private in ScEventRemoveElement class. You can not use it.
+// LCOV_EXCL_START
 ScAddr ScEventRemoveElement::GetSubscriptionElement() const
 {
   return ScAddr::Empty;
 }
+
+// LCOV_EXCL_STOP
 
 ScEventChangeLinkContent::ScEventChangeLinkContent(
     ScAddr const & userAddr,
