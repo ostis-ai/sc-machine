@@ -77,17 +77,17 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
   ScMemoryJsonPayload responsePayload;
   for (auto & atom : message)
   {
-    std::string eventType = atom["type"];
+    std::string eventClass = atom["type"];
     ScAddr const & subscriptionAddr = ScAddr(atom["addr"].get<size_t>());
 
-    auto const & it = m_deprecatedEventsIdtfsToSystemEventsIdtfs.find(eventType);
+    auto const & it = m_deprecatedEventsIdtfsToSystemEventsIdtfs.find(eventClass);
     if (it != m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
-      eventType = it->second;
+      eventClass = it->second;
 
-    ScAddr const & eventTypeAddr = m_context->HelperFindBySystemIdtf(eventType);
+    ScAddr const & eventClassAddr = m_context->HelperFindBySystemIdtf(eventClass);
     ScEventSubscription * subscription = new ScElementaryEventSubscription(
         *m_context,
-        eventTypeAddr,
+        eventClassAddr,
         ScType::Unknown,
         subscriptionAddr,
         bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));

@@ -23,11 +23,11 @@
  */
 struct _sc_event_emit_params
 {
-  sc_addr subscription_addr;  ///< sc-address representing the subscription associated with the event.
-  sc_event_type type;         ///< Type of the event to be emitted.
-  sc_addr connector_addr;     ///< sc-address representing the connector associated with the event.
-  sc_type connector_type;     ///< sc-type of the connector associated with the event.
-  sc_addr other_addr;         ///< sc-address representing the other element associated with the event.
+  sc_addr subscription_addr;      ///< sc-address representing the subscription associated with the event.
+  sc_event_type event_type_addr;  ///< Type of the event to be emitted.
+  sc_addr connector_addr;         ///< sc-address representing the connector associated with the event.
+  sc_type connector_type;         ///< sc-type of the connector associated with the event.
+  sc_addr other_addr;             ///< sc-address representing the other element associated with the event.
 };
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
@@ -233,14 +233,14 @@ sc_bool _sc_memory_context_are_events_pending(sc_memory_context const * ctx)
 
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr subscription_addr,
     sc_addr connector_addr,
     sc_type connector_type,
     sc_addr other_addr)
 {
   sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
-  params->type = type;
+  params->event_type_addr = event_type_addr;
   params->subscription_addr = subscription_addr;
   params->connector_addr = connector_addr;
   params->connector_type = connector_type;
@@ -265,7 +265,7 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
     sc_event_emit_impl(
         ctx,
         event_params->subscription_addr,
-        event_params->type,
+        event_params->event_type_addr,
         event_params->connector_addr,
         event_params->connector_type,
         event_params->other_addr);

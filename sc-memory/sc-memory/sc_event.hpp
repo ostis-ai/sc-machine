@@ -111,7 +111,7 @@ private:
   friend class TScElementaryEventSubscription;
 
   static inline ScType const & elementType = _elementType;
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_unknown;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_unknown;
 };
 
 /*!
@@ -167,7 +167,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_add_edge;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_add_edge;
 };
 
 /*!
@@ -189,7 +189,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_add_output_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_add_output_arc;
 };
 
 /*!
@@ -216,7 +216,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_add_input_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_add_input_arc;
 };
 
 /*!
@@ -268,7 +268,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_edge;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_remove_edge;
 };
 
 /*!
@@ -290,7 +290,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_output_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_remove_output_arc;
 };
 
 /*!
@@ -317,7 +317,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_input_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_remove_input_arc;
 };
 
 #include "sc_event.tpp"
@@ -343,7 +343,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_remove_element;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_remove_element;
 };
 
 /*!
@@ -364,7 +364,7 @@ private:
   template <class TScEvent>
   friend class TScElementaryEventSubscription;
 
-  static inline ScAddr const & eventType = ScKeynodes::sc_event_change_content;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_change_content;
 };
 
 using ScActionEvent = ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>;

@@ -13,10 +13,10 @@
 #include "sc_timer.hpp"
 
 template <class TScEvent>
-ScWaitEvent<TScEvent>::ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr)
+ScWaitEvent<TScEvent>::ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & subscriptionAddr)
   : m_event(
         ctx,
-        addr,
+        subscriptionAddr,
         [this](TScEvent const & event)
         {
           if (OnEvent(event))
@@ -32,8 +32,11 @@ sc_bool ScWaitEvent<TScEvent>::OnEvent(TScEvent const &)
 }
 
 template <class TScEvent>
-ScWaitCondition<TScEvent>::ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func)
-  : ScWaitEvent<TScEvent>(ctx, addr)
+ScWaitCondition<TScEvent>::ScWaitCondition(
+    ScMemoryContext const & ctx,
+    ScAddr const & subscriptionAddr,
+    DelegateCheckFunc func)
+  : ScWaitEvent<TScEvent>(ctx, subscriptionAddr)
   , m_checkFunc(std::move(func))
 {
 }

@@ -94,7 +94,7 @@ public:
    * @param addr An address of sc-element to wait event for.
    */
 
-  _SC_EXTERN ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr);
+  _SC_EXTERN ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & subscriptionAddr);
 
 protected:
   /*!
@@ -127,7 +127,7 @@ public:
    * @param addr An address of sc-element to wait event for.
    * @param func Delegate function to check the condition.
    */
-  _SC_EXTERN ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func);
+  _SC_EXTERN ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & subscriptionAddr, DelegateCheckFunc func);
 
 private:
   /*!

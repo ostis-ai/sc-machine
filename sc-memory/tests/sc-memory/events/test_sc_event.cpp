@@ -578,8 +578,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRe
 
   CreateNode();
 
-  ScElementaryEventSubscription subscription(
-      *m_ctx, ScKeynodes::sc_event_remove_element, ScType::Unknown, nodeAddr1, OnEvent);
+  ScElementaryEventSubscription subscription(*m_ctx, ScKeynodes::sc_event_remove_element, nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -725,8 +724,7 @@ TEST_F(ScEventTest, SetRemoveDelegateFuncV2)
 
   CreateNode();
 
-  ScElementaryEventSubscription subscription(
-      *m_ctx, ScKeynodes::sc_event_change_content, ScType::Unknown, linkAddr, {});
+  ScElementaryEventSubscription subscription(*m_ctx, ScKeynodes::sc_event_change_content, linkAddr, {});
 
   ScTimer timer = ScTimer(kTestTimeout);
   EmitEvent();

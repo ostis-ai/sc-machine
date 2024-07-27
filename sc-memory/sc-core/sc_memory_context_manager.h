@@ -115,7 +115,7 @@ void _sc_memory_context_pending_end(sc_memory_context * ctx);
  */
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr subscription_addr,
     sc_addr connector_addr,
     sc_type connector_type,

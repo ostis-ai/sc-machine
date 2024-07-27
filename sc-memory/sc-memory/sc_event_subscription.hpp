@@ -33,8 +33,14 @@ public:
 
   explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
-      ScAddr const & eventTypeAddr,
+      ScAddr const & eventClassAddr,
       ScType const & elementType,
+      ScAddr const & subscriptionAddr,
+      DelegateFunc const & func = DelegateFunc());
+
+  explicit _SC_EXTERN ScElementaryEventSubscription(
+      ScMemoryContext const & ctx,
+      ScAddr const & eventClassAddr,
       ScAddr const & subscriptionAddr,
       DelegateFunc const & func = DelegateFunc());
 
@@ -80,7 +86,7 @@ public:
 
   explicit _SC_EXTERN TScElementaryEventSubscription(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       DelegateFunc const & func = DelegateFunc());
 
   _SC_EXTERN ~TScElementaryEventSubscription() override;
@@ -120,7 +126,7 @@ class _SC_EXTERN ScEventSubscriptionAddOutputArc final
 public:
   _SC_EXTERN ScEventSubscriptionAddOutputArc(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventAddOutputArc<arcType> const &)> const & func);
 };
 
@@ -131,7 +137,7 @@ class _SC_EXTERN ScEventSubscriptionAddInputArc final
 public:
   _SC_EXTERN ScEventSubscriptionAddInputArc(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventAddInputArc<arcType> const &)> const & func);
 };
 
@@ -141,7 +147,7 @@ class _SC_EXTERN ScEventSubscriptionAddEdge final : public TScElementaryEventSub
 public:
   _SC_EXTERN ScEventSubscriptionAddEdge(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventAddEdge<edgeType> const &)> const & func);
 };
 
@@ -152,7 +158,7 @@ class _SC_EXTERN ScEventSubscriptionRemoveOutputArc final
 public:
   _SC_EXTERN ScEventSubscriptionRemoveOutputArc(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventRemoveOutputArc<arcType> const &)> const & func);
 };
 
@@ -163,7 +169,7 @@ class _SC_EXTERN ScEventSubscriptionRemoveInputArc final
 public:
   _SC_EXTERN ScEventSubscriptionRemoveInputArc(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventRemoveInputArc<arcType> const &)> const & func);
 };
 
@@ -174,7 +180,7 @@ class _SC_EXTERN ScEventSubscriptionRemoveEdge final
 public:
   _SC_EXTERN ScEventSubscriptionRemoveEdge(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventRemoveEdge<edgeType> const &)> const & func);
 };
 
@@ -183,7 +189,7 @@ class _SC_EXTERN ScEventSubscriptionRemoveElement final : public TScElementaryEv
 public:
   _SC_EXTERN ScEventSubscriptionRemoveElement(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventRemoveElement const &)> const & func);
 };
 
@@ -193,7 +199,7 @@ class _SC_EXTERN ScEventSubscriptionChangeLinkContent final
 public:
   _SC_EXTERN ScEventSubscriptionChangeLinkContent(
       ScMemoryContext const & ctx,
-      ScAddr const & addr,
+      ScAddr const & subscriptionAddr,
       std::function<void(ScEventChangeLinkContent const &)> const & func);
 };
 

@@ -20,7 +20,7 @@ ScElementaryEventSubscription::ScElementaryEventSubscription()
 
 ScElementaryEventSubscription::ScElementaryEventSubscription(
     ScMemoryContext const & ctx,
-    ScAddr const & eventTypeAddr,
+    ScAddr const & eventClassAddr,
     ScType const & elementType,
     ScAddr const & subscriptionAddr,
     DelegateFunc const & func)
@@ -29,11 +29,20 @@ ScElementaryEventSubscription::ScElementaryEventSubscription(
   m_event_subscription = sc_event_subscription_with_user_new(
       *ctx,
       *subscriptionAddr,
-      *eventTypeAddr,
+      *eventClassAddr,
       *elementType,
       (sc_pointer)this,
       &ScElementaryEventSubscription::Handler,
       &ScElementaryEventSubscription::HandlerDelete);
+}
+
+ScElementaryEventSubscription::ScElementaryEventSubscription(
+    ScMemoryContext const & ctx,
+    ScAddr const & eventClassAddr,
+    ScAddr const & subscriptionAddr,
+    DelegateFunc const & func)
+  : ScElementaryEventSubscription(ctx, eventClassAddr, ScType::Unknown, subscriptionAddr, func)
+{
 }
 
 ScElementaryEventSubscription::~ScElementaryEventSubscription()

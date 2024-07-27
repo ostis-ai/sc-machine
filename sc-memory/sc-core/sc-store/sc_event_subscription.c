@@ -131,7 +131,7 @@ void sc_event_subscription_manager_shutdown(sc_event_subscription_manager * mana
 sc_event_subscription * sc_event_subscription_new(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_pointer data,
     sc_event_callback callback,
     sc_event_subscription_delete_function delete_callback)
@@ -143,7 +143,7 @@ sc_event_subscription * sc_event_subscription_new(
 
   sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
   event_subscription->subscription_addr = subscription_addr;
-  event_subscription->type = type;
+  event_subscription->event_type_addr = event_type_addr;
   event_subscription->event_element_type = 0;
   event_subscription->callback = callback;
   event_subscription->callback_ext = null_ptr;
@@ -163,7 +163,7 @@ sc_event_subscription * sc_event_subscription_new(
 sc_event_subscription * sc_event_subscription_new_ext(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_pointer data,
     sc_event_callback_ext callback,
     sc_event_subscription_delete_function delete_callback)
@@ -175,7 +175,7 @@ sc_event_subscription * sc_event_subscription_new_ext(
 
   sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
   event_subscription->subscription_addr = subscription_addr;
-  event_subscription->type = type;
+  event_subscription->event_type_addr = event_type_addr;
   event_subscription->event_element_type = 0;
   event_subscription->callback = null_ptr;
   event_subscription->callback_ext = callback;
@@ -195,7 +195,7 @@ sc_event_subscription * sc_event_subscription_new_ext(
 sc_event_subscription * sc_event_subscription_with_user_new(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_type event_element_type,
     sc_pointer data,
     sc_event_callback_with_user callback,
@@ -208,7 +208,7 @@ sc_event_subscription * sc_event_subscription_with_user_new(
 
   sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
   event_subscription->subscription_addr = subscription_addr;
-  event_subscription->type = type;
+  event_subscription->event_type_addr = event_type_addr;
   event_subscription->event_element_type = event_element_type;
   event_subscription->callback = null_ptr;
   event_subscription->callback_ext = null_ptr;
@@ -245,7 +245,7 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
 
   event_subscription->ref_count = SC_EVENT_REQUEST_DESTROY;
   event_subscription->subscription_addr = SC_ADDR_EMPTY;
-  event_subscription->type = SC_ADDR_EMPTY;
+  event_subscription->event_type_addr = SC_ADDR_EMPTY;
   event_subscription->event_element_type = 0;
   event_subscription->callback = null_ptr;
   event_subscription->callback_ext = null_ptr;
@@ -317,7 +317,7 @@ result:
 sc_result sc_event_emit(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type connector_type,
     sc_addr other_addr)
@@ -330,17 +330,17 @@ sc_result sc_event_emit(
 
   if (_sc_memory_context_are_events_pending(ctx))
   {
-    _sc_memory_context_pend_event(ctx, type, subscription_addr, connector_addr, connector_type, other_addr);
+    _sc_memory_context_pend_event(ctx, event_type_addr, subscription_addr, connector_addr, connector_type, other_addr);
     return SC_RESULT_OK;
   }
 
-  return sc_event_emit_impl(ctx, subscription_addr, type, connector_addr, connector_type, other_addr);
+  return sc_event_emit_impl(ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr);
 }
 
 sc_result sc_event_emit_impl(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type connector_type,
     sc_addr other_addr)
@@ -369,7 +369,7 @@ sc_result sc_event_emit_impl(
   {
     event_subscription = (sc_event_subscription *)element_events_list->data;
 
-    if (SC_ADDR_IS_EQUAL(event_subscription->type, type)
+    if (SC_ADDR_IS_EQUAL(event_subscription->event_type_addr, event_type_addr)
         && ((event_subscription->event_element_type & connector_type) == event_subscription->event_element_type))
       _sc_event_emission_manager_add(
           emission_manager, event_subscription, ctx->user_addr, connector_addr, connector_type, other_addr);
