@@ -21,7 +21,7 @@ struct _sc_event_subscription
   //! sc-addr of listened sc-element
   sc_addr subscription_addr;
   //! Event type
-  sc_event_type type;
+  sc_event_type event_type_addr;
   sc_type event_element_type;
   //! Pointer to user data
   sc_pointer data;
@@ -57,7 +57,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
 sc_result sc_event_emit(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type edge_type,
     sc_addr other_addr);
@@ -67,7 +67,7 @@ sc_result sc_event_emit(
 sc_result sc_event_emit_impl(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type edge_type,
     sc_addr other_addr);

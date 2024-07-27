@@ -18,7 +18,7 @@ TScElementaryEventSubscription<TScEvent>::TScElementaryEventSubscription(
   m_event_subscription = sc_event_subscription_with_user_new(
       *ctx,
       *subscriptionAddr,
-      *TScEvent::eventType,
+      *TScEvent::eventClassAddr,
       *TScEvent::elementType,
       (sc_pointer)this,
       &TScElementaryEventSubscription::Handler,
