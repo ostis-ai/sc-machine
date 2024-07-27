@@ -47,7 +47,8 @@ target_include_directories(sc-memory
     PRIVATE ${GLIB2_INCLUDE_DIRS}
     PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC $<INSTALL_INTERFACE:include>
 )
 
 add_dependencies(sc-memory 

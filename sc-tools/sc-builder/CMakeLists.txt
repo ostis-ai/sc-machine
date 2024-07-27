@@ -22,7 +22,12 @@ target_link_libraries(sc-builder-lib
 target_include_directories(sc-builder-lib
     PRIVATE ${GLIB2_INCLUDE_DIRS}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC $<INSTALL_INTERFACE:include>
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 add_executable(sc-builder "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")

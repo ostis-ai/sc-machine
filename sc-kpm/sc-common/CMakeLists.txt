@@ -11,6 +11,11 @@ target_include_directories(sc-kpm-common
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.h"
+)
+
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-common)
 endif()
