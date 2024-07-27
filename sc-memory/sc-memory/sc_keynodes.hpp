@@ -90,6 +90,7 @@ public:
 
   _SC_EXTERN static inline ScKeynode const action{"action", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_state{"action_state", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const action_deactivated{"action_deactivated", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_initiated{"action_initiated", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_finished{"action_finished", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_finished_successfully{

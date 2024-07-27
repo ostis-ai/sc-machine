@@ -173,82 +173,139 @@ TEST_F(ScAgentTest, ATestAddMultipleOutputArc)
   UnsubscribeAgent<ATestAddMultipleOutputArc>(&*m_ctx, subscriptionAddr);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
+TEST_F(ScAgentTest, ATestCheckAnswerOnlyFirstArgumentV1)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   context.CreateAction(ATestAddOutputArc::add_output_arc_action)
       .SetArgument(1, ATestAddOutputArc::add_output_arc_action)
       .Initiate();
 
-  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+  EXPECT_TRUE(ATestCheckAnswer::msWaiter.Wait());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV2)
+TEST_F(ScAgentTest, ATestCheckAnswerOnlyFirstArgumentV2)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputArc::add_output_arc_action)
                   .SetArgument(1, ATestAddOutputArc::add_output_arc_action)
                   .InitiateAndWait(2000));
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV1)
+TEST_F(ScAgentTest, ATestCheckAnswerOnlySecondArgumentV1)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   context.CreateAction(ATestAddOutputArc::add_output_arc_action)
       .SetArgument(2, ATestAddOutputArc::add_output_arc_action)
       .Initiate();
 
-  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+  EXPECT_TRUE(ATestCheckAnswer::msWaiter.Wait());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV2)
+TEST_F(ScAgentTest, ATestCheckAnswerOnlySecondArgumentV2)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputArc::add_output_arc_action)
                   .SetArgument(2, ATestAddOutputArc::add_output_arc_action)
                   .InitiateAndWait(2000));
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV1)
+TEST_F(ScAgentTest, ATestCheckAnswerTwoArgumentsV1)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   context.CreateAction(ATestAddOutputArc::add_output_arc_action)
       .SetArguments(ATestAddOutputArc::add_output_arc_action, ATestAddOutputArc::add_output_arc_action)
       .Initiate();
 
-  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+  EXPECT_TRUE(ATestCheckAnswer::msWaiter.Wait());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV2)
+TEST_F(ScAgentTest, ATestCheckAnswerTwoArgumentsV2)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputArc::add_output_arc_action)
                   .SetArguments(ATestAddOutputArc::add_output_arc_action, ATestAddOutputArc::add_output_arc_action)
                   .InitiateAndWait(2000));
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, ATestCheckInitiationCondition)
+{
+  SubscribeAgent<ATestCheckInitiationCondition>(&*m_ctx);
+
+  ScAgentContext context;
+  context.CreateAction(ATestAddOutputArc::add_output_arc_action).SetArguments().Initiate();
+
+  EXPECT_FALSE(ATestCheckInitiationCondition::msWaiter.Wait(0.2));
+
+  context.CreateAction(ATestAddOutputArc::add_output_arc_action)
+      .SetArguments(ATestAddOutputArc::add_output_arc_action)
+      .Initiate();
+
+  EXPECT_TRUE(ATestCheckInitiationCondition::msWaiter.Wait(1));
+
+  UnsubscribeAgent<ATestCheckInitiationCondition>(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, ATestCheckResultCondition)
+{
+  SubscribeAgent<ATestCheckResultCondition>(&*m_ctx);
+
+  ScAgentContext context;
+  context.CreateAction(ATestAddOutputArc::add_output_arc_action).SetArguments().Initiate();
+
+  EXPECT_TRUE(ATestCheckResultCondition::msWaiter.Wait(1));
+
+  context.CreateAction(ATestAddOutputArc::add_output_arc_action)
+      .SetArguments(ATestAddOutputArc::add_output_arc_action)
+      .Initiate();
+
+  EXPECT_TRUE(ATestCheckResultCondition::msWaiter.Wait(1));
+
+  UnsubscribeAgent<ATestCheckResultCondition>(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, ActionDeactivated)
+{
+  SubscribeAgent<ATestActionDeactivated>(&*m_ctx);
+
+  ScAddr const & arcAddr = m_ctx->CreateEdge(
+      ScType::EdgeAccessConstPosPerm, ScKeynodes::action_deactivated, ATestAddOutputArc::add_output_arc_action);
+
+  ScAgentContext context;
+  context.CreateAction(ATestAddOutputArc::add_output_arc_action).SetArguments().Initiate();
+
+  EXPECT_FALSE(ATestActionDeactivated::msWaiter.Wait(0.2));
+
+  m_ctx->EraseElement(arcAddr);
+
+  context.CreateAction(ATestAddOutputArc::add_output_arc_action).SetArguments().Initiate();
+
+  EXPECT_TRUE(ATestActionDeactivated::msWaiter.Wait(1));
+
+  UnsubscribeAgent<ATestActionDeactivated>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, RegisterAgentWithinModule)

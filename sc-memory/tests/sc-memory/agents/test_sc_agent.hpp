@@ -17,9 +17,9 @@ public:
     m_lock.Lock();
   }
 
-  bool Wait()
+  bool Wait(sc_float time_s = 5.0)
   {
-    ScTimer timer(5.0);
+    ScTimer timer(time_s);
     while (!timer.IsTimeOut() && m_lock.IsLocked())
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
@@ -133,7 +133,41 @@ public:
   ScResult DoProgram(ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
 };
 
-class ATestCheckResult : public ScActionAgent
+class ATestCheckAnswer : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestCheckInitiationCondition : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScTemplate GetInitiationCondition(ScActionEvent const & event) override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestCheckResultCondition : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+
+  ScTemplate GetResultCondition(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestActionDeactivated : public ScActionAgent
 {
 public:
   static inline TestWaiter msWaiter;

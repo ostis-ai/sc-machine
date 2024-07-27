@@ -133,7 +133,7 @@ protected:
  * This class extends ScAgent and provides methods for subscribing and unsubscribing
  * to sc-action events.
  *
- * @details The `ScResult DoProgram(ScEventAddOutputArc const & event, ScAction & action)` procedure should be
+ * @details The `ScResult DoProgram(ScActionEvent const & event, ScAction & action)` procedure should be
  * implemented in the child class.
  *
  * File sc_syntactic_analysis_agent.hpp:
@@ -160,7 +160,7 @@ protected:
  *
  *   ScAddr GetActionClass() const override;
  *
- *   ScResult DoProgram(ScEventAddOutputArc const & event, ScAction & action) override;
+ *   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
  * };
  *
  * private:
@@ -189,7 +189,7 @@ protected:
  *   return ScNLPKeynodes::action_syntactic_analysis;
  * }
  *
- * ScResult ScSyntacticAnalysisAgent::DoProgram(ScEventAddOutputArc const &, ScAction & action)
+ * ScResult ScSyntacticAnalysisAgent::DoProgram(ScActionEvent const &, ScAction & action)
  * {
  *   ScAddr const textAddr = action.GetArgument(1);
  *   if (!textAddr.IsValid())
@@ -215,7 +215,7 @@ protected:
  *   }
  *
  *   SC_AGENT_LOG_INFO("Lexeme tree has been formed");
- *   action.AssignAnswer(answerAddr);
+ *   action.SetAnswer(answerAddr);
  *   return action.FinishSuccessfully();
  * }
  * \endcode
