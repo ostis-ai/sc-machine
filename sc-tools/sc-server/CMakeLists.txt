@@ -20,8 +20,13 @@ target_compile_definitions(sc-server-lib
     PUBLIC ASIO_STANDALONE
 )
 target_include_directories(sc-server-lib
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PRIVATE ${SC_MEMORY_SRC}/sc-core/src
+    PRIVATE $<BUILD_INTERFACE:${SC_MEMORY_SRC}/sc-core/src>
+    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    PUBLIC $<INSTALL_INTERFACE:include>
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 add_executable(sc-server "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")

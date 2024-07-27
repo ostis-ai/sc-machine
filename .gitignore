@@ -6,6 +6,7 @@ generated
 cmake-build-debug
 cmake-build-release
 cmake-build-debug-coverage
+/CMakeUserPresets.json
 
 test_defines.hpp
 *.scdb
