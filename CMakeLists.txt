@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 set(CMAKE_CXX_STANDARD 17)
-project(sc-machine)
+project(sc-machine VERSION "0.9.0")
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
@@ -94,11 +94,29 @@ endif()
 
 include(CTest)
 
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG)
+
+include(GNUInstallDirs)
+
 message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, path: ${CMAKE_CXX_COMPILER}")
+
+# Set up dynamic linking paths for our own libraries
+# For macOS, use @loader_path instead of $ORIGIN
+if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib")
+else()
+    set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib")
+endif()
+
+# Always use full RPATH
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-tools)
+
+include(${SC_MACHINE_ROOT}/cmake/install.cmake)
