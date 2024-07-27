@@ -206,7 +206,7 @@ TEST_F(ScActionTest, CreateActionSetResetGetArguments)
 
 TEST_F(ScActionTest, InitiateAndWaitAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action =
@@ -217,12 +217,12 @@ TEST_F(ScActionTest, InitiateAndWaitAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyNotInitiatedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -233,12 +233,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyNotInitiatedAction)
   EXPECT_FALSE(action.IsFinishedSuccessfully());
   EXPECT_FALSE(action.IsFinishedUnsuccessfully());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateInitiatedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -246,7 +246,7 @@ TEST_F(ScActionTest, InitiateInitiatedAction)
   EXPECT_THROW(action.Initiate(), utils::ExceptionInvalidState);
   EXPECT_TRUE(action.IsInitiated());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateFinishedAction)
@@ -271,7 +271,7 @@ TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
 
 TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -282,12 +282,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)
   EXPECT_FALSE(action.IsFinishedSuccessfully());
   EXPECT_FALSE(action.IsFinishedUnsuccessfully());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorNotInitiatedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -298,12 +298,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorNotInitiatedAction)
   EXPECT_FALSE(action.IsFinishedSuccessfully());
   EXPECT_FALSE(action.IsFinishedUnsuccessfully());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyFinishedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -317,12 +317,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyFinishedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyFinishedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -336,12 +336,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyFinishedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorFinishedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -355,12 +355,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorFinishedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
 {
-  SubscribeAgent<ATestCheckResult>(&*m_ctx);
+  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -374,5 +374,5 @@ TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
 }

@@ -28,7 +28,7 @@ _SC_EXTERN ScAction & ScAction::SetArguments(TScAddr const &... arguments)
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   size_t i = 0;
-  for (ScAddr const & argumentAddr : {arguments...})
+  for (ScAddr const & argumentAddr : ScAddrVector{arguments...})
     SetArgument(++i, argumentAddr);
 
   return *this;

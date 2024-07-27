@@ -73,16 +73,17 @@ void ScAgent<TScEvent>::Subscribe(ScMemoryContext * ctx, TScAddr const &... subs
     if (!ctx->IsElement(subscriptionAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Not able to subscribe `" << agentName << "` to event `" << eventName
-                                    << "due subscription sc-element with address `" << subscriptionAddr.Hash()
-                                    << "` is not valid.");
+          "Not able to subscribe agent `" << agentName << "` to event `" << eventName
+                                          << "due subscription sc-element with address `" << subscriptionAddr.Hash()
+                                          << "` is not valid.");
     if (subscriptionsMap.find(subscriptionAddr) != subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "`" << agentName << "` has already been subscribed to event `" << eventName << "(" << subscriptionAddr.Hash()
-              << ")`.");
+          "Agent `" << agentName << "` has already been subscribed to event `" << eventName << "("
+                    << subscriptionAddr.Hash() << ")`.");
 
-    SC_LOG_INFO("Subscribe `" << agentName << "` to event `" << eventName << "(" << subscriptionAddr.Hash() << ")`.");
+    SC_LOG_INFO(
+        "Subscribe agent `" << agentName << "` to event `" << eventName << "(" << subscriptionAddr.Hash() << ")`.");
 
     subscriptionsMap.insert(
         {subscriptionAddr,
@@ -102,7 +103,8 @@ void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... su
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
   auto const & agentsMapIt = ScAgentAbstract<TScEvent>::m_events.find(agentName);
   if (agentsMapIt == ScAgentAbstract<TScEvent>::m_events.cend())
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, agentName << " has not been subscribed to any events yet.");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Agent `" << agentName << "` has not been subscribed to any events yet.");
 
   std::string const & eventName = ScEvent::GetName<TScEvent>();
   auto & subscriptionsMap = agentsMapIt->second;
@@ -113,20 +115,20 @@ void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... su
       if (!ctx->IsElement(subscriptionAddr))
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "Not able to unsubscribe `" << agentName << "` from event `" << eventName
-                                        << "due subscription sc-element with address `" << subscriptionAddr.Hash()
-                                        << "` is not valid.");
+            "Not able to unsubscribe agent `" << agentName << "` from event `" << eventName
+                                              << "due subscription sc-element with address `" << subscriptionAddr.Hash()
+                                              << "` is not valid.");
     }
 
     auto const & it = subscriptionsMap.find(subscriptionAddr);
     if (it == subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "`" << agentName << "` has not been subscribed to event `" << eventName << "(" << subscriptionAddr.Hash()
-              << ")` yet.");
+          "Agent `" << agentName << "` has not been subscribed to event `" << eventName << "("
+                    << subscriptionAddr.Hash() << ")` yet.");
 
     SC_LOG_INFO(
-        "Unsubscribe `" << agentName << "` from event `" << eventName << "(" << subscriptionAddr.Hash() << ")`.");
+        "Unsubscribe agent `" << agentName << "` from event `" << eventName << "(" << subscriptionAddr.Hash() << ")`.");
 
     delete it->second;
     subscriptionsMap.erase(subscriptionAddr);
@@ -150,29 +152,46 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
     };
 
     TScAgent agent;
+    SC_LOG_INFO("Agent `" << agent.GetName() << "` started");
+
     agent.SetContext(event.GetUser());
+    if (ScMemory::ms_globalContext->HelperCheckEdge(
+            ScKeynodes::action_deactivated, agent.GetActionClass(), ScType::EdgeAccessConstPosPerm))
+    {
+      SC_LOG_WARNING(
+          "Agent `" << agent.GetName() << "` was not started due actions with class `" << agent.GetActionClass().Hash()
+                    << "` are deactivated.");
+      return;
+    }
+
     ScAction action = CreateAction(event, agent);
 
     ScTemplate && initiationConditionTemplate = agent.GetInitiationCondition(event);
     ScTemplateSearchResult searchResult;
     if (!initiationConditionTemplate.IsEmpty()
         && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
+    {
+      SC_LOG_WARNING(
+          "Agent `" << agent.GetName() << "` was finished due its initiation condition was tested unsuccessfully.");
       return;
+    }
 
-    SC_LOG_INFO(agent.GetName() << " started");
     ScResult result = agent.DoProgram(event, action);
 
     if (result == SC_RESULT_OK)
-      SC_LOG_INFO(agent.GetName() << " finished successfully");
+      SC_LOG_INFO("Agent `" << agent.GetName() << "` finished successfully");
     else if (result == SC_RESULT_NO)
-      SC_LOG_INFO(agent.GetName() << " finished unsuccessfully");
+      SC_LOG_INFO("Agent `" << agent.GetName() << "` finished unsuccessfully");
     else
-      SC_LOG_INFO(agent.GetName() << " finished with error");
+      SC_LOG_INFO("Agent `" << agent.GetName() << "` finished with error");
 
     ScTemplate && resultConditionTemplate = agent.GetResultCondition(event, action);
     if (!resultConditionTemplate.IsEmpty()
         && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
+    {
+      SC_LOG_WARNING("Result condition of agent `" << agent.GetName() << "` tested unsuccessfully.");
       return;
+    }
 
     return;
   };

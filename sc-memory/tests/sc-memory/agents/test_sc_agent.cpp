@@ -125,12 +125,12 @@ ScResult ATestAddMultipleOutputArc::DoProgram(
 
 /// --------------------------------------
 
-ScAddr ATestCheckResult::GetActionClass() const
+ScAddr ATestCheckAnswer::GetActionClass() const
 {
   return ATestAddOutputArc::add_output_arc_action;
 }
 
-ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestCheckAnswer::DoProgram(ScActionEvent const &, ScAction & action)
 {
   auto [firstArgument, secondArgument] = action.GetArguments<2>();
 
@@ -146,6 +146,59 @@ ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
     return action.FinishUnsuccessfully();
   }
 
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestCheckInitiationCondition::GetActionClass() const
+{
+  return ATestAddOutputArc::add_output_arc_action;
+}
+
+ScTemplate ATestCheckInitiationCondition::GetInitiationCondition(ScActionEvent const & event)
+{
+  ScTemplate initiationCondition;
+  initiationCondition.Triple(event.GetArcTargetElement(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  return initiationCondition;
+}
+
+ScResult ATestCheckInitiationCondition::DoProgram(ScActionEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestCheckResultCondition::GetActionClass() const
+{
+  return ATestAddOutputArc::add_output_arc_action;
+}
+
+ScResult ATestCheckResultCondition::DoProgram(ScActionEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+ScTemplate ATestCheckResultCondition::GetResultCondition(ScActionEvent const & event, ScAction &)
+{
+  ScTemplate initiationCondition;
+  initiationCondition.Triple(event.GetArcTargetElement(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  return initiationCondition;
+}
+
+/// --------------------------------------
+
+ScAddr ATestActionDeactivated::GetActionClass() const
+{
+  return ATestAddOutputArc::add_output_arc_action;
+}
+
+ScResult ATestActionDeactivated::DoProgram(ScActionEvent const &, ScAction & action)
+{
   msWaiter.Unlock();
   return action.FinishSuccessfully();
 }
