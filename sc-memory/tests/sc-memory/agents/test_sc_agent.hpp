@@ -1,12 +1,13 @@
 #pragma once
 
+#include <thread>
+
 #include "sc-memory/sc_addr.hpp"
 #include "sc-memory/sc_object.hpp"
-#include "sc-memory/sc_timer.hpp"
-#include "sc-memory/utils/sc_lock.hpp"
 #include "sc-memory/sc_agent.hpp"
 
-#include <thread>
+#include "sc-memory/sc_timer.hpp"
+#include "sc-memory/utils/sc_lock.hpp"
 
 class TestWaiter
 {

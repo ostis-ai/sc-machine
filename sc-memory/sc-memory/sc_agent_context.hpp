@@ -30,6 +30,8 @@ public:
    */
   _SC_EXTERN explicit ScAgentContext(sc_memory_context * context) noexcept;
 
+  SC_DISALLOW_COPY(ScAgentContext);
+
   /*!
    * @brief Move constructor for ScAgentContext.
    * @param other Other ScAgentContext to move from.

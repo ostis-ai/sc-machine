@@ -506,9 +506,6 @@ ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
     break;
   }
 
-  if (result != SC_RESULT_OK)
-    addr.Reset();
-
   return addr;
 }
 
@@ -544,9 +541,6 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
     break;
   }
 
-  if (result != SC_RESULT_OK)
-    addr.Reset();
-
   return addr;
 }
 
@@ -578,14 +572,6 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
 
   default:
     break;
-  }
-
-  if (result != SC_RESULT_OK)
-  {
-    outSourceAddr.Reset();
-    outTargetAddr.Reset();
-
-    return false;
   }
 
   return true;

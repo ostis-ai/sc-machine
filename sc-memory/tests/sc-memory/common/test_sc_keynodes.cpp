@@ -73,7 +73,14 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_custom) == ScType::NodeConstClass);
 }
 
-TEST_F(ScKeynodesTest, binary_types)
+TEST_F(ScKeynodesTest, GetRrelIndex)
+{
+  EXPECT_EQ(ScKeynodes::GetRrelIndexNum(), 20u);
+  EXPECT_TRUE(ScKeynodes::GetRrelIndex(1).IsValid());
+  EXPECT_THROW(ScKeynodes::GetRrelIndex(ScKeynodes::GetRrelIndexNum()), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScKeynodesTest, BinaryTypes)
 {
   ScAddr keynodes[] = {
       ScKeynodes::binary_double,
@@ -92,7 +99,22 @@ TEST_F(ScKeynodesTest, binary_types)
     EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::binary_type, a, ScType::EdgeAccessConstPosPerm));
 }
 
-TEST_F(ScKeynodesTest, cache)
+TEST_F(ScKeynodesTest, CopyKeynode)
+{
+  ScKeynode keynode = ScKeynodes::action_finished;
+  EXPECT_TRUE(keynode.IsValid());
+
+  ScKeynode keynodeCopy = keynode;
+  EXPECT_EQ(keynodeCopy, keynode);
+
+  keynodeCopy = keynode;
+  EXPECT_EQ(keynodeCopy, keynode);
+
+  keynodeCopy = keynodeCopy;
+  EXPECT_EQ(keynodeCopy, keynode);
+}
+
+TEST_F(ScKeynodesTest, Cache)
 {
   utils::ScKeynodeCache cache(*m_ctx);
 
@@ -101,6 +123,7 @@ TEST_F(ScKeynodesTest, cache)
   EXPECT_TRUE(addr.IsValid());
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_idtf", addr));
 
+  EXPECT_TRUE(cache.GetKeynode("test_idtf").IsValid());
   EXPECT_TRUE(cache.GetKeynode("test_idtf").IsValid());
   EXPECT_FALSE(cache.GetKeynode("other").IsValid());
   EXPECT_FALSE(cache.GetKeynode("any_idtf").IsValid());

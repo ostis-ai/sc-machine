@@ -1,11 +1,9 @@
-#include <gtest/gtest.h>
+#include "agents_test_utils.hpp"
 
 #include "sc-memory/sc_agent.hpp"
 
 #include "test_sc_agent.hpp"
 #include "test_sc_module.hpp"
-
-#include "agents_test_utils.hpp"
 
 TEST_F(ScAgentTest, InvalidSubscription)
 {
