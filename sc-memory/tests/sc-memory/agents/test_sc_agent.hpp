@@ -101,7 +101,7 @@ public:
   ScResult DoProgram(ScEventRemoveEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
-class ATestEraseElement : public ScAgent<ScEventRemoveElement>
+class ATestRemoveElement : public ScAgent<ScEventRemoveElement>
 {
 public:
   static inline ScKeynode const erase_element_action{"erase_element_action", ScType::NodeConstClass};
@@ -112,7 +112,7 @@ public:
   ScResult DoProgram(ScEventRemoveElement const & event, ScAction & action) override;
 };
 
-class ATestChangeContent : public ScAgent<ScEventChangeLinkContent>
+class ATestChangeLinkContent : public ScAgent<ScEventChangeLinkContent>
 {
 public:
   static inline ScKeynode const content_change_action{"content_change_action", ScType::NodeConstClass};
