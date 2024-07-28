@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <string>
+#include <list>
 
 class GWFTranslator : public Translator
 {

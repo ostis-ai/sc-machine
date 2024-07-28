@@ -7,7 +7,7 @@
 class ScgToScsElement
 {
 public:
-  static std::string m_GetElement(std::string const & scgElement, std::string const & dict);
+  static std::string GetElement(std::string const & scgElement, std::string const & dict);
 
 private:
   static std::string m_FindValue(
