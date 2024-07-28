@@ -65,7 +65,7 @@ protected:
   mutable ScAgentContext m_memoryCtx;
 
   static inline std::
-      unordered_map<std::string, std::unordered_map<ScAddr, TScElementaryEventSubscription<TScEvent> *, ScAddrHashFunc>>
+      unordered_map<std::string, std::unordered_map<ScAddr, ScElementaryEventSubscription *, ScAddrHashFunc>>
           m_events;
 
   _SC_EXTERN ScAgentAbstract();
@@ -254,6 +254,50 @@ public:
 
 protected:
   ScActionAgent();
+};
+
+template <ScKeynode const & agentImplementationAddr>
+class _SC_EXTERN ScSpecificatedAgent : public ScAgent<ScElementaryEvent>
+{
+public:
+  template <class TScAgent>
+  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx);
+
+  template <class TScAgent>
+  static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx);
+
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetPrimaryInitiationCondition();
+
+  _SC_EXTERN ScAddr GetActionClass() const final;
+
+  _SC_EXTERN ScAddr GetInitiationCondition() const;
+
+  _SC_EXTERN ScAddr GetResultCondition() const;
+
+protected:
+  static inline ScAddr ms_implementationAgentAddr;
+  static inline ScAddr ms_abstractAgentAddr;
+  static inline ScAddr ms_eventClassAddr;
+  static inline ScAddr ms_eventSubscriptionAddr;
+  static inline ScAddr ms_actionClassAddr;
+  static inline ScAddr ms_initiationConditionAddr;
+  static inline ScAddr ms_resultConditionAddr;
+
+  ScSpecificatedAgent();
+
+  template <class TScAgent>
+  static std::function<void(ScElementaryEvent const &)> GetCallback();
+
+private:
+  template <class TScAgent>
+  static void Initialize(ScMemoryContext * ctx);
+
+  template <class TScAgent>
+  static void Shutdown(ScMemoryContext * ctx);
+
+  ScTemplate GetInitiationCondition(ScElementaryEvent const & event) final;
+
+  ScTemplate GetResultCondition(ScElementaryEvent const & event, ScAction & action) final;
 };
 
 #include "sc_agent.tpp"

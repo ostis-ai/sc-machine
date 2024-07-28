@@ -95,10 +95,35 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGene
   }
 
   // command states
-  ScAddr states[] = {action_initiated, action_finished};
+  ScAddr states[] = {action_deactivated, action_initiated, action_finished};
   for (auto const & a : states)
   {
-    ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, action_state, a);
+    ScAddr arcAddr;
+    if (!ctx->HelperCheckEdge(action_state, a, ScType::EdgeAccessConstPosPerm))
+      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, action_state, a);
+
+    if (initMemoryGeneratedStructureAddr.IsValid())
+      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
+  }
+
+  // sc-events
+  ScAddr events[] = {
+      sc_event_add_input_arc,
+      sc_event_add_output_arc,
+      sc_event_add_edge,
+      sc_event_remove_input_arc,
+      sc_event_remove_output_arc,
+      sc_event_remove_edge,
+      sc_event_remove_element,
+      sc_event_change_content};
+  for (auto const & e : events)
+  {
+    ScAddr arcAddr;
+    if (!ctx->HelperCheckEdge(sc_event, e, ScType::EdgeAccessConstPosPerm))
+      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sc_event, e);
+
+    if (initMemoryGeneratedStructureAddr.IsValid())
+      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
   }
 
   // binary types
@@ -117,7 +142,9 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGene
       binary_custom};
   for (auto const & b : binaryTypes)
   {
-    ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, binary_type, b);
+    ScAddr arcAddr;
+    if (!ctx->HelperCheckEdge(binary_type, b, ScType::EdgeAccessConstPosPerm))
+      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, binary_type, b);
 
     if (initMemoryGeneratedStructureAddr.IsValid())
       ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
@@ -163,13 +190,13 @@ ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)
 
 ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)
 {
-  if (idx >= kKeynodeRrelListNum)
+  if (idx == 0 || idx >= kKeynodeRrelListNum)
   {
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "You should use index in range[0; " + std::to_string(kKeynodeRrelListNum) + "]");
+        utils::ExceptionInvalidParams, "You should use index in range[1; " + std::to_string(kKeynodeRrelListNum) + "]");
   }
 
-  return kKeynodeRrelList[idx];
+  return kKeynodeRrelList[idx - 1];
 }
 
 size_t ScKeynodes::GetRrelIndexNum()

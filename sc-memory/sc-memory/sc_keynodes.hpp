@@ -88,6 +88,8 @@ class _SC_EXTERN ScKeynodes : public ScObject
 public:
   _SC_EXTERN static inline ScKeynode const myself{"myself"};
 
+  _SC_EXTERN static inline ScKeynode const nrel_inclusion{"nrel_inclusion", ScType::NodeConstNoRole};
+
   _SC_EXTERN static inline ScKeynode const action{"action", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_state{"action_state", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_deactivated{"action_deactivated", ScType::NodeConstClass};
@@ -104,6 +106,22 @@ public:
       ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const nrel_answer{"nrel_answer", ScType::NodeConstNoRole};
 
+  _SC_EXTERN static inline ScKeynode const abstract_sc_agent{"abstract_sc_agent", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const nrel_primary_initiation_condition{
+      "nrel_primary_initiation_condition",
+      ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_sc_agent_action_class{
+      "nrel_sc_agent_action_class",
+      ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_initiation_condition_and_result{
+      "nrel_initiation_condition_and_result",
+      ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const platform_dependent_abstract_sc_agent{
+      "platform_dependent_abstract_sc_agent",
+      ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const nrel_sc_agent_program{"nrel_sc_agent_program", ScType::NodeConstNoRole};
+
+  _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_add_input_arc{"sc_event_add_input_arc", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_add_output_arc{"sc_event_add_output_arc", ScType::NodeConstClass};
