@@ -5,6 +5,8 @@
  */
 
 #include "sc_template.hpp"
+
+#include "sc_template_private.hpp"
 #include "sc_memory.hpp"
 
 ScTemplateParams const ScTemplateParams::Empty;
@@ -31,7 +33,7 @@ public:
 
     PreCheckTemplateAndParams();
 
-    result = ScTemplateResultItem{*m_context, m_replacements};
+    result = ScTemplateResultItem{&m_context, m_replacements};
     result.m_replacementConstruction.resize(m_triples.size() * 3);
 
     ScAddrVector createdElements;
