@@ -11,6 +11,8 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
 {
   EXPECT_TRUE(ScKeynodes::action_state.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_state) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::action_deactivated.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_deactivated) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::action_initiated.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_initiated) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::action_finished.IsValid());
@@ -23,6 +25,36 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished_with_error) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::nrel_answer.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_answer) == ScType::NodeConstNoRole);
+
+  EXPECT_TRUE(ScKeynodes::abstract_sc_agent.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::abstract_sc_agent) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::nrel_primary_initiation_condition.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_primary_initiation_condition) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::nrel_sc_agent_action_class.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_sc_agent_action_class) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::nrel_initiation_condition_and_result.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_initiation_condition_and_result) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::platform_dependent_abstract_sc_agent.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::platform_dependent_abstract_sc_agent) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::nrel_sc_agent_program.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_sc_agent_program) == ScType::NodeConstNoRole);
+
+  EXPECT_TRUE(ScKeynodes::sc_event.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_add_input_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_add_input_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_add_output_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_add_output_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_remove_input_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_remove_input_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_remove_output_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_remove_output_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_remove_edge.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_remove_edge) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_remove_element.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_remove_element) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_change_content.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_change_content) == ScType::NodeConstClass);
 
   EXPECT_TRUE(ScKeynodes::sc_result_class.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_class) == ScType::NodeConstClass);
@@ -44,6 +76,25 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_invalid_state) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::sc_result_error_not_found.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_not_found) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_full_memory.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_full_memory) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_addr_is_not_valid.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_addr_is_not_valid) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_element_is_not_node.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_element_is_not_node) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_element_is_not_link.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_element_is_not_link) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_element_is_not_connector.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_element_is_not_connector) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_file_memory_io.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_file_memory_io) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_stream_io.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_stream_io) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_invalid_system_identifier.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_invalid_system_identifier) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_result_error_duplicated_system_identifier.IsValid());
+  EXPECT_TRUE(
+      m_ctx->GetElementType(ScKeynodes::sc_result_error_duplicated_system_identifier) == ScType::NodeConstClass);
 
   EXPECT_TRUE(ScKeynodes::binary_type.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_type) == ScType::NodeConstClass);
@@ -80,6 +131,24 @@ TEST_F(ScKeynodesTest, GetRrelIndex)
   EXPECT_THROW(ScKeynodes::GetRrelIndex(ScKeynodes::GetRrelIndexNum()), utils::ExceptionInvalidParams);
 }
 
+TEST_F(ScKeynodesTest, Events)
+{
+  ScAddr keynodes[] = {
+      ScKeynodes::sc_event_unknown,
+      ScKeynodes::sc_event_add_input_arc,
+      ScKeynodes::sc_event_add_output_arc,
+      ScKeynodes::sc_event_add_edge,
+      ScKeynodes::sc_event_remove_input_arc,
+      ScKeynodes::sc_event_remove_output_arc,
+      ScKeynodes::sc_event_remove_edge,
+      ScKeynodes::sc_event_remove_element,
+      ScKeynodes::sc_event_change_content,
+  };
+
+  for (ScAddr event : keynodes)
+    EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::sc_event, event, ScType::EdgeAccessConstPosPerm));
+}
+
 TEST_F(ScKeynodesTest, BinaryTypes)
 {
   ScAddr keynodes[] = {
@@ -93,7 +162,8 @@ TEST_F(ScKeynodesTest, BinaryTypes)
       ScKeynodes::binary_uint16,
       ScKeynodes::binary_uint32,
       ScKeynodes::binary_uint64,
-      ScKeynodes::binary_string};
+      ScKeynodes::binary_string,
+  };
 
   for (ScAddr a : keynodes)
     EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::binary_type, a, ScType::EdgeAccessConstPosPerm));

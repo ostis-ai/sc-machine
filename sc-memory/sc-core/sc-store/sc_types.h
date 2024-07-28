@@ -154,6 +154,10 @@ typedef sc_uint16 sc_type;
 #  define sc_type_arc_neg_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp)
 #  define sc_type_arc_pos_var_perm (sc_type)(sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm)
 
+#  define sc_type_node_const (sc_type)(sc_type_node | sc_type_const)
+#  define sc_type_node_const_class (sc_type)(sc_type_node | sc_type_const | sc_type_node_class)
+#  define sc_type_node_const_norole (sc_type)(sc_type_node | sc_type_const | sc_type_node_norole)
+
 // type mask
 #  define sc_type_element_mask \
     (sc_type)(sc_type_node | sc_type_link | sc_type_edge_common | sc_type_arc_common | sc_type_arc_access)
