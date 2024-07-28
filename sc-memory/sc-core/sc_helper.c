@@ -360,12 +360,13 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
 sc_bool sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * system_idtf, sc_addr * result_addr)
 {
   sc_system_identifier_fiver fiver;
-  return sc_helper_resolve_system_identifier_ext(ctx, system_idtf, result_addr, &fiver);
+  return sc_helper_resolve_system_identifier_ext(ctx, system_idtf, sc_type_node | sc_type_const, result_addr, &fiver);
 }
 
 sc_bool sc_helper_resolve_system_identifier_ext(
     sc_memory_context * ctx,
     sc_char const * system_idtf,
+    sc_type type,
     sc_addr * result_addr,
     sc_system_identifier_fiver * fiver)
 {
@@ -385,7 +386,7 @@ sc_bool sc_helper_resolve_system_identifier_ext(
     return SC_TRUE;
   }
 
-  *result_addr = sc_memory_node_new(ctx, sc_type_node | sc_type_const);
+  *result_addr = sc_memory_node_new(ctx, type);
   result = sc_helper_set_system_identifier_ext(ctx, *result_addr, system_idtf, string_size, fiver);
   if (result != SC_RESULT_OK)
     goto error;

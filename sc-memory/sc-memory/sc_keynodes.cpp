@@ -70,6 +70,19 @@ std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 
 void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr)
 {
+  auto const & ResolveArc = [&](ScAddr const & beginAddr, ScAddr const & endAddr)
+  {
+    ScAddr arcAddr;
+    ScIterator3Ptr it3 = ctx->Iterator3(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+    if (it3->Next())
+      arcAddr = it3->Get(1);
+    else
+      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+
+    if (initMemoryGeneratedStructureAddr.IsValid())
+      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
+  };
+
   SC_LOG_INFO("Initialize " << GetName<ScKeynodes>());
 
   internal::ScKeynodesRegister::Register(ctx, initMemoryGeneratedStructureAddr);
@@ -77,14 +90,8 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGene
   // init sc_result set
   for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
   {
-    ScAddr const resAddr = GetResultCodeAddr(static_cast<sc_result>(i));
-    if (!ctx->HelperCheckEdge(sc_result_class, resAddr, ScType::EdgeAccessConstPosPerm))
-    {
-      ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sc_result_class, resAddr);
-
-      if (initMemoryGeneratedStructureAddr.IsValid())
-        ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
-    }
+    ScAddr const resultAddr = GetResultCodeAddr(static_cast<sc_result>(i));
+    ResolveArc(sc_result_class, resultAddr);
   }
 
   // resolve rrel_n relations
@@ -96,18 +103,14 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGene
 
   // command states
   ScAddr states[] = {action_deactivated, action_initiated, action_finished};
-  for (auto const & a : states)
+  for (auto const & state : states)
   {
-    ScAddr arcAddr;
-    if (!ctx->HelperCheckEdge(action_state, a, ScType::EdgeAccessConstPosPerm))
-      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, action_state, a);
-
-    if (initMemoryGeneratedStructureAddr.IsValid())
-      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
+    ResolveArc(action_state, state);
   }
 
   // sc-events
   ScAddr events[] = {
+      sc_event_unknown,
       sc_event_add_input_arc,
       sc_event_add_output_arc,
       sc_event_add_edge,
@@ -116,14 +119,9 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGene
       sc_event_remove_edge,
       sc_event_remove_element,
       sc_event_change_content};
-  for (auto const & e : events)
+  for (auto const & event : events)
   {
-    ScAddr arcAddr;
-    if (!ctx->HelperCheckEdge(sc_event, e, ScType::EdgeAccessConstPosPerm))
-      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sc_event, e);
-
-    if (initMemoryGeneratedStructureAddr.IsValid())
-      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
+    ResolveArc(sc_event, event);
   }
 
   // binary types
@@ -140,14 +138,9 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGene
       binary_uint32,
       binary_uint64,
       binary_custom};
-  for (auto const & b : binaryTypes)
+  for (auto const & type : binaryTypes)
   {
-    ScAddr arcAddr;
-    if (!ctx->HelperCheckEdge(binary_type, b, ScType::EdgeAccessConstPosPerm))
-      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, binary_type, b);
-
-    if (initMemoryGeneratedStructureAddr.IsValid())
-      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, arcAddr);
+    ResolveArc(binary_type, type);
   }
 }
 
