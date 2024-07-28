@@ -12,6 +12,7 @@
 
 class ScStruct;
 class ScResult;
+class ScKeynode;
 
 /*!
  * @class ScAction
@@ -211,6 +212,8 @@ private:
   friend class ScAgentContext;
   template <class TScEvent>
   friend class ScAgent;
+  template <ScKeynode const & agentImplementationAddr>
+  friend class ScSpecificatedAgent;
 };
 
 #include "sc_action.tpp"

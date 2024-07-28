@@ -8,6 +8,8 @@
 
 #include "sc_object.hpp"
 
+class ScKeynode;
+
 class ScResult : public ScObject
 {
 private:
@@ -15,6 +17,8 @@ private:
 
   template <class TScEvent>
   friend class ScAgent;
+  template <ScKeynode const & agentImplementationAddr>
+  friend class ScSpecificatedAgent;
   friend class ScAction;
 
   _SC_EXTERN ScResult(sc_result code);
