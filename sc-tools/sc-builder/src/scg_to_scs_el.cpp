@@ -228,7 +228,7 @@ std::string ScgToScsElement::m_FindValue(
   return (it != dictionary.end()) ? it->second : "";
 }
 
-std::string ScgToScsElement::m_GetElement(std::string const & scgElement, std::string const & dict)
+std::string ScgToScsElement::GetElement(std::string const & scgElement, std::string const & dict)
 {
   static const std::unordered_map<std::string, std::unordered_map<std::string, std::string> const *> dictMap = {
       {"NodeTypeSets", &m_nodeTypeSets},

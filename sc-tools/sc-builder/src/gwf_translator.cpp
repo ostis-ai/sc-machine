@@ -23,7 +23,7 @@ std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string 
 {
   GwfParser parser;
 
-  std::vector<std::unordered_map<std::string, std::string>> elements = parser.Parse(xmlStr);
+  auto elements = parser.Parse(xmlStr);
 
   if (elements.empty())
   {
@@ -31,7 +31,7 @@ std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string 
   }
 
   ScsWriter writer;
-  const std::string scsStr = writer.Write(elements, filePath);
+  auto const scsStr = writer.Write(elements, filePath);
 
   return scsStr;
 }
@@ -107,7 +107,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     newParams.m_outputStructure = params.m_outputStructure;
     bool status = m_scsTranslator.Translate(newParams);
 
-    std::filesystem::remove(scsSource.c_str());
+    // std::filesystem::remove(scsSource.c_str());
 
     return status;
   }
