@@ -256,7 +256,7 @@ void ScSpecificatedAgent<agentImplementationAddr>::Initialize(ScMemoryContext * 
         "Agent implementation `" << agentImplementationName << "` has two or more sc-agent programs.");
 
   it5 = ctx->Iterator5(
-      ScType::NodeConst,
+      ScType::Unknown,
       ScType::EdgeDCommonConst,
       agentImplementationAddr,
       ScType::EdgeAccessConstPosPerm,
