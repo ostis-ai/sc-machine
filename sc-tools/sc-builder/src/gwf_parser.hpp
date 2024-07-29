@@ -190,11 +190,6 @@ public:
     return elements;
   }
 
-  std::unordered_map<std::string, std::shared_ptr<ScgElement>> const & getElements() const
-  {
-    return elements;
-  }
-
 private:
   std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements;
 };
