@@ -113,7 +113,7 @@ void ScsWriter::ProcessElementsList(
   }
   catch (std::exception const & e)
   {
-    std::cerr << "Exception in process elements: " << e.what() << '\n';
+    SC_LOG_ERROR("Exception in process elements: " + std::string(e.what()));
   }
 }
 
