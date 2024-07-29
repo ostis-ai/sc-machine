@@ -27,7 +27,7 @@ std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string 
 
   if (elements.empty())
   {
-    throw std::runtime_error("There are no elements in this file " + filePath);
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, "There are no elements in this file " + filePath);
   }
 
   ScsWriter writer;
@@ -44,21 +44,21 @@ std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::st
 
   if (!outputFile.is_open())
   {
-    throw std::runtime_error("Error creating file for writing: " + scsSource);
+    SC_THROW_EXCEPTION(utils::ExceptionCritical,"Error creating file for writing: " + scsSource);
   }
 
   outputFile << scsStr;
 
   if (outputFile.fail())
   {
-    throw std::runtime_error("Error writing to file: " + scsSource);
+    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Error writing to file: " + scsSource);
   }
 
   outputFile.close();
 
   if (outputFile.fail())
   {
-    throw std::runtime_error("Error closing the file: " + scsSource);
+    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Error closing the file: " + scsSource);
   }
 
   return scsSource;
@@ -71,7 +71,7 @@ std::string GWFTranslator::XmlFileToString(std::string const & filename)
   xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
   if (doc == nullptr)
   {
-    throw std::runtime_error("Failed to parse XML file");
+    SC_THROW_EXCEPTION(utils::ExceptionParseError, "Failed to parse XML file");
   }
 
   xmlChar * xmlBuffer;
@@ -94,7 +94,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     const std::string xmlStr = XmlFileToString(params.m_fileName);
     if (xmlStr.empty())
     {
-      throw std::runtime_error("Gwf file is empty: " + params.m_fileName);
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Gwf file is empty: " + params.m_fileName);
     }
 
     const std::string scsStr = GwfToScs(xmlStr, params.m_fileName);
@@ -107,7 +107,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     newParams.m_outputStructure = params.m_outputStructure;
     bool status = m_scsTranslator.Translate(newParams);
 
-    // std::filesystem::remove(scsSource.c_str());
+    std::filesystem::remove(scsSource.c_str());
 
     return status;
   }
