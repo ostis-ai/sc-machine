@@ -13,6 +13,7 @@ target_include_directories(sc-ui
     PRIVATE "${CMAKE_CURRENT_LIST_DIR}"
     PUBLIC "${CMAKE_CURRENT_LIST_DIR}/.."
 )
+target_compile_features(sc-ui PUBLIC cxx_std_20)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-ui)

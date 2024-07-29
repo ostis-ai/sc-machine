@@ -17,12 +17,18 @@ target_link_libraries(sc-server-lib
 target_include_directories(sc-server-lib
     PUBLIC ${SC_SERVER_ROOT}
 )
+set_target_properties(sc-server-lib PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
 
 set(SC_SERVER_MODULE_ROOT "${SC_SERVER_ROOT}/src/sc-server-module")
 sc_codegen_ex(sc-server-lib "${SC_SERVER_MODULE_ROOT}" "${SC_SERVER_MODULE_ROOT}/generated")
 
 add_executable(sc-server "${SC_SERVER_ROOT}/src/main.cpp")
 target_link_libraries(sc-server LINK_PRIVATE sc-server-lib)
+target_compile_features(sc-server PUBLIC cxx_std_17)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-server-lib)

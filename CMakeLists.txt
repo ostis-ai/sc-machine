@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
-set(CMAKE_CXX_STANDARD 17)
+cmake_minimum_required(VERSION 3.12)
 project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
@@ -49,6 +48,9 @@ endif()
 
 if(${SC_BUILD_TESTS})
     include(${CMAKE_MODULE_PATH}/tests.cmake)
+    if(${SC_BUILD_BENCH})
+        find_package(benchmark REQUIRED)
+    endif()
 endif()
 
 if(${SC_CLANG_FORMAT_CODE})
@@ -56,7 +58,7 @@ if(${SC_CLANG_FORMAT_CODE})
 endif()
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
     if (${SC_USE_SANITIZER} STREQUAL "none" AND NOT ${SC_COVERAGE})
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
     endif()
@@ -64,13 +66,13 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations")
     endif()
 elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
     if(${SC_USE_SANITIZER} STREQUAL "none" AND NOT ${SC_COVERAGE})
-	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3") ## Optimize
+	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -lstdc++fs -O3") ##
     endif()
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s") ## Strip binary
 elseif (NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
 find_program(CCACHE_PROGRAM ccache)

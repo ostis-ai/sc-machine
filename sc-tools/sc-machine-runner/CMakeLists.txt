@@ -8,9 +8,11 @@ target_link_libraries(sc-machine-runner
     LINK_PUBLIC sc-memory
     LINK_PUBLIC sc-config-utils
 )
+target_compile_features(sc-machine-runner PUBLIC cxx_std_20)
 
 add_executable(sc-machine "${SC_MACHINE_RUNNER_SRC}/src/main.cpp")
 target_link_libraries(sc-machine LINK_PRIVATE sc-machine-runner)
+target_compile_features(sc-machine PUBLIC cxx_std_20)
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-machine-runner)

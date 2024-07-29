@@ -28,6 +28,8 @@ XPath::XPath(Parser *parser, const std::string &path) {
   _elements = split(path);
 }
 
+XPath::~XPath() = default;
+
 std::vector<XPathElement> XPath::split(const std::string &path) {
   ANTLRFileStream in(path);
   XPathLexer lexer(&in);

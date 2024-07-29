@@ -17,6 +17,7 @@ target_link_libraries(sc-code-generator
     LINK_PRIVATE ${BOOST_LIBS_LIST}
 )
 target_include_directories(sc-code-generator PRIVATE ${SC_CODEGEN_DIR}/Parser)
+target_compile_features(sc-code-generator PUBLIC cxx_std_20)
 set_target_properties(sc-code-generator PROPERTIES COMPILE_FLAGS ${LIBCLANG_CXXFLAGS})
 
 if(${SC_CLANG_FORMAT_CODE})
