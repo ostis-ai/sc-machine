@@ -1,107 +1,5 @@
 #include "gwf_parser.hpp"
 
-std::string GwfParser::XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr)
-{
-  if (!ptr)
-  {
-    return "";
-  }
-
-  std::size_t length = xmlStrlen(ptr.get());
-
-  std::string result(length, '\0');
-  std::copy(ptr.get(), ptr.get() + length, result.begin());
-
-  return result;
-}
-
-std::unique_ptr<xmlChar, XmlCharDeleter> GwfParser::GetXmlProp(xmlNodePtr node, char const * propName)
-{
-  xmlChar * propValue = xmlGetProp(node, BAD_CAST propName);
-  // BAD_CAST macro to cast const char* to const xmlChar* (libxml/xmlstring.h)
-  return std::unique_ptr<xmlChar, XmlCharDeleter>(propValue);
-}
-
-void GwfParser::FillContour(std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,  std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements)
-{
-  for (auto & pair : contourAndId)
-  {
-    auto & contour = pair.first;
-    auto & id = pair.second;
-
-    for (auto & [key, element] : elements)
-    {
-      if (element->getParent() == id)
-      {
-        contour->addElement(element);
-     }
-    }
-    auto check = contour->getElements();
-  }
-}
-
-void GwfParser::ProcessStaticSector(
-    xmlNodePtr staticSector,
-    std::unordered_map<std::string, std::shared_ptr<ScgElement>> & elements)
-{
-  try
-  {
-    std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> connectorsList;
-    std::vector<std::unordered_map<std::shared_ptr<Contour>, std::string>> contoursList;
-
-    for (xmlNodePtr child = staticSector->children; child != nullptr; child = child->next)
-    {
-      if (child->type == XML_ELEMENT_NODE)
-      {
-        auto const id = XmlCharToString(GetXmlProp(child, "id"));
-        auto const parent = XmlCharToString(GetXmlProp(child, "parent"));
-        auto idtf = XmlCharToString(GetXmlProp(child, "idtf"));
-        auto const type = XmlCharToString(GetXmlProp(child, "type"));
-        auto const tag = XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter>(xmlStrdup(child->name)));
-
-        std::shared_ptr<ScgElement> scgElement;
-
-        if (tag == "node" && HasContent(child))
-        {
-          scgElement = CreateLink(id, parent, idtf, type, tag, child);
-        }
-        else if (tag == "node")
-        {
-          scgElement = CreateNode(id, parent, idtf, type, tag, child);
-        }
-        else if (tag == "bus")
-        {
-          scgElement = CreateBus(id, parent, idtf, type, tag, child);
-        }
-        else if (tag == "contour")
-        {
-          scgElement = CreateContour(id, parent, idtf, type, tag, child, contoursList);
-        }
-        else if (tag == "pair" || tag == "arc")
-        {
-          scgElement = CreateConnector(id, parent, idtf, type, tag, child, connectorsList);
-        }
-
-        elements[id] = scgElement;
-      }
-    }
-
-    for (auto & connector : connectorsList)
-    {
-      FillConnector(connector, elements);
-    }
-    for (auto & countour : contoursList)
-    {
-      FillContour(countour, elements);
-    }
-  }
-  catch (std::exception const & e)
-  {
-    SC_THROW_EXCEPTION(
-        utils::ExceptionParseError, std::string("Exception caught in process static sector: ") + e.what());
-  }
-}
-
 std::unordered_map<std::string, std::shared_ptr<ScgElement>> GwfParser::Parse(std::string const & xmlStr)
 {
   try
@@ -154,6 +52,74 @@ std::unordered_map<std::string, std::shared_ptr<ScgElement>> GwfParser::Parse(st
   }
 }
 
+void GwfParser::ProcessStaticSector(
+    xmlNodePtr staticSector,
+    std::unordered_map<std::string, std::shared_ptr<ScgElement>> & elements)
+{
+  try
+  {
+    std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> connectorsList;
+    // connectorsList = {connectorMap1, connectorMap2, ...}
+    // connectorMap = {connector: (sourceId, targetId)}
+    std::vector<std::unordered_map<std::shared_ptr<Contour>, std::string>> contoursList;
+    // contoursList = {contourMap1, contourMap2, ...}
+    // contourMap = {contour: contourId}
+
+    for (xmlNodePtr child = staticSector->children; child != nullptr; child = child->next)
+    {
+      if (child->type == XML_ELEMENT_NODE)
+      {
+        auto const id = XmlCharToString(GetXmlProp(child, "id"));
+        auto const parent = XmlCharToString(GetXmlProp(child, "parent"));
+        auto idtf = XmlCharToString(GetXmlProp(child, "idtf"));
+        auto const type = XmlCharToString(GetXmlProp(child, "type"));
+        auto const tag = XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter>(xmlStrdup(child->name)));
+
+        std::shared_ptr<ScgElement> scgElement;
+
+        if (tag == "node" && HasContent(child))
+        {
+          scgElement = CreateLink(id, parent, idtf, type, tag, child);
+        }
+        else if (tag == "node")
+        {
+          scgElement = CreateNode(id, parent, idtf, type, tag, child);
+        }
+        else if (tag == "bus")
+        {
+          scgElement = CreateBus(id, parent, idtf, type, tag, child);
+        }
+        else if (tag == "contour")
+        {
+          scgElement = CreateContour(id, parent, idtf, type, tag, child, contoursList);
+        }
+        else if (tag == "pair" || tag == "arc")
+        {
+          scgElement = CreateConnector(id, parent, idtf, type, tag, child, connectorsList);
+        }
+
+        elements[id] = scgElement;
+      }
+    }
+
+    // To correctly process contours(connectors), all elements are first collected, then the contours(connectors) are assigned elements
+
+    for (auto & connector : connectorsList)
+    {
+      FillConnector(connector, elements);
+    }
+    for (auto & countour : contoursList)
+    {
+      FillContour(countour, elements);
+    }
+  }
+  catch (std::exception const & e)
+  {
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError, std::string("Exception caught in process static sector: ") + e.what());
+  }
+}
+
 std::shared_ptr<Node> GwfParser::CreateNode(
     std::string const & id,
     std::string const & parent,
@@ -184,7 +150,7 @@ std::shared_ptr<Link> GwfParser::CreateLink(
 
       if (!contentType.empty() && std::stoi(contentType) < 4)
       {
-        // content is num or str
+        // Content is num or string that don't need conversion
       }
       else if (contentType == "4")
       {
@@ -264,6 +230,7 @@ std::shared_ptr<Connector> GwfParser::CreateConnector(
   auto const targetId = XmlCharToString(GetXmlProp(el, "id_e"));
 
   auto connector = std::make_shared<Connector>(id, parent, idtf, type, tag, nullptr, nullptr);
+
   std::pair<std::string, std::string> sourseAndTarget = {sourceId, targetId};
   std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>> elementMap;
   elementMap[connector] = sourseAndTarget;
@@ -279,11 +246,11 @@ void GwfParser::FillConnector(
 {
   for (auto & pair : connectorSourceTarget)
   {
-    auto & connector = pair.first;
-    auto & sourceAndTarget = pair.second;
+    const std::shared_ptr<Connector> & connector = pair.first;
+    std::pair<std::string, std::string> & sourceAndTarget = pair.second;
 
-    auto & sourceId = sourceAndTarget.first;
-    auto & targetId = sourceAndTarget.second;
+    const std::string & sourceId = sourceAndTarget.first;
+    const std::string & targetId = sourceAndTarget.second;
 
     auto sourceIt = elements.find(sourceId);
     auto targetIt = elements.find(targetId);
@@ -304,3 +271,43 @@ void GwfParser::FillConnector(
     connector->setTarget(targetEl);
   }
 }
+
+void GwfParser::FillContour(std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,  std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements)
+{
+  for (auto & pair : contourAndId)
+  {
+    const std::shared_ptr<Contour> & contour = pair.first;
+    const std::string & id = pair.second;
+
+    for (auto & [key, element] : elements)
+    {
+      if (element->getParent() == id)
+      {
+        contour->addElement(element);
+     }
+    }
+  }
+}
+
+std::string GwfParser::XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr)
+{
+  if (!ptr)
+  {
+    return "";
+  }
+
+  std::size_t length = xmlStrlen(ptr.get());
+
+  std::string result(length, '\0');
+  std::copy(ptr.get(), ptr.get() + length, result.begin());
+
+  return result;
+}
+
+std::unique_ptr<xmlChar, XmlCharDeleter> GwfParser::GetXmlProp(xmlNodePtr node, char const * propName)
+{
+  xmlChar * propValue = xmlGetProp(node, BAD_CAST propName);
+  // BAD_CAST macro to cast const char* to const xmlChar* (libxml/xmlstring.h)
+  return std::unique_ptr<xmlChar, XmlCharDeleter>(propValue);
+}
+
