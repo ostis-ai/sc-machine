@@ -21,6 +21,7 @@ encapsulated this logic;
 
 ### Added
 
+- Doc strings for public template classes
 - Usings `ScAddrStack`, `ScAddrQueue`, `ScAddrSet` and `ScAddrHashSet`
 - Doc strings for iterator classes
 - Clean monitor tables by size threshold
@@ -72,6 +73,7 @@ encapsulated this logic;
 
 ### Fixed
 
+- Separate implementation from declarations in templates
 - Separate specializations from declarations in iterators
 - Fix duplication of iterator specializations
 - Make sc_addr_hash equal to sc_uint32
