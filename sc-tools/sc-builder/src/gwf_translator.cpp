@@ -51,6 +51,8 @@ std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::st
 
   if (outputFile.fail())
   {
+    outputFile.close();
+    std::remove(scsSource.c_str());
     SC_THROW_EXCEPTION(utils::ExceptionCritical, "Error writing to file: " + scsSource);
   }
 
@@ -58,6 +60,7 @@ std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::st
 
   if (outputFile.fail())
   {
+    std::remove(scsSource.c_str());
     SC_THROW_EXCEPTION(utils::ExceptionCritical, "Error closing the file: " + scsSource);
   }
 
@@ -68,7 +71,7 @@ std::string GWFTranslator::XmlFileToString(std::string const & filename)
 {
   xmlInitParser();
 
-  xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
+  xmlDocPtr doc = xmlReadFile(filename.c_str(), nullptr, 0);
   if (doc == nullptr)
   {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "Failed to parse XML file");
@@ -113,8 +116,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
   }
   catch (std::exception const & e)
   {
-    std::cerr << "Error: " << e.what() << '\n';
-
+    SC_LOG_ERROR("Error: " + std::string(e.what()));
     return false;
   }
 }

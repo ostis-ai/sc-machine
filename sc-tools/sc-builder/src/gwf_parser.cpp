@@ -46,7 +46,7 @@ std::unordered_map<std::string, std::shared_ptr<ScgElement>> GwfParser::Parse(st
   }
   catch (std::exception const & e)
   {
-    SC_THROW_EXCEPTION(utils::ExceptionParseError, std::string("Error in parse: ") + e.what());
+    SC_LOG_ERROR("Error in parse: " + std::string(e.what()));
     xmlCleanupParser();
     return {};
   }
@@ -115,8 +115,7 @@ void GwfParser::ProcessStaticSector(
   }
   catch (std::exception const & e)
   {
-    SC_THROW_EXCEPTION(
-        utils::ExceptionParseError, std::string("Exception caught in process static sector: ") + e.what());
+    SC_LOG_ERROR("Exception caught in process static sector: " + std::string(e.what()));
   }
 }
 
