@@ -83,4 +83,4 @@ using ScAddrList = std::list<ScAddr>;
 using ScAddrStack = std::stack<ScAddr>;
 using ScAddrQueue = std::queue<ScAddr>;
 using ScAddrSet = std::set<ScAddr, ScAddrLessFunc>;
-using ScAddrUnorderedSet = std::unordered_set<ScAddr, ScAddrHashFunc, ScAddrLessFunc>;
+using ScAddrUnorderedSet = std::unordered_set<ScAddr, ScAddrHashFunc>;
