@@ -623,9 +623,6 @@ private:
     isLast = true;
     isFinished = true;
 
-    auto const & checkedTemplateTriplesInCurrentReplacementConstruction =
-        m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx];
-
     std::unordered_set<size_t> iteratedTemplateTriples;
     for (size_t const idx : templateTriples)
     {
@@ -637,8 +634,9 @@ private:
       for (ScTemplateTriple * otherTemplateTriple : m_template.m_templateTriples)
       {
         // check if iterable triple is equal to current, not checked and not iterable with previous
-        if (checkedTemplateTriplesInCurrentReplacementConstruction.find(otherTemplateTriple->m_index)
-                == checkedTemplateTriplesInCurrentReplacementConstruction.cend()
+        if (m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].find(
+                otherTemplateTriple->m_index)
+                == m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].cend()
             && currentIterableTemplateTriples.find(idx) == currentIterableTemplateTriples.cend()
             && IsTriplesEqual(triple, otherTemplateTriple, templateItemName))
         {
