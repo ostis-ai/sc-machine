@@ -58,7 +58,7 @@ bool Utils::IsVariable(std::string const & el_type)
 
 // SCS WRITER CLASS
 
-const std::unordered_map<std::string, std::string> IMAGE_FORMATS = {{"png", "format_png"}};
+const std::unordered_map<std::string, std::string> IMAGE_FORMATS = {{".png", "format_png"}};
 
 const std::string N_REL_SYSTEM_IDTF = "nrel_system_identifier";
 const std::string N_REL_MAIN_IDTF = "nrel_main_idtf";
@@ -92,6 +92,7 @@ void ScsWriter::ProcessElementsList(
       if (tag == "node" || tag == "bus")
       {
         WriteNode(buffer, element.second, filePath);
+        buffer.Write("\n");
         continue;
       }
 
@@ -108,7 +109,9 @@ void ScsWriter::ProcessElementsList(
           std::shared_ptr<Contour> contour = std::dynamic_pointer_cast<Contour>(element.second);
           WriteContour(buffer, contour, 1);
         }
-      }
+
+        buffer.Write("\n");
+      }   
     }
   }
   catch (std::exception const & e)
@@ -119,9 +122,13 @@ void ScsWriter::ProcessElementsList(
 
 void ScsWriter::WriteNode(Buffer & buffer, std::shared_ptr<ScgElement> const & element, std::string const & filePath)
 {
-  Node * node = dynamic_cast<Node *>(element.get());
+  std::shared_ptr<Link> link = std::dynamic_pointer_cast<Link>(element);
 
-  if (node)
+  if (link->getContentType() != "0")
+  {
+    WriteLink(buffer, link, filePath);
+  }
+  else
   {
     std::string scsElType = ScgToScsElement::GetElement(element->getType(), "NodeTypeSets");
 
@@ -140,14 +147,6 @@ void ScsWriter::WriteNode(Buffer & buffer, std::shared_ptr<ScgElement> const & e
     }
 
     buffer.Write(element->getIdtf() + "\n  <- " + scsElType + ";;\n");
-  }
-  else
-  {
-    std::shared_ptr<Link> link = std::dynamic_pointer_cast<Link>(element);
-    if (link)
-    {
-      WriteLink(buffer, link, filePath);
-    }
   }
 }
 
@@ -191,13 +190,15 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
 {
   Buffer contourBuffer;
 
+  auto ff = contour->getElements();
+
   for (auto element : contour->getElements())
   {
     auto const tag = element.second->getTag();
 
     if (tag == "node" || tag == "bus")
     {
-      WriteNodeForContour(contourBuffer, element.second, contour);
+      WriteNodeForContour(buffer, element.second, contour);
     }
     else if (tag == "pair" || tag == "arc")
     {
@@ -207,10 +208,11 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
     }
     else if (tag == "contour")
     {
-      tabLevel++;
       std::shared_ptr<Contour> contour = std::dynamic_pointer_cast<Contour>(element.second);
-      WriteContour(contourBuffer, contour, tabLevel);
+      WriteContour(contourBuffer, contour, tabLevel + 1);
     }
+
+    buffer.Write("\n");
   }
   contourBuffer.AddTabs(tabLevel);
   buffer.Write(contour->getIdtf() + " = [*\n" + contourBuffer.GetValue() + "\n*];;\n");

@@ -182,7 +182,7 @@ public:
 
   void addElement(std::shared_ptr<ScgElement> & element)
   {
-    elements[id] = element;
+    elements[element->getId()] = element;
   }
 
   std::unordered_map<std::string, std::shared_ptr<ScgElement>> & getElements()
@@ -280,7 +280,7 @@ private:
       std::string const & type,
       std::string const & tag,
       xmlNodePtr & el,
-      std::unordered_map<std::string, std::shared_ptr<ScgElement>> & elements);
+      std::vector<std::unordered_map<std::shared_ptr<Contour>, std::string>> & contoursList);
 
   std::shared_ptr<Connector> CreateConnector(
       std::string const & tag,
@@ -292,9 +292,14 @@ private:
       std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> &
           connectorsList);
 
-  void fillConnector(
+  void FillConnector(
       std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>> & connectorSourceTarget,
       std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements);
+
+  void FillContour(
+    std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,
+    std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements
+  );
 
   void ProcessStaticSector(
       xmlNodePtr staticSector,
