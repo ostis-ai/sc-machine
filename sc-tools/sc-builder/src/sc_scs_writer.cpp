@@ -140,7 +140,7 @@ void ScsWriter::WriteNode(Buffer & buffer, std::shared_ptr<ScgElement> const & e
     }
     if (scsElType.empty())
     {
-      throw std::runtime_error("No matching scs node type for scg node: " + element->getType());
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + element->getType());
     }
 
     buffer.Write(element->getIdtf() + "\n  <- " + scsElType + ";;\n\n");
@@ -258,7 +258,7 @@ void ScsWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, s
     std::ofstream file(fullPath, std::ios::binary);
     if (!file)
     {
-      throw std::runtime_error("Failed to open file for writing: " + fullPath.string());
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Failed to open file for writing: " + fullPath.string());
     }
     file.write(contentData.data(), contentData.size());
     file.close();
