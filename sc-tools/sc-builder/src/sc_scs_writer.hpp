@@ -62,4 +62,6 @@ private:
       std::shared_ptr<Contour> const & contour);
 
   void CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & element);
+
+  bool checkForNode(std::shared_ptr<ScgElement> refElement, std::unordered_map<std::string, std::shared_ptr<ScgElement>> contourElements);
 };
