@@ -92,7 +92,6 @@ void ScsWriter::ProcessElementsList(
       if (tag == "node" || tag == "bus")
       {
         WriteNode(buffer, element.second, filePath);
-        buffer.Write("\n");
         continue;
       }
 
@@ -109,8 +108,6 @@ void ScsWriter::ProcessElementsList(
           std::shared_ptr<Contour> contour = std::dynamic_pointer_cast<Contour>(element.second);
           WriteContour(buffer, contour, 1);
         }
-
-        buffer.Write("\n");
       }   
     }
   }
@@ -146,7 +143,7 @@ void ScsWriter::WriteNode(Buffer & buffer, std::shared_ptr<ScgElement> const & e
       throw std::runtime_error("No matching scs node type for scg node: " + element->getType());
     }
 
-    buffer.Write(element->getIdtf() + "\n  <- " + scsElType + ";;\n");
+    buffer.Write(element->getIdtf() + "\n  <- " + scsElType + ";;\n\n");
   }
 }
 
@@ -184,15 +181,17 @@ void ScsWriter::WriteConnector(Buffer & buffer, std::shared_ptr<Connector> const
         alias + " = (" + connector->getSource()->getIdtf() + " " + symbol + " " + connector->getTarget()->getIdtf()
         + ");;\n");
   }
+
+  buffer.Write("\n");
 }
 
 void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & contour, int tabLevel)
 {
   Buffer contourBuffer;
 
-  auto ff = contour->getElements();
+  auto contourElements = contour->getElements();
 
-  for (auto element : contour->getElements())
+  for (auto element : contourElements)
   {
     auto const tag = element.second->getTag();
 
@@ -204,6 +203,14 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
     {
       std::shared_ptr<Connector> connector = std::dynamic_pointer_cast<Connector>(element.second);
 
+      if (connector->getSource() == contour)
+      {
+        if(checkForNode(connector->getTarget(), contourElements))
+        {
+          continue;
+        }
+      }
+
       WriteConnector(contourBuffer, connector);
     }
     else if (tag == "contour")
@@ -211,11 +218,13 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
       std::shared_ptr<Contour> contour = std::dynamic_pointer_cast<Contour>(element.second);
       WriteContour(contourBuffer, contour, tabLevel + 1);
     }
-
-    buffer.Write("\n");
+    else
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Uncorrect element tag " + tag);
+    }
   }
   contourBuffer.AddTabs(tabLevel);
-  buffer.Write(contour->getIdtf() + " = [*\n" + contourBuffer.GetValue() + "\n*];;\n");
+  buffer.Write(contour->getIdtf() + " = [*\n" + contourBuffer.GetValue() + "*];;\n\n");
 }
 
 void ScsWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, std::string const & filePath)
@@ -324,7 +333,7 @@ void ScsWriter::WriteNodeForContour(
 
   auto const edgeName =
       ("@edge_from_contour_" + contour->getId() + "_to_node_" + node->getId() + "_" + std::to_string(counter));
-  buffer.Write(edgeName + " = (" + contour->getIdtf() + " -> " + node->getIdtf() + ");;\n");
+  buffer.Write(edgeName + " = (" + contour->getIdtf() + " -> " + node->getIdtf() + ");;\n\n");
 }
 
 void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & element)
@@ -385,4 +394,19 @@ void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & eleme
     }
     buffer.Write(output);
   }
+}
+
+bool ScsWriter::checkForNode(
+    std::shared_ptr<ScgElement> refElement,
+    std::unordered_map<std::string, std::shared_ptr<ScgElement>> contourElements)
+{
+  for (const auto & element : contourElements)
+  {
+    if (element.second == refElement)
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
