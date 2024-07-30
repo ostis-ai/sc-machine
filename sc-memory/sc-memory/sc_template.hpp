@@ -281,7 +281,7 @@ using ScTemplateSearchResultFilterCallback = std::function<bool(ScTemplateResult
 using ScTemplateSearchResultCheckCallback = std::function<bool(ScAddr const & addr)>;
 
 /*!
- * @brief Represents a program sc-template used for generating and searching sc-elements in sc-memory.
+ * @brief Represents a program object of sc-template used for generating and searching sc-elements in sc-memory.
  *
  * ScTemplate allows the creation of templates for sc-elements, which can be used to generate or search for specific
  * patterns in sc-memory.
@@ -293,6 +293,7 @@ class _SC_EXTERN ScTemplate final
   friend class ScTemplateGenerator;
   friend class ScTemplateBuilder;
   friend class ScTemplateBuilderFromScs;
+  friend class ScTemplateLoader;
 
 public:
   /*!
@@ -522,6 +523,11 @@ protected:
   Result FromScTemplate(
       ScMemoryContext & ctx,
       ScAddr const & scTemplateAddr,
+      ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
+
+  Result ToScTemplate(
+      ScMemoryContext & ctx,
+      ScAddr & scTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 
   /*!
