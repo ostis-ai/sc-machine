@@ -1176,7 +1176,7 @@ public:
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   /*!
-   * Builds a program object ofsctemplate from existing in sc-memory sc-address of sc-structure. After
+   * Builds a program object of sc-template from existing in sc-memory sc-address of sc-structure. After
    * sc-template built you can use it to search or generate sc-constructions.
    * @param templ A built program object of sc-template.
    * @param templAddr A sc-address of sc-template structure.
