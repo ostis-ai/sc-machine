@@ -22,6 +22,7 @@ encapsulated this logic;
 ### Added
 
 - Add unordered_map type with `ScAddr` as key
+- Implement method of loading program object of sc-template into sc-memory
 - Doc strings for public template classes
 - Usings `ScAddrStack`, `ScAddrQueue`, `ScAddrSet` and `ScAddrHashSet`
 - Doc strings for iterator classes
