@@ -1071,6 +1071,15 @@ ScTemplate::Result ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std:
   return templ.FromScs(*this, scsText);
 }
 
+ScTemplate::Result ScMemoryContext::HelperLoadTemplate(
+    ScTemplate & templ,
+    ScAddr & templAddr,
+    ScTemplateParams const & params)
+{
+  CHECK_CONTEXT;
+  return templ.ToScTemplate(*this, templAddr, params);
+}
+
 ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
 {
   CHECK_CONTEXT;

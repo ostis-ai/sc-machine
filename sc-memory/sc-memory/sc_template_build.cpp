@@ -5,12 +5,12 @@
  */
 
 #include "sc_template.hpp"
-#include "sc_memory.hpp"
-#include "sc_debug.hpp"
 
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+
+#include "sc_memory.hpp"
 
 namespace
 {
