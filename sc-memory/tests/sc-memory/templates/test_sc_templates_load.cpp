@@ -23,7 +23,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
   templ.Triple("_test_set", ScType::EdgeAccessVarPosPerm, "_arc_to_test_object");
 
   ScAddr templAddr;
-  EXPECT_TRUE(m_ctx->HelperLoadTemplate(templ, templAddr));
+  m_ctx->HelperLoadTemplate(templ, templAddr);
 
   ScStruct templateStruct{*m_ctx, templAddr};
   {
@@ -81,7 +81,48 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
   EXPECT_EQ(searchResult.Size(), 1u);
 
   ScAddr templAddr;
-  EXPECT_TRUE(m_ctx->HelperLoadTemplate(templ, templAddr));
+  m_ctx->HelperLoadTemplate(templ, templAddr);
+
+  ScTemplate builtTemplate;
+  EXPECT_TRUE(m_ctx->HelperBuildTemplate(builtTemplate, templAddr));
+
+  EXPECT_EQ(builtTemplate.Size(), 4u);
+
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(builtTemplate, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+}
+
+TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTemplate)
+{
+  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testRelationAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+
+  ScTemplate templ;
+  templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
+  templ.Quintuple(
+      "_test_object",
+      ScType::EdgeDCommonVar,
+      ScType::NodeVar >> "_test_set",
+      ScType::EdgeAccessVarPosPerm,
+      testRelationAddr);
+  templ.Triple("_test_set", ScType::EdgeAccessVarPosPerm, "_arc_to_test_object");
+  EXPECT_EQ(templ.Size(), 4u);
+
+  ScTemplateGenResult genResult;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+
+  ScTemplateSearchResult searchResult;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_EQ(searchResult.Size(), 1u);
+
+  ScAddr const & testObject = genResult["_test_object"];
+  ScTemplateParams params;
+  params.Add("_test_object", testObject);
+
+  ScAddr templAddr;
+  m_ctx->HelperLoadTemplate(templ, templAddr, params);
+  ScStruct templateStruct{*m_ctx, templAddr};
+  EXPECT_TRUE(templateStruct.HasElement(testObject));
 
   ScTemplate builtTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(builtTemplate, templAddr));

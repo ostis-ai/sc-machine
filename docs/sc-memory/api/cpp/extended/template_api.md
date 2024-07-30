@@ -389,7 +389,7 @@ Also, you can build sc-templates using [SCs-code](../../../../scs/scs.md).
 
 ```cpp
 ...
-// Describe your sc-template on SCs-code.
+// Describe your sc-template in SCs-code.
 sc_char const * data = 
   "_set"
   "  _<- concept_set;"
@@ -397,10 +397,12 @@ sc_char const * data =
 
 // Build program object by this sc-template.
 ScTemplate templ;
-bool const isTemplateBuilt = context.HelperBuildTemplate(templ, data);
-// The value of `isTemplateBuilt` must be equal to `SC_TRUE`.
+context.HelperBuildTemplate(templ, data);
 ...
 ```
+
+!!! note
+    Don't use result value, it doesn't mean anything.
 
 During sc-template building all constants will be resolved by their system identifier (in
 example: `concept_set`, `concept_binary_set`), so in result `templ` will contain sc-template:
@@ -416,10 +418,12 @@ ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
 
 // Build program object by this sc-template.
 ScTemplate templ;
-bool const isTemplateBuilt = context.HelperBuildTemplate(templ, templAddr);
-// The value of `isTemplateBuilt` must be equal to `SC_TRUE`.
+context.HelperBuildTemplate(templ, templAddr);
 ...
 ```
+
+!!! note
+    Don't use result value, it doesn't mean anything.
 
 ## **ScTemplateParams**
 

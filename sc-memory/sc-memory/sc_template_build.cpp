@@ -90,13 +90,11 @@ class ScTemplateBuilder
   using ScAddrHashSet = std::set<ScAddr::HashType>;
 
 protected:
-  ScTemplateBuilder(ScAddr const & inScTemplateAddr, ScMemoryContext & inCtx, ScTemplateParams const & params)
-    : m_templateAddr(inScTemplateAddr)
-    , m_context(inCtx)
+  ScTemplateBuilder(ScAddr const & translatableTemplateAddr, ScMemoryContext & ctx, ScTemplateParams const & params)
+    : m_templateAddr(translatableTemplateAddr)
+    , m_context(ctx)
   {
-    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
     auto const & replacements = params.GetAll();
-    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
     for (auto const & item : replacements)
     {
       ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);
@@ -117,7 +115,7 @@ protected:
     }
   }
 
-  ScTemplate::Result operator()(ScTemplate * inTemplate)
+  void operator()(ScTemplate * inTemplate)
   {
     // TODO: Add blocking sc-structure
     ScAddrHashSet independentEdges;
@@ -172,8 +170,6 @@ protected:
         inTemplate->Triple(param(src), param(edge), param(trg));
       }
     }
-
-    return ScTemplate::Result(true);
   }
 
 protected:
@@ -242,11 +238,11 @@ private:
   }
 };
 
-ScTemplate::Result ScTemplate::FromScTemplate(
+void ScTemplate::TranslateFrom(
     ScMemoryContext & ctx,
-    ScAddr const & scTemplateAddr,
+    ScAddr const & translatableTemplateAddr,
     ScTemplateParams const & params)
 {
-  ScTemplateBuilder builder(scTemplateAddr, ctx, params);
-  return builder(this);
+  ScTemplateBuilder builder(translatableTemplateAddr, ctx, params);
+  builder(this);
 }

@@ -107,7 +107,7 @@ public:
     ScConsole::SetColor(ScConsole::Color::Reset);
     ScConsole::Color const color = get_color(channel);
     ScConsole::SetColor(color);
-    *m_out << "\x1b[1m[" << timestamp << "]" << "[" << names::channel_name(channel) << "]:\x1b[0m ";
+    *m_out << "\x1b[1m[" << timestamp << "][" << names::channel_name(channel) << "]:\x1b[0m ";
     ScConsole::SetColor(color);
     *m_out << "[sc-server] " << msg << "\n";
     ScConsole::SetColor(ScConsole::Color::Reset);

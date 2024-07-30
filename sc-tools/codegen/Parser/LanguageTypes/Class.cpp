@@ -283,7 +283,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
                "ScAddr const & otherAddr)";
     outCode << "\\\n	{";
     outCode << "\\\n		" << m_displayName << " Instance(" << instConstructParams << "userAddr);";
-    outCode << "\\\n " << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
+    outCode << "return Instance.Run(addr, edgeAddr, otherAddr) == SC_RESULT_OK;";
     outCode << "\\\n	}";
 
     // register/unregister
@@ -291,7 +291,7 @@ void Class::GenerateDeclarations(std::stringstream & outCode) const
     outCode << "\\\n	{";
     outCode << "\\\n		ScMemoryContext ms_context;";
     outCode << "\\\n		ms_event.reset(new ScEvent(ms_context, " << listenAddr << ", " << eventType << ", &"
-            << m_displayName << "::handler_emit" << "));";
+            << m_displayName << "::handler_emit));";
     outCode << "\\\n        if (ms_event.get())";
     outCode << "\\\n        {";
 

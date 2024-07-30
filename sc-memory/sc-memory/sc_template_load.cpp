@@ -22,13 +22,14 @@ class ScTemplateLoader
 protected:
   ScTemplateLoader(ScMemoryContext & ctx, ScTemplateParams const & params)
     : m_context(ctx)
+    , m_params(params)
   {
   }
 
-  ScTemplate::Result operator()(ScTemplate * inTemplate, ScAddr & outTemplateAddr)
+  void operator()(ScTemplate * inTemplate, ScAddr & resultTemplateAddr)
   {
-    outTemplateAddr = m_context.CreateNode(ScType::NodeConstStruct);
-    ScStruct templateStruct(m_context, outTemplateAddr);
+    resultTemplateAddr = m_context.CreateNode(ScType::NodeConstStruct);
+    ScStruct templateStruct(m_context, resultTemplateAddr);
 
     std::unordered_map<std::string, ScAddr> itemNamesToTemplateElements;
     auto const & ResolveAddr = [this, &templateStruct, &inTemplate, &itemNamesToTemplateElements](
@@ -40,14 +41,22 @@ protected:
 
       if (item.HasName())
       {
-        auto const & replacementItemsAddrsIt =
-            inTemplate->m_templateItemsNamesToReplacementItemsAddrs.find(item.m_name);
-        if (replacementItemsAddrsIt != inTemplate->m_templateItemsNamesToReplacementItemsAddrs.cend())
-          itemAddr = replacementItemsAddrsIt->second;
-
-        auto const & templateElementsIt = itemNamesToTemplateElements.find(item.m_name);
-        if (templateElementsIt != itemNamesToTemplateElements.cend())
-          itemAddr = templateElementsIt->second;
+        ScAddr replacementAddr;
+        if (m_params.Get(item.m_name, replacementAddr))
+          itemAddr = replacementAddr;
+        else
+        {
+          auto const & replacementItemsAddrsIt =
+              inTemplate->m_templateItemsNamesToReplacementItemsAddrs.find(item.m_name);
+          if (replacementItemsAddrsIt != inTemplate->m_templateItemsNamesToReplacementItemsAddrs.cend())
+            itemAddr = replacementItemsAddrsIt->second;
+          else
+          {
+            auto const & templateElementsIt = itemNamesToTemplateElements.find(item.m_name);
+            if (templateElementsIt != itemNamesToTemplateElements.cend())
+              itemAddr = templateElementsIt->second;
+          }
+        }
       }
 
       if (!itemAddr.IsValid())
@@ -85,8 +94,6 @@ protected:
       ScAddr const & targetAddr = ResolveAddr(targetItem);
       ResolveAddr(connectorItem, sourceAddr, targetAddr);
     }
-
-    return ScTemplate::Result(true);
   }
 
 protected:
@@ -95,11 +102,8 @@ protected:
   ScTemplateParams m_params;
 };
 
-ScTemplate::Result ScTemplate::ToScTemplate(
-    ScMemoryContext & ctx,
-    ScAddr & scTemplateAddr,
-    ScTemplateParams const & params)
+void ScTemplate::TranslateTo(ScMemoryContext & ctx, ScAddr & resultTemplateAddr, ScTemplateParams const & params)
 {
   ScTemplateLoader loader(ctx, params);
-  return loader(this, scTemplateAddr);
+  loader(this, resultTemplateAddr);
 }
