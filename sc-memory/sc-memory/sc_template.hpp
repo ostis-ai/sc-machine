@@ -14,14 +14,14 @@
 #include "sc_utils.hpp"
 
 /*!
- * @brief Represents an item in a sc-template.
+ * @brief Represents an item in a program object of sc-template.
  *
  * ScTemplateItem is used to define elements within a sc-template, which can be a sc-address, type, or a replacement.
  */
 struct _SC_EXTERN ScTemplateItem
 {
   /*!
-   * @brief Enum class for specifying the type of the template item.
+   * @brief Enum class for specifying the type of item in program object of sc-template.
    */
   enum class Type : uint8_t
   {
@@ -137,7 +137,7 @@ struct _SC_EXTERN ScTemplateItem
    */
   _SC_EXTERN void SetReplacement(sc_char const * name);
 
-  Type m_itemType = Type::Type;  ///< A type of the template item.
+  Type m_itemType = Type::Type;  ///< A type of the item.
   ScAddr m_addrValue;            ///< A value sc-address of the item.
   ScType m_typeValue;            ///< A type value of the item.
   std::string m_name;            ///< A name of the item.
@@ -245,7 +245,7 @@ public:
   _SC_EXTERN bool Get(ScAddr const & varAddr, ScAddr & outAddr) const noexcept;
 
   /*!
-   * @brief Gets all the template items and their corresponding parameters.
+   * @brief Gets all items in program object of sc-template and their corresponding parameters.
    *
    * @return A map of template items to parameters.
    */
@@ -339,7 +339,7 @@ public:
   _SC_EXTERN ~ScTemplate();
 
   /*!
-   * @brief Adds a triple to the template.
+   * @brief Adds a triple to program object of sc-template.
    *
    * @param param1 The first item in the triple.
    * @param param2 The second item in the triple.
@@ -353,7 +353,7 @@ public:
       ScTemplateItem const & param3) noexcept(false);
 
   /*!
-   * @brief Adds a quintuple to the template.
+   * @brief Adds a quintuple to program object of sc-template.
    *
    * @param param1 The first item in the quintuple.
    * @param param2 The second item in the quintuple.
@@ -371,26 +371,26 @@ public:
       ScTemplateItem const & param5) noexcept(false);
 
   /*!
-   * @brief Removes all constructions from the template.
+   * @brief Removes all constructions from program object of sc-template.
    */
   _SC_EXTERN void Clear();
 
   /*!
-   * @brief Checks if the template is empty.
+   * @brief Checks if program object of sc-template is empty.
    *
-   * @return true if the template is empty, false otherwise.
+   * @return true if program object of sc-template is empty, false otherwise.
    */
   [[nodiscard]] _SC_EXTERN bool IsEmpty() const;
 
   /*!
-   * @brief Gets size of the template.
+   * @brief Gets size of program object of sc-template.
    *
-   * @return The number of triples in the template.
+   * @return The number of triples in program object of sc-template.
    */
   [[nodiscard]] _SC_EXTERN size_t Size() const;
 
   /*!
-   * @brief Checks if the template has a replacement for a given name.
+   * @brief Checks if program object of sc-template has a replacement for a given name.
    *
    * @param repl The replacement name.
    * @return true if the replacement exists, false otherwise.
@@ -398,7 +398,7 @@ public:
   _SC_EXTERN bool HasReplacement(std::string const & repl) const;
 
   /*!
-   * @brief Checks if the template has a replacement for a given sc-address of variable.
+   * @brief Checks if program object of sc-template has a replacement for a given sc-address of variable.
    *
    * @param replAddr The replacement address.
    * @return true if the replacement exists, false otherwise.
@@ -406,7 +406,7 @@ public:
   _SC_EXTERN bool HasReplacement(ScAddr const & replAddr) const;
 
   /*!
-   * @brief Adds a triple to the template.
+   * @brief Adds a triple to program object of sc-template.
    *
    * @param param1 The first item in the triple.
    * @param param2 The second item in the triple.
@@ -424,7 +424,7 @@ public:
       ScTemplateItem const & param3) noexcept(false);
 
   /*!
-   * @brief Adds a quintuple to the template.
+   * @brief Adds a quintuple to program object of sc-template.
    *
    * @param param1 The first item in the quintuple.
    * @param param2 The second item in the quintuple.
@@ -456,7 +456,7 @@ protected:
   // Begin: calls by memory context
 
   /*!
-   * @brief Generates sc-elements based on the template.
+   * @brief Generates sc-elements based by program object of sc-template.
    *
    * @param ctx A sc-memory context.
    * @param result A result item to store generated elements.
@@ -472,7 +472,7 @@ protected:
       ScTemplateResultCode * errorCode = nullptr) const noexcept(false);
 
   /*!
-   * @brief Searches for sc-elements based on the template.
+   * @brief Searches for sc-elements by program object of sc-template.
    *
    * @param ctx A sc-memory context.
    * @param result A result item to store the found elements.
@@ -482,7 +482,7 @@ protected:
   Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const noexcept(false);
 
   /*!
-   * @brief Searches for sc-elements based on the template with callbacks.
+   * @brief Searches for sc-elements by program object of sc-template with callbacks.
    *
    * @param ctx A sc-memory context.
    * @param callback A callback to handle the search results.
@@ -497,7 +497,7 @@ protected:
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) const noexcept(false);
 
   /*!
-   * @brief Searches for sc-elements based on the template with request callbacks.
+   * @brief Searches for sc-elements by program object of sc-template with request callbacks.
    *
    * @param ctx A sc-memory context.
    * @param callback A callback to handle the search results with requests.
@@ -512,11 +512,11 @@ protected:
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) const noexcept(false);
 
   /*!
-   * @brief Builds the template based on a template in sc-memory.
+   * @brief Builds program object of sc-template from a sc-template in sc-memory.
    *
    * @param ctx A sc-memory context.
-   * @param scTemplateAddr A sc-address of the template.
-   * @param params Optional template parameters.
+   * @param scTemplateAddr A sc-address of sc-template in sc-memory.
+   * @param params Optional sc-template parameters.
    * @return The result of the operation.
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
@@ -525,13 +525,22 @@ protected:
       ScAddr const & scTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 
+  /*!
+   * @brief Loads the program object of program object of sc-template to a sc-template in sc-memory.
+   *
+   * @param ctx A sc-memory context.
+   * @param scTemplateAddr A sc-address of sc-template loaded into sc-memory.
+   * @param params Optional sc-template parameters.
+   * @return The result of the operation.
+   * @throws utils::ExceptionInvalidParams if the parameters are invalid.
+   */
   Result ToScTemplate(
       ScMemoryContext & ctx,
       ScAddr & scTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 
   /*!
-   * @brief Builds the template based on a SCs-text.
+   * @brief Builds program object of sc-template from a SCs-text.
    *
    * @param ctx A sc-memory context.
    * @param scsText A SCs-text.
