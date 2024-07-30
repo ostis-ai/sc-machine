@@ -90,7 +90,7 @@ endif()
 
 if(${SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES})
     message("Build optimized checking local user permissions")
-    add_definitions(-DSC_OPTIMIZE_CHECKING_LOCAL_USER_PERMISSIONS)
+    add_definitions(-DSC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES)
 endif()
 
 include("${SC_MACHINE_ROOT}/dependencies.cmake")
