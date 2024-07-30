@@ -22,6 +22,7 @@ class ScTemplateLoader
 protected:
   ScTemplateLoader(ScMemoryContext & ctx, ScTemplateParams const & params)
     : m_context(ctx)
+    , m_params(params)
   {
   }
 
@@ -40,14 +41,22 @@ protected:
 
       if (item.HasName())
       {
-        auto const & replacementItemsAddrsIt =
-            inTemplate->m_templateItemsNamesToReplacementItemsAddrs.find(item.m_name);
-        if (replacementItemsAddrsIt != inTemplate->m_templateItemsNamesToReplacementItemsAddrs.cend())
-          itemAddr = replacementItemsAddrsIt->second;
-
-        auto const & templateElementsIt = itemNamesToTemplateElements.find(item.m_name);
-        if (templateElementsIt != itemNamesToTemplateElements.cend())
-          itemAddr = templateElementsIt->second;
+        ScAddr replacementAddr;
+        if (m_params.Get(item.m_name, replacementAddr))
+          itemAddr = replacementAddr;
+        else
+        {
+          auto const & replacementItemsAddrsIt =
+              inTemplate->m_templateItemsNamesToReplacementItemsAddrs.find(item.m_name);
+          if (replacementItemsAddrsIt != inTemplate->m_templateItemsNamesToReplacementItemsAddrs.cend())
+            itemAddr = replacementItemsAddrsIt->second;
+          else
+          {
+            auto const & templateElementsIt = itemNamesToTemplateElements.find(item.m_name);
+            if (templateElementsIt != itemNamesToTemplateElements.cend())
+              itemAddr = templateElementsIt->second;
+          }
+        }
       }
 
       if (!itemAddr.IsValid())
