@@ -27,13 +27,37 @@ ScAgentAbstract<TScEvent>::~ScAgentAbstract()
 }
 
 template <class TScEvent>
-ScTemplate ScAgentAbstract<TScEvent>::GetInitiationCondition(TScEvent const &)
+ScAddr ScAgentAbstract<TScEvent>::GetAbstractAgent() const
+{
+  return ScAddr::Empty;
+}
+
+template <class TScEvent>
+ScAddr ScAgentAbstract<TScEvent>::GetSubscriptionElement() const
+{
+  return ScAddr::Empty;
+}
+
+template <class TScEvent>
+sc_bool ScAgentAbstract<TScEvent>::CheckInitiationCondition(TScEvent const & event)
+{
+  return SC_TRUE;
+}
+
+template <class TScEvent>
+ScTemplate ScAgentAbstract<TScEvent>::GetInitiationCondition() const
 {
   return ScTemplate();
 }
 
 template <class TScEvent>
-ScTemplate ScAgentAbstract<TScEvent>::GetResultCondition(TScEvent const &, ScAction &)
+sc_bool ScAgentAbstract<TScEvent>::CheckResultCondition(TScEvent const &, ScAction &)
+{
+  return SC_TRUE;
+}
+
+template <class TScEvent>
+ScTemplate ScAgentAbstract<TScEvent>::GetResultCondition() const
 {
   return ScTemplate();
 }
@@ -55,12 +79,162 @@ ScAgent<TScEvent>::ScAgent()
   : ScAgentAbstract<TScEvent>(){};
 
 template <class TScEvent>
+template <class TScAgent>
+void ScAgent<TScEvent>::Initialize(ScMemoryContext * ctx)
+{
+  TScAgent agent;
+  std::string const & agentImplementationName = agent.GetName();
+
+  ScAddr const & abstractAgentAddr = agent.GetAbstractAgent();
+  if (!abstractAgentAddr.IsValid())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Agent implementation for class `" << agentImplementationName << "` has not specified abstract agent.");
+
+  ScIterator3Ptr it3 = ctx->Iterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, abstractAgentAddr);
+  if (!it3->Next())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Specified sc-element for class `"
+            << agentImplementationName
+            << "` is not abstract agent due it does not belong to class `abstract_sc_agent`.");
+
+  ScAddr const & subscriptionElementAddr = agent.GetSubscriptionElement();
+  if (subscriptionElementAddr.IsValid())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Agent implementation for class `" << agentImplementationName
+                                           << "` has not specified subscription sc-element.");
+
+  ScAddr const & actionClassAddr = agent.GetActionClass();
+  if (!actionClassAddr.IsValid())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Agent implementation for class `" << agentImplementationName << "` has not specified action class.");
+
+  ScTemplate && initiationConditionTemplate = agent.GetInitiationCondition();
+  if (!initiationConditionTemplate.IsEmpty())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Agent implementation for class `" << agentImplementationName
+                                           << "` has not specified initiation condition template.");
+
+  ScTemplate && resultConditionTemplate = agent.GetResultCondition();
+  if (!resultConditionTemplate.IsEmpty())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Agent implementation for class `" << agentImplementationName
+                                           << "` has not specified result condition template.");
+
+  ScAddr agentImplementationAddr = ctx->HelperFindBySystemIdtf(agentImplementationName);
+  if (agentImplementationAddr.IsValid())
+    SC_LOG_WARNING(
+        "Agent implementation for class `" << agentImplementationName << "` was not generated due it already exists.");
+  else
+  {
+    agentImplementationAddr = ctx->CreateNode(ScType::NodeConst);
+    ctx->HelperSetSystemIdtf(agentImplementationName, agentImplementationAddr);
+    SC_LOG_WARNING("Agent implementation for class `" << agentImplementationName << "` was generated.");
+  }
+
+  ScIterator5Ptr it5 = ctx->Iterator5(
+      abstractAgentAddr,
+      ScType::EdgeDCommonConst,
+      agentImplementationAddr,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_inclusion);
+  if (it5->Next())
+    SC_LOG_WARNING(
+        "Connection between specified abstract agent and agent implementation for class `"
+        << agentImplementationName << "` was not generated due it already exists.");
+  else
+  {
+    ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeDCommonConst, abstractAgentAddr, agentImplementationAddr);
+    ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+    SC_LOG_WARNING(
+        "Connection between specified abstract agent and agent implementation for class `" << agentImplementationName
+                                                                                           << "` was generated.");
+  }
+
+  it5 = ctx->Iterator5(
+      abstractAgentAddr,
+      ScType::EdgeDCommonConst,
+      actionClassAddr,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_sc_agent_action_class);
+  if (it5->Next())
+    SC_LOG_WARNING(
+        "Connection between specified abstract agent and action class for agent class `"
+        << agentImplementationName << "` was not generated due it already exists.");
+  else
+  {
+    ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeDCommonConst, abstractAgentAddr, actionClassAddr);
+    ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_sc_agent_action_class, arcAddr);
+    SC_LOG_WARNING(
+        "Connection between specified abstract agent and action class for agent class `" << agentImplementationName
+                                                                                         << "` was generated.");
+  }
+
+  it5 = ctx->Iterator5(
+      abstractAgentAddr,
+      ScType::EdgeDCommonConst,
+      ScType::EdgeDCommonConst,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_primary_initiation_condition);
+  if (it5->Next())
+    SC_LOG_WARNING(
+        "Primary initiation condition for class `" << agentImplementationName
+                                                   << "` was not generated due it already exists.");
+  else
+  {
+    ScAddr const & primaryConditionAddr =
+        ctx->CreateEdge(ScType::EdgeDCommonConst, TScEvent::eventClassAddr, subscriptionElementAddr);
+    ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeDCommonConst, abstractAgentAddr, primaryConditionAddr);
+    ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_primary_initiation_condition, arcAddr);
+    SC_LOG_WARNING("Primary initiation condition for class  `" << agentImplementationName << "` was generated.");
+  }
+
+  it5 = ctx->Iterator5(
+      abstractAgentAddr,
+      ScType::EdgeDCommonConst,
+      ScType::EdgeDCommonConst,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_initiation_condition_and_result);
+  if (it5->Next())
+    SC_LOG_WARNING(
+        "Initiation condition and result for class `" << agentImplementationName
+                                                      << "` was not generated due it already exists.");
+  else
+  {
+    ScAddr initiationConditionAddr;
+    ctx->HelperLoadTemplate(initiationConditionTemplate, initiationConditionAddr);
+
+    ScAddr resultConditionTemplate;
+    ctx->HelperLoadTemplate(initiationConditionTemplate, initiationConditionAddr);
+
+    ScAddr const & conditionAndResultAddr =
+        ctx->CreateEdge(ScType::EdgeDCommonConst, initiationConditionAddr, resultConditionTemplate);
+    ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeDCommonConst, abstractAgentAddr, conditionAndResultAddr);
+    ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_initiation_condition_and_result, arcAddr);
+    SC_LOG_WARNING("Initiation condition and result for class  `" << agentImplementationName << "` was generated.");
+  }
+}
+
+template <class TScEvent>
+template <class TScAgent>
+void ScAgent<TScEvent>::Shutdown(ScMemoryContext * ctx)
+{
+}
+
+template <class TScEvent>
 template <class TScAgent, class... TScAddr>
 void ScAgent<TScEvent>::Subscribe(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs)
 {
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
+  ScAgent<TScAgent>::Initialize<TScAgent>(ctx);
 
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
   if (!ScAgentAbstract<TScEvent>::m_events.count(agentName))
@@ -99,6 +273,8 @@ void ScAgent<TScEvent>::Unsubscribe(ScMemoryContext * ctx, TScAddr const &... su
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
+  ScAgent<TScAgent>::Shutdown<TScAgent>(ctx);
 
   std::string const & agentName = TScAgent::template GetName<TScAgent>();
   auto const & agentsMapIt = ScAgentAbstract<TScEvent>::m_events.find(agentName);
@@ -167,7 +343,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
 
     ScAction action = CreateAction(event, agent);
 
-    ScTemplate && initiationConditionTemplate = agent.GetInitiationCondition(event);
+    ScTemplate && initiationConditionTemplate = agent.GetInitiationCondition();
     ScTemplateSearchResult searchResult;
     if (!initiationConditionTemplate.IsEmpty()
         && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
@@ -186,7 +362,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback()
     else
       SC_LOG_INFO("Agent `" << agent.GetName() << "` finished with error");
 
-    ScTemplate && resultConditionTemplate = agent.GetResultCondition(event, action);
+    ScTemplate && resultConditionTemplate = agent.GetResultCondition();
     if (!resultConditionTemplate.IsEmpty()
         && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
     {
@@ -492,22 +668,10 @@ ScAddr ScSpecificatedAgent<agentImplementationAddr>::GetActionClass() const
   return ms_actionClassAddr;
 }
 
-template <ScKeynode const & agentImplementationAddr>
-ScAddr ScSpecificatedAgent<agentImplementationAddr>::GetInitiationCondition() const
-{
-  return ms_initiationConditionAddr;
-}
-
-template <ScKeynode const & agentImplementationAddr>
-ScAddr ScSpecificatedAgent<agentImplementationAddr>::GetResultCondition() const
-{
-  return ms_resultConditionAddr;
-}
-
 //! This method is private in ScSpecificatedAgent class. You can not use it.
 // LCOV_EXCL_START
 template <ScKeynode const & agentImplementationAddr>
-ScTemplate ScSpecificatedAgent<agentImplementationAddr>::GetInitiationCondition(ScElementaryEvent const & event)
+ScTemplate ScSpecificatedAgent<agentImplementationAddr>::GetInitiationCondition() const
 {
   return ScTemplate();
 }
@@ -517,9 +681,7 @@ ScTemplate ScSpecificatedAgent<agentImplementationAddr>::GetInitiationCondition(
 //! This method is private in ScSpecificatedAgent class. You can not use it.
 // LCOV_EXCL_START
 template <ScKeynode const & agentImplementationAddr>
-ScTemplate ScSpecificatedAgent<agentImplementationAddr>::GetResultCondition(
-    ScElementaryEvent const & event,
-    ScAction & action)
+ScTemplate ScSpecificatedAgent<agentImplementationAddr>::GetResultCondition() const
 {
   return ScTemplate();
 }

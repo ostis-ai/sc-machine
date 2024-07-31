@@ -30,6 +30,7 @@ class ScResult;
  * This class provides a base implementation for sc-agents, offering methods for initialization, shutdown, and handling
  * events.
  *
+ *
  * @tparam TScEvent The type of sc-event this agent handles.
  */
 template <class TScEvent>
@@ -40,6 +41,10 @@ class _SC_EXTERN ScAgentAbstract : public ScObject
 public:
   _SC_EXTERN ~ScAgentAbstract() override;
 
+  _SC_EXTERN virtual ScAddr GetAbstractAgent() const;
+
+  _SC_EXTERN virtual ScAddr GetSubscriptionElement() const;
+
   _SC_EXTERN virtual ScAddr GetActionClass() const = 0;
 
   /*!
@@ -48,7 +53,9 @@ public:
    * @param event The sc-event to check.
    * @return ScTemplate of action initiation condition.
    */
-  _SC_EXTERN virtual ScTemplate GetInitiationCondition(TScEvent const & event);
+  _SC_EXTERN virtual sc_bool CheckInitiationCondition(TScEvent const & event);
+
+  _SC_EXTERN virtual ScTemplate GetInitiationCondition() const;
 
   _SC_EXTERN virtual ScResult DoProgram(TScEvent const & event, ScAction & action) = 0;
 
@@ -59,7 +66,9 @@ public:
    * @param action The sc-action.
    * @return ScTemplate of sucessfully finished action result condition.
    */
-  _SC_EXTERN virtual ScTemplate GetResultCondition(TScEvent const & event, ScAction & action);
+  _SC_EXTERN virtual sc_bool CheckResultCondition(TScEvent const & event, ScAction & action);
+
+  _SC_EXTERN virtual ScTemplate GetResultCondition() const;
 
 protected:
   mutable ScAgentContext m_memoryCtx;
@@ -114,6 +123,12 @@ public:
 
 protected:
   _SC_EXTERN explicit ScAgent();
+
+  template <class TScAgent>
+  static void Initialize(ScMemoryContext * ctx);
+
+  template <class TScAgent>
+  static void Shutdown(ScMemoryContext * ctx);
 
   /*!
    * @brief Gets the callback function for agent class.
@@ -250,7 +265,7 @@ public:
    * @param event The sc-event to check.
    * @return SC_TRUE if the condition is met, otherwise SC_FALSE.
    */
-  _SC_EXTERN ScTemplate GetInitiationCondition(ScActionEvent const & event) override;
+  _SC_EXTERN ScTemplate GetInitiationCondition() const override;
 
 protected:
   ScActionAgent();
@@ -269,10 +284,6 @@ public:
   _SC_EXTERN std::tuple<ScAddr, ScAddr> GetPrimaryInitiationCondition();
 
   _SC_EXTERN ScAddr GetActionClass() const final;
-
-  _SC_EXTERN ScAddr GetInitiationCondition() const;
-
-  _SC_EXTERN ScAddr GetResultCondition() const;
 
 protected:
   static inline ScAddr ms_implementationAgentAddr;
@@ -295,9 +306,9 @@ private:
   template <class TScAgent>
   static void Shutdown(ScMemoryContext * ctx);
 
-  ScTemplate GetInitiationCondition(ScElementaryEvent const & event) final;
+  ScTemplate GetInitiationCondition() const final;
 
-  ScTemplate GetResultCondition(ScElementaryEvent const & event, ScAction & action) final;
+  ScTemplate GetResultCondition() const final;
 };
 
 #include "sc_agent.tpp"

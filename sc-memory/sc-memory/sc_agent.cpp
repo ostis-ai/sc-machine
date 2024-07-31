@@ -11,9 +11,9 @@
 
 ScActionAgent::ScActionAgent() = default;
 
-ScTemplate ScActionAgent::GetInitiationCondition(ScActionEvent const & event)
+ScTemplate ScActionAgent::GetInitiationCondition() const
 {
   ScTemplate templ;
-  templ.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, event.GetArcTargetElement());
+  templ.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
   return templ;
 }
