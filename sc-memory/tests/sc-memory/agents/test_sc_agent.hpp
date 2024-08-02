@@ -150,7 +150,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScTemplate GetInitiationCondition(ScActionEvent const & event) override;
+  ScTemplate GetInitiationConditionTemplate() const override;
 
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
@@ -164,7 +164,7 @@ public:
 
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 
-  ScTemplate GetResultCondition(ScActionEvent const & event, ScAction & action) override;
+  ScTemplate GetResultConditionTemplate() const override;
 };
 
 class ATestActionDeactivated : public ScActionAgent

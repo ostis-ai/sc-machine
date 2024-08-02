@@ -9,6 +9,7 @@
 #include "sc_object.hpp"
 
 #include "sc_agent_context.hpp"
+#include "sc_agent_builder.hpp"
 
 #include "utils/sc_log.hpp"
 
@@ -43,9 +44,11 @@ public:
 
   _SC_EXTERN virtual ScAddr GetAbstractAgent() const;
 
-  _SC_EXTERN virtual ScAddr GetSubscriptionElement() const;
+  _SC_EXTERN virtual ScAddr GetEventClass() const;
 
-  _SC_EXTERN virtual ScAddr GetActionClass() const = 0;
+  _SC_EXTERN virtual ScAddr GetEventSubscriptionElement() const;
+
+  _SC_EXTERN virtual ScAddr GetActionClass() const;
 
   /*!
    * @brief Checks the initiation condition for agent of this class.
@@ -55,7 +58,9 @@ public:
    */
   _SC_EXTERN virtual sc_bool CheckInitiationCondition(TScEvent const & event);
 
-  _SC_EXTERN virtual ScTemplate GetInitiationCondition() const;
+  _SC_EXTERN virtual ScAddr GetInitiationCondition() const;
+
+  _SC_EXTERN virtual ScTemplate GetInitiationConditionTemplate() const;
 
   _SC_EXTERN virtual ScResult DoProgram(TScEvent const & event, ScAction & action) = 0;
 
@@ -68,10 +73,13 @@ public:
    */
   _SC_EXTERN virtual sc_bool CheckResultCondition(TScEvent const & event, ScAction & action);
 
-  _SC_EXTERN virtual ScTemplate GetResultCondition() const;
+  _SC_EXTERN virtual ScAddr GetResultCondition() const;
+
+  _SC_EXTERN virtual ScTemplate GetResultConditionTemplate() const;
 
 protected:
   mutable ScAgentContext m_memoryCtx;
+  ScAddr m_agentImplementationAddr;
 
   static inline std::
       unordered_map<std::string, std::unordered_map<ScAddr, ScElementaryEventSubscription *, ScAddrHashFunc>>
@@ -81,7 +89,11 @@ protected:
 
   _SC_EXTERN void SetContext(ScAddr const & userAddr);
 
-  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback();
+  _SC_EXTERN void SetImplementation(ScAddr const & agentImplementationAddr);
+
+  _SC_EXTERN sc_bool MayBeSpecified() const;
+
+  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
 };
 
 /*!
@@ -108,7 +120,10 @@ public:
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    */
   template <class TScAgent, class... TScAddr>
-  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx, TScAddr const &... subscriptionAddrs);
+  static _SC_EXTERN void Subscribe(
+      ScMemoryContext * ctx,
+      ScAddr const & agentImplementationAddr,
+      TScAddr const &... subscriptionAddrs);
 
   /*!
    * @brief Unsubscribes agent class from specified sc-events.
@@ -119,16 +134,13 @@ public:
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to unsubscribe from.
    */
   template <class TScAgent, class... TScAddr>
-  static _SC_EXTERN void Unsubscribe(ScMemoryContext *, TScAddr const &... subscriptionAddrs);
+  static _SC_EXTERN void Unsubscribe(
+      ScMemoryContext * ctx,
+      ScAddr const & agentImplementationAddr,
+      TScAddr const &... subscriptionAddrs);
 
 protected:
   _SC_EXTERN explicit ScAgent();
-
-  template <class TScAgent>
-  static void Initialize(ScMemoryContext * ctx);
-
-  template <class TScAgent>
-  static void Shutdown(ScMemoryContext * ctx);
 
   /*!
    * @brief Gets the callback function for agent class.
@@ -138,7 +150,7 @@ protected:
    * @return A function that takes an sc-event and returns an sc-result.
    */
   template <class TScAgent>
-  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback();
+  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
 };
 
 /*!
@@ -235,6 +247,7 @@ protected:
  * }
  * \endcode
  */
+
 class _SC_EXTERN ScActionAgent : public ScAgent<ScActionEvent>
 {
 public:
@@ -246,7 +259,7 @@ public:
    * @param ctx A sc-memory context.
    */
   template <class TScAgent>
-  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx);
+  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr);
 
   /*!
    * @brief Unsubscribes agent class from sc-event of adding output arc from `action_initiated` to some formed
@@ -257,7 +270,7 @@ public:
    * @param ctx A sc-memory context.
    */
   template <class TScAgent>
-  static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx);
+  static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr);
 
   /*!
    * @brief Checks that initiated sc-action belongs to action class that this agent class interpreters.
@@ -265,50 +278,10 @@ public:
    * @param event The sc-event to check.
    * @return SC_TRUE if the condition is met, otherwise SC_FALSE.
    */
-  _SC_EXTERN ScTemplate GetInitiationCondition() const override;
+  _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;
 
 protected:
   ScActionAgent();
-};
-
-template <ScKeynode const & agentImplementationAddr>
-class _SC_EXTERN ScSpecificatedAgent : public ScAgent<ScElementaryEvent>
-{
-public:
-  template <class TScAgent>
-  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx);
-
-  template <class TScAgent>
-  static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx);
-
-  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetPrimaryInitiationCondition();
-
-  _SC_EXTERN ScAddr GetActionClass() const final;
-
-protected:
-  static inline ScAddr ms_implementationAgentAddr;
-  static inline ScAddr ms_abstractAgentAddr;
-  static inline ScAddr ms_eventClassAddr;
-  static inline ScAddr ms_eventSubscriptionAddr;
-  static inline ScAddr ms_actionClassAddr;
-  static inline ScAddr ms_initiationConditionAddr;
-  static inline ScAddr ms_resultConditionAddr;
-
-  ScSpecificatedAgent();
-
-  template <class TScAgent>
-  static std::function<void(ScElementaryEvent const &)> GetCallback();
-
-private:
-  template <class TScAgent>
-  static void Initialize(ScMemoryContext * ctx);
-
-  template <class TScAgent>
-  static void Shutdown(ScMemoryContext * ctx);
-
-  ScTemplate GetInitiationCondition() const final;
-
-  ScTemplate GetResultCondition() const final;
 };
 
 #include "sc_agent.tpp"
@@ -329,7 +302,7 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  TScAgent::template Subscribe<TScAgent>(ctx, subscriptionAddrs...);
+  TScAgent::template Subscribe<TScAgent>(ctx, ScAddr::Empty, subscriptionAddrs...);
 }
 
 /*!
@@ -342,7 +315,7 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
 template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(ScMemoryContext * ctx)
 {
-  ScActionAgent::template Subscribe<TScAgent>(ctx);
+  ScActionAgent::template Subscribe<TScAgent>(ctx, ScAddr::Empty);
 }
 
 /*!
@@ -361,7 +334,7 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  TScAgent::template Unsubscribe<TScAgent>(ctx, subscriptionAddrs...);
+  TScAgent::template Unsubscribe<TScAgent>(ctx, ScAddr::Empty, subscriptionAddrs...);
 }
 
 /*!
@@ -375,5 +348,20 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
 template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(ScMemoryContext * ctx)
 {
-  ScActionAgent::template Unsubscribe<TScAgent>(ctx);
+  ScActionAgent::template Unsubscribe<TScAgent>(ctx, ScAddr::Empty);
+}
+
+template <class TScAgent>
+void BuildAndSubscribeAgent(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr)
+{
+  ScAgentBuilder<TScAgent> builder{agentImplementationAddr};
+  builder.LoadSpecification(ctx);
+
+  TScAgent::template Subscribe<TScAgent>(ctx, agentImplementationAddr);
+}
+
+template <class TScAgent>
+void DestroyAndUnsubscribeAgent(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr)
+{
+  TScAgent::template Unsubscribe<TScAgent>(ctx, agentImplementationAddr);
 }

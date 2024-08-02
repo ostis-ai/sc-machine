@@ -11,6 +11,7 @@
 template <class TScEvent>
 class ScWaitCondition;
 class ScAction;
+class ScKeynode;
 
 /*!
  * @class ScAgentContext
