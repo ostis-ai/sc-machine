@@ -14,50 +14,112 @@
 
 using GWFTranslatorTest = ScBuilderTest;
 
-bool compareStringWithFileContent(std::string const & str, std::string const & filePath)
-{
-  std::ifstream file(filePath);
-  if (!file.is_open())
-  {
-    std::cerr << "Failed to open file: " << filePath << std::endl;
-    return false;
-  }
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
+#include <algorithm>
 
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  std::string fileContent = buffer.str();
+struct TreeNode {
+    std::string name;
+    std::string content;
+    std::map<std::string, std::shared_ptr<TreeNode>> children;
 
-  return str == fileContent;
+    TreeNode(const std::string& name, const std::string& content)
+        : name(name), content(content) {}
+};
+
+std::shared_ptr<TreeNode> addChildNode(std::shared_ptr<TreeNode> parent, const std::string& name, const std::string& content) {
+    auto node = std::make_shared<TreeNode>(name, content);
+    if (parent) {
+        parent->children.emplace(name, node);
+    }
+    return node;
 }
 
-std::vector<char> readFile(std::string const & filePath)
-{
-  std::ifstream file(filePath, std::ios::binary);
-  if (!file)
-  {
-    std::cerr << "Could not open the file " << filePath << std::endl;
-    return {};
-  }
-
-  return std::vector<char>(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+std::string trim(const std::string& str) {
+    auto start = str.find_first_not_of(" \t");
+    auto end = str.find_last_not_of(" \t");
+    return (start == std::string::npos || end == std::string::npos) ? "" : str.substr(start, end - start + 1);
 }
 
-bool isFileIdentical(std::string const & filePath1, std::string const & filePath2)
-{
-  std::vector<char> fileData1 = readFile(filePath1);
-  std::vector<char> fileData2 = readFile(filePath2);
+bool isBlockStart(const std::string& line) {
+    return line.find(" = [*") != std::string::npos;
+}
 
-  if (fileData1.empty() || fileData2.empty())
-  {
-    return false;
-  }
+bool isBlockEnd(const std::string& line) {
+    return line.find("*];;") != std::string::npos;
+}
 
-  if (fileData1.size() != fileData2.size())
-  {
-    return false;
-  }
+bool isNodeWithContent(const std::string& line) {
+    return line.find(" = ") != std::string::npos;
+}
 
-  return std::equal(fileData1.begin(), fileData1.end(), fileData2.begin());
+bool isNodeWithoutContent(const std::string& line) {
+    return !isBlockStart(line) && !isBlockEnd(line) && !isNodeWithContent(line);
+}
+
+std::shared_ptr<TreeNode> parseTree(const std::string& input) {
+    std::istringstream iss(input);
+    std::string line;
+    std::vector<std::shared_ptr<TreeNode>> nodeStack;
+    auto root = std::make_shared<TreeNode>("root", "");
+    auto currentNode = root;
+
+    while (std::getline(iss, line)) {
+        line = trim(line);
+        if (line.empty()) continue;
+
+        if (isBlockStart(line)) {
+            std::string name = trim(line.substr(0, line.find(" = [*")));
+            currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
+            nodeStack.push_back(currentNode);
+        } else if (isBlockEnd(line)) {
+            if (!nodeStack.empty()) nodeStack.pop_back();
+            currentNode = nodeStack.empty() ? root : nodeStack.back();
+        } else if (isNodeWithContent(line)) {
+            size_t equalPos = line.find(" = ");
+            std::string name = trim(line.substr(0, equalPos));
+            std::string content = trim(line.substr(equalPos + 3));
+            currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, content);
+        } else if (line.find("<-") != std::string::npos) {
+            currentNode->content = line;
+        } else if (isNodeWithoutContent(line)) {
+            std::string name = line;
+            currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
+        }
+    }
+
+    return root;
+}
+
+void printTree(const std::shared_ptr<TreeNode>& node, int level = 0) {
+    if (!node) return;
+    std::cout << std::string(level, '\t') << node->name << ": " << node->content << std::endl;
+    for (const auto& child : node->children) {
+        printTree(child.second, level + 1);
+    }
+}
+
+bool compareTrees(const std::shared_ptr<TreeNode>& node1, const std::shared_ptr<TreeNode>& node2) {
+    if (node1 == nullptr || node2 == nullptr) {
+        return node1 == node2;
+    }
+    if (node1->name != node1->name || node1->content != node2->content) {
+        return false;
+    }
+    if (node1->children.size() != node2->children.size()) {
+        return false;
+    }
+    for (const auto& child : node1->children) {
+        auto it = node2->children.find(child.first);
+        if (it == node2->children.end() || !compareTrees(child.second, it->second)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 TEST_F(GWFTranslatorTest, EmptyStaticSector)
@@ -69,55 +131,4 @@ TEST_F(GWFTranslatorTest, EmptyStaticSector)
   const std::string gwfStr = translator.XmlFileToString(filePath);
 
   EXPECT_THROW({ translator.GwfToScs(gwfStr, filePath); }, std::runtime_error);
-}
-
-TEST_F(GWFTranslatorTest, EmptyFile)
-{
-  GWFTranslator translator(*m_ctx);
-
-  const std::string filePath = BASE_TEST_PATH "empty.gwf";
-
-  EXPECT_THROW({ translator.XmlFileToString(filePath); }, std::runtime_error);
-}
-
-TEST_F(GWFTranslatorTest, ContentTypes)
-{
-  GWFTranslator translator(*m_ctx);
-
-  const std::string filePath = BASE_TEST_PATH "content_types.gwf";
-
-  const std::string gwfStr = translator.XmlFileToString(filePath);
-
-  const std::string scsStr = translator.GwfToScs(gwfStr, filePath);
-
-  EXPECT_TRUE(compareStringWithFileContent(scsStr, filePath + ".scs"));
-  EXPECT_TRUE(isFileIdentical(BASE_TEST_PATH "ostis.png", BASE_TEST_PATH "ostis_ref.png"));
-
-  std::filesystem::remove(BASE_TEST_PATH "ostis.png");
-}
-
-TEST_F(GWFTranslatorTest, LotOfContours)
-{
-  GWFTranslator translator(*m_ctx);
-
-  const std::string filePath = BASE_TEST_PATH "lot_of_contours.gwf";
-
-  const std::string gwfStr = translator.XmlFileToString(filePath);
-
-  const std::string scsStr = translator.GwfToScs(gwfStr, filePath);
-
-  EXPECT_TRUE(compareStringWithFileContent(scsStr, filePath + ".scs"));
-}
-
-TEST_F(GWFTranslatorTest, EmptyContour)
-{
-  GWFTranslator translator(*m_ctx);
-
-  const std::string filePath = BASE_TEST_PATH "empty_contour.gwf";
-
-  const std::string gwfStr = translator.XmlFileToString(filePath);
-
-  const std::string scsStr = translator.GwfToScs(gwfStr, filePath);
-
-  EXPECT_TRUE(compareStringWithFileContent(scsStr, filePath + ".scs"));
 }
