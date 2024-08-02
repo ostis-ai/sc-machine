@@ -35,13 +35,12 @@ private:
   utils::ScLock m_lock;
 };
 
-static ScKeynode const test_specificated_agent_implementation =
-    ScKeynode("test_specificated_agent_implementation", ScType::NodeConst);
-
-class ATestSpecificatedAgent : public ScSpecificatedAgent<test_specificated_agent_implementation>
+class ATestSpecificatedAgent : public ScAgent<ScElementaryEvent>
 {
 public:
   static inline TestWaiter msWaiter;
+  static inline ScKeynode const test_specificated_agent_implementation =
+      ScKeynode("test_specificated_agent_implementation", ScType::NodeConst);
 
   ScResult DoProgram(ScElementaryEvent const & event, ScAction & action) override;
 };

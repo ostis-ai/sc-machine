@@ -2,7 +2,11 @@
 
 #include <thread>
 
+#include "sc-memory/sc_event.hpp"
+#include "sc-memory/sc_event_subscription.hpp"
+
 #include "sc-memory/sc_memory.hpp"
+
 #include "sc-core/sc_keynodes.h"
 #include "sc-memory/sc_struct.hpp"
 

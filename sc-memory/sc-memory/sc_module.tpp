@@ -6,6 +6,8 @@
 
 #include "sc_module.hpp"
 
+#include "sc_agent_builder.hpp"
+
 template <class TKeynodesClass>
 ScModule * ScModule::Keynodes()
 {
@@ -23,33 +25,51 @@ ScModule * ScModule::Agent(TScAddr const &... subscriptionAddrs)
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   m_agents.push_back(
-      {{GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>()}, {subscriptionAddrs...}});
+      {nullptr,
+       GetAgentSubscribeCallback<TScAgent>(),
+       GetAgentUnsubscribeCallback<TScAgent>(),
+       ScAddr::Empty,
+       {subscriptionAddrs...}});
   return this;
+}
+
+template <class TScAgent>
+ScAgentBuilder<TScAgent> * ScModule::AgentBuilder(ScAddr const & agentImplementationAddr)
+{
+  auto * builder = new ScAgentBuilder<TScAgent>(this, agentImplementationAddr);
+  m_agents.push_back(
+      {builder,
+       GetAgentSubscribeCallback<TScAgent>(),
+       GetAgentUnsubscribeCallback<TScAgent>(),
+       agentImplementationAddr,
+       {}});
+  return builder;
 }
 
 template <class TScAgent, typename>
 ScModule * ScModule::Agent()
 {
-  m_agents.push_back({{GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>()}, {}});
+  m_agents.push_back(
+      {nullptr, GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>(), ScAddr::Empty, {}});
   return this;
 }
 
 template <class TScAgent>
 ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback()
 {
-  return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
+  return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
     for (ScAddr const & addr : addrs)
-      TScAgent::template Subscribe<TScAgent>(ctx, addr);
+      TScAgent::template Subscribe<TScAgent>(ctx, agentImplementationAddr, addr);
   };
 }
 
 template <class TScAgent>
 ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback()
 {
-  return [](ScMemoryContext * ctx, ScAddrVector const & addrs)
+  return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
     for (ScAddr const & addr : addrs)
-      TScAgent::template Unsubscribe<TScAgent>(ctx, addr);
+      TScAgent::template Unsubscribe<TScAgent>(ctx, agentImplementationAddr, addr);
   };
 }

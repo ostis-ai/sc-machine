@@ -10,7 +10,13 @@
 
 #include "sc_addr.hpp"
 
-#include "sc_agent.hpp"
+#include "sc_memory.hpp"
+
+class ScKeynodes;
+class ScActionAgent;
+class ScAgentBuilderAbstract;
+template <class TScAgent>
+class ScAgentBuilder;
 
 /*!
  * @interface An interface for keynodes and agent modules. It's like a complex component that contains linked agents.
@@ -69,6 +75,9 @@ public:
       typename = std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>>
   _SC_EXTERN ScModule * Agent(TScAddr const &... subscriptionAddrs);
 
+  template <class TScAgent>
+  _SC_EXTERN ScAgentBuilder<TScAgent> * AgentBuilder(ScAddr const & agentImplementationAddr = ScAddr::Empty);
+
   /*! Reminds action agent and it initiation condition to register it with module after.
    * @param TScAgent An agent class to be subscribe to.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
@@ -96,9 +105,11 @@ protected:
   /// Registered keynodes
   std::list<ScKeynodes *> m_keynodes;
   /// Registered agents
-  using ScAgentSubscribeCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
-  using ScAgentUnsubscribeCallback = std::function<void(ScMemoryContext *, ScAddrVector const &)>;
-  std::list<std::pair<std::pair<ScAgentSubscribeCallback, ScAgentUnsubscribeCallback>, ScAddrVector>> m_agents;
+  using ScAgentSubscribeCallback = std::function<void(ScMemoryContext *, ScAddr const &, ScAddrVector const &)>;
+  using ScAgentUnsubscribeCallback = std::function<void(ScMemoryContext *, ScAddr const &, ScAddrVector const &)>;
+  std::list<
+      std::tuple<ScAgentBuilderAbstract *, ScAgentSubscribeCallback, ScAgentUnsubscribeCallback, ScAddr, ScAddrVector>>
+      m_agents;
 
   template <class TScAgent>
   ScAgentSubscribeCallback GetAgentSubscribeCallback();
