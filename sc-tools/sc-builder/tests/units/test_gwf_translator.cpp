@@ -61,16 +61,43 @@ bool isNodeWithoutContent(const std::string& line) {
     return !isBlockStart(line) && !isBlockEnd(line) && !isNodeWithContent(line);
 }
 
+bool isOpeningBracket(char ch) {
+    return ch == '[' || ch == '(';
+}
+
+bool isClosingBracket(char ch) {
+    return ch == ']' || ch == ')';
+}
+
 std::shared_ptr<TreeNode> parseTree(const std::string& input) {
     std::istringstream iss(input);
     std::string line;
     std::vector<std::shared_ptr<TreeNode>> nodeStack;
     auto root = std::make_shared<TreeNode>("root", "");
     auto currentNode = root;
+    bool isContentMultiLine = false;
+    bool flag = false;
+    std::string multiLineContent;
+    std::string currentName;
+    int bracketCount = 0;
 
     while (std::getline(iss, line)) {
         line = trim(line);
         if (line.empty()) continue;
+
+        if (isContentMultiLine) {
+            multiLineContent += " " + line;
+            for (char ch : line) {
+                if (isOpeningBracket(ch)) bracketCount++;
+                if (isClosingBracket(ch)) bracketCount--;
+            }
+            if (bracketCount == 0) {
+                currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), currentName, multiLineContent);
+                isContentMultiLine = false;
+                multiLineContent.clear();
+            }
+            continue;
+        }
 
         if (isBlockStart(line)) {
             std::string name = trim(line.substr(0, line.find(" = [*")));
@@ -83,12 +110,27 @@ std::shared_ptr<TreeNode> parseTree(const std::string& input) {
             size_t equalPos = line.find(" = ");
             std::string name = trim(line.substr(0, equalPos));
             std::string content = trim(line.substr(equalPos + 3));
-            currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, content);
-        } else if (line.find("<-") != std::string::npos) {
+            bracketCount = 0;
+            for (char ch : content) {
+                if (isOpeningBracket(ch)) bracketCount++;
+                if (isClosingBracket(ch)) bracketCount--;
+            }
+            if (bracketCount != 0) {
+                isContentMultiLine = true;
+                multiLineContent = content;
+                currentName = name;
+            } else {
+                currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, content);
+            }
+        }
+        else if(flag){
             currentNode->content = line;
-        } else if (isNodeWithoutContent(line)) {
+            flag = false;
+        }
+        else {
             std::string name = line;
             currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
+            flag = true;
         }
     }
 
