@@ -193,15 +193,15 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
 
   for (auto element : contourElements)
   {
-    auto const tag = element.second->getTag();
+    auto const tag = element->getTag();
 
     if (tag == "node" || tag == "bus")
     {
-      WriteNodeForContour(buffer, element.second, contour);
+      WriteNodeForContour(buffer, element, contour);
     }
     else if (tag == "pair" || tag == "arc")
     {
-      std::shared_ptr<Connector> connector = std::dynamic_pointer_cast<Connector>(element.second);
+      std::shared_ptr<Connector> connector = std::dynamic_pointer_cast<Connector>(element);
 
       if (connector->getSource() == contour)
       {
@@ -215,7 +215,7 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
     }
     else if (tag == "contour")
     {
-      std::shared_ptr<Contour> contour = std::dynamic_pointer_cast<Contour>(element.second);
+      std::shared_ptr<Contour> contour = std::dynamic_pointer_cast<Contour>(element);
       WriteContour(contourBuffer, contour, tabLevel + 1);
     }
     else
@@ -224,7 +224,7 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
     }
   }
   contourBuffer.AddTabs(tabLevel);
-  buffer.Write(contour->getIdtf() + " = [*\n" + contourBuffer.GetValue() + "*];;\n\n");
+  buffer.Write(contour->getIdtf() + " = [*\n" + contourBuffer.GetValue() + "*];;\n");
 }
 
 void ScsWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, std::string const & filePath)
@@ -300,6 +300,8 @@ void ScsWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, s
     std::string isVar = Utils::IsVariable(link->getType()) ? "_" : "";
     buffer.Write(elIdtf + " = " + isVar + "[" + contentRes + "];;\n");
   }
+
+  buffer.Write("\n");
 }
 
 void ScsWriter::WriteNodeForContour(
@@ -310,36 +312,29 @@ void ScsWriter::WriteNodeForContour(
   size_t counter = 1;
   auto & elements = contour->getElements();
 
-  for (auto it = elements.begin(); it != elements.end();)
-  {
-    std::shared_ptr<Connector> connector = std::dynamic_pointer_cast<Connector>(it->second);
-    if (connector)
-    {
-      if (connector->getSource() == contour && connector->getTarget() == node)
+  elements.erase(
+    std::remove_if(elements.begin(), elements.end(), [&](std::shared_ptr<ScgElement> & element) {
+      auto connector = std::dynamic_pointer_cast<Connector>(element);
+      if (connector && connector->getSource() == contour && connector->getTarget() == node)
       {
         counter++;
-        it = elements.erase(it);
+        return true;
       }
-      else
-      {
-        ++it;
-      }
-    }
-    else
-    {
-      ++it;
-    }
-  }
+      return false;
+    }),
+    elements.end()
+  );
 
   auto const edgeName =
       ("@edge_from_contour_" + contour->getId() + "_to_node_" + node->getId() + "_" + std::to_string(counter));
   buffer.Write(edgeName + " = (" + contour->getIdtf() + " -> " + node->getIdtf() + ");;\n\n");
 }
 
+
 void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & element)
 {
   std::regex idtfPatternEng("^[0-9a-zA-Z_]*$");
-  std::regex idtfPatternRus("^[0-9a-zA-Z_а-яёА-ЯЁ*' ]*$");
+  std::regex idtfPatternRus("^[0-9a-zA-Z_\\xD0\\x80-\\xD1\\x8F\\xD1\\x90-\\xD1\\x8F\\xD1\\x91\\xD0\\x81*' ]*$");
 
   std::string systemIdtf = element->getIdtf();
   bool isVar = Utils::IsVariable(element->getType());
@@ -392,17 +387,17 @@ void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & eleme
     {
       output = "\n" + element->getIdtf() + "\n => " + N_REL_SYSTEM_IDTF + ": [" + mainIdtf + "];;\n";
     }
-    buffer.Write(output);
+    buffer.Write(output + "\n");
   }
 }
 
 bool ScsWriter::checkForNode(
     std::shared_ptr<ScgElement> refElement,
-    std::unordered_map<std::string, std::shared_ptr<ScgElement>> contourElements)
+    std::vector<std::shared_ptr<ScgElement>> contourElements)
 {
   for (const auto & element : contourElements)
   {
-    if (element.second == refElement)
+    if (element == refElement)
     {
       return true;
     }

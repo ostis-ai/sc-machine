@@ -167,6 +167,11 @@ private:
   std::string nodeId;
 };
 
+#include <string>
+#include <vector>
+#include <memory>
+#include <algorithm>
+
 class Contour : public Node
 {
 public:
@@ -182,17 +187,18 @@ public:
 
   void addElement(std::shared_ptr<ScgElement> & element)
   {
-    elements[element->getId()] = element;
+    elements.push_back(element);
   }
 
-  std::unordered_map<std::string, std::shared_ptr<ScgElement>> & getElements()
+  std::vector<std::shared_ptr<ScgElement>> & getElements()
   {
     return elements;
   }
 
 private:
-  std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements;
+  std::vector<std::shared_ptr<ScgElement>> elements;
 };
+
 
 class Connector : public ScgElement
 {
