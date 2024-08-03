@@ -235,7 +235,9 @@ template <ScType const & arcType>
 class _SC_EXTERN ScEventRemoveArc : public TScElementaryEvent<arcType>
 {
 public:
-  _SC_EXTERN virtual ScType GetRemovedArcType() const;
+  _SC_EXTERN virtual ScAddr GetRemovableArc() const;
+
+  _SC_EXTERN virtual ScType GetRemovableArcType() const;
 
   _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
 
@@ -258,7 +260,9 @@ template <ScType const & edgeType>
 class _SC_EXTERN ScEventRemoveEdge : public TScElementaryEvent<edgeType>
 {
 public:
-  _SC_EXTERN virtual ScType GetRemovedEdgeType() const;
+  _SC_EXTERN virtual ScAddr GetRemovableEdge() const;
+
+  _SC_EXTERN virtual ScType GetRemovableEdgeType() const;
 
   _SC_EXTERN virtual ScAddr GetEdgeSourceElement() const;
 
@@ -349,9 +353,6 @@ protected:
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
-
-private:
-  _SC_EXTERN ScAddr GetSubscriptionElement() const final;
 
 private:
   template <class TScEvent>

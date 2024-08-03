@@ -60,7 +60,9 @@ sc_result sc_event_emit(
     sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type edge_type,
-    sc_addr other_addr);
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    void * data);
 
 /*! Emit event immediately
  */
@@ -70,6 +72,8 @@ sc_result sc_event_emit_impl(
     sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type edge_type,
-    sc_addr other_addr);
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    void * data);
 
 #endif

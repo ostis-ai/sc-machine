@@ -112,7 +112,13 @@ _SC_EXTERN ScEventAddInputArc<arcType>::ScEventAddInputArc(
   : ScEventAddArc<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
 
 template <ScType const & arcType>
-ScType ScEventRemoveArc<arcType>::GetRemovedArcType() const
+ScAddr ScEventRemoveArc<arcType>::GetRemovableArc() const
+{
+  return ScElementaryEvent::GetConnector();
+}
+
+template <ScType const & arcType>
+ScType ScEventRemoveArc<arcType>::GetRemovableArcType() const
 {
   return ScElementaryEvent::GetConnectorType();
 }
@@ -139,7 +145,13 @@ ScEventRemoveArc<arcType>::ScEventRemoveArc(
   : TScElementaryEvent<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
 
 template <ScType const & edgeType>
-ScType ScEventRemoveEdge<edgeType>::GetRemovedEdgeType() const
+ScAddr ScEventRemoveEdge<edgeType>::GetRemovableEdge() const
+{
+  return ScElementaryEvent::GetConnector();
+}
+
+template <ScType const & edgeType>
+ScType ScEventRemoveEdge<edgeType>::GetRemovableEdgeType() const
 {
   return ScElementaryEvent::GetConnectorType();
 }
