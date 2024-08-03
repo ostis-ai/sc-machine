@@ -23,28 +23,33 @@ ScAgentBuilder<TScAgent>::ScAgentBuilder(ScModule * module, ScAddr const & agent
 }
 
 template <class TScAgent>
+ScAddr ScAgentBuilder<TScAgent>::GetAgentImplementation() const
+{
+  return m_agentImplementationAddr;
+}
+
+template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr const & abstractAgentAddr)
 {
-  m_initializeAbstractAgent = [this, abstractAgentAddr](ScMemoryContext * ctx)
+  m_initializeAbstractAgent = [this](ScMemoryContext * ctx)
   {
-    if (!abstractAgentAddr.IsValid())
+    if (!m_abstractAgentAddr.IsValid())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
                                              << "` has not specified abstract agent.");
 
     ScIterator3Ptr it3 =
-        ctx->Iterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, abstractAgentAddr);
+        ctx->Iterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
     if (!it3->Next())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Specified sc-element for class `"
               << TScAgent::template GetName<TScAgent>()
               << "` is not abstract agent due it does not belong to class `abstract_sc_agent`.");
-
-    m_abstractAgentAddr = abstractAgentAddr;
   };
 
+  m_abstractAgentAddr = abstractAgentAddr;
   return this;
 }
 
@@ -52,40 +57,35 @@ template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetPrimaryInitiationCondition(
     std::tuple<ScAddr, ScAddr> const & primaryInitiationCondition)
 {
-  auto [_eventClassAddr, _eventSubscriptionElementAddr] = primaryInitiationCondition;
-  ScAddr const & eventClassAddr = _eventClassAddr;
-  ScAddr const & eventSubscriptionElementAddr = _eventSubscriptionElementAddr;
+  auto [eventClassAddr, eventSubscriptionElementAddr] = primaryInitiationCondition;
 
-  m_initializePrimaryInitiationCondition = [this, eventClassAddr, eventSubscriptionElementAddr](ScMemoryContext * ctx)
+  m_initializePrimaryInitiationCondition = [this](ScMemoryContext * ctx)
   {
-    m_eventClassAddr = eventClassAddr;
-
-    if (eventSubscriptionElementAddr.IsValid())
+    if (!ctx->IsElement(m_eventSubscriptionElementAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
                                              << "` has not specified event subscription sc-element.");
-
-    m_eventSubscriptionElementAddr = eventSubscriptionElementAddr;
   };
 
+  m_eventClassAddr = eventClassAddr;
+  m_eventSubscriptionElementAddr = eventSubscriptionElementAddr;
   return this;
 }
 
 template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const & actionClassAddr)
 {
-  m_initializeActionClass = [this, actionClassAddr](ScMemoryContext * ctx)
+  m_initializeActionClass = [this](ScMemoryContext * ctx)
   {
-    if (!actionClassAddr.IsValid())
+    if (!ctx->IsElement(m_actionClassAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
                                              << "` has not specified action class.");
-
-    m_actionClassAddr = actionClassAddr;
   };
 
+  m_actionClassAddr = actionClassAddr;
   return this;
 }
 
@@ -93,29 +93,25 @@ template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetInitiationConditionAndResult(
     std::tuple<ScAddr, ScAddr> const & initiationCondition)
 {
-  auto [_initiationConditionAddr, _resultConditionAddr] = initiationCondition;
-  ScAddr const & initiationConditionAddr = _initiationConditionAddr;
-  ScAddr const & resultConditionAddr = _resultConditionAddr;
+  auto [initiationConditionAddr, resultConditionAddr] = initiationCondition;
 
-  m_initializeInitiationConditionAndResult = [this, initiationConditionAddr, resultConditionAddr](ScMemoryContext * ctx)
+  m_initializeInitiationConditionAndResult = [this](ScMemoryContext * ctx)
   {
-    if (!initiationConditionAddr.IsValid())
+    if (!ctx->IsElement(m_initiationConditionAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
                                              << "` has not specified initiation condition template.");
 
-    m_initiationConditionAddr = initiationConditionAddr;
-
-    if (!resultConditionAddr.IsValid())
+    if (!ctx->IsElement(m_resultConditionAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
                                              << "` has not specified result condition template.");
-
-    m_resultConditionAddr = resultConditionAddr;
   };
 
+  m_initiationConditionAddr = initiationConditionAddr;
+  m_resultConditionAddr = resultConditionAddr;
   return this;
 }
 
@@ -149,7 +145,7 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
   {
     agentImplementationName = agentClassName;
 
-    ScAddr m_agentImplementationAddr = ctx->HelperFindBySystemIdtf(agentClassName);
+    m_agentImplementationAddr = ctx->HelperFindBySystemIdtf(agentClassName);
     if (m_agentImplementationAddr.IsValid())
     {
       ScIterator3Ptr const it3 = ctx->Iterator3(
