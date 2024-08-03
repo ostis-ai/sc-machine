@@ -699,62 +699,71 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
 
     sc_result remove_input_arc_result = SC_RESULT_NO;
     sc_result remove_output_arc_result = SC_RESULT_NO;
-    if (sc_type_has_subtype(type, sc_type_edge_common))
+    sc_result remove_element_result = SC_RESULT_NO;
+
+    if ((el->flags.states & SC_STATE_IS_DELETABLE) != SC_STATE_IS_DELETABLE)
     {
-      remove_input_arc_result = sc_event_emit(
+      if (sc_type_has_subtype(type, sc_type_edge_common))
+      {
+        remove_input_arc_result = sc_event_emit(
+            ctx,
+            begin_addr,
+            sc_event_remove_edge_addr,
+            element_addr,
+            type,
+            end_addr,
+            sc_storage_element_free,
+            element_addr);
+        remove_output_arc_result = sc_event_emit(
+            ctx,
+            end_addr,
+            sc_event_remove_edge_addr,
+            element_addr,
+            type,
+            begin_addr,
+            sc_storage_element_free,
+            element_addr);
+      }
+      else if (sc_type_has_subtype(type, sc_type_arc_access) || sc_type_has_subtype(type, sc_type_arc_common))
+      {
+        remove_output_arc_result = sc_event_emit(
+            ctx,
+            begin_addr,
+            sc_event_remove_output_arc_addr,
+            element_addr,
+            type,
+            end_addr,
+            sc_storage_element_free,
+            element_addr);
+        remove_input_arc_result = sc_event_emit(
+            ctx,
+            end_addr,
+            sc_event_remove_input_arc_addr,
+            element_addr,
+            type,
+            begin_addr,
+            sc_storage_element_free,
+            element_addr);
+      }
+
+      remove_element_result = sc_event_emit(
           ctx,
-          begin_addr,
-          sc_event_remove_edge_addr,
           element_addr,
-          type,
-          end_addr,
-          _sc_storage_element_remove,
-          &element_addr);
-      remove_output_arc_result = sc_event_emit(
-          ctx,
-          end_addr,
-          sc_event_remove_edge_addr,
-          element_addr,
-          type,
-          begin_addr,
-          _sc_storage_element_remove,
-          &element_addr);
-    }
-    else if (sc_type_has_subtype(type, sc_type_arc_access) || sc_type_has_subtype(type, sc_type_arc_common))
-    {
-      remove_output_arc_result = sc_event_emit(
-          ctx,
-          begin_addr,
-          sc_event_remove_output_arc_addr,
-          element_addr,
-          type,
-          end_addr,
-          _sc_storage_element_remove,
-          &element_addr);
-      remove_input_arc_result = sc_event_emit(
-          ctx,
-          end_addr,
-          sc_event_remove_input_arc_addr,
-          element_addr,
-          type,
-          begin_addr,
-          _sc_storage_element_remove,
-          &element_addr);
+          sc_event_remove_element_addr,
+          SC_ADDR_EMPTY,
+          0,
+          SC_ADDR_EMPTY,
+          sc_storage_element_free,
+          element_addr);
+
+      el->flags.states |= SC_STATE_IS_DELETABLE;
     }
 
-    sc_result emit_result = sc_event_emit(
-        ctx,
-        element_addr,
-        sc_event_remove_element_addr,
-        SC_ADDR_EMPTY,
-        0,
-        SC_ADDR_EMPTY,
-        _sc_storage_element_remove,
-        &element_addr);
+    if (remove_input_arc_result == SC_RESULT_OK || remove_output_arc_result == SC_RESULT_OK
+        || remove_element_result == SC_RESULT_OK)
+      continue;
 
-    if (remove_input_arc_result == SC_RESULT_NO && remove_output_arc_result == SC_RESULT_NO
-        && emit_result == SC_RESULT_NO)
-      sc_queue_push(&remove_queue, p_addr);
+    sc_queue_push(&remove_queue, p_addr);
 
     sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, element_addr);
     sc_monitor_acquire_read(monitor);
@@ -1035,13 +1044,13 @@ sc_addr sc_storage_arc_new_ext(
   // emit events
   if (is_edge && is_not_loop)
   {
-    sc_event_emit(ctx, end_addr, sc_event_add_edge_addr, arc_addr, type, beg_addr, null_ptr, null_ptr);
-    sc_event_emit(ctx, beg_addr, sc_event_add_edge_addr, arc_addr, type, end_addr, null_ptr, null_ptr);
+    sc_event_emit(ctx, end_addr, sc_event_add_edge_addr, arc_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
+    sc_event_emit(ctx, beg_addr, sc_event_add_edge_addr, arc_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
   }
   else
   {
-    sc_event_emit(ctx, beg_addr, sc_event_add_output_arc_addr, arc_addr, type, end_addr, null_ptr, null_ptr);
-    sc_event_emit(ctx, end_addr, sc_event_add_input_arc_addr, arc_addr, type, beg_addr, null_ptr, null_ptr);
+    sc_event_emit(ctx, beg_addr, sc_event_add_output_arc_addr, arc_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
+    sc_event_emit(ctx, end_addr, sc_event_add_input_arc_addr, arc_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
   }
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
@@ -1262,7 +1271,7 @@ sc_result sc_storage_set_link_content(
     goto error;
   }
 
-  sc_event_emit(ctx, addr, sc_event_change_content_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY, null_ptr, null_ptr);
+  sc_event_emit(ctx, addr, sc_event_change_content_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY, null_ptr, SC_ADDR_EMPTY);
 
   sc_monitor_release_write(monitor);
   sc_mem_free(string);

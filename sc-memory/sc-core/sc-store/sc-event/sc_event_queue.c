@@ -12,6 +12,7 @@
 #include "../sc_storage.h"
 #include "../sc_storage_private.h"
 #include "../../sc_memory_private.h"
+#include "../../sc_memory.h"
 
 #include "../sc-base/sc_allocator.h"
 
@@ -26,7 +27,7 @@ typedef struct
   sc_type connector_type;                      ///< sc-type of the sc-connector associated with the event.
   sc_addr other_addr;                          ///< sc-address representing the other element associated with the event.
   sc_event_do_after_callback callback;
-  void * data;
+  sc_addr event_addr;
 } sc_event;
 
 /*! Function that creates a new instance of sc_event.
@@ -42,7 +43,7 @@ sc_event * _sc_event_new(
     sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
-    void * data)
+    sc_addr event_addr)
 {
   sc_event * event = sc_mem_new(sc_event, 1);
   event->event_subscription = event_subscription;
@@ -51,7 +52,7 @@ sc_event * _sc_event_new(
   event->connector_type = connector_type;
   event->other_addr = other_addr;
   event->callback = callback;
-  event->data = data;
+  event->event_addr = event_addr;
 
   return event;
 }
@@ -110,9 +111,16 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
 end:
   sc_monitor_release_read(&queue->destroy_monitor);
 destroy:
-  if (event->callback != null_ptr && event->data != null_ptr)
-    event->callback(*(sc_addr *)data);
+{
+  if (event->callback != null_ptr)
+  {
+    sc_memory_context * ctx = sc_memory_context_new_ext(event->user_addr);
+    event->callback(ctx, event->event_addr);
+    sc_memory_context_free(ctx);
+  }
+
   _sc_event_emission_pool_worker_data_destroy(event);
+}
 }
 
 void sc_event_emission_manager_initialize(sc_event_emission_manager ** manager, sc_memory_params const * params)
@@ -199,13 +207,13 @@ void _sc_event_emission_manager_add(
     sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
-    void * data)
+    sc_addr event_addr)
 {
   if (manager == null_ptr)
     return;
 
   sc_event * event =
-      _sc_event_new(event_subscription, user_addr, connector_addr, connector_type, other_addr, callback, data);
+      _sc_event_new(event_subscription, user_addr, connector_addr, connector_type, other_addr, callback, event_addr);
 
   sc_monitor_acquire_write(&manager->pool_monitor);
   g_thread_pool_push(manager->thread_pool, event, null_ptr);

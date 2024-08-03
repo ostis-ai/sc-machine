@@ -774,3 +774,71 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentUnsuccessfullInitiationCon
   DestroyAndUnsubscribeAgent<ATestSpecificatedAgent>(
       &*m_ctx, ATestSpecificatedAgent::test_specificated_agent_implementation);
 }
+
+static std::string const ATestSpecificatedAgentSpecificationRemovingEdge = R"(
+  test_specificated_agent
+  <- abstract_sc_agent;
+  => nrel_primary_initiation_condition: 
+    (sc_event_remove_edge => test_set);
+  => nrel_sc_agent_action_class: 
+    test_specificated_agent_action;
+  => nrel_initiation_condition_and_result: 
+    (..test_specificated_agent_condition => ..test_specificated_agent_result);
+  <= nrel_sc_agent_key_sc_elements: 
+    {
+      test_set;
+      action;
+      test_specificated_agent_action
+    };
+  => nrel_inclusion: 
+    test_specificated_agent_implementation
+    (*
+      <- platform_dependent_abstract_sc_agent;;
+      <= nrel_sc_agent_program: 
+      {
+        [] (* => nrel_format: format_github_source_link;; *);
+        [] (* => nrel_format: format_github_source_link;; *)
+      };;
+    *);;
+
+  ..test_specificated_agent_condition
+  = [*
+    test_set _<=> test_relation:: test_other_set;;
+  *];;
+
+  ..test_specificated_agent_result
+  = [*
+    test_other_set _<=> test_relation:: test_set;;
+  *];;
+
+  test_specificated_agent_action
+  <- sc_node_class;
+  <= nrel_inclusion: sc_action;;
+)";
+
+TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentRemovingEdgeHasFullSpecification)
+{
+  std::string const & data = ATestSpecificatedAgentSpecificationRemovingEdge;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      &*m_ctx, ATestSpecificatedAgent::test_specificated_agent_implementation);
+
+  ScAddr const & testSetAddr = m_ctx->HelperFindBySystemIdtf("test_set");
+  ScAddr const & testOtherSetAddr = m_ctx->HelperFindBySystemIdtf("test_other_set");
+  ScAddr const & testRelation = m_ctx->HelperFindBySystemIdtf("test_relation");
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeUCommonConst, testSetAddr, testOtherSetAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+
+  m_ctx->EraseElement(edgeAddr);
+
+  EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
+
+  EXPECT_FALSE(m_ctx->IsElement(edgeAddr));
+  EXPECT_FALSE(m_ctx->IsElement(arcAddr));
+
+  DestroyAndUnsubscribeAgent<ATestSpecificatedAgent>(
+      &*m_ctx, ATestSpecificatedAgent::test_specificated_agent_implementation);
+}
