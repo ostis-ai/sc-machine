@@ -24,6 +24,8 @@ class _SC_EXTERN ScEvent : public ScObject
 public:
   _SC_EXTERN virtual ~ScEvent();
 
+  _SC_EXTERN virtual ScAddr GetEventClass() const = 0;
+
   _SC_EXTERN virtual ScAddr GetUser() const = 0;
 
   _SC_EXTERN virtual ScAddr GetSubscriptionElement() const = 0;
@@ -42,6 +44,8 @@ protected:
 class _SC_EXTERN ScElementaryEvent : public ScEvent
 {
 public:
+  _SC_EXTERN ScAddr GetEventClass() const override;
+
   _SC_EXTERN ScAddr GetUser() const override;
 
   _SC_EXTERN ScAddr GetSubscriptionElement() const override;
@@ -52,7 +56,6 @@ public:
    */
   _SC_EXTERN std::tuple<ScAddr, ScAddr, ScAddr> GetTriple() const;
 
-protected:
   /*!
    * @brief Gets a connector element outgoing from or ingoing to a subscription element.
    * @return ScAddr representing a connector element from/to a subscription element.
@@ -73,12 +76,14 @@ protected:
 
 protected:
   _SC_EXTERN ScElementaryEvent(
+      ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+  ScAddr m_eventClassAddr;
   ScAddr m_userAddr;
   ScAddr m_subscriptionAddr;
   ScAddr m_connectorAddr;
@@ -100,6 +105,7 @@ class _SC_EXTERN TScElementaryEvent : public ScElementaryEvent
 {
 protected:
   _SC_EXTERN TScElementaryEvent(
+      ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionAddr,
       ScAddr const & connectorAddr,
@@ -134,6 +140,7 @@ public:
 
 protected:
   _SC_EXTERN ScEventAddArc(
+      ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionAddr,
       ScAddr const & connectorAddr,
@@ -245,6 +252,7 @@ public:
 
 protected:
   _SC_EXTERN ScEventRemoveArc(
+      ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionAddr,
       ScAddr const & connectorAddr,

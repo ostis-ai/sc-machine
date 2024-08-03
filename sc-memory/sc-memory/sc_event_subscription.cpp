@@ -79,7 +79,12 @@ sc_result ScElementaryEventSubscription::Handler(
   try
   {
     delegateFunc(ScElementaryEvent(
-        userAddr, sc_event_subscription_get_element(event_subscription), connectorAddr, connectorType, otherAddr));
+        sc_event_subscription_get_event_type(event_subscription),
+        userAddr,
+        sc_event_subscription_get_element(event_subscription),
+        connectorAddr,
+        connectorType,
+        otherAddr));
   }
   catch (utils::ScException & e)
   {

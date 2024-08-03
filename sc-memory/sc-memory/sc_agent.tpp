@@ -356,7 +356,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback(ScAddr cons
     if (initiationConditionTemplate.IsEmpty() && agent.MayBeSpecified())
     {
       ScAddr const & initiationConditionAddr = agent.GetInitiationCondition();
-      agent.m_memoryCtx.HelperBuildTemplate(initiationConditionTemplate, initiationConditionAddr);
+      initiationConditionTemplate = agent.BuildCheckTemplate(event, initiationConditionAddr);
     }
 
     ScTemplateSearchResult searchResult;
@@ -381,7 +381,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback(ScAddr cons
     if (resultConditionTemplate.IsEmpty() && agent.MayBeSpecified())
     {
       ScAddr const & resultConditionAddr = agent.GetResultCondition();
-      agent.m_memoryCtx.HelperBuildTemplate(resultConditionTemplate, resultConditionAddr);
+      resultConditionTemplate = agent.BuildCheckTemplate(event, resultConditionAddr);
     }
 
     if (!resultConditionTemplate.IsEmpty()
@@ -393,6 +393,62 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback(ScAddr cons
 
     return;
   };
+}
+
+template <class TScEvent>
+ScTemplate ScAgent<TScEvent>::BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr)
+{
+  ScAddr const & eventClassAddr = event.GetEventClass();
+  auto [eventSubscriptionElement, _, otherElementAddr] = event.GetTriple();
+
+  ScIterator5Ptr it5;
+  size_t otherVarPosition = 0u;
+  if (eventClassAddr == ScKeynodes::sc_event_add_input_arc || eventClassAddr == ScKeynodes::sc_event_remove_input_arc)
+  {
+    it5 = this->m_memoryCtx.Iterator5(
+        ScType::Var, ScType::Var, eventSubscriptionElement, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+  }
+  else if (
+      eventClassAddr == ScKeynodes::sc_event_add_output_arc || eventClassAddr == ScKeynodes::sc_event_remove_output_arc
+      || eventClassAddr == ScKeynodes::sc_event_add_edge || eventClassAddr == ScKeynodes::sc_event_remove_edge)
+  {
+    it5 = this->m_memoryCtx.Iterator5(
+        eventSubscriptionElement, ScType::Var, ScType::Var, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+
+    otherVarPosition = 2u;
+  }
+
+  ScTemplateParams params;
+  if (it5->IsValid())
+  {
+    ScIterator3Ptr const it3 =
+        this->m_memoryCtx.Iterator3(checkTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElement);
+    if (it3->Next())
+    {
+      if (it5->Next())
+        params.Add(it5->Get(otherVarPosition), otherElementAddr);
+      else
+      {
+        SC_LOG_WARNING(
+            "Initiation condition (or result) template of agent class `"
+            << this->GetName()
+            << "` checks initiated sc-event incorrectly. May be types of sc-elements "
+               "in initiation condition or result template are not correct. Check it.");
+      }
+    }
+    else
+    {
+      SC_LOG_WARNING(
+          "Initiation condition (or result) template of agent class `"
+          << this->GetName()
+          << "` doesn't check initiated sc-event. Check that agent initiation "
+             "condition and result templates are correct.");
+    }
+  }
+
+  ScTemplate templ;
+  this->m_memoryCtx.HelperBuildTemplate(templ, checkTemplateAddr, params);
+  return templ;
 }
 
 template <class TScAgent>

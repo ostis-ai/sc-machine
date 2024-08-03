@@ -9,16 +9,23 @@
 ScEvent::~ScEvent() = default;
 
 ScElementaryEvent::ScElementaryEvent(
+    ScAddr const & eventClassAddr,
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : m_userAddr(userAddr)
+  : m_eventClassAddr(eventClassAddr)
+  , m_userAddr(userAddr)
   , m_subscriptionAddr(subscriptionAddr)
   , m_connectorAddr(connectorAddr)
   , m_connectorType(connectorType)
   , m_otherAddr(otherAddr) {};
+
+ScAddr ScElementaryEvent::GetEventClass() const
+{
+  return m_eventClassAddr;
+}
 
 ScAddr ScElementaryEvent::GetUser() const
 {
@@ -56,7 +63,13 @@ ScEventRemoveElement::ScEventRemoveElement(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : TScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : TScElementaryEvent(
+        ScEventRemoveElement::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr) {};
 
 ScEventChangeLinkContent::ScEventChangeLinkContent(
     ScAddr const & userAddr,
@@ -64,4 +77,10 @@ ScEventChangeLinkContent::ScEventChangeLinkContent(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : TScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : TScElementaryEvent(
+        ScEventChangeLinkContent::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr) {};

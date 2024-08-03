@@ -43,6 +43,7 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
   ..test_specificated_agent_result
   = [*
     test_specificated_agent_action _-> .._action;;
+    action_initiated _-> .._action;;
     action_finished _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
     .._action _=> nrel_answer:: .._answer;;

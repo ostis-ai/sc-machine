@@ -106,6 +106,8 @@ _SC_EXTERN sc_bool sc_event_subscription_is_deletable(sc_event_subscription cons
  */
 _SC_EXTERN sc_pointer sc_event_subscription_get_data(sc_event_subscription const * event);
 
+_SC_EXTERN sc_addr sc_event_subscription_get_event_type(sc_event_subscription const * event_subscription);
+
 /*! Gets the sc-address of the associated sc-element for the specified sc-event subscription.
  * @param event Pointer to the sc-event subscription.
  * @return Returns the sc-addr of the associated sc-element.

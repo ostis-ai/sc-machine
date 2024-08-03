@@ -8,12 +8,13 @@
 
 template <ScType const & elementType>
 TScElementaryEvent<elementType>::TScElementaryEvent(
+    ScAddr const & eventClassAddr,
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScElementaryEvent(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : ScElementaryEvent(eventClassAddr, userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
 
 template <ScType const & arcType>
 ScAddr ScEventAddArc<arcType>::GetAddedArc() const
@@ -41,12 +42,13 @@ ScAddr ScEventAddArc<arcType>::GetArcTargetElement() const
 
 template <ScType const & arcType>
 ScEventAddArc<arcType>::ScEventAddArc(
+    ScAddr const & eventClassAddr,
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : TScElementaryEvent<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : TScElementaryEvent<arcType>(eventClassAddr, userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
 
 template <ScType const & edgeType>
 ScEventAddEdge<edgeType>::ScEventAddEdge(
@@ -55,7 +57,13 @@ ScEventAddEdge<edgeType>::ScEventAddEdge(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : TScElementaryEvent<edgeType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : TScElementaryEvent<edgeType>(
+        ScEventAddEdge<edgeType>::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr){};
 
 template <ScType const & edgeType>
 ScAddr ScEventAddEdge<edgeType>::GetAddedEdge() const
@@ -88,7 +96,13 @@ ScEventAddOutputArc<arcType>::ScEventAddOutputArc(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventAddArc<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : ScEventAddArc<arcType>(
+        ScEventAddOutputArc<arcType>::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr){};
 
 template <ScType const & arcType>
 ScAddr ScEventAddInputArc<arcType>::GetArcSourceElement() const
@@ -109,7 +123,13 @@ _SC_EXTERN ScEventAddInputArc<arcType>::ScEventAddInputArc(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventAddArc<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr) {};
+  : ScEventAddArc<arcType>(
+        ScEventAddInputArc<arcType>::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr) {};
 
 template <ScType const & arcType>
 ScAddr ScEventRemoveArc<arcType>::GetRemovableArc() const
@@ -137,12 +157,13 @@ ScAddr ScEventRemoveArc<arcType>::GetArcTargetElement() const
 
 template <ScType const & arcType>
 ScEventRemoveArc<arcType>::ScEventRemoveArc(
+    ScAddr const & eventClassAddr,
     ScAddr const & userAddr,
     ScAddr const & subscriptionAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : TScElementaryEvent<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : TScElementaryEvent<arcType>(eventClassAddr, userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
 
 template <ScType const & edgeType>
 ScAddr ScEventRemoveEdge<edgeType>::GetRemovableEdge() const
@@ -175,7 +196,13 @@ ScEventRemoveEdge<edgeType>::ScEventRemoveEdge(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : TScElementaryEvent<edgeType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : TScElementaryEvent<edgeType>(
+        ScEventRemoveEdge<edgeType>::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr){};
 
 template <ScType const & arcType>
 ScEventRemoveOutputArc<arcType>::ScEventRemoveOutputArc(
@@ -184,7 +211,13 @@ ScEventRemoveOutputArc<arcType>::ScEventRemoveOutputArc(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventRemoveArc<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : ScEventRemoveArc<arcType>(
+        ScEventRemoveOutputArc<arcType>::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr){};
 
 template <ScType const & arcType>
 ScAddr ScEventRemoveInputArc<arcType>::GetArcSourceElement() const
@@ -205,4 +238,10 @@ ScEventRemoveInputArc<arcType>::ScEventRemoveInputArc(
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventRemoveArc<arcType>(userAddr, subscriptionAddr, connectorAddr, connectorType, otherAddr){};
+  : ScEventRemoveArc<arcType>(
+        ScEventRemoveInputArc<arcType>::eventClassAddr,
+        userAddr,
+        subscriptionAddr,
+        connectorAddr,
+        connectorType,
+        otherAddr){};
