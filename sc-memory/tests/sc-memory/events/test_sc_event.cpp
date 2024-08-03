@@ -310,7 +310,9 @@ bool TestEventSubscriptionRemoveInputArc(ScMemoryContext * ctx)
   bool isDone = false;
   auto const & OnEvent = [&](ScEventRemoveInputArc<subscriptionArcType> const & event)
   {
-    EXPECT_EQ(event.GetRemovedArcType(), eventArcType);
+    EXPECT_EQ(event.GetRemovableArc(), arcAddr);
+    EXPECT_TRUE(ctx->IsElement(arcAddr));
+    EXPECT_EQ(event.GetRemovableArcType(), eventArcType);
     EXPECT_EQ(event.GetArcSourceElement(), nodeAddr2);
     EXPECT_EQ(event.GetArcTargetElement(), nodeAddr1);
     EXPECT_EQ(event.GetSubscriptionElement(), nodeAddr1);
@@ -379,7 +381,9 @@ bool TestEventSubscriptionRemoveOutputArc(ScMemoryContext * ctx)
   bool isDone = false;
   auto const & OnEvent = [&](ScEventRemoveOutputArc<subscriptionArcType> const & event)
   {
-    EXPECT_EQ(event.GetRemovedArcType(), eventArcType);
+    EXPECT_EQ(event.GetRemovableArc(), arcAddr);
+    EXPECT_TRUE(ctx->IsElement(arcAddr));
+    EXPECT_EQ(event.GetRemovableArcType(), eventArcType);
     EXPECT_EQ(event.GetArcSourceElement(), nodeAddr1);
     EXPECT_EQ(event.GetArcTargetElement(), nodeAddr2);
     EXPECT_EQ(event.GetSubscriptionElement(), nodeAddr1);
@@ -448,7 +452,9 @@ bool TestEventSubscriptionRemoveEdge(ScMemoryContext * ctx)
   bool isDone = false;
   auto const & OnEvent = [&](ScEventRemoveEdge<subscriptionEdgeType> const & event)
   {
-    EXPECT_EQ(event.GetRemovedEdgeType(), eventEdgeType);
+    EXPECT_EQ(event.GetRemovableEdge(), edgeAddr);
+    EXPECT_TRUE(ctx->IsElement(edgeAddr));
+    EXPECT_EQ(event.GetRemovableEdgeType(), eventEdgeType);
     EXPECT_TRUE(event.GetEdgeSourceElement() == nodeAddr1 || event.GetEdgeSourceElement() == nodeAddr2);
     EXPECT_TRUE(event.GetEdgeTargetElement() == nodeAddr1 || event.GetEdgeTargetElement() == nodeAddr2);
     EXPECT_EQ(event.GetSubscriptionElement(), nodeAddr1);
@@ -506,7 +512,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEvent)
   bool isDone = false;
   auto const & OnEvent = [&](ScEventRemoveElement const & event)
   {
-    EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
+    EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
     isDone = true;
   };
 
@@ -540,8 +546,9 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRe
   bool isDone = false;
   auto const & OnEvent = [&](ScEventRemoveElement const & event)
   {
-    EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
-    m_ctx->GetElementType(nodeAddr1);
+    EXPECT_EQ(event.GetSubscriptionElement(), nodeAddr1);
+    EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
+    EXPECT_NO_THROW(m_ctx->GetElementType(nodeAddr1));
   };
 
   CreateNode();
@@ -574,7 +581,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRe
   bool isDone = false;
   auto const & OnEvent = [&](ScElementaryEvent const & event)
   {
-    EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
+    EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
     m_ctx->GetElementType(nodeAddr1);
   };
 

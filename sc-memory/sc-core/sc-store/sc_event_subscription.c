@@ -320,7 +320,9 @@ sc_result sc_event_emit(
     sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type connector_type,
-    sc_addr other_addr)
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    void * data)
 {
   if (ctx == null_ptr)
     return SC_RESULT_NO;
@@ -334,7 +336,8 @@ sc_result sc_event_emit(
     return SC_RESULT_OK;
   }
 
-  return sc_event_emit_impl(ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr);
+  return sc_event_emit_impl(
+      ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr, callback, data);
 }
 
 sc_result sc_event_emit_impl(
@@ -343,7 +346,9 @@ sc_result sc_event_emit_impl(
     sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type connector_type,
-    sc_addr other_addr)
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    void * data)
 {
   sc_hash_table_list * element_events_list = null_ptr;
   sc_event_subscription * event_subscription = null_ptr;
@@ -365,20 +370,32 @@ sc_result sc_event_emit_impl(
         (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(subscription_addr));
   sc_monitor_release_read(&registration_manager->events_table_monitor);
 
+  sc_result result = SC_RESULT_NO;
   while (element_events_list != null_ptr)
   {
     event_subscription = (sc_event_subscription *)element_events_list->data;
 
     if (SC_ADDR_IS_EQUAL(event_subscription->event_type_addr, event_type_addr)
         && ((event_subscription->event_element_type & connector_type) == event_subscription->event_element_type))
+    {
       _sc_event_emission_manager_add(
-          emission_manager, event_subscription, ctx->user_addr, connector_addr, connector_type, other_addr);
+          emission_manager,
+          event_subscription,
+          ctx->user_addr,
+          connector_addr,
+          connector_type,
+          other_addr,
+          callback,
+          data);
+
+      result = SC_RESULT_OK;
+    }
 
     element_events_list = element_events_list->next;
   }
 
 result:
-  return SC_RESULT_OK;
+  return result;
 }
 
 sc_bool sc_event_subscription_is_deletable(sc_event_subscription const * event_subscription)
