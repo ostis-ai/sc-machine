@@ -270,7 +270,7 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
         event_params->connector_type,
         event_params->other_addr,
         null_ptr,
-        null_ptr);
+        SC_ADDR_EMPTY);
     sc_mem_free(event_params);
 
     ((sc_memory_context *)ctx)->pend_events = sc_hash_table_list_remove_sublist(ctx->pend_events, ctx->pend_events);

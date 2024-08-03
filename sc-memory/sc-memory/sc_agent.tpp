@@ -406,14 +406,14 @@ ScTemplate ScAgent<TScEvent>::BuildCheckTemplate(TScEvent const & event, ScAddr 
   if (eventClassAddr == ScKeynodes::sc_event_add_input_arc || eventClassAddr == ScKeynodes::sc_event_remove_input_arc)
   {
     it5 = this->m_memoryCtx.Iterator5(
-        ScType::Var, ScType::Var, eventSubscriptionElement, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+        ScType::Unknown, ScType::Var, eventSubscriptionElement, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
   }
   else if (
       eventClassAddr == ScKeynodes::sc_event_add_output_arc || eventClassAddr == ScKeynodes::sc_event_remove_output_arc
       || eventClassAddr == ScKeynodes::sc_event_add_edge || eventClassAddr == ScKeynodes::sc_event_remove_edge)
   {
     it5 = this->m_memoryCtx.Iterator5(
-        eventSubscriptionElement, ScType::Var, ScType::Var, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+        eventSubscriptionElement, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
 
     otherVarPosition = 2u;
   }
@@ -426,7 +426,11 @@ ScTemplate ScAgent<TScEvent>::BuildCheckTemplate(TScEvent const & event, ScAddr 
     if (it3->Next())
     {
       if (it5->Next())
-        params.Add(it5->Get(otherVarPosition), otherElementAddr);
+      {
+        ScAddr const & otherVarAddr = it5->Get(otherVarPosition);
+        if (this->m_memoryCtx.GetElementType(otherVarAddr).IsVar() && otherVarAddr != otherElementAddr)
+          params.Add(it5->Get(otherVarPosition), otherElementAddr);
+      }
       else
       {
         SC_LOG_WARNING(

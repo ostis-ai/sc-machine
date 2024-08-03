@@ -322,13 +322,13 @@ sc_result sc_event_emit(
     sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
-    void * data)
+    sc_addr event_addr)
 {
   if (ctx == null_ptr)
     return SC_RESULT_NO;
 
   if (_sc_memory_context_are_events_blocking(ctx))
-    return SC_RESULT_OK;
+    return SC_RESULT_NO;
 
   if (_sc_memory_context_are_events_pending(ctx))
   {
@@ -337,7 +337,7 @@ sc_result sc_event_emit(
   }
 
   return sc_event_emit_impl(
-      ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr, callback, data);
+      ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr, callback, event_addr);
 }
 
 sc_result sc_event_emit_impl(
@@ -348,7 +348,7 @@ sc_result sc_event_emit_impl(
     sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
-    void * data)
+    sc_addr event_addr)
 {
   sc_hash_table_list * element_events_list = null_ptr;
   sc_event_subscription * event_subscription = null_ptr;
@@ -386,7 +386,7 @@ sc_result sc_event_emit_impl(
           connector_type,
           other_addr,
           callback,
-          data);
+          event_addr);
 
       result = SC_RESULT_OK;
     }

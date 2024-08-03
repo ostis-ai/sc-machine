@@ -182,6 +182,7 @@ typedef sc_uint16 sc_type;
 typedef sc_uint16 sc_states;
 
 #  define SC_STATE_REQUEST_DELETION 0x1
+#  define SC_STATE_IS_DELETABLE 0x200
 #  define SC_STATE_ELEMENT_EXIST 0x2
 
 #  define SC_ACCESS_LVL_MAX_VALUE 15

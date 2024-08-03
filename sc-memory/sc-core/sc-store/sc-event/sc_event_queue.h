@@ -14,7 +14,7 @@
 #include "../sc-container/sc-hash-table/sc_hash_table.h"
 #include "../sc-base/sc_monitor.h"
 
-typedef sc_result (*sc_event_do_after_callback)(sc_addr addr);
+typedef sc_result (*sc_event_do_after_callback)(sc_memory_context const * ctx, sc_addr addr);
 
 /*! Structure representing an sc-event emission manager.
  * @note This structure manages the asynchronous processing of sc-events using a thread pool.
@@ -66,6 +66,6 @@ void _sc_event_emission_manager_add(
     sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
-    void * data);
+    sc_addr event_addr);
 
 #endif
