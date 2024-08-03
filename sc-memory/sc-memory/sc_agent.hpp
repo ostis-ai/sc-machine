@@ -151,6 +151,9 @@ protected:
    */
   template <class TScAgent>
   static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
+
+private:
+  ScTemplate BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr);
 };
 
 /*!

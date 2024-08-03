@@ -408,6 +408,11 @@ sc_pointer sc_event_subscription_get_data(sc_event_subscription const * event_su
   return event_subscription->data;
 }
 
+sc_addr sc_event_subscription_get_event_type(sc_event_subscription const * event_subscription)
+{
+  return event_subscription->event_type_addr;
+}
+
 sc_addr sc_event_subscription_get_element(sc_event_subscription const * event_subscription)
 {
   return event_subscription->subscription_addr;

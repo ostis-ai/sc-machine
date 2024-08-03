@@ -260,6 +260,21 @@ ScTemplate::ScTemplate(ScTemplate && other)
 {
 }
 
+ScTemplate & ScTemplate::operator=(ScTemplate && other)
+{
+  if (this == &other)
+    return *this;
+
+  m_templateItemsNamesToReplacementItemsPositions = std::move(other.m_templateItemsNamesToReplacementItemsPositions);
+  m_templateTriples = std::move(other.m_templateTriples);
+  m_priorityOrderedTemplateTriples = std::move(other.m_priorityOrderedTemplateTriples);
+  m_templateItemsNamesToReplacementItemsAddrs = std::move(other.m_templateItemsNamesToReplacementItemsAddrs);
+  m_templateItemsNamesToTypes = std::move(other.m_templateItemsNamesToTypes);
+
+  other.Clear();
+  return *this;
+}
+
 ScTemplate & ScTemplate::operator()(
     ScTemplateItem const & param1,
     ScTemplateItem const & param2,
