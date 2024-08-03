@@ -107,8 +107,7 @@ protected:
   /// Registered agents
   using ScAgentSubscribeCallback = std::function<void(ScMemoryContext *, ScAddr const &, ScAddrVector const &)>;
   using ScAgentUnsubscribeCallback = std::function<void(ScMemoryContext *, ScAddr const &, ScAddrVector const &)>;
-  std::list<
-      std::tuple<ScAgentBuilderAbstract *, ScAgentSubscribeCallback, ScAgentUnsubscribeCallback, ScAddr, ScAddrVector>>
+  std::list<std::tuple<ScAgentBuilderAbstract *, ScAgentSubscribeCallback, ScAgentUnsubscribeCallback, ScAddrVector>>
       m_agents;
 
   template <class TScAgent>

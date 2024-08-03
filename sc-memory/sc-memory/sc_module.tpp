@@ -28,7 +28,6 @@ ScModule * ScModule::Agent(TScAddr const &... subscriptionAddrs)
       {nullptr,
        GetAgentSubscribeCallback<TScAgent>(),
        GetAgentUnsubscribeCallback<TScAgent>(),
-       ScAddr::Empty,
        {subscriptionAddrs...}});
   return this;
 }
@@ -37,20 +36,14 @@ template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScModule::AgentBuilder(ScAddr const & agentImplementationAddr)
 {
   auto * builder = new ScAgentBuilder<TScAgent>(this, agentImplementationAddr);
-  m_agents.push_back(
-      {builder,
-       GetAgentSubscribeCallback<TScAgent>(),
-       GetAgentUnsubscribeCallback<TScAgent>(),
-       agentImplementationAddr,
-       {}});
+  m_agents.push_back({builder, GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>(), {}});
   return builder;
 }
 
 template <class TScAgent, typename>
 ScModule * ScModule::Agent()
 {
-  m_agents.push_back(
-      {nullptr, GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>(), ScAddr::Empty, {}});
+  m_agents.push_back({nullptr, GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>(), {}});
   return this;
 }
 
@@ -59,8 +52,13 @@ ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback()
 {
   return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
-    for (ScAddr const & addr : addrs)
-      TScAgent::template Subscribe<TScAgent>(ctx, agentImplementationAddr, addr);
+    if (agentImplementationAddr.IsValid())
+      TScAgent::template Subscribe<TScAgent>(ctx, agentImplementationAddr);
+    else
+    {
+      for (ScAddr const & addr : addrs)
+        TScAgent::template Subscribe<TScAgent>(ctx, agentImplementationAddr, addr);
+    }
   };
 }
 
@@ -69,7 +67,12 @@ ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback()
 {
   return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
-    for (ScAddr const & addr : addrs)
-      TScAgent::template Unsubscribe<TScAgent>(ctx, agentImplementationAddr, addr);
+    if (agentImplementationAddr.IsValid())
+      TScAgent::template Unsubscribe<TScAgent>(ctx, agentImplementationAddr);
+    else
+    {
+      for (ScAddr const & addr : addrs)
+        TScAgent::template Unsubscribe<TScAgent>(ctx, agentImplementationAddr, addr);
+    }
   };
 }

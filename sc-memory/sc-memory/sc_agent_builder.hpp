@@ -16,6 +16,8 @@ class ScMemoryContext;
 class ScAgentBuilderAbstract : public ScObject
 {
 public:
+  ScAddr virtual GetAgentImplementation() const = 0;
+
   _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) = 0;
 
   _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx) = 0;
@@ -26,8 +28,6 @@ class ScAgentBuilder : public ScAgentBuilderAbstract
 {
 public:
   _SC_EXTERN ScAgentBuilder * SetAbstractAgent(ScAddr const & abstractAgentAddr);
-
-  _SC_EXTERN ScAgentBuilder * SetEventClass(ScAddr const & eventClassAddr);
 
   _SC_EXTERN ScAgentBuilder * SetPrimaryInitiationCondition(
       std::tuple<ScAddr, ScAddr> const & primaryInitiationCondition);
@@ -68,6 +68,8 @@ protected:
   _SC_EXTERN ScAgentBuilder(ScAddr const & agentImplementationAddr);
 
   _SC_EXTERN ScAgentBuilder(ScModule * module, ScAddr const & agentImplementationAddr);
+
+  _SC_EXTERN ScAddr GetAgentImplementation() const override;
 
   _SC_EXTERN void LoadSpecification(ScMemoryContext * ctx);
 

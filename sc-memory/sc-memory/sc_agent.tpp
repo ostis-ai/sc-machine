@@ -219,7 +219,7 @@ void ScAgent<TScEvent>::Subscribe(
     ScAgentAbstract<TScEvent>::m_events.insert({agentName, {}});
 
   ScAddrVector subscriptionVector{subscriptionAddrs...};
-  if (agent.MayBeSpecified())
+  if (agent.MayBeSpecified() && subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
   std::string const & eventName = ScEvent::GetName<TScEvent>();
@@ -283,7 +283,7 @@ void ScAgent<TScEvent>::Unsubscribe(
         utils::ExceptionInvalidState, "Agent `" << agentName << "` has not been subscribed to any events yet.");
 
   ScAddrVector subscriptionVector{subscriptionAddrs...};
-  if (agent.MayBeSpecified())
+  if (agent.MayBeSpecified() && subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
   std::string const & eventClassName = ScEvent::GetName<TScEvent>();
