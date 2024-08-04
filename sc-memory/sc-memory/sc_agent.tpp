@@ -172,7 +172,7 @@ ScTemplate ScAgentAbstract<TScEvent>::GetResultConditionTemplate() const
 }
 
 template <class TScEvent>
-void ScAgentAbstract<TScEvent>::SetContext(ScAddr const & userAddr)
+void ScAgentAbstract<TScEvent>::SetInitiator(ScAddr const & userAddr)
 {
   m_memoryCtx = ScAgentContext(userAddr);
 }
