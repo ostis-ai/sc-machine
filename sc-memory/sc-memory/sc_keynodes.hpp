@@ -19,48 +19,73 @@ class ScKeynode;
 
 namespace internal
 {
+
 /*!
- * @class A base class to register keynodes.
- * @brief It reminds keynodes data and resolve them after memory initialization.
- * @note This class is just for internal usage.
+ * @class ScKeynodesRegister
+ * @brief A base class to register keynodes. It stores keynodes and resolves them after memory initialization.
+ * @warning This class is for internal usage only.
  */
 class ScKeynodesRegister
 {
 public:
   /*!
-   * @brief Remembers keynode data to register it after.
-   * @param keynode Pointer to remembering keynode data.
-   * @param idtf Keynode system identifier.
-   * @param keynodeType Keynode syntactic type.
+   * @brief Stores keynode data to register it later.
+   * @param keynode Pointer to the keynode data to be stored.
    */
   static void Remember(ScKeynode * keynode);
 
+  /*!
+   * @brief Removes keynode data from the stored list.
+   * @param keynode Pointer to the keynode data to be removed.
+   */
   static void Forget(ScKeynode * keynode);
 
   /*!
-   * @brief Registers all reminded keynodes.
+   * @brief Registers all stored keynodes.
    * @param context Sc-memory context to resolve keynodes.
+   * @param initMemoryGeneratedStructure Address of the initial memory structure.
    */
   static void Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure);
 
+  /*!
+   * @brief Unregisters all keynodes.
+   * @param context Sc-memory context used for unregistering keynodes.
+   */
   static void Unregister(ScMemoryContext *);
 
 protected:
   static inline std::list<ScKeynode *> m_keynodes;
 };
+
 }  // namespace internal
 
 /*!
- * @class A base class for keynodes. Use it to create keynode in ScKeynodes class to use in agent programs.
- * @example
- * \code
- * static inline ScKeynode const keynode{"keynode_const_node", ScType::NodeConst};
- * \endcode
- * @warning Use it only for static objects declaration.
+ * @class ScKeynode
+ * @brief A base class for keynodes. Use it to create keynodes in the ScKeynodes class for use in agent programs.
+ *
+ * A keynode is a key element used by some sc-agent during its operation. Typically, keynodes can be classes and
+ * relations, which are sc-elements that agents use to find constructions in sc-memory or create new ones. However,
+ * keynodes can be any sc-elements, even connectors between sc-elements.
+ *
+ * @note Objects of this class can be used as ScAddr.
+ * @warning Use this class only for static object declarations.
+ * @warning Keynodes can be defined not only in classes derived from the `ScKeynodes` class. You can define them as
+ * static objects anywhere.
+ *
+ * @code
+ * static inline ScKeynode const my_keynode_class{"my_keynode_class", ScType::NodeConstClass};
+ * @endcode
  */
 class _SC_EXTERN ScKeynode : public ScAddr
 {
+  friend class internal::ScKeynodesRegister;
+
 public:
+  /*!
+   * @brief Defines a keynode with the provided system identifier `sysIdtf` and sc-type `type`.
+   * @param sysIdtf A system identifier of the sc-keynode to be resolved.
+   * @param type A sc-type of the sc-keynode to be resolved.
+   */
   _SC_EXTERN explicit ScKeynode(std::string_view const & sysIdtf = "", ScType const & type = ScType::NodeConst);
 
   _SC_EXTERN ~ScKeynode();
@@ -73,67 +98,111 @@ protected:
   std::string_view m_sysIdtf;
   ScType m_type;
 
-  friend class internal::ScKeynodesRegister;
-
+  /*!
+   * @brief Initializes the keynode with the given context and memory structure address.
+   * @param context Sc-memory context used for initialization.
+   * @param initMemoryGeneratedStructureAddr Address of the initial memory structure.
+   */
   virtual void Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr);
 };
 
+/*!
+ * @class ScTemplateKeynode
+ * @brief A base class to create sc-templates as keynodes. Use it to create keynodes of sc-templates in the ScKeynodes
+ * class for use in agent programs.
+ *
+ * This class is useful when you want use programmly represented sc-template in different places in the code or when you
+ * don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.
+ *
+ * @note Objects of this class can be used as ScTemplate and ScAddr.
+ * @warning Use this class only for static object declarations.
+ *
+ * @code
+ * static inline ScTemplateKeynode const & my_agent_initiation_condition =
+ *   ScTemplateKeynode("my_agent_initiation_condition")
+ *     .Triple(
+ *        ScKeynodes::action_initiated,
+ *        ScType::EdgeAccessVarPosPerm,
+ *        ScType::NodeVar >> "_action")
+ *     .Triple(
+ *        MyKeynodes::my_action,
+ *        ScType::EdgeAccessVarPosPerm,
+ *        "_action");
+ * @endcode
+ */
 class _SC_EXTERN ScTemplateKeynode final
   : public ScKeynode
   , protected ScTemplate
 {
+  friend class internal::ScKeynodesRegister;
+
+  SC_DISALLOW_COPY(ScTemplateKeynode);
+
 public:
+  /*!
+   * @brief Defines a keynode for sc-template with the provided system identifier `sysIdtf`.
+   * @param sysIdtf A system identifier of the sc-template keynode to be resolved.
+   */
   _SC_EXTERN explicit ScTemplateKeynode(std::string_view const & sysIdtf = "");
 
   _SC_EXTERN ~ScTemplateKeynode();
 
-  SC_DISALLOW_COPY(ScTemplateKeynode);
-
   _SC_EXTERN ScTemplateKeynode(ScTemplateKeynode && other);
 
+  /*!
+   * @brief Appends provided triple to sc-template keynode.
+   * @note This method can be used in the same way as a method `Triple` of the class `ScTemplate`.
+   */
   template <typename T1, typename T2, typename T3>
-  ScTemplateKeynode Triple(T1 const & param1, T2 const & param2, T3 const & param3) noexcept(false);
+  _SC_EXTERN ScTemplateKeynode Triple(T1 const & param1, T2 const & param2, T3 const & param3) noexcept(false);
 
+  /*!
+   * @brief Appends provided quintuple to sc-template keynode.
+   * @note This method can be used in the same way as a method `Quintuple` of the class `ScTemplate`.
+   */
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
-  ScTemplateKeynode Quintuple(
-      T1 const & param1,
-      T2 const & param2,
-      T3 const & param3,
-      T4 const & param4,
-      T5 const & param5) noexcept(false);
+  _SC_EXTERN ScTemplateKeynode
+  Quintuple(T1 const & param1, T2 const & param2, T3 const & param3, T4 const & param4, T5 const & param5) noexcept(
+      false);
 
 private:
   std::list<std::function<void(ScTemplate &)>> m_constructionInitializers;
 
-  friend class internal::ScKeynodesRegister;
-
   template <typename T>
   static auto HandleParam(T const & param);
 
+  /*!
+   * @brief Initializes the keynode with the given context and memory structure address.
+   * @param context Sc-memory context used for initialization.
+   * @param initMemoryGeneratedStructureAddr Address of the initial memory structure.
+   */
   void Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr) override;
 };
 
 #include "sc_keynodes.tpp"
 
 /*!
- * @class A base class for keynodes declaration. It's like a namespace. Use it as a base class for own keynodes.
- * @example
- * File sc_nlp_keynodes.hpp:
- * \code
- * class ScNLPKeynodes : public ScKeynodes
+ * @class ScKeynodes
+ * @brief A base class for keynodes declaration. It's like a namespace. Use it as a base class for own keynodes.
+ * @note This class already contains frequently used keynodes. Use them in your code.
+ *
+ * @code
+ * // File my_keynodes.hpp:
+ *
+ * class MyKeynodes : public ScKeynodes
  * {
  * public:
- *   static inline ScKeynode const kConceptMessage{"concept_message", ScType::NodeConstClass};
- *   static inline ScKeynode const kNrelHistory{"nrel_history", ScType::NodeConstNoRole};
- *   static inline ScKeynode const kNrelDecomposition{"nrel_decomposition", ScType::NodeConstNoRole};
- *   static inline ScKeynode const kRrel1{"rrel_1", ScType::NodeConstRole};
+ *   static inline ScKeynode const my_keynode_class_a{"my_keynode_class_a", ScType::NodeConstClass};
+ *   static inline ScKeynode const my_keynode_relation_b{"my_keynode_relation_b", ScType::NodeConstNoRole};
  * };
- * \endcode
- * @see ScKeynode
+ * @endcode
  */
 class _SC_EXTERN ScKeynodes : public ScObject
-
 {
+  friend class ScMemory;
+  friend class ScModule;
+  friend class ScLink;
+
 public:
   _SC_EXTERN static inline ScKeynode const myself{"myself"};
 
@@ -249,10 +318,6 @@ public:
   _SC_EXTERN static size_t GetRrelIndexNum();
 
 private:
-  friend class ScMemory;
-  friend class ScModule;
-  friend class ScLink;
-
   static _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
   static _SC_EXTERN void Shutdown(ScMemoryContext * ctx);
 
