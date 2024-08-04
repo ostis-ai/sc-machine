@@ -38,6 +38,9 @@ class _SC_EXTERN ScAgentAbstract : public ScObject
 {
   static_assert(std::is_base_of<class ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
+  template <class TScAgent>
+  friend class ScAgentBuilder;
+
 public:
   _SC_EXTERN ~ScAgentAbstract() override;
 
@@ -363,11 +366,13 @@ private:
   /*!
    * @brief Builds a check template for the given sc-event and template sc-address.
    * @param event A sc-event to build the template for.
-   * @param checkTemplateAddr Ф sc-address of the check template.
+   * @param checkTemplateAddr A sc-address of the check template.
    * @return A built sc-template.
    */
   ScTemplate BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr);
 };
+
+using ScBaseAgent = ScAgent<ScElementaryEvent>;
 
 /*!
  * @class ScActionAgent

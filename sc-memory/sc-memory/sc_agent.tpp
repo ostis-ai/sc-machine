@@ -38,7 +38,7 @@ ScAddr ScAgentAbstract<TScEvent>::GetAbstractAgent() const
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Agent implementation `" << this->GetName<ScAgentAbstract<TScEvent>>()
+        "Agent implementation `" << this->GetName()
                                  << "` is not included to any abstract sc-agent. Check that agent implementation has "
                                     "specified relation `nrel_inclusion`.");
 
@@ -61,7 +61,7 @@ ScAddr ScAgentAbstract<TScEvent>::GetEventClass() const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Abstract sc-agent `"
-            << this->GetName<ScAgentAbstract<TScEvent>>()
+            << this->GetName()
             << "` has not primary initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
@@ -81,7 +81,7 @@ ScAddr ScAgentAbstract<TScEvent>::GetEventSubscriptionElement() const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Abstract sc-agent `"
-            << this->GetName<ScAgentAbstract<TScEvent>>()
+            << this->GetName()
             << "` has not primary initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
@@ -100,7 +100,7 @@ ScAddr ScAgentAbstract<TScEvent>::GetActionClass() const
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Abstract sc-agent `" << this->GetName<ScAgentAbstract<TScEvent>>()
+        "Abstract sc-agent `" << this->GetName()
                               << "` has not action class. Check that abstract sc-agent has specified "
                                  "relation `nrel_sc_agent_action_class`.");
 
@@ -126,7 +126,7 @@ ScAddr ScAgentAbstract<TScEvent>::GetInitiationCondition() const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Abstract sc-agent `"
-            << this->GetName<ScAgentAbstract<TScEvent>>()
+            << this->GetName()
             << "` has not initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
@@ -158,7 +158,7 @@ ScAddr ScAgentAbstract<TScEvent>::GetResultCondition() const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Abstract sc-agent `"
-            << this->GetName<ScAgentAbstract<TScEvent>>()
+            << this->GetName()
             << "` has not initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
@@ -211,7 +211,7 @@ void ScAgent<TScEvent>::Subscribe(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   TScAgent agent;
-  agent.SetContext(ctx->GetUser());
+  agent.SetInitiator(ctx->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
@@ -273,7 +273,7 @@ void ScAgent<TScEvent>::Unsubscribe(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   TScAgent agent;
-  agent.SetContext(ctx->GetUser());
+  agent.SetInitiator(ctx->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
@@ -339,7 +339,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback(ScAddr cons
     TScAgent agent;
     SC_LOG_INFO("Agent `" << agent.GetName() << "` started");
 
-    agent.SetContext(event.GetUser());
+    agent.SetInitiator(event.GetUser());
     agent.SetImplementation(agentImplementationAddr);
     if (ScMemory::ms_globalContext->HelperCheckEdge(
             ScKeynodes::action_deactivated, agent.GetActionClass(), ScType::EdgeAccessConstPosPerm))

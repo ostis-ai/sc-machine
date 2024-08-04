@@ -36,15 +36,14 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr con
     if (!m_abstractAgentAddr.IsValid())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
-                                             << "` has not specified abstract agent.");
+          "Specified abstract agent for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
 
     ScIterator3Ptr it3 =
         ctx->Iterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
     if (!it3->Next())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Specified sc-element for class `"
+          "Specified sc-element for agent class `"
               << TScAgent::template GetName<TScAgent>()
               << "` is not abstract agent due it does not belong to class `abstract_sc_agent`.");
   };
@@ -61,11 +60,16 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetPrimaryInitiationConditi
 
   m_initializePrimaryInitiationCondition = [this](ScMemoryContext * ctx)
   {
+    if (!ctx->IsElement(m_eventClassAddr))
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Specified sc-event class for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
+
     if (!ctx->IsElement(m_eventSubscriptionElementAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
-                                             << "` has not specified event subscription sc-element.");
+          "Specified sc-event subscription sc-element for agent class `" << TScAgent::template GetName<TScAgent>()
+                                                                         << "` is not valid.");
   };
 
   m_eventClassAddr = eventClassAddr;
@@ -81,8 +85,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const
     if (!ctx->IsElement(m_actionClassAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
-                                             << "` has not specified action class.");
+          "Specified action class for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
   };
 
   m_actionClassAddr = actionClassAddr;
@@ -100,14 +103,14 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetInitiationConditionAndRe
     if (!ctx->IsElement(m_initiationConditionAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
-                                             << "` has not specified initiation condition template.");
+          "Specified initiation condition template for agent class `" << TScAgent::template GetName<TScAgent>()
+                                                                      << "` is not valid.");
 
     if (!ctx->IsElement(m_resultConditionAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent implementation for class `" << TScAgent::template GetName<TScAgent>()
-                                             << "` has not specified result condition template.");
+          "Specified result condition template for agent class `" << TScAgent::template GetName<TScAgent>()
+                                                                  << "` is not valid.");
   };
 
   m_initiationConditionAddr = initiationConditionAddr;
@@ -140,6 +143,8 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
           "Agent implementation with system identifier `"
               << agentImplementationName << "` for agent class `" << agentClassName
               << "` belongs to class `platform_dependent_abstract_sc_agent` twice.");
+
+    SC_LOG_WARNING("Agent implementation for agent class `" << agentClassName << "` was found.");
   }
   else
   {
@@ -240,6 +245,8 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
           utils::ExceptionInvalidState,
           "Abstract sc-agent or agent implementation `" << agentImplementationName
                                                         << "` belongs to clas `abstract_sc_agent` twice.");
+
+    SC_LOG_WARNING("Abstract agent for agent class `" << agentClassName << "` was found.");
   }
 
   std::string abstractAgentName = ctx->HelperGetSystemIdtf(m_abstractAgentAddr);
@@ -292,9 +299,10 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
     if (ctx->GetElementType(m_actionClassAddr).BitAnd(ScType::NodeConstClass) != ScType::NodeConstClass)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Found sc-element by relation `nrel_sc_agent_action_class` is not action class for "
-          "abstract sc-agent `"
+          "Found sc-element by relation `nrel_sc_agent_action_class` is not action class for abstract sc-agent `"
               << abstractAgentName << "` beacuse it has not sc-type `ScType::NodeConstClass`.");
+
+    SC_LOG_WARNING("Action class for agent class `" << agentClassName << "` was found.");
   }
 
   if (m_eventClassAddr.IsValid() && m_eventSubscriptionElementAddr.IsValid())
@@ -361,6 +369,8 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
           utils::ExceptionInvalidState,
           "Found sc-event class for abstract sc-agent `" << abstractAgentName
                                                          << "` belongs to class `sc_event` twice.");
+
+    SC_LOG_WARNING("Primary initiation condition for agent class `" << agentClassName << "` was found.");
   }
 
   if (m_initiationConditionAddr.IsValid() && m_resultConditionAddr.IsValid())
@@ -411,24 +421,24 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
         != ScType::EdgeDCommonConst)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Found sc-element by relation `nrel_initiation_condition_and_result` is initiation condition and result "
-          "for abstract sc-agent `"
+          "Found sc-element by relation `nrel_initiation_condition_and_result` is initiation condition and result for "
+          "abstract sc-agent `"
               << abstractAgentName << "` beacuse it has not sc-type `ScType::EdgeDCommonConst`.");
 
     ctx->GetEdgeInfo(initiationConditionAndResultAddr, m_initiationConditionAddr, m_resultConditionAddr);
     if (ctx->GetElementType(m_initiationConditionAddr).BitAnd(ScType::NodeConstStruct) != ScType::NodeConstStruct)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Initiation condition for "
-          "abstract sc-agent `"
+          "Initiation condition for abstract sc-agent `"
               << abstractAgentName << "` is not sc-template because it has not sc-type `ScType::NodeConstStruct`.");
 
     if (ctx->GetElementType(m_resultConditionAddr).BitAnd(ScType::NodeConstStruct) != ScType::NodeConstStruct)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Result condition for "
-          "abstract sc-agent `"
+          "Result condition for abstract sc-agent `"
               << abstractAgentName << "` is not sc-template because it has not sc-type `ScType::NodeConstStruct`.");
+
+    SC_LOG_WARNING("Initiation condition and result for agent class `" << agentClassName << "` was found.");
   }
 }
 
