@@ -105,7 +105,7 @@ void ScTemplateItem::SetReplacement(sc_char const * name)
     m_name = name;
 }
 
-ScTemplateItem operator>>(ScAddr const & value, char const * replName)
+ScTemplateItem operator>>(ScAddr const & value, sc_char const * replName)
 {
   return {value, replName};
 }
@@ -115,7 +115,7 @@ ScTemplateItem operator>>(ScAddr const & value, std::string const & replName)
   return {value, replName.c_str()};
 }
 
-ScTemplateItem operator>>(ScType const & value, char const * replName)
+ScTemplateItem operator>>(ScType const & value, sc_char const * replName)
 {
   return {value, replName};
 }
