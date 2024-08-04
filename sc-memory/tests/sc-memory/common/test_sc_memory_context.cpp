@@ -390,13 +390,13 @@ TEST_F(ScMemoryTestWithUserMode, GetUserAddrFromContext)
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
-  EXPECT_EQ(userContext.GetUserAddr(), userAddr);
+  EXPECT_EQ(userContext.GetUser(), userAddr);
 }
 
 TEST_F(ScMemoryTestWithUserMode, GetGuestUserAddrFromContext)
 {
   TestScMemoryContext userContext;
-  EXPECT_TRUE(userContext.GetUserAddr().IsValid());
+  EXPECT_TRUE(userContext.GetUser().IsValid());
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByGuestUser)
@@ -420,7 +420,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
 {
   TestScMemoryContext userContext;
 
-  ScAddr const & guestUserAddr = userContext.GetUserAddr();
+  ScAddr const & guestUserAddr = userContext.GetUser();
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   TestSetIdentifiedUser(m_ctx, guestUserAddr, userAddr);
 

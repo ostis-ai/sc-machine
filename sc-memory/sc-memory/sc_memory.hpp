@@ -103,7 +103,8 @@ public:
   _SC_EXTERN ScMemoryContext(ScMemoryContext && other) noexcept;
   _SC_EXTERN ScMemoryContext & operator=(ScMemoryContext && other) noexcept;
 
-  _SC_EXTERN ScAddr GetUserAddr();
+  _SC_EXTERN ScAddr GetUser();
+  _SC_EXTERN ScAddr GetContextStructure();
 
   _SC_EXTERN sc_memory_context * operator*() const;
 
@@ -1267,7 +1268,7 @@ protected:
 
 protected:
   sc_memory_context * m_context;
-  std::string m_name;
+  ScAddr m_contextStructureAddr;
 };
 
 class ScMemoryContextEventsPendingGuard

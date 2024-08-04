@@ -106,7 +106,7 @@ public:
 
   void OnConnectionInfo(ScServerSessionId const & sessionId, ScServerMessage const &)
   {
-    ScAddr const & userAddr = m_server->GetSessionContext(sessionId)->GetUserAddr();
+    ScAddr const & userAddr = m_server->GetSessionContext(sessionId)->GetUser();
     ScMemoryJsonPayload response{{"connection_id", (sc_uint64)sessionId.lock().get()}, {"user_addr", userAddr.Hash()}};
 
     m_server->Send(sessionId, response.dump(), ScServerMessageType::text);

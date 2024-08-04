@@ -18,7 +18,7 @@ class ScAgentBuilderAbstract : public ScObject
 public:
   ScAddr virtual GetAgentImplementation() const = 0;
 
-  _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) = 0;
+  _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx) = 0;
 
   _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx) = 0;
 };
@@ -73,7 +73,7 @@ protected:
 
   _SC_EXTERN void LoadSpecification(ScMemoryContext * ctx);
 
-  _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  _SC_EXTERN void Initialize(ScMemoryContext * ctx) override;
 
   _SC_EXTERN void Shutdown(ScMemoryContext * ctx) override;
 };

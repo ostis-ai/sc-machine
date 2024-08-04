@@ -13,7 +13,7 @@ SC_MODULE_REGISTER(ScServerModule);
 std::shared_ptr<ScServer> ScServerModule::m_server;
 ScParams ScServerModule::ms_serverParams;
 
-void ScServerModule::Initialize(ScMemoryContext *, ScAddr const &)
+void ScServerModule::Initialize(ScMemoryContext *)
 {
   // It is backward compatible logic. When all platform-dependent components will be configured from kb it will be
   // removed.
