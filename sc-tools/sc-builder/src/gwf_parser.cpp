@@ -44,7 +44,7 @@ std::unordered_map<std::string, std::shared_ptr<ScgElement>> GwfParser::Parse(st
 
     return elements;
   }
-  catch (std::exception const & e)
+  catch (utils::ScException const & e)
   {
     SC_LOG_ERROR("Error in parse: " + std::string(e.what()));
     xmlCleanupParser();
@@ -102,7 +102,8 @@ void GwfParser::ProcessStaticSector(
       }
     }
 
-    // To correctly process contours(connectors), all elements are first collected, then the contours(connectors) are assigned elements
+    // To correctly process contours(connectors), all elements are first collected, then the contours(connectors) are
+    // assigned elements
 
     for (auto & connector : connectorsList)
     {
@@ -113,7 +114,7 @@ void GwfParser::ProcessStaticSector(
       FillContour(countour, elements);
     }
   }
-  catch (std::exception const & e)
+  catch (utils::ScException const & e)
   {
     SC_LOG_ERROR("Exception caught in process static sector: " + std::string(e.what()));
   }
@@ -245,11 +246,11 @@ void GwfParser::FillConnector(
 {
   for (auto & pair : connectorSourceTarget)
   {
-    const std::shared_ptr<Connector> & connector = pair.first;
+    std::shared_ptr<Connector> const & connector = pair.first;
     std::pair<std::string, std::string> & sourceAndTarget = pair.second;
 
-    const std::string & sourceId = sourceAndTarget.first;
-    const std::string & targetId = sourceAndTarget.second;
+    std::string const & sourceId = sourceAndTarget.first;
+    std::string const & targetId = sourceAndTarget.second;
 
     auto sourceIt = elements.find(sourceId);
     auto targetIt = elements.find(targetId);
@@ -271,19 +272,21 @@ void GwfParser::FillConnector(
   }
 }
 
-void GwfParser::FillContour(std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,  std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements)
+void GwfParser::FillContour(
+    std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,
+    std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements)
 {
   for (auto & pair : contourAndId)
   {
-    const std::shared_ptr<Contour> & contour = pair.first;
-    const std::string & id = pair.second;
+    std::shared_ptr<Contour> const & contour = pair.first;
+    std::string const & id = pair.second;
 
     for (auto & [key, element] : elements)
     {
       if (element->getParent() == id)
       {
         contour->addElement(element);
-     }
+      }
     }
   }
 }
@@ -309,4 +312,3 @@ std::unique_ptr<xmlChar, XmlCharDeleter> GwfParser::GetXmlProp(xmlNodePtr node, 
   // BAD_CAST macro to cast const char* to const xmlChar* (libxml/xmlstring.h)
   return std::unique_ptr<xmlChar, XmlCharDeleter>(propValue);
 }
-

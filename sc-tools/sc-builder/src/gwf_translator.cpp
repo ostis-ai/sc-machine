@@ -44,7 +44,7 @@ std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::st
 
   if (!outputFile.is_open())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionCritical,"Error creating file for writing: " + scsSource);
+    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Error creating file for writing: " + scsSource);
   }
 
   outputFile << scsStr;
@@ -110,7 +110,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     newParams.m_outputStructure = params.m_outputStructure;
     bool status = m_scsTranslator.Translate(newParams);
 
-    //std::filesystem::remove(scsSource.c_str());
+    std::filesystem::remove(scsSource.c_str());
 
     return status;
   }

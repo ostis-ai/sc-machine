@@ -108,10 +108,10 @@ void ScsWriter::ProcessElementsList(
           std::shared_ptr<Contour> contour = std::dynamic_pointer_cast<Contour>(element.second);
           WriteContour(buffer, contour, 1);
         }
-      }   
+      }
     }
   }
-  catch (std::exception const & e)
+  catch (utils::ScException const & e)
   {
     SC_LOG_ERROR("Exception in process elements: " + std::string(e.what()));
   }
@@ -205,7 +205,7 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
 
       if (connector->getSource() == contour)
       {
-        if(checkForNode(connector->getTarget(), contourElements))
+        if (checkForNode(connector->getTarget(), contourElements))
         {
           continue;
         }
@@ -313,23 +313,25 @@ void ScsWriter::WriteNodeForContour(
   auto & elements = contour->getElements();
 
   elements.erase(
-    std::remove_if(elements.begin(), elements.end(), [&](std::shared_ptr<ScgElement> & element) {
-      auto connector = std::dynamic_pointer_cast<Connector>(element);
-      if (connector && connector->getSource() == contour && connector->getTarget() == node)
-      {
-        counter++;
-        return true;
-      }
-      return false;
-    }),
-    elements.end()
-  );
+      std::remove_if(
+          elements.begin(),
+          elements.end(),
+          [&](std::shared_ptr<ScgElement> & element)
+          {
+            auto connector = std::dynamic_pointer_cast<Connector>(element);
+            if (connector && connector->getSource() == contour && connector->getTarget() == node)
+            {
+              counter++;
+              return true;
+            }
+            return false;
+          }),
+      elements.end());
 
   auto const edgeName =
       ("@edge_from_contour_" + contour->getId() + "_to_node_" + node->getId() + "_" + std::to_string(counter));
   buffer.Write(edgeName + " = (" + contour->getIdtf() + " -> " + node->getIdtf() + ");;\n\n");
 }
-
 
 void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & element)
 {
@@ -381,13 +383,19 @@ void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & eleme
     std::string output;
     if (mainIdtf[0] == '[')
     {
-      output = "\n" + element->getIdtf() + "\n => " + N_REL_SYSTEM_IDTF + ": " + mainIdtf + ";;\n";
+      output = "\n" + element->getIdtf() + "\n => " + N_REL_MAIN_IDTF + ": " + mainIdtf + ";;\n";
     }
     else
     {
-      output = "\n" + element->getIdtf() + "\n => " + N_REL_SYSTEM_IDTF + ": [" + mainIdtf + "];;\n";
+      output = "\n" + element->getIdtf() + "\n => " + N_REL_MAIN_IDTF + ": [" + mainIdtf + "];;\n";
     }
     buffer.Write(output + "\n");
+  }
+
+  if (element->getTag() == "pair" || element->getTag() == "arc")
+  {
+    auto id = element->getId();
+    element->setIdtf(Utils::MakeAlias("edge", id));
   }
 }
 
@@ -395,7 +403,7 @@ bool ScsWriter::checkForNode(
     std::shared_ptr<ScgElement> refElement,
     std::vector<std::shared_ptr<ScgElement>> contourElements)
 {
-  for (const auto & element : contourElements)
+  for (auto const & element : contourElements)
   {
     if (element == refElement)
     {
