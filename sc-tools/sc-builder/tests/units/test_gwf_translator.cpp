@@ -8,7 +8,9 @@
 
 #include <sc-memory/sc_utils.hpp>
 
-#include "gwf_translator.hpp"
+#include "sc-memory/sc_utils.hpp"
+#include "../../src/gwf_translator.hpp"
+#include "../../src/sc_scs_tree.hpp"
 
 #define BASE_TEST_PATH "/home/iromanchuk/sc-machine/sc-tools/sc-builder/tests/kb/tests-gwf-to-scs/"
 
@@ -22,155 +24,90 @@ using GWFTranslatorTest = ScBuilderTest;
 #include <memory>
 #include <algorithm>
 
-struct TreeNode {
-    std::string name;
-    std::string content;
-    std::map<std::string, std::shared_ptr<TreeNode>> children;
-
-    TreeNode(const std::string& name, const std::string& content)
-        : name(name), content(content) {}
-};
-
-std::shared_ptr<TreeNode> addChildNode(std::shared_ptr<TreeNode> parent, const std::string& name, const std::string& content) {
-    auto node = std::make_shared<TreeNode>(name, content);
-    if (parent) {
-        parent->children.emplace(name, node);
+std::vector<char> readFileToBytes(const std::string& filePath) {
+    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    if (!file) {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not open file: " + filePath);
     }
-    return node;
-}
-
-std::string trim(const std::string& str) {
-    auto start = str.find_first_not_of(" \t");
-    auto end = str.find_last_not_of(" \t");
-    return (start == std::string::npos || end == std::string::npos) ? "" : str.substr(start, end - start + 1);
-}
-
-bool isBlockStart(const std::string& line) {
-    return line.find(" = [*") != std::string::npos;
-}
-
-bool isBlockEnd(const std::string& line) {
-    return line.find("*];;") != std::string::npos;
-}
-
-bool isNodeWithContent(const std::string& line) {
-    return line.find(" = ") != std::string::npos;
-}
-
-bool isNodeWithoutContent(const std::string& line) {
-    return !isBlockStart(line) && !isBlockEnd(line) && !isNodeWithContent(line);
-}
-
-bool isOpeningBracket(char ch) {
-    return ch == '[' || ch == '(';
-}
-
-bool isClosingBracket(char ch) {
-    return ch == ']' || ch == ')';
-}
-
-std::shared_ptr<TreeNode> parseTree(const std::string& input) {
-    std::istringstream iss(input);
-    std::string line;
-    std::vector<std::shared_ptr<TreeNode>> nodeStack;
-    auto root = std::make_shared<TreeNode>("root", "");
-    auto currentNode = root;
-    bool isContentMultiLine = false;
-    bool flag = false;
-    std::string multiLineContent;
-    std::string currentName;
-    int bracketCount = 0;
-
-    while (std::getline(iss, line)) {
-        line = trim(line);
-        if (line.empty()) continue;
-
-        if (isContentMultiLine) {
-            multiLineContent += " " + line;
-            for (char ch : line) {
-                if (isOpeningBracket(ch)) bracketCount++;
-                if (isClosingBracket(ch)) bracketCount--;
-            }
-            if (bracketCount == 0) {
-                currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), currentName, multiLineContent);
-                isContentMultiLine = false;
-                multiLineContent.clear();
-            }
-            continue;
-        }
-
-        if (isBlockStart(line)) {
-            std::string name = trim(line.substr(0, line.find(" = [*")));
-            currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
-            nodeStack.push_back(currentNode);
-        } else if (isBlockEnd(line)) {
-            if (!nodeStack.empty()) nodeStack.pop_back();
-            currentNode = nodeStack.empty() ? root : nodeStack.back();
-        } else if (isNodeWithContent(line)) {
-            size_t equalPos = line.find(" = ");
-            std::string name = trim(line.substr(0, equalPos));
-            std::string content = trim(line.substr(equalPos + 3));
-            bracketCount = 0;
-            for (char ch : content) {
-                if (isOpeningBracket(ch)) bracketCount++;
-                if (isClosingBracket(ch)) bracketCount--;
-            }
-            if (bracketCount != 0) {
-                isContentMultiLine = true;
-                multiLineContent = content;
-                currentName = name;
-            } else {
-                currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, content);
-            }
-        }
-        else if(flag){
-            currentNode->content = line;
-            flag = false;
-        }
-        else {
-            std::string name = line;
-            currentNode = addChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
-            flag = true;
-        }
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> buffer(size);
+    if (!file.read(buffer.data(), size)) {
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not read file: " + filePath);
     }
-
-    return root;
+    return buffer;
 }
 
-void printTree(const std::shared_ptr<TreeNode>& node, int level = 0) {
-    if (!node) return;
-    std::cout << std::string(level, '\t') << node->name << ": " << node->content << std::endl;
-    for (const auto& child : node->children) {
-        printTree(child.second, level + 1);
-    }
-}
-
-bool compareTrees(const std::shared_ptr<TreeNode>& node1, const std::shared_ptr<TreeNode>& node2) {
-    if (node1 == nullptr || node2 == nullptr) {
-        return node1 == node2;
-    }
-    if (node1->name != node1->name || node1->content != node2->content) {
+bool compareFiles(const std::string& filePath1, const std::string& filePath2) {
+    try {
+        std::vector<char> file1Bytes = readFileToBytes(filePath1);
+        std::vector<char> file2Bytes = readFileToBytes(filePath2);
+        return file1Bytes == file2Bytes;
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
         return false;
     }
-    if (node1->children.size() != node2->children.size()) {
-        return false;
-    }
-    for (const auto& child : node1->children) {
-        auto it = node2->children.find(child.first);
-        if (it == node2->children.end() || !compareTrees(child.second, it->second)) {
-            return false;
-        }
-    }
-    return true;
 }
 
-TEST_F(GWFTranslatorTest, EmptyStaticSector)
+std::string readFileToString(std::string const & filePath)
+{
+  std::ifstream file(filePath);
+  if (!file.is_open())
+  {
+    throw std::runtime_error("Could not open file");
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
+}
+
+TEST_F(GWFTranslatorTest, EmptyContour)
 {
   GWFTranslator translator(*m_ctx);
 
-  const std::string filePath = BASE_TEST_PATH "empty_static.gwf";
+  const std::string filePath = BASE_TEST_PATH "empty_contour.gwf";
 
   const std::string gwfStr = translator.XmlFileToString(filePath);
+  const std::string scsStr = translator.GwfToScs(gwfStr, BASE_TEST_PATH);
 
-  EXPECT_THROW({ translator.GwfToScs(gwfStr, filePath); }, std::runtime_error);
+  const std::string exampleScs = readFileToString(BASE_TEST_PATH "empty_contour.gwf.scs");
+
+  auto const exampleTree = ScsTree::ParseTree(exampleScs);
+  auto const resultTree = ScsTree::ParseTree(scsStr);
+
+  EXPECT_FALSE(ScsTree::CompareTrees(exampleTree, resultTree));
+}
+
+TEST_F(GWFTranslatorTest, LotOfContours)
+{
+  GWFTranslator translator(*m_ctx);
+
+  const std::string filePath = BASE_TEST_PATH "lot_of_contours.gwf";
+
+  const std::string gwfStr = translator.XmlFileToString(filePath);
+  const std::string scsStr = translator.GwfToScs(gwfStr, BASE_TEST_PATH);
+
+  const std::string exampleScs = readFileToString(BASE_TEST_PATH "lot_of_contours.gwf.scs");
+
+  auto const exampleTree = ScsTree::ParseTree(exampleScs);
+  auto const resultTree = ScsTree::ParseTree(scsStr);
+
+  EXPECT_FALSE(ScsTree::CompareTrees(exampleTree, resultTree));
+}
+
+TEST_F(GWFTranslatorTest, ContentTypes)
+{
+  GWFTranslator translator(*m_ctx);
+
+  const std::string filePath = BASE_TEST_PATH "content_types.gwf";
+
+  const std::string gwfStr = translator.XmlFileToString(filePath);
+  const std::string scsStr = translator.GwfToScs(gwfStr, BASE_TEST_PATH);
+
+  const std::string exampleScs = readFileToString(BASE_TEST_PATH "content_types.gwf.scs");
+
+  auto const exampleTree = ScsTree::ParseTree(exampleScs);
+  auto const resultTree = ScsTree::ParseTree(scsStr);
+
+  EXPECT_FALSE(ScsTree::CompareTrees(exampleTree, resultTree));
 }
