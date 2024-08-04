@@ -19,32 +19,31 @@ template <class TScAgent>
 class ScAgentBuilder;
 
 /*!
- * @interface An interface for keynodes and agent modules. It's like a complex component that contains linked agents.
- * Implement your own module class.
- * @example
- * File sc_nlp_module.hpp:
- * \code
+ * @class ScModule
+ * @brief This class is an interface for keynodes and agent modules. It's like a complex component that contains linked
+ * agents.
+ *
+ * Derive this class to implement your own module class.
+ *
+ * @code
+ * // File my_module.hpp
  * #pragma once
  *
- * #include "sc-memory/sc_module.hpp"
+ * #include <sc-memory/sc_module.hpp>
  *
- * class ScNLPModule final : public ScModule
+ * class MyModule final : public ScModule
  * {
  * };
  *
- * \endcode
- * File sc_nlp_module.cpp:
- * \code
- * #include "nlp-module/sc_nlp_module.hpp"
+ * // File my_module.cpp:
+ * #include "my-module/my_module.hpp"
  *
- * #include "nlp-module/keynodes/sc_nlp_keynodes.hpp"
- * #include "nlp-module/agents/sc_syntactic_analysis_agent.hpp"
- * #include "nlp-module/agents/sc_semantic_analysis_agent.hpp"
+ * #include "my-module/keynodes/my_keynodes.hpp"
+ * #include "my-module/agents/my_agent.hpp"
  *
- * SC_MODULE_REGISTER(ScNLPModule)
- *   ->Keynodes<nlp::ScNLPKeynodes>()
- *   ->Agent<nlp::ScSyntacticAnalysisAgent>()
- *   ->Agent<nlp::ScSemanticAnalysisAgent>();
+ * SC_MODULE_REGISTER(MyModule)
+ *   ->Keynodes<MyKeynodes>()
+ *   ->Agent<MyAgent>();
  *
  * \endcode
  * @note Not recommended to use interface API to implement module classes. Use example defines instead.
@@ -56,18 +55,19 @@ public:
 
   _SC_EXTERN static ScModule * Create(ScModule * module);
 
-  /*! Reminds keynodes to register it with module after.
+  /*!
+   * @brief Reminds keynodes to register it with module after.
    * @param TKeynodesClass A keynodes class to be initialized in this module.
-   * @returns Pointer to module instance.
+   * @returns A pointer to module instance.
    */
   template <class TKeynodesClass>
   _SC_EXTERN ScModule * Keynodes();
 
-  /*! Reminds agent and it initiation condition to register it with module after.
+  /*!
+   * @brief Reminds agent and it initiation condition to register it with module after.
    * @param TScAgent An agent class to be subscribe to.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
-   *
-   * @returns Pointer to module instance.
+   * @returns A pointer to module instance.
    */
   template <
       class TScAgent,
@@ -75,19 +75,26 @@ public:
       typename = std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>>
   _SC_EXTERN ScModule * Agent(TScAddr const &... subscriptionAddrs);
 
-  template <class TScAgent>
-  _SC_EXTERN ScAgentBuilder<TScAgent> * AgentBuilder(ScAddr const & agentImplementationAddr = ScAddr::Empty);
-
-  /*! Reminds action agent and it initiation condition to register it with module after.
+  /*!
+   * @brief Reminds action agent and it initiation condition to register it with module after.
    * @param TScAgent An agent class to be subscribe to.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
-   *
-   * @returns Pointer to module instance.
+   * @returns A pointer to module instance.
    */
   template <class TScAgent, typename = std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>>
   _SC_EXTERN ScModule * Agent();
 
-  /*! Registers all module keynodes and agents.
+  /*!
+   * @brief Creates an agent builder for the specified agent implementation.
+   * @param TScAgent An agent class to be subscribe to.
+   * @param agentImplementationAddr A sc-address of the agent implementation.
+   * @return A pointer to the created agent builder.
+   */
+  template <class TScAgent>
+  _SC_EXTERN ScAgentBuilder<TScAgent> * AgentBuilder(ScAddr const & agentImplementationAddr = ScAddr::Empty);
+
+  /*!
+   * @brief Registers all module keynodes and agents.
    * @returns Result of initializing.
    */
   _SC_EXTERN void Register(ScMemoryContext * ctx);
@@ -97,8 +104,16 @@ public:
    */
   _SC_EXTERN void Unregister(ScMemoryContext * ctx);
 
+  /*!
+   * @brief Initializes the module with the given memory context.
+   * @param ctx A sc-memory context for initialization.
+   */
   _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx);
 
+  /*!
+   * @brief Shuts down the module with the given memory context.
+   * @param A The sc-memory context for shutdown.
+   */
   _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx);
 
 protected:
