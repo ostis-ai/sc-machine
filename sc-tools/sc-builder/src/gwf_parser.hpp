@@ -199,7 +199,6 @@ private:
   std::vector<std::shared_ptr<ScgElement>> elements;
 };
 
-
 class Connector : public ScgElement
 {
 public:
@@ -298,9 +297,8 @@ private:
       std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements);
 
   void FillContour(
-    std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,
-    std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements
-  );
+      std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,
+      std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements);
 
   void ProcessStaticSector(
       xmlNodePtr staticSector,
