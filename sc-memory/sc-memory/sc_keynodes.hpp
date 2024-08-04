@@ -99,7 +99,7 @@ protected:
 
   /*!
    * @brief Initializes the keynode with the given context and memory structure address.
-   * @param context Sc-memory context used for initialization.
+   * @param context A sc-memory context used for initialization.
    */
   virtual void Initialize(ScMemoryContext * context);
 };
@@ -171,7 +171,7 @@ private:
 
   /*!
    * @brief Initializes the keynode with the given context and memory structure address.
-   * @param context Sc-memory context used for initialization.
+   * @param context A sc-memory context used for initialization.
    */
   void Initialize(ScMemoryContext * context) override;
 };
@@ -185,6 +185,9 @@ private:
  *
  * @code
  * // File my_keynodes.hpp:
+ * #pragma once
+ *
+ * #include <sc-memory/sc_keynodes.hpp>
  *
  * class MyKeynodes : public ScKeynodes
  * {
