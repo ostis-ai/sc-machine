@@ -253,58 +253,6 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
   if (abstractAgentName.empty())
     abstractAgentName = std::to_string(m_abstractAgentAddr.Hash());
 
-  if (m_actionClassAddr.IsValid())
-  {
-    ScIterator5Ptr const it5 = ctx->Iterator5(
-        m_abstractAgentAddr,
-        ScType::EdgeDCommonConst,
-        m_actionClassAddr,
-        ScType::EdgeAccessConstPosPerm,
-        ScKeynodes::nrel_sc_agent_action_class);
-    if (it5->Next())
-      SC_LOG_WARNING(
-          "Connection between specified abstract agent and action class for agent class `"
-          << agentClassName << "` was not generated due it already exists.");
-    else
-    {
-      ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_actionClassAddr);
-      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_sc_agent_action_class, arcAddr);
-      SC_LOG_WARNING(
-          "Connection between specified abstract agent and action class for agent class `" << agentClassName
-                                                                                           << "` was generated.");
-    }
-  }
-  else
-  {
-    ScIterator5Ptr const it5 = ctx->Iterator5(
-        m_abstractAgentAddr,
-        ScType::EdgeDCommonConst,
-        ScType::Unknown,
-        ScType::EdgeAccessConstPosPerm,
-        ScKeynodes::nrel_sc_agent_action_class);
-    if (!it5->Next())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Abstract sc-agent `" << abstractAgentName
-                                << "` has not action class. Check that abstract sc-agent has specified "
-                                   "relation `nrel_sc_agent_action_class`.");
-
-    m_actionClassAddr = it5->Get(2);
-
-    if (it5->Next())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Abstract sc-agent `" << abstractAgentName << "` has two or more action classes.");
-
-    if (ctx->GetElementType(m_actionClassAddr).BitAnd(ScType::NodeConstClass) != ScType::NodeConstClass)
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Found sc-element by relation `nrel_sc_agent_action_class` is not action class for abstract sc-agent `"
-              << abstractAgentName << "` beacuse it has not sc-type `ScType::NodeConstClass`.");
-
-    SC_LOG_WARNING("Action class for agent class `" << agentClassName << "` was found.");
-  }
-
   if (m_eventClassAddr.IsValid() && m_eventSubscriptionElementAddr.IsValid())
   {
     ScIterator5Ptr const it5 = ctx->Iterator5(
@@ -371,6 +319,58 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
                                                          << "` belongs to class `sc_event` twice.");
 
     SC_LOG_WARNING("Primary initiation condition for agent class `" << agentClassName << "` was found.");
+  }
+
+  if (m_actionClassAddr.IsValid())
+  {
+    ScIterator5Ptr const it5 = ctx->Iterator5(
+        m_abstractAgentAddr,
+        ScType::EdgeDCommonConst,
+        m_actionClassAddr,
+        ScType::EdgeAccessConstPosPerm,
+        ScKeynodes::nrel_sc_agent_action_class);
+    if (it5->Next())
+      SC_LOG_WARNING(
+          "Connection between specified abstract agent and action class for agent class `"
+          << agentClassName << "` was not generated due it already exists.");
+    else
+    {
+      ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_actionClassAddr);
+      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_sc_agent_action_class, arcAddr);
+      SC_LOG_WARNING(
+          "Connection between specified abstract agent and action class for agent class `" << agentClassName
+                                                                                           << "` was generated.");
+    }
+  }
+  else
+  {
+    ScIterator5Ptr const it5 = ctx->Iterator5(
+        m_abstractAgentAddr,
+        ScType::EdgeDCommonConst,
+        ScType::Unknown,
+        ScType::EdgeAccessConstPosPerm,
+        ScKeynodes::nrel_sc_agent_action_class);
+    if (!it5->Next())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Abstract sc-agent `" << abstractAgentName
+                                << "` has not action class. Check that abstract sc-agent has specified "
+                                   "relation `nrel_sc_agent_action_class`.");
+
+    m_actionClassAddr = it5->Get(2);
+
+    if (it5->Next())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Abstract sc-agent `" << abstractAgentName << "` has two or more action classes.");
+
+    if (ctx->GetElementType(m_actionClassAddr).BitAnd(ScType::NodeConstClass) != ScType::NodeConstClass)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Found sc-element by relation `nrel_sc_agent_action_class` is not action class for abstract sc-agent `"
+              << abstractAgentName << "` beacuse it has not sc-type `ScType::NodeConstClass`.");
+
+    SC_LOG_WARNING("Action class for agent class `" << agentClassName << "` was found.");
   }
 
   if (m_initiationConditionAddr.IsValid() && m_resultConditionAddr.IsValid())
