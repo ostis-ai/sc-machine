@@ -818,11 +818,11 @@ public:
    *
    * This function resolves the sc-address of an sc-element with the specified system identifier.
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
-   * Additionally, it returns the system identifier fiver of the resolved or created sc-element.
+   * Additionally, it returns the system identifier quintuple of the resolved or created sc-element.
    *
    * @param sysIdtf The system identifier of the sc-element to resolve.
    * @param type The type of the sc-node to create if the element is not found.
-   * @param outFiver The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of resolved
+   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved
    *                              addr1 (resolved sc-element address)
    *                addr4           |
    *        addr5 --------------->  | addr2
@@ -837,14 +837,14 @@ public:
    *
    * @code
    * ScMemoryContext ctx;
-   * ScSystemIdentifierQuintuple resultFiver;
-   * bool success = ctx.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass, resultFiver);
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool success = ctx.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass, resultQuintuple);
    * @endcode
    */
   _SC_EXTERN bool HelperResolveSystemIdtf(
       std::string const & sysIdtf,
       ScType const & type,
-      ScSystemIdentifierQuintuple & outFiver) noexcept(false);
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*! Tries to set system identifier for sc-element ScAddr.
    * @param sysIdtf System identifier to set for sc-element `addr`
@@ -866,11 +866,8 @@ public:
   /*! Tries to set system identifier for sc-element ScAddr.
    * @param sysIdtf System identifier to set for sc-element `addr`
    * @param addr Sc-element address to set `sysIdtf` for it
-   * @param outFiver[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of sc-element `addr`
-   * with set `sysIdtf`
-   *                              addr1 (`addr`)
-   *                addr4           |
-   *        addr5 --------------->  | addr2
+   * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
+   * sc-element `addr` with set `sysIdtf` addr1 (`addr`) addr4           | addr5 --------------->  | addr2
    *     (nrel_system_identifier)   |
    *                              addr3 (system identifier sc-link)
    * @returns false if `sysIdtf` set for other sc-element address.
@@ -882,14 +879,14 @@ public:
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
-   * ScSystemIdentifierQuintuple resultFiver;
-   * bool success = ctx.HelperSetSystemIdtf("example_identifier", elementAddr, resultFiver);
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool success = ctx.HelperSetSystemIdtf("example_identifier", elementAddr, resultQuintuple);
    * @endcode
    */
   _SC_EXTERN bool HelperSetSystemIdtf(
       std::string const & sysIdtf,
       ScAddr const & addr,
-      ScSystemIdentifierQuintuple & resultFiver) noexcept(false);
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*! Tries to get system identifier for sc-element ScAddr.
    * @param addr Sc-element address to get it system identifier
@@ -948,11 +945,11 @@ public:
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address as a system identifier fiver.
+   * @brief Finds an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
-   * The sc-address is then converted into a system identifier fiver, which is stored in the 'outFiver' parameter.
-   * If the element is found, the function returns true; otherwise, it returns false.
+   * The sc-address is then converted into a system identifier quintuple, which is stored in the 'outQuintuple'
+   * parameter. If the element is found, the function returns true; otherwise, it returns false.
    *
    * @param sysIdtf The system identifier of the sc-element to find.
    * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).

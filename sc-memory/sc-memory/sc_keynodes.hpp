@@ -13,6 +13,9 @@
 
 #include "sc_addr.hpp"
 #include "sc_type.hpp"
+#include "sc_template.hpp"
+
+class ScKeynode;
 
 namespace internal
 {
@@ -30,9 +33,9 @@ public:
    * @param idtf Keynode system identifier.
    * @param keynodeType Keynode syntactic type.
    */
-  static void Remember(ScAddr * keynode, std::string_view const & idtf, ScType const & keynodeType);
+  static void Remember(ScKeynode * keynode);
 
-  static void Forget(ScAddr * keynode);
+  static void Forget(ScKeynode * keynode);
 
   /*!
    * @brief Registers all reminded keynodes.
@@ -43,7 +46,7 @@ public:
   static void Unregister(ScMemoryContext *);
 
 protected:
-  static inline std::map<ScAddr *, std::pair<std::string_view, ScType>> m_keynodes;
+  static inline std::list<ScKeynode *> m_keynodes;
 };
 }  // namespace internal
 
@@ -55,7 +58,7 @@ protected:
  * \endcode
  * @warning Use it only for static objects declaration.
  */
-class _SC_EXTERN ScKeynode final : public ScAddr
+class _SC_EXTERN ScKeynode : public ScAddr
 {
 public:
   _SC_EXTERN explicit ScKeynode(std::string_view const & sysIdtf = "", ScType const & type = ScType::NodeConst);
@@ -65,7 +68,52 @@ public:
   _SC_EXTERN ScKeynode(ScKeynode const & other);
 
   _SC_EXTERN ScKeynode & operator=(ScKeynode const & other);
+
+protected:
+  std::string_view m_sysIdtf;
+  ScType m_type;
+
+  friend class internal::ScKeynodesRegister;
+
+  virtual void Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr);
 };
+
+class _SC_EXTERN ScTemplateKeynode final
+  : public ScKeynode
+  , protected ScTemplate
+{
+public:
+  _SC_EXTERN explicit ScTemplateKeynode(std::string_view const & sysIdtf = "");
+
+  _SC_EXTERN ~ScTemplateKeynode();
+
+  SC_DISALLOW_COPY(ScTemplateKeynode);
+
+  _SC_EXTERN ScTemplateKeynode(ScTemplateKeynode && other);
+
+  template <typename T1, typename T2, typename T3>
+  ScTemplateKeynode Triple(T1 const & param1, T2 const & param2, T3 const & param3) noexcept(false);
+
+  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+  ScTemplateKeynode Quintuple(
+      T1 const & param1,
+      T2 const & param2,
+      T3 const & param3,
+      T4 const & param4,
+      T5 const & param5) noexcept(false);
+
+private:
+  std::list<std::function<void(ScTemplate &)>> m_constructionInitializers;
+
+  friend class internal::ScKeynodesRegister;
+
+  template <typename T>
+  static auto HandleParam(T const & param);
+
+  void Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr) override;
+};
+
+#include "sc_keynodes.tpp"
 
 /*!
  * @class A base class for keynodes declaration. It's like a namespace. Use it as a base class for own keynodes.
@@ -84,6 +132,7 @@ public:
  * @see ScKeynode
  */
 class _SC_EXTERN ScKeynodes : public ScObject
+
 {
 public:
   _SC_EXTERN static inline ScKeynode const myself{"myself"};

@@ -10,43 +10,30 @@
 
 #include "sc_struct.hpp"
 
-void internal::ScKeynodesRegister::Remember(ScAddr * keynode, std::string_view const & idtf, ScType const & keynodeType)
+void internal::ScKeynodesRegister::Remember(ScKeynode * keynode)
 {
-  m_keynodes.insert({keynode, {idtf, keynodeType}});
+  m_keynodes.push_back(keynode);
 }
 
-void internal::ScKeynodesRegister::Forget(ScAddr * keynode)
+void internal::ScKeynodesRegister::Forget(ScKeynode * keynode)
 {
-  m_keynodes.erase(keynode);
+  m_keynodes.remove(keynode);
 }
 
-void internal::ScKeynodesRegister::Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure)
+void internal::ScKeynodesRegister::Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructureAddr)
 {
-  for (auto const & item : m_keynodes)
-  {
-    ScAddr * keynode = item.first;
-    auto const & keynodeInfo = item.second;
-    ScSystemIdentifierQuintuple fiver;
-    context->HelperResolveSystemIdtf(std::string(keynodeInfo.first), keynodeInfo.second, fiver);
-    *keynode = fiver.addr1;
-
-    if (initMemoryGeneratedStructure.IsValid())
-    {
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr1);
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr2);
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr3);
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructure, fiver.addr4);
-    }
-  }
+  for (auto * keynode : m_keynodes)
+    keynode->Initialize(context, initMemoryGeneratedStructureAddr);
 }
 
 void internal::ScKeynodesRegister::Unregister(ScMemoryContext *) {}
 
 ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type)
   : ScAddr(ScAddr::Empty)
+  , m_sysIdtf(sysIdtf)
+  , m_type(type)
 {
-  if (!sysIdtf.empty())
-    internal::ScKeynodesRegister::Remember(this, sysIdtf, type);
+  internal::ScKeynodesRegister::Remember(this);
 }
 
 ScKeynode::~ScKeynode()
@@ -56,13 +43,71 @@ ScKeynode::~ScKeynode()
 
 ScKeynode::ScKeynode(ScKeynode const & other)
   : ScAddr(other)
+  , m_sysIdtf(other.m_sysIdtf)
+  , m_type(other.m_type)
 {
 }
 
 ScKeynode & ScKeynode::operator=(ScKeynode const & other)
 {
   this->m_realAddr = other.m_realAddr;
+  this->m_sysIdtf = other.m_sysIdtf;
+  this->m_type = other.m_type;
   return *this;
+}
+
+void ScKeynode::Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr)
+{
+  ScSystemIdentifierQuintuple quintuple;
+  context->HelperResolveSystemIdtf(std::string(m_sysIdtf), m_type, quintuple);
+  this->m_realAddr = quintuple.addr1.GetRealAddr();
+
+  if (initMemoryGeneratedStructureAddr.IsValid())
+  {
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr1);
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr2);
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr3);
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr4);
+  }
+}
+
+ScTemplateKeynode::ScTemplateKeynode(std::string_view const & sysIdtf)
+  : ScKeynode(sysIdtf)
+{
+  if (!m_sysIdtf.empty())
+    internal::ScKeynodesRegister::Remember(this);
+}
+
+ScTemplateKeynode::~ScTemplateKeynode() {}
+
+ScTemplateKeynode::ScTemplateKeynode(ScTemplateKeynode && other)
+  : ScKeynode(other)
+  , ScTemplate(std::move(other))
+  , m_constructionInitializers(other.m_constructionInitializers)
+{
+  internal::ScKeynodesRegister::Forget(&other);
+  internal::ScKeynodesRegister::Remember(this);
+}
+
+void ScTemplateKeynode::Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr)
+{
+  this->Clear();
+
+  for (auto const & initializer : m_constructionInitializers)
+    initializer(*this);
+
+  context->HelperLoadTemplate(*this, *this);
+
+  ScSystemIdentifierQuintuple quintuple;
+  context->HelperSetSystemIdtf(std::string(m_sysIdtf), *this, quintuple);
+
+  if (initMemoryGeneratedStructureAddr.IsValid())
+  {
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr1);
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr2);
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr3);
+    context->CreateEdge(ScType::EdgeAccessConstPosPerm, initMemoryGeneratedStructureAddr, quintuple.addr4);
+  }
 }
 
 size_t const kKeynodeRrelListNum = 20;

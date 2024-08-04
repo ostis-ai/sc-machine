@@ -286,7 +286,7 @@ using ScTemplateSearchResultCheckCallback = std::function<bool(ScAddr const & ad
  * ScTemplate allows the creation of templates for sc-elements, which can be used to generate or search for specific
  * patterns in sc-memory.
  */
-class _SC_EXTERN ScTemplate final
+class _SC_EXTERN ScTemplate
 {
   friend class ScMemoryContext;
   friend class ScTemplateSearch;

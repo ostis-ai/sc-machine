@@ -41,6 +41,24 @@ public:
   static inline TestWaiter msWaiter;
   static inline ScKeynode const test_specificated_agent_implementation =
       ScKeynode("test_specificated_agent_implementation", ScType::NodeConst);
+  static inline ScKeynode const test_specificated_agent_action =
+      ScKeynode("test_specificated_agent_action", ScType::NodeConstClass);
+
+  static inline ScTemplateKeynode const & test_specificated_agent_initiation_condition =
+      ScTemplateKeynode("test_specificated_agent_initiation_condition")
+          .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
+          .Triple(test_specificated_agent_action, ScType::EdgeAccessVarPosPerm, "_action");
+
+  static inline ScTemplateKeynode const & test_specificated_agent_result_condition =
+      ScTemplateKeynode("test_specificated_agent_result_condition")
+          .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
+          .Triple(test_specificated_agent_action, ScType::EdgeAccessVarPosPerm, "_action")
+          .Quintuple(
+              "_action",
+              ScType::EdgeDCommonVar,
+              ScType::NodeVar,
+              ScType::EdgeAccessVarPosPerm,
+              ScKeynodes::nrel_answer);
 
   ScResult DoProgram(ScElementaryEvent const & event, ScAction & action) override;
 };

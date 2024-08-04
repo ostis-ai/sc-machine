@@ -816,9 +816,9 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 {
   CHECK_CONTEXT;
 
-  ScSystemIdentifierQuintuple outFiver;
-  HelperResolveSystemIdtf(sysIdtf, type, outFiver);
-  return outFiver.addr1;
+  ScSystemIdentifierQuintuple quintuple;
+  HelperResolveSystemIdtf(sysIdtf, type, quintuple);
+  return quintuple.addr1;
 }
 
 bool ScMemoryContext::HelperResolveSystemIdtf(
@@ -856,13 +856,13 @@ bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr co
 bool ScMemoryContext::HelperSetSystemIdtf(
     std::string const & sysIdtf,
     ScAddr const & addr,
-    ScSystemIdentifierQuintuple & outFiver)
+    ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
-  sc_system_identifier_fiver fiver;
+  sc_system_identifier_fiver quintuple;
   sc_result const result =
-      sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &fiver);
+      sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &quintuple);
 
   switch (result)
   {
@@ -894,8 +894,12 @@ bool ScMemoryContext::HelperSetSystemIdtf(
     break;
   }
 
-  outFiver = (ScSystemIdentifierQuintuple){
-      ScAddr(fiver.addr1), ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4), ScAddr(fiver.addr5)};
+  outQuintuple = (ScSystemIdentifierQuintuple){
+      ScAddr(quintuple.addr1),
+      ScAddr(quintuple.addr2),
+      ScAddr(quintuple.addr3),
+      ScAddr(quintuple.addr4),
+      ScAddr(quintuple.addr5)};
 
   return result == SC_RESULT_OK;
 }

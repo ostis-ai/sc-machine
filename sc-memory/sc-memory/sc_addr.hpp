@@ -26,6 +26,7 @@ using ScRealAddr = sc_addr;
 class _SC_EXTERN ScAddr
 {
   friend class ScMemoryContext;
+  friend class ScTemplateItem;
 
 public:
   using HashType = sc_addr_hash;
