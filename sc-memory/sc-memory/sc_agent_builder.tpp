@@ -444,7 +444,7 @@ ScModule * ScAgentBuilder<TScAgent>::FinishBuild()
 }
 
 template <class TScAgent>
-void ScAgentBuilder<TScAgent>::Initialize(ScMemoryContext * ctx, ScAddr const &)
+void ScAgentBuilder<TScAgent>::Initialize(ScMemoryContext * ctx)
 {
   if (m_initializeAbstractAgent)
     m_initializeAbstractAgent(ctx);

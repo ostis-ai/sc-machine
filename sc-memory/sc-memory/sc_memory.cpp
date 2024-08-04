@@ -81,8 +81,9 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   if (params.init_memory_generated_upload)
     initMemoryGeneratedStructureAddr =
         ms_globalContext->HelperResolveSystemIdtf(params.init_memory_generated_structure, ScType::NodeConstStruct);
+  ms_globalContext->m_contextStructureAddr = initMemoryGeneratedStructureAddr;
 
-  ScKeynodes::Initialize(ms_globalContext, initMemoryGeneratedStructureAddr);
+  ScKeynodes::Initialize(ms_globalContext);
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
@@ -145,7 +146,7 @@ ScMemoryContext::~ScMemoryContext() noexcept
 
 ScMemoryContext::ScMemoryContext(ScMemoryContext && other) noexcept
   : m_context(other.m_context)
-  , m_name(other.m_name)
+  , m_contextStructureAddr(other.m_contextStructureAddr)
 {
   other.m_context = nullptr;
 }
@@ -156,7 +157,6 @@ ScMemoryContext & ScMemoryContext::operator=(ScMemoryContext && other) noexcept
     return *this;
 
   m_context = other.m_context;
-  m_name = other.m_name;
   other.m_context = nullptr;
 
   return *this;
@@ -171,10 +171,16 @@ void ScMemoryContext::Destroy() noexcept
   }
 }
 
-ScAddr ScMemoryContext::GetUserAddr()
+ScAddr ScMemoryContext::GetUser()
 {
   CHECK_CONTEXT;
   return sc_memory_context_get_user_addr(m_context);
+}
+
+ScAddr ScMemoryContext::GetContextStructure()
+{
+  CHECK_CONTEXT;
+  return m_contextStructureAddr;
 }
 
 sc_memory_context * ScMemoryContext::operator*() const

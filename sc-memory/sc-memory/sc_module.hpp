@@ -90,14 +90,14 @@ public:
   /*! Registers all module keynodes and agents.
    * @returns Result of initializing.
    */
-  _SC_EXTERN void Register(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr = ScAddr::Empty);
+  _SC_EXTERN void Register(ScMemoryContext * ctx);
 
   /*! Unregisters all module keynodes and agents.
    * @returns Result of shutdown.
    */
   _SC_EXTERN void Unregister(ScMemoryContext * ctx);
 
-  _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
+  _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx);
 
   _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx);
 
@@ -125,12 +125,11 @@ protected:
   }; \
   extern "C" \
   { \
-  _SC_EXTERN sc_result \
-  sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure_addr) \
+  _SC_EXTERN sc_result sc_module_initialize() \
   { \
     try \
     { \
-      __ModuleName__##Dummy::ms_module->Register(ScMemory::ms_globalContext, init_memory_generated_structure_addr); \
+      __ModuleName__##Dummy::ms_module->Register(ScMemory::ms_globalContext); \
     } \
     catch (utils::ScException const & e) \
     { \

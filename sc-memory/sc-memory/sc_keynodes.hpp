@@ -43,9 +43,8 @@ public:
   /*!
    * @brief Registers all stored keynodes.
    * @param context Sc-memory context to resolve keynodes.
-   * @param initMemoryGeneratedStructure Address of the initial memory structure.
    */
-  static void Register(ScMemoryContext * context, ScAddr initMemoryGeneratedStructure);
+  static void Register(ScMemoryContext * context);
 
   /*!
    * @brief Unregisters all keynodes.
@@ -101,9 +100,8 @@ protected:
   /*!
    * @brief Initializes the keynode with the given context and memory structure address.
    * @param context Sc-memory context used for initialization.
-   * @param initMemoryGeneratedStructureAddr Address of the initial memory structure.
    */
-  virtual void Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr);
+  virtual void Initialize(ScMemoryContext * context);
 };
 
 /*!
@@ -174,9 +172,8 @@ private:
   /*!
    * @brief Initializes the keynode with the given context and memory structure address.
    * @param context Sc-memory context used for initialization.
-   * @param initMemoryGeneratedStructureAddr Address of the initial memory structure.
    */
-  void Initialize(ScMemoryContext * context, ScAddr const & initMemoryGeneratedStructureAddr) override;
+  void Initialize(ScMemoryContext * context) override;
 };
 
 #include "sc_keynodes.tpp"
@@ -318,7 +315,7 @@ public:
   _SC_EXTERN static size_t GetRrelIndexNum();
 
 private:
-  static _SC_EXTERN void Initialize(ScMemoryContext * ctx, ScAddr const & initMemoryGeneratedStructureAddr);
+  static _SC_EXTERN void Initialize(ScMemoryContext * ctx);
   static _SC_EXTERN void Shutdown(ScMemoryContext * ctx);
 
   static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);

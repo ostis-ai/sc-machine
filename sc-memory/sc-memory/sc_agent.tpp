@@ -211,7 +211,7 @@ void ScAgent<TScEvent>::Subscribe(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   TScAgent agent;
-  agent.SetContext(ctx->GetUserAddr());
+  agent.SetContext(ctx->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
@@ -273,7 +273,7 @@ void ScAgent<TScEvent>::Unsubscribe(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   TScAgent agent;
-  agent.SetContext(ctx->GetUserAddr());
+  agent.SetContext(ctx->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
