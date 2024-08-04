@@ -6,15 +6,17 @@
 
 #include "sc_object.hpp"
 
+ScObject::ScObject()
+{
+  m_name = Demangle(typeid(*this).name());
+}
+
 ScObject & ScObject::operator=(ScObject const & other) = default;
 
 ScObject::~ScObject() = default;
 
-std::string ScObject::GetName()
+std::string ScObject::GetName() const
 {
-  if (m_name.empty())
-    m_name = Demangle(typeid(*this).name());
-
   return m_name;
 }
 

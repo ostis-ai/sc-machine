@@ -11,18 +11,20 @@
 
 #include "sc_addr.hpp"
 
-/**
+/*!
  * Base class for all objects that has meta data.
  * If you override it, then call any constructor of ScObject in your custom constructors.
  */
 class ScObject
 {
 public:
+  _SC_EXTERN ScObject();
+
   _SC_EXTERN ScObject & operator=(ScObject const & other);
 
   _SC_EXTERN virtual ~ScObject();
 
-  _SC_EXTERN std::string GetName();
+  _SC_EXTERN std::string GetName() const;
 
   template <class Class>
   static _SC_EXTERN std::string GetName()
