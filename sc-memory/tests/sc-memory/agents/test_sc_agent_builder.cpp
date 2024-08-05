@@ -27,6 +27,50 @@ static std::string const agentResultCondition = R"(
   @contour => nrel_system_identifier: [test_specificated_agent_result_condition];;
 )";
 
+static std::string const ATestSpecificatedAgentSpecification = R"(
+  test_specificated_agent
+  <- abstract_sc_agent;
+  => nrel_primary_initiation_condition: 
+    (sc_event_add_output_arc => action_initiated);
+  => nrel_sc_agent_action_class: 
+    test_specificated_agent_action;
+  => nrel_initiation_condition_and_result: 
+    (test_specificated_agent_initiation_condition => test_specificated_agent_result_condition);
+  <= nrel_sc_agent_key_sc_elements: 
+    {
+      action_initiated;
+      action;
+      test_specificated_agent_action
+    };
+  => nrel_inclusion: 
+    ATestSpecificatedAgent
+    (*
+      <- platform_dependent_abstract_sc_agent;;
+      <= nrel_sc_agent_program: 
+      {
+        [] (* => nrel_format: format_github_source_link;; *);
+        [] (* => nrel_format: format_github_source_link;; *)
+      };;
+    *);;
+
+  test_specificated_agent_initiation_condition_new
+  = [*
+    action_initiated _-> _action;;
+    test_specificated_agent_action _-> _action;;
+  *];;
+
+  test_specificated_agent_result_condition_new
+  = [*
+    action_initiated _-> _action;;
+    test_specificated_agent_action _-> _action;;
+    _action _=> nrel_answer:: _answer;;
+  *];;
+
+  test_specificated_agent_action
+  <- sc_node_class;
+  <= nrel_inclusion: sc_action;;
+)";
+
 TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
@@ -38,7 +82,6 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
     SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
     EXPECT_TRUE(helper.GenerateBySCsText(agentInitiationCondition));
   }
-
   ScAddr const & initiationConditionAddr =
       m_ctx->HelperFindBySystemIdtf("test_specificated_agent_initiation_condition");
 
@@ -47,6 +90,36 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
     EXPECT_TRUE(helper.GenerateBySCsText(agentResultCondition));
   }
   ScAddr const & resultConditionAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_result_condition");
+
+  TestModule module;
+  module.AgentBuilder<ATestSpecificatedAgent>()
+      ->SetAbstractAgent(abstractAgentAddr)
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_output_arc, ScKeynodes::action_initiated})
+      ->SetActionClass(actionClassAddr)
+      ->SetInitiationConditionAndResult({initiationConditionAddr, resultConditionAddr})
+      ->FinishBuild();
+  module.Register(&*m_ctx);
+
+  ScAgentContext context;
+  context.CreateAction(actionClassAddr).SetArguments().Initiate();
+  EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
+
+  module.Unregister(&*m_ctx);
+}
+
+TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasAlreadyFullSpecification)
+{
+  std::string const & data = ATestSpecificatedAgentSpecification;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  ScAddr const & abstractAgentAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent");
+  ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_action");
+
+  ScAddr const & initiationConditionAddr =
+      m_ctx->HelperFindBySystemIdtf("test_specificated_agent_initiation_condition_new");
+  ScAddr const & resultConditionAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_result_condition_new");
 
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
