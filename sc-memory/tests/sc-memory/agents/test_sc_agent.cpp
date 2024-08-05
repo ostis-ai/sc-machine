@@ -226,9 +226,11 @@ ScResult ATestCheckResultCondition::DoProgram(ScActionEvent const &, ScAction & 
   return action.FinishSuccessfully();
 }
 
-sc_bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const &, ScAction & action)
+sc_bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const & event, ScAction & action)
 {
-  return m_memoryCtx.HelperCheckEdge(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm);
+  return m_memoryCtx.HelperCheckEdge(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm)
+         && m_memoryCtx.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)
+                ->Next();
 }
 
 /// --------------------------------------

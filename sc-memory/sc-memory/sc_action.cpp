@@ -80,17 +80,14 @@ ScStruct ScAction::GetAnswer() noexcept(false)
         "Not able to get answer of action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                              << "` due it had not been finished yet.");
 
-  if (!m_answerAddr.IsValid())
-  {
-    ScIterator5Ptr const & it5 = m_ctx->Iterator5(
-        *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_answer);
-    if (!it5->Next())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` has not answer structure.");
+  ScIterator5Ptr const & it5 = m_ctx->Iterator5(
+      *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_answer);
+  if (!it5->Next())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` has not answer structure.");
 
-    m_answerAddr = it5->Get(2);
-  }
+  m_answerAddr = it5->Get(2);
   return ScStruct{m_ctx, m_answerAddr};
 }
 
