@@ -337,7 +337,8 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback(ScAddr cons
     };
 
     TScAgent agent;
-    SC_LOG_INFO("Agent `" << agent.GetName() << "` started");
+    std::string const & agentName = agent.GetName();
+    SC_LOG_INFO("Agent `" << agentName << "` started");
 
     agent.SetInitiator(event.GetUser());
     agent.SetImplementation(agentImplementationAddr);
@@ -345,50 +346,77 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback(ScAddr cons
             ScKeynodes::action_deactivated, agent.GetActionClass(), ScType::EdgeAccessConstPosPerm))
     {
       SC_LOG_WARNING(
-          "Agent `" << agent.GetName() << "` was not started due actions with class `" << agent.GetActionClass().Hash()
+          "Agent `" << agentName << "` was not started due actions with class `" << agent.GetActionClass().Hash()
                     << "` are deactivated.");
       return;
     }
 
     ScAction action = CreateAction(event, agent);
 
-    ScTemplate && initiationConditionTemplate = agent.GetInitiationConditionTemplate();
-    if (initiationConditionTemplate.IsEmpty() && agent.MayBeSpecified())
+    if constexpr (std::is_same<
+                      decltype(&TScAgent::CheckInitiationCondition),
+                      decltype(&ScAgent::CheckInitiationCondition)>::value)
     {
-      ScAddr const & initiationConditionAddr = agent.GetInitiationCondition();
-      initiationConditionTemplate = agent.BuildCheckTemplate(event, initiationConditionAddr);
-    }
+      ScTemplate && initiationConditionTemplate = agent.GetInitiationConditionTemplate();
+      if (initiationConditionTemplate.IsEmpty() && agent.MayBeSpecified())
+      {
+        ScAddr const & initiationConditionAddr = agent.GetInitiationCondition();
+        initiationConditionTemplate = agent.BuildCheckTemplate(event, initiationConditionAddr);
+      }
 
-    ScTemplateSearchResult searchResult;
-    if (!initiationConditionTemplate.IsEmpty()
-        && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
+      ScTemplateSearchResult searchResult;
+      if (!initiationConditionTemplate.IsEmpty()
+          && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
+      {
+        SC_LOG_WARNING(
+            "Agent `" << agentName << "` was finished due its initiation condition was tested unsuccessfully.");
+        return;
+      }
+    }
+    else
     {
-      SC_LOG_WARNING(
-          "Agent `" << agent.GetName() << "` was finished due its initiation condition was tested unsuccessfully.");
-      return;
+      if (!agent.CheckInitiationCondition(event))
+      {
+        SC_LOG_WARNING(
+            "Agent `" << agentName << "` was finished due its initiation condition was tested unsuccessfully.");
+        return;
+      }
     }
 
     ScResult result = agent.DoProgram(event, action);
 
     if (result == SC_RESULT_OK)
-      SC_LOG_INFO("Agent `" << agent.GetName() << "` finished successfully");
+      SC_LOG_INFO("Agent `" << agentName << "` finished successfully");
     else if (result == SC_RESULT_NO)
-      SC_LOG_INFO("Agent `" << agent.GetName() << "` finished unsuccessfully");
+      SC_LOG_INFO("Agent `" << agentName << "` finished unsuccessfully");
     else
-      SC_LOG_INFO("Agent `" << agent.GetName() << "` finished with error");
+      SC_LOG_INFO("Agent `" << agentName << "` finished with error");
 
-    ScTemplate && resultConditionTemplate = agent.GetResultConditionTemplate();
-    if (resultConditionTemplate.IsEmpty() && agent.MayBeSpecified())
+    if constexpr (std::is_same<decltype(&TScAgent::CheckResultCondition), decltype(&ScAgent::CheckResultCondition)>::
+                      value)
     {
-      ScAddr const & resultConditionAddr = agent.GetResultCondition();
-      resultConditionTemplate = agent.BuildCheckTemplate(event, resultConditionAddr);
+      ScTemplate && resultConditionTemplate = agent.GetResultConditionTemplate();
+      if (resultConditionTemplate.IsEmpty() && agent.MayBeSpecified())
+      {
+        ScAddr const & resultConditionAddr = agent.GetResultCondition();
+        resultConditionTemplate = agent.BuildCheckTemplate(event, resultConditionAddr);
+      }
+
+      ScTemplateSearchResult searchResult;
+      if (!resultConditionTemplate.IsEmpty()
+          && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
+      {
+        SC_LOG_WARNING("Result condition of agent `" << agentName << "` tested unsuccessfully.");
+        return;
+      }
     }
-
-    if (!resultConditionTemplate.IsEmpty()
-        && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
+    else
     {
-      SC_LOG_WARNING("Result condition of agent `" << agent.GetName() << "` tested unsuccessfully.");
-      return;
+      if (!agent.CheckResultCondition(event, action))
+      {
+        SC_LOG_WARNING("Result condition of agent `" << agentName << "` tested unsuccessfully.");
+        return;
+      }
     }
 
     return;
