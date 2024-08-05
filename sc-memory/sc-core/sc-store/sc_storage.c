@@ -624,7 +624,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
           next_in_arc_from_structure_monitor);
 #else
       sc_monitor_acquire_write_n(
-          3, prev_out_arc_monitor, next_out_arc_monitor, prev_in_arc_monitor, next_in_arc_monitor);
+          4, prev_out_arc_monitor, next_out_arc_monitor, prev_in_arc_monitor, next_in_arc_monitor);
 #endif
 
       if (SC_ADDR_IS_NOT_EMPTY(prev_out_arc_addr))
