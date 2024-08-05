@@ -81,3 +81,21 @@ TEST_F(ScMemoryTest, sc_memory_find_links_contents_by_content_substring)
   sc_list_clear(string_hashes);
   sc_list_destroy(string_hashes);
 }
+
+TEST_F(ScMemoryTest, sc_event_subscription_invalid)
+{
+  sc_memory_context * context = **m_ctx;
+  sc_addr const subscription_addr = sc_memory_node_new(context, sc_type_node_const);
+
+  EXPECT_TRUE(
+      sc_event_subscription_new(context, subscription_addr, SC_ADDR_EMPTY, nullptr, nullptr, nullptr) == nullptr);
+  EXPECT_TRUE(
+      sc_event_subscription_new(context, SC_ADDR_EMPTY, subscription_addr, nullptr, nullptr, nullptr) == nullptr);
+
+  EXPECT_TRUE(
+      sc_event_subscription_with_user_new(context, subscription_addr, SC_ADDR_EMPTY, 0, nullptr, nullptr, nullptr)
+      == nullptr);
+  EXPECT_TRUE(
+      sc_event_subscription_with_user_new(context, SC_ADDR_EMPTY, subscription_addr, 0, nullptr, nullptr, nullptr)
+      == nullptr);
+}

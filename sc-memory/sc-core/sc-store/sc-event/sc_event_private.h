@@ -28,7 +28,6 @@ struct _sc_event_subscription
   //! Pointer to callback function, that calls on event emit (for backward compatibility)
   sc_event_callback callback;
   //! Pointer to callback function, that calls on event emit
-  sc_event_callback_ext callback_ext;
   sc_event_callback_with_user callback_with_user;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
   sc_event_subscription_delete_function delete_callback;
