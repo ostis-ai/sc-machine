@@ -143,7 +143,7 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
-class ATestCheckInitiationCondition : public ScActionAgent
+class ATestGetInitiationConditionTemplate : public ScActionAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -155,7 +155,19 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
-class ATestCheckResultCondition : public ScActionAgent
+class ATestCheckInitiationCondition : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  sc_bool CheckInitiationCondition(ScActionEvent const & event) override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestGetResultConditionTemplate : public ScActionAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -165,6 +177,18 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 
   ScTemplate GetResultConditionTemplate() const override;
+};
+
+class ATestCheckResultCondition : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+
+  sc_bool CheckResultCondition(ScActionEvent const & event, ScAction & action) override;
 };
 
 class ATestActionDeactivated : public ScActionAgent

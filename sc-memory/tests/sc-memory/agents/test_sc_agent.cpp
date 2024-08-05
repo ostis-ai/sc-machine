@@ -152,12 +152,12 @@ ScResult ATestCheckAnswer::DoProgram(ScActionEvent const &, ScAction & action)
 
 /// --------------------------------------
 
-ScAddr ATestCheckInitiationCondition::GetActionClass() const
+ScAddr ATestGetInitiationConditionTemplate::GetActionClass() const
 {
   return ATestAddOutputArc::add_output_arc_action;
 }
 
-ScTemplate ATestCheckInitiationCondition::GetInitiationConditionTemplate() const
+ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate() const
 {
   ScTemplate initiationCondition;
   initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action");
@@ -165,10 +165,52 @@ ScTemplate ATestCheckInitiationCondition::GetInitiationConditionTemplate() const
   return initiationCondition;
 }
 
+ScResult ATestGetInitiationConditionTemplate::DoProgram(ScActionEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestCheckInitiationCondition::GetActionClass() const
+{
+  return ATestAddOutputArc::add_output_arc_action;
+}
+
+sc_bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionEvent const & event)
+{
+  return m_memoryCtx.HelperCheckEdge(
+             ATestAddOutputArc::add_output_arc_action, event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm)
+         && m_memoryCtx.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)
+                ->Next();
+}
+
 ScResult ATestCheckInitiationCondition::DoProgram(ScActionEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestGetResultConditionTemplate::GetActionClass() const
+{
+  return ATestAddOutputArc::add_output_arc_action;
+}
+
+ScResult ATestGetResultConditionTemplate::DoProgram(ScActionEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate() const
+{
+  ScTemplate initiationCondition;
+  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action");
+  initiationCondition.Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  return initiationCondition;
 }
 
 /// --------------------------------------
@@ -184,12 +226,9 @@ ScResult ATestCheckResultCondition::DoProgram(ScActionEvent const &, ScAction & 
   return action.FinishSuccessfully();
 }
 
-ScTemplate ATestCheckResultCondition::GetResultConditionTemplate() const
+sc_bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const &, ScAction & action)
 {
-  ScTemplate initiationCondition;
-  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action");
-  initiationCondition.Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
-  return initiationCondition;
+  return m_memoryCtx.HelperCheckEdge(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm);
 }
 
 /// --------------------------------------
