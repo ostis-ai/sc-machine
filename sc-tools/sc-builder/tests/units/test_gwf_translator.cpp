@@ -24,7 +24,7 @@ using GWFTranslatorTest = ScBuilderTest;
 #include <memory>
 #include <algorithm>
 
-std::vector<char> readFileToBytes(const std::string& filePath) {
+std::vector<char> ReadFileToBytes(const std::string& filePath) {
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
     if (!file) {
         SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not open file: " + filePath);
@@ -38,27 +38,57 @@ std::vector<char> readFileToBytes(const std::string& filePath) {
     return buffer;
 }
 
-bool compareFiles(const std::string& filePath1, const std::string& filePath2) {
-    try {
-        std::vector<char> file1Bytes = readFileToBytes(filePath1);
-        std::vector<char> file2Bytes = readFileToBytes(filePath2);
+bool CompareFiles(const std::string& filePath1, const std::string& filePath2) {
+    try
+    {
+        std::vector<char> file1Bytes = ReadFileToBytes(filePath1);
+        std::vector<char> file2Bytes = ReadFileToBytes(filePath2);
         return file1Bytes == file2Bytes;
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
-        return false;
+    }
+    catch(utils::ScException const& e)
+    {
+      SC_LOG_ERROR("Exeption in reading file to string " + std::string(e.what()));
+      return false;
     }
 }
 
-std::string readFileToString(std::string const & filePath)
+std::string ReadFileToString(std::string const & filePath)
 {
-  std::ifstream file(filePath);
-  if (!file.is_open())
+  try
   {
-    throw std::runtime_error("Could not open file");
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not open file");
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
   }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
+  catch(utils::ScException const& e)
+  {
+    SC_LOG_ERROR("Exeption in reading file to string " + std::string(e.what()));
+    return nullptr;
+  }
+}
+
+TEST_F(GWFTranslatorTest, EmptyFile)
+{
+  GWFTranslator translator(*m_ctx);
+
+  const std::string filePath = BASE_TEST_PATH "empty_file.gwf";
+
+  EXPECT_THROW(translator.XmlFileToString(filePath), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, EmptyStatic)
+{
+  GWFTranslator translator(*m_ctx);
+
+  const std::string filePath = BASE_TEST_PATH "empty_static.gwf";
+
+  const std::string gwfStr = translator.XmlFileToString(filePath);
+  EXPECT_THROW(translator.GwfToScs(gwfStr, BASE_TEST_PATH), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, EmptyContour)
@@ -70,7 +100,7 @@ TEST_F(GWFTranslatorTest, EmptyContour)
   const std::string gwfStr = translator.XmlFileToString(filePath);
   const std::string scsStr = translator.GwfToScs(gwfStr, BASE_TEST_PATH);
 
-  const std::string exampleScs = readFileToString(BASE_TEST_PATH "empty_contour.gwf.scs");
+  const std::string exampleScs = ReadFileToString(BASE_TEST_PATH "empty_contour.gwf.scs");
 
   auto const exampleTree = ScsTree::ParseTree(exampleScs);
   auto const resultTree = ScsTree::ParseTree(scsStr);
@@ -87,7 +117,7 @@ TEST_F(GWFTranslatorTest, LotOfContours)
   const std::string gwfStr = translator.XmlFileToString(filePath);
   const std::string scsStr = translator.GwfToScs(gwfStr, BASE_TEST_PATH);
 
-  const std::string exampleScs = readFileToString(BASE_TEST_PATH "lot_of_contours.gwf.scs");
+  const std::string exampleScs = ReadFileToString(BASE_TEST_PATH "lot_of_contours.gwf.scs");
 
   auto const exampleTree = ScsTree::ParseTree(exampleScs);
   auto const resultTree = ScsTree::ParseTree(scsStr);
@@ -104,10 +134,14 @@ TEST_F(GWFTranslatorTest, ContentTypes)
   const std::string gwfStr = translator.XmlFileToString(filePath);
   const std::string scsStr = translator.GwfToScs(gwfStr, BASE_TEST_PATH);
 
-  const std::string exampleScs = readFileToString(BASE_TEST_PATH "content_types.gwf.scs");
+  const std::string exampleScs = ReadFileToString(BASE_TEST_PATH "content_types.gwf.scs");
 
   auto const exampleTree = ScsTree::ParseTree(exampleScs);
   auto const resultTree = ScsTree::ParseTree(scsStr);
+
+  EXPECT_TRUE(CompareFiles(BASE_TEST_PATH "ostis.png", BASE_TEST_PATH "ostis_ref.png"));
+
+  std::filesystem::remove(BASE_TEST_PATH "ostis.png");
 
   EXPECT_FALSE(ScsTree::CompareTrees(exampleTree, resultTree));
 }
