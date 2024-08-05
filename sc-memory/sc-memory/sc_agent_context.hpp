@@ -19,6 +19,12 @@ class ScKeynode;
  */
 class ScAgentContext : public ScMemoryContext
 {
+  template <class TScEvent>
+  friend class ScAgentAbstract;
+  friend class ScAction;
+
+  SC_DISALLOW_COPY(ScAgentContext);
+
 public:
   /*!
    * @brief Default constructor for ScAgentContext.
@@ -30,8 +36,6 @@ public:
    * @param context Pointer to sc-memory context.
    */
   _SC_EXTERN explicit ScAgentContext(sc_memory_context * context) noexcept;
-
-  SC_DISALLOW_COPY(ScAgentContext);
 
   /*!
    * @brief Move constructor for ScAgentContext.
@@ -68,10 +72,6 @@ public:
   _SC_EXTERN ScAction CreateAction(ScAddr const & actionAddrClass);
 
 protected:
-  template <class TScEvent>
-  friend class ScAgentAbstract;
-  friend class ScAction;
-
   /*!
    * @brief Constructor for ScAgentContext with a given user.
    * @param userAddr Address of the user.
