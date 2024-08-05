@@ -91,15 +91,12 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
   }
 
   sc_event_callback callback = event_subscription->callback;
-  sc_event_callback_ext callback_ext = event_subscription->callback_ext;
   sc_event_callback_with_user callback_ext2 = event_subscription->callback_with_user;
 
   sc_storage_start_new_process();
 
   if (callback != null_ptr)
     callback(event_subscription, event->connector_addr);
-  else if (callback_ext != null_ptr)
-    callback_ext(event_subscription, event->connector_addr, event->other_addr);
   else if (callback_ext2 != null_ptr)
     callback_ext2(
         event_subscription, event->user_addr, event->connector_addr, event->connector_type, event->other_addr);

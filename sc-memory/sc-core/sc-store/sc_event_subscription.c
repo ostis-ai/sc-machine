@@ -138,7 +138,10 @@ sc_event_subscription * sc_event_subscription_new(
 {
   sc_unused(ctx);
 
-  if (SC_ADDR_IS_EMPTY(subscription_addr))
+  if (!sc_storage_is_element(ctx, subscription_addr))
+    return null_ptr;
+
+  if (!sc_storage_is_element(ctx, event_type_addr))
     return null_ptr;
 
   sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
@@ -146,39 +149,6 @@ sc_event_subscription * sc_event_subscription_new(
   event_subscription->event_type_addr = event_type_addr;
   event_subscription->event_element_type = 0;
   event_subscription->callback = callback;
-  event_subscription->callback_ext = null_ptr;
-  event_subscription->callback_with_user = null_ptr;
-  event_subscription->delete_callback = delete_callback;
-  event_subscription->data = data;
-  event_subscription->ref_count = 1;
-  sc_monitor_init(&event_subscription->monitor);
-
-  // register created event_subscription
-  sc_event_subscription_manager * manager = sc_storage_get_event_registration_manager();
-  _sc_event_subscription_manager_add(manager, event_subscription);
-
-  return event_subscription;
-}
-
-sc_event_subscription * sc_event_subscription_new_ext(
-    sc_memory_context const * ctx,
-    sc_addr subscription_addr,
-    sc_event_type event_type_addr,
-    sc_pointer data,
-    sc_event_callback_ext callback,
-    sc_event_subscription_delete_function delete_callback)
-{
-  sc_unused(ctx);
-
-  if (SC_ADDR_IS_EMPTY(subscription_addr))
-    return null_ptr;
-
-  sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
-  event_subscription->subscription_addr = subscription_addr;
-  event_subscription->event_type_addr = event_type_addr;
-  event_subscription->event_element_type = 0;
-  event_subscription->callback = null_ptr;
-  event_subscription->callback_ext = callback;
   event_subscription->callback_with_user = null_ptr;
   event_subscription->delete_callback = delete_callback;
   event_subscription->data = data;
@@ -203,7 +173,10 @@ sc_event_subscription * sc_event_subscription_with_user_new(
 {
   sc_unused(ctx);
 
-  if (SC_ADDR_IS_EMPTY(subscription_addr))
+  if (!sc_storage_is_element(ctx, subscription_addr))
+    return null_ptr;
+
+  if (!sc_storage_is_element(ctx, event_type_addr))
     return null_ptr;
 
   sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
@@ -211,7 +184,6 @@ sc_event_subscription * sc_event_subscription_with_user_new(
   event_subscription->event_type_addr = event_type_addr;
   event_subscription->event_element_type = event_element_type;
   event_subscription->callback = null_ptr;
-  event_subscription->callback_ext = null_ptr;
   event_subscription->callback_with_user = callback;
   event_subscription->delete_callback = delete_callback;
   event_subscription->data = data;
@@ -248,7 +220,6 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
   event_subscription->event_type_addr = SC_ADDR_EMPTY;
   event_subscription->event_element_type = 0;
   event_subscription->callback = null_ptr;
-  event_subscription->callback_ext = null_ptr;
   event_subscription->callback_with_user = null_ptr;
   event_subscription->delete_callback = null_ptr;
   event_subscription->data = null_ptr;
@@ -352,9 +323,6 @@ sc_result sc_event_emit_impl(
 {
   sc_hash_table_list * element_events_list = null_ptr;
   sc_event_subscription * event_subscription = null_ptr;
-
-  if (SC_ADDR_IS_EMPTY(subscription_addr))
-    return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
 
   sc_event_subscription_manager * registration_manager = sc_storage_get_event_registration_manager();
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();

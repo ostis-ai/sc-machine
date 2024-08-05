@@ -71,14 +71,6 @@ _SC_EXTERN sc_event_subscription * sc_event_subscription_new(
  * @return Returns pointer to created sc-event.
  * @remarks Callback functions can be called from any thread, so they need to be a thread safe.
  */
-_SC_EXTERN sc_event_subscription * sc_event_subscription_new_ext(
-    sc_memory_context const * ctx,
-    sc_addr subscription_addr,
-    sc_event_type event_type_addr,
-    sc_pointer data,
-    sc_event_callback_ext callback,
-    sc_event_subscription_delete_function delete_callback);
-
 _SC_EXTERN sc_event_subscription * sc_event_subscription_with_user_new(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
