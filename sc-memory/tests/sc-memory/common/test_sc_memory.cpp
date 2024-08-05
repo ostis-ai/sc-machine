@@ -132,6 +132,9 @@ TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
   EXPECT_EQ(str, "content with spaces");
 }
 
+static inline ScTemplateKeynode const & testTemplate =
+    ScTemplateKeynode("test_template").Triple(ScKeynodes::action_state, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {
   ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
@@ -140,7 +143,8 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 
-  ScAddrVector const & keynodesAddrs = {ScKeynodes::sc_result_class, ScKeynodes::binary_type};
+  ScAddrVector const & keynodesAddrs = {
+      ScKeynodes::sc_event, ScKeynodes::sc_result_class, ScKeynodes::binary_type, testTemplate};
 
   ScAddrVector const & resultCodes = {
       ScKeynodes::sc_result_ok,
@@ -152,6 +156,27 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
       ScKeynodes::sc_result_invalid_state,
       ScKeynodes::sc_result_error_not_found,
       ScKeynodes::sc_result_error_stream_io,
+      ScKeynodes::sc_result_error_not_found,
+      ScKeynodes::sc_result_error_full_memory,
+      ScKeynodes::sc_result_error_addr_is_not_valid,
+      ScKeynodes::sc_result_error_element_is_not_node,
+      ScKeynodes::sc_result_error_element_is_not_link,
+      ScKeynodes::sc_result_error_element_is_not_connector,
+      ScKeynodes::sc_result_error_file_memory_io,
+      ScKeynodes::sc_result_error_stream_io,
+      ScKeynodes::sc_result_error_invalid_system_identifier,
+      ScKeynodes::sc_result_error_duplicated_system_identifier};
+
+  ScAddrVector const & events = {
+      ScKeynodes::sc_event_add_input_arc,
+      ScKeynodes::sc_event_add_output_arc,
+      ScKeynodes::sc_event_add_edge,
+      ScKeynodes::sc_event_remove_input_arc,
+      ScKeynodes::sc_event_remove_output_arc,
+      ScKeynodes::sc_event_remove_edge,
+      ScKeynodes::sc_event_remove_element,
+      ScKeynodes::sc_event_change_content,
+      ScKeynodes::sc_event_unknown,
   };
 
   ScAddrVector const & binaryTypes = {
@@ -168,7 +193,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
       ScKeynodes::binary_uint64,
       ScKeynodes::binary_custom};
 
-  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, resultCodes, binaryTypes};
+  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, events, resultCodes, binaryTypes};
 
   ScAddrVector allKeynodes;
   for (ScAddrVector const & keynodes : keynodesVectors)

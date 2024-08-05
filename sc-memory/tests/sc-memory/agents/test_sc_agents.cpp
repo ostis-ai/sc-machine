@@ -360,3 +360,17 @@ TEST_F(ScAgentTest, RegisterAgentWithinModule)
 
   module.Unregister(&*m_ctx);
 }
+
+TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
+{
+  ATestCheckAnswer agent;
+  EXPECT_THROW(agent.GetAbstractAgent(), utils::ExceptionInvalidState);
+  EXPECT_NO_THROW(agent.GetActionClass());
+  EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_add_output_arc);
+  EXPECT_THROW(agent.GetEventSubscriptionElement(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionInvalidState);
+  EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
+  EXPECT_NO_THROW(agent.GetResultConditionTemplate());
+  EXPECT_EQ(agent.GetName(), "ATestCheckAnswer");
+}

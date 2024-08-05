@@ -58,6 +58,32 @@ TEST_F(ScActionTest, CreateActionAndSetGetAnswer)
   EXPECT_EQ(answer, structureAddr2);
 }
 
+TEST_F(ScActionTest, CreateActionAndSetRemoveGetAnswer)
+{
+  ScAgentContext context;
+  ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
+  ScAction action = context.CreateAction(testClassAddr);
+
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_FALSE(action.InitiateAndWait(1));
+
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
+
+  action.FinishSuccessfully();
+
+  ScIterator5Ptr it5 = m_ctx->Iterator5(
+      action,
+      ScType::EdgeDCommonConst,
+      ScType::NodeConstStruct,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_answer);
+  EXPECT_TRUE(it5->Next());
+  m_ctx->EraseElement(it5->Get(1));
+  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+}
+
 TEST_F(ScActionTest, CreateActionAndSetFormUpdateGetAnswer)
 {
   ScAgentContext context;
@@ -255,8 +281,12 @@ TEST_F(ScActionTest, InitiateFinishedAction)
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
   EXPECT_NO_THROW(action.Initiate());
   EXPECT_NO_THROW(action.FinishSuccessfully());
+  ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
+  EXPECT_TRUE(it3->Next());
+  m_ctx->EraseElement(it3->Get(1));
+  EXPECT_FALSE(action.IsInitiated());
   EXPECT_THROW(action.Initiate(), utils::ExceptionInvalidState);
-  EXPECT_TRUE(action.IsInitiated());
+  EXPECT_FALSE(action.IsInitiated());
 }
 
 TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
@@ -265,8 +295,12 @@ TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
   EXPECT_NO_THROW(action.InitiateAndWait(1));
   EXPECT_NO_THROW(action.FinishSuccessfully());
+  ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
+  EXPECT_TRUE(it3->Next());
+  m_ctx->EraseElement(it3->Get(1));
+  EXPECT_FALSE(action.IsInitiated());
   EXPECT_THROW(action.InitiateAndWait(1), utils::ExceptionInvalidState);
-  EXPECT_TRUE(action.IsInitiated());
+  EXPECT_FALSE(action.IsInitiated());
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)

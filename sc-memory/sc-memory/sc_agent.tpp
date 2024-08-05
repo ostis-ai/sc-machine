@@ -107,11 +107,14 @@ ScAddr ScAgentAbstract<TScEvent>::GetActionClass() const
   return it5->Get(2);
 }
 
+// LCOV_EXCL_START
 template <class TScEvent>
 sc_bool ScAgentAbstract<TScEvent>::CheckInitiationCondition(TScEvent const & event)
 {
   return SC_TRUE;
 }
+
+// LCOV_EXCL_STOP
 
 template <class TScEvent>
 ScAddr ScAgentAbstract<TScEvent>::GetInitiationCondition() const
@@ -139,11 +142,14 @@ ScTemplate ScAgentAbstract<TScEvent>::GetInitiationConditionTemplate() const
   return ScTemplate();
 }
 
+// LCOV_EXCL_START
 template <class TScEvent>
 sc_bool ScAgentAbstract<TScEvent>::CheckResultCondition(TScEvent const &, ScAction &)
 {
   return SC_TRUE;
 }
+
+// LCOV_EXCL_STOP
 
 template <class TScEvent>
 ScAddr ScAgentAbstract<TScEvent>::GetResultCondition() const

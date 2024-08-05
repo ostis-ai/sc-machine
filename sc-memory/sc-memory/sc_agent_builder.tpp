@@ -33,7 +33,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr con
 {
   m_initializeAbstractAgent = [this](ScMemoryContext * ctx)
   {
-    if (!m_abstractAgentAddr.IsValid())
+    if (!ctx->IsElement(m_abstractAgentAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Specified abstract agent for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
