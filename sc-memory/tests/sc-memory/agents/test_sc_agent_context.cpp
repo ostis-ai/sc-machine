@@ -19,4 +19,7 @@ TEST_F(ScAgentContextTest, MoveAgentContext)
 
   EXPECT_TRUE(context1.IsValid());
   EXPECT_FALSE(context2.IsValid());
+
+  ScAgentContext context3 = std::move(context2);
+  EXPECT_FALSE(context3.IsValid());
 }
