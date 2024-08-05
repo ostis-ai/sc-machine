@@ -265,7 +265,7 @@ class SCsWriter:
         self.process_elements(elements, buff, 0)
 
         file = open(self.output_path, "w")
-        file.write(buff.value + "py")
+        file.write(buff.value)
         file.close()
 
         return self.errors
