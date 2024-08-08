@@ -40,6 +40,7 @@ struct _sc_dictionary_fs_memory
   sc_monitor_table strings_channels_monitors_table;
   sc_uint64 last_string_offset;  // last offset of string in 'string_path`
   sc_monitor monitor;
+  sc_monitor resolve_string_offset_monitor;
 
   sc_char * terms_string_offsets_path;              // path to dictionary file with terms and its strings offsets
   sc_dictionary * terms_string_offsets_dictionary;  // dictionary instance with terms and its strings offsets
