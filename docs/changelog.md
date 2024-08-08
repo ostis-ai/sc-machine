@@ -73,6 +73,8 @@ encapsulated this logic;
 
 ### Fixed
 
+- fs-memory uses monitor to resolve string offset
+- fs-memory searches for new strings in all channels instead of only in last channel
 - Separate implementation from declarations in templates
 - Separate specializations from declarations in iterators
 - Fix duplication of iterator specializations
