@@ -45,7 +45,13 @@ if(${SC_AUTO_TEST})
 endif()
 
 if(${SC_BUILD_TESTS})
+    include(GoogleTest)
+    find_package(GTest REQUIRED)
     include(${CMAKE_MODULE_PATH}/tests.cmake)
+endif()
+
+if(${SC_BUILD_BENCH})
+    find_package(benchmark REQUIRED)
 endif()
 
 if(${SC_CLANG_FORMAT_CODE})

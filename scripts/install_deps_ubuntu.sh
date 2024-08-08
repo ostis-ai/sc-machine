@@ -40,6 +40,8 @@ packagelist_dev=(
   nlohmann-json3-dev
   libxml2-dev
   python3-dev
+  libgtest-dev
+  libbenchmark-dev
 )
 
 packages=() 
