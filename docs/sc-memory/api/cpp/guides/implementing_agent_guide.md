@@ -357,7 +357,11 @@ class ScSetModule : public ScModule
 
 **sc_set_module.cpp**
 
-```cpp
+```diff
+SC_MODULE_REGISTER(ScSetModule)
+  ->Keynodes<ScSetKeynodes>()
+  ->Agent<ScAgentForCalculatingPower>();
+
 + // This method will be called once. 
 + void ScSetModule::Initialize(ScMemoryContext * context)
 + {
