@@ -9,9 +9,17 @@
     * C++ API - *documentation of C++ API provided by sc-machine*
         * [C++ Core API](sc-memory/api/cpp/core/api.md) - *documentation of C++ core API for creating, retrieving and erasing sc-elements in sc-memory*
         * C++ Extended API: - *documentation of C++ extended API for manipulating with system identifiers of sc-elements and sc-templates*
-            * [System identifier C++ API](sc-memory/api/cpp/extended/helper_api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
-            * [ScTemplate C++ API](sc-memory/api/cpp/extended/template_api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)*
-        * [C++ Agents API](sc-memory/api/cpp/agents.md) - *documentation of C++ Agents API for creating sc-agents*
+            * [C++ System identifier API](sc-memory/api/cpp/extended/helper_api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
+            * [C++ ScTemplate API](sc-memory/api/cpp/extended/template_api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)* 
+            * C++ Agents API: - *documentation of C++ Agents API for creating sc-agents*
+                * [C++ Events](sc-memory/api/cpp/extended/agents/events.md) 
+                * [C++ Waits](sc-memory/api/cpp/extended/agents/waits.md) 
+                * [C++ Agents](sc-memory/api/cpp/extended/agents/agents.md)
+                * [C++ Keynodes]
+                * [C++ Modules]
+                * [C++ Agent utils]
+        * C++ Guides:
+            * [C++ Implementing agent guide](sc-memory/api/cpp/guides/implementing_agent_guide.md)
     * Python API - *documentation of Python API provided by py-sc-client*
         * [Python Core API](https://github.com/ostis-ai/py-sc-client) - *documentation of Python core API for creating, retrieving and erasing sc-elements and sc-events in sc-memory*
         * [Python Extended API](https://github.com/ostis-ai/py-sc-kpm) - *documentation of Python extended API for manipulating with large graphs*
@@ -26,7 +34,6 @@
     * [Knowledge Base repo file](sc-tools/kb_repo_file.md) - *description of configuration of knowledge base sources*
     * [Websocket Server](sc-tools/sc_server.md) - *description of options of sc-server for communication with sc-memory through network*
     * [Sc-machine Runner](sc-tools/sc_machine.md) - *description of options of sc-machine runner*
-    * [Meta Programming](sc-tools/cpp_meta.md) - *documentation of meta programming language*
 - **Development**
     * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
     * [Codestyle Guide](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
