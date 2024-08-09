@@ -78,14 +78,12 @@ public:
     m_server->Send(sessionId, responseText, ScServerMessageType::text);
   }
 
-  void OnHealthCheck(ScServerSessionId const & sessionId, ScServerMessage const & msg)
+  void OnHealthCheck(ScServerSessionId const & sessionId, ScServerMessage const &)
   {
-    SC_UNUSED(msg);
-
     ScMemoryJsonPayload response;
     try
     {
-      auto * context = new ScMemoryContext(ScKeynodes::kMySelf);
+      auto * context = new ScMemoryContext(ScKeynodes::myself);
 
       ScAddr const & tempAddr = context->CreateNode(ScType::NodeConst);
       context->EraseElement(tempAddr);
@@ -106,11 +104,9 @@ public:
     m_server->CloseConnection(sessionId, websocketpp::close::status::normal, "Status checked");
   }
 
-  void OnConnectionInfo(ScServerSessionId const & sessionId, ScServerMessage const & msg)
+  void OnConnectionInfo(ScServerSessionId const & sessionId, ScServerMessage const &)
   {
-    SC_UNUSED(msg);
-
-    ScAddr const & userAddr = m_server->GetSessionContext(sessionId)->GetUserAddr();
+    ScAddr const & userAddr = m_server->GetSessionContext(sessionId)->GetUser();
     ScMemoryJsonPayload response{{"connection_id", (sc_uint64)sessionId.lock().get()}, {"user_addr", userAddr.Hash()}};
 
     m_server->Send(sessionId, response.dump(), ScServerMessageType::text);

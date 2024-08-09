@@ -6,15 +6,15 @@
 
 #include "sc_link.hpp"
 
-ScLink::ScLink(ScMemoryContext & ctx, ScAddr const & addr)
-  : m_ctx(ctx)
-  , m_addr(addr)
+ScLink::ScLink(ScMemoryContext & ctx, ScAddr const & linkAddr)
+  : ScAddr(linkAddr)
+  , m_ctx(&ctx)
 {
 }
 
 bool ScLink::IsValid() const
 {
-  return m_ctx.GetElementType(m_addr).IsLink();
+  return m_ctx->GetElementType(*this).IsLink();
 }
 
 ScLink::Type ScLink::DetermineType() const
@@ -115,14 +115,13 @@ bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
 {
   // set type
   ScTemplate templ;
-  templ.Triple(ScKeynodes::kBinaryType, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
+  templ.Triple(ScKeynodes::binary_type, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
 
-  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", m_addr);
+  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", *this);
 
   ScTemplateSearchResult res;
-  if (m_ctx.HelperSearchTemplate(templ, res))
+  if (m_ctx->HelperSearchTemplate(templ, res))
   {
-    SC_ASSERT(res.Size() == 1, ("Invalid state of knowledge base"));
     outType = res[0]["_type"];
     outEdge = res[0]["_edge"];
     return true;

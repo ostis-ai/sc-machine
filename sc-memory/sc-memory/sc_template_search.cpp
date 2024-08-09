@@ -540,6 +540,7 @@ private:
       {
         return GetItemAddrInReplacements(templateItem);
       }
+      SC_FALLTHROUGH;
     }
 
     default:

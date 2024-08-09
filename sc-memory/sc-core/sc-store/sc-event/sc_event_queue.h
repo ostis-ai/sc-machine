@@ -14,6 +14,8 @@
 #include "../sc-container/sc-hash-table/sc_hash_table.h"
 #include "../sc-base/sc_monitor.h"
 
+typedef sc_result (*sc_event_do_after_callback)(sc_memory_context const * ctx, sc_addr addr);
+
 /*! Structure representing an sc-event emission manager.
  * @note This structure manages the asynchronous processing of sc-events using a thread pool.
  */
@@ -22,7 +24,8 @@ typedef struct
   ///< Boolean indicating whether sc-memory limit `max_events_and_agents_threads` by maximum physical core number.
   sc_bool limit_max_threads_by_max_physical_cores;
   sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for processing events and agents.
-  sc_queue deletable_events;                ///< Queue of events that need to be deleted after sc-memory shutdown.
+  sc_queue deletable_events_subscriptions;  ///< Queue of sc-events subscriptions that need to be deleted after
+                                            ///< sc-memory shutdown.
   sc_bool running;                          ///< Flag indicating whether the event emission manager is running.
   sc_monitor destroy_monitor;               ///< Monitor for synchronizing access to the destruction process.
   GThreadPool * thread_pool;                ///< Thread pool used for worker threads processing events.
@@ -57,10 +60,12 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager);
  */
 void _sc_event_emission_manager_add(
     sc_event_emission_manager * manager,
-    sc_event * event,
+    sc_event_subscription * event,
     sc_addr user_addr,
     sc_addr connector_addr,
     sc_type connector_type,
-    sc_addr other_addr);
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    sc_addr event_addr);
 
 #endif

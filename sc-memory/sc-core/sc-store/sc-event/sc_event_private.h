@@ -9,28 +9,28 @@
 
 #include "sc_event_queue.h"
 
-#include "../sc_event.h"
+#include "../sc_event_subscription.h"
 #include "../sc_types.h"
 
-#define SC_EVENT_REQUEST_DESTROY (1 << 31)
+#define SC_EVENT_REQUEST_DESTROY (sc_uint32)(1 << 31)
 
 /*! Structure that contains information about event
  */
-struct _sc_event
+struct _sc_event_subscription
 {
   //! sc-addr of listened sc-element
   sc_addr subscription_addr;
   //! Event type
-  sc_event_type type;
+  sc_event_type event_type_addr;
+  sc_type event_element_type;
   //! Pointer to user data
   sc_pointer data;
   //! Pointer to callback function, that calls on event emit (for backward compatibility)
   sc_event_callback callback;
   //! Pointer to callback function, that calls on event emit
-  sc_event_callback_ext callback_ext;
   sc_event_callback_with_user callback_with_user;
   //! Pointer to callback function, that calls, when subscribed sc-element deleted
-  sc_event_delete_function delete_callback;
+  sc_event_subscription_delete_function delete_callback;
   sc_monitor monitor;
   sc_uint32 ref_count;
 };
@@ -56,19 +56,23 @@ sc_result sc_event_notify_element_deleted(sc_addr element);
 sc_result sc_event_emit(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type edge_type,
-    sc_addr other_addr);
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    sc_addr event_addr);
 
 /*! Emit event immediately
  */
 sc_result sc_event_emit_impl(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type edge_type,
-    sc_addr other_addr);
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    sc_addr event_addr);
 
 #endif

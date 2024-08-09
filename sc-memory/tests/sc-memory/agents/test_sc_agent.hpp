@@ -1,14 +1,13 @@
 #pragma once
 
-#include "sc-memory/sc_addr.hpp"
-#include "sc-memory/sc_object.hpp"
-#include "sc-memory/sc_timer.hpp"
-#include "sc-memory/utils/sc_lock.hpp"
-#include "sc-memory/kpm/sc_agent.hpp"
-
 #include <thread>
 
-#include "test_sc_agent.generated.hpp"
+#include "sc-memory/sc_addr.hpp"
+#include "sc-memory/sc_object.hpp"
+#include "sc-memory/sc_agent.hpp"
+
+#include "sc-memory/sc_timer.hpp"
+#include "sc-memory/utils/sc_lock.hpp"
 
 class TestWaiter
 {
@@ -18,9 +17,9 @@ public:
     m_lock.Lock();
   }
 
-  bool Wait()
+  bool Wait(sc_float time_s = 5.0)
   {
-    ScTimer timer(5.0);
+    ScTimer timer(time_s);
     while (!timer.IsTimeOut() && m_lock.IsLocked())
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
@@ -36,83 +35,168 @@ private:
   utils::ScLock m_lock;
 };
 
-class ATestAction : public ScAgentAction
+class ATestAddInputArc : public ScAgent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>
 {
-  SC_CLASS(Agent, CmdClass("command_1"))
-  SC_GENERATED_BODY()
-
 public:
-  static TestWaiter msWaiter;
+  static inline ScKeynode const add_input_arc_action{"add_input_arc_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
 };
 
-class ATestAddInputEdge : public ScAgent
+class ATestAddOutputArc : public ScAgent<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::AddInputEdge))
-  SC_GENERATED_BODY()
-
 public:
-  SC_PROPERTY(Keynode("ATestAddInputEdge"), ForceCreate)
-  static ScAddr msAgentKeynode;
+  static inline ScKeynode const add_output_arc_action{"add_output_arc_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
 
-  static TestWaiter msWaiter;
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
 };
 
-class ATestAddOutputEdge : public ScAgent
+class ATestAddEdge : public ScAgent<ScEventAddEdge<ScType::EdgeUCommonConst>>
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::AddOutputEdge))
-  SC_GENERATED_BODY()
-
 public:
-  SC_PROPERTY(Keynode("ATestAddOutputEdge"), ForceCreate)
-  static ScAddr msAgentKeynode;
+  static inline ScKeynode const add_edge_action{"add_edge_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
 
-  static TestWaiter msWaiter;
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventAddEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
-class ATestRemoveInputEdge : public ScAgent
+class ATestRemoveInputArc : public ScAgent<ScEventRemoveInputArc<ScType::EdgeAccessConstPosPerm>>
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::RemoveInputEdge))
-  SC_GENERATED_BODY()
-
 public:
-  SC_PROPERTY(Keynode("ATestRemoveInputEdge"), ForceCreate)
-  static ScAddr msAgentKeynode;
+  static inline ScKeynode const remove_input_arc_action{"remove_input_arc_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
 
-  static TestWaiter msWaiter;
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventRemoveInputArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
 };
 
-class ATestRemoveOutputEdge : public ScAgent
+class ATestRemoveOutputArc : public ScAgent<ScEventRemoveOutputArc<ScType::EdgeAccessConstPosPerm>>
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::RemoveOutputEdge))
-  SC_GENERATED_BODY()
-
 public:
-  SC_PROPERTY(Keynode("ATestRemoveOutputEdge"), ForceCreate)
-  static ScAddr msAgentKeynode;
+  static inline ScKeynode const remove_output_arc_action{"remove_output_arc_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
 
-  static TestWaiter msWaiter;
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventRemoveOutputArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
 };
 
-class ATestRemoveElement : public ScAgent
+class ATestRemoveEdge : public ScAgent<ScEventRemoveEdge<ScType::EdgeUCommonConst>>
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::EraseElement))
-  SC_GENERATED_BODY()
-
 public:
-  SC_PROPERTY(Keynode("ATestRemoveElement"), ForceCreate)
-  static ScAddr msAgentKeynode;
+  static inline ScKeynode const remove_edge_action{"remove_edge_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
 
-  static TestWaiter msWaiter;
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventRemoveEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
-class ATestContentChanged : public ScAgent
+class ATestRemoveElement : public ScAgent<ScEventRemoveElement>
 {
-  SC_CLASS(Agent, Event(msAgentKeynode, ScEvent::Type::ContentChanged))
-  SC_GENERATED_BODY()
-
 public:
-  SC_PROPERTY(Keynode("ATestContentChanged"), ForceCreate)
-  static ScAddr msAgentKeynode;
+  static inline ScKeynode const erase_element_action{"erase_element_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
 
-  static TestWaiter msWaiter;
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventRemoveElement const & event, ScAction & action) override;
+};
+
+class ATestChangeLinkContent : public ScAgent<ScEventChangeLinkContent>
+{
+public:
+  static inline ScKeynode const content_change_action{"content_change_action", ScType::NodeConstClass};
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventChangeLinkContent const & event, ScAction & action) override;
+};
+
+class ATestAddMultipleOutputArc : public ScAgent<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
+};
+
+class ATestCheckAnswer : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestGetInitiationConditionTemplate : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScTemplate GetInitiationConditionTemplate() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestCheckInitiationCondition : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  sc_bool CheckInitiationCondition(ScActionEvent const & event) override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestGetResultConditionTemplate : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+
+  ScTemplate GetResultConditionTemplate() const override;
+};
+
+class ATestCheckResultCondition : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+
+  sc_bool CheckResultCondition(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestActionDeactivated : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };

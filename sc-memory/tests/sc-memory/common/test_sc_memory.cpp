@@ -132,6 +132,9 @@ TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
   EXPECT_EQ(str, "content with spaces");
 }
 
+static inline ScTemplateKeynode const & testTemplate =
+    ScTemplateKeynode("test_template").Triple(ScKeynodes::action_state, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {
   ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
@@ -141,44 +144,56 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   ScMemoryContext * context = m_ctx.get();
 
   ScAddrVector const & keynodesAddrs = {
-      ScKeynodes::kCommandStateAddr,
-      ScKeynodes::kCommandInitiatedAddr,
-      ScKeynodes::kCommandProgressedAddr,
-      ScKeynodes::kCommandFinishedAddr,
-      ScKeynodes::kNrelResult,
-      ScKeynodes::kNrelCommonTemplate,
-      ScKeynodes::kNrelIdtf,
-      ScKeynodes::kNrelFormat,
-      ScKeynodes::kScResult,
-      ScKeynodes::kBinaryType};
+      ScKeynodes::sc_event, ScKeynodes::sc_result_class, ScKeynodes::binary_type, testTemplate};
 
   ScAddrVector const & resultCodes = {
-      ScKeynodes::kScResultOk,
-      ScKeynodes::kScResultNo,
-      ScKeynodes::kScResultUnknown,
-      ScKeynodes::kScResultError,
-      ScKeynodes::kScResultErrorInvalidParams,
-      ScKeynodes::kScResultErrorInvalidType,
-      ScKeynodes::kScResultInvalidState,
-      ScKeynodes::kScResultErrorNotFound,
-      ScKeynodes::kScResultErrorStreamIO,
+      ScKeynodes::sc_result_ok,
+      ScKeynodes::sc_result_no,
+      ScKeynodes::sc_result_unknown,
+      ScKeynodes::sc_result_error,
+      ScKeynodes::sc_result_error_invalid_params,
+      ScKeynodes::sc_result_error_invalid_type,
+      ScKeynodes::sc_result_invalid_state,
+      ScKeynodes::sc_result_error_not_found,
+      ScKeynodes::sc_result_error_stream_io,
+      ScKeynodes::sc_result_error_not_found,
+      ScKeynodes::sc_result_error_full_memory,
+      ScKeynodes::sc_result_error_addr_is_not_valid,
+      ScKeynodes::sc_result_error_element_is_not_node,
+      ScKeynodes::sc_result_error_element_is_not_link,
+      ScKeynodes::sc_result_error_element_is_not_connector,
+      ScKeynodes::sc_result_error_file_memory_io,
+      ScKeynodes::sc_result_error_stream_io,
+      ScKeynodes::sc_result_error_invalid_system_identifier,
+      ScKeynodes::sc_result_error_duplicated_system_identifier};
+
+  ScAddrVector const & events = {
+      ScKeynodes::sc_event_add_input_arc,
+      ScKeynodes::sc_event_add_output_arc,
+      ScKeynodes::sc_event_add_edge,
+      ScKeynodes::sc_event_remove_input_arc,
+      ScKeynodes::sc_event_remove_output_arc,
+      ScKeynodes::sc_event_remove_edge,
+      ScKeynodes::sc_event_remove_element,
+      ScKeynodes::sc_event_change_content,
+      ScKeynodes::sc_event_unknown,
   };
 
   ScAddrVector const & binaryTypes = {
-      ScKeynodes::kBinaryDouble,
-      ScKeynodes::kBinaryFloat,
-      ScKeynodes::kBinaryString,
-      ScKeynodes::kBinaryInt8,
-      ScKeynodes::kBinaryInt16,
-      ScKeynodes::kBinaryInt32,
-      ScKeynodes::kBinaryInt64,
-      ScKeynodes::kBinaryUInt8,
-      ScKeynodes::kBinaryUInt16,
-      ScKeynodes::kBinaryUInt32,
-      ScKeynodes::kBinaryUInt64,
-      ScKeynodes::kBinaryCustom};
+      ScKeynodes::binary_double,
+      ScKeynodes::binary_float,
+      ScKeynodes::binary_string,
+      ScKeynodes::binary_int8,
+      ScKeynodes::binary_int16,
+      ScKeynodes::binary_int32,
+      ScKeynodes::binary_int64,
+      ScKeynodes::binary_uint8,
+      ScKeynodes::binary_uint16,
+      ScKeynodes::binary_uint32,
+      ScKeynodes::binary_uint64,
+      ScKeynodes::binary_custom};
 
-  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, resultCodes, binaryTypes};
+  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, events, resultCodes, binaryTypes};
 
   ScAddrVector allKeynodes;
   for (ScAddrVector const & keynodes : keynodesVectors)

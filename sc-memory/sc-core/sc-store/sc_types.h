@@ -154,6 +154,10 @@ typedef sc_uint16 sc_type;
 #  define sc_type_arc_neg_const_temp (sc_type)(sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp)
 #  define sc_type_arc_pos_var_perm (sc_type)(sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm)
 
+#  define sc_type_node_const (sc_type)(sc_type_node | sc_type_const)
+#  define sc_type_node_const_class (sc_type)(sc_type_node | sc_type_const | sc_type_node_class)
+#  define sc_type_node_const_norole (sc_type)(sc_type_node | sc_type_const | sc_type_node_norole)
+
 // type mask
 #  define sc_type_element_mask \
     (sc_type)(sc_type_node | sc_type_link | sc_type_edge_common | sc_type_arc_common | sc_type_arc_access)
@@ -178,6 +182,7 @@ typedef sc_uint16 sc_type;
 typedef sc_uint16 sc_states;
 
 #  define SC_STATE_REQUEST_DELETION 0x1
+#  define SC_STATE_IS_DELETABLE 0x200
 #  define SC_STATE_ELEMENT_EXIST 0x2
 
 #  define SC_ACCESS_LVL_MAX_VALUE 15
@@ -222,18 +227,6 @@ enum _sc_result
   SC_RESULT_COUNT,  // number of result types
 };
 
-// events
-enum _sc_event_type
-{
-  SC_EVENT_UNKNOWN = -1,
-  SC_EVENT_ADD_OUTPUT_ARC = 0,
-  SC_EVENT_ADD_INPUT_ARC = 1,
-  SC_EVENT_REMOVE_OUTPUT_ARC = 2,
-  SC_EVENT_REMOVE_INPUT_ARC = 3,
-  SC_EVENT_REMOVE_ELEMENT = 4,
-  SC_EVENT_CONTENT_CHANGED = 5
-};
-
 // structure to store statistics info
 struct _sc_stat
 {
@@ -252,11 +245,11 @@ typedef struct _sc_memory_context sc_memory_context;
 typedef struct _sc_element sc_element;
 typedef struct _sc_segment sc_segment;
 typedef struct _sc_addr sc_addr;
+typedef sc_addr sc_event_type;
 typedef struct _sc_iterator_param sc_iterator_param;
 typedef struct _sc_iterator_result sc_iterator_result;
 typedef struct _sc_iterator3 sc_iterator3;
 typedef struct _sc_iterator5 sc_iterator5;
-typedef struct _sc_event sc_event;
+typedef struct _sc_event_subscription sc_event_subscription;
 typedef enum _sc_result sc_result;
-typedef enum _sc_event_type sc_event_type;
 typedef struct _sc_stat sc_stat;

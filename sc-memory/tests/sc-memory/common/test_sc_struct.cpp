@@ -7,12 +7,9 @@
 
 using ScStructTest = ScMemoryTest;
 
-TEST_F(ScStructTest, common)
+TEST_F(ScStructTest, AppendIterateElements)
 {
-  ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_TRUE(structAddr.IsValid());
-
-  ScStruct st(*m_ctx, structAddr);
+  ScStruct structAddr(*m_ctx);
 
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConstClass);
   EXPECT_TRUE(addr1.IsValid());
@@ -20,27 +17,28 @@ TEST_F(ScStructTest, common)
   ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstMaterial);
   EXPECT_TRUE(addr2.IsValid());
 
-  st << addr1 << addr2;
-  EXPECT_TRUE(st.HasElement(addr1));
-  EXPECT_TRUE(st.HasElement(addr2));
+  structAddr << addr1 << addr2;
+  EXPECT_TRUE(structAddr.HasElement(addr1));
+  EXPECT_FALSE(structAddr.Append(addr1));
+  EXPECT_TRUE(structAddr.HasElement(addr2));
 
-  st >> addr1;
+  structAddr >> addr1;
 
-  EXPECT_FALSE(st.HasElement(addr1));
-  EXPECT_TRUE(st.HasElement(addr2));
+  EXPECT_FALSE(structAddr.HasElement(addr1));
+  EXPECT_TRUE(structAddr.HasElement(addr2));
 
-  st >> addr2;
+  structAddr >> addr2;
 
-  EXPECT_FALSE(st.HasElement(addr1));
-  EXPECT_FALSE(st.HasElement(addr2));
-  EXPECT_TRUE(st.IsEmpty());
+  EXPECT_FALSE(structAddr.HasElement(addr1));
+  EXPECT_FALSE(structAddr.HasElement(addr2));
+  EXPECT_TRUE(structAddr.IsEmpty());
 
   // attributes
   ScAddr const attrAddr = m_ctx->CreateNode(ScType::NodeConstRole);
   EXPECT_TRUE(attrAddr.IsValid());
 
-  EXPECT_TRUE(st.Append(addr1, attrAddr));
-  EXPECT_FALSE(st.Append(addr1, attrAddr));
+  EXPECT_TRUE(structAddr.Append(addr1, attrAddr));
+  EXPECT_FALSE(structAddr.Append(addr1, attrAddr));
   ScIterator5Ptr iter5 = m_ctx->Iterator5(
       structAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
 
@@ -54,4 +52,38 @@ TEST_F(ScStructTest, common)
     found = true;
   }
   EXPECT_TRUE(found);
+}
+
+TEST_F(ScStructTest, AppendItSelf)
+{
+  ScSet set = ScSet(*m_ctx);
+  EXPECT_TRUE(set.IsValid());
+
+  ScSet setCopy = set;
+  EXPECT_TRUE(setCopy.IsValid());
+  EXPECT_TRUE(set.IsValid());
+
+  setCopy = set;
+  EXPECT_TRUE(setCopy.IsValid());
+  EXPECT_TRUE(set.IsValid());
+
+  setCopy = setCopy;
+  EXPECT_TRUE(setCopy.IsValid());
+  EXPECT_TRUE(set.IsValid());
+
+  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  setCopy << nodeAddr;
+
+  ScTemplate templ;
+  templ.Triple(setCopy, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+
+  result.ForEach(
+      [&](ScTemplateSearchResultItem const & item)
+      {
+        setCopy << item;
+      });
+
+  EXPECT_TRUE(setCopy.HasElement(setCopy));
 }

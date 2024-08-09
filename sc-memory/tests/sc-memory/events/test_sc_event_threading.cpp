@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_event.hpp"
+#include "sc-memory/sc_event_subscription.hpp"
+
 #include "sc-memory/sc_timer.hpp"
 
 #include "event_test_utils.hpp"
@@ -10,7 +12,7 @@
 #include <ctime>
 #include <thread>
 
-TEST_F(ScEventTest, threading_smoke)
+TEST_F(ScEventTest, ThreadingSmoke)
 {
   std::srand(unsigned(std::time(0)));
 
@@ -30,16 +32,19 @@ TEST_F(ScEventTest, threading_smoke)
   }
 
   // create random events for each node
-  std::vector<ScEvent *> events;
+  std::vector<ScEventSubscription *> events;
   events.resize(eventsNum);
 
-  std::vector<ScEvent::Type> eventTypes = {
-      ScEvent::Type::AddOutputEdge,
-      ScEvent::Type::AddInputEdge,
-      ScEvent::Type::RemoveOutputEdge,
-      ScEvent::Type::RemoveInputEdge,
-      ScEvent::Type::EraseElement,
-      ScEvent::Type::ContentChanged};
+  std::vector<ScAddr> eventTypes = {
+      ScKeynodes::sc_event_add_input_arc,
+      ScKeynodes::sc_event_add_output_arc,
+      ScKeynodes::sc_event_add_edge,
+      ScKeynodes::sc_event_remove_input_arc,
+      ScKeynodes::sc_event_remove_output_arc,
+      ScKeynodes::sc_event_remove_edge,
+      ScKeynodes::sc_event_remove_element,
+      ScKeynodes::sc_event_change_content,
+  };
 
   auto const randNode = [&nodes]()
   {
@@ -50,14 +55,14 @@ TEST_F(ScEventTest, threading_smoke)
 
   for (size_t i = 0; i < eventsNum; ++i)
   {
-    events[i] = new ScEvent(
+    events[i] = new ScElementaryEventSubscription(
         *m_ctx,
+        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ChangeContent event
+        ScType::Unknown,
         randNode(),
-        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
-        [&](ScAddr const &, ScAddr const &, ScAddr const &)
+        [&](ScElementaryEvent const &)
         {
           evtCount++;
-          return true;
         });
   }
 

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdint>
+#include <list>
 #include <vector>
 #include <list>
 #include <stack>
@@ -24,6 +25,7 @@ using ScRealAddr = sc_addr;
 class _SC_EXTERN ScAddr
 {
   friend class ScMemoryContext;
+  friend class ScTemplateItem;
 
 public:
   using HashType = sc_addr_hash;
@@ -32,7 +34,7 @@ public:
 
   ScAddr();
   ScAddr(sc_addr const & addr);
-  explicit ScAddr(HashType const & hash);
+  ScAddr(ScAddr::HashType const & hash);
 
   bool IsValid() const;
   void Reset();
@@ -48,7 +50,7 @@ protected:
   ScRealAddr m_realAddr;
 };
 
-struct RealAddrLessFunc
+struct _SC_EXTERN RealAddrLessFunc
 {
   bool operator()(ScRealAddr const & a, ScRealAddr const & b) const
   {
@@ -62,7 +64,7 @@ struct RealAddrLessFunc
   }
 };
 
-struct ScAddrLessFunc
+struct _SC_EXTERN ScAddrLessFunc
 {
   bool operator()(ScAddr const & a, ScAddr const & b) const
   {

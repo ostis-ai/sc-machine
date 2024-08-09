@@ -5,12 +5,12 @@
  */
 
 #include "sc_template.hpp"
-#include "sc_memory.hpp"
-#include "sc_debug.hpp"
 
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+
+#include "sc_memory.hpp"
 
 namespace
 {
@@ -94,9 +94,7 @@ protected:
     : m_templateAddr(inScTemplateAddr)
     , m_context(inCtx)
   {
-    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
     auto const & replacements = params.GetAll();
-    SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
     for (auto const & item : replacements)
     {
       ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);

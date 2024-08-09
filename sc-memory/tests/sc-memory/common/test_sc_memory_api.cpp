@@ -11,6 +11,23 @@ TEST_F(ScMemoryTest, ScMemory)
   EXPECT_TRUE(m_ctx->IsValid());
 }
 
+TEST_F(ScMemoryTest, MoveContext)
+{
+  ScMemoryContext context1;
+  ScMemoryContext context2 = ScMemoryContext();
+  EXPECT_TRUE(context2.IsValid());
+
+  context1 = std::move(context2);
+
+  EXPECT_TRUE(context1.IsValid());
+  EXPECT_FALSE(context2.IsValid());
+
+  context1 = std::move(context1);
+
+  EXPECT_TRUE(context1.IsValid());
+  EXPECT_FALSE(context2.IsValid());
+}
+
 TEST_F(ScMemoryTest, CreateElements)
 {
   ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);

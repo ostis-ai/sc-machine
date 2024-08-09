@@ -6,151 +6,161 @@
 
 #pragma once
 
-#include "sc_event.hpp"
-#include "sc_timer.hpp"
-
 #include <condition_variable>
 #include <chrono>
 #include <mutex>
 #include <utility>
 
-/* Class implements common wait logic.
+#include "sc_event_subscription.hpp"
+
+/*!
+ * @class ScWait
+ * @brief Implements common wait logic.
  */
-class ScWait
+class _SC_EXTERN ScWait : public ScObject
 {
-  class Impl
-  {
-  public:
-    Impl() = default;
-    virtual ~Impl() = default;
-
-    void Resolve()
-    {
-      std::unique_lock<std::mutex> lock(m_mutex);
-      m_isResolved = true;
-      m_cond.notify_one();
-    }
-
-    bool Wait(uint32_t timeout_ms, std::function<void(void)> const & initializationFunction)
-    {
-      std::unique_lock<std::mutex> lock(m_mutex);
-
-      sc_bool actionPerformed = SC_FALSE;
-      while (!m_isResolved)
-      {
-        if (actionPerformed == SC_FALSE)
-        {
-          initializationFunction();
-          actionPerformed = SC_TRUE;
-        }
-
-        if (m_cond.wait_for(lock, std::chrono::milliseconds(timeout_ms)) == std::cv_status::timeout)
-          return false;
-      }
-
-      return true;
-    }
-
-  private:
-    std::mutex m_mutex;
-    std::condition_variable m_cond;
-    bool m_isResolved = false;
-  };
-
 public:
   using DelegateFunc = std::function<void(void)>;
 
-  virtual ~ScWait() = default;
-
-  void Resolve()
+private:
+  class Impl
   {
-    m_impl.Resolve();
-  }
+  public:
+    Impl();
+    virtual ~Impl();
 
-  bool Wait(uint32_t timeout_ms = 5000, DelegateFunc const & initializationFunction = []() -> void {})
-  {
-    return m_impl.Wait(timeout_ms, initializationFunction);
-  }
+    void Resolve();
+
+    /*!
+     * @brief Waits for condition to be resolved or a timeout.
+     * @param timeout_ms Timeout in milliseconds.
+     * @param startDelegate Delegate function to call at the start of the wait.
+     * @return True if resolved, false if timeout.
+     */
+    sc_bool Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate);
+
+  private:
+    std::mutex m_mutex;               ///< Mutex for thread safety.
+    std::condition_variable m_cond;   ///< Condition variable for waiting.
+    sc_bool m_isResolved = SC_FALSE;  ///< Flag indicating if the condition is resolved.
+  };
+
+public:
+  _SC_EXTERN ~ScWait() override;
+
+  /*!
+   * @brief Resolves the wait condition.
+   */
+  _SC_EXTERN void Resolve();
+
+  /*!
+   * @brief Sets a delegate function to be called at the start of the wait.
+   * @param startDelegate Delegate function.
+   * @return Pointer to the current ScWait object.
+   */
+  _SC_EXTERN ScWait * SetOnWaitStartDelegate(DelegateFunc const & startDelegate);
+
+  /*!
+   * @brief Waits for the condition to be resolved or a timeout.
+   * @param timeout_ms Timeout in milliseconds.
+   * @param onWaitSuccess Function to call on successful wait.
+   * @param onWaitUnsuccess Function to call on unsuccessful wait.
+   * @return True if resolved, false if timeout.
+   */
+  _SC_EXTERN sc_bool Wait(
+      sc_uint32 timeout_ms = 5000,
+      std::function<void(void)> const & onWaitSuccess = {},
+      std::function<void(void)> const & onWaitUnsuccess = {});
 
 private:
-  Impl m_impl;
+  Impl m_impl;                       ///< Implementation of the wait logic.
+  DelegateFunc m_waitStartDelegate;  ///< Delegate function for wait start.
 };
 
-/* Class implements event wait logic.
- * Should be alive, while Memory context is alive.
+/*!
+ * @class ScWaitEvent
+ * @brief Implements event wait logic. Should be alive while sc-memory context is alive.
+ * @tparam TScEvent Type of the event.
  */
-template <typename EventClassT>
-class ScWaitEvent : public ScWait
+template <class TScEvent>
+class _SC_EXTERN ScWaitEvent : public ScWait
 {
-public:
-  ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & addr)
-    : m_event(
-          ctx,
-          addr,
-          std::bind(
-              &ScWaitEvent<EventClassT>::OnEvent,
-              this,
-              std::placeholders::_1,
-              std::placeholders::_2,
-              std::placeholders::_3))
-  {
-  }
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
-  virtual ~ScWaitEvent() {}
+public:
+  /*!
+   * @brief Constructor for ScWaitEvent.
+   * @param ctx Sc-memory context.
+   * @param addr An address of sc-element to wait event for.
+   */
+
+  _SC_EXTERN ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & subscriptionAddr);
 
 protected:
-  bool OnEvent(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-  {
-    if (OnEventImpl(listenAddr, edgeAddr, otherAddr))
-    {
-      ScWait::Resolve();
-      return true;
-    }
-    return false;
-  }
-
-  virtual bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr)
-  {
-    return true;
-  }
+  /*!
+   * @brief Event handler.
+   * @param event Event object.
+   * @return Result of the event handling.
+   */
+  virtual sc_bool OnEvent(TScEvent const &);
 
 private:
-  EventClassT m_event;
+  TScElementaryEventSubscription<TScEvent> m_event;
 };
 
-template <typename EventClassT>
-class ScWaitCondition final : public ScWaitEvent<EventClassT>
+/*!
+ * @class ScWaitCondition
+ * @brief Implements waiting for a condition based on an event.
+ * @tparam TScEvent Type of event.
+ */
+template <class TScEvent>
+class _SC_EXTERN ScWaitCondition final : public ScWaitEvent<TScEvent>
 {
-public:
-  using DelegateCheckFunc = std::function<bool(ScAddr const &, ScAddr const &, ScAddr const &)>;
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
-  ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & addr, DelegateCheckFunc func)
-    : ScWaitEvent<EventClassT>(ctx, addr)
-    , m_checkFunc(std::move(func))
-  {
-  }
+public:
+  using DelegateCheckFunc = std::function<sc_bool(TScEvent const &)>;
+
+  /*!
+   * @brief Constructor for ScWaitCondition.
+   * @param ctx Sc-memory context.
+   * @param addr An address of sc-element to wait event for.
+   * @param func Delegate function to check the condition.
+   */
+  _SC_EXTERN ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & subscriptionAddr, DelegateCheckFunc func);
 
 private:
-  bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override
-  {
-    return m_checkFunc(listenAddr, edgeAddr, otherAddr);
-  }
+  /*!
+   * @brief Event handler.
+   * @param event Event object.
+   */
+  sc_bool OnEvent(TScEvent const & event) override;
 
 private:
   DelegateCheckFunc m_checkFunc;
 };
 
-/* Implements waiting for action finish
+/*!
+ * @class ScWaitActionFinished
+ * @brief Implements waiting for an action to finish.
  */
-class ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputEdge>
+class _SC_EXTERN ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
+  /*!
+   * @brief Constructor for ScWaitActionFinished.
+   * @param ctx Sc-memory context.
+   * @param actionAddr An address of the action.
+   */
   _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
 
 private:
-  bool OnEventImpl(ScAddr const & listenAddr, ScAddr const & edgeAddr, ScAddr const & otherAddr) override;
+  /*!
+   * @brief Event handler.
+   * @param event Event object.
+   * @return Result of the event handling.
+   */
+  sc_bool OnEvent(ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event) override;
 };
 
-#define SC_WAIT_CHECK(_func) std::bind(_func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
-#define SC_WAIT_CHECK_MEMBER(_class, _func) \
-  std::bind(_class, _func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
+#include "sc_wait.tpp"

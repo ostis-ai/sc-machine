@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_keynodes.hpp"
+#include "sc-memory/sc_module.hpp"
 
 class ScMemoryTest : public testing::Test
 {
@@ -95,6 +95,6 @@ class ScMemoryTestWithUserMode : public ScMemoryTest
   virtual void SetUp()
   {
     ScMemoryTestWithUserMode::InitializeWithUserMode();
-    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::kMySelf);
+    m_ctx = std::make_unique<TestScMemoryContext>(ScKeynodes::myself);
   }
 };

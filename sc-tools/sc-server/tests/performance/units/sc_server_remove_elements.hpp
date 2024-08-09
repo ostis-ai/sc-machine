@@ -8,7 +8,7 @@
 
 #include "sc_server_test.hpp"
 
-class TestRemoveElements : public TestScServer
+class TestEraseElements : public TestScServer
 {
 public:
   void Run(std::unique_ptr<ScClient> const & client)

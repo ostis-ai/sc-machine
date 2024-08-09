@@ -5,15 +5,14 @@
  */
 
 #include "sc_memory.hpp"
+
+#include "sc_event_subscription.hpp"
+
 #include "sc_keynodes.hpp"
 #include "sc_utils.hpp"
 #include "sc_stream.hpp"
 
-#include "kpm/sc_agent.hpp"
-
 #include "utils/sc_log.hpp"
-
-#include <iostream>
 
 extern "C"
 {
@@ -21,6 +20,8 @@ extern "C"
 #include "sc-core/sc_memory_private.h"
 #include "sc-core/sc_memory_context_private.h"
 #include "sc-core/sc_memory_context_permissions.h"
+#include "sc-core/sc_memory_headers.h"
+#include "sc-core/sc_helper.h"
 }
 
 SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
@@ -30,15 +31,8 @@ namespace
 
 bool isLogMuted = false;
 
-void _logPrintHandler(
-    sc_char const * log_domain,
-    GLogLevelFlags log_level,
-    sc_char const * message,
-    sc_pointer user_data)
+void _logPrintHandler(sc_char const *, GLogLevelFlags log_level, sc_char const * message, sc_pointer)
 {
-  SC_UNUSED(log_domain);
-  SC_UNUSED(user_data);
-
   if (isLogMuted)
     return;
 
@@ -83,11 +77,13 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   if (ctx == nullptr)
     return false;
 
-  ScKeynodes::Init(
-      ms_globalContext,
-      false,
-      params.init_memory_generated_upload ? params.init_memory_generated_structure : (sc_char *)nullptr);
-  ScAgentInit(true);
+  ScAddr initMemoryGeneratedStructureAddr;
+  if (params.init_memory_generated_upload)
+    initMemoryGeneratedStructureAddr =
+        ms_globalContext->HelperResolveSystemIdtf(params.init_memory_generated_structure, ScType::NodeConstStruct);
+  ms_globalContext->m_contextStructureAddr = initMemoryGeneratedStructureAddr;
+
+  ScKeynodes::Initialize(ms_globalContext);
 
   utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
 
@@ -101,9 +97,9 @@ bool ScMemory::IsInitialized()
 
 bool ScMemory::Shutdown(bool saveState /* = true */)
 {
-  utils::ScLog::SetUp("Console", "", "Info");
+  ScKeynodes::Shutdown(ms_globalContext);
 
-  ScKeynodes::Shutdown();
+  utils::ScLog::SetUp("Console", "", "Info");
 
   sc_bool result = sc_memory_shutdown(saveState);
 
@@ -128,27 +124,45 @@ void ScMemory::LogUnmute()
 
 // ---------------
 
-ScMemoryContext::ScMemoryContext()
+ScMemoryContext::ScMemoryContext() noexcept
   : m_context(sc_memory_context_new_ext(*ScAddr::Empty))
 {
 }
 
-ScMemoryContext::ScMemoryContext(ScAddr const & userAddr)
+ScMemoryContext::ScMemoryContext(ScAddr const & userAddr) noexcept
   : m_context(sc_memory_context_new_ext(*userAddr))
 {
 }
 
-ScMemoryContext::ScMemoryContext(sc_memory_context * context)
+ScMemoryContext::ScMemoryContext(sc_memory_context * context) noexcept
   : m_context(context)
 {
 }
 
-ScMemoryContext::~ScMemoryContext()
+ScMemoryContext::~ScMemoryContext() noexcept
 {
   Destroy();
 }
 
-void ScMemoryContext::Destroy()
+ScMemoryContext::ScMemoryContext(ScMemoryContext && other) noexcept
+  : m_context(other.m_context)
+  , m_contextStructureAddr(other.m_contextStructureAddr)
+{
+  other.m_context = nullptr;
+}
+
+ScMemoryContext & ScMemoryContext::operator=(ScMemoryContext && other) noexcept
+{
+  if (this == &other)
+    return *this;
+
+  m_context = other.m_context;
+  other.m_context = nullptr;
+
+  return *this;
+}
+
+void ScMemoryContext::Destroy() noexcept
 {
   if (m_context)
   {
@@ -157,10 +171,26 @@ void ScMemoryContext::Destroy()
   }
 }
 
-ScAddr ScMemoryContext::GetUserAddr()
+ScAddr ScMemoryContext::GetUser()
 {
   CHECK_CONTEXT;
   return sc_memory_context_get_user_addr(m_context);
+}
+
+ScAddr ScMemoryContext::GetContextStructure()
+{
+  CHECK_CONTEXT;
+  return m_contextStructureAddr;
+}
+
+sc_memory_context * ScMemoryContext::operator*() const
+{
+  return m_context;
+}
+
+sc_memory_context * ScMemoryContext::GetRealContext() const
+{
+  return m_context;
 }
 
 void ScMemoryContext::BeingEventsPending()
@@ -482,9 +512,6 @@ ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
     break;
   }
 
-  if (result != SC_RESULT_OK)
-    addr.Reset();
-
   return addr;
 }
 
@@ -520,9 +547,6 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
     break;
   }
 
-  if (result != SC_RESULT_OK)
-    addr.Reset();
-
   return addr;
 }
 
@@ -554,14 +578,6 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
 
   default:
     break;
-  }
-
-  if (result != SC_RESULT_OK)
-  {
-    outSourceAddr.Reset();
-    outTargetAddr.Reset();
-
-    return false;
   }
 
   return true;
@@ -733,10 +749,8 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & st
   return linkAddrList;
 }
 
-void _PushLinkContent(void * data, sc_addr const link_addr, sc_char const * link_content)
+void _PushLinkContent(void * data, sc_addr const, sc_char const * link_content)
 {
-  SC_UNUSED(link_addr);
-
   auto * linkContentList = (std::vector<std::string> *)data;
   linkContentList->emplace_back(link_content);
 }
@@ -808,9 +822,9 @@ ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScT
 {
   CHECK_CONTEXT;
 
-  ScSystemIdentifierQuintuple outFiver;
-  HelperResolveSystemIdtf(sysIdtf, type, outFiver);
-  return outFiver.addr1;
+  ScSystemIdentifierQuintuple quintuple;
+  HelperResolveSystemIdtf(sysIdtf, type, quintuple);
+  return quintuple.addr1;
 }
 
 bool ScMemoryContext::HelperResolveSystemIdtf(
@@ -848,13 +862,13 @@ bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr co
 bool ScMemoryContext::HelperSetSystemIdtf(
     std::string const & sysIdtf,
     ScAddr const & addr,
-    ScSystemIdentifierQuintuple & outFiver)
+    ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
-  sc_system_identifier_fiver fiver;
+  sc_system_identifier_fiver quintuple;
   sc_result const result =
-      sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &fiver);
+      sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &quintuple);
 
   switch (result)
   {
@@ -886,8 +900,12 @@ bool ScMemoryContext::HelperSetSystemIdtf(
     break;
   }
 
-  outFiver = (ScSystemIdentifierQuintuple){
-      ScAddr(fiver.addr1), ScAddr(fiver.addr2), ScAddr(fiver.addr3), ScAddr(fiver.addr4), ScAddr(fiver.addr5)};
+  outQuintuple = (ScSystemIdentifierQuintuple){
+      ScAddr(quintuple.addr1),
+      ScAddr(quintuple.addr2),
+      ScAddr(quintuple.addr3),
+      ScAddr(quintuple.addr4),
+      ScAddr(quintuple.addr5)};
 
   return result == SC_RESULT_OK;
 }
@@ -927,7 +945,7 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   return systemIdtf;
 }
 
-bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType)
+bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const
 {
   CHECK_CONTEXT;
 
@@ -1069,6 +1087,15 @@ ScTemplate::Result ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std:
 {
   CHECK_CONTEXT;
   return templ.FromScs(*this, scsText);
+}
+
+ScTemplate::Result ScMemoryContext::HelperLoadTemplate(
+    ScTemplate & templ,
+    ScAddr & templAddr,
+    ScTemplateParams const & params)
+{
+  CHECK_CONTEXT;
+  return templ.ToScTemplate(*this, templAddr, params);
 }
 
 ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const

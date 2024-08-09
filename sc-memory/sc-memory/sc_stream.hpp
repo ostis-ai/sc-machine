@@ -6,14 +6,14 @@
 
 #pragma once
 
+#include <type_traits>
+
 extern "C"
 {
 #include "sc-core/sc_memory_headers.h"
 }
 
 #include "sc_utils.hpp"
-
-#include <type_traits>
 
 class ScStream
 {

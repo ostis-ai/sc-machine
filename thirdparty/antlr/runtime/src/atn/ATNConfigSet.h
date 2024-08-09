@@ -77,7 +77,7 @@ namespace atn {
 
     bool addAll(const Ref<ATNConfigSet> &other);
 
-    bool operator == (const ATNConfigSet &other);
+    bool operator == (const ATNConfigSet &other) const;
     virtual size_t hashCode();
     virtual size_t size();
     virtual bool isEmpty();

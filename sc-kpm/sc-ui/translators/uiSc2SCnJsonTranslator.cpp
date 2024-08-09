@@ -4,16 +4,22 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include "uiSc2SCnJsonTranslator.h"
+
+#include <algorithm>
+#include <string_view>
+
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_stream.hpp"
 
-#include "uiSc2SCnJsonTranslator.h"
+extern "C"
+{
+#include "sc-core/sc_helper.h"
+}
 
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
 #include "uiUtils.h"
-#include <algorithm>
-#include <string_view>
 
 namespace ScnTranslatorConstants
 {
@@ -713,7 +719,7 @@ sc_addr uiSc2SCnJsonTranslator::GetNextElementArc(sc_addr elementArc)
 }
 
 // -------------------------------------
-sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event const * event, sc_addr arg)
+sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event_subscription const *, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

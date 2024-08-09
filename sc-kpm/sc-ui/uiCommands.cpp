@@ -9,10 +9,12 @@
 #include "uiKeynodes.h"
 #include "uiDefines.h"
 
+#include "sc-core/sc_keynodes.h"
+
 // -------------------- Events ----------------------
-sc_event * event_ui_start_answer_translation = 0;
-sc_event * event_ui_command_generate_instance = 0;
-sc_event * event_ui_remove_displayed_answer = 0;
+sc_event_subscription * event_ui_start_answer_translation = 0;
+sc_event_subscription * event_ui_command_generate_instance = 0;
+sc_event_subscription * event_ui_remove_displayed_answer = 0;
 
 struct sTemplateArcInfo
 {
@@ -34,7 +36,7 @@ typedef std::list<sTemplateArcInfo> tTemplArcsList;
 typedef std::list<sc_addr> tElementsList;
 
 // -------------------- Event handlers --------------
-sc_result ui_command_generate_instance(sc_event const * event, sc_addr arg)
+sc_result ui_command_generate_instance(sc_event_subscription const *, sc_addr arg)
 {
   sc_addr command_addr;
   sc_addr args_addr;
@@ -270,7 +272,7 @@ sc_result ui_command_generate_instance(sc_event const * event, sc_addr arg)
   return SC_RESULT_OK;
 }
 
-sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
+sc_result ui_start_answer_translation(sc_event_subscription *, sc_addr arg)
 {
   sc_addr action_addr;
   sc_addr answer_addr;
@@ -379,7 +381,7 @@ sc_result ui_start_answer_translation(sc_event * event, sc_addr arg)
   return SC_RESULT_OK;
 }
 
-sc_result ui_remove_displayed_answer(sc_event * event, sc_addr arg)
+sc_result ui_remove_displayed_answer(sc_event_subscription *, sc_addr arg)
 {
   sc_addr answer_addr;
   sc_iterator5 * it5 = 0;
@@ -456,15 +458,15 @@ sc_result ui_remove_displayed_answer(sc_event * event, sc_addr arg)
 // -------------------- Module ----------------------
 sc_result ui_initialize_commands()
 {
-  /*event_ui_start_answer_translation = sc_event_new(keynode_action_finished, SC_EVENT_ADD_OUTPUT_ARC, 0,
+  /*event_ui_start_answer_translation = sc_event_subscription_new(keynode_action_finished, sc_event_add_output_arc, 0,
     ui_start_answer_translation, 0); if (event_ui_start_answer_translation == null) return SC_RESULT_ERROR;*/
 
-  event_ui_command_generate_instance = sc_event_new(
-      s_default_ctx, keynode_command_initiated, SC_EVENT_ADD_OUTPUT_ARC, 0, ui_command_generate_instance, 0);
+  event_ui_command_generate_instance = sc_event_subscription_new(
+      s_default_ctx, keynode_command_initiated, sc_event_add_output_arc_addr, 0, ui_command_generate_instance, 0);
   if (event_ui_command_generate_instance == null_ptr)
     return SC_RESULT_ERROR;
 
-  /*event_ui_remove_displayed_answer = sc_event_new(keynode_displayed_answer, SC_EVENT_ADD_OUTPUT_ARC, 0,
+  /*event_ui_remove_displayed_answer = sc_event_subscription_new(keynode_displayed_answer, sc_event_add_output_arc, 0,
     ui_remove_displayed_answer, 0); if (event_ui_remove_displayed_answer == null) return SC_RESULT_ERROR;*/
 
   return SC_RESULT_OK;
@@ -473,14 +475,14 @@ sc_result ui_initialize_commands()
 void ui_shutdown_commands()
 {
   if (event_ui_start_answer_translation)
-    sc_event_destroy(event_ui_start_answer_translation);
-  event_ui_start_answer_translation = (sc_event *)null_ptr;
+    sc_event_subscription_destroy(event_ui_start_answer_translation);
+  event_ui_start_answer_translation = (sc_event_subscription *)null_ptr;
 
   if (event_ui_command_generate_instance)
-    sc_event_destroy(event_ui_command_generate_instance);
-  event_ui_command_generate_instance = (sc_event *)null_ptr;
+    sc_event_subscription_destroy(event_ui_command_generate_instance);
+  event_ui_command_generate_instance = (sc_event_subscription *)null_ptr;
 
   if (event_ui_remove_displayed_answer)
-    sc_event_destroy(event_ui_remove_displayed_answer);
-  event_ui_remove_displayed_answer = (sc_event *)null_ptr;
+    sc_event_subscription_destroy(event_ui_remove_displayed_answer);
+  event_ui_remove_displayed_answer = (sc_event_subscription *)null_ptr;
 }

@@ -105,7 +105,7 @@ void ScTemplateItem::SetReplacement(sc_char const * name)
     m_name = name;
 }
 
-ScTemplateItem operator>>(ScAddr const & value, char const * replName)
+ScTemplateItem operator>>(ScAddr const & value, sc_char const * replName)
 {
   return {value, replName};
 }
@@ -115,7 +115,7 @@ ScTemplateItem operator>>(ScAddr const & value, std::string const & replName)
   return {value, replName.c_str()};
 }
 
-ScTemplateItem operator>>(ScType const & value, char const * replName)
+ScTemplateItem operator>>(ScType const & value, sc_char const * replName)
 {
   return {value, replName};
 }
@@ -249,6 +249,30 @@ ScTemplate::~ScTemplate()
   for (auto * triple : m_templateTriples)
     delete triple;
   m_templateTriples.clear();
+}
+
+ScTemplate::ScTemplate(ScTemplate && other)
+  : m_templateItemsNamesToReplacementItemsPositions(std::move(other.m_templateItemsNamesToReplacementItemsPositions))
+  , m_templateTriples(std::move(other.m_templateTriples))
+  , m_priorityOrderedTemplateTriples(std::move(other.m_priorityOrderedTemplateTriples))
+  , m_templateItemsNamesToReplacementItemsAddrs(std::move(other.m_templateItemsNamesToReplacementItemsAddrs))
+  , m_templateItemsNamesToTypes(std::move(other.m_templateItemsNamesToTypes))
+{
+}
+
+ScTemplate & ScTemplate::operator=(ScTemplate && other)
+{
+  if (this == &other)
+    return *this;
+
+  m_templateItemsNamesToReplacementItemsPositions = std::move(other.m_templateItemsNamesToReplacementItemsPositions);
+  m_templateTriples = std::move(other.m_templateTriples);
+  m_priorityOrderedTemplateTriples = std::move(other.m_priorityOrderedTemplateTriples);
+  m_templateItemsNamesToReplacementItemsAddrs = std::move(other.m_templateItemsNamesToReplacementItemsAddrs);
+  m_templateItemsNamesToTypes = std::move(other.m_templateItemsNamesToTypes);
+
+  other.Clear();
+  return *this;
 }
 
 ScTemplate & ScTemplate::operator()(

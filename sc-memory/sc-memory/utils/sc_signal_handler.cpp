@@ -44,7 +44,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
   }
 }
 #elif SC_IS_PLATFORM_LINUX || SC_IS_PLATFORM_MAC
-void sc_signal_handler(int s)
+void sc_signal_handler(int)
 {
   if (utils::ScSignalHandler::m_onTerminate)
     utils::ScSignalHandler::m_onTerminate();

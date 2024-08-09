@@ -8,13 +8,11 @@
 
 #include "sc_memory_json_action.hpp"
 
-class ScMemoryDeleteElementsJsonAction : public ScMemoryJsonAction
+class ScMemoryEraseElementsJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(
-      ScMemoryContext * context,
-      ScMemoryJsonPayload requestPayload,
-      ScMemoryJsonPayload & errorsPayload) override
+  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
+      override
   {
     for (auto & hash : requestPayload)
     {

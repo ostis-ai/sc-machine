@@ -12,18 +12,13 @@
 
 #pragma once
 
-extern "C"
-{
-#include "sc-core/sc_memory_headers.h"
-#include "sc-core/sc_helper.h"
-}
-
 #include "sc_addr.hpp"
-#include "sc_event.hpp"
-#include "sc_iterator.hpp"
-#include "sc_stream.hpp"
-#include "sc_template.hpp"
 #include "sc_type.hpp"
+
+#include "sc_iterator.hpp"
+#include "sc_template.hpp"
+
+#include "sc_stream.hpp"
 
 class ScMemoryContext;
 
@@ -98,28 +93,25 @@ public:
   };
 
 public:
-  _SC_EXTERN explicit ScMemoryContext();
-  _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context);
-  _SC_EXTERN ~ScMemoryContext();
+  _SC_EXTERN explicit ScMemoryContext() noexcept;
+  _SC_EXTERN explicit ScMemoryContext(sc_memory_context * context) noexcept;
+  _SC_EXTERN ~ScMemoryContext() noexcept;
 
-  // Disable object copying
-  ScMemoryContext(ScMemoryContext const & other) = delete;
-  ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
+  _SC_EXTERN ScMemoryContext(ScMemoryContext const & other) = delete;
+  _SC_EXTERN ScMemoryContext & operator=(ScMemoryContext const & other) = delete;
 
-  _SC_EXTERN ScAddr GetUserAddr();
+  _SC_EXTERN ScMemoryContext(ScMemoryContext && other) noexcept;
+  _SC_EXTERN ScMemoryContext & operator=(ScMemoryContext && other) noexcept;
 
-  _SC_EXTERN sc_memory_context * operator*() const
-  {
-    return m_context;
-  }
+  _SC_EXTERN ScAddr GetUser();
+  _SC_EXTERN ScAddr GetContextStructure();
 
-  _SC_EXTERN sc_memory_context * GetRealContext() const
-  {
-    return m_context;
-  }
+  _SC_EXTERN sc_memory_context * operator*() const;
+
+  _SC_EXTERN sc_memory_context * GetRealContext() const;
 
   //! Call this function, when you request to destroy real memory context, before destructor calls for this object
-  _SC_EXTERN void Destroy();
+  _SC_EXTERN void Destroy() noexcept;
 
   //! Begin events pending mode
   _SC_EXTERN void BeingEventsPending();
@@ -797,7 +789,7 @@ public:
    * bool hasEdge = ctx.HelperCheckEdge(node1, node2, edgeType);
    * @endcode
    */
-  _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) noexcept(false);
+  _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.
@@ -827,11 +819,11 @@ public:
    *
    * This function resolves the sc-address of an sc-element with the specified system identifier.
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
-   * Additionally, it returns the system identifier fiver of the resolved or created sc-element.
+   * Additionally, it returns the system identifier quintuple of the resolved or created sc-element.
    *
    * @param sysIdtf The system identifier of the sc-element to resolve.
    * @param type The type of the sc-node to create if the element is not found.
-   * @param outFiver The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of resolved
+   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved
    *                              addr1 (resolved sc-element address)
    *                addr4           |
    *        addr5 --------------->  | addr2
@@ -846,14 +838,14 @@ public:
    *
    * @code
    * ScMemoryContext ctx;
-   * ScSystemIdentifierQuintuple resultFiver;
-   * bool success = ctx.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass, resultFiver);
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool success = ctx.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass, resultQuintuple);
    * @endcode
    */
   _SC_EXTERN bool HelperResolveSystemIdtf(
       std::string const & sysIdtf,
       ScType const & type,
-      ScSystemIdentifierQuintuple & outFiver) noexcept(false);
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*! Tries to set system identifier for sc-element ScAddr.
    * @param sysIdtf System identifier to set for sc-element `addr`
@@ -875,11 +867,8 @@ public:
   /*! Tries to set system identifier for sc-element ScAddr.
    * @param sysIdtf System identifier to set for sc-element `addr`
    * @param addr Sc-element address to set `sysIdtf` for it
-   * @param outFiver[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier fiver of sc-element `addr`
-   * with set `sysIdtf`
-   *                              addr1 (`addr`)
-   *                addr4           |
-   *        addr5 --------------->  | addr2
+   * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
+   * sc-element `addr` with set `sysIdtf` addr1 (`addr`) addr4           | addr5 --------------->  | addr2
    *     (nrel_system_identifier)   |
    *                              addr3 (system identifier sc-link)
    * @returns false if `sysIdtf` set for other sc-element address.
@@ -891,14 +880,14 @@ public:
    * @code
    * ScMemoryContext ctx;
    * ScAddr elementAddr = ctx.CreateNode(ScType::NodeConst);
-   * ScSystemIdentifierQuintuple resultFiver;
-   * bool success = ctx.HelperSetSystemIdtf("example_identifier", elementAddr, resultFiver);
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool success = ctx.HelperSetSystemIdtf("example_identifier", elementAddr, resultQuintuple);
    * @endcode
    */
   _SC_EXTERN bool HelperSetSystemIdtf(
       std::string const & sysIdtf,
       ScAddr const & addr,
-      ScSystemIdentifierQuintuple & resultFiver) noexcept(false);
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*! Tries to get system identifier for sc-element ScAddr.
    * @param addr Sc-element address to get it system identifier
@@ -957,11 +946,11 @@ public:
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address as a system identifier fiver.
+   * @brief Finds an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
-   * The sc-address is then converted into a system identifier fiver, which is stored in the 'outFiver' parameter.
-   * If the element is found, the function returns true; otherwise, it returns false.
+   * The sc-address is then converted into a system identifier quintuple, which is stored in the 'outQuintuple'
+   * parameter. If the element is found, the function returns true; otherwise, it returns false.
    *
    * @param sysIdtf The system identifier of the sc-element to find.
    * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).
@@ -981,7 +970,7 @@ public:
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*!
-   * Generates sc-constructions by isomorphic sc-template and accumulates generated sc-construction into `result`.
+   * Generates sc-constructions by sc-template and accumulates generated sc-construction into `result`.
    * @param templ A sc-template object to find constructions by it.
    * @param result A generated sc-construction.
    * @param params A map of specified sc-template sc-variables to user replacements.
@@ -1013,7 +1002,7 @@ public:
       ScTemplateResultCode * resultCode = nullptr) noexcept(false);
 
   /*!
-   * Searches sc-constructions by isomorphic sc-template and accumulates found sc-constructions into `result`.
+   * Searches sc-constructions by sc-template and accumulates found sc-constructions into `result`.
    * @param templ A sc-template object to find sc-constructions by it.
    * @param result A result vector of found sc-constructions.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
@@ -1049,7 +1038,7 @@ public:
       ScTemplateSearchResult & result) noexcept(false);
 
   /*!
-   * Searches sc-constructions by isomorphic sc-template and passes found sc-constructions to `callback`
+   * Searches sc-constructions by sc-template and passes found sc-constructions to `callback`
    * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
    * condition.
    * @param templ A sc-template object to find sc-constructions by it
@@ -1087,13 +1076,42 @@ public:
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
+  /*!
+   * Searches sc-constructions by sc-template and passes found sc-constructions to `callback`
+   * lambda-function.
+   * @param templ A sc-template object to find sc-constructions by it
+   * @param callback A lambda-function, callable when each sc-construction triple was found
+   * @param checkCallback A lambda-function, that filters all found triples with checking sc-address
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if sc-template is not valid
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & structureAddr = ctx.CreateNode(ScType::NodeConstStruct);
+   * ScAddr const & modelAddr = ctx.CreateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+   * ScTemplate templ;
+   * templ.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * m_ctx->HelperSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) {
+   *  ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&ctx](ScAddr const & addr) -> bool {
+   *  return ctx->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   * });
+   * @endcode
+   */
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   /*!
-   * Searches constructions by isomorphic sc-template and pass found sc-constructions to `callback`
+   * Searches constructions by sc-template and pass found sc-constructions to `callback`
    * lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
    *  - ScTemplateSearchRequest::CONTINUE,
    *  - ScTemplateSearchRequest::STOP,
@@ -1147,9 +1165,9 @@ public:
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   /*!
-   * Builds a program object of isomorphic template from existing in sc-memory sc-address of sc-structure. After
+   * Builds a program object of sc-template from existing in sc-memory sc-address of sc-structure. After
    * sc-template built you can use it to search or generate sc-constructions.
-   * @param templ A built program object of isomorphic template.
+   * @param templ A built program object of sc-template.
    * @param templAddr A sc-address of sc-template structure.
    * @param params A map of specified sc-template sc-variables to user replacements.
    * @return Returns true if the sc-template is built; otherwise, returns false.
@@ -1170,10 +1188,10 @@ public:
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 
   /*!
-   * Builds a program object of isomorphic template represented in sc.s-text. After sc-template built you can use it to
+   * Builds a program object of sc-template represented in sc.s-text. After sc-template built you can use it to
    * search or generate sc-constructions.
-   * @param templ A built program object of isomorphic template.
-   * @param scsText A sc.s-representation of isomorphic template.
+   * @param templ A built program object of sc-template.
+   * @param scsText A sc.s-representation of sc-template.
    * @return Returns true if the sc-template is built; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if sc-template is not valid
    *
@@ -1188,6 +1206,32 @@ public:
    */
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText) noexcept(false);
 
+  /*!
+   * Loads a program object of sc-template to sc-structure in sc-memory.
+   * This operation is reverse for operation of building a program object of sc-template.
+   * @param templ A loaded program object of sctemplate.
+   * @param templAddr A sc-address of sc-template structure formed in sc-memory.
+   * @return Returns true if the sc-template is built; otherwise, returns false.
+   *
+   * @code
+   * ...
+   * ...
+   * ScTemplate templ;
+   * templ.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * ScAddr templAddr;
+   * m_ctx->HelperLoadTemplate(templ, templAddr);
+   * ...
+   * @endcode
+   */
+  _SC_EXTERN ScTemplate::Result HelperLoadTemplate(
+      ScTemplate & templ,
+      ScAddr & templAddr,
+      ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
+
   /*! Calculate sc-element counts
    *
    * @return Returns sc-nodes, sc-connectors and sc-links counts.
@@ -1197,14 +1241,14 @@ public:
 
 protected:
   friend class ScMemory;
-  friend class ScAgent;
   friend class ScServerMessageAction;
+  friend class ScAction;
 
-  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr);
+  _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr) noexcept;
 
-private:
+protected:
   sc_memory_context * m_context;
-  std::string m_name;
+  ScAddr m_contextStructureAddr;
 };
 
 class ScMemoryContextEventsPendingGuard
