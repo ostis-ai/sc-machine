@@ -16,9 +16,9 @@
                 * [C++ Event subscriptions](sc-memory/api/cpp/extended/agents/event_subscriptions.md) 
                 * [C++ Waits](sc-memory/api/cpp/extended/agents/waits.md) 
                 * [C++ Agents](sc-memory/api/cpp/extended/agents/agents.md)
-                * [C++ Keynodes]
-                * [C++ Modules]
-                * [C++ Agent utils]
+                * [C++ Keynodes](sc-memory/api/cpp/extended/agents/keynodes.md)
+                * [C++ Modules](sc-memory/api/cpp/extended/agents/modules.md)
+                * [C++ Agent utils](sc-memory/api/cpp/extended/agents/agent_utils.md)
         * C++ Guides:
             * [C++ Implementing agent guide](sc-memory/api/cpp/guides/implementing_agent_guide.md)
     * Python API - *documentation of Python API provided by py-sc-client*
