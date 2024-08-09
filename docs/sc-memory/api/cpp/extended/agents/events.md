@@ -10,7 +10,7 @@ This API describes how to work with sc-events.
 
 The sc-machine provides functionality for subscribing to the following syntactic elementary types of sc-events:
 
-* `ScElementaryEvent` is base class for all sc-events, it can be used to catch all sc-events for specified sc-element.
+* `ScElementaryEvent` is base class for all sc-events, it can be used to handle all sc-events for specified sc-element;
 * `ScEventAddOutputArc`, emits each time, when output (outgoing) sc-arc (from specified sc-element) is created;
 * `ScEventAddInputArc`, emits each time, when input (ingoing) sc-arc (to specified sc-element) is created;
 * `ScEventAddEdge`, emits each time, when sc-edge (from or to specified sc-element) is created;
@@ -22,15 +22,15 @@ The sc-machine provides functionality for subscribing to the following syntactic
 
 The following classes correspond to them:
 
-* `ScElementaryEvent`
-* `template class <ScType const & arcType> class ScEventAddInputArc<arcType>`;
-* `template class <ScType const & arcType> class ScEventAddOutputArc<arcType>`;
-* `template class <ScType const & edgeType> class ScEventAddEdge<edgeType>`;
-* `template class <ScType const & arcType> class ScEventRemoveInputArc<arcType>`;
-* `template class <ScType const & arcType> class ScEventRemoveOutputArc<arcType>`;
-* `template class <ScType const & edgeType> class ScEventRemoveEdge<edgeType>`;
+* `class ScElementaryEvent`;
+* `template <ScType const & arcType> class ScEventAddOutputArc`;
+* `template <ScType const & arcType> class ScEventAddInputArc`;
+* `template <ScType const & edgeType> class ScEventAddEdge`;
+* `template <ScType const & arcType> class ScEventRemoveOutputArc`;
+* `template <ScType const & arcType> class ScEventRemoveInputArc`;
+* `template <ScType const & edgeType> class ScEventRemoveEdge`;
 * `class ScEventRemoveElement`;
-* `class ScEventChangeLinkContent`;
+* `class ScEventChangeLinkContent`.
 
 !!! note
     All these sc-events classes are derived from `TScElementaryEvent` class. `ScElementaryEvent` class is derived from `ScEvent` class that is interface class.
@@ -40,6 +40,9 @@ The following classes correspond to them:
 
 !!! warning
     You can't create objects of these classes. All constructors of these classes are private.
+
+!!! warning
+    All objects of sc-event classes are not copyable and not movable.
 
 ### **ScElementaryEvent**
 

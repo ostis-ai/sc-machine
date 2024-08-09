@@ -13,6 +13,7 @@
             * [C++ ScTemplate API](sc-memory/api/cpp/extended/template_api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)* 
             * C++ Agents API: - *documentation of C++ Agents API for creating sc-agents*
                 * [C++ Events](sc-memory/api/cpp/extended/agents/events.md) 
+                * [C++ Event subscriptions](sc-memory/api/cpp/extended/agents/event_subscriptions.md) 
                 * [C++ Waits](sc-memory/api/cpp/extended/agents/waits.md) 
                 * [C++ Agents](sc-memory/api/cpp/extended/agents/agents.md)
                 * [C++ Keynodes]
