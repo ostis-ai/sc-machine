@@ -18,9 +18,17 @@ nav:
       - C++ API:
           - C++ Core API: sc-memory/api/cpp/core/api.md
           - C++ Extended API:
-              - System identifier API: sc-memory/api/cpp/extended/helper_api.md
-              - ScTemplate API: sc-memory/api/cpp/extended/template_api.md
-          - C++ Agents API: sc-memory/api/cpp/agents.md
+              - C++ System identifier API: sc-memory/api/cpp/extended/helper_api.md
+              - C++ ScTemplate API: sc-memory/api/cpp/extended/template_api.md
+              - C++ Agents API:
+                  - C++ Events: sc-memory/api/cpp/extended/agents/events.md
+                  - C++ Waits: sc-memory/api/cpp/extended/agents/waits.md
+                  - C++ Agents:  sc-memory/api/cpp/extended/agents/agents.md
+                  - C++ Keynodes: index.md
+                  - C++ Modules: index.md
+                  - C++ Agent utils: index.md
+          - C++ Guides:
+              - C++ Implementing agent guide: sc-memory/api/cpp/guides/implementing_agent_guide.md
       - Python API:
           - Python Core API: https://github.com/ostis-ai/py-sc-client
           - Python Extended API: https://github.com/ostis-ai/py-sc-kpm
@@ -35,7 +43,6 @@ nav:
       - Knowledge Base repo file: sc-tools/kb_repo_file.md
       - Websocket Server: sc-tools/sc_server.md
       - Sc-machine Runner: sc-tools/sc_machine.md
-      - Meta Programming: sc-tools/cpp_meta.md
   - Development:
       - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
       - Codestyle Guide: dev/codestyle.md
