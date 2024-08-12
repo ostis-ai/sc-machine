@@ -157,9 +157,9 @@ sc_bool test_agent_has_result(sc_memory_context * context, sc_addr const action_
       context,
       action_addr,
       sc_type_arc_common | sc_type_const,
-      sc_type_node | sc_type_const,  // action_addr -> keynode_nrel_answer {}
+      sc_type_node | sc_type_const,  // action_addr -> keynode_nrel_result {}
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
   sc_bool const result = sc_iterator5_next(action_addr_it5);
   sc_iterator5_free(action_addr_it5);
 

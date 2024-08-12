@@ -14,13 +14,13 @@ extern "C"
 
 extern sc_addr keynode_user;
 extern sc_addr keynode_command_translate_from_sc;
-extern sc_addr keynode_nrel_user_answer_formats;
+extern sc_addr keynode_nrel_user_result_formats;
 extern sc_addr keynode_rrel_source_sc_construction;
 extern sc_addr keynode_rrel_user_lang;
 extern sc_addr keynode_rrel_output_format;
 extern sc_addr keynode_rrel_filter_list;
 
-extern sc_addr keynode_action_nrel_answer;
+extern sc_addr keynode_action_nrel_result;
 extern sc_addr keynode_action_finished;
 extern sc_addr keynode_nrel_authors;
 extern sc_addr keynode_nrel_translation;
@@ -39,7 +39,7 @@ extern sc_addr keynode_rrel_command_arguments;
 extern sc_addr keynode_rrel_command;
 extern sc_addr keynode_nrel_command_template;
 extern sc_addr keynode_nrel_command_result;
-extern sc_addr keynode_displayed_answer;
+extern sc_addr keynode_displayed_result;
 
 extern sc_addr keynode_format_scs_json;
 extern sc_addr keynode_format_scg_json;

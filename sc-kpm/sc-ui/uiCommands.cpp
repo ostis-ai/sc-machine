@@ -12,9 +12,9 @@
 #include "sc-core/sc_keynodes.h"
 
 // -------------------- Events ----------------------
-sc_event_subscription * event_ui_start_answer_translation = 0;
+sc_event_subscription * event_ui_start_result_translation = 0;
 sc_event_subscription * event_ui_command_generate_instance = 0;
-sc_event_subscription * event_ui_remove_displayed_answer = 0;
+sc_event_subscription * event_ui_remove_displayed_result = 0;
 
 struct sTemplateArcInfo
 {
@@ -272,10 +272,10 @@ sc_result ui_command_generate_instance(sc_event_subscription const *, sc_addr ar
   return SC_RESULT_OK;
 }
 
-sc_result ui_start_answer_translation(sc_event_subscription *, sc_addr arg)
+sc_result ui_start_result_translation(sc_event_subscription *, sc_addr arg)
 {
   sc_addr action_addr;
-  sc_addr answer_addr;
+  sc_addr result_addr;
   sc_addr author_addr;
   sc_addr output_formats_addr;
   sc_addr format_addr;
@@ -293,14 +293,14 @@ sc_result ui_start_answer_translation(sc_event_subscription *, sc_addr arg)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_action_nrel_answer);
+      keynode_action_nrel_result);
   if (sc_iterator5_next(it5) == SC_FALSE)
   {
     sc_iterator5_free(it5);
     return SC_RESULT_ERROR;
   }
 
-  answer_addr = sc_iterator5_value(it5, 2);
+  result_addr = sc_iterator5_value(it5, 2);
 
   // find author of this action
   it5 = sc_iterator5_f_a_a_a_f_new(
@@ -321,14 +321,14 @@ sc_result ui_start_answer_translation(sc_event_subscription *, sc_addr arg)
     // check if author is an user
     if (sc_helper_check_arc(s_default_ctx, keynode_user, author_addr, sc_type_arc_pos_const_perm) == SC_TRUE)
     {
-      // get answer output formats
+      // get result output formats
       it5 = sc_iterator5_f_a_a_a_f_new(
           s_default_ctx,
           action_addr,
           sc_type_arc_common | sc_type_const,
           sc_type_node | sc_type_const,
           sc_type_arc_pos_const_perm,
-          keynode_nrel_user_answer_formats);
+          keynode_nrel_user_result_formats);
       if (it5 == null_ptr)
         return SC_RESULT_ERROR;
 
@@ -351,7 +351,7 @@ sc_result ui_start_answer_translation(sc_event_subscription *, sc_addr arg)
           trans_command_addr = sc_memory_node_new(s_default_ctx, sc_type_const);
           SYSTEM_ELEMENT(trans_command_addr);
 
-          arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, trans_command_addr, answer_addr);
+          arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, trans_command_addr, result_addr);
           SYSTEM_ELEMENT(arc_addr);
           arc_addr = sc_memory_arc_new(
               s_default_ctx, sc_type_arc_pos_const_perm, keynode_rrel_source_sc_construction, arc_addr);
@@ -376,19 +376,19 @@ sc_result ui_start_answer_translation(sc_event_subscription *, sc_addr arg)
   else
     sc_iterator5_free(it5);
 
-  // get answer node
+  // get result node
 
   return SC_RESULT_OK;
 }
 
-sc_result ui_remove_displayed_answer(sc_event_subscription *, sc_addr arg)
+sc_result ui_remove_displayed_result(sc_event_subscription *, sc_addr arg)
 {
-  sc_addr answer_addr;
+  sc_addr result_addr;
   sc_iterator5 * it5 = 0;
   sc_iterator5 * it5Res = 0;
   sc_iterator5 * it5Args = 0;
 
-  if (sc_memory_get_arc_end(s_default_ctx, arg, &answer_addr) != SC_RESULT_OK)
+  if (sc_memory_get_arc_end(s_default_ctx, arg, &result_addr) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   // first of all delete translation command
@@ -396,7 +396,7 @@ sc_result ui_remove_displayed_answer(sc_event_subscription *, sc_addr arg)
       s_default_ctx,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      answer_addr,
+      result_addr,
       sc_type_arc_pos_const_perm,
       keynode_rrel_source_sc_construction);
   if (sc_iterator5_next(it5) == SC_TRUE)
@@ -406,7 +406,7 @@ sc_result ui_remove_displayed_answer(sc_event_subscription *, sc_addr arg)
   // remove translation result
   it5 = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
-      answer_addr,
+      result_addr,
       sc_type_arc_common | sc_type_const,
       sc_type_link,
       sc_type_arc_pos_const_perm,
@@ -420,9 +420,9 @@ sc_result ui_remove_displayed_answer(sc_event_subscription *, sc_addr arg)
       s_default_ctx,
       sc_type_node | sc_type_const,
       sc_type_arc_common | sc_type_const,
-      answer_addr,
+      result_addr,
       sc_type_arc_pos_const_perm,
-      keynode_action_nrel_answer);
+      keynode_action_nrel_result);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
     it5Res =
@@ -449,8 +449,8 @@ sc_result ui_remove_displayed_answer(sc_event_subscription *, sc_addr arg)
   }
   sc_iterator5_free(it5);
 
-  // now we can remove answer node
-  sc_memory_element_free(s_default_ctx, answer_addr);
+  // now we can remove result node
+  sc_memory_element_free(s_default_ctx, result_addr);
 
   return SC_RESULT_OK;
 }
@@ -458,31 +458,31 @@ sc_result ui_remove_displayed_answer(sc_event_subscription *, sc_addr arg)
 // -------------------- Module ----------------------
 sc_result ui_initialize_commands()
 {
-  /*event_ui_start_answer_translation = sc_event_subscription_new(keynode_action_finished, sc_event_add_output_arc, 0,
-    ui_start_answer_translation, 0); if (event_ui_start_answer_translation == null) return SC_RESULT_ERROR;*/
+  /*event_ui_start_result_translation = sc_event_subscription_new(keynode_action_finished, sc_event_add_output_arc, 0,
+    ui_start_result_translation, 0); if (event_ui_start_result_translation == null) return SC_RESULT_ERROR;*/
 
   event_ui_command_generate_instance = sc_event_subscription_new(
       s_default_ctx, keynode_command_initiated, sc_event_add_output_arc_addr, 0, ui_command_generate_instance, 0);
   if (event_ui_command_generate_instance == null_ptr)
     return SC_RESULT_ERROR;
 
-  /*event_ui_remove_displayed_answer = sc_event_subscription_new(keynode_displayed_answer, sc_event_add_output_arc, 0,
-    ui_remove_displayed_answer, 0); if (event_ui_remove_displayed_answer == null) return SC_RESULT_ERROR;*/
+  /*event_ui_remove_displayed_result = sc_event_subscription_new(keynode_displayed_result, sc_event_add_output_arc, 0,
+    ui_remove_displayed_result, 0); if (event_ui_remove_displayed_result == null) return SC_RESULT_ERROR;*/
 
   return SC_RESULT_OK;
 }
 
 void ui_shutdown_commands()
 {
-  if (event_ui_start_answer_translation)
-    sc_event_subscription_destroy(event_ui_start_answer_translation);
-  event_ui_start_answer_translation = (sc_event_subscription *)null_ptr;
+  if (event_ui_start_result_translation)
+    sc_event_subscription_destroy(event_ui_start_result_translation);
+  event_ui_start_result_translation = (sc_event_subscription *)null_ptr;
 
   if (event_ui_command_generate_instance)
     sc_event_subscription_destroy(event_ui_command_generate_instance);
   event_ui_command_generate_instance = (sc_event_subscription *)null_ptr;
 
-  if (event_ui_remove_displayed_answer)
-    sc_event_subscription_destroy(event_ui_remove_displayed_answer);
-  event_ui_remove_displayed_answer = (sc_event_subscription *)null_ptr;
+  if (event_ui_remove_displayed_result)
+    sc_event_subscription_destroy(event_ui_remove_displayed_result);
+  event_ui_remove_displayed_result = (sc_event_subscription *)null_ptr;
 }

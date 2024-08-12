@@ -414,7 +414,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  *
  *   // Write agent logic here.
  *
- *   action.SetAnswer(answerAddr);
+ *   action.SetResult(resultAddr);
  *   return action.FinishSuccessfully();
  * }
  * @endcode

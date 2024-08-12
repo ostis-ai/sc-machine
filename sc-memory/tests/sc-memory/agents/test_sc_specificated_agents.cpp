@@ -46,7 +46,7 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
     action_initiated _-> .._action;;
     action_finished _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
-    .._action _=> nrel_answer:: .._answer;;
+    .._action _=> nrel_result:: .._result;;
   *];;
 
   test_specificated_agent_action
@@ -686,7 +686,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
       test_specificated_agent_action _-> .._action;;
       action_finished _-> .._action;;
       .._action _-> rrel_1:: .._parameter;;
-      .._action _=> nrel_answer:: .._answer;;
+      .._action _=> nrel_result:: .._result;;
     *];;
 
     test_specificated_agent_action

@@ -23,8 +23,8 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished_unsuccessfully) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::action_finished_with_error.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished_with_error) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::nrel_answer.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_answer) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::nrel_result.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_result) == ScType::NodeConstNoRole);
 
   EXPECT_TRUE(ScKeynodes::abstract_sc_agent.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::abstract_sc_agent) == ScType::NodeConstClass);

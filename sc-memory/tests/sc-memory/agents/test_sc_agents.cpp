@@ -173,82 +173,82 @@ TEST_F(ScAgentTest, ATestAddMultipleOutputArc)
   UnsubscribeAgent<ATestAddMultipleOutputArc>(&*m_ctx, subscriptionAddr);
 }
 
-TEST_F(ScAgentTest, ATestCheckAnswerOnlyFirstArgumentV1)
+TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   context.CreateAction(ATestAddOutputArc::add_output_arc_action)
       .SetArgument(1, ATestAddOutputArc::add_output_arc_action)
       .Initiate();
 
-  EXPECT_TRUE(ATestCheckAnswer::msWaiter.Wait());
+  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckAnswerOnlyFirstArgumentV2)
+TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV2)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputArc::add_output_arc_action)
                   .SetArgument(1, ATestAddOutputArc::add_output_arc_action)
                   .InitiateAndWait(2000));
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckAnswerOnlySecondArgumentV1)
+TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV1)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   context.CreateAction(ATestAddOutputArc::add_output_arc_action)
       .SetArgument(2, ATestAddOutputArc::add_output_arc_action)
       .Initiate();
 
-  EXPECT_TRUE(ATestCheckAnswer::msWaiter.Wait());
+  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckAnswerOnlySecondArgumentV2)
+TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV2)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputArc::add_output_arc_action)
                   .SetArgument(2, ATestAddOutputArc::add_output_arc_action)
                   .InitiateAndWait(2000));
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckAnswerTwoArgumentsV1)
+TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV1)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   context.CreateAction(ATestAddOutputArc::add_output_arc_action)
       .SetArguments(ATestAddOutputArc::add_output_arc_action, ATestAddOutputArc::add_output_arc_action)
       .Initiate();
 
-  EXPECT_TRUE(ATestCheckAnswer::msWaiter.Wait());
+  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
-TEST_F(ScAgentTest, ATestCheckAnswerTwoArgumentsV2)
+TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV2)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   EXPECT_TRUE(context.CreateAction(ATestAddOutputArc::add_output_arc_action)
                   .SetArguments(ATestAddOutputArc::add_output_arc_action, ATestAddOutputArc::add_output_arc_action)
                   .InitiateAndWait(2000));
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScAgentTest, ATestGetInitiationConditionTemplate)
@@ -363,7 +363,7 @@ TEST_F(ScAgentTest, RegisterAgentWithinModule)
 
 TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
 {
-  ATestCheckAnswer agent;
+  ATestCheckResult agent;
   EXPECT_THROW(agent.GetAbstractAgent(), utils::ExceptionInvalidState);
   EXPECT_NO_THROW(agent.GetActionClass());
   EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_add_output_arc);
@@ -372,5 +372,5 @@ TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
   EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionInvalidState);
   EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
   EXPECT_NO_THROW(agent.GetResultConditionTemplate());
-  EXPECT_EQ(agent.GetName(), "ATestCheckAnswer");
+  EXPECT_EQ(agent.GetName(), "ATestCheckResult");
 }

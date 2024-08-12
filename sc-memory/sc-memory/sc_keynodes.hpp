@@ -222,7 +222,7 @@ public:
   _SC_EXTERN static inline ScKeynode const action_finished_with_error{
       "action_finished_with_error",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const nrel_answer{"nrel_answer", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_result{"nrel_result", ScType::NodeConstNoRole};
 
   _SC_EXTERN static inline ScKeynode const abstract_sc_agent{"abstract_sc_agent", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const nrel_primary_initiation_condition{

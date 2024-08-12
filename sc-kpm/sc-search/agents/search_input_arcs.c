@@ -15,7 +15,7 @@
 
 sc_result agent_search_all_const_pos_input_arc(sc_event_subscription const * event, sc_addr arg)
 {
-  sc_addr action, answer;
+  sc_addr action, result;
   sc_iterator3 *it1, *it2;
   sc_bool sys_off = SC_TRUE;
 
@@ -27,7 +27,7 @@ sc_result agent_search_all_const_pos_input_arc(sc_event_subscription const * eve
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
-  answer = create_answer_node();
+  result = create_result_node();
 
   // find argument
   it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
@@ -44,16 +44,16 @@ sc_result agent_search_all_const_pos_input_arc(sc_event_subscription const * eve
           && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
         continue;
 
-      appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
-      appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
+      appendIntoResult(result, sc_iterator3_value(it2, 0));
+      appendIntoResult(result, sc_iterator3_value(it2, 1));
     }
     sc_iterator3_free(it2);
 
-    appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+    appendIntoResult(result, sc_iterator3_value(it1, 2));
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_action(action, answer);
+  connect_result_to_action(action, result);
   finish_action(action);
 
   return SC_RESULT_OK;
@@ -63,7 +63,7 @@ sc_result agent_search_all_const_pos_input_arc(sc_event_subscription const * eve
 
 sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event_subscription const * event, sc_addr arg)
 {
-  sc_addr action, answer;
+  sc_addr action, result;
   sc_iterator3 *it1, *it2, *it3;
   sc_bool sys_off = SC_TRUE;
 
@@ -76,7 +76,7 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event_subscription co
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
-  answer = create_answer_node();
+  result = create_result_node();
 
   // get action argument
   it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
@@ -101,21 +101,21 @@ sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event_subscription co
             && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1))))
           continue;
 
-        appendIntoAnswer(answer, sc_iterator3_value(it3, 0));
-        appendIntoAnswer(answer, sc_iterator3_value(it3, 1));
+        appendIntoResult(result, sc_iterator3_value(it3, 0));
+        appendIntoResult(result, sc_iterator3_value(it3, 1));
       }
       sc_iterator3_free(it3);
 
-      appendIntoAnswer(answer, sc_iterator3_value(it2, 0));
-      appendIntoAnswer(answer, sc_iterator3_value(it2, 1));
+      appendIntoResult(result, sc_iterator3_value(it2, 0));
+      appendIntoResult(result, sc_iterator3_value(it2, 1));
     }
     sc_iterator3_free(it2);
 
-    appendIntoAnswer(answer, sc_iterator3_value(it1, 2));
+    appendIntoResult(result, sc_iterator3_value(it1, 2));
   }
   sc_iterator3_free(it1);
 
-  connect_answer_to_action(action, answer);
+  connect_result_to_action(action, result);
   finish_action(action);
 
   return SC_RESULT_OK;

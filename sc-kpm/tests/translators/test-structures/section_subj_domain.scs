@@ -1,5 +1,5 @@
 section_subjdomain_knowledges <- action_addr;;
-answer_addr = [*
+result_addr = [*
 
 section_subjdomain_knowledges
 => nrel_main_idtf:

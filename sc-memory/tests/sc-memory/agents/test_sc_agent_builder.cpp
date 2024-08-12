@@ -21,7 +21,7 @@ static std::string const agentResultCondition = R"(
   @contour = [*
     action_initiated _-> _action;;
     test_specificated_agent_action _-> _action;;
-    _action _=> nrel_answer:: _answer;;
+    _action _=> nrel_result:: _result;;
   *];; 
 
   @contour => nrel_system_identifier: [test_specificated_agent_result_condition];;
@@ -63,7 +63,7 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
   = [*
     action_initiated _-> _action;;
     test_specificated_agent_action _-> _action;;
-    _action _=> nrel_answer:: _answer;;
+    _action _=> nrel_result:: _result;;
   *];;
 
   test_specificated_agent_action

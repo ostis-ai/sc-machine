@@ -28,7 +28,7 @@ void uiSc2ScsTranslator::runImpl()
       sc_type_arc_common | sc_type_const,
       mInputConstructionAddr,
       sc_type_arc_pos_const_perm,
-      keynode_action_nrel_answer);
+      keynode_action_nrel_result);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
     sc_iterator3 * it3 =

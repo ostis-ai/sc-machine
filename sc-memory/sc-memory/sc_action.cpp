@@ -15,13 +15,13 @@ ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const
   : ScAddr(actionAddr)
   , m_ctx(ctx)
   , m_actionClassAddr(actionClassAddr)
-  , m_answerAddr(ScAddr::Empty) {};
+  , m_resultAddr(ScAddr::Empty) {};
 
 ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr)
   : ScAddr(ctx->CreateNode(ScType::NodeConst))
   , m_ctx(ctx)
   , m_actionClassAddr(actionClassAddr)
-  , m_answerAddr(ScAddr::Empty)
+  , m_resultAddr(ScAddr::Empty)
 {
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_actionClassAddr, *this);
 };
@@ -66,40 +66,40 @@ ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const 
   return *this;
 }
 
-ScStruct ScAction::GetAnswer() noexcept(false)
+ScStruct ScAction::GetResult() noexcept(false)
 {
   if (!IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get answer of action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to get result of action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                              << "` due it had not been initiated yet.");
 
   if (!IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get answer of action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to get result of action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                              << "` due it had not been finished yet.");
 
   ScIterator5Ptr const & it5 = m_ctx->Iterator5(
-      *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_answer);
+      *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` has not answer structure.");
+        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` has not result structure.");
 
-  m_answerAddr = it5->Get(2);
-  return ScStruct{m_ctx, m_answerAddr};
+  m_resultAddr = it5->Get(2);
+  return ScStruct{m_ctx, m_resultAddr};
 }
 
-ScAction & ScAction::SetAnswer(ScAddr const & structureAddr) noexcept(false)
+ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
 {
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to set answer for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to set result for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                        << "` due it had already been finished.");
 
-  if (m_answerAddr == structureAddr)
+  if (m_resultAddr == structureAddr)
     return *this;
 
   if (!m_ctx->IsElement(structureAddr))
@@ -108,10 +108,10 @@ ScAction & ScAction::SetAnswer(ScAddr const & structureAddr) noexcept(false)
         "Not able to set structure for action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                                  << "`due settable structure is not valid.");
 
-  if (m_answerAddr.IsValid())
-    m_ctx->EraseElement(m_answerAddr);
+  if (m_resultAddr.IsValid())
+    m_ctx->EraseElement(m_resultAddr);
 
-  m_answerAddr = structureAddr;
+  m_resultAddr = structureAddr;
   return *this;
 }
 
@@ -176,11 +176,11 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
         "Not able to finish action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                       << "` due it had already been initiated.");
 
-  if (!m_answerAddr.IsValid())
-    m_answerAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+  if (!m_resultAddr.IsValid())
+    m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
 
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, *this, m_answerAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_answer, arcAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, *this, m_resultAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result, arcAddr);
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, actionStateAddr, *this);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);

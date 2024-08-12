@@ -11,28 +11,28 @@
 
 #include "sc-core/sc_helper.h"
 
-sc_addr create_answer_node()
+sc_addr create_result_node()
 {
   sc_addr res = sc_memory_node_new(s_default_ctx, sc_type_node | sc_type_const | sc_type_node_struct);
   SYSTEM_ELEMENT(res);
   return res;
 }
 
-void connect_answer_to_action(sc_addr action, sc_addr answer)
+void connect_result_to_action(sc_addr action, sc_addr result)
 {
-  sc_addr arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_common | sc_type_const, action, answer);
+  sc_addr arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_common | sc_type_const, action, result);
   SYSTEM_ELEMENT(arc);
-  arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_nrel_answer, arc);
+  arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_nrel_result, arc);
   SYSTEM_ELEMENT(arc);
 }
 
-void appendIntoAnswer(sc_addr answer, sc_addr el)
+void appendIntoResult(sc_addr result, sc_addr el)
 {
   sc_addr arc;
-  if (sc_helper_check_arc(s_default_ctx, answer, el, sc_type_arc_pos_const_perm) == SC_TRUE)
+  if (sc_helper_check_arc(s_default_ctx, result, el, sc_type_arc_pos_const_perm) == SC_TRUE)
     return;
 
-  arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, answer, el);
+  arc = sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, result, el);
   SYSTEM_ELEMENT(arc);
 }
 

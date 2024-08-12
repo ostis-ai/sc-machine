@@ -1,5 +1,5 @@
-answer_addr <- action_addr;;
-answer_addr = [*
+result_addr <- action_addr;;
+result_addr = [*
 section_subjdomain_knowledges
 => nrel_main_idtf:
 	[Раздел. Предметная область знаний]

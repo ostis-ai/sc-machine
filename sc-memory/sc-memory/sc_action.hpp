@@ -77,33 +77,33 @@ public:
   _SC_EXTERN ScAction & SetArguments(TScAddr const &... arguments) noexcept(false);
 
   /*!
-   * @brief Gets answer structure of the action.
-   * @return ScStruct representing answer.
+   * @brief Gets result structure of the action.
+   * @return ScStruct representing result.
    */
-  _SC_EXTERN ScStruct GetAnswer() noexcept(false);
+  _SC_EXTERN ScStruct GetResult() noexcept(false);
 
   /*!
-   * @brief Sets answer structure for the action.
-   * @param structureAddr ScAddr representing answer.
+   * @brief Sets result structure for the action.
+   * @param structureAddr ScAddr representing result.
    * @return Reference to the current ScAction object.
    */
-  _SC_EXTERN ScAction & SetAnswer(ScAddr const & structureAddr) noexcept(false);
+  _SC_EXTERN ScAction & SetResult(ScAddr const & structureAddr) noexcept(false);
 
   /*!
-   * @brief Forms answer structure of the action.
-   * @param addrs Addresses of sc-elements to form the answer with.
-   * @return Reference to the current ScAction object.
-   */
-  template <class... TScAddr>
-  _SC_EXTERN ScAction & FormAnswer(TScAddr const &... addrs) noexcept(false);
-
-  /*!
-   * @brief Updates answer structure of the action.
-   * @param addrs Addresses of sc-elements to update the answer with.
+   * @brief Forms result structure of the action.
+   * @param addrs Addresses of sc-elements to form the result with.
    * @return Reference to the current ScAction object.
    */
   template <class... TScAddr>
-  _SC_EXTERN ScAction & UpdateAnswer(TScAddr const &... addrs) noexcept(false);
+  _SC_EXTERN ScAction & FormResult(TScAddr const &... addrs) noexcept(false);
+
+  /*!
+   * @brief Updates result structure of the action.
+   * @param addrs Addresses of sc-elements to update the result with.
+   * @return Reference to the current ScAction object.
+   */
+  template <class... TScAddr>
+  _SC_EXTERN ScAction & UpdateResult(TScAddr const &... addrs) noexcept(false);
 
   /*!
    * @brief Checks if the action is initiated.
@@ -175,7 +175,7 @@ public:
 protected:
   class ScAgentContext * m_ctx;  ///< Context of the agent.
   ScAddr m_actionClassAddr;      ///< Class of the action.
-  ScAddr m_answerAddr;           ///< Answer structure of the action.
+  ScAddr m_resultAddr;           ///< Result structure of the action.
 
   /*!
    * @brief Constructor for ScAction.

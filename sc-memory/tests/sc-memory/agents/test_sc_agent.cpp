@@ -125,12 +125,12 @@ ScResult ATestAddMultipleOutputArc::DoProgram(
 
 /// --------------------------------------
 
-ScAddr ATestCheckAnswer::GetActionClass() const
+ScAddr ATestCheckResult::GetActionClass() const
 {
   return ATestAddOutputArc::add_output_arc_action;
 }
 
-ScResult ATestCheckAnswer::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
 {
   auto [firstArgument, secondArgument] = action.GetArguments<2>();
 

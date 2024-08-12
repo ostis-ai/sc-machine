@@ -133,7 +133,7 @@ public:
   ScResult DoProgram(ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
 };
 
-class ATestCheckAnswer : public ScActionAgent
+class ATestCheckResult : public ScActionAgent
 {
 public:
   static inline TestWaiter msWaiter;

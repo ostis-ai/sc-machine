@@ -35,7 +35,7 @@ _SC_EXTERN ScAction & ScAction::SetArguments(TScAddr const &... arguments)
 }
 
 template <class... TScAddr>
-ScAction & ScAction::FormAnswer(TScAddr const &... addrs)
+ScAction & ScAction::FormResult(TScAddr const &... addrs)
 {
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
@@ -43,24 +43,24 @@ ScAction & ScAction::FormAnswer(TScAddr const &... addrs)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to form answer for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to form result for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                         << "` due it had already been finished.");
 
-  if (m_answerAddr.IsValid())
+  if (m_resultAddr.IsValid())
   {
-    m_answerAddr = m_ctx->EraseElement(m_answerAddr);
-    m_answerAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+    m_resultAddr = m_ctx->EraseElement(m_resultAddr);
+    m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   }
 
-  ScStruct answerStruct{m_ctx, m_answerAddr};
+  ScStruct resultStruct{m_ctx, m_resultAddr};
   for (ScAddr const & addr : ScAddrVector{addrs...})
-    answerStruct << addr;
+    resultStruct << addr;
 
   return *this;
 }
 
 template <class... TScAddr>
-_SC_EXTERN ScAction & ScAction::UpdateAnswer(TScAddr const &... addrs)
+_SC_EXTERN ScAction & ScAction::UpdateResult(TScAddr const &... addrs)
 {
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
@@ -68,15 +68,15 @@ _SC_EXTERN ScAction & ScAction::UpdateAnswer(TScAddr const &... addrs)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to update answer for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to update result for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                           << "` due it had already been finished.");
 
-  if (!m_answerAddr.IsValid())
-    m_answerAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+  if (!m_resultAddr.IsValid())
+    m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
 
-  ScStruct answerStruct{m_ctx, m_answerAddr};
+  ScStruct resultStruct{m_ctx, m_resultAddr};
   for (ScAddr const & addr : ScAddrVector{addrs...})
-    answerStruct << addr;
+    resultStruct << addr;
 
   return *this;
 }

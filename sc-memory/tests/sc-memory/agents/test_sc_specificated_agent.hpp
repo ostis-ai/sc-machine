@@ -58,7 +58,7 @@ public:
               ScType::EdgeDCommonVar,
               ScType::NodeVar,
               ScType::EdgeAccessVarPosPerm,
-              ScKeynodes::nrel_answer);
+              ScKeynodes::nrel_result);
 
   ScResult DoProgram(ScElementaryEvent const & event, ScAction & action) override;
 };

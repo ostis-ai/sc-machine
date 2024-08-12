@@ -15,61 +15,61 @@ TEST_F(ScActionTest, CreateActionAndGetClass)
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 
-TEST_F(ScActionTest, CreateActionAndGetAnswer)
+TEST_F(ScActionTest, CreateActionAndGetResult)
 {
   ScAgentContext context;
   ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
   ScAction action = context.CreateAction(testClassAddr);
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
 
   action.FinishSuccessfully();
-  EXPECT_TRUE(action.GetAnswer().IsEmpty());
+  EXPECT_TRUE(action.GetResult().IsEmpty());
 }
 
-TEST_F(ScActionTest, CreateActionAndSetGetAnswer)
+TEST_F(ScActionTest, CreateActionAndSetGetResult)
 {
   ScAgentContext context;
   ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
   ScAction action = context.CreateAction(testClassAddr);
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
-  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
+  EXPECT_NO_THROW(action.SetResult(structureAddr1));
+  EXPECT_NO_THROW(action.SetResult(structureAddr1));
 
   ScAddr const & structureAddr2 = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_NO_THROW(action.SetAnswer(structureAddr2));
+  EXPECT_NO_THROW(action.SetResult(structureAddr2));
   EXPECT_FALSE(m_ctx->IsElement(structureAddr1));
-  EXPECT_THROW(action.SetAnswer(structureAddr1), utils::ExceptionInvalidParams);
-  EXPECT_NO_THROW(action.SetAnswer(structureAddr2));
+  EXPECT_THROW(action.SetResult(structureAddr1), utils::ExceptionInvalidParams);
+  EXPECT_NO_THROW(action.SetResult(structureAddr2));
 
   action.FinishSuccessfully();
-  EXPECT_THROW(action.SetAnswer(structureAddr2), utils::ExceptionInvalidState);
-  ScStruct const & answer = action.GetAnswer();
-  EXPECT_TRUE(answer.IsEmpty());
-  EXPECT_EQ(answer, action.GetAnswer());
-  EXPECT_EQ(answer, structureAddr2);
+  EXPECT_THROW(action.SetResult(structureAddr2), utils::ExceptionInvalidState);
+  ScStruct const & result = action.GetResult();
+  EXPECT_TRUE(result.IsEmpty());
+  EXPECT_EQ(result, action.GetResult());
+  EXPECT_EQ(result, structureAddr2);
 }
 
-TEST_F(ScActionTest, CreateActionAndSetRemoveGetAnswer)
+TEST_F(ScActionTest, CreateActionAndSetRemoveGetResult)
 {
   ScAgentContext context;
   ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
   ScAction action = context.CreateAction(testClassAddr);
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
+  EXPECT_NO_THROW(action.SetResult(structureAddr1));
 
   action.FinishSuccessfully();
 
@@ -78,68 +78,68 @@ TEST_F(ScActionTest, CreateActionAndSetRemoveGetAnswer)
       ScType::EdgeDCommonConst,
       ScType::NodeConstStruct,
       ScType::EdgeAccessConstPosPerm,
-      ScKeynodes::nrel_answer);
+      ScKeynodes::nrel_result);
   EXPECT_TRUE(it5->Next());
   m_ctx->EraseElement(it5->Get(1));
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScActionTest, CreateActionAndSetFormUpdateGetAnswer)
+TEST_F(ScActionTest, CreateActionAndSetFormUpdateGetResult)
 {
   ScAgentContext context;
   ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
   ScAction action = context.CreateAction(testClassAddr);
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_NO_THROW(action.SetAnswer(structureAddr1));
+  EXPECT_NO_THROW(action.SetResult(structureAddr1));
 
   ScAddr const & structureAddr2 = m_ctx->CreateNode(ScType::NodeConstStruct);
-  EXPECT_NO_THROW(action.SetAnswer(structureAddr2));
+  EXPECT_NO_THROW(action.SetResult(structureAddr2));
   EXPECT_FALSE(m_ctx->IsElement(structureAddr1));
 
-  EXPECT_NO_THROW(action.FormAnswer());
+  EXPECT_NO_THROW(action.FormResult());
   EXPECT_FALSE(m_ctx->IsElement(structureAddr2));
   ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  EXPECT_NO_THROW(action.FormAnswer(elementAddr1));
+  EXPECT_NO_THROW(action.FormResult(elementAddr1));
 
   ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
-  EXPECT_NO_THROW(action.UpdateAnswer(elementAddr2));
+  EXPECT_NO_THROW(action.UpdateResult(elementAddr2));
 
   action.FinishSuccessfully();
-  EXPECT_THROW(action.FormAnswer(), utils::ExceptionInvalidState);
-  EXPECT_THROW(action.UpdateAnswer(), utils::ExceptionInvalidState);
-  ScStruct const & answer = action.GetAnswer();
-  EXPECT_FALSE(answer.IsEmpty());
+  EXPECT_THROW(action.FormResult(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.UpdateResult(), utils::ExceptionInvalidState);
+  ScStruct const & result = action.GetResult();
+  EXPECT_FALSE(result.IsEmpty());
 
-  EXPECT_TRUE(answer.HasElement(elementAddr1));
-  EXPECT_TRUE(answer.HasElement(elementAddr2));
+  EXPECT_TRUE(result.HasElement(elementAddr1));
+  EXPECT_TRUE(result.HasElement(elementAddr2));
 }
 
-TEST_F(ScActionTest, CreateActionAndUpdateGetAnswer)
+TEST_F(ScActionTest, CreateActionAndUpdateGetResult)
 {
   ScAgentContext context;
   ScAddr const & testClassAddr = context.CreateNode(ScType::NodeConstClass);
   ScAction action = context.CreateAction(testClassAddr);
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
-  EXPECT_THROW(action.GetAnswer(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
 
   ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  EXPECT_NO_THROW(action.UpdateAnswer(elementAddr1));
+  EXPECT_NO_THROW(action.UpdateResult(elementAddr1));
 
   action.FinishSuccessfully();
-  EXPECT_THROW(action.FormAnswer(), utils::ExceptionInvalidState);
-  EXPECT_THROW(action.UpdateAnswer(), utils::ExceptionInvalidState);
-  ScStruct const & answer = action.GetAnswer();
-  EXPECT_FALSE(answer.IsEmpty());
+  EXPECT_THROW(action.FormResult(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.UpdateResult(), utils::ExceptionInvalidState);
+  ScStruct const & result = action.GetResult();
+  EXPECT_FALSE(result.IsEmpty());
 
-  EXPECT_TRUE(answer.HasElement(elementAddr1));
+  EXPECT_TRUE(result.HasElement(elementAddr1));
 }
 
 TEST_F(ScActionTest, CreateActionAndSetGetArgument)
@@ -232,7 +232,7 @@ TEST_F(ScActionTest, CreateActionSetResetGetArguments)
 
 TEST_F(ScActionTest, InitiateAndWaitAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action =
@@ -243,12 +243,12 @@ TEST_F(ScActionTest, InitiateAndWaitAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyNotInitiatedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -259,12 +259,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyNotInitiatedAction)
   EXPECT_FALSE(action.IsFinishedSuccessfully());
   EXPECT_FALSE(action.IsFinishedUnsuccessfully());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateInitiatedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -272,7 +272,7 @@ TEST_F(ScActionTest, InitiateInitiatedAction)
   EXPECT_THROW(action.Initiate(), utils::ExceptionInvalidState);
   EXPECT_TRUE(action.IsInitiated());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateFinishedAction)
@@ -305,7 +305,7 @@ TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
 
 TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -316,12 +316,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)
   EXPECT_FALSE(action.IsFinishedSuccessfully());
   EXPECT_FALSE(action.IsFinishedUnsuccessfully());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorNotInitiatedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -332,12 +332,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorNotInitiatedAction)
   EXPECT_FALSE(action.IsFinishedSuccessfully());
   EXPECT_FALSE(action.IsFinishedUnsuccessfully());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyFinishedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -351,12 +351,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyFinishedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyFinishedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -370,12 +370,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyFinishedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorFinishedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -389,12 +389,12 @@ TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorFinishedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
 
 TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
 {
-  SubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  SubscribeAgent<ATestCheckResult>(&*m_ctx);
 
   ScAgentContext context;
   ScAction action = context.CreateAction(ATestAddOutputArc::add_output_arc_action);
@@ -408,5 +408,5 @@ TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedWithError());
 
-  UnsubscribeAgent<ATestCheckAnswer>(&*m_ctx);
+  UnsubscribeAgent<ATestCheckResult>(&*m_ctx);
 }
