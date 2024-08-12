@@ -24,7 +24,7 @@
   })
 
 void TestAddPermissionsForUserToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -35,7 +35,7 @@ void TestAddPermissionsForUserToInitActions(
 }
 
 void TestAddPermissionsForUserToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -44,7 +44,7 @@ void TestAddPermissionsForUserToInitReadActions(
 }
 
 void TestAddPermissionsForUserToInitWriteActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -53,7 +53,7 @@ void TestAddPermissionsForUserToInitWriteActions(
 }
 
 void TestAddPermissionsForUserToInitEraseActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -62,7 +62,7 @@ void TestAddPermissionsForUserToInitEraseActions(
 }
 
 void TestAddAllPermissionsForUserToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -72,7 +72,7 @@ void TestAddAllPermissionsForUserToInitActions(
 }
 
 void TestRemovePermissionsForUserToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr)
 {
@@ -85,7 +85,7 @@ void TestRemovePermissionsForUserToInitActions(
 }
 
 void TestRemovePermissionsForUserToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & readActionInScMemoryAddr{action_read_from_sc_memory_addr};
@@ -93,7 +93,7 @@ void TestRemovePermissionsForUserToInitReadActions(
 }
 
 void TestAddPermissionsForUsersSetToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScAddr const & actionClassAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -104,7 +104,7 @@ void TestAddPermissionsForUsersSetToInitActions(
 }
 
 void TestAddPermissionsForUsersSetToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -113,7 +113,7 @@ void TestAddPermissionsForUsersSetToInitReadActions(
 }
 
 void TestAddPermissionsForUsersSetToInitWriteActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -122,7 +122,7 @@ void TestAddPermissionsForUsersSetToInitWriteActions(
 }
 
 void TestAddPermissionsForUsersSetToInitEraseActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -131,7 +131,7 @@ void TestAddPermissionsForUsersSetToInitEraseActions(
 }
 
 void TestAddAllPermissionsForUsersSetToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -141,7 +141,7 @@ void TestAddAllPermissionsForUsersSetToInitActions(
 }
 
 void TestRemovePermissionsForUsersSetToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr)
 {
@@ -154,7 +154,7 @@ void TestRemovePermissionsForUsersSetToInitActions(
 }
 
 void TestRemovePermissionsForUsersSetToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & readActionInScMemoryAddr{action_read_from_sc_memory_addr};
@@ -162,7 +162,7 @@ void TestRemovePermissionsForUsersSetToInitReadActions(
 }
 
 ScAddr TestGenerateClassForUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -172,7 +172,7 @@ ScAddr TestGenerateClassForUser(
 }
 
 ScAddr TestAddClassForUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -181,7 +181,7 @@ ScAddr TestAddClassForUser(
 }
 
 void TestAuthenticationRequestUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -189,7 +189,7 @@ void TestAuthenticationRequestUser(
   context->CreateEdge(arcType, conceptAuthenticationRequestUserAddr, userAddr);
 }
 
-void TestReadActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -216,7 +216,7 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & contex
   EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test"));
 }
 
-void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestReadActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -236,7 +236,7 @@ void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & cont
 }
 
 void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     TestScMemoryContext & userContext)
 {
   TestReadActionsUnsuccessfully(context, userContext);
@@ -264,7 +264,7 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
       userContext.HelperCheckEdge(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
 }
 
-void TestIteratorsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestIteratorsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -280,7 +280,7 @@ void TestIteratorsSuccessfully(std::unique_ptr<ScMemoryContext> const & context,
   EXPECT_TRUE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
 }
 
-void TestIteratorsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestIteratorsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -296,7 +296,7 @@ void TestIteratorsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & contex
   EXPECT_FALSE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
 }
 
-void TestWriteActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestWriteActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -309,7 +309,7 @@ void TestWriteActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & conte
   EXPECT_TRUE(userContext.Save());
 }
 
-void TestWriteActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestWriteActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -321,35 +321,35 @@ void TestWriteActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & con
   EXPECT_THROW(userContext.Save(), utils::ExceptionInvalidState);
 }
 
-void TestEraseActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestEraseActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
 
   EXPECT_TRUE(userContext.EraseElement(nodeAddr));
 }
 
-void TestEraseActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestEraseActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
 
   EXPECT_THROW(userContext.EraseElement(nodeAddr), utils::ExceptionInvalidState);
 }
 
-void TestApplyActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestApplyActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
   EXPECT_NO_THROW(userContext.SetLinkContent(linkAddr, "test"));
 }
 
-void TestApplyActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestApplyActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
   EXPECT_THROW(userContext.SetLinkContent(linkAddr, "test"), utils::ExceptionInvalidState);
 }
 
-void TestChangeActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestChangeActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
@@ -357,9 +357,7 @@ void TestChangeActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & cont
   EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst));
 }
 
-void TestChangeActionsUnsuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
-    TestScMemoryContext & userContext)
+void TestChangeActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
@@ -367,7 +365,7 @@ void TestChangeActionsUnsuccessfully(
   EXPECT_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst), utils::ExceptionInvalidState);
 }
 
-void TestActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   TestReadActionsSuccessfully(context, userContext);
   TestWriteActionsSuccessfully(context, userContext);
@@ -376,7 +374,7 @@ void TestActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, T
   TestChangeActionsSuccessfully(context, userContext);
 }
 
-void TestActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   TestReadActionsUnsuccessfully(context, userContext);
   TestWriteActionsUnsuccessfully(context, userContext);
@@ -406,7 +404,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByGuestUser)
 }
 
 void TestSetIdentifiedUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & guestUserAddr,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1153,7 +1151,7 @@ TEST_F(
 }
 
 void TestReadWriteEraseAccessedElementUnsuccessfully(
-    std::unique_ptr<ScMemoryContext> const &,
+    std::unique_ptr<ScAgentContext> const &,
     TestScMemoryContext & userContext,
     sc_addr const & addr)
 {
@@ -1176,7 +1174,7 @@ void TestReadWriteEraseAccessedElementUnsuccessfully(
 }
 
 void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     TestScMemoryContext & userContext)
 {
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, concept_authentication_request_user_addr);
@@ -1191,7 +1189,7 @@ void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
 }
 
 void TestReadWriteAccessedElementSuccessfully(
-    std::unique_ptr<ScMemoryContext> const &,
+    std::unique_ptr<ScAgentContext> const &,
     TestScMemoryContext & userContext,
     sc_addr const addr)
 {
@@ -1212,7 +1210,7 @@ void TestReadWriteAccessedElementSuccessfully(
 }
 
 void TestReadWriteEraseAccessedAllElementsSuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     TestScMemoryContext & userContext)
 {
   TestReadWriteAccessedElementSuccessfully(context, userContext, concept_guest_user_addr);
@@ -1231,16 +1229,14 @@ void TestReadWriteEraseAccessedAllElementsSuccessfully(
   TestReadWriteAccessedElementSuccessfully(context, userContext, nrel_users_set_action_class_within_sc_structure_addr);
 }
 
-void TestAddPermissionsToHandleReadPermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
-    ScAddr const & userAddr)
+void TestAddPermissionsToHandleReadPermissions(std::unique_ptr<ScAgentContext> const & context, ScAddr const & userAddr)
 {
   ScAddr const & readActionInScMemoryAddr{action_read_permissions_from_sc_memory_addr};
   TestAddPermissionsForUserToInitActions(context, userAddr, readActionInScMemoryAddr);
 }
 
 void TestAddPermissionsToHandleWritePermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & writeActionInScMemoryAddr{action_generate_permissions_in_sc_memory_addr};
@@ -1248,7 +1244,7 @@ void TestAddPermissionsToHandleWritePermissions(
 }
 
 void TestAddPermissionsToHandleErasePermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & eraseActionInScMemoryAddr{action_erase_permissions_from_sc_memory_addr};
@@ -1256,7 +1252,7 @@ void TestAddPermissionsToHandleErasePermissions(
 }
 
 void TestAddAllPermissionsToHandleAllPermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   TestAddPermissionsToHandleReadPermissions(context, userAddr);
@@ -1326,7 +1322,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithPe
 }
 
 void TestAddPermissionsForUserToInitActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr,
     ScAddr const & structureAddr,
@@ -1340,7 +1336,7 @@ void TestAddPermissionsForUserToInitActionsWithinStructure(
 }
 
 void TestAddPermissionsForUserToInitReadActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1351,7 +1347,7 @@ void TestAddPermissionsForUserToInitReadActionsWithinStructure(
 }
 
 void TestAddPermissionsForUserToInitWriteActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1362,7 +1358,7 @@ void TestAddPermissionsForUserToInitWriteActionsWithinStructure(
 }
 
 void TestAddPermissionsForUserToInitEraseActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1373,7 +1369,7 @@ void TestAddPermissionsForUserToInitEraseActionsWithinStructure(
 }
 
 void TestAddPermissionsForUsersSetToInitActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScAddr const & actionClassAddr,
     ScAddr const & structureAddr,
@@ -1388,7 +1384,7 @@ void TestAddPermissionsForUsersSetToInitActionsWithinStructure(
 }
 
 void TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1552,7 +1548,7 @@ void TestChangeActionsWithinStructureUnsuccessfully(TestScMemoryContext & userCo
 }
 
 ScAddr TestCreateStructureWithConnectorAndIncidentElements(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & nodeAddr1,
     ScAddr & edgeAddr,
     ScAddr & linkAddr,
@@ -1572,7 +1568,7 @@ ScAddr TestCreateStructureWithConnectorAndIncidentElements(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStruct structure = context->UseStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr << linkAddr << relationEdgeAddr << relationAddr;
 
   return structureAddr;
@@ -1960,7 +1956,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
 }
 
 ScAddr TestCreateStructureWithConnectorAndSource(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & nodeAddr1,
     ScAddr & nodeAddr2)
 {
@@ -1971,7 +1967,7 @@ ScAddr TestCreateStructureWithConnectorAndSource(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStruct structure = context->UseStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr1;
 
   return structureAddr;
@@ -2047,7 +2043,7 @@ TEST_F(
 }
 
 ScAddr TestCreateStructureWithConnectorAndTarget(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & linkAddr,
     ScAddr & nodeAddr2)
 {
@@ -2058,7 +2054,7 @@ ScAddr TestCreateStructureWithConnectorAndTarget(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStruct structure = context->UseStructure(structureAddr);
   structure << edgeAddr1 << linkAddr;
 
   return structureAddr;
@@ -2134,7 +2130,7 @@ TEST_F(
 }
 
 ScAddr TestCreateStructureWithConnector(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & edgeAddr,
     ScAddr & nodeAddr2)
 {
@@ -2145,7 +2141,7 @@ ScAddr TestCreateStructureWithConnector(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStruct structure = context->UseStructure(structureAddr);
   structure << edgeAddr;
 
   return structureAddr;
@@ -2209,7 +2205,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
 }
 
 ScAddr TestCreateStructureWithLinks(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & linkAddr1,
     ScAddr & linkAddr2)
 {
@@ -2219,7 +2215,7 @@ ScAddr TestCreateStructureWithLinks(
   context->SetLinkContent(linkAddr2, "test_content");
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStruct structure = context->UseStructure(structureAddr);
   structure << linkAddr1;
 
   return structureAddr;

@@ -22,7 +22,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
   ScAddr const templateAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(templateAddr.IsValid());
 
-  ScStruct templStruct(*m_ctx, templateAddr);
+  ScStruct templStruct = m_ctx->UseStructure(templateAddr);
   ScAddr xAddr;
   {
     ScAddr _yAddr, _zAddr, _sAddr;

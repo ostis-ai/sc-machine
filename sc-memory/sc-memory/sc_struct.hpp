@@ -12,11 +12,9 @@
 
 class ScSet : public ScAddr
 {
+  friend class ScAgentContext;
+
 public:
-  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr = ScAddr::Empty);
-
-  _SC_EXTERN ScSet(ScMemoryContext & ctx, ScAddr const & setAddr = ScAddr::Empty);
-
   _SC_EXTERN ~ScSet();
 
   _SC_EXTERN ScSet(ScSet const & other);
@@ -45,13 +43,22 @@ public:
   _SC_EXTERN bool IsEmpty() const;
 
   /// TODO: implement +, -, == operators
+
+protected:
+  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr = ScAddr::Empty);
+
+  _SC_EXTERN ScSet(ScMemoryContext & ctx, ScAddr const & setAddr = ScAddr::Empty);
+
 private:
   ScMemoryContext * m_ctx;
 };
 
 class ScStruct : public ScSet
 {
-public:
+  friend class ScAgentContext;
+  friend class ScTemplateLoader;
+
+protected:
   _SC_EXTERN ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr = ScAddr::Empty);
 
   _SC_EXTERN ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr = ScAddr::Empty);

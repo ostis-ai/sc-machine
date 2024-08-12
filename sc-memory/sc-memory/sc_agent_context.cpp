@@ -49,3 +49,27 @@ ScAction ScAgentContext::UseAction(ScAddr const & actionAddr)
   ScAction action{this, actionAddr, ScAddr::Empty};
   return action;
 }
+
+ScSet ScAgentContext::CreateSet()
+{
+  ScSet set{this};
+  return set;
+}
+
+ScSet ScAgentContext::UseSet(ScAddr const & setAddr)
+{
+  ScSet set{this, setAddr};
+  return set;
+}
+
+ScStruct ScAgentContext::CreateStructure()
+{
+  ScStruct structure{this};
+  return structure;
+}
+
+ScStruct ScAgentContext::UseStructure(ScAddr const & structureAddr)
+{
+  ScStruct structure{this, structureAddr};
+  return structure;
+}

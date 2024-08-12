@@ -11,6 +11,8 @@
 template <class TScEvent>
 class ScWaitCondition;
 class ScAction;
+class ScSet;
+class ScStruct;
 class ScKeynode;
 
 /*!
@@ -72,11 +74,37 @@ public:
   _SC_EXTERN ScAction CreateAction(ScAddr const & actionClassAddr);
 
   /*!
-   * @brief Creates an action with a given action class.
-   * @param actionAddr Address of the action class.
+   * @brief Create ScAction object for provided action.
+   * @param actionAddr Address of the action.
    * @return ScAction object.
    */
   _SC_EXTERN ScAction UseAction(ScAddr const & actionAddr);
+
+  /*!
+   * @brief Creates a set.
+   * @return ScSet object.
+   */
+  _SC_EXTERN ScSet CreateSet();
+
+  /*!
+   * @brief Create ScSet object for provided set.
+   * @param setAddr Address of the set.
+   * @return ScSet object.
+   */
+  _SC_EXTERN ScSet UseSet(ScAddr const & setAddr);
+
+  /*!
+   * @brief Creates a structure.
+   * @return ScStruct object.
+   */
+  _SC_EXTERN ScStruct CreateStructure();
+
+  /*!
+   * @brief Create ScStruct object for provided set.
+   * @param structureAddr Address of the set.
+   * @return ScStruct object.
+   */
+  _SC_EXTERN ScStruct UseStructure(ScAddr const & structureAddr);
 
 protected:
   /*!

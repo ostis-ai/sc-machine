@@ -9,7 +9,7 @@ using ScStructTest = ScMemoryTest;
 
 TEST_F(ScStructTest, AppendIterateElements)
 {
-  ScStruct structAddr(*m_ctx);
+  ScStruct structure = m_ctx->CreateStructure();
 
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConstClass);
   EXPECT_TRUE(addr1.IsValid());
@@ -17,36 +17,36 @@ TEST_F(ScStructTest, AppendIterateElements)
   ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstMaterial);
   EXPECT_TRUE(addr2.IsValid());
 
-  structAddr << addr1 << addr2;
-  EXPECT_TRUE(structAddr.HasElement(addr1));
-  EXPECT_FALSE(structAddr.Append(addr1));
-  EXPECT_TRUE(structAddr.HasElement(addr2));
+  structure << addr1 << addr2;
+  EXPECT_TRUE(structure.HasElement(addr1));
+  EXPECT_FALSE(structure.Append(addr1));
+  EXPECT_TRUE(structure.HasElement(addr2));
 
-  structAddr >> addr1;
+  structure >> addr1;
 
-  EXPECT_FALSE(structAddr.HasElement(addr1));
-  EXPECT_TRUE(structAddr.HasElement(addr2));
+  EXPECT_FALSE(structure.HasElement(addr1));
+  EXPECT_TRUE(structure.HasElement(addr2));
 
-  structAddr >> addr2;
+  structure >> addr2;
 
-  EXPECT_FALSE(structAddr.HasElement(addr1));
-  EXPECT_FALSE(structAddr.HasElement(addr2));
-  EXPECT_TRUE(structAddr.IsEmpty());
+  EXPECT_FALSE(structure.HasElement(addr1));
+  EXPECT_FALSE(structure.HasElement(addr2));
+  EXPECT_TRUE(structure.IsEmpty());
 
   // attributes
   ScAddr const attrAddr = m_ctx->CreateNode(ScType::NodeConstRole);
   EXPECT_TRUE(attrAddr.IsValid());
 
-  EXPECT_TRUE(structAddr.Append(addr1, attrAddr));
-  EXPECT_FALSE(structAddr.Append(addr1, attrAddr));
+  EXPECT_TRUE(structure.Append(addr1, attrAddr));
+  EXPECT_FALSE(structure.Append(addr1, attrAddr));
   ScIterator5Ptr iter5 = m_ctx->Iterator5(
-      structAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
+      structure, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
 
   bool found = false;
   while (iter5->Next())
   {
     EXPECT_FALSE(found);  // one time
-    EXPECT_EQ(iter5->Get(0), structAddr);
+    EXPECT_EQ(iter5->Get(0), structure);
     EXPECT_EQ(iter5->Get(2), addr1);
     EXPECT_EQ(iter5->Get(4), attrAddr);
     found = true;
@@ -56,7 +56,7 @@ TEST_F(ScStructTest, AppendIterateElements)
 
 TEST_F(ScStructTest, AppendItSelf)
 {
-  ScSet set = ScSet(*m_ctx);
+  ScSet set = m_ctx->CreateSet();
   EXPECT_TRUE(set.IsValid());
 
   ScSet setCopy = set;

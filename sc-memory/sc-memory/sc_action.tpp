@@ -52,7 +52,7 @@ ScAction & ScAction::FormResult(TScAddr const &... addrs)
     m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   }
 
-  ScStruct resultStruct{m_ctx, m_resultAddr};
+  ScStruct resultStruct = m_ctx->UseStructure(m_resultAddr);
   for (ScAddr const & addr : ScAddrVector{addrs...})
     resultStruct << addr;
 
@@ -74,7 +74,7 @@ _SC_EXTERN ScAction & ScAction::UpdateResult(TScAddr const &... addrs)
   if (!m_resultAddr.IsValid())
     m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
 
-  ScStruct resultStruct{m_ctx, m_resultAddr};
+  ScStruct resultStruct = m_ctx->UseStructure(m_resultAddr);
   for (ScAddr const & addr : ScAddrVector{addrs...})
     resultStruct << addr;
 

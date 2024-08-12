@@ -105,7 +105,7 @@ ScStruct ScAction::GetResult() noexcept(false)
         "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` has not result structure.");
 
   m_resultAddr = it5->Get(2);
-  return ScStruct{m_ctx, m_resultAddr};
+  return m_ctx->UseStructure(m_resultAddr);
 }
 
 ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
