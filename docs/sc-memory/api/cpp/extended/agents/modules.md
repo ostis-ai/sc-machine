@@ -200,7 +200,7 @@ my_agent_result_condition_template
     my_action_class _-> .._action;;
     action_initiated _-> .._action;;
     action_finished_successfully _-> .._action;;
-    .._action _=> nrel_answer:: .._answer;;
+    .._action _=> nrel_result:: .._result;;
 *];;
 ```
 

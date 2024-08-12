@@ -72,10 +72,10 @@ agent_for_calculating_set_power
     action_initiated _-> .._action;;
     action_finished_successfully _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
-    .._action _=> nrel_answer:: .._answer;;
+    .._action _=> nrel_result:: .._result;;
 *];;
 // Agent should check by this template that initiated action is finished 
-// and that it has answer.
+// and that it has result.
 ```
 
 ## **What are ways of providing the agent's specification?**
@@ -335,15 +335,15 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 }
 ```
 
-##### Handling action answer
+##### Handling action result
 
 ```cpp
 ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 {
   // Some logic...
  
-  action.FormAnswer(foundAddr1, generatedAddr1, ...); 
-  // Or you can use UpdateAnswer.
+  action.FormResult(foundAddr1, generatedAddr1, ...); 
+  // Or you can use UpdateResult.
   return action.FinishSuccessfully();
 }
 ```
@@ -353,7 +353,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 {
   // Some logic...
  
-  action.SetAnswer(structAddr);
+  action.SetResult(structAddr);
   return action.FinishSuccessfully();
 }
 ```
@@ -388,7 +388,7 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 ```
 
 !!! warning
-    The API of `ScAction` provides other methods. Not use `GetAnswer` for initiated but not finished action and `Initiate` for initiated or finished action.
+    The API of `ScAction` provides other methods. Not use `GetResult` for initiated but not finished action and `Initiate` for initiated or finished action.
 
 ### **Not reguired methods**
 
@@ -558,7 +558,7 @@ ScTemplate MyAgent::GetResultConditionTemplate() const
     ScType::EdgeDCommonVar,
     ScType::NodeVarStruct,
     ScType::EdgeAccessVarPosPerm,
-    ScKeynodes::nrel_answer
+    ScKeynodes::nrel_result
   );
   return resultCondition;
 }
@@ -572,7 +572,7 @@ For speed, you can implement the agent result condition in the form of checks on
 sc_bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 {
   return m_memoryCtx.HelperCheckEdge(
-    ScType::EdgeAccessConstPosPerm, action.GetAnswer(), MyKeynodes::my_class);
+    ScType::EdgeAccessConstPosPerm, action.GetResult(), MyKeynodes::my_class);
 }
 ```
 

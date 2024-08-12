@@ -26,8 +26,9 @@ nav:
                   - C++ Waits API: sc-memory/api/cpp/extended/agents/waits.md
                   - C++ Agents API: sc-memory/api/cpp/extended/agents/agents.md
                   - C++ Keynodes API: sc-memory/api/cpp/extended/agents/keynodes.md
+                  - C++ Actions API: sc-memory/api/cpp/extended/agents/actions.md
+                  - C++ Agent context API: sc-memory/api/cpp/extended/agents/agent_utils.md
                   - C++ Modules API: sc-memory/api/cpp/extended/agents/modules.md
-                  - C++ Agent utils API: sc-memory/api/cpp/extended/agents/agent_utils.md
           - C++ Guides:
               - C++ Simple guide for implementing agent: sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md
       - Python API:

@@ -42,9 +42,9 @@ The result construction of agent might look like this:
 <- action_initiated;
 <- action_finished_successfully;
 -> rrel_1: ..some_set;
-=> nrel_answer: ..answer;;
+=> nrel_result: ..result;;
 
-..answer = [*
+..result = [*
   ..some_set => nrel_set_power: [3];;
 *];;
 ```
@@ -190,7 +190,7 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
   ScAddr const & arcAccessAddr 
     = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
 
-  action.FormAnswer(
+  action.FormResult(
     setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
   SC_AGENT_LOG_DEBUG("Set power was counted.");
 
