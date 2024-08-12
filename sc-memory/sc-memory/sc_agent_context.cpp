@@ -38,8 +38,14 @@ ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
   return *this;
 }
 
-ScAction ScAgentContext::CreateAction(ScAddr const & actionAddrClass)
+ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)
 {
-  ScAction action{this, actionAddrClass};
+  ScAction action{this, actionClassAddr};
+  return action;
+}
+
+ScAction ScAgentContext::UseAction(ScAddr const & actionAddr)
+{
+  ScAction action{this, actionAddr, ScAddr::Empty};
   return action;
 }

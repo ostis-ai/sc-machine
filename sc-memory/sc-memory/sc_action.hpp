@@ -20,12 +20,14 @@ class ScKeynode;
  */
 class _SC_EXTERN ScAction final : public ScAddr
 {
+  friend class ScAgentContext;
+
 public:
   /*!
    * @brief Gets class of the action.
    * @return ScAddr representing class of the action.
    */
-  _SC_EXTERN ScAddr GetClass() const;
+  _SC_EXTERN ScAddr GetClass();
 
   /*!
    * @brief Gets argument of the action by index.
@@ -207,13 +209,6 @@ protected:
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
    */
   void Finish(ScAddr const & actionStateAddr);
-
-private:
-  friend class ScAgentContext;
-  template <class TScEvent>
-  friend class ScAgent;
-  template <ScKeynode const & agentImplementationAddr>
-  friend class ScSpecificatedAgent;
 };
 
 #include "sc_action.tpp"

@@ -336,10 +336,10 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent>::GetCallback(ScAddr cons
       if (subscriptionElementAddr == ScKeynodes::action_initiated)
       {
         ScAddr const & actionAddr = otherElementAddr;
-        return ScAction(&agent.m_memoryCtx, actionAddr, agent.GetActionClass());
+        return agent.m_memoryCtx.UseAction(actionAddr);
       }
 
-      return ScAction(&agent.m_memoryCtx, agent.GetActionClass()).Initiate();
+      return agent.m_memoryCtx.CreateAction(agent.GetActionClass()).Initiate();
     };
 
     TScAgent agent;

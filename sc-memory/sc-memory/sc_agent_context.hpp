@@ -66,10 +66,17 @@ public:
 
   /*!
    * @brief Creates an action with a given action class.
-   * @param actionAddrClass Address of the action class.
+   * @param actionClassAddr Address of the action class.
    * @return ScAction object.
    */
-  _SC_EXTERN ScAction CreateAction(ScAddr const & actionAddrClass);
+  _SC_EXTERN ScAction CreateAction(ScAddr const & actionClassAddr);
+
+  /*!
+   * @brief Creates an action with a given action class.
+   * @param actionAddr Address of the action class.
+   * @return ScAction object.
+   */
+  _SC_EXTERN ScAction UseAction(ScAddr const & actionAddr);
 
 protected:
   /*!

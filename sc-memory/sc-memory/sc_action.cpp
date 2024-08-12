@@ -26,9 +26,26 @@ ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr)
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_actionClassAddr, *this);
 };
 
-ScAddr ScAction::GetClass() const
+ScAddr ScAction::GetClass()
 {
-  return m_actionClassAddr;
+  if (m_actionClassAddr.IsValid())
+    return m_actionClassAddr;
+
+  ScIterator3Ptr const it3 = m_ctx->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
+  while (it3->Next())
+  {
+    m_actionClassAddr = it3->Get(2);
+    ScIterator5Ptr const it5 = m_ctx->Iterator5(
+        ScKeynodes::action,
+        ScType::EdgeDCommonConst,
+        m_actionClassAddr,
+        ScType::EdgeAccessConstPosPerm,
+        ScKeynodes::nrel_inclusion);
+    if (it5->Next())
+      return m_actionClassAddr;
+  }
+
+  return ScAddr::Empty;
 }
 
 ScAddr ScAction::GetArgument(size_t idx, ScAddr const & defaultArgumentAddr) const
