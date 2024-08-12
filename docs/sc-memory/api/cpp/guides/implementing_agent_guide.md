@@ -49,7 +49,7 @@ The result construction of agent might look like this:
 *];;
 ```
 
-In addition to agents that initiate actions themselves and then interpret these actions, there is a need to implement agents that interpret actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation condition in the knowledge base.
+In addition to agents that initiate actions themselves and then interpret these actions, there is a need to implement agents that interpret actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
 
 --- 
 
