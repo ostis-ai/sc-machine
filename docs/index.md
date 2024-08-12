@@ -12,15 +12,15 @@
             * [C++ System identifier API](sc-memory/api/cpp/extended/helper_api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
             * [C++ ScTemplate API](sc-memory/api/cpp/extended/template_api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)* 
             * C++ Agents API: - *documentation of C++ Agents API for creating sc-agents*
-                * [C++ Events](sc-memory/api/cpp/extended/agents/events.md) 
-                * [C++ Event subscriptions](sc-memory/api/cpp/extended/agents/event_subscriptions.md) 
-                * [C++ Waits](sc-memory/api/cpp/extended/agents/waits.md) 
-                * [C++ Agents](sc-memory/api/cpp/extended/agents/agents.md)
-                * [C++ Keynodes](sc-memory/api/cpp/extended/agents/keynodes.md)
-                * [C++ Modules](sc-memory/api/cpp/extended/agents/modules.md)
-                * [C++ Agent utils](sc-memory/api/cpp/extended/agents/agent_utils.md)
+                * [C++ Events API](sc-memory/api/cpp/extended/agents/events.md) 
+                * [C++ Event subscriptions API](sc-memory/api/cpp/extended/agents/event_subscriptions.md) 
+                * [C++ Waits API](sc-memory/api/cpp/extended/agents/waits.md) 
+                * [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md)
+                * [C++ Keynodes API](sc-memory/api/cpp/extended/agents/keynodes.md)
+                * [C++ Modules API](sc-memory/api/cpp/extended/agents/modules.md)
+                * [C++ Agent utils API](sc-memory/api/cpp/extended/agents/agent_utils.md)
         * C++ Guides:
-            * [C++ Implementing agent guide](sc-memory/api/cpp/guides/implementing_agent_guide.md)
+            * [C++ Simple guide for implementing agent](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md)
     * Python API - *documentation of Python API provided by py-sc-client*
         * [Python Core API](https://github.com/ostis-ai/py-sc-client) - *documentation of Python core API for creating, retrieving and erasing sc-elements and sc-events in sc-memory*
         * [Python Extended API](https://github.com/ostis-ai/py-sc-kpm) - *documentation of Python extended API for manipulating with large graphs*

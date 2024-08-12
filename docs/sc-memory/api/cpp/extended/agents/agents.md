@@ -8,7 +8,7 @@ This API provides functionality to implement sc-agents on C++.
 
 ## **What is the agent-based model?**
 
-The sc-machine implements the agent-based model to process information. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralised and most often independent of each other. 
+The sc-machine implements the **agent-based model** to process information. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralised and most often independent of each other. 
 
 All agents within the OSTIS Technology are divided into two classes: platform-independent, i.e. implemented only by means of SC-code, and platform-dependent, implemented by means of sc-machine API. This sc-machine presents a powerful, but simple API for developing and maintaining platform-dependent agents in C++.
 
@@ -16,7 +16,7 @@ All agents react to the occurrence of events in sc-memory (sc-events). That is, 
 
 ## **What does agent specification represent?**
 
-All knowledge about an agent: primary initiation condition, class of actions it can interpret, initiation condition, and result condition, are part of specification of this agent. This specification can be represented either in a knowledge base, using SC-code, or programmarly, using sc-machine API.
+All knowledge about an agent: *primary initiation condition*, *class of actions* it can interpret, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programmarly, using sc-machine API.
 
 Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code. An abstract sc-agent is a class of functionally equivalent sc-agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
 
@@ -78,18 +78,7 @@ agent_for_calculating_set_power
 // and that it has answer.
 ```
 
-The sc-machine API provides two types of functionalities to implement an agent in C++:
-a. when agent's specification is represented in knowledge base and used by the agent;
-b. and when agent's specification is represented in C++ code and also used by the agent. 
-
-In both cases, agent's specification can be static, dynamic or semi-dynamic.
-1. Static agent's specification is specification, provided in agent's class externally (via overriding public getters). This specification isn't saved in knowledge base, because changings in knowledge base can't automatically change user-specified code. To provide this type of agent's specification you can use overriding public getters in your agent's class (see documentation below).
-2. Dynamic agent's specification is specification, provided in knowledge base or provided in the code initially, but automatically saved into knowledge base. After that the first agent changes specification of the second agent, the second agent uses changed specification. To implement this type of specification, use API of `ScModule` class and API of `ScAgentBuilder` class (see `C++ Modules`).
-3. Semi-dynamic agent's specification can be gotten when specification is provided in knowledge base or provided in the code initially, and appended externally (via overriding public getters).
-
-Static agent's specification can be useful if you try implementing agent in C++ the first one or if you want to minimize amount of searchings in knowledge base. Dynamic agent's specification provides opportunity to analyze and change this specification by other agents. Semi-dynamic specification can be useful if you want to change some parts of this specification but you want that agent's calls will be quick.
-
-There are two main classes, that you can use to implement agent: `ScAgent` and `ScActionAgent`.
+## **What are ways of providing the agent's specification?**
 
 The sc-machine API provides two types of functionalities to implement an agent in C++:
 a. when the agent's specification is represented in the knowledge base and used by the agent;
@@ -97,16 +86,19 @@ b. when the agent's specification is represented in C++ code and also used by th
 
 In both cases, the agent's specification can be static, dynamic, or semi-dynamic.
 
-1. Static agent specification is a specification provided externally in the agent's class (via overriding public getters). This specification isn't saved in the knowledge base because changes in the knowledge base can't automatically alter user-specified code. To provide this type of agent specification, you can use overriding public getters in your agent's class (see documentation below).
-2. Dynamic agent specification is a specification provided in the knowledge base or initially in the code but automatically saved into the knowledge base. After that, the first agent changes the specification of the second agent, and the second agent uses the changed specification. To implement this type of specification, use the API of `ScModule` class and the API of `ScAgentBuilder` class (see C++ Modules).
-3. Semi-dynamic agent specification can be obtained when the specification is provided in the knowledge base or initially in the code and appended externally (via overriding public getters).
+1. **Static agent specification** is a specification provided externally in the agent's class (via overriding public getters). This specification isn't saved in the knowledge base because changes in the knowledge base can't automatically alter user-specified code. To provide this type of agent specification, you can use overriding public getters in your agent's class (see documentation below).
+2. **Dynamic agent specification** is a specification provided in the knowledge base or initially in the code but automatically saved into the knowledge base. After that, the first agent changes the specification of the second agent, and the second agent uses the changed specification. To implement this type of specification, use the API of `ScModule` class and the API of `ScAgentBuilder` class (see C++ Modules).
+3. **Semi-dynamic agent specification** can be obtained when the specification is provided in the knowledge base or initially in the code and appended externally (via overriding public getters).
 
 Static agent specification can be useful if you are implementing an agent in C++ for the first time or if you want to minimize the number of searches in the knowledge base. Dynamic agent specification provides the opportunity to analyze and change this specification by other agents. Semi-dynamic specification can be useful if you want to change some parts of this specification but still want the agent's calls to be quick.
 
-Next, the API for implementing an agent with a static specification will be discussed. This is the easiest implementation variant to understand for you.
+## **Static agent specification**
+
+Here, the API for implementing an agent with a static specification will be discussed. This is the easiest implementation variant to understand for you. To learn about dynamic agent specification, see [**C++ Modules API**](modules.md).
+
 There are two main classes that you can use to implement an agent: `ScAgent` and `ScActionAgent`.
 
-## **ScAgent**
+### **ScAgent**
 
 This class can be used for all classes of agents. The example using this class is represented below.
 
@@ -134,6 +126,8 @@ public:
   // Other user-defined methods.
 };
 ```
+
+See [**C++ Events API**](events.md) and [**C++ Event subscriptions API**](event_subscriptions.md) to learn how to use and handle sc-events.
 
 !!! note
     Define action class as keynode in agent class or keynodes class.
@@ -187,7 +181,7 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 !!! note
     If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`.
 
-## **ScActionAgent**
+### **ScActionAgent**
 
 In addition to agents that initiate actions themselves and then interpret these actions, there is a need to implement agents that interpret actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
 
@@ -218,7 +212,7 @@ public:
 
 `ScActionEvent` is alias for `ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>` with subscruption sc-element `action_initiated`.
 
-## **ScAgentAbstract**
+### **ScAgentAbstract**
 
 There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
 
@@ -242,6 +236,8 @@ ScAddr MyAgent::GetActionClass() const
   return MyKeynodes::my_action;
 }
 ```
+
+See [**C++ Keynodes API**](keynodes.md) and learn how to define sc-keynodes and use them for your agent.
 
 #### **DoProgram**
 
