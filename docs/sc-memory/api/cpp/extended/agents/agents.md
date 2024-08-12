@@ -6,9 +6,9 @@
 
 This API provides functionality to implement sc-agents on C++.
 
-## **What is the agent-based model?**
+## **What is the agent-driven model?**
 
-The sc-machine implements the **agent-based model** to process information. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralised and most often independent of each other. 
+The sc-machine implements the **agent-driven model** to process information. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralised and most often independent of each other. 
 
 All agents within the OSTIS Technology are divided into two classes: platform-independent, i.e. implemented only by means of SC-code, and platform-dependent, implemented by means of sc-machine API. This sc-machine presents a powerful, but simple API for developing and maintaining platform-dependent agents in C++.
 

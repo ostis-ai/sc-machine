@@ -6,6 +6,14 @@
 
 This API describes how to work with sc-events.
 
+## **What is event-driven model?**
+
+The sc-machine uses event-driven model to manage processing information. The sc-memory stores SC-code constructions, which are are graph structures, then any kind of events, occurring in sc-memory, is related to changes in these graph constructions.
+
+These are methods that generate events (`CreateEdge`, `EraseElement` and `SetLinkContent`). They publish events to an event queue without needing to know which consumers will receive them. These components filter and distribute events to appropriate consumers. They manage the flow of events and ensure that they reach the correct destinations. Event consumers are the components that listen for and process events. Event consumers can be modules, agents or something else.
+
+Within the OSTIS technology, events are considered only situations in which relationships have changed or new relationships have been created.
+
 ## **ScEvent**
 
 The sc-machine provides functionality for subscribing to the following syntactic elementary types of sc-events:
