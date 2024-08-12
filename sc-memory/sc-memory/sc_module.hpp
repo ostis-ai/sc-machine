@@ -20,8 +20,8 @@ class ScAgentBuilder;
 
 /*!
  * @class ScModule
- * @brief This class is an interface for keynodes and agent modules. It's like a complex component that contains linked
- * agents.
+ * @brief A base class for regestering keynodes and agent modules. It's like a complex component that contains
+ * connected agents.
  *
  * Derive this class to implement your own module class.
  *

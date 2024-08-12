@@ -334,7 +334,7 @@ SC_MODULE_REGISTER(ScSetModule)
   // be initialized.
   ->Agent<ScAgentForCalculatingPower>();
   // This method pointers to module that agent class `ScAgentForCalculatingPower`
-  // should be subcribed to sc-event of adding output arc of sc-element
+  // should be subcribed to sc-event of adding output arc from sc-element
   // `action_initiated`. It is default parameter in these method if you want
   // register agent class derived from `ScActionAgent`.
 

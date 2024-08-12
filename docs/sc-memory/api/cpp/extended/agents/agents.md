@@ -210,7 +210,11 @@ public:
 };
 ```
 
-`ScActionEvent` is alias for `ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>` with subscruption sc-element `action_initiated`.
+!!! note
+    `ScActionAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
+
+!!! note
+    `ScActionEvent` is alias for `ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>` with subscruption sc-element `action_initiated`.
 
 ### **ScAgentAbstract**
 
@@ -225,6 +229,7 @@ This class does not provide methods to subscribe and unsubscribe a specified age
 It gets action class that the agent of specified class interpreters. If the abstract sc-agent for this agent class does not have an action class, then method will throw `utils::ExceptionInvalidState`.
 
 ```cpp
+// File my_agent.cpp
 #include "my_agent.hpp"
 
 #include "keynodes/my_keynodes.hpp"
