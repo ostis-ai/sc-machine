@@ -1568,7 +1568,7 @@ ScAddr TestCreateStructureWithConnectorAndIncidentElements(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure = context->UseStructure(structureAddr);
+  ScStructure structure = context->UseStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr << linkAddr << relationEdgeAddr << relationAddr;
 
   return structureAddr;
@@ -1967,7 +1967,7 @@ ScAddr TestCreateStructureWithConnectorAndSource(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure = context->UseStructure(structureAddr);
+  ScStructure structure = context->UseStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr1;
 
   return structureAddr;
@@ -2054,7 +2054,7 @@ ScAddr TestCreateStructureWithConnectorAndTarget(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure = context->UseStructure(structureAddr);
+  ScStructure structure = context->UseStructure(structureAddr);
   structure << edgeAddr1 << linkAddr;
 
   return structureAddr;
@@ -2141,7 +2141,7 @@ ScAddr TestCreateStructureWithConnector(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure = context->UseStructure(structureAddr);
+  ScStructure structure = context->UseStructure(structureAddr);
   structure << edgeAddr;
 
   return structureAddr;
@@ -2215,7 +2215,7 @@ ScAddr TestCreateStructureWithLinks(
   context->SetLinkContent(linkAddr2, "test_content");
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure = context->UseStructure(structureAddr);
+  ScStructure structure = context->UseStructure(structureAddr);
   structure << linkAddr1;
 
   return structureAddr;

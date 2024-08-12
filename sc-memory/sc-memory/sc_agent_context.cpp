@@ -62,14 +62,14 @@ ScSet ScAgentContext::UseSet(ScAddr const & setAddr)
   return set;
 }
 
-ScStruct ScAgentContext::CreateStructure()
+ScStructure ScAgentContext::CreateStructure()
 {
-  ScStruct structure{this};
+  ScStructure structure{this};
   return structure;
 }
 
-ScStruct ScAgentContext::UseStructure(ScAddr const & structureAddr)
+ScStructure ScAgentContext::UseStructure(ScAddr const & structureAddr)
 {
-  ScStruct structure{this, structureAddr};
+  ScStructure structure{this, structureAddr};
   return structure;
 }

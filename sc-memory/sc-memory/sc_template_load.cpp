@@ -29,7 +29,7 @@ protected:
   void operator()(ScTemplate * inTemplate, ScAddr & resultTemplateAddr)
   {
     resultTemplateAddr = m_context.CreateNode(ScType::NodeConstStruct);
-    ScStruct templateStruct(m_context, resultTemplateAddr);
+    ScStructure templateStruct(m_context, resultTemplateAddr);
 
     std::unordered_map<std::string, ScAddr> itemNamesToTemplateElements;
     auto const & ResolveAddr = [this, &templateStruct, &inTemplate, &itemNamesToTemplateElements](

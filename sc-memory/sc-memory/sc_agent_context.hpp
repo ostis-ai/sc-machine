@@ -12,7 +12,7 @@ template <class TScEvent>
 class ScWaitCondition;
 class ScAction;
 class ScSet;
-class ScStruct;
+class ScStructure;
 class ScKeynode;
 
 /*!
@@ -95,16 +95,16 @@ public:
 
   /*!
    * @brief Creates a structure.
-   * @return ScStruct object.
+   * @return ScStructure object.
    */
-  _SC_EXTERN ScStruct CreateStructure();
+  _SC_EXTERN ScStructure CreateStructure();
 
   /*!
-   * @brief Create ScStruct object for provided set.
+   * @brief Create ScStructure object for provided set.
    * @param structureAddr Address of the set.
-   * @return ScStruct object.
+   * @return ScStructure object.
    */
-  _SC_EXTERN ScStruct UseStructure(ScAddr const & structureAddr);
+  _SC_EXTERN ScStructure UseStructure(ScAddr const & structureAddr);
 
 protected:
   /*!

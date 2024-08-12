@@ -10,7 +10,7 @@
 
 #include "sc_addr.hpp"
 
-class ScStruct;
+class ScStructure;
 class ScResult;
 class ScKeynode;
 
@@ -80,9 +80,9 @@ public:
 
   /*!
    * @brief Gets result structure of the action.
-   * @return ScStruct representing result.
+   * @return ScStructure representing result.
    */
-  _SC_EXTERN ScStruct GetResult() noexcept(false);
+  _SC_EXTERN ScStructure GetResult() noexcept(false);
 
   /*!
    * @brief Sets result structure for the action.

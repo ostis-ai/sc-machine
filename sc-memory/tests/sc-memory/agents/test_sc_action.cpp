@@ -52,7 +52,7 @@ TEST_F(ScActionTest, CreateActionAndSetGetResult)
 
   action.FinishSuccessfully();
   EXPECT_THROW(action.SetResult(structureAddr2), utils::ExceptionInvalidState);
-  ScStruct const & result = action.GetResult();
+  ScStructure const & result = action.GetResult();
   EXPECT_TRUE(result.IsEmpty());
   EXPECT_EQ(result, action.GetResult());
   EXPECT_EQ(result, structureAddr2);
@@ -112,7 +112,7 @@ TEST_F(ScActionTest, CreateActionAndSetFormUpdateGetResult)
   action.FinishSuccessfully();
   EXPECT_THROW(action.FormResult(), utils::ExceptionInvalidState);
   EXPECT_THROW(action.UpdateResult(), utils::ExceptionInvalidState);
-  ScStruct const & result = action.GetResult();
+  ScStructure const & result = action.GetResult();
   EXPECT_FALSE(result.IsEmpty());
 
   EXPECT_TRUE(result.HasElement(elementAddr1));
@@ -136,7 +136,7 @@ TEST_F(ScActionTest, CreateActionAndUpdateGetResult)
   action.FinishSuccessfully();
   EXPECT_THROW(action.FormResult(), utils::ExceptionInvalidState);
   EXPECT_THROW(action.UpdateResult(), utils::ExceptionInvalidState);
-  ScStruct const & result = action.GetResult();
+  ScStructure const & result = action.GetResult();
   EXPECT_FALSE(result.IsEmpty());
 
   EXPECT_TRUE(result.HasElement(elementAddr1));

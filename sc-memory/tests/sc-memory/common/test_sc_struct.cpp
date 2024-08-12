@@ -9,7 +9,7 @@ using ScStructTest = ScMemoryTest;
 
 TEST_F(ScStructTest, AppendIterateElements)
 {
-  ScStruct structure = m_ctx->CreateStructure();
+  ScStructure structure = m_ctx->CreateStructure();
 
   ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConstClass);
   EXPECT_TRUE(addr1.IsValid());

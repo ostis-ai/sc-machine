@@ -83,7 +83,7 @@ ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const 
   return *this;
 }
 
-ScStruct ScAction::GetResult() noexcept(false)
+ScStructure ScAction::GetResult() noexcept(false)
 {
   if (!IsInitiated())
     SC_THROW_EXCEPTION(

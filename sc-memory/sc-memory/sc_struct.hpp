@@ -53,13 +53,13 @@ private:
   ScMemoryContext * m_ctx;
 };
 
-class ScStruct : public ScSet
+class ScStructure : public ScSet
 {
   friend class ScAgentContext;
   friend class ScTemplateLoader;
 
 protected:
-  _SC_EXTERN ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr = ScAddr::Empty);
+  _SC_EXTERN ScStructure(ScMemoryContext * ctx, ScAddr const & structAddr = ScAddr::Empty);
 
-  _SC_EXTERN ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr = ScAddr::Empty);
+  _SC_EXTERN ScStructure(ScMemoryContext & ctx, ScAddr const & structAddr = ScAddr::Empty);
 };

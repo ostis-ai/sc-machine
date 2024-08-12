@@ -100,13 +100,13 @@ bool ScSet::IsEmpty() const
   return !iter->Next();
 }
 
-ScStruct::ScStruct(ScMemoryContext * ctx, ScAddr const & structAddr)
+ScStructure::ScStructure(ScMemoryContext * ctx, ScAddr const & structAddr)
   : ScSet(ctx, structAddr.IsValid() ? structAddr : ctx->CreateNode(ScType::NodeConstStruct))
 {
   // TODO: check type of struct element
 }
 
-ScStruct::ScStruct(ScMemoryContext & ctx, ScAddr const & structAddr)
+ScStructure::ScStructure(ScMemoryContext & ctx, ScAddr const & structAddr)
   : ScSet(&ctx, structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConstStruct))
 {
   // TODO: check type of struct element

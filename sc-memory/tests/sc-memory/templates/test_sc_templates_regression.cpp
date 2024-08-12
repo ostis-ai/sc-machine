@@ -251,7 +251,7 @@ TEST_F(ScTemplateRegressionTest, Issue224)
         ScAddr const structAddr =
             m_ctx->HelperResolveSystemIdtf("test_program" + std::to_string(i), ScType::NodeConstStruct);
         EXPECT_TRUE(structAddr.IsValid());
-        ScStruct contour = m_ctx->UseStructure(structAddr);
+        ScStructure contour = m_ctx->UseStructure(structAddr);
 
         for (auto const & a : contourItems)
           contour << a;
