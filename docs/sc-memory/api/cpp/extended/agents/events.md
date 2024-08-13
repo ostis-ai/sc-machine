@@ -68,7 +68,7 @@ ScAddr const userAddr = event.GetUser();
 
 #### **GetSubscriptionElement**
 
-Each event occurs within a semantic neighbourhood of some sc-element. This sc-element is called sc-event subsctiption sc-element. In other words, it is an element that is permanently listening for the occurrence of certain sc-events within its neighbourhood. To get it, use this method.
+Each event occurs within a semantic neighbourhood of some sc-element. This sc-element is called sc-event subscription sc-element. In other words, it is an element that is permanently listening for the occurrence of certain sc-events within its neighbourhood. To get it, use this method.
 
 ```cpp
 ...
@@ -223,7 +223,7 @@ auto const [listenAddr, _1, _2] = event.GetTriple();
 </table>
 
 !!! note
-    All described methods of `ScElementary` class are public and accessable from child classes.
+    All described methods of `ScElementary` class are public and accessible from child classes.
 
 ### **ScEventAddOutputArc** and **ScEventAddInputArc**
 
@@ -395,11 +395,11 @@ ScAddr const targetElementAddr = event.GetEdgeTargetElement();
 
 ### **ScEventRemoveElement**
 
-This class represents sc-event of removing specified listen sc-element. You can use all methods from objects of this class that arc accessable from `ScElementaryEvent` class.
+This class represents sc-event of removing specified listen sc-element. You can use all methods from objects of this class that arc accessible from `ScElementaryEvent` class.
 
 ### **ScEventChangeLinkContent**
 
-This class represents sc-event of changing content for listen sc-link. You can use all methods from objects of this class that arc accessable from `ScElementaryEvent` class.
+This class represents sc-event of changing content for listen sc-link. You can use all methods from objects of this class that arc accessible from `ScElementaryEvent` class.
 
 --- 
 

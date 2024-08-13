@@ -220,10 +220,10 @@ For each agent, you can specify key sc-elements that this agent uses during the 
 
 ```diff
 set-agents-module/
-  ├── CMakeLists.txt
-  ├── agents/
-  │   ├── sc_agent_for_сalculating_set_power.hpp
-  │   └── sc_agent_for_сalculating_set_power.сpp
+ ├── CMakeLists.txt
+ ├── agents/
+ │   ├── sc_agent_for_сalculating_set_power.hpp
+ │   └── sc_agent_for_сalculating_set_power.сpp
 +├── keynodes/
 +│   └── sc_set_keynodes.hpp
 ```
@@ -294,13 +294,13 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
 Someone should subscribe your agent to event. It can be other agent, or any code at all. You can implement class, that allows register keynodes and agents. This class is named sc-module. Each sc-module should register keynodes and agents with common sense.
 
 ```diff
-  set-agents-module/
-  ├── CMakeLists.txt
-  ├── agents/
-  │   ├── sc_agent_for_сalculating_set_power.hpp
-  │   └── sc_agent_for_сalculating_set_power.сpp
-  ├── keynodes/
-  │   └── sc_set_keynodes.hpp
+ set-agents-module/
+ ├── CMakeLists.txt
+ ├── agents/
+ │   ├── sc_agent_for_сalculating_set_power.hpp
+ │   └── sc_agent_for_сalculating_set_power.сpp
+ ├── keynodes/
+ │   └── sc_set_keynodes.hpp
 +├── sc_set_module.hpp
 +└── sc_set_module.cpp
 ```

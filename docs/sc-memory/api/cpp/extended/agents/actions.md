@@ -10,7 +10,7 @@ This API provides functionality to handle actions on C++.
 
 All actions are processes. Any process is performed by some subject. Each action performed can be interpreted as a process of solving some task, i.e. as a process of achieving the given goal with the given conditions. Each action denotes some transformation carried out in the external environment or in the memory of some system.
 
-Like an agent, an action has a specification. This specification includes: class, arguments, finish state and others. The specification of an action is called a problem (task).
+Like an agent, an action has a specification. This specification includes: class, arguments, state, result and others. The specification of an action is called a problem (task).
 
 ## **ScAction**
 
@@ -40,9 +40,9 @@ ScAddr const & actionClassAddr = action.GetClass();
 ...
 ```
 
-If action has arguments in knowledge base, then you will get them. There are a couple of getters for this.
-
 ### **GetArgument**
+
+Actions can have arguments. Action arguments are some objects on which this action should be performed. If action has arguments in knowledge base, then you will get them. There are a couple of getters for this.
 
 ```cpp
 ...
@@ -66,7 +66,6 @@ ScAddr const & argAddr = action.GetArgument(1);
 
 ```cpp
 ...
-// Use 
 ScAddr const & argAddr = action.GetArgument(1, defaultArgumentAddr);
 // If there is no argument with such role, then `argAddr` will equal 
 // to `defaultArgumentAddr`.
@@ -92,61 +91,125 @@ auto const & [argAddr1, argAddr2, _] = action.GetArguments<3>();
 ...
 ```
 
+!!! note
+    `GetArguments` uses `GetArgument` for each argument.
+
 ### **SetArgument**
+
+You can set arguments for specified action.
 
 ```cpp
 ...
+// Provide relation here if your argument should have specific role in action. 
 action.SetArgument(ScKeynodes::rrel_1, argAddr);
 ...
 ```
 
 ```cpp
 ...
+// Or provide index of argument. 1 is equal to `ScKeynodes::rrel_1`,
+// 2 is equal to `ScKeynodes::rrel_2` and etc.
 action.SetArgument(1, argAddr);
 ...
 ```
+
+!!! note
+    If action has already argument with specified role, then connection between action and this argument will be removed and created new one between action and new argument.
 
 ### **SetArguments**
 
 ```cpp
 ...
+// Set several arguments simultaneously.
 action.SetArguments(argAddr1, argAddr2);
 ...
 ```
 
-### **GetResult**
+!!! note
+    `SetArguments` uses `SetArgument` for each argument.
+
+### **Action result**
+
+All action should have result (result situation). Result situation is structure that contains all sc-constructions that which indicate result of interpreting action.
+
+#### **GetResult**
+
+You can result for any actions.
 
 ```cpp
 ...
-ScStruct const & actionResult = action.GetResult();
+// Use this method after that some agent finished 
+// interpreting action.
+ScStructure const & actionResult = action.GetResult();
 ...
 ```
 
-### **SetResult**
+!!! warning
+    You can call this method for finished action only.
+
+#### **SetResult**
 
 ```cpp
 ...
-action.SetResult(resultStruct);
+// Use this method in agent interpreting action 
+// to set new result.
+action.SetResult(resultStructure);
 ...
 ```
 
-### **FormResult**
+!!! note
+    If action has result, then will be removed and the new one will be set.
+
+!!! warning
+    You can call this method for not finished, but initiated action only.
+
+#### **FormResult**
+
+You must not create result structure. You can provide only elements of result for action.
 
 ```cpp
 ...
+// Use this method in agent interpreting action 
+// to form new result with provided sc-elements.
 action.FormResult(elementAddr1, elementAddr2);
 ...
 ```
 
-### **UpdateResult**
+!!! note
+    If action has result, then will be removed and the new one will be set.
+
+#### **UpdateResult**
 
 ```cpp
 ...
+// Use this method in agent interpreting action
+// for update existing result by new sc-elements.
 action.UpdateResult(elementAddr1, elementAddr2);
 ...
 ```
 
-### **IsInitiated**
+!!! note
+    This method updates existing result for action.
+
+!!! note
+    `FormResult` and `UpdateResult` doesn't append sc-element twice.
+
+!!! note
+    If you don't form result then empty result for your action will be generated if you finish action.
+
+### **Action states**
+
+All actions have state. There are three states of actions provided by this API:
+
+* action isn't initiated;
+* action is initiated, but isn't finished, that is, action is performed;
+* action is finished.
+
+You can initiate, wait or finish actions.
+
+#### **IsInitiated**
+
+Use this method to check that specified action is initiated.
 
 ```cpp
 ...
@@ -154,15 +217,21 @@ sc_bool const isActionInitiated = action.IsInitiated();
 ...
 ```
 
-### **InitiateAndWait**
+#### **InitiateAndWait**
+
+You can initiate action and wait while it will be finished.
 
 ```cpp
 ...
-action.InitiateAndWait(100);
+// Provide maximum time of waiting while action will be finished.
+action.InitiateAndWait(100); // milliseconds
+// This argument has default value, that equals to 5000 milliseconds.
 ...
 ```
 
-### **Initiate**
+#### **Initiate**
+
+Or you can initiate and not wait while it will be finished.
 
 ```cpp
 ...
@@ -170,7 +239,9 @@ action.Initiate();
 ...
 ```
 
-### **IsFinished**
+#### **IsFinished**
+
+Use this method to check that specified action is finished.
 
 ```cpp
 ...
@@ -178,7 +249,15 @@ sc_bool const isActionFinished = action.IsFinished();
 ...
 ```
 
-### **IsFinishedSuccessfully**
+All finished actions should be:
+
+* finished successfully;
+* finished unsuccessfully;
+* finished with error.
+
+#### **IsFinishedSuccessfully**
+
+The set of actions finished successfully includes actions that have been successfully completed from the point of view of subject who performed them, i.e., the goal has been achieved, for example, the solution and result to a problem have been obtained, a construction has been successfully transformed, etc.
 
 ```cpp
 ...
@@ -186,15 +265,23 @@ sc_bool const isActionFinishedSuccessfully = action.IsFinishedSuccessfully();
 ...
 ```
 
-### **FinishSuccessfully**
+#### **FinishSuccessfully**
+
+You can finish successfully action that not finished yet.
 
 ```cpp
 ...
 ScResult const & result = action.FinishSuccessfully();
+// Use result to return result from agent program.
 ...
 ```
 
-### **IsFinishedUnsuccessfully**
+#### **IsFinishedUnsuccessfully**
+
+The set of actions finished unsuccessfully includes actions that were not successfully finished from the point of view of subject who performed them for some reasons. There are two main reasons why this situation may occur:
+
+* corresponding problem is formulated incorrectly;
+* formulation of corresponding problem is correct and understandable to the system, but solution of this problem at the current moment cannot be obtained in terms satisfactory from the point of view of executor.
 
 ```cpp
 ...
@@ -202,15 +289,26 @@ sc_bool const isActionFinishedUnsuccessfully = action.IsFinishedUnsuccessfully()
 ...
 ```
 
-### **FinishUnsuccessfully**
+!!! warning
+    You can't finish successfully action that finished or not initiated.
+
+#### **FinishUnsuccessfully**
+
+You can finish unsuccessfully action that not finished yet.
 
 ```cpp
 ...
 ScResult const & result = action.FinishUnsuccessfully();
+// Use result to return result from agent program.
 ...
 ```
 
-### **IsFinishedWithError**
+!!! warning
+    You can't finish unsuccessfully action that finished or not initiated.
+
+#### **IsFinishedWithError**
+
+The set of actions finished with error includes actions whose execution was not successfully finished from the point of view of subject who executed them, due to some error, such as incorrect specification of this action or violation of sc-memory integrity by some subject.
 
 ```cpp
 ...
@@ -218,13 +316,22 @@ sc_bool const isActionFinishedWithError = action.IsFinishedWithError();
 ...
 ```
 
-### **FinishWithError**
+#### **FinishWithError**
+
+You can finish action with error that not finished yet.
 
 ```cpp
 ...
 ScResult const & result = action.FinishWithError();
+// Use result to return result from agent program.
 ...
 ```
+
+!!! warning
+    You can't finish action with error that finished or not initiated.
+
+
+All these methods return object of `ScResult`. You should return it in agent program. You can't call constructor of `ScResult` to create new object.
 
 --- 
 

@@ -16,7 +16,7 @@ All agents react to the occurrence of events in sc-memory (sc-events). That is, 
 
 ## **What does agent specification represent?**
 
-All knowledge about an agent: *primary initiation condition*, *class of actions* it can interpret, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programmarly, using sc-machine API.
+All knowledge about an agent: *primary initiation condition*, *class of actions* it can interpret, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programly, using sc-machine API.
 
 Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code. An abstract sc-agent is a class of functionally equivalent sc-agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
 
@@ -114,7 +114,7 @@ This class can be used for all classes of agents. The example using this class i
 class MyAgent : public ScAgent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
-  // Here you should specify class of actions which the given agent interpretes. 
+  // Here you should specify class of actions which the given agent interpreters. 
   // This overriding is required.
   ScAddr GetActionClass() const override;
   // Here you should implement program of the given agent. 
@@ -199,7 +199,7 @@ This class can be only used for agents that should be triggered to sc-event of a
 class MyAgent : public ScActionAgent
 {
 public:
-  // Here you should specify class of actions which the given agent interpretes. 
+  // Here you should specify class of actions which the given agent interpreters. 
   // This overriding is required.
   ScAddr GetActionClass() const override;
   // Here you should implement program of the given agent. 
@@ -214,7 +214,7 @@ public:
     `ScActionAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
 
 !!! note
-    `ScActionEvent` is alias for `ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>` with subscruption sc-element `action_initiated`.
+    `ScActionEvent` is alias for `ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
 
 ### **ScAgentAbstract**
 
@@ -222,7 +222,7 @@ There is a base class for agents in C++. This class provides implemented methods
 
 This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should derive your agent class from these classes, not from the ScAgentAbstract class (see documentation above).
 
-### **Reguired methods**
+### **Required methods**
 
 #### **GetActionClass**
 
@@ -253,7 +253,7 @@ Each agent interprets action with the help of its program.
 ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 {
   // Class `ScAction` encapsulates information about sc-action. The provided 
-  // action is action that the given agent interpretes right now. 
+  // action is action that the given agent interpreters right now. 
   // It belongs to `MyKeynodes::my_action` class. 
   // Actions are copyable and movable. `ScAction` is derived from `ScAddr`.
  
@@ -353,7 +353,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 {
   // Some logic...
  
-  action.SetResult(structAddr);
+  action.SetResult(structureAddr);
   return action.FinishSuccessfully();
 }
 ```
@@ -379,7 +379,7 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 {
   action.IsInitiated(); // result: SC_TRUE
   action.IsFinished(); // result: SC_FALSE
-  action.IsFinishedSucessfully(); // result: SC_FALSE
+  action.IsFinishedSuccessfully(); // result: SC_FALSE
 
   // Some logic...
 
@@ -390,7 +390,7 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 !!! warning
     The API of `ScAction` provides other methods. Not use `GetResult` for initiated but not finished action and `Initiate` for initiated or finished action.
 
-### **Not reguired methods**
+### **Not required methods**
 
 #### **GetAbstractAgent**
 
@@ -408,7 +408,7 @@ ScAddr MyAgent::GetAbstractAgent() const
 ```
 
 !!! warning
-    Remember, if you override only this method and required methods, then other getters will return elements of specification for specified abstract agent. All not overrided getters call `GetAbstractAgent`. 
+    Remember, if you override only this method and required methods, then other getters will return elements of specification for specified abstract agent. All not override getters call `GetAbstractAgent`. 
 
 #### **GetEventClass**
 

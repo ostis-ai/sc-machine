@@ -4,15 +4,15 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement modules for regestering keynodes and agents on C++.
+This API provides functionality to implement modules for registering keynodes and agents on C++.
 
 ---
 
 ## **ScModule**
 
-This class is a base class for regestering keynodes and agent modules. It's like a complex component that contains connected agents.
+This class is a base class for registering keynodes and agent modules. It's like a complex component that contains connected agents.
 
-To register your keynodes and agents, implement module class and call `Keynodes` and `Agent` methods to register keynodes and agents correspondently.
+To register your keynodes and agents, implement module class and call `Keynodes` and `Agent` methods to register keynodes and agents correspondingly.
 
 ```cpp
 // File my_module.hpp
@@ -34,14 +34,14 @@ class MyModule : public ScModule
 
 SC_MODULE_REGISTER(MyModule)
 // It initializes static object of `MyModule` class that can be 
-// used to call methods for regestering keynodes and agents.
+// used to call methods for registering keynodes and agents.
   ->Keynodes<MyKeynodes>()
   // It registers keynodes and returns object of `MyModule`.
   ->Agent<MyAgent>(); 
   // It registers agent and returns object of `MyModule`.
   // `MyAgent` is derived from `ScActionAgent`.
   // This method pointers to module that agent class `MyAgent`
-  // should be subcribed to sc-event of adding output arc from 
+  // should be subscribed to sc-event of adding output arc from 
   // sc-element `action_initiated`. It is default parameter
   // in these method if you want register agent class derived 
   // from `ScActionAgent`.
@@ -70,7 +70,7 @@ SC_MODULE_REGISTER(MyModule)
   ;
 ```
 
-If you need to initalize not agent objects in module, you can override `Initialize` and `Shutdown` methods in your module class.
+If you need to initialize not agent objects in module, you can override `Initialize` and `Shutdown` methods in your module class.
 
 ```diff
 // File my_module.hpp:
@@ -147,7 +147,7 @@ So you can load the initial specification for your agent into the knowledge base
     If specification for an agent already exists in the knowledge base, no new connections will be created, i.e. there will be no duplicates.
 
 !!! note
-    All provided arguments must be valid, otherwize you module will not be registered, because errors will occur.
+    All provided arguments must be valid, otherwise you module will not be registered, because errors will occur.
 
 !!! warning
     If specification for an agent isn't already in the knowledge base, you should call all the methods listed after `AgentBuilder` call.
@@ -157,7 +157,7 @@ So you can load the initial specification for your agent into the knowledge base
 
 ### **Loading agent specification from knowledge base**
 
-If you has specification for your agent in the knowledge base writed in SCs-code or SCg-code, then you can just specify implementation of your agent.
+If you has specification for your agent in the knowledge base wrote in SCs-code or SCg-code, then you can just specify implementation of your agent.
 
 Write scs-specification of your agent and connect it with module that register your agent.
 
@@ -218,6 +218,6 @@ SC_MODULE_REGISTER(MyModule)
 ```
 
 !!! note
-    If specifcation of your agent isn't full in the knowledge base, then module will not be registered, because errors will occur.
+    If specification of your agent isn't full in the knowledge base, then module will not be registered, because errors will occur.
 
 ## **Frequently Asked Questions**

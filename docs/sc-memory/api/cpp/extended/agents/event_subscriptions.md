@@ -36,7 +36,7 @@ Each sc-event subscription constructor, besides `ScElementaryEventSubscription` 
 
 * `context` - `ScMemoryContext` that will be used to work with sc-event;
 * `subscriptionElementAddr` - sc-address of sc-element that need to be listened for a specified sc-event;
-* `delegateFunc` - delegate to a callback function, that will be called on each event emit (`void delegateFunc(TScEvent const &)`), where `TScEvent` is corresponfing sc-event class.
+* `delegateFunc` - delegate to a callback function, that will be called on each event emit (`void delegateFunc(TScEvent const &)`), where `TScEvent` is corresponding sc-event class.
 
 !!! note
     Callback function will be called in another thread!
@@ -175,7 +175,7 @@ ScEventSubscriptionRemoveOutputArc<ScType::EdgeAccessConstPosPerm> subscription(
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-ScEventSubscriptionRemovInputArc<ScType::EdgeAccessConstPosPerm> subscription(
+ScEventSubscriptionRemoveInputArc<ScType::EdgeAccessConstPosPerm> subscription(
   context, 
   elementAddr, 
   [](ScEventRemoveInputArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
