@@ -8,7 +8,7 @@
 
 #include "sc_agent_context.hpp"
 #include "sc_result.hpp"
-#include "sc_wait.hpp"
+#include "sc_event_wait.hpp"
 #include "sc_struct.hpp"
 
 ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const & actionClassAddr)
@@ -151,7 +151,7 @@ sc_bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
         "Not able to initiate action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                         << "` due it had already been finished.");
 
-  auto wait = std::make_shared<ScWaitActionFinished>(*m_ctx, *this);
+  auto wait = std::shared_ptr<ScWaitActionFinished>(new ScWaitActionFinished(*m_ctx, *this));
   wait->SetOnWaitStartDelegate(
       [this]()
       {

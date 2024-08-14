@@ -26,7 +26,7 @@
 #include "sc_agent_context.hpp"
 #include "sc_action.hpp"
 #include "sc_result.hpp"
-#include "sc_wait.hpp"
+#include "sc_event_wait.hpp"
 #include "sc_module.hpp"
 #include "sc_keynodes.hpp"
 

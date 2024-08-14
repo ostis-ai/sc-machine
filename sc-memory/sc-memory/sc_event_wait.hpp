@@ -61,7 +61,7 @@ public:
   _SC_EXTERN ScWait * SetOnWaitStartDelegate(DelegateFunc const & startDelegate);
 
   /*!
-   * @brief Waits for the condition to be resolved or a timeout.
+   * @brief Waits for condition to be resolved or a timeout.
    * @param timeout_ms Timeout in milliseconds.
    * @param onWaitSuccess Function to call on successful wait.
    * @param onWaitUnsuccess Function to call on unsuccessful wait.
@@ -77,6 +77,8 @@ private:
   DelegateFunc m_waitStartDelegate;  ///< Delegate function for wait start.
 };
 
+SHARED_PTR_TYPE(ScWait);
+
 /*!
  * @class ScWaitEvent
  * @brief Implements event wait logic. Should be alive while sc-memory context is alive.
@@ -87,22 +89,28 @@ class _SC_EXTERN ScWaitEvent : public ScWait
 {
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
-public:
-  /*!
-   * @brief Constructor for ScWaitEvent.
-   * @param ctx Sc-memory context.
-   * @param addr An address of sc-element to wait event for.
-   */
-
-  _SC_EXTERN ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & subscriptionAddr);
+  friend class ScAgentContext;
 
 protected:
   /*!
-   * @brief Event handler.
-   * @param event Event object.
-   * @return Result of the event handling.
+   * @brief Constructor for ScWaitEvent.
+   * @param ctx A sc-memory context used to wait sc-event.
+   * @param subscriptionElementAddr An address of sc-element to wait sc-event for.
    */
-  virtual sc_bool OnEvent(TScEvent const &);
+  _SC_EXTERN ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & subscriptionElementAddr);
+
+  /*!
+   * @brief Constructor for ScWaitEvent.
+   * @param ctx A sc-memory context used to wait sc-event.
+   * @param eventClassAddr A type of sc-event.
+   * @param subscriptionElementAddr An address of sc-element to wait sc-event for.
+   */
+  _SC_EXTERN ScWaitEvent(
+      ScMemoryContext const & ctx,
+      ScAddr const & eventClassAddr,
+      ScAddr const & subscriptionElementAddr);
+
+  virtual sc_bool OnEvent(TScEvent const & event);
 
 private:
   ScElementaryEventSubscription<TScEvent> m_event;
@@ -118,22 +126,36 @@ class _SC_EXTERN ScWaitCondition final : public ScWaitEvent<TScEvent>
 {
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
-public:
+  friend class ScAgentContext;
+
+protected:
   using DelegateCheckFunc = std::function<sc_bool(TScEvent const &)>;
 
   /*!
    * @brief Constructor for ScWaitCondition.
-   * @param ctx Sc-memory context.
-   * @param addr An address of sc-element to wait event for.
+   * @param ctx A sc-memory context used to wait sc-event with condition.
+   * @param subscriptionElementAddr An address of sc-element to wait event for.
    * @param func Delegate function to check the condition.
    */
-  _SC_EXTERN ScWaitCondition(ScMemoryContext const & ctx, ScAddr const & subscriptionAddr, DelegateCheckFunc func);
+  _SC_EXTERN ScWaitCondition(
+      ScMemoryContext const & ctx,
+      ScAddr const & subscriptionElementAddr,
+      DelegateCheckFunc const & func);
+
+  /*!
+   * @brief Constructor for ScWaitCondition.
+   * @param ctx A sc-memory context used to wait sc-event with condition.
+   * @param eventClassAddr A type of sc-event.
+   * @param subscriptionElementAddr An address of sc-element to wait event for.
+   * @param func Delegate function to check the condition.
+   */
+  _SC_EXTERN ScWaitCondition(
+      ScMemoryContext const & ctx,
+      ScAddr const & eventClassAddr,
+      ScAddr const & subscriptionElementAddr,
+      DelegateCheckFunc const & func);
 
 private:
-  /*!
-   * @brief Event handler.
-   * @param event Event object.
-   */
   sc_bool OnEvent(TScEvent const & event) override;
 
 private:
@@ -146,21 +168,18 @@ private:
  */
 class _SC_EXTERN ScWaitActionFinished final : public ScWaitEvent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>
 {
-public:
+  friend class ScAction;
+
+protected:
   /*!
    * @brief Constructor for ScWaitActionFinished.
-   * @param ctx Sc-memory context.
+   * @param ctx A sc-memory context used to wait while action will be finished.
    * @param actionAddr An address of the action.
    */
   _SC_EXTERN ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
 
 private:
-  /*!
-   * @brief Event handler.
-   * @param event Event object.
-   * @return Result of the event handling.
-   */
   sc_bool OnEvent(ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event) override;
 };
 
-#include "sc_wait.tpp"
+#include "sc_event_wait.tpp"

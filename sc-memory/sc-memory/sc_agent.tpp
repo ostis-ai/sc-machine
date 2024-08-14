@@ -230,39 +230,40 @@ void ScAgent<TScEvent>::Subscribe(
 
   std::string const & eventName = ScEvent::GetName<TScEvent>();
   auto & subscriptionsMap = ScAgentAbstract<TScEvent>::m_events.find(agentName)->second;
-  for (ScAddr const & subscriptionAddr : subscriptionVector)
+  for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
-    if (!ctx->IsElement(subscriptionAddr))
+    if (!ctx->IsElement(subscriptionElementAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Not able to subscribe agent `" << agentName << "` to event `" << eventName
-                                          << "due subscription sc-element with address `" << subscriptionAddr.Hash()
-                                          << "` is not valid.");
-    if (subscriptionsMap.find(subscriptionAddr) != subscriptionsMap.cend())
+                                          << "due subscription sc-element with address `"
+                                          << subscriptionElementAddr.Hash() << "` is not valid.");
+    if (subscriptionsMap.find(subscriptionElementAddr) != subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Agent `" << agentName << "` has already been subscribed to event `" << eventName << "("
-                    << subscriptionAddr.Hash() << ")`.");
+                    << subscriptionElementAddr.Hash() << ")`.");
 
     SC_LOG_INFO(
-        "Subscribe agent `" << agentName << "` to event `" << eventName << "(" << subscriptionAddr.Hash() << ")`.");
+        "Subscribe agent `" << agentName << "` to event `" << eventName << "(" << subscriptionElementAddr.Hash()
+                            << ")`.");
 
     if constexpr (std::is_same<ScElementaryEvent, TScEvent>::value)
     {
       subscriptionsMap.insert(
-          {subscriptionAddr,
+          {subscriptionElementAddr,
            new ScElementaryEventSubscription(
                *ctx,
                agent.GetEventClass(),
-               subscriptionAddr,
+               subscriptionElementAddr,
                TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
     }
     else
     {
       subscriptionsMap.insert(
-          {subscriptionAddr,
+          {subscriptionElementAddr,
            new ScElementaryEventSubscription<TScEvent>(
-               *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
+               *ctx, subscriptionElementAddr, TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
     }
   }
 }
@@ -294,31 +295,31 @@ void ScAgent<TScEvent>::Unsubscribe(
 
   std::string const & eventClassName = ScEvent::GetName<TScEvent>();
   auto & subscriptionsMap = agentsMapIt->second;
-  for (ScAddr const & subscriptionAddr : subscriptionVector)
+  for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
     if constexpr (!std::is_same<TScEvent, ScEventRemoveElement>::value)
     {
-      if (!ctx->IsElement(subscriptionAddr))
+      if (!ctx->IsElement(subscriptionElementAddr))
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "Not able to unsubscribe agent `" << agentName << "` from event `" << eventClassName
-                                              << "due subscription sc-element with address `" << subscriptionAddr.Hash()
-                                              << "` is not valid.");
+                                              << "due subscription sc-element with address `"
+                                              << subscriptionElementAddr.Hash() << "` is not valid.");
     }
 
-    auto const & it = subscriptionsMap.find(subscriptionAddr);
+    auto const & it = subscriptionsMap.find(subscriptionElementAddr);
     if (it == subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
           "Agent `" << agentName << "` has not been subscribed to event `" << eventClassName << "("
-                    << subscriptionAddr.Hash() << ")` yet.");
+                    << subscriptionElementAddr.Hash() << ")` yet.");
 
     SC_LOG_INFO(
-        "Unsubscribe agent `" << agentName << "` from event `" << eventClassName << "(" << subscriptionAddr.Hash()
-                              << ")`.");
+        "Unsubscribe agent `" << agentName << "` from event `" << eventClassName << "("
+                              << subscriptionElementAddr.Hash() << ")`.");
 
     delete it->second;
-    subscriptionsMap.erase(subscriptionAddr);
+    subscriptionsMap.erase(subscriptionElementAddr);
   }
 }
 
@@ -500,21 +501,3 @@ void ScActionAgent::Unsubscribe(ScMemoryContext * ctx, ScAddr const & agentImple
 {
   ScAgent<ScActionEvent>::Unsubscribe<TScAgent>(ctx, agentImplementationAddr, ScKeynodes::action_initiated);
 }
-
-// ScIterator5Ptr it5 = ctx->Iterator5(
-//     ScType::Unknown,
-//     ScType::EdgeDCommonConst,
-//     agentImplementationAddr,
-//     ScType::EdgeAccessConstPosPerm,
-//     ScKeynodes::nrel_sc_agent_program);
-// if (!it5->Next())
-//   SC_THROW_EXCEPTION(
-//       utils::ExceptionInvalidState,
-//       "Agent implementation `" << agentImplementationName
-//                                << "` has not sc-agent program. Check that agent implementation `"
-//                                << agentImplementationName << " has specified relation `nrel_sc_agent_program`.");
-
-// if (it5->Next())
-//   SC_THROW_EXCEPTION(
-//       utils::ExceptionInvalidState,
-//       "Agent implementation `" << agentImplementationName << "` has two or more sc-agent programs.");

@@ -725,6 +725,16 @@ TEST_F(ScEventTest, InvalidSubscriptions)
   EXPECT_THROW(m_ctx->CreateEventSubscription<ScEventChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
+TEST_F(ScEventTest, InvalidEvents)
+{
+  ScAddr nodeAddr{23124323};
+  ScAddr eventClassAddr{23124323};
+  EXPECT_THROW(m_ctx->CreateEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+
+  nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_THROW(m_ctx->CreateEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+}
+
 TEST_F(ScEventTest, SetRemoveDelegateFunc)
 {
   ScAddr linkAddr;

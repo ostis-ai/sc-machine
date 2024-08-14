@@ -11,13 +11,13 @@
 template <class TScEvent>
 ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
     ScMemoryContext const & ctx,
-    ScAddr const & subscriptionAddr,
+    ScAddr const & subscriptionElementAddr,
     DelegateFunc const & func)
 {
   m_delegate = func;
   m_event_subscription = sc_event_subscription_with_user_new(
       *ctx,
-      *subscriptionAddr,
+      *subscriptionElementAddr,
       *TScEvent::eventClassAddr,
       *TScEvent::elementType,
       (sc_pointer)this,
@@ -29,13 +29,13 @@ template <class TScEvent>
 ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
     ScMemoryContext const & ctx,
     ScAddr const & eventClassAddr,
-    ScAddr const & subscriptionAddr,
+    ScAddr const & subscriptionElementAddr,
     DelegateFunc const & func)
 {
   m_delegate = func;
   m_event_subscription = sc_event_subscription_with_user_new(
       *ctx,
-      *subscriptionAddr,
+      *subscriptionElementAddr,
       *eventClassAddr,
       *ScType::Unknown,
       (sc_pointer)this,

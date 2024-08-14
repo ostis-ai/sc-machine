@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_wait.hpp"
+#include "sc_event_wait.hpp"
 
 ScWait::Impl::Impl() = default;
 ScWait::Impl::~Impl() = default;

@@ -19,12 +19,11 @@ class _SC_EXTERN ScEventSubscription : public ScObject
 public:
   _SC_EXTERN ~ScEventSubscription() override;
 
-  /* Set specified function as a delegate that will be calls on event emit */
-  template <typename FuncT>
-  _SC_EXTERN void SetDelegate(FuncT &&);
-
+  /* Remove delegate function */
   _SC_EXTERN virtual void RemoveDelegate() = 0;
 };
+
+SHARED_PTR_TYPE(ScEventSubscription);
 
 template <class TScEvent = ScElementaryEvent>
 class _SC_EXTERN ScElementaryEventSubscription final : public ScEventSubscription
@@ -56,13 +55,13 @@ protected:
 
   explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       DelegateFunc const & func = DelegateFunc());
 
   explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
       ScAddr const & eventClassAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       DelegateFunc const & func = DelegateFunc());
 
   _SC_EXTERN static sc_result Handler(
@@ -80,8 +79,5 @@ private:
   DelegateFunc m_delegate;
   utils::ScLock m_lock;
 };
-
-template <class TScEvent>
-using ScElementaryEventSubscriptionPtr = ScElementaryEventSubscription<TScEvent>;
 
 #include "sc_event_subscription.tpp"

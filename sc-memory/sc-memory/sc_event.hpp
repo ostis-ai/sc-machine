@@ -79,7 +79,7 @@ protected:
   _SC_EXTERN ScElementaryEvent(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -109,7 +109,7 @@ protected:
   _SC_EXTERN TScElementaryEvent(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -144,7 +144,7 @@ protected:
   _SC_EXTERN ScEventAddArc(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -169,7 +169,7 @@ public:
 protected:
   _SC_EXTERN ScEventAddEdge(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -193,7 +193,7 @@ class _SC_EXTERN ScEventAddOutputArc : public ScEventAddArc<arcType>
 protected:
   _SC_EXTERN ScEventAddOutputArc(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -222,7 +222,7 @@ public:
 protected:
   _SC_EXTERN ScEventAddInputArc(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -256,7 +256,7 @@ protected:
   _SC_EXTERN ScEventRemoveArc(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -281,7 +281,7 @@ public:
 protected:
   _SC_EXTERN ScEventRemoveEdge(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -305,7 +305,7 @@ class _SC_EXTERN ScEventRemoveOutputArc final : public ScEventRemoveArc<arcType>
 protected:
   _SC_EXTERN ScEventRemoveOutputArc(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -334,7 +334,7 @@ public:
 protected:
   _SC_EXTERN ScEventRemoveInputArc(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -359,7 +359,7 @@ class _SC_EXTERN ScEventRemoveElement final : public TScElementaryEvent<ScType::
 protected:
   _SC_EXTERN ScEventRemoveElement(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
@@ -382,7 +382,7 @@ class _SC_EXTERN ScEventChangeLinkContent final : public TScElementaryEvent<ScTy
 protected:
   _SC_EXTERN ScEventChangeLinkContent(
       ScAddr const & userAddr,
-      ScAddr const & subscriptionAddr,
+      ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
