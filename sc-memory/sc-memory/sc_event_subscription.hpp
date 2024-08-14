@@ -37,13 +37,12 @@ class _SC_EXTERN ScElementaryEventSubscription final : public ScEventSubscriptio
   friend class ScAgent;
   friend class ScMemoryJsonEventsHandler;
 
+  SC_DISALLOW_COPY_AND_MOVE(ScElementaryEventSubscription);
+
 public:
   using DelegateFunc = std::function<void(TScEvent const & event)>;
 
   _SC_EXTERN ~ScElementaryEventSubscription() override;
-
-  // Don't allow copying of events
-  _SC_EXTERN ScElementaryEventSubscription(ScElementaryEventSubscription const & other) = delete;
 
   /* Set specified function as a delegate that will be calls on event emit */
   _SC_EXTERN void SetDelegate(DelegateFunc && func);

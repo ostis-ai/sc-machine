@@ -103,11 +103,9 @@ bool ScSet::IsEmpty() const
 ScStructure::ScStructure(ScMemoryContext * ctx, ScAddr const & structAddr)
   : ScSet(ctx, structAddr.IsValid() ? structAddr : ctx->CreateNode(ScType::NodeConstStruct))
 {
-  // TODO: check type of struct element
 }
 
 ScStructure::ScStructure(ScMemoryContext & ctx, ScAddr const & structAddr)
   : ScSet(&ctx, structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConstStruct))
 {
-  // TODO: check type of struct element
 }

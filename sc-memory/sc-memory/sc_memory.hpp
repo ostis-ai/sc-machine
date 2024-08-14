@@ -79,6 +79,10 @@ public:
 //! Class used to work with memory. It provides functions to create/retrieve/erase sc-elements
 class ScMemoryContext
 {
+  friend class ScMemory;
+  friend class ScServerMessageAction;
+  friend class ScAction;
+
 public:
   struct ScMemoryStatistics
   {
@@ -1260,10 +1264,6 @@ public:
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
 
 protected:
-  friend class ScMemory;
-  friend class ScServerMessageAction;
-  friend class ScAction;
-
   _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr) noexcept;
 
 protected:

@@ -12,14 +12,12 @@ class ScKeynode;
 
 class ScResult : public ScObject
 {
-private:
-  sc_result m_code;
-
   template <class TScEvent>
   friend class ScAgent;
-  template <ScKeynode const & agentImplementationAddr>
-  friend class ScSpecificatedAgent;
   friend class ScAction;
+
+private:
+  sc_result m_code;
 
   _SC_EXTERN ScResult(sc_result code);
 
