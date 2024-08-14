@@ -40,7 +40,7 @@ ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
   return *this;
 }
 
-std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext::CreateEventSubscription(
+std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(ScElementaryEvent const &)> const & eventCallback) const
@@ -71,7 +71,7 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
           *this, eventClassAddr, subscriptionElementAddr, eventCallback));
 }
 
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWait(
+std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback) const
@@ -96,7 +96,7 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWait(
   return eventWait;
 }
 
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWaitWithCondition(
+std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
@@ -124,12 +124,12 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWaitWithCondition(
   return eventWait;
 }
 
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWaitWithCondition(
+std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback) const
 {
-  return CreateEventWaitWithCondition(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
+  return CreateEventWaiterWithCondition(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
 }
 
 ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)

@@ -57,7 +57,7 @@ public:
   _SC_EXTERN ScAgentContext & operator=(ScAgentContext && other) noexcept;
 
   /*!
-   * @brief Creates an elementary event subscription for the specified event class and subscription element.
+   * @brief Creates elementary sc-event subscription for the specified sc-event class and subscription sc-element.
    *
    * This function allows the user to subscribe to events of a specified class,
    * using the provided subscription element address and a callback function
@@ -72,13 +72,13 @@ public:
    * @throws utils::ExceptionInvalidParams If the event class address or subscription element address is not valid,
    *         or if the event class does not belong to `sc_event`.
    */
-  std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> CreateEventSubscription(
+  std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> CreateElementaryEventSubscription(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(ScElementaryEvent const &)> const & eventCallback) const;
 
   /*!
-   * @brief Creates sc-event subscription for the specified subscription address and event callback.
+   * @brief Creates elementary sc-event subscription for specified subscription sc-element and sc-event callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
    * @param subscriptionElementAddr An address of subscription sc-element.
    * @param eventCallback The callback function that will be called when sc-event occurs. It takes a const reference to
@@ -88,7 +88,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<TScEvent>> CreateEventSubscription(
+  _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<TScEvent>> CreateElementaryEventSubscription(
       ScAddr const & subscriptionElementAddr,
       std::function<void(TScEvent const &)> const & eventCallback) const;
 
@@ -107,13 +107,13 @@ public:
    * @return A shared pointer to created `ScWait`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
-  _SC_EXTERN std::shared_ptr<ScWait> CreateEventWait(
+  _SC_EXTERN std::shared_ptr<ScWait> CreateEventWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback = {}) const;
 
   /*!
-   * @brief Creates sc-event wait for the specified subscription address and optional initiate callback.
+   * @brief Creates sc-event wait for the specified subscription sc-element and optional initiate callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
    * @param subscriptionElementAddr An address of subscription sc-element.
    * @param initiateCallback An optional callback function that will be called when the wait starts. It takes no
@@ -123,7 +123,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  _SC_EXTERN std::shared_ptr<ScWait> CreateEventWait(
+  _SC_EXTERN std::shared_ptr<ScWait> CreateEventWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback = {}) const;
 
@@ -145,14 +145,14 @@ public:
    * @return A shared pointer to created `ScWait`.
    * @throws utils::ExceptionInvalidParams If sc-event class address or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWait> CreateEventWaitWithCondition(
+  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
       std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback) const;
 
   /*!
-   * @brief Creates sc-event wait with condition for specified subscription sc-element, initiate callback, and check
+   * @brief Creates sc-event wait with condition for the specified subscription sc-element, initiate callback, and check
    * callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
    * @param subscriptionElementAddr An address of subscription sc-element.
@@ -164,7 +164,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWait> CreateEventWaitWithCondition(
+  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
       std::function<sc_bool(TScEvent const &)> const & checkCallback) const;
@@ -185,13 +185,13 @@ public:
    * @return A shared pointer to created `ScWait`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWait> CreateEventWaitWithCondition(
+  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback) const;
 
   /*!
-   * @brief Creates sc-event wait with condition for specified subscription sc-element and check callback.
+   * @brief Creates sc-event wait with condition for the specified subscription sc-element and check callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
    * @param subscriptionElementAddr A address of subscription sc-element.
    * @param checkCallback A callback function that will be called to check if the condition is met. It takes a const
@@ -201,7 +201,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWait> CreateEventWaitWithCondition(
+  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
       ScAddr const & subscriptionElementAddr,
       std::function<sc_bool(TScEvent const &)> const & checkCallback) const;
 

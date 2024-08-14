@@ -11,7 +11,7 @@
 #include "sc_agent_builder.hpp"
 
 template <class TScEvent>
-std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateEventSubscription(
+std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & subscriptionElementAddr,
     std::function<void(TScEvent const &)> const & eventCallback) const
 {
@@ -37,7 +37,7 @@ std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateE
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWait(
+std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback) const
 {
@@ -63,7 +63,7 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWait(
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWaitWithCondition(
+std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
     std::function<sc_bool(TScEvent const &)> const & checkCallback) const
@@ -93,11 +93,11 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWaitWithCondition(
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWaitWithCondition(
+std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & subscriptionElementAddr,
     std::function<sc_bool(TScEvent const &)> const & checkCallback) const
 {
-  return CreateEventWaitWithCondition(subscriptionElementAddr, {}, checkCallback);
+  return CreateEventWaiterWithCondition(subscriptionElementAddr, {}, checkCallback);
 }
 
 template <class TScAgent, class... TScAddr>

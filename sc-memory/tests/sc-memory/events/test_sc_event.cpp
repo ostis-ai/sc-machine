@@ -30,7 +30,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
 
   size_t count = 10;
 
-  auto eventSubscription = ctx.CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+  auto eventSubscription = ctx.CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
       node,
       [node, node2, count](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
       {
@@ -45,7 +45,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
           localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node2, node);
       });
 
-  eventSubscription = ctx.CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+  eventSubscription = ctx.CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
       node2,
       [node3, node2, count](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
       {
@@ -60,7 +60,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
           localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node3, node2);
       });
 
-  eventSubscription = ctx.CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+  eventSubscription = ctx.CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
       node3,
       [node3](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
       {
@@ -119,7 +119,8 @@ bool TestEventSubscriptionAddInputArc(ScAgentContext * ctx)
 
   CreateNode();
 
-  auto eventSubscription = ctx->CreateEventSubscription<ScEventAddInputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
+  auto eventSubscription =
+      ctx->CreateElementaryEventSubscription<ScEventAddInputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -185,7 +186,8 @@ bool TestEventSubscriptionAddOutputArc(ScAgentContext * ctx)
 
   CreateNode();
 
-  auto eventSubscription = ctx->CreateEventSubscription<ScEventAddOutputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
+  auto eventSubscription =
+      ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -251,7 +253,8 @@ bool TestEventSubscriptionAddEdge(ScAgentContext * ctx)
 
   CreateNode();
 
-  auto eventSubscription = ctx->CreateEventSubscription<ScEventAddEdge<subscriptionEdgeType>>(nodeAddr1, OnEvent);
+  auto eventSubscription =
+      ctx->CreateElementaryEventSubscription<ScEventAddEdge<subscriptionEdgeType>>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -319,7 +322,8 @@ bool TestEventSubscriptionRemoveInputArc(ScAgentContext * ctx)
 
   CreateNode();
 
-  auto eventSubscription = ctx->CreateEventSubscription<ScEventRemoveInputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
+  auto eventSubscription =
+      ctx->CreateElementaryEventSubscription<ScEventRemoveInputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -391,7 +395,7 @@ bool TestEventSubscriptionRemoveOutputArc(ScAgentContext * ctx)
   CreateNode();
 
   auto eventSubscription =
-      ctx->CreateEventSubscription<ScEventRemoveOutputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
+      ctx->CreateElementaryEventSubscription<ScEventRemoveOutputArc<subscriptionArcType>>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -462,7 +466,8 @@ bool TestEventSubscriptionRemoveEdge(ScAgentContext * ctx)
 
   CreateNode();
 
-  auto eventSubscription = ctx->CreateEventSubscription<ScEventRemoveEdge<subscriptionEdgeType>>(nodeAddr1, OnEvent);
+  auto eventSubscription =
+      ctx->CreateElementaryEventSubscription<ScEventRemoveEdge<subscriptionEdgeType>>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -516,7 +521,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEvent)
 
   CreateNode();
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventRemoveElement>(nodeAddr1, OnEvent);
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventRemoveElement>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -551,7 +556,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRe
 
   CreateNode();
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventRemoveElement>(nodeAddr1, OnEvent);
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventRemoveElement>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -584,7 +589,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndThrow
 
   CreateNode();
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventRemoveElement>(nodeAddr1, OnEvent);
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventRemoveElement>(nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -618,7 +623,8 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndGetRe
 
   CreateNode();
 
-  auto eventSubscription = m_ctx->CreateEventSubscription(ScKeynodes::sc_event_remove_element, nodeAddr1, OnEvent);
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription(ScKeynodes::sc_event_remove_element, nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -651,7 +657,8 @@ TEST_F(ScEventTest, CreateEventSubscriptionRemoveElementAndInitiateEventAndThrow
 
   CreateNode();
 
-  auto eventSubscription = m_ctx->CreateEventSubscription(ScKeynodes::sc_event_remove_element, nodeAddr1, OnEvent);
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription(ScKeynodes::sc_event_remove_element, nodeAddr1, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -686,7 +693,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEvent)
 
   CreateNode();
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventChangeLinkContent>(linkAddr, OnEvent);
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventChangeLinkContent>(linkAddr, OnEvent);
   ScTimer timer(kTestTimeout);
 
   EmitEvent();
@@ -702,37 +709,41 @@ TEST_F(ScEventTest, InvalidSubscriptions)
   ScAddr nodeAddr{23124323};
 
   EXPECT_THROW(
-      m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateEventSubscription<ScEventAddInputArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      m_ctx->CreateElementaryEventSubscription<ScEventAddInputArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateEventSubscription<ScEventAddEdge<ScType::EdgeAccess>>(nodeAddr, {}), utils::ExceptionInvalidParams);
-  EXPECT_THROW(
-      m_ctx->CreateEventSubscription<ScEventRemoveOutputArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      m_ctx->CreateElementaryEventSubscription<ScEventAddEdge<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateEventSubscription<ScEventRemoveInputArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      m_ctx->CreateElementaryEventSubscription<ScEventRemoveOutputArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateEventSubscription<ScEventRemoveEdge<ScType::EdgeAccess>>(nodeAddr, {}),
+      m_ctx->CreateElementaryEventSubscription<ScEventRemoveInputArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->CreateEventSubscription<ScEventRemoveElement>(nodeAddr, {}), utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->CreateEventSubscription<ScEventChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
+  EXPECT_THROW(
+      m_ctx->CreateElementaryEventSubscription<ScEventRemoveEdge<ScType::EdgeAccess>>(nodeAddr, {}),
+      utils::ExceptionInvalidParams);
+  EXPECT_THROW(
+      m_ctx->CreateElementaryEventSubscription<ScEventRemoveElement>(nodeAddr, {}), utils::ExceptionInvalidParams);
+  EXPECT_THROW(
+      m_ctx->CreateElementaryEventSubscription<ScEventChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 
   nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
-  EXPECT_THROW(m_ctx->CreateEventSubscription<ScEventChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
+  EXPECT_THROW(
+      m_ctx->CreateElementaryEventSubscription<ScEventChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScEventTest, InvalidEvents)
 {
   ScAddr nodeAddr{23124323};
   ScAddr eventClassAddr{23124323};
-  EXPECT_THROW(m_ctx->CreateEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
-  EXPECT_THROW(m_ctx->CreateEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScEventTest, SetRemoveDelegateFunc)
@@ -758,7 +769,7 @@ TEST_F(ScEventTest, SetRemoveDelegateFunc)
   };
 
   CreateNode();
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventChangeLinkContent>(linkAddr, {});
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventChangeLinkContent>(linkAddr, {});
 
   ScTimer timer = ScTimer(kTestTimeout);
   EmitEvent();
@@ -814,7 +825,7 @@ TEST_F(ScEventTest, SetRemoveDelegateFuncV2)
 
   CreateNode();
 
-  auto eventSubscription = m_ctx->CreateEventSubscription(ScKeynodes::sc_event_change_content, linkAddr, {});
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription(ScKeynodes::sc_event_change_content, linkAddr, {});
 
   ScTimer timer = ScTimer(kTestTimeout);
   EmitEvent();
@@ -851,7 +862,7 @@ TEST_F(ScEventTest, DestroyOrder)
   ScAddr const node = m_ctx->CreateNode(ScType::Unknown);
   EXPECT_TRUE(node.IsValid());
 
-  auto evt = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto evt = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       node, [](ScEventAddOutputArc<ScType::EdgeAccess> const &) {});
 
   m_ctx.reset();
@@ -864,18 +875,19 @@ TEST_F(ScEventTest, EventsLock)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      node,
-      [node](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
-      {
-        bool result = false;
-        ScMemoryContext localCtx;
-        ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
-        while (it->Next())
-          result = true;
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          node,
+          [node](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
+          {
+            bool result = false;
+            ScMemoryContext localCtx;
+            ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            while (it->Next())
+              result = true;
 
-        EXPECT_TRUE(result);
-      });
+            EXPECT_TRUE(result);
+          });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
@@ -886,21 +898,22 @@ TEST_F(ScEventTest, ParallelCreateEdges)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      node,
-      [node](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event)
-      {
-        bool result = false;
-        ScMemoryContext localCtx;
-        ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
-        while (it->Next())
-          result = true;
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          node,
+          [node](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event)
+          {
+            bool result = false;
+            ScMemoryContext localCtx;
+            ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            while (it->Next())
+              result = true;
 
-        for (size_t i = 0; i < 10000; i++)
-          localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, event.GetArcTargetElement());
+            for (size_t i = 0; i < 10000; i++)
+              localCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, event.GetArcTargetElement());
 
-        EXPECT_TRUE(result);
-      });
+            EXPECT_TRUE(result);
+          });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
@@ -911,15 +924,16 @@ TEST_F(ScEventTest, ParallelCreateRemoveEdges)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      node,
-      [node](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
-      {
-        ScMemoryContext localCtx;
-        ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
-        while (it->Next())
-          localCtx.EraseElement(it->Get(1));
-      });
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          node,
+          [node](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
+          {
+            ScMemoryContext localCtx;
+            ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            while (it->Next())
+              localCtx.EraseElement(it->Get(1));
+          });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
@@ -930,13 +944,14 @@ TEST_F(ScEventTest, ParallelCreateRemoveEdges2)
   ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr const node2 = m_ctx->CreateNode(ScType::NodeConst);
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      node,
-      [](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event)
-      {
-        ScMemoryContext localCtx;
-        localCtx.EraseElement(event.GetAddedArc());
-      });
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          node,
+          [](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event)
+          {
+            ScMemoryContext localCtx;
+            localCtx.EraseElement(event.GetAddedArc());
+          });
 
   for (size_t i = 0; i < 10000; i++)
     m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, node2);
@@ -969,7 +984,7 @@ TEST_F(ScEventTest, PendEvents)
   std::atomic_uint eventsCount(0);
   std::atomic_uint passedCount(0);
 
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeDCommonConst>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeDCommonConst>>(
       set1,
       [&passedCount, &eventsCount, &set1, &elements, &rel](ScEventAddOutputArc<ScType::EdgeDCommonConst> const &)
       {
@@ -1009,12 +1024,13 @@ TEST_F(ScEventTest, BlockEventsAndNotEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      nodeAddr,
-      [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
-      {
-        isCalled = true;
-      });
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          nodeAddr,
+          [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
+          {
+            isCalled = true;
+          });
 
   m_ctx->BeingEventsBlocking();
 
@@ -1032,12 +1048,13 @@ TEST_F(ScEventTest, BlockEventsAndEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      nodeAddr,
-      [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
-      {
-        isCalled = true;
-      });
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          nodeAddr,
+          [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
+          {
+            isCalled = true;
+          });
 
   m_ctx->BeingEventsBlocking();
 
@@ -1061,12 +1078,13 @@ TEST_F(ScEventTest, BlockEventsGuardAndNotEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      nodeAddr,
-      [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
-      {
-        isCalled = true;
-      });
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          nodeAddr,
+          [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
+          {
+            isCalled = true;
+          });
 
   ScMemoryContextEventsBlockingGuard guard(*m_ctx);
 
@@ -1082,12 +1100,13 @@ TEST_F(ScEventTest, BlockEventsGuardAndEmitAfter)
   ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   std::atomic_bool isCalled = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
-      nodeAddr,
-      [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
-      {
-        isCalled = true;
-      });
+  auto eventSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+          nodeAddr,
+          [&isCalled](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &)
+          {
+            isCalled = true;
+          });
   {
     ScMemoryContextEventsBlockingGuard guard(*m_ctx);
 

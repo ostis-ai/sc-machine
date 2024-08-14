@@ -424,7 +424,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -459,7 +459,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -485,7 +485,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeA
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -514,7 +514,7 @@ TEST_F(
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -535,7 +535,7 @@ TEST_F(
   ScAddr edgeAddr;
   std::atomic_bool isChecked = false;
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventRemoveOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventRemoveOutputArc<ScType::EdgeAccess>>(
         usersSetAddr,
         [this, &userContext, &isChecked](ScEventRemoveOutputArc<ScType::EdgeAccess> const &)
         {
@@ -550,7 +550,7 @@ TEST_F(
   }
 
   isChecked = false;
-  eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       usersSetAddr,
       [this, &userContext, &isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -573,7 +573,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isChecked = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -596,7 +596,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
   SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
   EXPECT_TRUE(isChecked.load());
 
-  eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -620,7 +620,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isChecked = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -644,7 +644,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
   SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
   EXPECT_TRUE(isChecked.load());
 
-  eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -668,7 +668,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByUserWithInvalidConnectorsToPe
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isChecked = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [this, &userContext, &isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -689,7 +689,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedAfter)
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
 
   std::atomic_bool isChecked = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [this, &isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -715,7 +715,7 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
 
   std::atomic_bool isChecked = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [this, &isChecked](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -758,7 +758,7 @@ TEST_F(
 
   std::atomic_bool isAuthenticated = false;
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
         {
@@ -778,7 +778,7 @@ TEST_F(
   }
 
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
         {
@@ -801,7 +801,7 @@ TEST_F(
   EXPECT_TRUE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
 
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
         {
@@ -831,7 +831,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutPermiss
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -854,7 +854,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWriteAn
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -882,7 +882,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutErasePe
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -911,7 +911,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWritePe
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -940,7 +940,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -968,7 +968,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadPer
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -997,7 +997,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -1026,7 +1026,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   {
     std::atomic_bool isAuthenticated = false;
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
         {
@@ -1049,7 +1049,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
 
   ScAddr const & nrelUserActionClassAddr{nrel_user_action_class_addr};
   std::atomic_bool isPermissionsUpdated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       nrelUserActionClassAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -1080,7 +1080,7 @@ TEST_F(
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   {
     std::atomic_bool isAuthenticated = false;
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
         {
@@ -1103,7 +1103,7 @@ TEST_F(
 
   ScAddr const & nrelUsersSetActionClassAddr{nrel_users_set_action_class_addr};
   std::atomic_bool isPermissionsUpdated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       nrelUsersSetActionClassAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -1241,7 +1241,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithou
   {
     ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
     std::atomic_bool isAuthenticated = false;
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
         {
@@ -1270,7 +1270,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithPe
   {
     ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
     std::atomic_bool isAuthenticated = false;
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [this, &userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
         {
@@ -1556,7 +1556,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -1587,7 +1587,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -1621,7 +1621,7 @@ TEST_F(
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -1644,7 +1644,7 @@ TEST_F(
   ScAddr usersSetEdgeAddr;
   std::atomic_bool isChecked = false;
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventRemoveOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventRemoveOutputArc<ScType::EdgeAccess>>(
         usersSetAddr,
         [&](ScEventRemoveOutputArc<ScType::EdgeAccess> const &)
         {
@@ -1662,7 +1662,7 @@ TEST_F(
   }
 
   isChecked = false;
-  eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       usersSetAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -1693,7 +1693,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -1725,7 +1725,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalErase
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -1757,7 +1757,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -1794,7 +1794,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
 
   std::atomic_bool isAuthenticated = false;
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc<ScType::EdgeAccess> const &)
         {
@@ -1820,7 +1820,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   isAuthenticated = false;
 
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc<ScType::EdgeAccess> const &)
         {
@@ -1861,7 +1861,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
 
   std::atomic_bool isAuthenticated = false;
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc<ScType::EdgeAccess> const &)
         {
@@ -1887,7 +1887,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
   isAuthenticated = false;
 
   {
-    auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+    auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
         conceptAuthenticatedUserAddr,
         [&](ScEventAddOutputArc<ScType::EdgeAccess> const &)
         {
@@ -1979,7 +1979,7 @@ TEST_F(
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -2065,7 +2065,7 @@ TEST_F(
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -2139,7 +2139,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
@@ -2203,7 +2203,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&](ScEventAddOutputArc<ScType::EdgeAccess> const & event)
       {
