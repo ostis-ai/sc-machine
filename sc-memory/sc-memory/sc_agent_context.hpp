@@ -17,6 +17,7 @@ class ScEventSubscription;
 template <class TScEvent>
 class ScElementaryEventSubscription;
 class ScWait;
+class ScActionAgent;
 
 /*!
  * @class ScAgentContext
@@ -243,6 +244,81 @@ public:
    * @return ScStructure object.
    */
   _SC_EXTERN ScStructure UseStructure(ScAddr const & structureAddr);
+
+  /*!
+   * @brief Subscribes agent class to specified sc-events.
+   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
+   * @warning Specified agent class must be derived from class `ScAgent`.
+   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
+   * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
+   */
+  template <class TScAgent, class... TScAddr>
+  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(
+      TScAddr const &... subscriptionAddrs);
+
+  /*!
+   * @brief Subscribes agent class to sc-event of adding output arc from `action_initiated` to some formed sc-action.
+   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @warning Specified agent class must be derived from class `ScAgentAction`.
+   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
+   * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
+   */
+  template <class TScAgent>
+  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent();
+
+  /*!
+   * @brief Unsubscribes agent class from specified sc-events.
+   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe from.
+   * @warning Specified agent class must be derived from class `ScAgent`.
+   *  @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
+   * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
+   */
+  template <class TScAgent, class... TScAddr>
+  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(
+      TScAddr const &... subscriptionAddrs);
+
+  /*!
+   * @brief Unsubscribes agent class from sc-event of adding output arc from `action_initiated` to some formed
+   * sc-action.
+   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @warning Specified agent class must be derived from class `ScAgentAction`.
+   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
+   * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
+   */
+  template <class TScAgent>
+  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent();
+
+  /*!
+   * @brief Builds and subscribes an agent.
+   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
+   * class.
+   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
+   * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
+   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and is not included
+   * in any abstract sc-agent.
+   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and the abstract
+   * sc-agent for this agent class does not have a primary initiation condition.
+   */
+  template <class TScAgent>
+  _SC_EXTERN void BuildAndSubscribeAgent(ScAddr const & agentImplementationAddr);
+
+  /*!
+   * @brief Destroys and unsubscribes an agent.
+   * @tparam TScAgent An agent class to be unsubscribed from the event.
+   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
+   * class.
+   *  @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
+   * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
+   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and is not included
+   * in any abstract sc-agent.
+   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and the abstract
+   * sc-agent for this agent class does not have a primary initiation condition.
+   */
+  template <class TScAgent>
+  _SC_EXTERN void DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr);
 
 protected:
   /*!

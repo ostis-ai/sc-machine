@@ -6,6 +6,8 @@
 
 #include "sc_agent_builder.hpp"
 
+#include "sc_agent_context.hpp"
+
 #include "sc_keynodes.hpp"
 
 template <class TScAgent>

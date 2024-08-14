@@ -55,6 +55,9 @@ public:
 template <class TScAgent>
 class ScAgentBuilder : public ScAgentBuilderAbstract
 {
+  friend class ScModule;
+  friend class ScAgentContext;
+
 public:
   /*!
    * @brief Constructs an ScAgentBuilder with the given agent implementation.
@@ -112,9 +115,6 @@ public:
 
 protected:
   using ScInitializeCallback = std::function<void(ScMemoryContext *)>;
-  friend class ScModule;
-  template <class ScAgent>
-  friend void BuildAndSubscribeAgent(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr);
 
   ScModule * m_module;
 
