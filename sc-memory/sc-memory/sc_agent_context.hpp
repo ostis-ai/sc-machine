@@ -29,7 +29,7 @@ class ScActionAgent;
  */
 class ScAgentContext : public ScMemoryContext
 {
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
   friend class ScAction;
 

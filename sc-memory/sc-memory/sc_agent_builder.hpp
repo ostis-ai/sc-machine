@@ -14,6 +14,7 @@
 
 class ScModule;
 class ScMemoryContext;
+class ScAgentContext;
 
 /*!
  * @class ScAgentBuilderAbstract

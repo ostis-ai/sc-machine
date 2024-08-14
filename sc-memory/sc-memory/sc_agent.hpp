@@ -32,10 +32,14 @@ class ScResult;
  *
  * @tparam TScEvent The type of sc-event this agent handles.
  */
-template <class TScEvent>
+template <class TScEvent, class TScContext = ScAgentContext>
 class _SC_EXTERN ScAgentAbstract : public ScObject
 {
   static_assert(std::is_base_of<class ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+  static_assert(
+      std::is_base_of<class ScAgentContext, TScContext>::value,
+      "TScContext type must be derived from ScAgentContext type.");
+  static_assert(std::is_move_constructible<TScContext>::value, "TScContext type must be movable constructible.");
 
   template <class TScAgent>
   friend class ScAgentBuilder;
@@ -210,7 +214,7 @@ public:
   _SC_EXTERN virtual ScTemplate GetResultConditionTemplate() const;
 
 protected:
-  mutable ScAgentContext m_memoryCtx;
+  mutable TScContext m_memoryCtx;
   ScAddr m_agentImplementationAddr;
 
   static inline std::unordered_map<std::string, std::unordered_map<ScAddr, ScEventSubscription *, ScAddrHashFunc>>
@@ -248,10 +252,54 @@ protected:
  *
  * @tparam TScEvent The type of sc-event this agent class handles.
  */
-template <class TScEvent>
-class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent>
+template <class TScEvent, class TScContext = ScAgentContext>
+class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent, TScContext>
 {
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+  static_assert(
+      std::is_base_of<class ScAgentContext, TScContext>::value,
+      "TScContext type must be derived from ScAgentContext type.");
+  static_assert(std::is_move_constructible<TScContext>::value, "TScContext type must be movable constructible.");
+
+  // Each agent should be have no more than one of three methods working with initiation condition.
+  template <typename TScAgent>
+  struct should_be_no_more_than_one_override_initiation_condition_method_for
+  {
+    template <typename T1, typename T2>
+    struct check_override_initiation_condition_method_for
+    {
+      static constexpr bool value =
+          (!std::is_same<decltype(&T1::CheckInitiationCondition), decltype(&T2::CheckInitiationCondition)>::value
+           + !std::is_same<decltype(&T1::GetInitiationCondition), decltype(&T2::GetInitiationCondition)>::value
+           + !std::is_same<
+               decltype(&T1::GetInitiationConditionTemplate),
+               decltype(&T2::GetInitiationConditionTemplate)>::value)
+          <= 1;
+    };
+
+    static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
+                                      ? check_override_initiation_condition_method_for<ScActionAgent, TScAgent>::value
+                                      : check_override_initiation_condition_method_for<ScAgent, TScAgent>::value;
+  };
+
+  // Each agent should be have no more than one of three methods working with result condition.
+  template <typename TScAgent>
+  struct should_be_no_more_than_one_override_result_condition_method_for
+  {
+    template <typename T1, typename T2>
+    struct check_override_result_condition_method_for
+    {
+      static constexpr bool value =
+          (!std::is_same<decltype(&T1::CheckResultCondition), decltype(&T2::CheckResultCondition)>::value
+           + !std::is_same<decltype(&T1::GetResultCondition), decltype(&T2::GetResultCondition)>::value
+           + !std::is_same<decltype(&T1::GetResultConditionTemplate), decltype(&T2::GetResultConditionTemplate)>::value)
+          <= 1;
+    };
+
+    static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
+                                      ? check_override_result_condition_method_for<ScActionAgent, TScAgent>::value
+                                      : check_override_result_condition_method_for<ScAgent, TScAgent>::value;
+  };
 
   friend class ScModule;
   friend class ScActionAgent;
@@ -432,32 +480,6 @@ public:
    * @return ScTemplate of initiation condition of this agent class.
    */
   _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;
-
-private:
-  /*!
-   * @brief Subscribes agent class to sc-event of adding output arc from `action_initiated` to some formed sc-action.
-   * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param ctx A sc-memory context used to subscribe agent class to specified sc-event.
-   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
-   * class.
-   * @warning Specified agent class must be derived from class `ScAgentAction`.
-   * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
-   */
-  template <class TScAgent>
-  static _SC_EXTERN void Subscribe(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr);
-
-  /*!
-   * @brief Unsubscribes agent class from sc-event of adding output arc from `action_initiated` to some formed
-   * sc-action.
-   * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param ctx A sc-memory context used to unsubscribe agent class from specified sc-event.
-   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
-   * class.
-   * @warning Specified agent class must be derived from class `ScAgentAction`.
-   * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
-   */
-  template <class TScAgent>
-  static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr);
 
 protected:
   ScActionAgent();

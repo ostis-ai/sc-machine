@@ -105,7 +105,7 @@ class _SC_EXTERN TScElementaryEvent : public ScElementaryEvent
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 protected:
@@ -157,7 +157,7 @@ class _SC_EXTERN ScEventAddEdge : public TScElementaryEvent<edgeType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 public:
@@ -190,7 +190,7 @@ class _SC_EXTERN ScEventAddOutputArc : public ScEventAddArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 protected:
@@ -214,7 +214,7 @@ class _SC_EXTERN ScEventAddInputArc final : public ScEventAddArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 public:
@@ -269,7 +269,7 @@ class _SC_EXTERN ScEventRemoveEdge : public TScElementaryEvent<edgeType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 public:
@@ -302,7 +302,7 @@ class _SC_EXTERN ScEventRemoveOutputArc final : public ScEventRemoveArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 protected:
@@ -326,7 +326,7 @@ class _SC_EXTERN ScEventRemoveInputArc final : public ScEventRemoveArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 public:
@@ -356,7 +356,7 @@ class _SC_EXTERN ScEventRemoveElement final : public TScElementaryEvent<ScType::
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 protected:
@@ -379,7 +379,7 @@ class _SC_EXTERN ScEventChangeLinkContent final : public TScElementaryEvent<ScTy
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  template <class TScEvent>
+  template <class TScEvent, class TScContext>
   friend class ScAgentAbstract;
 
 protected:

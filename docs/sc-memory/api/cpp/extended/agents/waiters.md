@@ -30,7 +30,8 @@ waiter.Wait();
 * Wait input sc-connector into sc-element with `nodeAddr`, with condition:
 
 ```cpp
-auto const CheckCallback = [](ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event)
+auto const CheckCallback 
+  = [](ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event)
 {
   // Check condition here.
   // Return SC_TRUE or SC_FALSE depending on condition.
