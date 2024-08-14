@@ -26,23 +26,20 @@ public:
   _SC_EXTERN virtual void RemoveDelegate() = 0;
 };
 
-class _SC_EXTERN ScElementaryEventSubscription : public ScEventSubscription
+template <class TScEvent = ScElementaryEvent>
+class _SC_EXTERN ScElementaryEventSubscription final : public ScEventSubscription
 {
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
+  friend class ScAgentContext;
+  template <class TScEventType>
+  friend class ScWaitEvent;
+  template <class TScEventType>
+  friend class ScAgent;
+  friend class ScMemoryJsonEventsHandler;
+
 public:
-  using DelegateFunc = std::function<void(ScElementaryEvent const & event)>;
-
-  explicit _SC_EXTERN ScElementaryEventSubscription(
-      ScMemoryContext const & ctx,
-      ScAddr const & eventClassAddr,
-      ScType const & elementType,
-      ScAddr const & subscriptionAddr,
-      DelegateFunc const & func = DelegateFunc());
-
-  explicit _SC_EXTERN ScElementaryEventSubscription(
-      ScMemoryContext const & ctx,
-      ScAddr const & eventClassAddr,
-      ScAddr const & subscriptionAddr,
-      DelegateFunc const & func = DelegateFunc());
+  using DelegateFunc = std::function<void(TScEvent const & event)>;
 
   _SC_EXTERN ~ScElementaryEventSubscription() override;
 
@@ -57,50 +54,16 @@ public:
 protected:
   friend class ScMemoryContext;
 
-  explicit _SC_EXTERN ScElementaryEventSubscription();
-
-  _SC_EXTERN static sc_result Handler(
-      sc_event_subscription const * event_subscription,
-      sc_addr userAddr,
-      sc_addr connectorAddr,
-      sc_type connectorType,
-      sc_addr otherAddr);
-
-  _SC_EXTERN static sc_result HandlerDelete(sc_event_subscription const * event_subscription);
-
-protected:
-  sc_event_subscription * m_event_subscription;
-
-private:
-  DelegateFunc m_delegate;
-  utils::ScLock m_lock;
-};
-
-template <class TScEvent>
-class _SC_EXTERN TScElementaryEventSubscription : public ScElementaryEventSubscription
-{
-  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
-
-public:
-  using DelegateFunc = std::function<void(TScEvent const & event)>;
-
-  explicit _SC_EXTERN TScElementaryEventSubscription(
+  explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
       ScAddr const & subscriptionAddr,
       DelegateFunc const & func = DelegateFunc());
 
-  _SC_EXTERN ~TScElementaryEventSubscription() override;
-
-  // Don't allow copying of events
-  _SC_EXTERN TScElementaryEventSubscription(TScElementaryEventSubscription const & other) = delete;
-
-  /* Set specified function as a delegate that will be calls on event emit */
-  _SC_EXTERN void SetDelegate(DelegateFunc && func);
-
-  _SC_EXTERN void RemoveDelegate() override;
-
-protected:
-  friend class ScMemoryContext;
+  explicit _SC_EXTERN ScElementaryEventSubscription(
+      ScMemoryContext const & ctx,
+      ScAddr const & eventClassAddr,
+      ScAddr const & subscriptionAddr,
+      DelegateFunc const & func = DelegateFunc());
 
   _SC_EXTERN static sc_result Handler(
       sc_event_subscription const * event_subscription,
@@ -112,95 +75,13 @@ protected:
   _SC_EXTERN static sc_result HandlerDelete(sc_event_subscription const * event);
 
 private:
+  sc_event_subscription * m_event_subscription;
+
   DelegateFunc m_delegate;
   utils::ScLock m_lock;
 };
 
-// Specific event subscription classes follow the same pattern as ScElementaryEventSubscription.
-// They are specialized for different types of sc-events.
-
-template <ScType const & arcType>
-class _SC_EXTERN ScEventSubscriptionAddOutputArc final
-  : public TScElementaryEventSubscription<ScEventAddOutputArc<arcType>>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionAddOutputArc(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventAddOutputArc<arcType> const &)> const & func);
-};
-
-template <ScType const & arcType>
-class _SC_EXTERN ScEventSubscriptionAddInputArc final
-  : public TScElementaryEventSubscription<ScEventAddInputArc<arcType>>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionAddInputArc(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventAddInputArc<arcType> const &)> const & func);
-};
-
-template <ScType const & edgeType>
-class _SC_EXTERN ScEventSubscriptionAddEdge final : public TScElementaryEventSubscription<ScEventAddEdge<edgeType>>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionAddEdge(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventAddEdge<edgeType> const &)> const & func);
-};
-
-template <ScType const & arcType>
-class _SC_EXTERN ScEventSubscriptionRemoveOutputArc final
-  : public TScElementaryEventSubscription<ScEventRemoveOutputArc<arcType>>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionRemoveOutputArc(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventRemoveOutputArc<arcType> const &)> const & func);
-};
-
-template <ScType const & arcType>
-class _SC_EXTERN ScEventSubscriptionRemoveInputArc final
-  : public TScElementaryEventSubscription<ScEventRemoveInputArc<arcType>>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionRemoveInputArc(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventRemoveInputArc<arcType> const &)> const & func);
-};
-
-template <ScType const & edgeType>
-class _SC_EXTERN ScEventSubscriptionRemoveEdge final
-  : public TScElementaryEventSubscription<ScEventRemoveEdge<edgeType>>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionRemoveEdge(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventRemoveEdge<edgeType> const &)> const & func);
-};
-
-class _SC_EXTERN ScEventSubscriptionRemoveElement final : public TScElementaryEventSubscription<ScEventRemoveElement>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionRemoveElement(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventRemoveElement const &)> const & func);
-};
-
-class _SC_EXTERN ScEventSubscriptionChangeLinkContent final
-  : public TScElementaryEventSubscription<ScEventChangeLinkContent>
-{
-public:
-  _SC_EXTERN ScEventSubscriptionChangeLinkContent(
-      ScMemoryContext const & ctx,
-      ScAddr const & subscriptionAddr,
-      std::function<void(ScEventChangeLinkContent const &)> const & func);
-};
+template <class TScEvent>
+using ScElementaryEventSubscriptionPtr = ScElementaryEventSubscription<TScEvent>;
 
 #include "sc_event_subscription.tpp"

@@ -9,13 +9,27 @@
 #include "sc_wait.hpp"
 
 template <class TScEvent>
-std::shared_ptr<ScWaitCondition<TScEvent>> ScAgentContext::InitializeEvent(
+std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateEventSubscription(
     ScAddr const & subscriptionAddr,
-    std::function<void(void)> const & cause,
-    std::function<sc_result(TScEvent const &)> check) const
+    std::function<void(TScEvent const &)> const & eventCallback) const
 {
-  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+  static_assert(
+      std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
-  cause();
-  return std::make_shared<ScWaitCondition<TScEvent>>(*this, subscriptionAddr, check);
+  if (!IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription due subscription sc-element is not valid.");
+
+  if constexpr (std::is_same<TScEvent, ScEventChangeLinkContent>::value)
+  {
+    if (!GetElementType(subscriptionAddr).IsLink())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Not able to create sc-event subscription of changing link content due subscription sc-element is not "
+          "sc-link.");
+  }
+
+  return std::shared_ptr<ScElementaryEventSubscription<TScEvent>>(
+      new ScElementaryEventSubscription<TScEvent>(*this, subscriptionAddr, eventCallback));
 }

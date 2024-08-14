@@ -261,7 +261,7 @@ void ScAgent<TScEvent>::Subscribe(
     {
       subscriptionsMap.insert(
           {subscriptionAddr,
-           new TScElementaryEventSubscription<TScEvent>(
+           new ScElementaryEventSubscription<TScEvent>(
                *ctx, subscriptionAddr, TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
     }
   }
@@ -453,7 +453,7 @@ ScTemplate ScAgent<TScEvent>::BuildCheckTemplate(TScEvent const & event, ScAddr 
   }
 
   ScTemplateParams params;
-  if (it5->IsValid())
+  if (it5 && it5->IsValid())
   {
     ScIterator3Ptr const it3 =
         this->m_memoryCtx.Iterator3(checkTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElement);

@@ -32,7 +32,7 @@ TEST_F(ScEventTest, ThreadingSmoke)
   }
 
   // create random events for each node
-  std::vector<ScEventSubscription *> events;
+  std::vector<std::shared_ptr<ScEventSubscription>> events;
   events.resize(eventsNum);
 
   std::vector<ScAddr> eventTypes = {
@@ -55,10 +55,8 @@ TEST_F(ScEventTest, ThreadingSmoke)
 
   for (size_t i = 0; i < eventsNum; ++i)
   {
-    events[i] = new ScElementaryEventSubscription(
-        *m_ctx,
+    events[i] = m_ctx->CreateEventSubscription(
         eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ChangeContent event
-        ScType::Unknown,
         randNode(),
         [&](ScElementaryEvent const &)
         {
@@ -97,9 +95,6 @@ TEST_F(ScEventTest, ThreadingSmoke)
       }
     }
   }
-
-  for (auto e : events)
-    delete e;
 
   events.clear();
 }

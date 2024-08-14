@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_agent_context.hpp"
 #include "sc-memory/sc_keynodes.hpp"
 
 #include "test_defines.hpp"
@@ -15,7 +16,7 @@ protected:
   virtual void SetUp()
   {
     ScBuilderTest::Initialize();
-    m_ctx = std::make_unique<ScMemoryContext>();
+    m_ctx = std::make_unique<ScAgentContext>();
   }
 
   virtual void TearDown()
@@ -68,14 +69,14 @@ protected:
   }
 
 protected:
-  std::unique_ptr<ScMemoryContext> m_ctx;
+  std::unique_ptr<ScAgentContext> m_ctx;
 };
 
-class TestScMemoryContext : public ScMemoryContext
+class TestScMemoryContext : public ScAgentContext
 {
 public:
   TestScMemoryContext(ScAddr const & userAddr = ScAddr::Empty)
-    : ScMemoryContext(userAddr)
+    : ScAgentContext(userAddr)
   {
   }
 };

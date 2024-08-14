@@ -85,12 +85,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
       eventClass = it->second;
 
     ScAddr const & eventClassAddr = m_context->HelperFindBySystemIdtf(eventClass);
-    ScEventSubscription * subscription = new ScElementaryEventSubscription(
-        *m_context,
-        eventClassAddr,
-        ScType::Unknown,
-        subscriptionAddr,
-        bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
+    ScEventSubscription * subscription = new ScElementaryEventSubscription<>(
+        *m_context, eventClassAddr, subscriptionAddr, bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
     responsePayload.push_back(m_manager->Add(subscription));
   }
 

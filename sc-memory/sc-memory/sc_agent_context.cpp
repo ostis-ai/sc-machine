@@ -8,6 +8,8 @@
 
 #include <algorithm>
 
+#include "sc_event_subscription.hpp"
+
 #include "sc_action.hpp"
 #include "sc_keynodes.hpp"
 
@@ -36,6 +38,36 @@ ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
 
   ScMemoryContext::operator=(std::move(other));
   return *this;
+}
+
+std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext::CreateEventSubscription(
+    ScAddr const & eventClassAddr,
+    ScAddr const & subscriptionAddr,
+    std::function<void(ScElementaryEvent const &)> const & eventCallback) const
+{
+  if (!IsElement(eventClassAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create elementary sc-event subscription due sc-event class is not valid.");
+
+  if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create elementary sc-event subscription due sc-event class is not belongs to `sc_event`.");
+
+  if (!IsElement(subscriptionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create elementary sc-event subscription due subscription sc-element is not valid.");
+
+  if (eventClassAddr == ScKeynodes::sc_event_change_content && !GetElementType(subscriptionAddr).IsLink())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event subscription of changing link content due subscription sc-element is not "
+        "sc-link.");
+
+  return std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>>(
+      new ScElementaryEventSubscription<ScElementaryEvent>(*this, eventClassAddr, subscriptionAddr, eventCallback));
 }
 
 ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)

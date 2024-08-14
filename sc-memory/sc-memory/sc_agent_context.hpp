@@ -8,12 +8,16 @@
 
 #include "sc_memory.hpp"
 
-template <class TScEvent>
-class ScWaitCondition;
 class ScAction;
 class ScSet;
 class ScStructure;
 class ScKeynode;
+
+class ScElementaryEvent;
+template <class TScEvent>
+class ScElementaryEventSubscription;
+template <class TScEvent>
+class ScWaitCondition;
 
 /*!
  * @class ScAgentContext
@@ -61,10 +65,14 @@ public:
    * @return Shared pointer to ScWaitCondition for an event.
    */
   template <class TScEvent>
-  _SC_EXTERN std::shared_ptr<ScWaitCondition<TScEvent>> InitializeEvent(
+  _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<TScEvent>> CreateEventSubscription(
       ScAddr const & subscriptionAddr,
-      std::function<void(void)> const & cause,
-      std::function<sc_result(TScEvent const &)> check) const;
+      std::function<void(TScEvent const &)> const & eventCallback) const;
+
+  _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> CreateEventSubscription(
+      ScAddr const & eventClassAddr,
+      ScAddr const & subscriptionAddr,
+      std::function<void(ScElementaryEvent const &)> const & eventCallback) const;
 
   /*!
    * @brief Creates an action with a given action class.

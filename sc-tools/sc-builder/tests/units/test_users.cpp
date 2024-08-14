@@ -26,7 +26,7 @@
   })
 
 void TestAuthenticationRequestUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -43,8 +43,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventSubscriptionAddOutputArc<ScType::EdgeAccess> event(
-      *m_ctx,
+  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -75,8 +74,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventSubscriptionAddOutputArc<ScType::EdgeAccess> event(
-      *m_ctx,
+  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {

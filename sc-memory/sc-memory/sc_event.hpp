@@ -31,6 +31,7 @@ public:
   _SC_EXTERN virtual ScAddr GetSubscriptionElement() const = 0;
 
 protected:
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
   friend class ScEventSubscriptionFactory;
 };
@@ -91,6 +92,7 @@ protected:
   ScAddr m_otherAddr;
 
 private:
+  template <class TScEvent>
   friend class ScElementaryEventSubscription;
 };
 
@@ -114,7 +116,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -174,7 +176,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -198,7 +200,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -227,7 +229,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -286,7 +288,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -310,7 +312,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -339,7 +341,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -364,7 +366,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 
@@ -387,7 +389,7 @@ protected:
 
 private:
   template <class TScEvent>
-  friend class TScElementaryEventSubscription;
+  friend class ScElementaryEventSubscription;
   template <class TScEvent>
   friend class ScAgentAbstract;
 

@@ -105,7 +105,7 @@ protected:
   virtual sc_bool OnEvent(TScEvent const &);
 
 private:
-  TScElementaryEventSubscription<TScEvent> m_event;
+  ScElementaryEventSubscription<TScEvent> m_event;
 };
 
 /*!
