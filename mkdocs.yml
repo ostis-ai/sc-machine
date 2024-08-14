@@ -23,7 +23,7 @@ nav:
               - C++ Agents API:
                   - C++ Events API: sc-memory/api/cpp/extended/agents/events.md
                   - C++ Event subscriptions API: sc-memory/api/cpp/extended/agents/event_subscriptions.md
-                  - C++ Waits API: sc-memory/api/cpp/extended/agents/waits.md
+                  - C++ Waiters API: sc-memory/api/cpp/extended/agents/waiters.md
                   - C++ Agents API: sc-memory/api/cpp/extended/agents/agents.md
                   - C++ Keynodes API: sc-memory/api/cpp/extended/agents/keynodes.md
                   - C++ Actions API: sc-memory/api/cpp/extended/agents/actions.md

@@ -151,7 +151,7 @@ sc_bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
         "Not able to initiate action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
                                         << "` due it had already been finished.");
 
-  auto wait = std::shared_ptr<ScWaitActionFinished>(new ScWaitActionFinished(*m_ctx, *this));
+  auto wait = std::shared_ptr<ScWaiterActionFinished>(new ScWaiterActionFinished(*m_ctx, *this));
   wait->SetOnWaitStartDelegate(
       [this]()
       {

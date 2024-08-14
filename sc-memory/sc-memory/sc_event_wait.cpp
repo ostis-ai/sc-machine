@@ -6,17 +6,17 @@
 
 #include "sc_event_wait.hpp"
 
-ScWait::Impl::Impl() = default;
-ScWait::Impl::~Impl() = default;
+ScWaiter::Impl::Impl() = default;
+ScWaiter::Impl::~Impl() = default;
 
-void ScWait::Impl::Resolve()
+void ScWaiter::Impl::Resolve()
 {
   std::unique_lock<std::mutex> lock(m_mutex);
   m_isResolved = SC_TRUE;
   m_cond.notify_one();
 }
 
-sc_bool ScWait::Impl::Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate)
+sc_bool ScWaiter::Impl::Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate)
 {
   std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -37,20 +37,20 @@ sc_bool ScWait::Impl::Wait(sc_uint32 timeout_ms, DelegateFunc const & startDeleg
   return true;
 }
 
-ScWait::~ScWait() = default;
+ScWaiter::~ScWaiter() = default;
 
-void ScWait::Resolve()
+void ScWaiter::Resolve()
 {
   m_impl.Resolve();
 }
 
-ScWait * ScWait::SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
+ScWaiter * ScWaiter::SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
 {
   m_waitStartDelegate = startDelegate;
   return this;
 }
 
-sc_bool ScWait::Wait(
+sc_bool ScWaiter::Wait(
     sc_uint32 timeout_ms,
     std::function<void(void)> const & onWaitSuccess,
     std::function<void(void)> const & onWaitUnsuccess)
@@ -71,12 +71,12 @@ sc_bool ScWait::Wait(
   return result;
 }
 
-ScWaitActionFinished::ScWaitActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
-  : ScWaitEvent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>(ctx, actionAddr)
+ScWaiterActionFinished::ScWaiterActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
+  : ScEventWaiter<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>(ctx, actionAddr)
 {
 }
 
-sc_bool ScWaitActionFinished::OnEvent(ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event)
+sc_bool ScWaiterActionFinished::OnEvent(ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event)
 {
   return event.GetArcSourceElement() == ScKeynodes::action_finished;
 }

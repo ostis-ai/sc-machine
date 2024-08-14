@@ -32,7 +32,7 @@ class _SC_EXTERN ScElementaryEventSubscription final : public ScEventSubscriptio
 
   friend class ScAgentContext;
   template <class TScEventType>
-  friend class ScWaitEvent;
+  friend class ScEventWaiter;
   template <class TScEventType>
   friend class ScAgent;
   friend class ScMemoryJsonEventsHandler;

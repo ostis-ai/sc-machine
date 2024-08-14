@@ -16,7 +16,7 @@ class ScElementaryEvent;
 class ScEventSubscription;
 template <class TScEvent>
 class ScElementaryEventSubscription;
-class ScWait;
+class ScWaiter;
 class ScActionAgent;
 
 /*!
@@ -108,10 +108,10 @@ public:
    * @param subscriptionElementAddr An address of subscription sc-element, which must be valid sc-element.
    * @param initiateCallback An optional callback function that will be called when the wait starts.
    *                         It takes no parameters. Defaults to an empty function if not provided.
-   * @return A shared pointer to created `ScWait`.
+   * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
-  _SC_EXTERN std::shared_ptr<ScWait> CreateEventWaiter(
+  _SC_EXTERN std::shared_ptr<ScWaiter> CreateEventWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback = {});
@@ -122,12 +122,12 @@ public:
    * @param subscriptionElementAddr An address of subscription sc-element.
    * @param initiateCallback An optional callback function that will be called when the wait starts. It takes no
    * parameters.
-   * @return A shared pointer to created `ScWait`.
+   * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If subscription sc-element is not valid or if TScEvent is not derived from
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  _SC_EXTERN std::shared_ptr<ScWait> CreateEventWaiter(
+  _SC_EXTERN std::shared_ptr<ScWaiter> CreateEventWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback = {});
 
@@ -146,10 +146,10 @@ public:
    * @param checkCallback A callback function that will be called to check if condition is met.
    *                      It takes a const reference to `ScElementaryEvent` object as a parameter and
    *                      returns an `sc_bool`.
-   * @return A shared pointer to created `ScWait`.
+   * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class address or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
@@ -163,12 +163,12 @@ public:
    * @param initiateCallback A callback function that will be called when the wait starts. It takes no parameters.
    * @param checkCallback A callback function that will be called to check if the condition is met. It takes a const
    * reference to TScEvent as a parameter and returns an sc_bool.
-   * @return A shared pointer to created `ScWait`.
+   * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If subscription sc-element is not valid or if TScEvent is not derived from
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
       std::function<sc_bool(TScEvent const &)> const & checkCallback);
@@ -186,10 +186,10 @@ public:
    * @param checkCallback A callback function that will be called to check if condition is met.
    *                      It takes a const reference to `ScElementaryEvent` object as a parameter and
    *                      returns an `sc_bool`.
-   * @return A shared pointer to created `ScWait`.
+   * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback);
@@ -200,12 +200,12 @@ public:
    * @param subscriptionElementAddr A address of subscription sc-element.
    * @param checkCallback A callback function that will be called to check if the condition is met. It takes a const
    * reference to TScEvent as a parameter and returns an sc_bool.
-   * @return A shared pointer to created `ScWait`.
+   * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If subscription sc-element is not valid or if TScEvent is not derived from
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
       ScAddr const & subscriptionElementAddr,
       std::function<sc_bool(TScEvent const &)> const & checkCallback);
 

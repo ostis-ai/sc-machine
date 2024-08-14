@@ -6,18 +6,18 @@
 
 This API provides functionality to implement sc-agents on C++.
 
-## **ScWait** and **ScWaitCondition**
+## **ScWaiter** and **ScConditionWaiter**
 
 This type of objects is used to wait until some event emits. It is usually used, when one of an `ScAgent` wants to wait 
-result of another one. There are next kind of `ScWait` objects:
+result of another one. There are next kind of `ScWaiter` objects:
 
-* `ScWait`- lock run flow until simple event emits. You can see the list of these events in the Class properties table (
+* `ScWaiter`- lock run flow until simple event emits. You can see the list of these events in the Class properties table (
   ScEvent property);
-* `ScWaitCondition` - lock run flow until simple event emits and specified conditional check returns `SC_TRUE`. In other
-  words, this works like an `ScWait`, but returns to run flow if special condition function returns `SC_TRUE`. Condition
+* `ScConditionWaiter` - lock run flow until simple event emits and specified conditional check returns `SC_TRUE`. In other
+  words, this works like an `ScWaiter`, but returns to run flow if special condition function returns `SC_TRUE`. Condition
   function receives 3 parameters (see [**C++ Events API**](events.md) for more details about them).
 
-There are some examples of usage for specified `ScWait` objects:
+There are some examples of usage for specified `ScWaiter` objects:
 
 * Wait input sc-connector into sc-element with `nodeAddr`:
 

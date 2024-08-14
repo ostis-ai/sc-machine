@@ -13,20 +13,20 @@
 #include "sc_timer.hpp"
 
 template <class TScEvent>
-ScWaitEvent<TScEvent>::ScWaitEvent(ScMemoryContext const & ctx, ScAddr const & subscriptionElementAddr)
+ScEventWaiter<TScEvent>::ScEventWaiter(ScMemoryContext const & ctx, ScAddr const & subscriptionElementAddr)
   : m_event(
         ctx,
         subscriptionElementAddr,
         [this](TScEvent const & event)
         {
           if (OnEvent(event))
-            ScWait::Resolve();
+            ScWaiter::Resolve();
         })
 {
 }
 
 template <class TScEvent>
-ScWaitEvent<TScEvent>::ScWaitEvent(
+ScEventWaiter<TScEvent>::ScEventWaiter(
     ScMemoryContext const & ctx,
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr)
@@ -37,40 +37,40 @@ ScWaitEvent<TScEvent>::ScWaitEvent(
         [this](ScElementaryEvent const & event)
         {
           if (OnEvent(event))
-            ScWait::Resolve();
+            ScWaiter::Resolve();
         })
 {
 }
 
 template <class TScEvent>
-sc_bool ScWaitEvent<TScEvent>::OnEvent(TScEvent const &)
+sc_bool ScEventWaiter<TScEvent>::OnEvent(TScEvent const &)
 {
   return SC_TRUE;
 }
 
 template <class TScEvent>
-ScWaitCondition<TScEvent>::ScWaitCondition(
+ScConditionWaiter<TScEvent>::ScConditionWaiter(
     ScMemoryContext const & ctx,
     ScAddr const & subscriptionElementAddr,
     DelegateCheckFunc const & func)
-  : ScWaitEvent<TScEvent>(ctx, subscriptionElementAddr)
+  : ScEventWaiter<TScEvent>(ctx, subscriptionElementAddr)
   , m_checkFunc(std::move(func))
 {
 }
 
 template <class TScEvent>
-ScWaitCondition<TScEvent>::ScWaitCondition(
+ScConditionWaiter<TScEvent>::ScConditionWaiter(
     ScMemoryContext const & ctx,
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     DelegateCheckFunc const & func)
-  : ScWaitEvent<TScEvent>(ctx, eventClassAddr, subscriptionElementAddr)
+  : ScEventWaiter<TScEvent>(ctx, eventClassAddr, subscriptionElementAddr)
   , m_checkFunc(std::move(func))
 {
 }
 
 template <class TScEvent>
-sc_bool ScWaitCondition<TScEvent>::OnEvent(TScEvent const & event)
+sc_bool ScConditionWaiter<TScEvent>::OnEvent(TScEvent const & event)
 {
   return m_checkFunc(event);
 }

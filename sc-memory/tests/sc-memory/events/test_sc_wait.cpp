@@ -40,7 +40,7 @@ void EmitEvent(WaitTestData & data)
 
 }  // namespace
 
-class ScWaitTest : public ScMemoryTest
+class ScWaiterTest : public ScMemoryTest
 {
   void SetUp() override
   {
@@ -59,12 +59,12 @@ protected:
   ScAddr m_addr;
 };
 
-TEST_F(ScWaitTest, Smoke)
+TEST_F(ScWaiterTest, Smoke)
 {
   EXPECT_TRUE(m_addr.IsValid());
 }
 
-TEST_F(ScWaitTest, Valid)
+TEST_F(ScWaiterTest, Valid)
 {
   WaitTestData data(m_addr);
   auto eventWaiter = m_ctx->CreateEventWaiter<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>(
@@ -82,12 +82,12 @@ TEST_F(ScWaitTest, Valid)
   EXPECT_TRUE(data.m_isDone);
 }
 
-TEST_F(ScWaitTest, TimeOut)
+TEST_F(ScWaiterTest, TimeOut)
 {
   EXPECT_FALSE(m_ctx->CreateEventWaiter<ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(m_addr)->Wait(1000));
 }
 
-TEST_F(ScWaitTest, CondValid)
+TEST_F(ScWaiterTest, CondValid)
 {
   WaitTestData data(m_addr);
   auto waiter = m_ctx->CreateEventWaiterWithCondition<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>(
@@ -105,7 +105,7 @@ TEST_F(ScWaitTest, CondValid)
   EXPECT_TRUE(data.m_isDone);
 }
 
-TEST_F(ScWaitTest, CondValidFalse)
+TEST_F(ScWaiterTest, CondValidFalse)
 {
   WaitTestData data(m_addr);
 
@@ -135,7 +135,7 @@ TEST_F(ScWaitTest, CondValidFalse)
   EXPECT_TRUE(data.m_isDone);
 }
 
-TEST_F(ScWaitTest, InvalidWaiters)
+TEST_F(ScWaiterTest, InvalidWaiters)
 {
   ScAddr nodeAddr{23124323};
 
@@ -159,7 +159,7 @@ TEST_F(ScWaitTest, InvalidWaiters)
   EXPECT_THROW(m_ctx->CreateEventWaiter<ScEventChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScWaitTest, InvalidWaitersWithCondition)
+TEST_F(ScWaiterTest, InvalidWaitersWithCondition)
 {
   ScAddr nodeAddr{23124323};
 
@@ -191,7 +191,7 @@ TEST_F(ScWaitTest, InvalidWaitersWithCondition)
       m_ctx->CreateEventWaiterWithCondition<ScEventChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScWaitTest, InvalidEventsFotWaiters)
+TEST_F(ScWaiterTest, InvalidEventsFotWaiters)
 {
   ScAddr nodeAddr{23124323};
   ScAddr eventClassAddr{23124323};
@@ -201,7 +201,7 @@ TEST_F(ScWaitTest, InvalidEventsFotWaiters)
   EXPECT_THROW(m_ctx->CreateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScWaitTest, InvalidEventsFotWaitersWithConditions)
+TEST_F(ScWaiterTest, InvalidEventsFotWaitersWithConditions)
 {
   ScAddr nodeAddr{23124323};
   ScAddr eventClassAddr{23124323};

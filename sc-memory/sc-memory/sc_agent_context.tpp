@@ -37,7 +37,7 @@ std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateE
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiter(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback)
 {
@@ -57,13 +57,14 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiter(
           "sc-link.");
   }
 
-  auto eventWait = std::shared_ptr<ScWaitEvent<TScEvent>>(new ScWaitEvent<TScEvent>(*this, subscriptionElementAddr));
+  auto eventWait =
+      std::shared_ptr<ScEventWaiter<TScEvent>>(new ScEventWaiter<TScEvent>(*this, subscriptionElementAddr));
   eventWait->SetOnWaitStartDelegate(initiateCallback);
   return eventWait;
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
     std::function<sc_bool(TScEvent const &)> const & checkCallback)
@@ -86,14 +87,14 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
           "sc-link.");
   }
 
-  auto eventWait = std::shared_ptr<ScWaitCondition<TScEvent>>(
-      new ScWaitCondition<TScEvent>(*this, subscriptionElementAddr, checkCallback));
+  auto eventWait = std::shared_ptr<ScConditionWaiter<TScEvent>>(
+      new ScConditionWaiter<TScEvent>(*this, subscriptionElementAddr, checkCallback));
   eventWait->SetOnWaitStartDelegate(initiateCallback);
   return eventWait;
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & subscriptionElementAddr,
     std::function<sc_bool(TScEvent const &)> const & checkCallback)
 {
