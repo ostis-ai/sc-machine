@@ -104,6 +104,8 @@ SC_MODULE_REGISTER(MyModule)
 + }
 ```
 
+---
+
 ## **Dynamic agent specification**
 
 Modules allow to register agents with dynamic specification provided in knowledge base or in code. Dynamic specification can be changed by other agents. To learn more about types of agent specifications in [C++ Agents API](agents.md).
@@ -219,5 +221,7 @@ SC_MODULE_REGISTER(MyModule)
 
 !!! note
     If specification of your agent isn't full in the knowledge base, then module will not be registered, because errors will occur.
+
+---
 
 ## **Frequently Asked Questions**

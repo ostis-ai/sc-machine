@@ -218,6 +218,8 @@ eventWaiter->Wait(200); // milliseconds
 
 You can also create waiters with conditions dynamically, providing sc-event class from knowledge base.
 
+---
+
 ### **SubscribeAgent**
 
 `ScModule` provides API to register agents statically (see [**C++ Modules API**](modules.md)). `ScAgentContext` also provides methods to register agents. It can be useful if you want to register agents dynamically.
@@ -285,6 +287,8 @@ This method finds specification of abstract agent for specified agent implementa
 !!! warning
     You must provide valid agent implementations.
 
+---
+
 ### **CreateAction**
 
 All agents interpreter actions. We provide API to work with them. Use `CreateAction` to create object of `ScAction` class. To learn more about actions see [**C++ Action API**](actions.md).
@@ -343,5 +347,7 @@ ScStructure structure = context.CreateStructure();
 ScSet set = context.UseStructure(structureAddr);
 ...
 ```
+
+--- 
 
 ## **Frequently Asked Questions**

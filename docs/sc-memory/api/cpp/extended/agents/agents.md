@@ -92,6 +92,8 @@ In both cases, the agent's specification can be static, dynamic, or semi-dynamic
 
 Static agent specification can be useful if you are implementing an agent in C++ for the first time or if you want to minimize the number of searches in the knowledge base. Dynamic agent specification provides the opportunity to analyze and change this specification by other agents. Semi-dynamic specification can be useful if you want to change some parts of this specification but still want the agent's calls to be quick.
 
+---
+
 ## **Static agent specification**
 
 Here, the API for implementing an agent with a static specification will be discussed. This is the easiest implementation variant to understand for you. To learn about dynamic agent specification, see [**C++ Modules API**](modules.md).
@@ -216,11 +218,15 @@ public:
 !!! note
     `ScActionEvent` is alias for `ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
 
+---
+
 ### **ScAgentAbstract**
 
 There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
 
 This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should derive your agent class from these classes, not from the ScAgentAbstract class (see documentation above).
+
+---
 
 ### **Required methods**
 
@@ -389,6 +395,8 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 
 !!! warning
     The API of `ScAction` provides other methods. Not use `GetResult` for initiated but not finished action and `Initiate` for initiated or finished action.
+
+---
 
 ### **Not required methods**
 
