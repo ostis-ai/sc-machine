@@ -253,7 +253,11 @@ class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent>
 {
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
-public:
+  friend class ScModule;
+  friend class ScActionAgent;
+  friend class ScAgentContext;
+
+private:
   /*!
    * @brief Subscribes agent class to specified sc-events.
    *
@@ -278,7 +282,7 @@ public:
    *               event_subscription_element
    *
    * and subscribes the agent of this class to sc-event `event_class` with subscription sc-element
-   * `event_subscription_element`, else subcribes the agent of this class to sc-event
+   * `event_subscription_element`, else subscribes the agent of this class to sc-event
    * `TScEvent` with subscription sc-elements from `subscriptionAddrs`.
    *
    * @tparam TScAgent An agent class to be subscribed to the event.
@@ -324,7 +328,7 @@ public:
    *               event_subscription_element
    *
    * and unsubscribes the agent of this class from sc-event `event_class` with subscription sc-element
-   * `event_subscription_element`, else unsubcribes the agent of this class from sc-event
+   * `event_subscription_element`, else unsubscribes the agent of this class from sc-event
    * `TScEvent` with subscription sc-elements from `subscriptionAddrs`.
    *
    * @tparam TScAgent An agent class to be unsubscribed from the event.
@@ -355,7 +359,7 @@ protected:
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
    * @return A function that takes an sc-event and returns an sc-result.
-   * @warning Specified agent class must be derivied from class `ScAgent`.
+   * @warning Specified agent class must be derived from class `ScAgent`.
    */
   template <class TScAgent>
   static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
@@ -419,14 +423,24 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  */
 class _SC_EXTERN ScActionAgent : public ScAgent<ScActionEvent>
 {
+  friend class ScAgentContext;
+
 public:
+  /*!
+   * @brief Get sc-template that other sc-element of initiated sc-event belongs to action class that this agent class
+   * interpreters.
+   * @return ScTemplate of initiation condition of this agent class.
+   */
+  _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;
+
+private:
   /*!
    * @brief Subscribes agent class to sc-event of adding output arc from `action_initiated` to some formed sc-action.
    * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param ctx A sc-memory context used to subcribe agent class to specified sc-event.
+   * @param ctx A sc-memory context used to subscribe agent class to specified sc-event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
-   * @warning Specified agent class must be derivied from class `ScAgentAction`.
+   * @warning Specified agent class must be derived from class `ScAgentAction`.
    * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
    */
   template <class TScAgent>
@@ -436,21 +450,14 @@ public:
    * @brief Unsubscribes agent class from sc-event of adding output arc from `action_initiated` to some formed
    * sc-action.
    * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param ctx A sc-memory context used to unsubcribe agent class from specified sc-event.
+   * @param ctx A sc-memory context used to unsubscribe agent class from specified sc-event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
-   * @warning Specified agent class must be derivied from class `ScAgentAction`.
+   * @warning Specified agent class must be derived from class `ScAgentAction`.
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
    */
   template <class TScAgent>
   static _SC_EXTERN void Unsubscribe(ScMemoryContext * ctx, ScAddr const & agentImplementationAddr);
-
-  /*!
-   * @brief Get sc-template that other sc-element of initiated sc-event belongs to action class that this agent class
-   * interpreters.
-   * @return ScTemplate of initiation condition of this agent class.
-   */
-  _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;
 
 protected:
   ScActionAgent();

@@ -61,7 +61,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasFullSpecification)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
+  m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
 
   ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_action");
   ScAddr const & argAddr = m_ctx->CreateNode(ScType::NodeConst);
@@ -76,7 +76,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasFullSpecification)
 TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasNotSpecification)
 {
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -93,7 +93,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -114,7 +114,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -134,7 +134,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -164,7 +164,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -185,7 +185,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWitNotSpec
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -213,7 +213,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -238,7 +238,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -262,7 +262,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -289,7 +289,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -315,7 +315,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -342,7 +342,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -370,7 +370,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -399,7 +399,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -427,7 +427,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -457,7 +457,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -493,7 +493,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -527,7 +527,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -562,7 +562,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -600,7 +600,7 @@ TEST_F(
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -643,7 +643,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -696,7 +696,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 }
@@ -708,9 +708,9 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentSubscribeTwice)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
+  m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
   EXPECT_THROW(
-      m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(
+      m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(
           ATestSpecificatedAgent::test_specificated_agent_implementation),
       utils::ExceptionInvalidState);
 
@@ -725,7 +725,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentUnsubscribeTwice)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
+  m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
 
   m_ctx->DestroyAndUnsubscribeAgent<ATestSpecificatedAgent>(
       ATestSpecificatedAgent::test_specificated_agent_implementation);
@@ -757,7 +757,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentUnsuccessfullInitiationCon
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
+  m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
 
   ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_action");
   ScAddr const & argAddr = m_ctx->CreateNode(ScType::NodeConst);
@@ -817,7 +817,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentRemovingEdgeHasFullSpecifi
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  m_ctx->BuildAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
+  m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
 
   ScAddr const & testSetAddr = m_ctx->HelperFindBySystemIdtf("test_set");
   ScAddr const & testOtherSetAddr = m_ctx->HelperFindBySystemIdtf("test_other_set");

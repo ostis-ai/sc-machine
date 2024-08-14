@@ -43,7 +43,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {
@@ -74,7 +74,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  auto eventSubscription = m_ctx->CreateEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventAddOutputArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
       [&userContext, &isAuthenticated](ScEventAddOutputArc<ScType::EdgeAccess> const &)
       {

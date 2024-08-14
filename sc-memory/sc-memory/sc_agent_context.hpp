@@ -75,7 +75,7 @@ public:
   std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> CreateElementaryEventSubscription(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      std::function<void(ScElementaryEvent const &)> const & eventCallback) const;
+      std::function<void(ScElementaryEvent const &)> const & eventCallback);
 
   /*!
    * @brief Creates elementary sc-event subscription for specified subscription sc-element and sc-event callback.
@@ -90,7 +90,7 @@ public:
   template <class TScEvent>
   _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<TScEvent>> CreateElementaryEventSubscription(
       ScAddr const & subscriptionElementAddr,
-      std::function<void(TScEvent const &)> const & eventCallback) const;
+      std::function<void(TScEvent const &)> const & eventCallback);
 
   /*!
    * @brief Creates sc-event wait for specified event class and subscription sc-element.
@@ -110,7 +110,7 @@ public:
   _SC_EXTERN std::shared_ptr<ScWait> CreateEventWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      std::function<void(void)> const & initiateCallback = {}) const;
+      std::function<void(void)> const & initiateCallback = {});
 
   /*!
    * @brief Creates sc-event wait for the specified subscription sc-element and optional initiate callback.
@@ -125,7 +125,7 @@ public:
   template <class TScEvent>
   _SC_EXTERN std::shared_ptr<ScWait> CreateEventWaiter(
       ScAddr const & subscriptionElementAddr,
-      std::function<void(void)> const & initiateCallback = {}) const;
+      std::function<void(void)> const & initiateCallback = {});
 
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
@@ -149,7 +149,7 @@ public:
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback) const;
+      std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified subscription sc-element, initiate callback, and check
@@ -167,7 +167,7 @@ public:
   std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<sc_bool(TScEvent const &)> const & checkCallback) const;
+      std::function<sc_bool(TScEvent const &)> const & checkCallback);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
@@ -188,7 +188,7 @@ public:
   std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback) const;
+      std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified subscription sc-element and check callback.
@@ -203,47 +203,7 @@ public:
   template <class TScEvent>
   std::shared_ptr<ScWait> CreateEventWaiterWithCondition(
       ScAddr const & subscriptionElementAddr,
-      std::function<sc_bool(TScEvent const &)> const & checkCallback) const;
-
-  /*!
-   * @brief Creates an action with a given action class.
-   * @param actionClassAddr Address of the action class.
-   * @return ScAction object.
-   */
-  _SC_EXTERN ScAction CreateAction(ScAddr const & actionClassAddr);
-
-  /*!
-   * @brief Create ScAction object for provided action.
-   * @param actionAddr Address of the action.
-   * @return ScAction object.
-   */
-  _SC_EXTERN ScAction UseAction(ScAddr const & actionAddr);
-
-  /*!
-   * @brief Creates a set.
-   * @return ScSet object.
-   */
-  _SC_EXTERN ScSet CreateSet();
-
-  /*!
-   * @brief Create ScSet object for provided set.
-   * @param setAddr Address of the set.
-   * @return ScSet object.
-   */
-  _SC_EXTERN ScSet UseSet(ScAddr const & setAddr);
-
-  /*!
-   * @brief Creates a structure.
-   * @return ScStructure object.
-   */
-  _SC_EXTERN ScStructure CreateStructure();
-
-  /*!
-   * @brief Create ScStructure object for provided set.
-   * @param structureAddr Address of the set.
-   * @return ScStructure object.
-   */
-  _SC_EXTERN ScStructure UseStructure(ScAddr const & structureAddr);
+      std::function<sc_bool(TScEvent const &)> const & checkCallback);
 
   /*!
    * @brief Subscribes agent class to specified sc-events.
@@ -291,7 +251,7 @@ public:
   _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent();
 
   /*!
-   * @brief Builds and subscribes an agent.
+   * @brief Loads specification of agent implementation and subscribes agent class.
    * @tparam TScAgent An agent class to be subscribed to the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
@@ -303,14 +263,14 @@ public:
    * sc-agent for this agent class does not have a primary initiation condition.
    */
   template <class TScAgent>
-  _SC_EXTERN void BuildAndSubscribeAgent(ScAddr const & agentImplementationAddr);
+  _SC_EXTERN void LoadAndSubscribeAgent(ScAddr const & agentImplementationAddr);
 
   /*!
-   * @brief Destroys and unsubscribes an agent.
+   * @brief Remove from program specification of agent and unsubscribes agent class.
    * @tparam TScAgent An agent class to be unsubscribed from the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
-   *  @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
+   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
    * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and is not included
    * in any abstract sc-agent.
@@ -319,6 +279,46 @@ public:
    */
   template <class TScAgent>
   _SC_EXTERN void DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr);
+
+  /*!
+   * @brief Creates an action with a given action class.
+   * @param actionClassAddr Address of the action class.
+   * @return ScAction object.
+   */
+  _SC_EXTERN ScAction CreateAction(ScAddr const & actionClassAddr);
+
+  /*!
+   * @brief Create ScAction object for provided action.
+   * @param actionAddr Address of the action.
+   * @return ScAction object.
+   */
+  _SC_EXTERN ScAction UseAction(ScAddr const & actionAddr);
+
+  /*!
+   * @brief Creates a set.
+   * @return ScSet object.
+   */
+  _SC_EXTERN ScSet CreateSet();
+
+  /*!
+   * @brief Create ScSet object for provided set.
+   * @param setAddr Address of the set.
+   * @return ScSet object.
+   */
+  _SC_EXTERN ScSet UseSet(ScAddr const & setAddr);
+
+  /*!
+   * @brief Creates a structure.
+   * @return ScStructure object.
+   */
+  _SC_EXTERN ScStructure CreateStructure();
+
+  /*!
+   * @brief Create ScStructure object for provided set.
+   * @param structureAddr Address of the set.
+   * @return ScStructure object.
+   */
+  _SC_EXTERN ScStructure UseStructure(ScAddr const & structureAddr);
 
 protected:
   /*!

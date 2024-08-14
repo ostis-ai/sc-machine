@@ -43,7 +43,7 @@ ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
 std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
-    std::function<void(ScElementaryEvent const &)> const & eventCallback) const
+    std::function<void(ScElementaryEvent const &)> const & eventCallback)
 {
   if (!IsElement(eventClassAddr))
     SC_THROW_EXCEPTION(
@@ -74,7 +74,7 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
 std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
-    std::function<void(void)> const & initiateCallback) const
+    std::function<void(void)> const & initiateCallback)
 {
   if (!IsElement(eventClassAddr))
     SC_THROW_EXCEPTION(
@@ -100,7 +100,7 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
-    std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback) const
+    std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback)
 {
   if (!IsElement(eventClassAddr))
     SC_THROW_EXCEPTION(
@@ -127,7 +127,7 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
 std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
-    std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback) const
+    std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback)
 {
   return CreateEventWaiterWithCondition(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
 }

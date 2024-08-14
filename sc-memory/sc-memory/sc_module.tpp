@@ -12,7 +12,7 @@ template <class TKeynodesClass>
 ScModule * ScModule::Keynodes()
 {
   static_assert(
-      std::is_base_of<ScKeynodes, TKeynodesClass>::value, "TKeynodesClass must be derivied from ScKeynodes class.");
+      std::is_base_of<ScKeynodes, TKeynodesClass>::value, "TKeynodesClass must be derived from ScKeynodes class.");
 
   m_keynodes.push_back(new TKeynodesClass());
   return this;

@@ -13,7 +13,7 @@
 template <class TScEvent>
 std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & subscriptionElementAddr,
-    std::function<void(TScEvent const &)> const & eventCallback) const
+    std::function<void(TScEvent const &)> const & eventCallback)
 {
   static_assert(
       std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
@@ -39,7 +39,7 @@ std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateE
 template <class TScEvent>
 std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiter(
     ScAddr const & subscriptionElementAddr,
-    std::function<void(void)> const & initiateCallback) const
+    std::function<void(void)> const & initiateCallback)
 {
   static_assert(
       std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
@@ -66,7 +66,7 @@ template <class TScEvent>
 std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
-    std::function<sc_bool(TScEvent const &)> const & checkCallback) const
+    std::function<sc_bool(TScEvent const &)> const & checkCallback)
 {
   static_assert(
       std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
@@ -95,7 +95,7 @@ std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
 template <class TScEvent>
 std::shared_ptr<ScWait> ScAgentContext::CreateEventWaiterWithCondition(
     ScAddr const & subscriptionElementAddr,
-    std::function<sc_bool(TScEvent const &)> const & checkCallback) const
+    std::function<sc_bool(TScEvent const &)> const & checkCallback)
 {
   return CreateEventWaiterWithCondition(subscriptionElementAddr, {}, checkCallback);
 }
@@ -133,7 +133,7 @@ typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type S
 }
 
 template <class TScAgent>
-void ScAgentContext::BuildAndSubscribeAgent(ScAddr const & agentImplementationAddr)
+void ScAgentContext::LoadAndSubscribeAgent(ScAddr const & agentImplementationAddr)
 {
   ScAgentBuilder<TScAgent> builder{agentImplementationAddr};
   builder.LoadSpecification(this);

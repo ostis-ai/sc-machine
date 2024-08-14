@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include "sc_object.hpp"
 
 #include "sc_addr.hpp"
