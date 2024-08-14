@@ -336,3 +336,10 @@ All these methods return object of `ScResult`. You should return it in agent pro
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [What is difference between `ScAction` and `ScEvent`?](#what-is-difference-between-scaction-and-scevent)
+
+### **What is difference between `ScAction` and `ScEvent`?**
+
+`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to accomplish specified problem (task). `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are interpreted by agents. Emergence of events in sc-memory leads to generation of new processes.

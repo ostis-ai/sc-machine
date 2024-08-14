@@ -225,3 +225,20 @@ SC_MODULE_REGISTER(MyModule)
 ---
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [Is it possible to register an agent without calling a method to register it?](#is-it-possible-to-register-an-agent-without-calling-a-method-to-register-it)
+- [Is it possible to create one module and register all agents in it?](#is-it-possible-to-create-one-module-and-register-all-agents-in-it)
+- [If there is a difference in what order to register agents?](#if-there-is-a-difference-in-what-order-to-register-agents)
+
+### **Is it possible to register an agent without calling a method to register it?**
+
+You can implement an agent that will traverse all agent specifications in the knowledge base and register agents according its specifications.
+
+### **Is it possible to create one module and register all agents in it?**
+
+You can do that, but we advise you to build components from agents, meaning agents should be included in the same module if they make sense to be in the same component. Get used to having every module be a component.
+
+### **If there is a difference in what order to register agents?**
+
+Probably, not. Agents shouldn't be dependent on each other. But if you did, it's better not to do so.

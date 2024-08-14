@@ -50,3 +50,15 @@ All constructors of these classes are private. You should [**C++ Agent context A
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [Why can't I call the constructor of a waiter for sc-event?](#why-cant-i-call-the-constructor-of-a-waiter-for-sc-event)
+- [Is it possible to wait for sc-event through the knowledge base?](#is-it-possible-to-wait-for-sc-event-through-the-knowledge-base)
+
+### **Why can't I call the constructor of a waiter for sc-event?**
+
+First of all, it's not safe. We need more checks on input arguments because there are more of them. Secondly, it is correct from the OOP point of view. Constructors should not throw exceptions. Third, it is correct from the point of view of the architecture we use in the sc-machine. The `ScAgentContext` is a facade over all possible objects in memory. 
+
+### **Is it possible to wait for sc-event through the knowledge base**
+
+You can make an agent that will do that.

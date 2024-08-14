@@ -593,3 +593,37 @@ sc_bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [Is it possible to subscribe an agent for more than one sc-event?](#is-it-possible-to-subscribe-an-agent-for-more-than-one-sc-event)
+- [What happens if I don't specify full initiation condition in agent class?](#what-happens-if-i-dont-specify-full-initiation-condition-in-agent-class)
+- [Can there be an agent without primary initiation condition?](#can-there-be-an-agent-without-primary-initiation-condition)
+- [Is it possible to create object of agent`s and call any of class methods?](#is-it-possible-to-create-object-of-agents-and-call-any-of-class-methods)
+- [Is agent's call protocol preserved?](#is-agents-call-protocol-preserved)
+- [What is advisable to do as an agent and what is not?](#what-is-advisable-to-do-as-an-agent-and-what-is-not)
+
+### **Is it possible to subscribe an agent for more than one sc-event?**
+
+Future versions of the sc-machine will implement complex sc-events. Complex sc-events will be a set of elementary events. It will be possible to subscribe agents to such sc-events. 
+
+If it is a question of whether it is possible to subscribe the one and the same agent to two different elementary sc-events, it is better not to do it. Each agent should be subscribed to only one type of sc-event. If there is a subscribed to sign an agent to multiple sc-event types, you are probably doing something wrong.
+
+### **What happens if I don't specify full initiation condition in agent class?**
+
+We allow not specifying full initiation condition for agents. However, remember, your agents will be executed every time an event occurs over the listen sc-element your agent is subscribed to.
+
+### **Can there be an agent without primary initiation condition?**
+
+No, agents can't be without primary initiation condition. Agents react to events in sc-memory. A primary initiation condition indicates which sc-event agent is registered for, i.e. when agent will be called.
+
+### **Is it possible to create object of agent`s and call any of class methods?**
+
+Yes, you can call a method of agent class through object of that class. But remember that you can't create necessary arguments for all methods.
+
+### **Is agent's call protocol preserved?**
+
+Until the sc-machine implements functionality for logging processes in sc-memory. It will be added in the next versions. However, the sc-machine does not remove anything by itself.
+
+### **What is advisable to do as an agent and what is not?**
+
+It depends on your goal. If you want to make an ostis-system, then the whole functionality of your system should be a collective of agents. If you want to use a machine as a database to store and process information in a convenient and simple way, not everything should be agents. To improve performance, use agents with static specification or without specification, combine multiple agents into one, optimize sc-memory requests and etc.

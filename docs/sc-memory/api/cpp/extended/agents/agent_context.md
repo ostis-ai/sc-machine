@@ -351,3 +351,26 @@ ScSet set = context.UseStructure(structureAddr);
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [How do I add my method to a `ScAgentContext`?](#how-do-i-add-my-method-to-a-scagentcontext)
+
+### **How do I add my method to a `ScAgentContext`?**
+
+You can create a class that will inherit `ScAgentContext` class. If you want to use it in your agent, do this:
+
+```cpp
+class MyContext : public ScAgentContext
+{
+public:
+  // New methods.
+};
+
+class MyAgent : public ScAgent<MyEventType, MyContext>
+{
+public:
+  // Agent methods.
+};
+```
+
+You will be able to use context of class, which you specify, in the agent's methods.

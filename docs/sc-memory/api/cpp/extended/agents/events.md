@@ -404,3 +404,15 @@ This class represents sc-event of changing content for listen sc-link. You can u
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [Is there sc-event of adding sc-node?](#is-there-sc-event-of-adding-sc-node)
+- [Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?](#is-fact-of-what-happened-recorded-in-the-knowledge-base-are-sc-events-recorded-in-the-knowledge-base)
+
+### **Is there sc-event of adding sc-node?**
+
+A sc-event is defined as the addition, modification or removing of connections between sc-elements. This is so because knowledge is not a single sc-element, and knowledge is construction of three sc-elements at least. A sc-element does not carry any knowledge in itself. Therefore, a sc-event is considered to be emergence of some new knowledge.
+
+### **Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?**
+
+Right now, sc-events are not recorded in the knowledge base. It will be implemented in the future versions of the sc-machine.

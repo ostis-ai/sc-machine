@@ -73,3 +73,20 @@ public:
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [Is it possible to create the same keynodes in different modules but with different types?](#is-it-possible-to-create-the-same-keynodes-in-different-modules-but-with-different-types)
+- [Is it possible to create a keynode inside an agent class?](#is-it-possible-to-create-a-keynode-inside-an-agent-class)
+- [When are keynodes initialized?](#when-are-keynodes-initialized)
+
+### **Is it possible to create the same keynodes in different modules but with different types?**
+
+You can create the same keynodes in different modules. The main thing is that modules should not depend on each other and there should be no name conflict in the classes in which these keynodes are declared. However, you cannot create identical keynodes in different modules with different types, for example, as structure and as class. All sc-elements with the same system identifiers are automatically glued together.
+
+### **Is it possible to create a keynode inside an agent class?**
+
+Yes, the algorithm is exactly the same if you were to create this keynode in a separate special class for keynodes.
+
+### **When are keynodes initialized?**
+
+They are initialized during sc-memory initialization. Do not use them before the memory has not been initialized.

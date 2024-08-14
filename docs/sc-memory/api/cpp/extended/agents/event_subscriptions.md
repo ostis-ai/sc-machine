@@ -229,3 +229,15 @@ auto subscription = context->CreateElementaryEventSubscription<
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?](#whether-a-function-is-considered-an-agent-if-this-function-is-subscribed-to-a-sc-event-and-which-is-called-after-that-sc-event-occurs)
+- [Why can't you call the constructor of a subscription class to sc-event?](#why-cant-you-i-the-constructor-of-a-subscription-class-to-sc-event)
+
+### **Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?**
+
+No, such functions are not agents. Agents have a strict specification. See [C++ Agents API](agents.md).
+
+### **Why can't I call the constructor of a subscription class to sc-event?**
+
+First of all, it's not safe. We need more checks on input arguments because there are more of them. Secondly, it is correct from the OOP point of view. Constructors should not throw exceptions. Third, it is correct from the point of view of the architecture we use in the sc-machine. The `ScAgentContext` is a facade over all possible objects in memory. 
