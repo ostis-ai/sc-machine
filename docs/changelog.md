@@ -18,9 +18,29 @@ encapsulated this logic;
 - Constructors for ScMemoryContext with string and int parameters were removed. Use the one without parameters instead.
 - HelperSearchTemplateInStruct was removed from ScMemoryContext API. Use HelperSearchTemplate with callbacks.
 - Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
+- We've made breakthrough. Now we don't use code generation as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API. What have we done?
+  - Firstly, we have completely moved from code generation to template programming.
+  - Secondly, we have significantly improved and aligned with our description of how it should be.
+  - Thirdly, we have significantly simplified the API. Now it will be much easier to create agents. Go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
 
 ### Added
 
+- Simple guide for implementing agent in C++
+- Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
+- Full tests for C++ Agents API
+- Opportunity to implement agents with static, dynamic and semi-dynamic specifications
+- Implement `ScAgentContext` class to work with sc-event, subscriptions and waiters
+- Implement `ScAction` class to work with sc-actions in sc-memory
+- Implement `ScAgentBuilder` to handle dynamic specifications for agents
+- Implement `ScModule` to register agents
+- Implement `ScKeynodes` class to unite sc-keynodes
+- Implement `ScTemplateKeynode` class to represent static object of sc-template
+- Implement `ScKeynode` class to represent static object of sc-element
+- Implement `ScAgent` class for any types of agents
+- Implement `ScActionAgent` class to implement agents interpreting initiated actions
+- Implement sc-event classes hierarchy
+- Implement new C++ Agents API based on template programming
+- Implement method of loading program object of sc-template into sc-memory
 - Add unordered_map type with `ScAddr` as key
 - Implement protected method in ScMemoryContext to translate object of `ScTemplate` to sc-template in sc-memory
 - Doc strings for public template classes
@@ -59,6 +79,8 @@ encapsulated this logic;
 
 ### Changed
 
+- Rename `ScWait` to `ScWaiter`
+- Rename `ScEvent` to `ScEventSubscription`
 - Make template build methods to throw exceptions instead of return errors
 - Rename questions to actions
 - Use queues in monitors statically
@@ -76,6 +98,7 @@ encapsulated this logic;
 
 ### Fixed
 
+- Now sc-arcs and sc-elements are removed after agents have worked with them
 - fs-memory uses monitor to resolve string offset
 - fs-memory searches for new strings in all channels instead of only in last channel
 - Separate implementation from declarations in templates
@@ -99,6 +122,7 @@ encapsulated this logic;
 
 ### Removed
 
+- Codegen and C++ Agents API based on code generation
 - Deprecated sc-utils in 0.9.0
 - Constructors for ScMemoryContext with string and int parameters
 - HelperSearchTemplateInStruct from ScMemoryContext
