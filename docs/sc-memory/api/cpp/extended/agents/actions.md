@@ -19,14 +19,14 @@ The sc-machine provides `ScAction` class to handle actions in sc-memory. You can
 ```cpp
 // Find action class and create action.
 ...
-ScAction const & action = action.CreateAction(actionClassAddr);
+ScAction action = context.CreateAction(actionClassAddr);
 ...
 ```
 
 ```cpp
 // Or find action and use it.
 ...
-ScAction const & action = action.UseAction(actionAddr);
+ScAction action = context.UseAction(actionAddr);
 ...
 ```
 

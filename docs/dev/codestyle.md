@@ -22,8 +22,8 @@ libraries. External libraries have the highest priority.
 #include "hash/hmac.h"
 #include "hash/sha256.h"
 
-#include "sc-memory/cpp/sc_wait.hpp"
-#include "sc-memory/cpp/kpm/sc_agent.hpp"
+#include "sc-memory/sc_event_wait.hpp"
+#include "sc-memory/sc_agent.hpp"
 
 #include <curl/curl.h>
 

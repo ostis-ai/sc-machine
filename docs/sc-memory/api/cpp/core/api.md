@@ -20,6 +20,9 @@ these features using this API.
 !!! note
     To include this API provide `#include <sc-memory/sc_memory.hpp>` in your hpp source.
 
+!!! warning
+    Objects of `ScMemoryContext` class are movable, but not copyable.
+
 ## **ScAddr**
 
 Each sc-element has a sc-address with which you can obtain information about this sc-element.
@@ -40,15 +43,10 @@ during API methods completion.
 
 ```cpp
 ...
-// To create such context use constructor of ScMemoryContext 
-// providing system identifier of subject of action.
-ScMemoryContext context{"my_name"};
+// To create such context use constructor of ScMemoryContext.
+ScMemoryContext context;
 // After you can use this object to call any API methods.
 ```
-
-!!! note
-    Don't use constructor of ScMemoryContext, providing sc_permissions argument. It can be unsafe. It will be 
-    deleted in the further versions of sc-machine. 
 
 ### **CreateNode**
 

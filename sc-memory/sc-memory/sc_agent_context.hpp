@@ -21,7 +21,11 @@ class ScActionAgent;
 
 /*!
  * @class ScAgentContext
- * @brief Represents context for an sc-agent. ScAgentContext is derived from ScMemoryContext.
+ * @brief Represents the memory context for agents.
+ *
+ * ScAgentContext is derived from ScMemoryContext and provides functionality
+ * for managing agent-specific operations, including event subscriptions,
+ * actions, and structures within the sc-machine.
  */
 class ScAgentContext : public ScMemoryContext
 {
@@ -81,7 +85,7 @@ public:
    * @brief Creates elementary sc-event subscription for specified subscription sc-element and sc-event callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
    * @param subscriptionElementAddr An address of subscription sc-element.
-   * @param eventCallback The callback function that will be called when sc-event occurs. It takes a const reference to
+   * @param eventCallback A callback function that will be called when sc-event occurs. It takes a const reference to
    * TScEvent as a parameter.
    * @return A shared pointer to created `ScElementaryEventSubscription`.
    * @throws utils::ExceptionInvalidParams If subscription sc-element is not valid or if TScEvent is not derived from
@@ -282,7 +286,7 @@ public:
 
   /*!
    * @brief Creates an action with a given action class.
-   * @param actionClassAddr Address of the action class.
+   * @param actionClassAddr An address of the action class.
    * @return ScAction object.
    */
   _SC_EXTERN ScAction CreateAction(ScAddr const & actionClassAddr);
@@ -302,7 +306,7 @@ public:
 
   /*!
    * @brief Create ScSet object for provided set.
-   * @param setAddr Address of the set.
+   * @param setAddr An address of the set.
    * @return ScSet object.
    */
   _SC_EXTERN ScSet UseSet(ScAddr const & setAddr);
@@ -315,7 +319,7 @@ public:
 
   /*!
    * @brief Create ScStructure object for provided set.
-   * @param structureAddr Address of the set.
+   * @param structureAddr An address of the set.
    * @return ScStructure object.
    */
   _SC_EXTERN ScStructure UseStructure(ScAddr const & structureAddr);
