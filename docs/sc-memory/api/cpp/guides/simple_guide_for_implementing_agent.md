@@ -12,7 +12,8 @@ All agents in C++ represent some classes in C++. To implement an agent in C++, y
 4. In header file, define a class in C++ for this agent and specifies in it at least class of actions that this agent interprets and its program. In such class you can also specify primary initiation condition, initiation condition, and result condition.
 5. In source file, implement all declared methods of agent's class. You can also implement your own methods and use them in an agent program. You can use all C++ and OOP tools as much as possible. 
 6. Create file and implement class for keynodes used by implemented agent.
-7. Implement class for module for registering implemented agent. 
+7. Implement class for module for registering implemented agent.
+8. Write tests for implemented agent.
 
 ---
 
@@ -76,7 +77,7 @@ The `CMakeLists.txt` file should describe a process of building your agent code.
 ```cmake
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "*.cpp" "*.hpp"
-    "*/*.cpp" "*/*.hpp"
+    "agents/*.cpp" "agents/*.hpp"
 )
 
 # Create and link your library with using libraries.
@@ -228,6 +229,16 @@ set-agents-module/
 +│   └── sc_set_keynodes.hpp
 ```
 
+**CMakeLists.txt**
+
+```diff
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.cpp" "*.hpp"
+    "agents/*.cpp" "agents/*.hpp"
++   "keynodes/*.cpp" "keynodes/*.hpp"
+)
+```
+
 **sc_set_keynodes.hpp**
 
 ```cpp
@@ -374,6 +385,139 @@ SC_MODULE_REGISTER(ScSetModule)
 + }
 ```
 
+### **8. Write tests for implemented agent. Check agent logic.**
+
+To make sure how your agent works it is best to create tests and cover in them all possible cases that your agent has to handle. For this, create a separate file with test cases and implement them.
+
+```diff
+ set-agents-module/
+ ├── CMakeLists.txt
+ ├── agents/
+ │   ├── sc_agent_for_сalculating_set_power.hpp
+ │   └── sc_agent_for_сalculating_set_power.сpp
+ ├── keynodes/
+ │   └── sc_set_keynodes.hpp
++├── tests/
++│   └── test_sc_agent_for_сalculating_set_power.cpp
+ ├── sc_set_module.hpp
+ └── sc_set_module.cpp
+```
+
+**CMakeLists.txt**
+
+```diff
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "*.cpp" "*.hpp"
+    "agents/*.cpp" "agents/*.hpp"
+    "keynodes/*.cpp" "keynodes/*.hpp"
+)
+
+add_library(set-agents SHARED ${SOURCES})
+target_link_libraries(set-agents LINK_PRIVATE sc-memory)
+target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
++file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
++    "tests/*.cpp"
++)
+
+# Create executable for tests.
++add_executable(set-agents-tests ${TEST_SOURCES})
++target_link_libraries(set-agents-tests LINK_PRIVATE set-agents)
++target_include_directories(set-agents-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
++add_test(NAME set-agents-tests COMMAND set-agents-tests)
+```
+
+**test_sc_agent_for_сalculating_set_power.cpp**
+
+```cpp
+#include <sc-memory/sc_test.hpp>
+
+#include "agents/sc_agent_for_сalculating_set_power.hpp"
+#include "keynodes/sc_set_keynodes.hpp"
+
+using AgentTest = ScMemoryTest;
+
+TEST_F(AgentTest, AgentForCalculatingSetPowerFinishedSuccessfully)
+{
+  // Create action with class that your agent interpreters.
+  ScAction action 
+    = m_ctx->CreateAction(ScSetKeynodes::action_for_сalculating_set_power);
+
+  // Create set with two sc-elements.
+  ScSet set = m_ctx->CreateSet();
+  ScAddr nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  set << nodeAddr1 << nodeAddr2;
+
+  // Set created set as argument for action.
+  action.SetArgument(1, set);
+
+  // Initiate and wait while action will be finished.
+  action.InitiateAndWait();
+
+  // Check that action is finished successfully.
+  EXPECT_TRUE(action.IsFinishedSuccessfully());
+
+  // Get action result structure.
+  ScStructure structure = action.GetResult();
+  // Check that it has sc-elements.
+  EXPECT_FALSE(structure.IsEmpty());
+
+  // Check sc-constructions in result structure.
+  // Check the first three element construction.
+  ScIterator3Ptr it3 = m_ctx->Iterator3(
+    structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeDCommonConst);
+  EXPECT_TRUE(it3->Next());
+  ScAddr arcAddr = it3->Get(2);
+
+  ScAddr beginAddr;
+  ScAddr linkAddr;
+  m_ctx->GetEdgeInfo(arcAddr, beginAddr, linkAddr);
+  EXPECT_EQ(beginAddr, set);
+  EXPECT_TRUE(m_ctx->GetElementType(linkAddr).IsLink());
+
+  // Check that link content is 2.
+  size_t setPower;
+  EXPECT_TRUE(m_ctx->GetLinkContent(linkAddr, setPower));
+  EXPECT_EQ(setPower, 2u);
+
+  // Check the second three element construction.
+  ScIterator3Ptr it3 = m_ctx->Iterator3(
+    structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeAccessConstPosPerm);
+  EXPECT_TRUE(it3->Next());
+  ScAddr arcAddr2 = it3->Get(2);
+
+  ScAddr relationAddr;
+  ScAddr targetArcAddr;
+  m_ctx->GetEdgeInfo(arcAddr2, relationAddr, targetArcAddr);
+  EXPECT_EQ(relationAddr, ScSetKeynodes::nrel_set_power);
+  EXPECT_EQ(targetArcAddr, arcAddr);
+}
+
+// Provide tests for unsuccessful and error situations.
+...
+```
+
+!!! warning
+    A good code is a code covered by tests.
+
 --- 
 
 ## **Frequently Asked Questions**
+
+<!-- no toc -->
+- [What is the correct way to write CMakeLists.txt? What is it? How to work with it?](#what-is-the-correct-way-to-write-cmakeliststxt-what-is-it-how-to-work-with-it)
+- [How to write tests correctly?](#how-to-write-tests-correctly)
+
+### **What is the correct way to write CMakeLists.txt? What is it? How to work with it?**
+
+CMake is a widely used build system that facilitates the management of software builds, particularly for C++ projects. It allows developers to define the build process in a platform-independent manner, which can then be used to generate native build scripts for different environments. 
+
+Use [this guide](https://cliutils.gitlab.io/modern-cmake/) to write CMakeLists.txt correctly.
+
+### **How to write tests correctly?**
+
+We use GoogleTest to test our code. GoogleTest, often referred to as gtest, is a C++ testing framework developed by Google. It is used for writing and running unit tests in C++ projects. 
+
+Use [this guide](https://google.github.io/googletest/) to write good tests.
