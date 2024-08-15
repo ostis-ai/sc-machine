@@ -4,17 +4,17 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to handle actions on C++.
+This API provides functionality to handle C++ actions.
 
 ## **What is action?**
 
-All actions are processes. Any process is performed by some subject. Each action performed can be interpreted as a process of solving some task, i.e. as a process of achieving the given goal with the given conditions. Each action denotes some transformation carried out in the external environment or in the memory of some system.
+All actions are processes. Any process is performed by some subject. Each action can be defined as a process of solving some task, i.e. as a process of achieving the given goal with the given conditions. Each action denotes some transformation carried out in the external environment or in the memory of some system.
 
-Like an agent, an action has a specification. This specification includes: class, arguments, state, result and others. The specification of an action is called a problem (task).
+Like an agent, an action has a specification. This specification includes: class, arguments, state, result. The specification of an action is called a problem (task).
 
 ## **ScAction**
 
-The sc-machine provides `ScAction` class to handle actions in sc-memory. You can't call constructors of this class, because they are private. Use `ScAgentContext` to create action with provided class or use the existed one.
+The sc-machine provides `ScAction` class to handle actions in sc-memory. You can't use constructors of this class, because they are private. Use `ScAgentContext` to create action with provided class or use the existing one.
 
 ```cpp
 // Find action class and create action.
@@ -61,8 +61,11 @@ ScAddr const & argAddr = action.GetArgument(1);
 ...
 ```
 
+!!! note
+    There is a limit to the number of order role relations. You can get from `rrel_1` up to and including `rrel_20`.
+
 !!! warning
-    This method will throw `utils::ExceptionInvalidParams` if you provide invalid index for argument (for example, 0).
+    This method will throw `utils::ExceptionInvalidParams` if you provide invalid index for argument (for example, 0 or 20).
 
 ```cpp
 ...
@@ -74,11 +77,11 @@ ScAddr const & argAddr = action.GetArgument(1, defaultArgumentAddr);
 
 ### **GetArguments**
 
-You can get all arguments using one getters.
+You can get all arguments using one getter.
 
 ```cpp
 ...
-// Here, 2 is number arguments in specified action.
+// Here, 2 is number of arguments in specified action.
 auto const & [argAddr1, argAddr2] = action.GetArguments<2>();
 // If action doesn't have some argument, it will be empty.
 ...
@@ -86,7 +89,7 @@ auto const & [argAddr1, argAddr2] = action.GetArguments<2>();
 
 ```cpp
 ...
-// You can't ignore some arguments.
+// You can ignore some arguments.
 auto const & [argAddr1, argAddr2, _] = action.GetArguments<3>();
 ...
 ```
@@ -108,13 +111,13 @@ action.SetArgument(ScKeynodes::rrel_1, argAddr);
 ```cpp
 ...
 // Or provide index of argument. 1 is equal to `ScKeynodes::rrel_1`,
-// 2 is equal to `ScKeynodes::rrel_2` and etc.
+// 2 is equal to `ScKeynodes::rrel_2`, etc.
 action.SetArgument(1, argAddr);
 ...
 ```
 
 !!! note
-    If action has already argument with specified role, then connection between action and this argument will be removed and created new one between action and new argument.
+    If action already has an argument with specified role, then connection between action and existing argument will be removed and connection between action and new argument will be created.
 
 ### **SetArguments**
 
@@ -130,22 +133,22 @@ action.SetArguments(argAddr1, argAddr2);
 
 ### **Action result**
 
-All action should have result (result situation). Result situation is structure that contains all sc-constructions that which indicate result of interpreting action.
+All actions should have result (result situation). Result situation is structure that contains all sc-constructions that indicate result of performed(or finished, not interpreted) action.
 
 #### **GetResult**
 
-You can result for any actions.
+You get can result of any action.
 
 ```cpp
 ...
-// Use this method after that some agent finished 
-// interpreting action.
+// Use this method after some agent finishes 
+// performing action.
 ScStructure const & actionResult = action.GetResult();
 ...
 ```
 
 !!! warning
-    You can call this method for finished action only.
+    You can call this method for finished action only. It prevents a situation where an agent that performs an action is still forming a result for that action, and you haven't waited for it and already want to get result for that action.
 
 #### **SetResult**
 
@@ -158,7 +161,7 @@ action.SetResult(resultStructure);
 ```
 
 !!! note
-    If action has result, then will be removed and the new one will be set.
+    If action has result, then existing result will be removed and the new one will be set.
 
 !!! warning
     You can call this method for not finished, but initiated action only.
@@ -176,7 +179,7 @@ action.FormResult(elementAddr1, elementAddr2);
 ```
 
 !!! note
-    If action has result, then will be removed and the new one will be set.
+    If action has result, then existing result will be removed and the new one will be set.
 
 #### **UpdateResult**
 
@@ -192,7 +195,7 @@ action.UpdateResult(elementAddr1, elementAddr2);
     This method updates existing result for action.
 
 !!! note
-    `FormResult` and `UpdateResult` doesn't append sc-element twice.
+    `FormResult` and `UpdateResult` don't append sc-element twice.
 
 !!! note
     If you don't form result then empty result for your action will be generated if you finish action.
@@ -219,7 +222,7 @@ sc_bool const isActionInitiated = action.IsInitiated();
 
 #### **InitiateAndWait**
 
-You can initiate action and wait while it will be finished.
+You can initiate action and wait for it to finish.
 
 ```cpp
 ...
@@ -231,7 +234,7 @@ action.InitiateAndWait(100); // milliseconds
 
 #### **Initiate**
 
-Or you can initiate and not wait while it will be finished.
+Or you can initiate and not wait for it to finish.
 
 ```cpp
 ...
@@ -249,7 +252,7 @@ sc_bool const isActionFinished = action.IsFinished();
 ...
 ```
 
-All finished actions should be:
+All finished actions should be finished with one of the following statuses:
 
 * finished successfully;
 * finished unsuccessfully;
@@ -267,7 +270,7 @@ sc_bool const isActionFinishedSuccessfully = action.IsFinishedSuccessfully();
 
 #### **FinishSuccessfully**
 
-You can finish successfully action that not finished yet.
+You can successfully finish action that has not yet been finished.
 
 ```cpp
 ...
@@ -278,7 +281,7 @@ ScResult const & result = action.FinishSuccessfully();
 
 #### **IsFinishedUnsuccessfully**
 
-The set of actions finished unsuccessfully includes actions that were not successfully finished from the point of view of subject who performed them for some reasons. There are two main reasons why this situation may occur:
+The set of actions finished unsuccessfully includes actions that were not successfully finished from the point of view of subject who performed them for some reason. There are two main reasons why this situation may occur:
 
 * corresponding problem is formulated incorrectly;
 * formulation of corresponding problem is correct and understandable to the system, but solution of this problem at the current moment cannot be obtained in terms satisfactory from the point of view of executor.
@@ -290,7 +293,7 @@ sc_bool const isActionFinishedUnsuccessfully = action.IsFinishedUnsuccessfully()
 ```
 
 !!! warning
-    You can't finish successfully action that finished or not initiated.
+    You can't successfully finish action that are finished or not initiated.
 
 #### **FinishUnsuccessfully**
 
@@ -342,4 +345,8 @@ All these methods return object of `ScResult`. You should return it in agent pro
 
 ### **What is difference between `ScAction` and `ScEvent`?**
 
-`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to accomplish specified problem (task). `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are interpreted by agents. Emergence of events in sc-memory leads to generation of new processes.
+`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to solve specified problem (task). `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are performed by agents. Emergence of events in sc-memory leads to generation of new processes.
+
+### **What if I want to set some edge as action result and not structure with this edge?**
+
+You're not allowed to do this. Action result must be a sc-structure. Action result is a situation that describes how action was performed. Situation is a sc-structure.

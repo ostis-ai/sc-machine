@@ -8,7 +8,7 @@ This API provides functionality to implement agents on C++.
 
 ## **What is the agent-driven model?**
 
-The sc-machine implements the **agent-driven model** to process information. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralised and most often independent of each other. 
+The sc-machine implements the **agent-driven model** to process information. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralized and most often independent of each other. 
 
 All agents within the OSTIS Technology are divided into two classes: platform-independent, i.e. implemented only by means of SC-code, and platform-dependent, implemented by means of sc-machine API. This sc-machine presents a powerful, but simple API for developing and maintaining platform-dependent agents in C++.
 
@@ -18,7 +18,7 @@ All agents react to the occurrence of events in sc-memory (sc-events). That is, 
 
 All knowledge about an agent: *primary initiation condition*, *class of actions* it can interpret, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programly, using sc-machine API.
 
-Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code. An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
+Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code and SCg-code. An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
 
 ```scs
 // Abstract sc-agent
@@ -39,7 +39,6 @@ agent_for_calculating_set_power
     action_initiated;
     action;
     action_for_сalculating_set_power;
-    concept_set;
     nrel_set_power;
 };
 => nrel_inclusion: 
@@ -77,6 +76,8 @@ agent_for_calculating_set_power
 // Agent should check by this template that initiated action is finished 
 // and that it has result.
 ```
+
+<image src="../images/agents/agent_for_сalculating_set_power_specification.png"></image>
 
 ## **What are ways of providing the agent's specification?**
 

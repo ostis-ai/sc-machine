@@ -157,7 +157,7 @@ So you can load the initial specification for your agent into the knowledge base
 
 If you has specification for your agent in the knowledge base wrote in SCs-code or SCg-code, then you can just specify implementation of your agent.
 
-Write scs-specification of your agent and connect it with module that register your agent.
+Write scs-specification (or scg-specification) of your agent and connect it with module that register your agent.
 
 ```scs
 // Specification of agent in kb.
@@ -201,6 +201,8 @@ my_agent_result_condition_template
     .._action _=> nrel_result:: .._result;;
 *];;
 ```
+
+<image src="../images/agents/my_agent_specification.png"></image>
 
 ```cpp
 // File my_module.cpp:

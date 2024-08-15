@@ -35,6 +35,8 @@ The initial construction of agent might look like this:
 -> ..element_3;;
 ```
 
+<image src="../images/agents/agent_for_calculating_set_power_input_construction.png"></image>
+
 The result construction of agent might look like this:
 
 ```scs
@@ -49,6 +51,8 @@ The result construction of agent might look like this:
   ..some_set => nrel_set_power: [3];;
 *];;
 ```
+
+<image src="../images/agents/agent_for_calculating_set_power_output_construction.png"></image>
 
 In addition to agents that initiate actions themselves and then interpret these actions, there is a need to implement agents that interpret actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
 
@@ -101,7 +105,7 @@ The base class `ScAgent` contains API to implement agents that react to any sc-e
 
 b. It must override at least methods `ScAddr GetAction() const` and `ScResult DoProgram(ScActionEvent const & event, ScAction & action)`.
 
-c. Overriden methods must be public. Otherwise, you won't be able to build your code because the sc-machine won't be able to call methods on your agent class.
+c. Override methods must be public. Otherwise, you won't be able to build your code because the sc-machine won't be able to call methods on your agent class.
 
 d. You can implement other methods in agent's class.
 
@@ -148,7 +152,7 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
   // ScAction is derived from ScObject.
 
   // `ScAction` class encapsulates information about sc-action. 
-  // The provided action is action that the given agent interpretes right now. 
+  // The provided action is action that the given agent interpreters right now. 
   // It belongs to class action_for_сalculating_set_power`. 
   // Actions are copyable and movable. ScAction is derived from ScAddr.
 
@@ -326,7 +330,7 @@ Someone should subscribe your agent to event. It can be other agent, or any code
 class ScSetModule : public ScModule
 {
   // Here class is empty. You doesn't need to implement any methods. 
-  // `ScModule` class contains all nessary API to register your 
+  // `ScModule` class contains all necessary API to register your 
   // agents as separate sc-module.
 };
 ```
@@ -341,12 +345,12 @@ class ScSetModule : public ScModule
 SC_MODULE_REGISTER(ScSetModule)
   ->Agent<ScAgentForCalculatingPower>();
   // This method pointers to module that agent class `ScAgentForCalculatingPower`
-  // should be subcribed to sc-event of adding output arc from sc-element
+  // should be subscribed to sc-event of adding output arc from sc-element
   // `action_initiated`. It is default parameter in these method if you want
   // register agent class derived from `ScActionAgent`.
 
 // This way of registering agents makes it easier to write code. 
-// You don't have to think about deregistering agents after 
+// You don't have to think about unregistering agents after 
 // the system shutdown - your module will do it all by itself.
 ```
 
