@@ -4,15 +4,15 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement modules for registering keynodes and agents on C++.
+This API provides functionality to implement modules for registering agents on C++.
 
 ---
 
 ## **ScModule**
 
-This class is a base class for registering keynodes and agent modules. It's like a complex component that contains connected agents.
+This class is a base class for registering agents. It's like a complex component that contains connected agents.
 
-To register your keynodes and agents, implement module class and call `Keynodes` and `Agent` methods to register keynodes and agents correspondingly.
+To register your agents, implement module class and call `Agent` methods to register agents.
 
 ```cpp
 // File my_module.hpp
@@ -34,9 +34,7 @@ class MyModule : public ScModule
 
 SC_MODULE_REGISTER(MyModule)
 // It initializes static object of `MyModule` class that can be 
-// used to call methods for registering keynodes and agents.
-  ->Keynodes<MyKeynodes>()
-  // It registers keynodes and returns object of `MyModule`.
+// used to call methods for registering agents.
   ->Agent<MyAgent>(); 
   // It registers agent and returns object of `MyModule`.
   // `MyAgent` is derived from `ScActionAgent`.
@@ -49,18 +47,20 @@ SC_MODULE_REGISTER(MyModule)
 
 You must call `Agent` method for agent classes derived from `ScActionAgent` without arguments, but you should call it providing sc-event subscription sc-element for agent classes derived from `ScAgent`.
 
-A module registers keynodes and agents when the sc-memory initializes and it unregisters them when the sc-memory shutdowns.
+A module registers agents when the sc-memory initializes and it unregisters them when the sc-memory shutdowns.
 Also, you can use module to register a set of agents.
 
 ```cpp
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/keynodes/my_keynodes.hpp"
-#include "my-module/agents/my_agent.hpp"
+#include "my-module/agents/my_agent1.hpp"
+#include "my-module/agents/my_agent2.hpp"
+#include "my-module/agents/my_agent3.hpp"
+#include "my-module/agents/my_agent4.hpp"
+#include "my-module/agents/my_agent5.hpp"
 
 SC_MODULE_REGISTER(MyModule)
-  ->Keynodes<MyKeynodes>()
   ->Agent<MyAgent1>()
   ->Agent<MyAgent2>()
   ->Agent<MyAgent3>()
@@ -85,11 +85,9 @@ class MyModule : public ScModule
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/keynodes/my_keynodes.hpp"
 #include "my-module/agents/my_agent.hpp"
 
 SC_MODULE_REGISTER(MyModule)
-  ->Keynodes<MyKeynodes>()
   ->Agent<MyAgent>(); 
 
 + // This method will be called once. 
@@ -124,11 +122,9 @@ You can specify initial specification for your agent class in code with help of 
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/keynodes/my_keynodes.hpp"
 #include "my-module/agents/my_agent.hpp"
 
 SC_MODULE_REGISTER(MyModule)
-  ->Keynodes<MyKeynodes>()
   ->AgentBuilder<MyAgent>()
     ->SetAbstractAgent(MyKeynodes::my_abstract_agent)
     ->SetPrimaryInitiationCondition({
@@ -210,11 +206,9 @@ my_agent_result_condition_template
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/keynodes/my_keynodes.hpp"
 #include "my-module/agents/my_agent.hpp"
 
 SC_MODULE_REGISTER(MyModule)
-  ->Keynodes<MyKeynodes>()
   ->AgentBuilder<MyAgent>(ScKeynodes::my_agent_implementation)
     ->FinishBuild();
 ```

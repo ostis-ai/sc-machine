@@ -20,7 +20,7 @@ class ScAgentBuilder;
 
 /*!
  * @class ScModule
- * @brief A base class for regestering keynodes and agent modules. It's like a complex component that contains
+ * @brief A base class for registering agents. It's like a complex component that contains
  * connected agents.
  *
  * Derive this class to implement your own module class.
@@ -38,11 +38,9 @@ class ScAgentBuilder;
  * // File my_module.cpp:
  * #include "my-module/my_module.hpp"
  *
- * #include "my-module/keynodes/my_keynodes.hpp"
  * #include "my-module/agents/my_agent.hpp"
  *
  * SC_MODULE_REGISTER(MyModule)
- *   ->Keynodes<MyKeynodes>()
  *   ->Agent<MyAgent>();
  *
  * \endcode
@@ -54,14 +52,6 @@ public:
   _SC_EXTERN ~ScModule() override;
 
   _SC_EXTERN static ScModule * Create(ScModule * module);
-
-  /*!
-   * @brief Reminds keynodes to register it with module after.
-   * @param TKeynodesClass A keynodes class to be initialized in this module.
-   * @returns A pointer to module instance.
-   */
-  template <class TKeynodesClass>
-  _SC_EXTERN ScModule * Keynodes();
 
   /*!
    * @brief Reminds agent and it initiation condition to register it with module after.
@@ -94,12 +84,12 @@ public:
   _SC_EXTERN ScAgentBuilder<TScAgent> * AgentBuilder(ScAddr const & agentImplementationAddr = ScAddr::Empty);
 
   /*!
-   * @brief Registers all module keynodes and agents.
+   * @brief Registers all module agents.
    * @returns Result of initializing.
    */
   _SC_EXTERN void Register(ScMemoryContext * ctx);
 
-  /*! Unregisters all module keynodes and agents.
+  /*! Unregisters all module agents.
    * @returns Result of shutdown.
    */
   _SC_EXTERN void Unregister(ScMemoryContext * ctx);
@@ -117,8 +107,6 @@ public:
   _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx);
 
 protected:
-  /// Registered keynodes
-  std::list<ScKeynodes *> m_keynodes;
   /// Registered agents
   using ScAgentSubscribeCallback = std::function<void(ScMemoryContext *, ScAddr const &, ScAddrVector const &)>;
   using ScAgentUnsubscribeCallback = std::function<void(ScMemoryContext *, ScAddr const &, ScAddrVector const &)>;

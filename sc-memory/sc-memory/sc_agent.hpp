@@ -25,9 +25,9 @@ class ScResult;
 
 /*!
  * @class ScAgentAbstract
- * @brief An abstract base class for sc-agents.
+ * @brief An abstract base class for agents.
  *
- * This class provides a base implementation for sc-agents, offering methods for initialization, shutdown, and handling
+ * This class provides a base implementation for agents, offering methods for initialization, shutdown, and handling
  * events.
  *
  * @tparam TScEvent The type of sc-event this agent handles.
@@ -245,7 +245,7 @@ protected:
 
 /*!
  * @class ScAgent
- * @brief A class for sc-agents that can subscribe to any elementary sc-events.
+ * @brief A class for agents that can subscribe to any elementary sc-events.
  *
  * This class extends ScAgentAbstract and provides methods for subscribing and unsubscribing
  * to sc-events.

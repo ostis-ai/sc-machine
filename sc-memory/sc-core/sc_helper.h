@@ -11,7 +11,7 @@
 
 #include "sc_memory.h"
 
-//! Enumeration of sc-keynodes
+//! Enumeration of keynodes
 enum _sc_keynode
 {
   SC_KEYNODE_NREL_SYSTEM_IDENTIFIER = 0,  // nrel_system_identifier

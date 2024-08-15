@@ -18,9 +18,6 @@ void ScModule::Register(ScMemoryContext * ctx)
   SC_LOG_INFO("Initialize " << this->GetName());
   Initialize(ctx);
 
-  for (auto * keynodes : m_keynodes)
-    keynodes->Initialize(ctx);
-
   for (auto const & agentInfo : m_agents)
   {
     auto [builder, registerCallback, _, addrs] = agentInfo;
@@ -33,13 +30,6 @@ void ScModule::Register(ScMemoryContext * ctx)
 
 void ScModule::Unregister(ScMemoryContext * ctx)
 {
-  for (auto * keynodes : m_keynodes)
-  {
-    keynodes->Shutdown(ctx);
-    delete keynodes;
-  }
-  m_keynodes.clear();
-
   for (auto const & agentInfo : m_agents)
   {
     auto [builder, _, unregisterCallback, addrs] = agentInfo;

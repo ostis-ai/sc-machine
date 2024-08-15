@@ -31,7 +31,7 @@ Constructor of `ScElementaryEventSubscription` class takes 4 parameters:
 
 All these constructors are private, you can't call these. We provide more safe API to create subscription. Use [**C++ Agent Context API**](agent_context.md) to create sc-event subscriptions.
 
-All sc-event classes are in core sc-keynodes:
+All sc-event classes are in core keynodes:
 
 * `ScKeynodes::sc_event_add_output_arc`;
 * `ScKeynodes::sc_event_add_input_arc`;

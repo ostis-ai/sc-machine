@@ -11,7 +11,7 @@
         * C++ Extended API: - *documentation of C++ extended API for manipulating with system identifiers of sc-elements and sc-templates*
             * [C++ System identifier API](sc-memory/api/cpp/extended/helper_api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
             * [C++ ScTemplate API](sc-memory/api/cpp/extended/template_api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)* 
-            * C++ Agents API: - *documentation of C++ Agents API for creating sc-agents*
+            * C++ Agents API: - *documentation of C++ Agents API for creating agents*
                 * [C++ Events API](sc-memory/api/cpp/extended/agents/events.md) 
                 * [C++ Event subscriptions API](sc-memory/api/cpp/extended/agents/event_subscriptions.md) 
                 * [C++ Waiters API](sc-memory/api/cpp/extended/agents/waiters.md) 
@@ -30,7 +30,7 @@
     * [Sc-element types](scs/sc_element_types.md) - *detailed description of supported element types*
     * [SCs-code](scs/scs.md) - *documentation on SCs Language with examples*
 - **Utils**
-    * [Agents](sc-kpm/kpm.md) - *detailed description of common sc-agents*
+    * [Agents](sc-kpm/kpm.md) - *detailed description of common agents*
 - **Tools**
     * [Knowledge Base builder](sc-tools/sc_builder.md) - *description of options of sc-builder for knowledge base sources*
     * [Knowledge Base repo file](sc-tools/kb_repo_file.md) - *description of configuration of knowledge base sources*

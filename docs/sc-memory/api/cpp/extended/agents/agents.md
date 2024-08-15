@@ -4,7 +4,7 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement sc-agents on C++.
+This API provides functionality to implement agents on C++.
 
 ## **What is the agent-driven model?**
 
@@ -18,7 +18,7 @@ All agents react to the occurrence of events in sc-memory (sc-events). That is, 
 
 All knowledge about an agent: *primary initiation condition*, *class of actions* it can interpret, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programly, using sc-machine API.
 
-Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code. An abstract sc-agent is a class of functionally equivalent sc-agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
+Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code. An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
 
 ```scs
 // Abstract sc-agent
@@ -248,7 +248,7 @@ ScAddr MyAgent::GetActionClass() const
 }
 ```
 
-See [**C++ Keynodes API**](keynodes.md) and learn how to define sc-keynodes and use them for your agent.
+See [**C++ Keynodes API**](keynodes.md) and learn how to define keynodes and use them for your agent.
 
 #### **DoProgram**
 

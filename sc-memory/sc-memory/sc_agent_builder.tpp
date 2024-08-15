@@ -226,7 +226,7 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
     if (it5->Next())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent implementation `" << agentImplementationName << "` is included to two or more abstract sc-agents.");
+          "Agent implementation `" << agentImplementationName << "` is included to two or more abstract agents.");
 
     if (ctx->GetElementType(m_abstractAgentAddr).BitAnd(ScType::NodeConst) != ScType::NodeConst)
       SC_THROW_EXCEPTION(

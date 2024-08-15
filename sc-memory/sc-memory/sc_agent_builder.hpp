@@ -46,7 +46,7 @@ public:
 
 /*!
  * @class ScAgentBuilder
- * @brief A class for building sc-agents.
+ * @brief A class for building agents.
  *
  * This class extends ScAgentBuilderAbstract and provides methods for setting various properties of the agent and
  * finalizing the build process.

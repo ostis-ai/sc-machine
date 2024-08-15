@@ -8,16 +8,6 @@
 
 #include "sc_agent_builder.hpp"
 
-template <class TKeynodesClass>
-ScModule * ScModule::Keynodes()
-{
-  static_assert(
-      std::is_base_of<ScKeynodes, TKeynodesClass>::value, "TKeynodesClass must be derived from ScKeynodes class.");
-
-  m_keynodes.push_back(new TKeynodesClass());
-  return this;
-}
-
 template <class TScAgent, class... TScAddr, typename>
 ScModule * ScModule::Agent(TScAddr const &... subscriptionAddrs)
 {

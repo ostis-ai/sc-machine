@@ -4,7 +4,7 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement sc-agents on C++.
+This API provides functionality to implement agents on C++.
 
 ## **ScWaiter** and **ScConditionWaiter**
 

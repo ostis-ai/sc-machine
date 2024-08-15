@@ -300,9 +300,9 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
 
 ---
 
-### **7. Implement module class to register your keynodes and agent.**
+### **7. Implement module class to register your agent.**
 
-Someone should subscribe your agent to event. It can be other agent, or any code at all. You can implement class, that allows register keynodes and agents. This class is named sc-module. Each sc-module should register keynodes and agents with common sense.
+Someone should subscribe your agent to event. It can be other agent, or any code at all. You can implement class, that allows register agents. This class is named sc-module. Each sc-module should register agents with common sense.
 
 ```diff
  set-agents-module/
@@ -326,8 +326,8 @@ Someone should subscribe your agent to event. It can be other agent, or any code
 class ScSetModule : public ScModule
 {
   // Here class is empty. You doesn't need to implement any methods. 
-  // `ScModule` class contains all nessary API to register your keynodes 
-  // and agents as separate sc-module.
+  // `ScModule` class contains all nessary API to register your 
+  // agents as separate sc-module.
 };
 ```
 
@@ -336,25 +336,21 @@ class ScSetModule : public ScModule
 ```cpp
 #include "sc_set_module.hpp"
 
-#include "keynodes/sc_set_keynodes.hpp"
 #include "agents/sc_agent_for_сalculating_set_power.hpp"
 
 SC_MODULE_REGISTER(ScSetModule)
-  ->Keynodes<ScSetKeynodes>()
-  // This method pointers to module that all keynodes in `ScSetKeynodes` should
-  // be initialized.
   ->Agent<ScAgentForCalculatingPower>();
   // This method pointers to module that agent class `ScAgentForCalculatingPower`
   // should be subcribed to sc-event of adding output arc from sc-element
   // `action_initiated`. It is default parameter in these method if you want
   // register agent class derived from `ScActionAgent`.
 
-// This way of registering keynodes and agents makes it easier to write code. 
-// You don't have to think about deregistering keynodes and agents after 
+// This way of registering agents makes it easier to write code. 
+// You don't have to think about deregistering agents after 
 // the system shutdown - your module will do it all by itself.
 ```
 
-If you want to initialize something else in your module besides keynodes and agents, you can override methods `Initialize(ScMemoryContext * context) override;` and `Shutdown(ScMemoryContext * context) override;`.
+If you want to initialize something else in your module besides agents, you can override methods `Initialize(ScMemoryContext * context) override;` and `Shutdown(ScMemoryContext * context) override;`.
 
 **sc_set_module.hpp**
 
@@ -370,7 +366,6 @@ class ScSetModule : public ScModule
 
 ```diff
 SC_MODULE_REGISTER(ScSetModule)
-  ->Keynodes<ScSetKeynodes>()
   ->Agent<ScAgentForCalculatingPower>();
 
 + // This method will be called once. 
