@@ -207,6 +207,17 @@ public:
   _SC_EXTERN static inline ScKeynode const myself{"myself"};
 
   _SC_EXTERN static inline ScKeynode const nrel_inclusion{"nrel_inclusion", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const rrel_1{"rrel_1", ScType::NodeConstRole};
+  _SC_EXTERN static inline ScKeynode const rrel_2{"rrel_2", ScType::NodeConstRole};
+  _SC_EXTERN static inline ScKeynode const rrel_3{"rrel_3", ScType::NodeConstRole};
+  _SC_EXTERN static inline ScKeynode const nrel_basic_sequence{"nrel_basic_sequence", ScType::NodeConstNoRole};
+
+  _SC_EXTERN static inline ScKeynode const rrel_key_sc_element{"rrel_key_sc_element", ScType::NodeConstRole};
+  _SC_EXTERN static inline ScKeynode const rrel_main_key_sc_element{"rrel_main_key_sc_element", ScType::NodeConstRole};
+
+  _SC_EXTERN static inline ScKeynode const nrel_idtf{"nrel_idtf", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_main_idtf{"nrel_main_idtf", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const lang_ru{"lang_ru", ScType::NodeConstClass};
 
   _SC_EXTERN static inline ScKeynode const action{"action", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_state{"action_state", ScType::NodeConstClass};

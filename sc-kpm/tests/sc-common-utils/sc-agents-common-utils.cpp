@@ -6,7 +6,6 @@
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_scs_helper.hpp"
 
-#include "sc-agents-common/keynodes/coreKeynodes.hpp"
 #include "sc-agents-common/utils/GenerationUtils.hpp"
 
 TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
@@ -41,20 +40,20 @@ TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
       ScType::EdgeAccessVarPosPerm >> FIRST_MESSAGE_EDGE_ALIAS,
       firstMessage,
       ScType::EdgeAccessVarPosPerm,
-      scAgentsCommon::CoreKeynodes::rrel_1);
+      ScKeynodes::rrel_1);
   findTemplate.Quintuple(
       FIRST_MESSAGE_EDGE_ALIAS,
       ScType::EdgeDCommonVar,
       ScType::EdgeAccessVarPosPerm >> SECOND_MESSAGE_EDGE_ALIAS,
       ScType::EdgeAccessVarPosPerm,
-      scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
+      ScKeynodes::nrel_basic_sequence);
   findTemplate.Triple(orientedSet, SECOND_MESSAGE_EDGE_ALIAS, secondMessage);
   findTemplate.Quintuple(
       SECOND_MESSAGE_EDGE_ALIAS,
       ScType::EdgeDCommonVar,
       ScType::EdgeAccessVarPosPerm >> THIRD_MESSAGE_EDGE_ALIAS,
       ScType::EdgeAccessVarPosPerm,
-      scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
+      ScKeynodes::nrel_basic_sequence);
   findTemplate.Triple(orientedSet, THIRD_MESSAGE_EDGE_ALIAS, thirdMessage);
 
   ScTemplateSearchResult searchResult;

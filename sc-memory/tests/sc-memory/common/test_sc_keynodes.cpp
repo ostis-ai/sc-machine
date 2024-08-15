@@ -9,6 +9,30 @@ using ScKeynodesTest = ScMemoryTest;
 
 TEST_F(ScKeynodesTest, CoreKeynodes)
 {
+  EXPECT_TRUE(ScKeynodes::nrel_inclusion.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_inclusion) == ScType::NodeConstNoRole);
+
+  EXPECT_TRUE(ScKeynodes::rrel_1.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_1) == ScType::NodeConstRole);
+  EXPECT_TRUE(ScKeynodes::rrel_2.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_2) == ScType::NodeConstRole);
+  EXPECT_TRUE(ScKeynodes::rrel_3.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_3) == ScType::NodeConstRole);
+  EXPECT_TRUE(ScKeynodes::nrel_basic_sequence.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_basic_sequence) == ScType::NodeConstNoRole);
+
+  EXPECT_TRUE(ScKeynodes::rrel_key_sc_element.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_key_sc_element) == ScType::NodeConstRole);
+  EXPECT_TRUE(ScKeynodes::rrel_main_key_sc_element.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_main_key_sc_element) == ScType::NodeConstRole);
+
+  EXPECT_TRUE(ScKeynodes::nrel_idtf.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_idtf) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::nrel_main_idtf.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_main_idtf) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::lang_ru.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::lang_ru) == ScType::NodeConstClass);
+
   EXPECT_TRUE(ScKeynodes::action_state.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_state) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::action_deactivated.IsValid());

@@ -5,7 +5,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "*/*.cpp" "*/*.hpp"
 )
 
-add_library(sc-agents-common SHARED ${SOURCES})
+add_library(sc-agents-common STATIC ${SOURCES})
 target_link_libraries(sc-agents-common
     LINK_PUBLIC sc-memory
     LINK_PRIVATE nlohmann_json::nlohmann_json
