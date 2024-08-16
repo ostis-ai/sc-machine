@@ -24,32 +24,36 @@ using GWFTranslatorTest = ScBuilderTest;
 #include <memory>
 #include <algorithm>
 
-std::vector<char> ReadFileToBytes(const std::string& filePath) {
-    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
-    if (!file) {
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not open file: " + filePath);
-    }
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-    std::vector<char> buffer(size);
-    if (!file.read(buffer.data(), size)) {
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not read file: " + filePath);
-    }
-    return buffer;
+std::vector<char> ReadFileToBytes(std::string const & filePath)
+{
+  std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+  if (!file)
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not open file: " + filePath);
+  }
+  std::streamsize size = file.tellg();
+  file.seekg(0, std::ios::beg);
+  std::vector<char> buffer(size);
+  if (!file.read(buffer.data(), size))
+  {
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not read file: " + filePath);
+  }
+  return buffer;
 }
 
-bool CompareFiles(const std::string& filePath1, const std::string& filePath2) {
-    try
-    {
-        std::vector<char> file1Bytes = ReadFileToBytes(filePath1);
-        std::vector<char> file2Bytes = ReadFileToBytes(filePath2);
-        return file1Bytes == file2Bytes;
-    }
-    catch(utils::ScException const& e)
-    {
-      SC_LOG_ERROR("Exeption in reading file to string " + std::string(e.what()));
-      return false;
-    }
+bool CompareFiles(std::string const & filePath1, std::string const & filePath2)
+{
+  try
+  {
+    std::vector<char> file1Bytes = ReadFileToBytes(filePath1);
+    std::vector<char> file2Bytes = ReadFileToBytes(filePath2);
+    return file1Bytes == file2Bytes;
+  }
+  catch (utils::ScException const & e)
+  {
+    SC_LOG_ERROR("Exeption in reading file to string " + std::string(e.what()));
+    return false;
+  }
 }
 
 std::string ReadFileToString(std::string const & filePath)
@@ -65,7 +69,7 @@ std::string ReadFileToString(std::string const & filePath)
     buffer << file.rdbuf();
     return buffer.str();
   }
-  catch(utils::ScException const& e)
+  catch (utils::ScException const & e)
   {
     SC_LOG_ERROR("Exeption in reading file to string " + std::string(e.what()));
     return nullptr;

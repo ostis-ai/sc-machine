@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <algorithm>
 #include <memory>
 #include <list>
 
@@ -74,7 +75,7 @@ public:
     idtf = newIdtf;
   }
 
-protected:
+private:
   std::string id;
   std::string parent;
   std::string idtf;
@@ -167,11 +168,6 @@ private:
   std::string nodeId;
 };
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <algorithm>
-
 class Contour : public Node
 {
 public:
@@ -185,7 +181,7 @@ public:
   {
   }
 
-  void addElement(std::shared_ptr<SCGElement> & element)
+  void addElement(std::shared_ptr<SCGElement> const & element)
   {
     elements.push_back(element);
   }
@@ -226,12 +222,12 @@ public:
     return target;
   }
 
-  void setSource(std::shared_ptr<SCGElement> sourceEl)
+  void setSource(std::shared_ptr<SCGElement> const & sourceEl)
   {
     source = sourceEl;
   }
 
-  void setTarget(std::shared_ptr<SCGElement> targetEl)
+  void setTarget(std::shared_ptr<SCGElement> const & targetEl)
   {
     target = targetEl;
   }
@@ -247,13 +243,26 @@ public:
   std::unordered_map<std::string, std::shared_ptr<SCGElement>> Parse(std::string const & xmlStr);
 
 private:
+  xmlChar const * const STATIC_SECTOR = (xmlChar const *)"staticSector";
+  xmlChar const * const CONTENT = (xmlChar const *)"content";
+
+  const std::string ID = "id";
+  const std::string PARENT = "parent";
+  const std::string IDTF = "idtf";
+  const std::string TYPE = "type";
+  const std::string MIME_TYPE = "mime_type";
+  const std::string FILE_NAME = "file_name";
+  const std::string OWNER = "owner";
+  const std::string ID_B = "id_b";
+  const std::string ID_E = "id_e";
+
   std::shared_ptr<Node> CreateNode(
       std::string const & tag,
       std::string const & id,
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
-      xmlNodePtr & el);
+      xmlNodePtr & el) const;
 
   std::shared_ptr<Link> CreateLink(
       std::string const & tag,
@@ -261,9 +270,9 @@ private:
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
-      xmlNodePtr & el);
+      xmlNodePtr & el) const;
 
-  bool HasContent(const xmlNodePtr node);
+  bool HasContent(const xmlNodePtr node) const;
 
   std::shared_ptr<Bus> CreateBus(
       std::string const & tag,
@@ -271,7 +280,7 @@ private:
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
-      xmlNodePtr & el);
+      xmlNodePtr & el) const;
 
   std::shared_ptr<Contour> CreateContour(
       std::string const & id,
@@ -280,7 +289,7 @@ private:
       std::string const & type,
       std::string const & tag,
       xmlNodePtr & el,
-      std::vector<std::unordered_map<std::shared_ptr<Contour>, std::string>> & contoursList);
+      std::vector<std::unordered_map<std::shared_ptr<Contour>, std::string>> & contoursList) const;
 
   std::shared_ptr<Connector> CreateConnector(
       std::string const & tag,
@@ -290,20 +299,21 @@ private:
       std::string const & type,
       xmlNodePtr & el,
       std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> &
-          connectorsList);
+          connectorsList) const;
 
   void FillConnector(
-      std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>> & connectorSourceTarget,
-      std::unordered_map<std::string, std::shared_ptr<SCGElement>> elements);
+      std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>> const & connectorSourceTarget,
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elements);
 
   void FillContour(
-      std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,
-      std::unordered_map<std::string, std::shared_ptr<SCGElement>> elements);
+      std::unordered_map<std::shared_ptr<Contour>, std::string> const & contourAndId,
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elements);
 
   void ProcessStaticSector(
       xmlNodePtr staticSector,
       std::unordered_map<std::string, std::shared_ptr<SCGElement>> & elements);
 
-  std::string XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr);
-  std::unique_ptr<xmlChar, XmlCharDeleter> GetXmlProp(xmlNodePtr node, char const * propName);
+  std::string XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr) const;
+  std::unique_ptr<xmlChar, XmlCharDeleter> GetXmlProp(xmlNodePtr node, std::string const & propName) const;
+  std::string GetXmlPropStr(xmlNodePtr node, std::string const & propName) const;
 };
