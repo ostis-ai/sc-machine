@@ -18,7 +18,6 @@
 #include "../sc-container/sc-list/sc_list.h"
 
 typedef struct _sc_dictionary_fs_memory sc_dictionary_fs_memory;
-typedef struct _sc_dictionary_fs_memory sc_dictionary_fs_memory;
 typedef sc_fs_memory_status sc_dictionary_fs_memory_status;
 
 /*! Initialize sc-dictionary file system memory in specified path.
