@@ -7,6 +7,18 @@
 
 using ScTemplateLoadTest = ScTemplateTest;
 
+class ScTemplateLoadContext : public ScMemoryContext
+{
+public:
+  void HelperLoadTemplate(
+      ScTemplate & translatableTemplate,
+      ScAddr & resultTemplateAddr,
+      ScTemplateParams const & params = ScTemplateParams())
+  {
+    ScMemoryContext::HelperLoadTemplate(translatableTemplate, resultTemplateAddr, params);
+  }
+};
+
 TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
@@ -23,7 +35,8 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
   templ.Triple("_test_set", ScType::EdgeAccessVarPosPerm, "_arc_to_test_object");
 
   ScAddr templAddr;
-  m_ctx->HelperLoadTemplate(templ, templAddr);
+  ScTemplateLoadContext ctx;
+  ctx.HelperLoadTemplate(templ, templAddr);
 
   ScStruct templateStruct{*m_ctx, templAddr};
   {
@@ -81,7 +94,8 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
   EXPECT_EQ(searchResult.Size(), 1u);
 
   ScAddr templAddr;
-  m_ctx->HelperLoadTemplate(templ, templAddr);
+  ScTemplateLoadContext ctx;
+  ctx.HelperLoadTemplate(templ, templAddr);
 
   ScTemplate builtTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(builtTemplate, templAddr));
@@ -120,7 +134,8 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
   params.Add("_test_object", testObject);
 
   ScAddr templAddr;
-  m_ctx->HelperLoadTemplate(templ, templAddr, params);
+  ScTemplateLoadContext ctx;
+  ctx.HelperLoadTemplate(templ, templAddr, params);
   ScStruct templateStruct{*m_ctx, templAddr};
   EXPECT_TRUE(templateStruct.HasElement(testObject));
 

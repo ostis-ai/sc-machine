@@ -1236,6 +1236,7 @@ public:
       ScTemplate & resultTemplate,
       std::string const & translatableSCsTemplate) noexcept(false);
 
+protected:
   /*!
    * Translates an object of `ScTemplate` to sc-template in sc-memory (sc-structure).
    * This method is an inverse of the `HelperBuildTemplate` method.
@@ -1262,6 +1263,7 @@ public:
       ScAddr & resultTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 
+public:
   /*! Calculates sc-element counts.
    * @return Returns sc-nodes, sc-connectors and sc-links counts.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
