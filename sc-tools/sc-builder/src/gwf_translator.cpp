@@ -21,7 +21,7 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 
 std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string filePath)
 {
-  GwfParser parser;
+  GWFParser parser;
 
   auto elements = parser.Parse(xmlStr);
 
@@ -30,7 +30,7 @@ std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string 
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "There are no elements in this file " + filePath);
   }
 
-  ScsWriter writer;
+  SCSWriter writer;
   auto const scsStr = writer.Write(elements, filePath);
 
   return scsStr;
@@ -116,7 +116,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
   }
   catch (std::exception const & e)
   {
-    SC_LOG_ERROR("Error: " + std::string(e.what()));
+    SC_LOG_ERROR("GWFTranslator error: " + std::string(e.what()));
     return false;
   }
 }

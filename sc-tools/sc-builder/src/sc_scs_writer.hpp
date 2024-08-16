@@ -38,30 +38,30 @@ public:
 private:
 };
 
-class ScsWriter
+class SCSWriter
 {
 public:
   std::string Write(
-      std::unordered_map<std::string, std::shared_ptr<ScgElement>> & elementsList,
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> & elementsList,
       std::string const & filePath);
 
 private:
-  std::unordered_map<std::string, std::shared_ptr<ScgElement>> writtenList;
+  std::unordered_map<std::string, std::shared_ptr<SCGElement>> writtenList;
 
   void ProcessElementsList(
-      std::unordered_map<std::string, std::shared_ptr<ScgElement>> const & elementsList,
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elementsList,
       Buffer & buffer,
       std::string const & filePath);
-  void WriteNode(Buffer & buffer, std::shared_ptr<ScgElement> const & element, std::string const & filePath);
+  void WriteNode(Buffer & buffer, std::shared_ptr<SCGElement> const & element, std::string const & filePath);
   void WriteConnector(Buffer & buffer, std::shared_ptr<Connector> const & element);
   void WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & element, int tabLevel);
   void WriteLink(Buffer & buffer, std::shared_ptr<Link> const & element, std::string const & filePath);
   void WriteNodeForContour(
       Buffer & buffer,
-      std::shared_ptr<ScgElement> const & node,
+      std::shared_ptr<SCGElement> const & node,
       std::shared_ptr<Contour> const & contour);
 
-  void CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & element);
+  void CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> & element);
 
-  bool checkForNode(std::shared_ptr<ScgElement> refElement, std::vector<std::shared_ptr<ScgElement>> contourElements);
+  bool checkForNode(std::shared_ptr<SCGElement> refElement, std::vector<std::shared_ptr<SCGElement>> contourElements);
 };

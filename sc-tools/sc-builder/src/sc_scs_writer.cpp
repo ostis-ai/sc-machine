@@ -63,8 +63,8 @@ const std::unordered_map<std::string, std::string> IMAGE_FORMATS = {{".png", "fo
 const std::string N_REL_SYSTEM_IDTF = "nrel_system_identifier";
 const std::string N_REL_MAIN_IDTF = "nrel_main_idtf";
 
-std::string ScsWriter::Write(
-    std::unordered_map<std::string, std::shared_ptr<ScgElement>> & elementsList,
+std::string SCSWriter::Write(
+    std::unordered_map<std::string, std::shared_ptr<SCGElement>> & elementsList,
     std::string const & filePath)
 {
   Buffer buffer;
@@ -79,8 +79,8 @@ std::string ScsWriter::Write(
   return buffer.GetValue();
 }
 
-void ScsWriter::ProcessElementsList(
-    std::unordered_map<std::string, std::shared_ptr<ScgElement>> const & elementsList,
+void SCSWriter::ProcessElementsList(
+    std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elementsList,
     Buffer & buffer,
     std::string const & filePath)
 {
@@ -113,11 +113,11 @@ void ScsWriter::ProcessElementsList(
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR("Exception in process elements: " + std::string(e.what()));
+    SC_LOG_ERROR("SCSWriter: exception in process elements " + std::string(e.what()));
   }
 }
 
-void ScsWriter::WriteNode(Buffer & buffer, std::shared_ptr<ScgElement> const & element, std::string const & filePath)
+void SCSWriter::WriteNode(Buffer & buffer, std::shared_ptr<SCGElement> const & element, std::string const & filePath)
 {
   std::shared_ptr<Link> link = std::dynamic_pointer_cast<Link>(element);
 
@@ -147,7 +147,7 @@ void ScsWriter::WriteNode(Buffer & buffer, std::shared_ptr<ScgElement> const & e
   }
 }
 
-void ScsWriter::WriteConnector(Buffer & buffer, std::shared_ptr<Connector> const & connector)
+void SCSWriter::WriteConnector(Buffer & buffer, std::shared_ptr<Connector> const & connector)
 {
   const std::string edgeType = connector->getType();
   bool isUnsupported = false;
@@ -185,7 +185,7 @@ void ScsWriter::WriteConnector(Buffer & buffer, std::shared_ptr<Connector> const
   buffer.Write("\n");
 }
 
-void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & contour, int tabLevel)
+void SCSWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & contour, int tabLevel)
 {
   Buffer contourBuffer;
 
@@ -227,7 +227,7 @@ void ScsWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
   buffer.Write(contour->getIdtf() + " = [*\n" + contourBuffer.GetValue() + "*];;\n");
 }
 
-void ScsWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, std::string const & filePath)
+void SCSWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, std::string const & filePath)
 {
   int const contentType = std::stoi(link->getContentType());
 
@@ -304,9 +304,9 @@ void ScsWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, s
   buffer.Write("\n");
 }
 
-void ScsWriter::WriteNodeForContour(
+void SCSWriter::WriteNodeForContour(
     Buffer & buffer,
-    std::shared_ptr<ScgElement> const & node,
+    std::shared_ptr<SCGElement> const & node,
     std::shared_ptr<Contour> const & contour)
 {
   size_t counter = 1;
@@ -316,7 +316,7 @@ void ScsWriter::WriteNodeForContour(
       std::remove_if(
           elements.begin(),
           elements.end(),
-          [&](std::shared_ptr<ScgElement> & element)
+          [&](std::shared_ptr<SCGElement> & element)
           {
             auto connector = std::dynamic_pointer_cast<Connector>(element);
             if (connector && connector->getSource() == contour && connector->getTarget() == node)
@@ -333,7 +333,7 @@ void ScsWriter::WriteNodeForContour(
   buffer.Write(edgeName + " = (" + contour->getIdtf() + " -> " + node->getIdtf() + ");;\n\n");
 }
 
-void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & element)
+void SCSWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> & element)
 {
   std::regex idtfPatternEng("^[0-9a-zA-Z_]*$");
   std::regex idtfPatternRus("^[0-9a-zA-Z_\\xD0\\x80-\\xD1\\x8F\\xD1\\x90-\\xD1\\x8F\\xD1\\x91\\xD0\\x81*' ]*$");
@@ -399,9 +399,9 @@ void ScsWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<ScgElement> & eleme
   }
 }
 
-bool ScsWriter::checkForNode(
-    std::shared_ptr<ScgElement> refElement,
-    std::vector<std::shared_ptr<ScgElement>> contourElements)
+bool SCSWriter::checkForNode(
+    std::shared_ptr<SCGElement> refElement,
+    std::vector<std::shared_ptr<SCGElement>> contourElements)
 {
   for (auto const & element : contourElements)
   {
