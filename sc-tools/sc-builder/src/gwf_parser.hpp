@@ -25,10 +25,10 @@ public:
   }
 };
 
-class ScgElement
+class SCGElement
 {
 public:
-  ScgElement(
+  SCGElement(
       std::string const & id,
       std::string const & parent,
       std::string const & idtf,
@@ -42,7 +42,7 @@ public:
   {
   }
 
-  virtual ~ScgElement() = default;
+  virtual ~SCGElement() = default;
 
   std::string const & getId() const
   {
@@ -82,7 +82,7 @@ protected:
   std::string tag;
 };
 
-class Node : public ScgElement
+class Node : public SCGElement
 {
 public:
   Node(
@@ -91,7 +91,7 @@ public:
       std::string const & idtf,
       std::string const & type,
       std::string const & tag)
-    : ScgElement(id, parent, idtf, type, tag)
+    : SCGElement(id, parent, idtf, type, tag)
   {
   }
 };
@@ -185,21 +185,21 @@ public:
   {
   }
 
-  void addElement(std::shared_ptr<ScgElement> & element)
+  void addElement(std::shared_ptr<SCGElement> & element)
   {
     elements.push_back(element);
   }
 
-  std::vector<std::shared_ptr<ScgElement>> & getElements()
+  std::vector<std::shared_ptr<SCGElement>> & getElements()
   {
     return elements;
   }
 
 private:
-  std::vector<std::shared_ptr<ScgElement>> elements;
+  std::vector<std::shared_ptr<SCGElement>> elements;
 };
 
-class Connector : public ScgElement
+class Connector : public SCGElement
 {
 public:
   Connector(
@@ -208,43 +208,43 @@ public:
       std::string const & idtf,
       std::string const & type,
       std::string const & tag,
-      std::shared_ptr<ScgElement> sourceEl,
-      std::shared_ptr<ScgElement> targetEl)
-    : ScgElement(id, parent, idtf, type, tag)
+      std::shared_ptr<SCGElement> sourceEl,
+      std::shared_ptr<SCGElement> targetEl)
+    : SCGElement(id, parent, idtf, type, tag)
     , source(sourceEl)
     , target(targetEl)
   {
   }
 
-  std::shared_ptr<ScgElement> getSource() const
+  std::shared_ptr<SCGElement> getSource() const
   {
     return source;
   }
 
-  std::shared_ptr<ScgElement> getTarget() const
+  std::shared_ptr<SCGElement> getTarget() const
   {
     return target;
   }
 
-  void setSource(std::shared_ptr<ScgElement> sourceEl)
+  void setSource(std::shared_ptr<SCGElement> sourceEl)
   {
     source = sourceEl;
   }
 
-  void setTarget(std::shared_ptr<ScgElement> targetEl)
+  void setTarget(std::shared_ptr<SCGElement> targetEl)
   {
     target = targetEl;
   }
 
 private:
-  std::shared_ptr<ScgElement> source;
-  std::shared_ptr<ScgElement> target;
+  std::shared_ptr<SCGElement> source;
+  std::shared_ptr<SCGElement> target;
 };
 
-class GwfParser
+class GWFParser
 {
 public:
-  std::unordered_map<std::string, std::shared_ptr<ScgElement>> Parse(std::string const & xmlStr);
+  std::unordered_map<std::string, std::shared_ptr<SCGElement>> Parse(std::string const & xmlStr);
 
 private:
   std::shared_ptr<Node> CreateNode(
@@ -294,15 +294,15 @@ private:
 
   void FillConnector(
       std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>> & connectorSourceTarget,
-      std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements);
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> elements);
 
   void FillContour(
       std::unordered_map<std::shared_ptr<Contour>, std::string> & contourAndId,
-      std::unordered_map<std::string, std::shared_ptr<ScgElement>> elements);
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> elements);
 
   void ProcessStaticSector(
       xmlNodePtr staticSector,
-      std::unordered_map<std::string, std::shared_ptr<ScgElement>> & elements);
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> & elements);
 
   std::string XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr);
   std::unique_ptr<xmlChar, XmlCharDeleter> GetXmlProp(xmlNodePtr node, char const * propName);
