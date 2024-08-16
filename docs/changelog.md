@@ -21,6 +21,7 @@ encapsulated this logic;
 
 ### Added
 
+- Add unordered_map type with `ScAddr` as key
 - Doc strings for public template classes
 - Usings `ScAddrStack`, `ScAddrQueue`, `ScAddrSet` and `ScAddrHashSet`
 - Doc strings for iterator classes

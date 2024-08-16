@@ -13,6 +13,7 @@
 #include <queue>
 #include <set>
 #include <unordered_set>
+#include <unordered_map>
 
 extern "C"
 {
@@ -84,3 +85,5 @@ using ScAddrStack = std::stack<ScAddr>;
 using ScAddrQueue = std::queue<ScAddr>;
 using ScAddrSet = std::set<ScAddr, ScAddrLessFunc>;
 using ScAddrUnorderedSet = std::unordered_set<ScAddr, ScAddrHashFunc>;
+template <typename Value>
+using ScAddrToValueUnorderedMap = std::unordered_map<ScAddr, Value, ScAddrHashFunc>;
