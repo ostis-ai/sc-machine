@@ -59,6 +59,7 @@ encapsulated this logic;
 
 ### Changed
 
+- Make template build methods to throw exceptions instead of return errors
 - Rename questions to actions
 - Use queues in monitors statically
 - Implement array-based sc-queue
