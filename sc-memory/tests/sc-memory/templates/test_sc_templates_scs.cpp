@@ -22,7 +22,7 @@ TEST_F(ScTemplateSCsTest, BuildFail)
 {
   ScTemplate templ;
   sc_char const * data = "_a _-> b";
-  EXPECT_FALSE(m_ctx->HelperBuildTemplate(templ, data));
+  EXPECT_THROW(m_ctx->HelperBuildTemplate(templ, data), utils::ExceptionParseError);
 }
 
 TEST_F(ScTemplateSCsTest, GenBuildSearch)
@@ -105,7 +105,5 @@ TEST_F(ScTemplateSCsTest, GenerateSearch)
 TEST_F(ScTemplateSCsTest, IdtfNotExist)
 {
   ScTemplate templ;
-  ScTemplate::Result result = m_ctx->HelperBuildTemplate(templ, "non_existing_item _-> _z;;");
-  EXPECT_FALSE(result);
-  EXPECT_GT(result.Msg().size(), 0u);
+  EXPECT_THROW(m_ctx->HelperBuildTemplate(templ, "non_existing_item _-> _z;;"), utils::ExceptionInvalidState);
 }

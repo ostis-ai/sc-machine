@@ -44,7 +44,7 @@ TEST_F(SCsHelperTest, GenerateBySCs)
     EXPECT_TRUE(helper.GenerateBySCsText(t.first));
 
     ScTemplate templ;
-    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, t.second));
+    m_ctx->HelperBuildTemplate(templ, t.second);
 
     ScTemplateSearchResult result;
     EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));

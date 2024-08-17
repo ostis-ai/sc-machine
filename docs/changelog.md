@@ -22,6 +22,7 @@ encapsulated this logic;
 ### Added
 
 - Add unordered_map type with `ScAddr` as key
+- Implement protected method in ScMemoryContext to translate object of `ScTemplate` to sc-template in sc-memory
 - Doc strings for public template classes
 - Usings `ScAddrStack`, `ScAddrQueue`, `ScAddrSet` and `ScAddrHashSet`
 - Doc strings for iterator classes
@@ -58,6 +59,7 @@ encapsulated this logic;
 
 ### Changed
 
+- Make template build methods to throw exceptions instead of return errors
 - Rename questions to actions
 - Use queues in monitors statically
 - Implement array-based sc-queue

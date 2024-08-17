@@ -15,31 +15,28 @@
 class ScTemplateBuilderFromScs
 {
 public:
-  ScTemplateBuilderFromScs(std::string const & scsText, ScMemoryContext & ctx)
-    : m_scsText(scsText)
+  ScTemplateBuilderFromScs(std::string const & translatableSCsTemplate, ScMemoryContext & ctx)
+    : m_translatableSCsTemplate(translatableSCsTemplate)
     , m_ctx(ctx)
     , m_parser()
   {
   }
 
-  ScTemplate::Result operator()(ScTemplate * templ)
+  void operator()(ScTemplate * templ)
   {
-    if (!m_parser.Parse(m_scsText))
-      return ScTemplate::Result(false, m_parser.GetParseError());
+    if (!m_parser.Parse(m_translatableSCsTemplate))
+      SC_THROW_EXCEPTION(utils::ExceptionParseError, m_parser.GetParseError());
 
-    return BuildImpl(templ);
+    BuildImpl(templ);
   }
 
 protected:
-  ScTemplate::Result BuildImpl(ScTemplate * templ) const
+  void BuildImpl(ScTemplate * templ) const
   {
     utils::ScKeynodeCache keynodes(m_ctx);
     std::unordered_set<std::string> passed;
 
-    ScTemplate::Result result(true);
-
-    auto const MakeTemplItem = [&passed, &keynodes, &result](
-                                   scs::ParsedElement const & el, ScTemplateItem & outValue) -> bool
+    auto const MakeTemplItem = [&passed, &keynodes](scs::ParsedElement const & el, ScTemplateItem & outValue) -> bool
     {
       std::string const & idtf = el.GetIdtf();
       bool const isUnnamed = scs::TypeResolver::IsUnnamed(idtf);
@@ -65,7 +62,7 @@ protected:
           }
           else
           {
-            result = ScTemplate::Result(false, "Can't find element " + idtf);
+            SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't find element " << idtf);
             return false;
           }
         }
@@ -89,19 +86,17 @@ protected:
 
       templ->Triple(srcItem, edgeItem, trgItem);
     }
-
-    return result;
   }
 
 private:
-  std::string const & m_scsText;
+  std::string const & m_translatableSCsTemplate;
   ScMemoryContext & m_ctx;
 
   scs::Parser m_parser;
 };
 
-ScTemplate::Result ScTemplate::FromScs(ScMemoryContext & ctx, std::string const & scsText)
+void ScTemplate::TranslateFrom(ScMemoryContext & ctx, std::string const & translatableSCsTemplate)
 {
-  ScTemplateBuilderFromScs builder(scsText, ctx);
-  return builder(this);
+  ScTemplateBuilderFromScs builder(translatableSCsTemplate, ctx);
+  builder(this);
 }

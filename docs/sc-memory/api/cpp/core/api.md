@@ -298,7 +298,7 @@ context.SetLinkContent(linkAddr2, 10f);
 ```
 
 !!! note
-    Don't use result boolean value, it doesn't mean anything.
+    Don't use result value, it doesn't mean anything.
 
 ### **GetLinkContent**
 

@@ -981,18 +981,19 @@ public:
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*!
-   * Generates sc-constructions by isomorphic sc-template and accumulates generated sc-construction into `result`.
-   * @param templ A sc-template object to find constructions by it.
+   * Generates sc-constructions by object of `ScTemplate` and accumulates generated sc-construction into `result`.
+   * @param templateToGenerate An object of `ScTemplate` to find constructions by it.
    * @param result A generated sc-construction.
    * @param params A map of specified sc-template sc-variables to user replacements.
    * @param resultCode A pointer to status of method completion.
    * @return Returns true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
-   * @throws utils::ExceptionInvalidState if sc-template is not valid.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
    * ...
+   * ScAddr const & classAddr = ctx.HelperFindBySystemIdtf("my_class");
    * ...
-   * ScTemplate templ;
+   * ScTemplate templateToGenerate;
    * templ.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
@@ -1000,7 +1001,7 @@ public:
    * );
    *
    * ScTemplateResultItem result;
-   * m_ctx->HelperGenTemplate(templ, result);
+   * m_ctx->HelperGenTemplate(templateToGenerate, result);
    *
    * // handle generated sc-construction sc-elements
    * m_ctx->IsElement(item["_addr2"])
@@ -1013,19 +1014,20 @@ public:
       ScTemplateResultCode * resultCode = nullptr) noexcept(false);
 
   /*!
-   * Searches sc-constructions by isomorphic sc-template and accumulates found sc-constructions into `result`.
-   * @param templ A sc-template object to find sc-constructions by it.
+   * Searches sc-constructions by object of `ScTemplate` and accumulates found sc-constructions into `result`.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
    * @param result A result vector of found sc-constructions.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
-   * @throws utils::ExceptionInvalidState if sc-template is not valid
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
-   * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use one
-   * of callback-based HelperSearchTemplate.
+   * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use the
+   * one of callback-based HelperSearchTemplate.
    *
    * @code
    * ...
+   * ScAddr const & classAddr = ctx.HelperFindBySystemIdtf("my_class");
    * ...
-   * ScTemplate templ;
+   * ScTemplate templateToFind;
    * templ.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
@@ -1033,7 +1035,7 @@ public:
    * );
    *
    * ScTemplateSearchResult result;
-   * m_ctx->HelperSearchTemplate(templ, result);
+   * m_ctx->HelperSearchTemplate(templateToFind, result);
    *
    * // iterate by all result sc-constructions
    * for (size_t i = 0; i < result.Size(); ++i)
@@ -1049,34 +1051,39 @@ public:
       ScTemplateSearchResult & result) noexcept(false);
 
   /*!
-   * Searches sc-constructions by isomorphic sc-template and passes found sc-constructions to `callback`
+   * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
    * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
    * condition.
-   * @param templ A sc-template object to find sc-constructions by it
-   * @param callback A lambda-function, callable when each sc-construction triple was found
-   * @param filterCallback A lambda-function, that filters all found sc-constructions triples
-   * @param checkCallback A lambda-function, that filters all found triples with checking sc-address
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
+   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
-   * @throws utils::ExceptionInvalidState if sc-template is not valid
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
    * ...
    * ...
+   * ScAddr const & classAddr = ctx.HelperFindBySystemIdtf("my_class");
    * ScAddr const & structureAddr = ctx.CreateNode(ScType::NodeConstStruct);
    * ScAddr const & modelAddr = ctx.CreateNode(ScType::NodeConstStruct);
    * ...
    * ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
-   * ScTemplate templ;
-   * templ.Triple(
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
    *  ScType::Unknown >> "_addr2"
    * );
-   * m_ctx->HelperSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) {
+   * // Find all instances of specified class.
+   * m_ctx->HelperSearchTemplate(templateToFind, [&ctx](ScTemplateSearchResultItem const & item) {
+   *  // Add each checked instance of class to set.
    *  ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&ctx](ScTemplateSearchResultItem const & item) -> bool {
+   *  // Check that each sc-arc between class and its instance belongs to structure.
    *  return !ctx->HelperCheckEdge(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
    * }, [&ctx](ScAddr const & addr) -> bool {
+   *  // Check that each sc-element of find sc-construction belongs to model.
    *  return ctx->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
@@ -1087,13 +1094,45 @@ public:
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
+  /*!
+   * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
+   * lambda-function.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & classAddr = ctx.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & modelAddr = ctx.CreateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
+   * structure. m_ctx->HelperSearchTemplate(templateToFind, [&ctx](ScTemplateSearchResultItem const & item) {
+   *  // Add each checked instance of class to set.
+   *  ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&ctx](ScAddr const & addr) -> bool {
+   *  // Check that each sc-element of find sc-construction belongs to model.
+   *  return ctx->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   * });
+   * @endcode
+   */
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templ,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   /*!
-   * Searches constructions by isomorphic sc-template and pass found sc-constructions to `callback`
+   * Searches constructions by object of `ScTemplate` and pass found sc-constructions to `callback`
    * lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
    *  - ScTemplateSearchRequest::CONTINUE,
    *  - ScTemplateSearchRequest::STOP,
@@ -1103,93 +1142,129 @@ public:
    * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate thrown
    * utils::ExceptionInvalidState.
    * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
-   * @param templ A sc-template object to find sc-constructions by it
-   * @param callback A lambda-function, callable when each sc-construction triple was found
-   * @param filterCallback A lambda-function, that filters all found sc-constructions triples
-   * @param checkCallback A lambda-function, that filters all found triples with checking sc-address
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
+   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
-   * @throws utils::ExceptionInvalidState if sc-template is not valid
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
    * ...
    * ...
+   * ScAddr const & classAddr = ctx.HelperFindBySystemIdtf("my_class");
    * ScAddr const & structureAddr = ctx.CreateNode(ScType::NodeConstStruct);
    * ...
    * ScAddr const & setAddr = ctx.CreateNode(ScType::NodeConst);
-   * ScTemplate templ;
-   * templ.Triple(
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
    *  ScType::Unknown >> "_addr2"
    * );
-   * m_ctx->HelperSmartSearchTemplate(templ, [&ctx](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
+   * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
+   * belong to structure. m_ctx->HelperSmartSearchTemplate(templateToFind, [&ctx](ScTemplateSearchResultItem const &
+   * item) -> ScTemplateSearchRequest
    * {
    *   ScAddr const & edgeAddr = item["_edge"];
    *   if (ctx->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
    *    return ScTemplateSearchRequest::CONTINUE;
    *
-   *   if (ctx.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
+   *   if (ctx->HelperCheckEdge(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
    *    return ScTemplateSearchRequest::STOP;
    *
-   *   return ScTemplateSearchRequest::ERROR;
+   *   return ScTemplateSearchRequest::CONTINUE;
    * });
    * @endcode
    */
   _SC_EXTERN void HelperSmartSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
   _SC_EXTERN void HelperSmartSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   /*!
-   * Builds a program object of isomorphic template from existing in sc-memory sc-address of sc-structure. After
-   * sc-template built you can use it to search or generate sc-constructions.
-   * @param templ A built program object of isomorphic template.
-   * @param templAddr A sc-address of sc-template structure.
-   * @param params A map of specified sc-template sc-variables to user replacements.
-   * @return Returns true if the sc-template is built; otherwise, returns false.
-   * @throws utils::ExceptionInvalidState if sc-template is not valid
+   * Translates a sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`. After
+   * sc-template translation you can use object of `ScTemplate` to search or generate sc-constructions: in
+   * `HelperSearchTemplate` and `HelperGenTemplate` correspondingly.
+   * @param resultTemplate An object of `ScTemplate` to be gotten.
+   * @param translatableTemplateAddr A sc-address of sc-template structure to be translated.
+   * @param params A map of specified sc-template sc-variables to their replacements.
+   * @return Returns true if the sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`;
+   * otherwise, throws exceptions.
+   * @throws utils::ExceptionInvalidState if sc-template represented in sc-memory is not valid.
    *
    * @code
    * ...
    * ...
-   * ScTemplate templ;
-   * ScAddr const & templAddr = m_ctx->HelperFindBySystemIdtf("my_template");
-   * m_ctx->HelperBuildTemplate(templ, templAddr);
+   * ScTemplate resultTemplate;
+   * ScAddr const & translatableTemplAddr = m_ctx->HelperFindBySystemIdtf("my_template");
+   * m_ctx->HelperBuildTemplate(resultTemplate, translatableTemplAddr);
    * ...
    * @endcode
    */
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
-      ScTemplate & templ,
-      ScAddr const & templAddr,
+      ScTemplate & resultTemplate,
+      ScAddr const & translatableTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 
   /*!
-   * Builds a program object of isomorphic template represented in sc.s-text. After sc-template built you can use it to
-   * search or generate sc-constructions.
-   * @param templ A built program object of isomorphic template.
-   * @param scsText A sc.s-representation of isomorphic template.
-   * @return Returns true if the sc-template is built; otherwise, returns false.
-   * @throws utils::ExceptionInvalidState if sc-template is not valid
+   * Translates a sc-template represented in SCs-code into object of `ScTemplate`. After sc-template translation you can
+   * use object of `ScTemplate` to search or generate sc-constructions: in `HelperSearchTemplate` and
+   * `HelperGenTemplate` correspondingly.
+   * @param resultTemplate An object of `ScTemplate` to be gotten.
+   * @param translatableSCsTemplate A sc.s-representation of sc-template to be translated.
+   * @return Returns true if the sc-template represented in SCs-code into object of `ScTemplate`; otherwise, throws
+   * exceptions.
+   * @throws utils::ExceptionInvalidState if sc-template represented in SCs-code is not valid.
    *
    * @code
    * ...
    * ...
-   * ScTemplate templ;
-   * std::string const scsTempl = "concept_set _-> _var;;";
-   * m_ctx->HelperBuildTemplate(templ, scsTempl);
+   * ScTemplate resultTemplate;
+   * std::string const translatableSCsTemplate = "concept_set _-> _var;;";
+   * m_ctx->HelperBuildTemplate(resultTemplate, translatableSCsTemplate);
    * ...
    * @endcode
    */
-  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(ScTemplate & templ, std::string const & scsText) noexcept(false);
+  _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
+      ScTemplate & resultTemplate,
+      std::string const & translatableSCsTemplate) noexcept(false);
 
-  /*! Calculate sc-element counts
+protected:
+  /*!
+   * Translates an object of `ScTemplate` to sc-template in sc-memory (sc-structure).
+   * This method is an inverse of the `HelperBuildTemplate` method.
+   * @param translatableTemplate An object of `ScTemplate` to be translated.
+   * @param resultTemplateAddr A sc-address of sc-template structure to be gotten in sc-memory.
+   * @param params A map of specified sc-template sc-variables to their replacements.
    *
+   * @code
+   * ...
+   * ...
+   * ScTemplate translatableTemplate;
+   * templ.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * ScAddr resultTemplateAddr;
+   * m_ctx->HelperLoadTemplate(translatableTemplate, resultTemplateAddr);
+   * ...
+   * @endcode
+   */
+  _SC_EXTERN void HelperLoadTemplate(
+      ScTemplate & translatableTemplate,
+      ScAddr & resultTemplateAddr,
+      ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
+
+public:
+  /*! Calculates sc-element counts.
    * @return Returns sc-nodes, sc-connectors and sc-links counts.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    */

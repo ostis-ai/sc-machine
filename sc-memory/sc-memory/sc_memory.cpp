@@ -1057,18 +1057,31 @@ void ScMemoryContext::HelperSmartSearchTemplate(
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
-    ScTemplate & templ,
-    ScAddr const & templAddr,
+    ScTemplate & resultTemplate,
+    ScAddr const & translatableTemplateAddr,
     ScTemplateParams const & params)
 {
   CHECK_CONTEXT;
-  return templ.FromScTemplate(*this, templAddr, params);
+  resultTemplate.TranslateFrom(*this, translatableTemplateAddr, params);
+  return ScTemplate::Result(true);
 }
 
-ScTemplate::Result ScMemoryContext::HelperBuildTemplate(ScTemplate & templ, std::string const & scsText)
+ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
+    ScTemplate & resultTemplate,
+    std::string const & translatableSCsTemplate)
 {
   CHECK_CONTEXT;
-  return templ.FromScs(*this, scsText);
+  resultTemplate.TranslateFrom(*this, translatableSCsTemplate);
+  return ScTemplate::Result(true);
+}
+
+void ScMemoryContext::HelperLoadTemplate(
+    ScTemplate & translatableTemplate,
+    ScAddr & resultTemplateAddr,
+    ScTemplateParams const & params)
+{
+  CHECK_CONTEXT;
+  translatableTemplate.TranslateTo(*this, resultTemplateAddr, params);
 }
 
 ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
