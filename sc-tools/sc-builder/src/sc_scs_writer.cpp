@@ -127,44 +127,29 @@ void SCSWriter::WriteNode(Buffer & buffer, std::shared_ptr<SCGElement> const & e
   }
   else
   {
-    std::string scsElType = ScgToScsElement::GetElement(element->getType(), "NodeTypeSets");
+    const std::string nodeType = element->getType();
+    std::string scsNodeType = "";
 
-    if (scsElType.empty())
+    SCGToSCSElement::ConvertNodeType(element->getType(), scsNodeType);
+
+    if (scsNodeType.empty())
     {
-      scsElType = ScgToScsElement::GetElement(
-          ScgToScsElement::GetElement(element->getType(), "BackwardNodeTypes"), "NodeTypeSets");
-    }
-    if (scsElType.empty())
-    {
-      scsElType = ScgToScsElement::GetElement(element->getType(), "UnsupportedNodeTypeSets");
-    }
-    if (scsElType.empty())
-    {
-      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + element->getType());
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + nodeType);
     }
 
-    buffer.Write(element->getIdtf() + "\n  <- " + scsElType + ";;\n\n");
+    buffer.Write(element->getIdtf() + "\n  <- " + scsNodeType + ";;\n\n");
   }
 }
 
 void SCSWriter::WriteConnector(Buffer & buffer, std::shared_ptr<Connector> const & connector)
 {
   const std::string edgeType = connector->getType();
-  bool isUnsupported = false;
-  std::string symbol = ScgToScsElement::GetElement(edgeType, "EdgeTypes");
+  std::string symbol = "";
+  
+  bool isUnsupported = SCGToSCSElement::ConvertEdgeType(edgeType, symbol);
 
   if (symbol.empty())
   {
-    symbol = ScgToScsElement::GetElement(ScgToScsElement::GetElement(edgeType, "BackwardEdgeTypes"), "EdgeTypes");
-  }
-  if (symbol.empty())
-  {
-    symbol = ScgToScsElement::GetElement(edgeType, "UnsupportedEdgeTypes");
-    isUnsupported = true;
-  }
-  if (symbol.empty())
-  {
-    symbol = "?" + edgeType + "?";
     SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + edgeType);
   }
 

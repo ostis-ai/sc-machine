@@ -1,6 +1,6 @@
 #include "scg_to_scs_el.hpp"
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::m_nodeTypeSets = {
+const std::unordered_map<std::string, std::string> SCGToSCSElement::m_nodeTypeSets = {
     {"node/-/-/not_define", "sc_node"},
     {"node/-/not_define", "sc_node"},
 
@@ -63,7 +63,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::m_nodeTypeSe
     {"node/var/temp/group", "sc_node_class"},
 };
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::m_backwardNodeTypes = {
+const std::unordered_map<std::string, std::string> SCGToSCSElement::m_backwardNodeTypes = {
     {"node/-/not_define", "node/-/-/not_define"},
     {"node/var/symmetry", "node/var/perm/tuple"},
     {"node/const/general_node", "node/const/perm/general"},
@@ -83,7 +83,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::m_backwardNo
     {"node/var/group", "node/var/perm/group"},
 };
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::m_unsupportedNodeTypeSets = {
+const std::unordered_map<std::string, std::string> SCGToSCSElement::m_unsupportedNodeTypeSets = {
     {"node/const/perm/super_group", "sc_node_super_group"},
 
     {"node/const/temp/general", "sc_node_temp"},
@@ -133,7 +133,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::m_unsupporte
     {"node/meta/temp/super_group", "sc_node_super_group_meta_temp"},
 };
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::m_edgeTypes = {
+const std::unordered_map<std::string, std::string> SCGToSCSElement::m_edgeTypes = {
     {"pair/const/-/perm/noorien", "<=>"},
     {"pair/const/-/perm/orient", "=>"},
     {"pair/const/fuz/perm/orient/membership", "-/>"},
@@ -183,7 +183,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::m_edgeTypes 
     {"pair/var/orient", "_=>"},
     {"pair/var/noorient", "_<=>"}};
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::m_backwardEdgeTypes = {
+const std::unordered_map<std::string, std::string> SCGToSCSElement::m_backwardEdgeTypes = {
     {"pair/const/synonym", "pair/const/-/perm/noorien"},
     {"pair/const/orient", "pair/const/-/perm/orient"},
     {"arc/const/fuz", "pair/const/fuz/perm/orient/membership"},
@@ -204,7 +204,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::m_backwardEd
     {"pair/orient", "pair/-/-/-/orient"},
     {"arc/-/-", "pair/-/-/-/orient"}};
 
-const std::unordered_map<std::string, std::string> ScgToScsElement::m_unsupportedEdgeTypes = {
+const std::unordered_map<std::string, std::string> SCGToSCSElement::m_unsupportedEdgeTypes = {
     {"pair/var/-/temp/noorien", "sc_pair_var_temp_noorient"},
     {"pair/var/-/temp/orient", "sc_pair_var_temp_orient"},
 
@@ -220,7 +220,7 @@ const std::unordered_map<std::string, std::string> ScgToScsElement::m_unsupporte
     {"pair/meta/pos/perm/orient/membership", "sc_pair_meta_pos_perm_orient_membership"},
     {"pair/meta/pos/temp/orient/membership", "sc_pair_meta_pos_temp_orient_membership"}};
 
-std::string ScgToScsElement::m_FindValue(
+std::string SCGToSCSElement::m_FindValue(
     std::unordered_map<std::string, std::string> const & dictionary,
     std::string const & key)
 {
@@ -228,7 +228,43 @@ std::string ScgToScsElement::m_FindValue(
   return (it != dictionary.end()) ? it->second : "";
 }
 
-std::string ScgToScsElement::GetElement(std::string const & scgElement, std::string const & dict)
+bool SCGToSCSElement::ConvertNodeType(std::string const &nodeType, std::string &symbol)
+{
+    symbol = GetElement(nodeType, "NodeTypeSets");
+
+    if (symbol.empty())
+    {
+        symbol = GetElement(GetElement(nodeType, "BackwardNodeTypes"), "NodeTypeSets");
+    }
+
+    if (symbol.empty())
+    {
+        symbol = GetElement(nodeType, "UnsupportedNodeTypeSets");
+        return true;
+    }
+
+    return false;
+}
+
+bool SCGToSCSElement::ConvertEdgeType(std::string const &edgeType, std::string &symbol)
+{
+    symbol = GetElement(edgeType, "EdgeTypes");
+
+    if (symbol.empty())
+    {
+        symbol = GetElement(GetElement(edgeType, "BackwardEdgeTypes"), "EdgeTypes");
+    }
+
+    if (symbol.empty())
+    {
+        symbol = GetElement(edgeType, "UnsupportedEdgeTypes");
+        return true;
+    }
+
+    return false;
+}
+
+std::string SCGToSCSElement::GetElement(std::string const & scgElement, std::string const & dict)
 {
   static const std::unordered_map<std::string, std::unordered_map<std::string, std::string> const *> dictMap = {
       {"NodeTypeSets", &m_nodeTypeSets},
