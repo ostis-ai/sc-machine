@@ -8,6 +8,15 @@
 #include <vector>
 #include <algorithm>
 
+std::string const EQUAL = "=";
+std::string const BLOCK_BEGIN = "[";
+std::string const BLOCK_END = "];;";
+std::string const EDGE_BEGIN = "(";
+std::string const EDGE_END = ");;";
+std::string const CONTOUR_BEGIN = "[*";
+std::string const CONTOUR_END = "*];;";
+std::string const ELEMENT_END = ";;";
+
 class ScsTree
 {
 public:
@@ -25,11 +34,6 @@ public:
   static void PrintDifferences(std::shared_ptr<std::vector<std::pair<std::string, std::string>>> const & differences);
 
 private:
-  std::string const EQUAL = "=";
-  std::string const BLOCK_START = "[";
-  std::string const BLOCK_END = "];;"; 
-
-
   std::string name;
   std::string content;
   std::map<std::string, std::shared_ptr<ScsTree>> children;
@@ -39,12 +43,7 @@ private:
       std::string const & name,
       std::string const & content);
   static std::string Trim(std::string const & str);
-  static bool IsBlockStart(std::string const & line);
-  static bool IsBlockEnd(std::string const & line);
-  static bool IsNodeWithContent(std::string const & line);
-  static bool IsNodeWithoutContent(std::string const & line);
-  static bool IsOpeningBracket(char ch);
-  static bool IsClosingBracket(char ch);
+  static bool Check(std::string const & example, std::string const & line);
 };
 
 std::shared_ptr<ScsTree> ScsTree::AddChildNode(
@@ -72,41 +71,15 @@ std::string ScsTree::Trim(std::string const & str)
   return str.substr(start, end - start + 1);
 }
 
-bool ScsTree::IsBlockStart(std::string const & line)
+inline bool ScsTree::Check(std::string const & example, std::string const & line)
 {
-  return line.find("=") != std::string::npos;
-}
-
-bool ScsTree::IsBlockEnd(std::string const & line)
-{
-  return line.find("*];;") != std::string::npos;
-}
-
-bool ScsTree::IsNodeWithContent(std::string const & line)
-{
-  return line.find(" = ") != std::string::npos;
-}
-
-bool ScsTree::IsNodeWithoutContent(std::string const & line)
-{
-  return !IsBlockStart(line) && !IsBlockEnd(line) && !IsNodeWithContent(line);
-}
-
-bool ScsTree::IsOpeningBracket(char ch)
-{
-  return ch == '[' || ch == '(';
-}
-
-bool ScsTree::IsClosingBracket(char ch)
-{
-  return ch == ']' || ch == ')';
+  return line.find(example) != std::string::npos;
 }
 
 std::shared_ptr<ScsTree> ScsTree::ParseTree(std::string const & input)
 {
   std::istringstream iss(input);
   std::string line;
-
   std::list<std::shared_ptr<ScsTree>> nodeStack;
   auto root = std::make_shared<ScsTree>("root", "");
   auto currentNode = root;
@@ -114,7 +87,6 @@ std::shared_ptr<ScsTree> ScsTree::ParseTree(std::string const & input)
   bool flag = false;
   std::string multiLineContent;
   std::string currentName;
-  int bracketCount = 0;
 
   while (std::getline(iss, line))
   {
@@ -124,72 +96,114 @@ std::shared_ptr<ScsTree> ScsTree::ParseTree(std::string const & input)
 
     if (isContentMultiLine)
     {
-      multiLineContent += "\n" + line;
-      for (char ch : line)
+      if (Check(BLOCK_END, line))
       {
-        if (IsOpeningBracket(ch))
-          bracketCount++;
-        if (IsClosingBracket(ch))
-          bracketCount--;
-      }
-      if (bracketCount == 0)
-      {
+        size_t blockEndPos = line.find(BLOCK_END);
+        multiLineContent += "\n" + line.substr(0, blockEndPos);
+
         currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), currentName, multiLineContent);
         isContentMultiLine = false;
         multiLineContent.clear();
-      }
-      continue;
-    }
 
-    if (IsBlockStart(line))
-    {
-      std::string name = Trim(line.substr(0, line.find(" = [*")));
-      currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
-      nodeStack.push_back(currentNode);
-    }
-    else if (IsBlockEnd(line))
-    {
-      if (!nodeStack.empty())
-        nodeStack.pop_back();
-      currentNode = nodeStack.empty() ? root : nodeStack.back();
-    }
-    else if (IsNodeWithContent(line))
-    {
-      size_t equalPos = line.find(" = ");
-      std::string name = Trim(line.substr(0, equalPos));
-      std::string content = Trim(line.substr(equalPos + 3));
-      bracketCount = 0;
-      for (char ch : content)
-      {
-        if (IsOpeningBracket(ch))
-          bracketCount++;
-        if (IsClosingBracket(ch))
-          bracketCount--;
+        continue;
       }
-      if (bracketCount != 0)
-      {
-        isContentMultiLine = true;
-        multiLineContent = content;
-        currentName = name;
-      }
-      else
-      {
-        currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), name, content);
-      }
+
+      multiLineContent += "\n" + line;
+
+      continue;
     }
     else if (flag)
     {
-      currentNode->content = line;
+      size_t elementEndPos = line.find(ELEMENT_END);
+
+      std::string const content = Trim(line.substr(0, elementEndPos));
+
+      currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), currentName, content);
+
       flag = false;
+      continue;
+    }
+
+    if (Check(EQUAL, line))
+    {
+      size_t equalPos = line.find(EQUAL);
+      std::string const name = Trim(line.substr(0, equalPos));
+
+      if (Check(EDGE_BEGIN, line))
+      {
+        size_t edgeBeginPos = line.find(EDGE_BEGIN) + EDGE_BEGIN.length();
+
+        if (Check(EDGE_END, line))
+        {
+          size_t edgeEndPos = line.find(EDGE_END);
+
+          std::string const content = Trim(line.substr(edgeBeginPos, edgeEndPos - edgeBeginPos));
+
+          currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), name, content);
+
+          continue;
+        }
+        else
+        {
+          currentName = name;
+
+          std::string const content = Trim(line.substr(edgeBeginPos));
+
+          multiLineContent = content;
+          isContentMultiLine = true;
+        }
+      }
+      else if (Check(CONTOUR_BEGIN, line))
+      {
+        currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
+        nodeStack.push_back(currentNode);
+      }
+      else if (Check(BLOCK_BEGIN, line))
+      {
+        size_t blockBeginPos = line.find(BLOCK_BEGIN) + BLOCK_BEGIN.length();
+
+        if (Check(BLOCK_END, line))
+        {
+          size_t blockEndPos = line.find(BLOCK_END);
+
+          std::string const content = Trim(line.substr(blockBeginPos, blockEndPos - blockBeginPos));
+
+          currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), name, content);
+
+          continue;
+        }
+        else
+        {
+          currentName = name;
+
+          std::string const content = Trim(line.substr(blockBeginPos));
+
+          multiLineContent = content;
+          isContentMultiLine = true;
+        }
+      }
+    }
+    else if (Check(CONTOUR_END, line))
+    {
+      nodeStack.pop_back();
+      currentNode = nodeStack.empty() ? root : nodeStack.back();
+    }
+    else if (Check(ELEMENT_END, line))
+    {
+      size_t elementEndPos = line.find(ELEMENT_END);
+
+      std::string const name = Trim(line.substr(0, elementEndPos));
+      currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
     }
     else
     {
-      std::string name = line;
-      currentNode = AddChildNode(nodeStack.empty() ? root : nodeStack.back(), name, "");
-      if (line.find(";;") == std::string::npos)
-      {
-        flag = true;
-      }
+      currentName = Trim(line);
+
+      // Use flag to correct process elements like:
+      // ..el_102182951392320
+      //  => nrel_main_idtf: [ostis];;
+
+      flag = true;
     }
   }
 
