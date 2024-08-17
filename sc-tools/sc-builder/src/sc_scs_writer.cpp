@@ -164,8 +164,8 @@ void SCSWriter::WriteConnector(Buffer & buffer, std::shared_ptr<Connector> const
   }
   if (symbol.empty())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + edgeType);
     symbol = "?" + edgeType + "?";
+    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + edgeType);
   }
 
   const std::string alias = Utils::MakeAlias("edge", connector->getId());
