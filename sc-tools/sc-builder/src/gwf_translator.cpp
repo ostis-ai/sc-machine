@@ -19,11 +19,11 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 {
 }
 
-std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string filePath)
+std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string const & filePath)
 {
   GWFParser parser;
 
-  auto elements = parser.Parse(xmlStr);
+  auto const & elements = parser.Parse(xmlStr);
 
   if (elements.empty())
   {
@@ -31,14 +31,14 @@ std::string GWFTranslator::GwfToScs(const std::string xmlStr, const std::string 
   }
 
   SCSWriter writer;
-  auto const scsStr = writer.Write(elements, filePath);
+  auto const & scsStr = writer.Write(elements, filePath);
 
   return scsStr;
 }
 
 std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::string const & filePath)
 {
-  const std::string scsSource = filePath + ".scs";
+  std::string const scsSource = filePath + ".scs";
 
   std::ofstream outputFile(scsSource, std::ios::binary);
 
@@ -71,7 +71,7 @@ std::string GWFTranslator::XmlFileToString(std::string const & filename)
 {
   xmlInitParser();
 
-  xmlDocPtr doc = xmlReadFile(filename.c_str(), nullptr, 0);
+  xmlDocPtr const & doc = xmlReadFile(filename.c_str(), nullptr, 0);
   if (doc == nullptr)
   {
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "Failed to parse XML file");
@@ -79,7 +79,7 @@ std::string GWFTranslator::XmlFileToString(std::string const & filename)
 
   xmlChar * xmlBuffer;
   int bufferSize;
-  xmlDocDumpFormatMemory(doc, &xmlBuffer, &bufferSize, 1);
+  xmlDocDumpFormatMemory(doc, &xmlBuffer, &bufferSize, 0);
 
   std::string xmlString((char *)xmlBuffer, bufferSize);
 
@@ -94,15 +94,15 @@ bool GWFTranslator::TranslateImpl(Params const & params)
 {
   try
   {
-    const std::string xmlStr = XmlFileToString(params.m_fileName);
+    std::string const xmlStr = XmlFileToString(params.m_fileName);
     if (xmlStr.empty())
     {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Gwf file is empty: " + params.m_fileName);
     }
 
-    const std::string scsStr = GwfToScs(xmlStr, params.m_fileName);
+    std::string const scsStr = GWFToScs(xmlStr, params.m_fileName);
 
-    const std::string scsSource = WriteStringToFile(scsStr, params.m_fileName);
+    std::string const scsSource = WriteStringToFile(scsStr, params.m_fileName);
 
     Params newParams;
     newParams.m_fileName = scsSource;

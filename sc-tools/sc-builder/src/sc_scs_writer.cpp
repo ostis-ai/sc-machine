@@ -64,17 +64,17 @@ const std::string N_REL_SYSTEM_IDTF = "nrel_system_identifier";
 const std::string N_REL_MAIN_IDTF = "nrel_main_idtf";
 
 std::string SCSWriter::Write(
-    std::unordered_map<std::string, std::shared_ptr<SCGElement>> & elementsList,
+    std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elements,
     std::string const & filePath)
 {
   Buffer buffer;
 
-  for (auto & el : elementsList)
+  for (auto const & el : elements)
   {
     CorrectIdtf(buffer, el.second);
   }
 
-  ProcessElementsList(elementsList, buffer, filePath);
+  ProcessElementsList(elements, buffer, filePath);
 
   return buffer.GetValue();
 }
@@ -205,7 +205,7 @@ void SCSWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
 
       if (connector->getSource() == contour)
       {
-        if (checkForNode(connector->getTarget(), contourElements))
+        if (CheckForNode(connector->getTarget(), contourElements))
         {
           continue;
         }
@@ -333,7 +333,7 @@ void SCSWriter::WriteNodeForContour(
   buffer.Write(edgeName + " = (" + contour->getIdtf() + " -> " + node->getIdtf() + ");;\n\n");
 }
 
-void SCSWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> & element)
+void SCSWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> const & element)
 {
   std::regex idtfPatternEng("^[0-9a-zA-Z_]*$");
   std::regex idtfPatternRus("^[0-9a-zA-Z_\\xD0\\x80-\\xD1\\x8F\\xD1\\x90-\\xD1\\x8F\\xD1\\x91\\xD0\\x81*' ]*$");
@@ -399,7 +399,7 @@ void SCSWriter::CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> & eleme
   }
 }
 
-bool SCSWriter::checkForNode(
+bool SCSWriter::CheckForNode(
     std::shared_ptr<SCGElement> refElement,
     std::vector<std::shared_ptr<SCGElement>> contourElements)
 {
