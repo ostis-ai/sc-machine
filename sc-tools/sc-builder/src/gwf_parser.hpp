@@ -246,15 +246,15 @@ private:
   xmlChar const * const STATIC_SECTOR = (xmlChar const *)"staticSector";
   xmlChar const * const CONTENT = (xmlChar const *)"content";
 
-  const std::string ID = "id";
-  const std::string PARENT = "parent";
-  const std::string IDTF = "idtf";
-  const std::string TYPE = "type";
-  const std::string MIME_TYPE = "mime_type";
-  const std::string FILE_NAME = "file_name";
-  const std::string OWNER = "owner";
-  const std::string ID_B = "id_b";
-  const std::string ID_E = "id_e";
+  std::string const ID = "id";
+  std::string const PARENT = "parent";
+  std::string const IDTF = "idtf";
+  std::string const TYPE = "type";
+  std::string const MIME_TYPE = "mime_type";
+  std::string const FILE_NAME = "file_name";
+  std::string const OWNER = "owner";
+  std::string const ID_B = "id_b";
+  std::string const ID_E = "id_e";
 
   std::shared_ptr<Node> CreateNode(
       std::string const & tag,
@@ -262,7 +262,7 @@ private:
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
-      xmlNodePtr & el) const;
+      xmlNodePtr el) const;
 
   std::shared_ptr<Link> CreateLink(
       std::string const & tag,
@@ -270,9 +270,9 @@ private:
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
-      xmlNodePtr & el) const;
+      xmlNodePtr el) const;
 
-  bool HasContent(const xmlNodePtr node) const;
+  bool HasContent(xmlNodePtr const node) const;
 
   std::shared_ptr<Bus> CreateBus(
       std::string const & tag,
@@ -280,7 +280,7 @@ private:
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
-      xmlNodePtr & el) const;
+      xmlNodePtr el) const;
 
   std::shared_ptr<Contour> CreateContour(
       std::string const & id,
@@ -288,7 +288,7 @@ private:
       std::string const & idtf,
       std::string const & type,
       std::string const & tag,
-      xmlNodePtr & el,
+      xmlNodePtr el,
       std::vector<std::unordered_map<std::shared_ptr<Contour>, std::string>> & contoursList) const;
 
   std::shared_ptr<Connector> CreateConnector(
@@ -297,9 +297,9 @@ private:
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
-      xmlNodePtr & el,
-      std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> &
-          connectorsList) const;
+      xmlNodePtr el,
+      std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> & connectorsList)
+      const;
 
   void FillConnector(
       std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>> const & connectorSourceTarget,

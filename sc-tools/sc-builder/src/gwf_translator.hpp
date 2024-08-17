@@ -23,7 +23,7 @@ public:
 
   bool TranslateImpl(Params const & params) override;
 
-  std::string GwfToScs(const std::string xmlStr, const std::string filePath);
+  std::string GWFToScs(std::string const & xmlStr, std::string const & filePath);
   std::string XmlFileToString(std::string const & filename);
 
 private:

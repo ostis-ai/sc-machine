@@ -42,7 +42,7 @@ class SCSWriter
 {
 public:
   std::string Write(
-      std::unordered_map<std::string, std::shared_ptr<SCGElement>> & elementsList,
+      std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elementsList,
       std::string const & filePath);
 
 private:
@@ -61,7 +61,7 @@ private:
       std::shared_ptr<SCGElement> const & node,
       std::shared_ptr<Contour> const & contour);
 
-  void CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> & element);
+  void CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> const & element);
 
-  bool checkForNode(std::shared_ptr<SCGElement> refElement, std::vector<std::shared_ptr<SCGElement>> contourElements);
+  bool CheckForNode(std::shared_ptr<SCGElement> refElement, std::vector<std::shared_ptr<SCGElement>> contourElements);
 };

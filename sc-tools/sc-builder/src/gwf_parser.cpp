@@ -116,9 +116,9 @@ void GWFParser::ProcessStaticSector(
     {
       FillConnector(connector, elements);
     }
-    for (auto & countour : contours)
+    for (auto & contour : contours)
     {
-      FillContour(countour, elements);
+      FillContour(contour, elements);
     }
   }
   catch (utils::ScException const & e)
@@ -133,7 +133,7 @@ std::shared_ptr<Node> GWFParser::CreateNode(
     std::string const & idtf,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr & el) const
+    xmlNodePtr el) const
 {
   return std::make_shared<Node>(id, parent, idtf, type, tag);
 }
@@ -144,7 +144,7 @@ std::shared_ptr<Link> GWFParser::CreateLink(
     std::string const & idtf,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr & el) const
+    xmlNodePtr el) const
 {
   for (xmlNodePtr contentChild = el->children; contentChild; contentChild = contentChild->next)
   {
@@ -176,7 +176,7 @@ std::shared_ptr<Link> GWFParser::CreateLink(
   return nullptr;
 }
 
-bool GWFParser::HasContent(const xmlNodePtr node) const
+bool GWFParser::HasContent(xmlNodePtr const node) const
 {
   if (!node)
   {
@@ -199,7 +199,7 @@ std::shared_ptr<Bus> GWFParser::CreateBus(
     std::string const & idtf,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr & el) const
+    xmlNodePtr el) const
 {
   auto const nodeId = GetXmlPropStr(el, OWNER);
 
@@ -212,7 +212,7 @@ std::shared_ptr<Contour> GWFParser::CreateContour(
     std::string const & idtf,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr & el,
+    xmlNodePtr el,
     std::vector<std::unordered_map<std::shared_ptr<Contour>, std::string>> & contoursList) const
 {
   auto contour = std::make_shared<Contour>(id, parent, idtf, type, tag);
@@ -231,8 +231,9 @@ std::shared_ptr<Connector> GWFParser::CreateConnector(
     std::string const & idtf,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr & el,
-    std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> & connectorsList) const
+    xmlNodePtr el,
+    std::vector<std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>>> & connectorsList)
+    const
 {
   auto const sourceId = GetXmlPropStr(el, ID_B);
   auto const targetId = GetXmlPropStr(el, ID_E);
@@ -252,7 +253,7 @@ void GWFParser::FillConnector(
     std::unordered_map<std::shared_ptr<Connector>, std::pair<std::string, std::string>> const & connectorSourceTarget,
     std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elements)
 {
-  for (auto & pair : connectorSourceTarget)
+  for (auto const & pair : connectorSourceTarget)
   {
     std::shared_ptr<Connector> const & connector = pair.first;
     std::pair<std::string, std::string> const & sourceAndTarget = pair.second;
@@ -284,7 +285,7 @@ void GWFParser::FillContour(
     std::unordered_map<std::shared_ptr<Contour>, std::string> const & contourAndId,
     std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elements)
 {
-  for (auto & pair : contourAndId)
+  for (auto const & pair : contourAndId)
   {
     std::shared_ptr<Contour> const & contour = pair.first;
     std::string const & id = pair.second;
@@ -322,9 +323,9 @@ std::unique_ptr<xmlChar, XmlCharDeleter> GWFParser::GetXmlProp(xmlNodePtr node, 
 
 std::string GWFParser::GetXmlPropStr(xmlNodePtr node, std::string const & propName) const
 {
-  const std::unique_ptr<xmlChar, XmlCharDeleter> prop = GetXmlProp(node, propName);
+  std::unique_ptr<xmlChar, XmlCharDeleter> const prop = GetXmlProp(node, propName);
 
-  const std::string propStr = XmlCharToString(prop);
+  std::string const propStr = XmlCharToString(prop);
 
   return propStr;
 }

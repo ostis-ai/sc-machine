@@ -1,5 +1,4 @@
-#ifndef SCS_TREE_HPP
-#define SCS_TREE_HPP
+#pragma once
 
 #include <string>
 #include <map>
@@ -26,6 +25,11 @@ public:
   static void PrintDifferences(std::shared_ptr<std::vector<std::pair<std::string, std::string>>> const & differences);
 
 private:
+  std::string const EQUAL = "=";
+  std::string const BLOCK_START = "[";
+  std::string const BLOCK_END = "];;"; 
+
+
   std::string name;
   std::string content;
   std::map<std::string, std::shared_ptr<ScsTree>> children;
@@ -59,13 +63,18 @@ std::shared_ptr<ScsTree> ScsTree::AddChildNode(
 std::string ScsTree::Trim(std::string const & str)
 {
   auto start = str.find_first_not_of(" \t");
+  if (start == std::string::npos)
+  {
+    return "";
+  }
+
   auto end = str.find_last_not_of(" \t");
-  return (start == std::string::npos || end == std::string::npos) ? "" : str.substr(start, end - start + 1);
+  return str.substr(start, end - start + 1);
 }
 
 bool ScsTree::IsBlockStart(std::string const & line)
 {
-  return line.find(" = [*") != std::string::npos;
+  return line.find("=") != std::string::npos;
 }
 
 bool ScsTree::IsBlockEnd(std::string const & line)
@@ -97,7 +106,8 @@ std::shared_ptr<ScsTree> ScsTree::ParseTree(std::string const & input)
 {
   std::istringstream iss(input);
   std::string line;
-  std::vector<std::shared_ptr<ScsTree>> nodeStack;
+
+  std::list<std::shared_ptr<ScsTree>> nodeStack;
   auto root = std::make_shared<ScsTree>("root", "");
   auto currentNode = root;
   bool isContentMultiLine = false;
@@ -114,7 +124,7 @@ std::shared_ptr<ScsTree> ScsTree::ParseTree(std::string const & input)
 
     if (isContentMultiLine)
     {
-      multiLineContent += " " + line;
+      multiLineContent += "\n" + line;
       for (char ch : line)
       {
         if (IsOpeningBracket(ch))
@@ -268,4 +278,3 @@ std::shared_ptr<std::vector<std::pair<std::string, std::string>>> ScsTree::Compa
 
   return differences->empty() ? nullptr : differences;
 }
-#endif  // SCS_TREE_HPP
