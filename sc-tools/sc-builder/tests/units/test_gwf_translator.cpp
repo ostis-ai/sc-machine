@@ -119,7 +119,7 @@ std::string ReadFileToString(std::string const & filePath)
   }
 }
 
-std::pair<std::shared_ptr<ScsTree>, std::shared_ptr<ScsTree>> CompareScsFiles(
+std::pair<std::shared_ptr<ScsTree>, std::shared_ptr<ScsTree>> CompareSCSFiles(
     std::string const & fileName,
     GWFTranslator translator)
 {
@@ -137,7 +137,6 @@ std::pair<std::shared_ptr<ScsTree>, std::shared_ptr<ScsTree>> CompareScsFiles(
   return std::make_pair(exampleTree, resultTree);
 }
 
-/*
 TEST_F(GWFTranslatorTest, EmptyFile)
 {
   GWFTranslator translator(*m_ctx);
@@ -161,63 +160,31 @@ TEST_F(GWFTranslatorTest, EmptyContour)
 {
   GWFTranslator translator(*m_ctx);
 
-  const std::string filePath = BASE_TEST_PATH "empty_contour.gwf";
+  auto const & trees = CompareSCSFiles("empty_contour.gwf", translator);
+  bool const diff = ScsTree::CompareTrees(trees)->empty();
 
-  const std::string gwfStr = translator.XmlFileToString(filePath);
-  const std::string scsStr = translator.GWFToScs(gwfStr, BASE_TEST_PATH);
-
-  const std::string exampleScs = ReadFileToString(BASE_TEST_PATH "empty_contour.gwf.scs");
-
-  auto const exampleTree = ScsTree::ParseTree(exampleScs);
-  auto const resultTree = ScsTree::ParseTree(scsStr);
-
-  EXPECT_FALSE(ScsTree::CompareTrees(exampleTree, resultTree));
+  EXPECT_TRUE(diff);
 }
 
 TEST_F(GWFTranslatorTest, LotOfContours)
 {
   GWFTranslator translator(*m_ctx);
 
-  const auto & trees = CompareScsFiles("lot_of_contours", translator);
+  auto const & trees = CompareSCSFiles("lot_of_contours.gwf", translator);
+  bool const diff = ScsTree::CompareTrees(trees)->empty();
 
-  //EXPECT_FALSE(ScsTree::CompareTrees(exampleTree, resultTree));
+  EXPECT_TRUE(diff);
 }
 
 TEST_F(GWFTranslatorTest, ContentTypes)
 {
   GWFTranslator translator(*m_ctx);
 
-  const std::string filePath = BASE_TEST_PATH "content_types.gwf";
+  auto const & trees = CompareSCSFiles("content_types.gwf", translator);
+  bool const diff = ScsTree::CompareTrees(trees)->empty();
 
-  const std::string gwfStr = translator.XmlFileToString(filePath);
-  const std::string scsStr = translator.GWFToScs(gwfStr, BASE_TEST_PATH);
-
-  const std::string exampleScs = ReadFileToString(BASE_TEST_PATH "content_types.gwf.scs");
-
-  auto const exampleTree = ScsTree::ParseTree(exampleScs);
-  auto const resultTree = ScsTree::ParseTree(scsStr);
+  EXPECT_TRUE(diff);
 
   EXPECT_TRUE(CompareFiles(BASE_TEST_PATH "ostis.png", BASE_TEST_PATH "ostis_ref.png"));
-
   std::filesystem::remove(BASE_TEST_PATH "ostis.png");
-
-  EXPECT_FALSE(ScsTree::CompareTrees(exampleTree, resultTree));
-}
-*/
-
-TEST_F(GWFTranslatorTest, ContentTypes)
-{
-  GWFTranslator translator(*m_ctx);
-
-  const std::string filePath = BASE_TEST_PATH "lot_of_contours.gwf";
-
-  const std::string gwfStr = translator.XmlFileToString(filePath);
-  const std::string scsStr = translator.GWFToScs(gwfStr, BASE_TEST_PATH);
-
-  const std::string exampleScs = ReadFileToString(BASE_TEST_PATH "lot_of_contours.gwf.scs");
-
-  auto const exampleTree = ScsTree::ParseTree(exampleScs);
-  auto const resultTree = ScsTree::ParseTree(scsStr);
-
-  ScsTree::PrintTree(exampleTree);
 }

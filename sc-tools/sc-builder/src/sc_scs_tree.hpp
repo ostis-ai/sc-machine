@@ -28,10 +28,9 @@ public:
 
   static std::shared_ptr<ScsTree> ParseTree(std::string const & input);
   static void PrintTree(std::shared_ptr<ScsTree> const & node, int level = 0);
-  static std::shared_ptr<std::vector<std::pair<std::string, std::string>>> CompareTrees(
-      std::shared_ptr<ScsTree> const & node1,
-      std::shared_ptr<ScsTree> const & node2);
-  static void PrintDifferences(std::shared_ptr<std::vector<std::pair<std::string, std::string>>> const & differences);
+  static std::shared_ptr<std::list<std::pair<std::string, std::string>>> CompareTrees(
+      std::pair<std::shared_ptr<ScsTree>, std::shared_ptr<ScsTree>> const & nodes);
+  static void PrintDifferences(std::shared_ptr<std::list<std::pair<std::string, std::string>>> const & differences);
 
 private:
   std::string name;
@@ -221,7 +220,7 @@ void ScsTree::PrintTree(std::shared_ptr<ScsTree> const & node, int level)
   }
 }
 
-void ScsTree::PrintDifferences(std::shared_ptr<std::vector<std::pair<std::string, std::string>>> const & differences)
+void ScsTree::PrintDifferences(std::shared_ptr<std::list<std::pair<std::string, std::string>>> const & differences)
 {
   if (differences == nullptr)
   {
@@ -236,14 +235,17 @@ void ScsTree::PrintDifferences(std::shared_ptr<std::vector<std::pair<std::string
   }
 }
 
-std::shared_ptr<std::vector<std::pair<std::string, std::string>>> ScsTree::CompareTrees(
-    std::shared_ptr<ScsTree> const & node1,
-    std::shared_ptr<ScsTree> const & node2)
+std::shared_ptr<std::list<std::pair<std::string, std::string>>> ScsTree::CompareTrees(
+    std::pair<std::shared_ptr<ScsTree>, std::shared_ptr<ScsTree>> const & nodes)
 {
-  auto differences = std::make_shared<std::vector<std::pair<std::string, std::string>>>();
+  auto differences = std::make_shared<std::list<std::pair<std::string, std::string>>>();
+
+  auto const & node1 = nodes.first;
+  auto const & node2 = nodes.second;
 
   if (!node1 && !node2)
-    return nullptr;
+    return differences;
+
   if (!node1 || !node2)
   {
     differences->emplace_back(node1 ? node1->name : "null", node2 ? node2->name : "null");
@@ -262,19 +264,21 @@ std::shared_ptr<std::vector<std::pair<std::string, std::string>>> ScsTree::Compa
 
   if (node1->children.size() != node2->children.size())
   {
-    differences->emplace_back("children size mismatch", "children size mismatch");
+    differences->emplace_back(
+        "children size " + std::to_string(node1->children.size()),
+        "children size " + std::to_string(node2->children.size()));
   }
 
-  for (auto const & child : node1->children)
+  for (auto const & child1 : node1->children)
   {
-    auto it = node2->children.find(child.first);
+    auto it = node2->children.find(child1.first);
     if (it == node2->children.end())
     {
-      differences->emplace_back(child.first, "missing in node2");
+      differences->emplace_back(child1.first, "missing");
     }
     else
     {
-      auto childDifferences = ScsTree::CompareTrees(child.second, it->second);
+      auto childDifferences = ScsTree::CompareTrees({child1.second, it->second});
       if (childDifferences)
       {
         differences->insert(differences->end(), childDifferences->begin(), childDifferences->end());
@@ -282,13 +286,13 @@ std::shared_ptr<std::vector<std::pair<std::string, std::string>>> ScsTree::Compa
     }
   }
 
-  for (auto const & child : node2->children)
+  for (auto const & child2 : node2->children)
   {
-    if (node1->children.find(child.first) == node1->children.end())
+    if (node1->children.find(child2.first) == node1->children.end())
     {
-      differences->emplace_back("missing in node1", child.first);
+      differences->emplace_back("missing in node1", child2.first);
     }
   }
 
-  return differences->empty() ? nullptr : differences;
+  return differences;
 }
