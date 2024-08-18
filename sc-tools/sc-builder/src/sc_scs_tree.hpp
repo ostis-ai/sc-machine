@@ -8,14 +8,7 @@
 #include <vector>
 #include <algorithm>
 
-std::string const EQUAL = "=";
-std::string const BLOCK_BEGIN = "[";
-std::string const BLOCK_END = "];;";
-std::string const EDGE_BEGIN = "(";
-std::string const EDGE_END = ");;";
-std::string const CONTOUR_BEGIN = "[*";
-std::string const CONTOUR_END = "*];;";
-std::string const ELEMENT_END = ";;";
+#include "gwf_translator_const.hpp"
 
 class ScsTree
 {
@@ -44,6 +37,8 @@ private:
   static std::string Trim(std::string const & str);
   static bool Check(std::string const & example, std::string const & line);
 };
+
+using namespace Constants;
 
 std::shared_ptr<ScsTree> ScsTree::AddChildNode(
     std::shared_ptr<ScsTree> parent,

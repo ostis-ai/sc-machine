@@ -1,5 +1,7 @@
 #include "gwf_parser.hpp"
 
+using namespace Constants;
+
 std::unordered_map<std::string, std::shared_ptr<SCGElement>> GWFParser::Parse(std::string const & xmlStr)
 {
   try
@@ -77,7 +79,7 @@ void GWFParser::ProcessStaticSector(
 
         std::shared_ptr<SCGElement> scgElement;
 
-        if (tag == "node")
+        if (tag == NODE)
         {
           if (HasContent(child))
           {
@@ -88,15 +90,15 @@ void GWFParser::ProcessStaticSector(
             scgElement = CreateNode(id, parent, idtf, type, tag, child);
           }
         }
-        else if (tag == "bus")
+        else if (tag == BUS)
         {
           scgElement = CreateBus(id, parent, idtf, type, tag, child);
         }
-        else if (tag == "contour")
+        else if (tag == CONTOUR)
         {
           scgElement = CreateContour(id, parent, idtf, type, tag, child, contours);
         }
-        else if (tag == "pair" || tag == "arc")
+        else if (tag == PAIR || tag == ARC)
         {
           scgElement = CreateConnector(id, parent, idtf, type, tag, child, connectors);
         }
