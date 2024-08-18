@@ -88,13 +88,19 @@ void SCSWriter::ProcessElementsList(
     for (auto const & element : elementsList)
     {
       auto const & tag = element.second->getTag();
+
       if (tag == NODE || tag == BUS)
       {
+        // The type of each node must be specified
         WriteNode(buffer, element.second, filePath);
         continue;
       }
 
       auto const & parent = element.second->getParent();
+
+      // If an element has a parent, there must be a terminal ancestor element that has no parent
+      // By starting with ancestors, we ensure that all elements are covered
+
       if (parent == NO_PARENT)
       {
         if (tag == PAIR || tag == ARC)
@@ -184,6 +190,9 @@ void SCSWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
 
     if (tag == NODE || tag == BUS)
     {
+      // In SCS, single nodes cannot be specified within a contour
+      // Therefore, their connections must be explicitly defined using a connector
+
       WriteNodeForContour(buffer, element, contour);
     }
     else if (tag == PAIR || tag == ARC)
@@ -210,6 +219,7 @@ void SCSWriter::WriteContour(Buffer & buffer, std::shared_ptr<Contour> const & c
       SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Uncorrect element tag " + tag);
     }
   }
+
   contourBuffer.AddTabs(tabLevel);
   buffer.Write(
       contour->getIdtf() + SPACE + EQUAL + SPACE + OPEN_CONTOUR + NEWLINE + contourBuffer.GetValue() + CLOSE_CONTOUR
@@ -233,15 +243,19 @@ void SCSWriter::WriteLink(Buffer & buffer, std::shared_ptr<Link> const & link, s
 
   switch (contentType)
   {
+  // Content is string
   case 1:
     contentRes = contentData;
     break;
+  // Content is int number
   case 2:
     contentRes = DOUBLE_QUOTE + INT64 + contentData + DOUBLE_QUOTE;
     break;
+  // Content is float number
   case 3:
     contentRes = DOUBLE_QUOTE + FLOAT + contentData + DOUBLE_QUOTE;
     break;
+  // Content is image (.png)
   case 4:
   {
     std::ofstream file(fullPath, std::ios::binary);
@@ -303,6 +317,8 @@ void SCSWriter::WriteNodeForContour(
     std::shared_ptr<Contour> const & contour)
 {
   size_t counter = 1;
+  // Counter of multiple arcs belonging to a node to a contour
+
   auto & elements = contour->getElements();
 
   elements.erase(

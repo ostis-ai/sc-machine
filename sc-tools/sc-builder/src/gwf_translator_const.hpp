@@ -54,6 +54,16 @@ std::string const EDGE_END = ");;";
 std::string const CONTOUR_BEGIN = "[*";
 std::string const CONTOUR_END = "*];;";
 
+std::string const ID = "id";
+std::string const PARENT = "parent";
+std::string const IDTF = "idtf";
+std::string const TYPE = "type";
+std::string const MIME_TYPE = "mime_type";
+std::string const FILE_NAME = "file_name";
+std::string const OWNER = "owner";
+std::string const ID_B = "id_b";
+std::string const ID_E = "id_e";
+
 std::string const NO_CONTENT = "0";
 std::string const NO_PARENT = "0";
 }  // namespace Constants

@@ -163,7 +163,7 @@ std::shared_ptr<Link> GWFParser::CreateLink(
       }
       else if (contentType == "4")
       {
-        // Content in binary format
+        // Content in binary format (image)
         contentData = ScBase64::Decode(contentData);
       }
       else
