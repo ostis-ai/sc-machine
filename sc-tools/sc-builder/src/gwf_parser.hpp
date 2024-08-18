@@ -247,16 +247,6 @@ private:
   xmlChar const * const STATIC_SECTOR = (xmlChar const *)"staticSector";
   xmlChar const * const CONTENT = (xmlChar const *)"content";
 
-  std::string const ID = "id";
-  std::string const PARENT = "parent";
-  std::string const IDTF = "idtf";
-  std::string const TYPE = "type";
-  std::string const MIME_TYPE = "mime_type";
-  std::string const FILE_NAME = "file_name";
-  std::string const OWNER = "owner";
-  std::string const ID_B = "id_b";
-  std::string const ID_E = "id_e";
-
   std::shared_ptr<Node> CreateNode(
       std::string const & tag,
       std::string const & id,
