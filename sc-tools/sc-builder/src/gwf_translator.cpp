@@ -10,8 +10,7 @@
 
 #include <sc-memory/utils/sc_exec.hpp>
 
-#include "gwf_parser.hpp"
-#include "sc_scs_writer.hpp"
+using namespace Constants;
 
 GWFTranslator::GWFTranslator(ScMemoryContext & context)
   : Translator(context)
@@ -23,7 +22,7 @@ std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string cons
 {
   GWFParser parser;
 
-  auto const & elements = parser.Parse(xmlStr);
+  auto const elements = parser.Parse(xmlStr);
 
   if (elements.empty())
   {
@@ -31,14 +30,14 @@ std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string cons
   }
 
   SCSWriter writer;
-  auto const & scsStr = writer.Write(elements, filePath);
+  auto const scsStr = writer.Write(elements, filePath);
 
   return scsStr;
 }
 
 std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::string const & filePath)
 {
-  std::string const scsSource = filePath + ".scs";
+  std::string const & scsSource = filePath + SCS_EXTENTION;
 
   std::ofstream outputFile(scsSource, std::ios::binary);
 

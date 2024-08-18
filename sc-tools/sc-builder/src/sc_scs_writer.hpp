@@ -18,7 +18,7 @@ public:
   Buffer();
 
   void Write(std::string const & s);
-  void AddTabs(std::size_t count);
+  void AddTabs(std::size_t const & count);
 
   std::string GetValue() const;
 
@@ -46,8 +46,6 @@ public:
       std::string const & filePath);
 
 private:
-  std::unordered_map<std::string, std::shared_ptr<SCGElement>> writtenList;
-
   void ProcessElementsList(
       std::unordered_map<std::string, std::shared_ptr<SCGElement>> const & elementsList,
       Buffer & buffer,
@@ -63,5 +61,7 @@ private:
 
   void CorrectIdtf(Buffer & buffer, std::shared_ptr<SCGElement> const & element);
 
-  bool CheckForNode(std::shared_ptr<SCGElement> refElement, std::vector<std::shared_ptr<SCGElement>> contourElements);
+  bool CheckForNode(
+      std::shared_ptr<SCGElement> const refElement,
+      std::vector<std::shared_ptr<SCGElement>> const & contourElements);
 };

@@ -228,40 +228,40 @@ std::string SCGToSCSElement::m_FindValue(
   return (it != dictionary.end()) ? it->second : "";
 }
 
-bool SCGToSCSElement::ConvertNodeType(std::string const &nodeType, std::string &symbol)
+bool SCGToSCSElement::ConvertNodeType(std::string const & nodeType, std::string & symbol)
 {
-    symbol = GetElement(nodeType, "NodeTypeSets");
+  symbol = GetElement(nodeType, "NodeTypeSets");
 
-    if (symbol.empty())
-    {
-        symbol = GetElement(GetElement(nodeType, "BackwardNodeTypes"), "NodeTypeSets");
-    }
+  if (symbol.empty())
+  {
+    symbol = GetElement(GetElement(nodeType, "BackwardNodeTypes"), "NodeTypeSets");
+  }
 
-    if (symbol.empty())
-    {
-        symbol = GetElement(nodeType, "UnsupportedNodeTypeSets");
-        return true;
-    }
+  if (symbol.empty())
+  {
+    symbol = GetElement(nodeType, "UnsupportedNodeTypeSets");
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
-bool SCGToSCSElement::ConvertEdgeType(std::string const &edgeType, std::string &symbol)
+bool SCGToSCSElement::ConvertEdgeType(std::string const & edgeType, std::string & symbol)
 {
-    symbol = GetElement(edgeType, "EdgeTypes");
+  symbol = GetElement(edgeType, "EdgeTypes");
 
-    if (symbol.empty())
-    {
-        symbol = GetElement(GetElement(edgeType, "BackwardEdgeTypes"), "EdgeTypes");
-    }
+  if (symbol.empty())
+  {
+    symbol = GetElement(GetElement(edgeType, "BackwardEdgeTypes"), "EdgeTypes");
+  }
 
-    if (symbol.empty())
-    {
-        symbol = GetElement(edgeType, "UnsupportedEdgeTypes");
-        return true;
-    }
+  if (symbol.empty())
+  {
+    symbol = GetElement(edgeType, "UnsupportedEdgeTypes");
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 std::string SCGToSCSElement::GetElement(std::string const & scgElement, std::string const & dict)
