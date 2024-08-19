@@ -38,6 +38,7 @@ std::string const INT64 = "int64:";
 std::string const FLOAT = "float:";
 std::string const FILE_PREFIX = "file://";
 std::string const EL_PREFIX = "..el";
+std::string const EL_VAR_PREFIX = ".._el";
 std::string const SCS_EXTENTION = ".scs";
 
 std::string const OPEN_PARENTHESIS = "(";
