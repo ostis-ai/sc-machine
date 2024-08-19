@@ -29,7 +29,7 @@ std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string cons
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "There are no elements in this file " + filePath);
   }
 
-  SCSWriter writer;
+  SCsWriter writer;
   auto const scsStr = writer.Write(elements, filePath);
 
   return scsStr;
