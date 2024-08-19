@@ -81,11 +81,8 @@ std::string StringUtils::ReplaceAll(
 {
   std::string result = source;
   std::string::size_type pos = 0;
-  while (true)
+  while ((pos = result.find(replaceWhat, pos)) != std::string::npos)
   {
-    pos = result.find(replaceWhat, pos);
-    if (pos == std::string::npos)
-      break;
     result.replace(pos, replaceWhat.size(), replaceWithWhat);
     pos += replaceWithWhat.size();
   }
