@@ -6,11 +6,36 @@
 
 This API allows to handle users and their permissions in knowledge base.
 
-Users interact with ostis-systems. Users can be other systems, agents or people. All users of an ostis-system can 
-perform actions on its knowledge base. There are six classes of user actions in knowledge base. Before a user action is 
-performed, it is checked whether the user has permissions to perform actions of the specified class.
+## **What are user permissions?**
 
-Description of action classes that users of ostis-system can perform in its knowledge base:
+Users interact with ostis-systems. Users can be other systems, agents or people. All users of an ostis-system can perform actions on its knowledge base. There are six classes of user actions in knowledge base. Before a user action is  performed, it is checked whether the user has permissions to perform actions of the specified class.
+
+By default, user permissions are not handled by sc-machine. This is configured via the sc-machine config (`<config-name>.ini`). To enable user permissions handling in the sc-machine, go to the group `[sc-memory]` and set `user_mode` as `true`.
+
+```ini
+[sc-memory]
+...
+user_mode = true
+...
+```
+
+## **How are user permissions handled?**
+
+You can only work with memory through methods provided in `ScMemoryContext`. Each object of this class can be considered as an object that handles information about a user (including his permissions) when that user invokes methods through that object.
+
+You can't create object of `ScMemoryContext` with providing user. This happens automatically. When some user initiates a sc-event, an object of `ScMemoryContext` with this user is created for the agent that reacted to this sc-event. After your agent uses this context to call sc-memory methods.
+
+You can get user from object of context, if you need to handle this user.
+
+```cpp
+ScAddr const & userAddr = context.GetUser();
+```
+
+In order for a user to successfully execute a method from `ScMemoryContext`, it is necessary that the knowledge base for that user specifies that it can perform the class of actions that corresponds to that method.
+
+## **Action classes used to handle user permissions**
+
+Description of action classes that users of ostis-system can perform in its knowledge base is represented below:
 
 <table>
   <thead>
@@ -61,7 +86,7 @@ Description of action classes that users of ostis-system can perform in its know
   </tbody>
 </table>
 
-Description of ScMemoryContext API methods and user permissions required to execute these methods:
+Each core method of [**C++ Core API**](../core/api.md) checks user permissions. All methods of *C++ Extended API* use methods of *C++ Core API*. Description of ScMemoryContext API methods and user permissions required to execute these methods is represented below:
 
 <table>
   <thead>
@@ -154,8 +179,9 @@ Description of ScMemoryContext API methods and user permissions required to exec
   </tbody>
 </table>
 
-Depending on where the user can perform actions in the knowledge base, their permissions are divided into global and 
-local permissions:
+## **Global and local user permissions**
+
+Depending on where the user can perform actions in the knowledge base, their permissions are divided into global and local permissions:
 
 * global permissions is permissions over entire knowledge base;
 * local permissions is permissions in some part (sc-structure) of knowledge base.
@@ -342,23 +368,30 @@ nrel_users_set_action_class_within_sc_structure
   </tr>
 </table>
 
-!!! note
-    You can use any other action class (`action_generate_in_sc_memory`, `action_erase_from_sc_memory`, `action_read_permissions_from_sc_memory`, `action_generate_permissions_in_sc_memory` or `action_erase_permissions_from_sc_memory`) instead of `action_read_from_sc_memory`.
+In these examples, you can use any other action class (`action_generate_in_sc_memory`, `action_erase_from_sc_memory`, `action_read_permissions_from_sc_memory`, `action_generate_permissions_in_sc_memory` or `action_erase_permissions_from_sc_memory`) instead of `action_read_from_sc_memory`.
+
+All sc-arcs from permissions classes (relations) must be permanent or temporary. All sc-arcs from user groups (classes or sets) must be permanent or temporary.
 
 !!! note
-    If the knowledge base does not explicitly specify permissions for a user, it is tantamount to the user doesn't have them.
+    If the knowledge base does not explicitly specify permissions for a user, it is equivalent to saying that this user does not have them.
 
 !!! note
-    In order to erase permissions for a user it is enough to erase the access arc from the relation that indicated permissions.
-    
+    In order to erase permissions for a user it is enough to erase an access sc-arc from the relation that indicated permissions.
+  
 !!! note
+    In the sc-machine there is a global system context -- `ScMemory::ms_globalContext`, that has all permissions. You can use it to update permissions that can be used to read, update or erase permissions for other users.
+
+!!! warning
     Erasing a positive access sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically creates a negative access sc-arc between the given relation and the sc-arc between the user and the action class.
-    Creating a positive access sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically erasing all negative access sc-arcs between the given relation and the sc-arc between the user and the action class.
+
+!!! warning
+    Creating a positive access sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically erases all negative access sc-arcs between the given relation and the sc-arc between the user and the action class.
 
 ---
 
-Both global and local permissions can be described for the same user. It is important to know the logic of how they work 
-together. For example, concrete user wants to handle some sc-construction. There may be several cases:
+## **Compatibility of global and local user permissions**
+
+Both global and local permissions can be described for the same user. It is important to know the logic of how they work together. For example, concrete user wants to handle some sc-construction. There may be several cases:
 
 <table>
   <thead>
@@ -416,6 +449,139 @@ together. For example, concrete user wants to handle some sc-construction. There
   </tbody>
 </table>
 
+---
+
+## **Examples of using user permissions**
+
+If you want to update permissions for a user, then you can describe them in the knowledge base in any format convenient for you (SCs-code or SCg-code) or do it programly.
+
+### **Example for adding (updating) user permissions**
+
+If you want to add permissions for user constantly, specify permissions for this user in the knowledge base. See examples of local and global user permissions above.
+
+To do this programly you can create waiter to wait sc-event of adding outgoing sc-arc from permissions class and add permissions for this user. After waiting this sc-event, your user will have new user permissions.
+
+```cpp
+...
+// Find a user, for whom you need to add new permissions.
+ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+// Find a structure, within which the user should have permissions.
+ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
+
+// Before adding new user permissions, specify that user doesn't have these
+// permissions. This way, you can subscribe to sc-event of erasing negative 
+// sc-arc, because when you add new permissions for user, all existing 
+// negative sc-arcs to  permissions are erased. This logic will help you to 
+// wait for user's permissions will be changed.
+ScAddr const & _actionClassArcAddr = context.CreateEdge(
+  ScType::EdgeDCommonConst, 
+  ScKeynodes::action_generate_in_sc_memory, 
+  structureAddr);
+ScAddr const & _userArcAddr = context.CreateEdge(
+  ScType::EdgeDCommonConst, 
+  userAddr1, 
+  _actionClassArcAddr);
+context.CreateEdge(
+  ScType::EdgeAccessConstNegTemp, 
+  ScKeynodes::nrel_user_action_class_within_sc_structure, 
+  _userArcAddr);
+
+// Create sc-event waiter to wait adding new permissions for specified user.
+// You should subscribe to sc-event of erasing negative sc-arc. 
+// Negative sc-arc is erased when you added new permissions for user. 
+auto eventWaiter 
+  = context.CreateEventWaiter<
+    ScEventEraseOutgoingArc<ScType::EdgeAccessConstNegTemp>>(
+  ScKeynodes::nrel_user_action_class_within_sc_structure,
+  [&]() -> void
+  {
+    // Update user permissions here.
+    ScAddr const & actionClassArcAddr = context.CreateEdge(
+      ScType::EdgeDCommonConst, 
+      ScKeynodes::action_generate_in_sc_memory, 
+      structureAddr);
+    ScAddr const & userArcAddr = context.CreateEdge(
+      ScType::EdgeDCommonConst, 
+      userAddr1, 
+      actionClassArcAddr);
+    context.CreateEdge(
+      ScType::EdgeAccessConstPosTemp, 
+      ScKeynodes::nrel_user_action_class_within_sc_structure, 
+      userArcAddr);
+    // You should create sc-arc from permissions class at 
+    // the end of this callback.
+
+    // And note, that if `context` user doesn't have permissions to create
+    // permissions in sc-memory for other users, you should to update 
+    // permissions for user of `context` or use `ScMemory::ms_globalContext` 
+    // that has all permissions, by default.
+  });
+
+// After creation, call method `Wait` and specify time while you 
+// will wait sc-event for specified subscription sc-element
+eventWaiter->Wait(200); // milliseconds
+// By default, this wait time equals to 5000 milliseconds.
+// You will wait until sc-event occurs or until specified time expires.
+```
+
+Yes, this way of waiting for permissions to change is complicated, but it ensures that the NOT factors in the user information are accounted for. In the future, transaction mechanisms will be implemented in the ыс0machine to simplify its API.
+
+### **Example for erasing user permissions**
+
+To erase permissions for a user, you must erase sc-arc from permissions class.
+
+```cpp
+...
+// Find a user, for whom you need to erase permissions.
+ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+// Find a structure, within which the user should no longer have rights
+ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
+// Create sc-event waiter to wait erasing permissions for specified user. 
+// You should subscribe to sc-event of adding negative sc-arc. 
+// Negative sc-arc is added when you erases user permissions. 
+auto eventWaiter 
+  = context.CreateEventWaiter<
+    ScEventAddOutgoingArc<ScType::EdgeAccessConstNegTemp>>(
+  ScKeynodes::nrel_user_action_class_within_sc_structure,
+  [&]() -> void
+  {
+    // Update user permissions here.
+    ScTemplate permissionsTemplate;
+    permissionsTemplate.Triple(
+      ScKeynodes::action_generate_in_sc_memory,
+      ScType::EdgeDCommonVar >> "_action_class_arc",  
+      structureAddr
+    );
+    permissionsTemplate.Quintuple(
+      userAddr1, 
+      ScType::EdgeDCommonVar,
+      "_action_class_arc",
+      ScType::EdgeAccessVarPosTemp >> "_permissions_arc",
+      ScKeynodes::nrel_user_action_class_within_sc_structure 
+    )
+    ScTemplateSearchResult result;
+    if (context.HelperSearchTemplate(permissionsTemplate, result))
+    {
+      context.EraseElement(result[0]["_permissions_arc"]);
+      // You should erase sc-arc from permissions class at 
+      // the end of this callback.
+    }
+
+    // And note, that if `context` user doesn't have permissions to read
+    // permissions in sc-memory for other users, you should to update 
+    // permissions for user of `context` or use `ScMemory::ms_globalContext` 
+    // that has all permissions, by default.
+  });
+
+// After creation, call method `Wait` and specify time while you 
+// will wait sc-event for specified subscription sc-element
+eventWaiter->Wait(200); // milliseconds
+// By default, this wait time equals to 5000 milliseconds.
+// You will wait until sc-event occurs or until specified time expires.
+```
+
+These examples can be reused for any of permissions classes described above.
+
+---
+
 ## **Frequently Asked Questions**
-
-
