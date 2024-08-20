@@ -64,10 +64,10 @@ struct _sc_iterator3
   sc_bool finished;
 };
 
-/*! Create iterator to find output arcs for specified element
- * @param el sc-addr of element to iterate output arcs
- * @param arc_type Type of output arc to iterate (0 - all types)
- * @param end_type Type of end element for output arcs, to iterate
+/*! Create iterator to find outgoing sc-arcs for specified element
+ * @param el sc-addr of element to iterate outgoing sc-arcs
+ * @param arc_type Type of outgoing sc-arc to iterate (0 - all types)
+ * @param end_type Type of end element for outgoing sc-arcs, to iterate
  * @return If iterator created, then return pointer to it; otherwise return null
  */
 _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(
@@ -76,10 +76,10 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(
     sc_type arc_type,
     sc_type end_type);
 
-/*! Create iterator to find input arcs for specified element
- * @param beg_type Type of begin element for input arcs, to iterate
- * @param arc_type Type of input arc to iterate (0 - all types)
- * @param el sc-addr of element to iterate input arcs
+/*! Create iterator to find incoming sc-arcs for specified element
+ * @param beg_type Type of begin element for incoming sc-arcs, to iterate
+ * @param arc_type Type of incoming sc-arc to iterate (0 - all types)
+ * @param el sc-addr of element to iterate incoming sc-arcs
  * @return If iterator created, then return pointer to it; otherwise return null
  */
 _SC_EXTERN sc_iterator3 * sc_iterator3_a_a_f_new(

@@ -339,7 +339,7 @@ void search_superclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   }
   sc_iterator5_free(it5);
 
-  // iterate input arcs
+  // iterate incoming sc-arcs
   it3 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, elem);
   while (sc_iterator3_next(it3) == SC_TRUE)
   {

@@ -2,12 +2,14 @@
 
 /// --------------------------------------
 
-ScAddr ATestAddInputArc::GetActionClass() const
+ScAddr ATestAddIncomingArc::GetActionClass() const
 {
-  return ATestAddInputArc::add_input_arc_action;
+  return ATestAddIncomingArc::add_incoming_arc_action;
 }
 
-ScResult ATestAddInputArc::DoProgram(ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const &, ScAction & action)
+ScResult ATestAddIncomingArc::DoProgram(
+    ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -15,12 +17,14 @@ ScResult ATestAddInputArc::DoProgram(ScEventAddInputArc<ScType::EdgeAccessConstP
 
 /// --------------------------------------
 
-ScAddr ATestAddOutputArc::GetActionClass() const
+ScAddr ATestAddOutgoingArc::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
-ScResult ATestAddOutputArc::DoProgram(ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &, ScAction & action)
+ScResult ATestAddOutgoingArc::DoProgram(
+    ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -41,13 +45,13 @@ ScResult ATestAddEdge::DoProgram(ScEventAddEdge<ScType::EdgeUCommonConst> const 
 
 /// --------------------------------------
 
-ScAddr ATestRemoveInputArc::GetActionClass() const
+ScAddr ATestEraseIncomingArc::GetActionClass() const
 {
-  return ATestRemoveInputArc::remove_input_arc_action;
+  return ATestEraseIncomingArc::remove_incoming_arc_action;
 }
 
-ScResult ATestRemoveInputArc::DoProgram(
-    ScEventRemoveInputArc<ScType::EdgeAccessConstPosPerm> const &,
+ScResult ATestEraseIncomingArc::DoProgram(
+    ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -56,13 +60,13 @@ ScResult ATestRemoveInputArc::DoProgram(
 
 /// --------------------------------------
 
-ScAddr ATestRemoveOutputArc::GetActionClass() const
+ScAddr ATestEraseOutgoingArc::GetActionClass() const
 {
-  return ATestRemoveOutputArc::remove_output_arc_action;
+  return ATestEraseOutgoingArc::remove_outgoing_arc_action;
 }
 
-ScResult ATestRemoveOutputArc::DoProgram(
-    ScEventRemoveOutputArc<ScType::EdgeAccessConstPosPerm> const &,
+ScResult ATestEraseOutgoingArc::DoProgram(
+    ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -71,12 +75,12 @@ ScResult ATestRemoveOutputArc::DoProgram(
 
 /// --------------------------------------
 
-ScAddr ATestRemoveEdge::GetActionClass() const
+ScAddr ATestEraseEdge::GetActionClass() const
 {
-  return ATestRemoveEdge::remove_edge_action;
+  return ATestEraseEdge::remove_edge_action;
 }
 
-ScResult ATestRemoveEdge::DoProgram(ScEventRemoveEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
+ScResult ATestEraseEdge::DoProgram(ScEventEraseEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -84,12 +88,12 @@ ScResult ATestRemoveEdge::DoProgram(ScEventRemoveEdge<ScType::EdgeUCommonConst> 
 
 /// --------------------------------------
 
-ScAddr ATestRemoveElement::GetActionClass() const
+ScAddr ATestEraseElement::GetActionClass() const
 {
-  return ATestRemoveElement::erase_element_action;
+  return ATestEraseElement::erase_element_action;
 }
 
-ScResult ATestRemoveElement::DoProgram(ScEventRemoveElement const &, ScAction & action)
+ScResult ATestEraseElement::DoProgram(ScEventEraseElement const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -112,11 +116,11 @@ ScResult ATestChangeLinkContent::DoProgram(ScEventChangeLinkContent const &, ScA
 
 ScAddr ATestAddMultipleOutputArc::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
 ScResult ATestAddMultipleOutputArc::DoProgram(
-    ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -127,7 +131,7 @@ ScResult ATestAddMultipleOutputArc::DoProgram(
 
 ScAddr ATestCheckResult::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
 ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
@@ -154,7 +158,7 @@ ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
 
 ScAddr ATestGetInitiationConditionTemplate::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
 ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate() const
@@ -175,13 +179,13 @@ ScResult ATestGetInitiationConditionTemplate::DoProgram(ScActionEvent const &, S
 
 ScAddr ATestCheckInitiationCondition::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
 sc_bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionEvent const & event)
 {
   return m_memoryCtx.HelperCheckEdge(
-             ATestAddOutputArc::add_output_arc_action, event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm)
+             ATestAddOutgoingArc::add_outgoing_arc_action, event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm)
          && m_memoryCtx.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)
                 ->Next();
 }
@@ -196,7 +200,7 @@ ScResult ATestCheckInitiationCondition::DoProgram(ScActionEvent const &, ScActio
 
 ScAddr ATestGetResultConditionTemplate::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
 ScResult ATestGetResultConditionTemplate::DoProgram(ScActionEvent const &, ScAction & action)
@@ -217,7 +221,7 @@ ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate() const
 
 ScAddr ATestCheckResultCondition::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
 ScResult ATestCheckResultCondition::DoProgram(ScActionEvent const &, ScAction & action)
@@ -237,7 +241,7 @@ sc_bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const & ev
 
 ScAddr ATestActionDeactivated::GetActionClass() const
 {
-  return ATestAddOutputArc::add_output_arc_action;
+  return ATestAddOutgoingArc::add_outgoing_arc_action;
 }
 
 ScResult ATestActionDeactivated::DoProgram(ScActionEvent const &, ScAction & action)

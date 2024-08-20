@@ -115,7 +115,7 @@ void uiSc2SCnJsonTranslator::runImpl()
 
 void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
 {
-  // now we need to iterate all arcs and collect output/input arcs info
+  // now we need to iterate all arcs and collect output/incoming sc-arcs info
   // first collect information about elements
   std::set<sc_addr> filtered;
   for (auto const & it : mEdges)

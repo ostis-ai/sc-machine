@@ -96,14 +96,14 @@ ScAddr ScEventAddEdge<edgeType>::GetEdgeTargetElement() const
 }
 
 template <ScType const & arcType>
-ScEventAddOutputArc<arcType>::ScEventAddOutputArc(
+ScEventAddOutgoingArc<arcType>::ScEventAddOutgoingArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
   : ScEventAddArc<arcType>(
-        ScEventAddOutputArc<arcType>::eventClassAddr,
+        ScEventAddOutgoingArc<arcType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,
@@ -111,26 +111,26 @@ ScEventAddOutputArc<arcType>::ScEventAddOutputArc(
         otherAddr){};
 
 template <ScType const & arcType>
-ScAddr ScEventAddInputArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventAddIncomingArc<arcType>::GetArcSourceElement() const
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventAddInputArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventAddIncomingArc<arcType>::GetArcTargetElement() const
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-_SC_EXTERN ScEventAddInputArc<arcType>::ScEventAddInputArc(
+_SC_EXTERN ScEventAddIncomingArc<arcType>::ScEventAddIncomingArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
   : ScEventAddArc<arcType>(
-        ScEventAddInputArc<arcType>::eventClassAddr,
+        ScEventAddIncomingArc<arcType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,
@@ -138,31 +138,31 @@ _SC_EXTERN ScEventAddInputArc<arcType>::ScEventAddInputArc(
         otherAddr) {};
 
 template <ScType const & arcType>
-ScAddr ScEventRemoveArc<arcType>::GetRemovableArc() const
+ScAddr ScEventEraseArc<arcType>::GetErasableArc() const
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & arcType>
-ScType ScEventRemoveArc<arcType>::GetRemovableArcType() const
+ScType ScEventEraseArc<arcType>::GetErasableArcType() const
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventRemoveArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventEraseArc<arcType>::GetArcSourceElement() const
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventRemoveArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventEraseArc<arcType>::GetArcTargetElement() const
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & arcType>
-ScEventRemoveArc<arcType>::ScEventRemoveArc(
+ScEventEraseArc<arcType>::ScEventEraseArc(
     ScAddr const & eventClassAddr,
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
@@ -178,38 +178,38 @@ ScEventRemoveArc<arcType>::ScEventRemoveArc(
         otherAddr){};
 
 template <ScType const & edgeType>
-ScAddr ScEventRemoveEdge<edgeType>::GetRemovableEdge() const
+ScAddr ScEventEraseEdge<edgeType>::GetErasableEdge() const
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & edgeType>
-ScType ScEventRemoveEdge<edgeType>::GetRemovableEdgeType() const
+ScType ScEventEraseEdge<edgeType>::GetErasableEdgeType() const
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
 template <ScType const & edgeType>
-ScAddr ScEventRemoveEdge<edgeType>::GetEdgeSourceElement() const
+ScAddr ScEventEraseEdge<edgeType>::GetEdgeSourceElement() const
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & edgeType>
-ScAddr ScEventRemoveEdge<edgeType>::GetEdgeTargetElement() const
+ScAddr ScEventEraseEdge<edgeType>::GetEdgeTargetElement() const
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & edgeType>
-ScEventRemoveEdge<edgeType>::ScEventRemoveEdge(
+ScEventEraseEdge<edgeType>::ScEventEraseEdge(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
   : TScElementaryEvent<edgeType>(
-        ScEventRemoveEdge<edgeType>::eventClassAddr,
+        ScEventEraseEdge<edgeType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,
@@ -217,14 +217,14 @@ ScEventRemoveEdge<edgeType>::ScEventRemoveEdge(
         otherAddr){};
 
 template <ScType const & arcType>
-ScEventRemoveOutputArc<arcType>::ScEventRemoveOutputArc(
+ScEventEraseOutgoingArc<arcType>::ScEventEraseOutgoingArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventRemoveArc<arcType>(
-        ScEventRemoveOutputArc<arcType>::eventClassAddr,
+  : ScEventEraseArc<arcType>(
+        ScEventEraseOutgoingArc<arcType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,
@@ -232,26 +232,26 @@ ScEventRemoveOutputArc<arcType>::ScEventRemoveOutputArc(
         otherAddr){};
 
 template <ScType const & arcType>
-ScAddr ScEventRemoveInputArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventEraseIncomingArc<arcType>::GetArcSourceElement() const
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventRemoveInputArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventEraseIncomingArc<arcType>::GetArcTargetElement() const
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-ScEventRemoveInputArc<arcType>::ScEventRemoveInputArc(
+ScEventEraseIncomingArc<arcType>::ScEventEraseIncomingArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventRemoveArc<arcType>(
-        ScEventRemoveInputArc<arcType>::eventClassAddr,
+  : ScEventEraseArc<arcType>(
+        ScEventEraseIncomingArc<arcType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,

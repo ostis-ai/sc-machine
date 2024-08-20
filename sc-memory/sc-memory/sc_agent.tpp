@@ -299,7 +299,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
   auto & subscriptionsMap = agentsMapIt->second;
   for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
-    if constexpr (!std::is_same<TScEvent, ScEventRemoveElement>::value)
+    if constexpr (!std::is_same<TScEvent, ScEventEraseElement>::value)
     {
       if (!ctx->IsElement(subscriptionElementAddr))
         SC_THROW_EXCEPTION(
@@ -468,14 +468,16 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
 
   ScIterator5Ptr it5;
   size_t otherVarPosition = 0u;
-  if (eventClassAddr == ScKeynodes::sc_event_add_input_arc || eventClassAddr == ScKeynodes::sc_event_remove_input_arc)
+  if (eventClassAddr == ScKeynodes::sc_event_add_incoming_arc
+      || eventClassAddr == ScKeynodes::sc_event_erase_incoming_arc)
   {
     it5 = this->m_memoryCtx.Iterator5(
         ScType::Unknown, ScType::Var, eventSubscriptionElement, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
   }
   else if (
-      eventClassAddr == ScKeynodes::sc_event_add_output_arc || eventClassAddr == ScKeynodes::sc_event_remove_output_arc
-      || eventClassAddr == ScKeynodes::sc_event_add_edge || eventClassAddr == ScKeynodes::sc_event_remove_edge)
+      eventClassAddr == ScKeynodes::sc_event_add_outgoing_arc
+      || eventClassAddr == ScKeynodes::sc_event_erase_outgoing_arc || eventClassAddr == ScKeynodes::sc_event_add_edge
+      || eventClassAddr == ScKeynodes::sc_event_erase_edge)
   {
     it5 = this->m_memoryCtx.Iterator5(
         eventSubscriptionElement, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);

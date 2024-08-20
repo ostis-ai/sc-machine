@@ -149,7 +149,7 @@ public:
    * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class address or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
@@ -168,7 +168,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
       std::function<sc_bool(TScEvent const &)> const & checkCallback);
@@ -189,7 +189,7 @@ public:
    * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback);
@@ -205,7 +205,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWaiter> CreateEventWaiterWithCondition(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<sc_bool(TScEvent const &)> const & checkCallback);
 
@@ -222,7 +222,8 @@ public:
       TScAddr const &... subscriptionAddrs);
 
   /*!
-   * @brief Subscribes agent class to sc-event of adding output arc from `action_initiated` to some formed sc-action.
+   * @brief Subscribes agent class to sc-event of adding outgoing sc-arc from `action_initiated` to some formed
+   * sc-action.
    * @tparam TScAgent An agent class to be subscribed to the event.
    * @warning Specified agent class must be derived from class `ScAgentAction`.
    * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
@@ -244,7 +245,7 @@ public:
       TScAddr const &... subscriptionAddrs);
 
   /*!
-   * @brief Unsubscribes agent class from sc-event of adding output arc from `action_initiated` to some formed
+   * @brief Unsubscribes agent class from sc-event of adding outgoing sc-arc from `action_initiated` to some formed
    * sc-action.
    * @tparam TScAgent An agent class to be subscribed to the event.
    * @warning Specified agent class must be derived from class `ScAgentAction`.

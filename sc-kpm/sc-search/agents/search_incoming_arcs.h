@@ -4,21 +4,21 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#ifndef _search_input_arcs_h_
-#define _search_input_arcs_h_
+#ifndef _search_incoming_arcs_h_
+#define _search_incoming_arcs_h_
 
 #include "sc-core/sc_memory.h"
 
 /*!
  * Function that implement sc-agent to search all positive, constant and permanent
- * input arcs for specified sc-element
+ * incoming sc-arcs for specified sc-element
  */
-sc_result agent_search_all_const_pos_input_arc(sc_event_subscription const * event, sc_addr arg);
+sc_result agent_search_all_const_pos_incoming_arc(sc_event_subscription const * event, sc_addr arg);
 
 /*!
  * Function that implement sc-agent to search all positive, constant and permanent
- * input arcs with relations for specified sc-element
+ * incoming sc-arcs with relations for specified sc-element
  */
-sc_result agent_search_all_const_pos_input_arc_with_rel(sc_event_subscription const * event, sc_addr arg);
+sc_result agent_search_all_const_pos_incoming_arc_with_rel(sc_event_subscription const * event, sc_addr arg);
 
 #endif

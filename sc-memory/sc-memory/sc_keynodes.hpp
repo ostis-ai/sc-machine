@@ -252,18 +252,24 @@ public:
 
   _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_add_input_arc{"sc_event_add_input_arc", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_add_output_arc{"sc_event_add_output_arc", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_add_incoming_arc{
+      "sc_event_add_incoming_arc",
+      ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_add_outgoing_arc{
+      "sc_event_add_outgoing_arc",
+      ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_add_edge{"sc_event_add_edge", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_remove_input_arc{
-      "sc_event_remove_input_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_erase_incoming_arc{
+      "sc_event_erase_incoming_arc",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_remove_output_arc{
-      "sc_event_remove_output_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_erase_outgoing_arc{
+      "sc_event_erase_outgoing_arc",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_remove_edge{"sc_event_remove_edge", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_remove_element{"sc_event_remove_element", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_change_content{"sc_event_change_content", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_erase_edge{"sc_event_erase_edge", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_erase_element{"sc_event_erase_element", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_change_link_content{
+      "sc_event_change_link_content",
+      ScType::NodeConstClass};
 
   _SC_EXTERN static inline ScKeynode const sc_result_class{"sc_result", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_result_ok{"sc_result_ok", ScType::NodeConstClass};

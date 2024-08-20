@@ -57,14 +57,14 @@ ScAddr ScElementaryEvent::GetOtherElement() const
   return m_otherAddr;
 }
 
-ScEventRemoveElement::ScEventRemoveElement(
+ScEventEraseElement::ScEventEraseElement(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
   : TScElementaryEvent(
-        ScEventRemoveElement::eventClassAddr,
+        ScEventEraseElement::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,

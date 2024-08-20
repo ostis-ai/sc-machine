@@ -51,7 +51,7 @@ sc_result agent_search_all_identifiers(sc_event_subscription const * event, sc_a
               s_default_ctx, keynode_identification_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm)
           == SC_TRUE)
       {
-        // iterate input arcs for sc-link
+        // iterate incoming sc-arcs for sc-link
         it2 = sc_iterator3_a_a_f_new(
             s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, sc_iterator5_value(it5, 2));
         while (sc_iterator3_next(it2) == SC_TRUE)

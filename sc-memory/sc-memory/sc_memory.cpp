@@ -251,22 +251,22 @@ size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
   CHECK_CONTEXT;
 
   sc_result result;
-  size_t const count = sc_memory_get_element_output_arcs_count(m_context, *addr, &result);
+  size_t const count = sc_memory_get_element_outgoing_arcs_count(m_context, *addr, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get output arcs count");
+        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get outgoing sc-arcs count");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get output arcs count due sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to get outgoing sc-arcs count due sc-memory context is not authorized");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get output arcs count due sc-memory context hasn't read permissions");
+        "Not able to get outgoing sc-arcs count due sc-memory context hasn't read permissions");
 
   default:
     break;
@@ -280,21 +280,22 @@ size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
   CHECK_CONTEXT;
 
   sc_result result;
-  size_t const count = sc_memory_get_element_input_arcs_count(m_context, *addr, &result);
+  size_t const count = sc_memory_get_element_incoming_arcs_count(m_context, *addr, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get input arcs count");
+        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get incoming sc-arcs count");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get input arcs count due sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to get incoming sc-arcs count due sc-memory context is not authorized");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get input arcs count due sc-memory context hasn't read permissions");
+        utils::ExceptionInvalidState,
+        "Not able to get incoming sc-arcs count due sc-memory context hasn't read permissions");
 
   default:
     break;

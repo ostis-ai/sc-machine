@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "search_output_arcs.h"
+#include "search_incoming_arcs.h"
 #include "search_keynodes.h"
 #include "search_utils.h"
 #include "search_defines.h"
@@ -13,7 +13,7 @@
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_memory_headers.h"
 
-sc_result agent_search_all_const_pos_output_arc(sc_event_subscription const * event, sc_addr arg)
+sc_result agent_search_all_const_pos_incoming_arc(sc_event_subscription const * event, sc_addr arg)
 {
   sc_addr action, result;
   sc_iterator3 *it1, *it2;
@@ -23,34 +23,33 @@ sc_result agent_search_all_const_pos_output_arc(sc_event_subscription const * ev
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
   // check action type
-  if (sc_helper_check_arc(s_default_ctx, keynode_action_all_output_const_pos_arc, action, sc_type_arc_pos_const_perm)
+  if (sc_helper_check_arc(s_default_ctx, keynode_action_all_input_const_pos_arc, action, sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   result = create_result_node();
 
-  // get operation argument
+  // find argument
   it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
       sys_off = SC_FALSE;
 
-    // iterate output arcs and append them into result
-    it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, 0);
+    // iterate incoming sc-arcs
+    it2 = sc_iterator3_a_a_f_new(s_default_ctx, 0, sc_type_arc_pos_const_perm, sc_iterator3_value(it1, 2));
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+          && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
         continue;
 
+      appendIntoResult(result, sc_iterator3_value(it2, 0));
       appendIntoResult(result, sc_iterator3_value(it2, 1));
-      appendIntoResult(result, sc_iterator3_value(it2, 2));
     }
+    sc_iterator3_free(it2);
 
     appendIntoResult(result, sc_iterator3_value(it1, 2));
-
-    sc_iterator3_free(it2);
   }
   sc_iterator3_free(it1);
 
@@ -60,8 +59,9 @@ sc_result agent_search_all_const_pos_output_arc(sc_event_subscription const * ev
   return SC_RESULT_OK;
 }
 
-// ---------------------------------------------
-sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event_subscription const * event, sc_addr arg)
+// ---------------------------------------------------
+
+sc_result agent_search_all_const_pos_incoming_arc_with_rel(sc_event_subscription const * event, sc_addr arg)
 {
   sc_addr action, result;
   sc_iterator3 *it1, *it2, *it3;
@@ -72,29 +72,29 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event_subscription c
 
   // check action type
   if (sc_helper_check_arc(
-          s_default_ctx, keynode_action_all_output_const_pos_arc_with_rel, action, sc_type_arc_pos_const_perm)
+          s_default_ctx, keynode_action_all_input_const_pos_arc_with_rel, action, sc_type_arc_pos_const_perm)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   result = create_result_node();
 
-  // get operation argument
+  // get action argument
   it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
       sys_off = SC_FALSE;
 
-    // iterate output arcs and append them into result
-    it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator3_value(it1, 2), sc_type_arc_pos_const_perm, 0);
+    // iterate incoming sc-arcs
+    it2 = sc_iterator3_a_a_f_new(s_default_ctx, 0, sc_type_arc_pos_const_perm, sc_iterator3_value(it1, 2));
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 2))))
+          && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it2, 1))))
         continue;
 
       // iterate relations
-      it3 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
+      it3 = sc_iterator3_a_a_f_new(s_default_ctx, 0, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
       while (sc_iterator3_next(it3) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
@@ -106,8 +106,8 @@ sc_result agent_search_all_const_pos_output_arc_with_rel(sc_event_subscription c
       }
       sc_iterator3_free(it3);
 
+      appendIntoResult(result, sc_iterator3_value(it2, 0));
       appendIntoResult(result, sc_iterator3_value(it2, 1));
-      appendIntoResult(result, sc_iterator3_value(it2, 2));
     }
     sc_iterator3_free(it2);
 

@@ -19,25 +19,25 @@ Within the OSTIS technology, events are considered only situations in which rela
 The sc-machine provides functionality for subscribing to the following syntactic elementary types of sc-events:
 
 * `ScElementaryEvent` is base class for all sc-events, it can be used to handle all sc-events for specified sc-element;
-* `ScEventAddOutputArc`, emits each time, when output (outgoing) sc-arc (from specified sc-element) is created;
-* `ScEventAddInputArc`, emits each time, when input (ingoing) sc-arc (to specified sc-element) is created;
+* `ScEventAddOutgoingArc`, emits each time, when output (outgoing) sc-arc (from specified sc-element) is created;
+* `ScEventAddIncomingArc`, emits each time, when input (ingoing) sc-arc (to specified sc-element) is created;
 * `ScEventAddEdge`, emits each time, when sc-edge (from or to specified sc-element) is created;
-* `ScEventRemoveOutputArc`, emits each time, when output (outgoing) sc-arc (from specified sc-element) is removing;
-* `ScEventRemoveInputArc`, emits each time, when input (ingoing) sc-arc (to specified sc-element) is removing;
-* `ScEventRemoveEdge`, emits each time, when sc-edge (from or to specified sc-element) is removing;
-* `ScEventRemoveElement`, emits, when specified sc-element is removing;
+* `ScEventEraseOutgoingArc`, emits each time, when output (outgoing) sc-arc (from specified sc-element) is removing;
+* `ScEventEraseIncomingArc`, emits each time, when input (ingoing) sc-arc (to specified sc-element) is removing;
+* `ScEventEraseEdge`, emits each time, when sc-edge (from or to specified sc-element) is removing;
+* `ScEventEraseElement`, emits, when specified sc-element is removing;
 * `ScEventChangeLinkContent`, emits each time, when content of specified sc-link is changing.
 
 The following classes correspond to them:
 
 * `class ScElementaryEvent`;
-* `template <ScType const & arcType> class ScEventAddOutputArc`;
-* `template <ScType const & arcType> class ScEventAddInputArc`;
+* `template <ScType const & arcType> class ScEventAddOutgoingArc`;
+* `template <ScType const & arcType> class ScEventAddIncomingArc`;
 * `template <ScType const & edgeType> class ScEventAddEdge`;
-* `template <ScType const & arcType> class ScEventRemoveOutputArc`;
-* `template <ScType const & arcType> class ScEventRemoveInputArc`;
-* `template <ScType const & edgeType> class ScEventRemoveEdge`;
-* `class ScEventRemoveElement`;
+* `template <ScType const & arcType> class ScEventEraseOutgoingArc`;
+* `template <ScType const & arcType> class ScEventEraseIncomingArc`;
+* `template <ScType const & edgeType> class ScEventEraseEdge`;
+* `class ScEventEraseElement`;
 * `class ScEventChangeLinkContent`.
 
 !!! note
@@ -87,9 +87,9 @@ To get information about sc-elements in initiated sc-event, you can use this met
   </tr>
 
   <tr>
-    <td><strong>ScEventAddOutputArc</strong></td>
+    <td><strong>ScEventAddOutgoingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_output_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
@@ -104,9 +104,9 @@ auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
   </tr>
 
   <tr>
-    <td><strong>ScEventAddInputArc</strong></td>
+    <td><strong>ScEventAddIncomingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_input_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
@@ -138,9 +138,9 @@ auto const [listenAddr, edgeAddr, otherAddr] = event.GetTriple();
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveOutputArc</strong></td>
+    <td><strong>ScEventEraseOutgoingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_output_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
@@ -155,9 +155,9 @@ auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveInputArc</strong></td>
+    <td><strong>ScEventEraseIncomingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_input_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
@@ -172,7 +172,7 @@ auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveEdge</strong></td>
+    <td><strong>ScEventEraseEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -189,7 +189,7 @@ auto const [listenAddr, edgeAddr, otherAddr] = event.GetTriple();
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveElement</strong></td>
+    <td><strong>ScEventEraseElement</strong></td>
     <td>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
@@ -225,13 +225,13 @@ auto const [listenAddr, _1, _2] = event.GetTriple();
 !!! note
     All described methods of `ScElementary` class are public and accessible from child classes.
 
-### **ScEventAddOutputArc** and **ScEventAddInputArc**
+### **ScEventAddOutgoingArc** and **ScEventAddIncomingArc**
 
-`ScEventAddOutputArc` is class that represents sc-event of adding output sc-arc from specified sc-element. `ScEventAddInputArc` represents sc-event of adding input sc-arc to specified sc-element.
+`ScEventAddOutgoingArc` is class that represents sc-event of adding output sc-arc from specified sc-element. `ScEventAddIncomingArc` represents sc-event of adding input sc-arc to specified sc-element.
 
 #### **GetAddedArc**
 
-Method `GetAddedArc` returns added sc-arc from (for `ScEventAddOutputArc`) or to (for `ScEventAddInputArc) listen sc-element (subscription sc-element).
+Method `GetAddedArc` returns added sc-arc from (for `ScEventAddOutgoingArc`) or to (for `ScEventAddIncomingArc) listen sc-element (subscription sc-element).
 
 ```cpp
 ...
@@ -251,7 +251,7 @@ ScType const arcType = event.GetAddedArcType();
 
 #### **GetArcSourceElement**
 
-To get source and target sc-elements of added sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventAddOutputArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventAddInputArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
+To get source and target sc-elements of added sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventAddOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventAddIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
 
 ```cpp
 ...
@@ -309,33 +309,33 @@ ScAddr const targetElementAddr = event.GetEdgeTargetElement();
 ...
 ```
 
-### **ScEventRemoveOutputArc** and **ScEventRemoveInputArc**
+### **ScEventEraseOutgoingArc** and **ScEventEraseIncomingArc**
 
-`ScEventRemoveOutputArc` is class that represents sc-event of removing output sc-arc from specified sc-element. `ScEventRemoveInputArc` represents sc-event of removing input sc-arc to specified sc-element.
+`ScEventEraseOutgoingArc` is class that represents sc-event of removing output sc-arc from specified sc-element. `ScEventEraseIncomingArc` represents sc-event of removing input sc-arc to specified sc-element.
 
-#### **GetRemovableArc**
+#### **GetErasableArc**
 
-Method `GetRemovableArc` returns removable sc-arc from (for `ScEventRemoveOutputArc`) or to (for `ScEventRemoveInputArc) listen sc-element (subscription sc-element).
+Method `GetErasableArc` returns removable sc-arc from (for `ScEventEraseOutgoingArc`) or to (for `ScEventEraseIncomingArc) listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const arcAddr = event.GetRemovableArc();
+ScAddr const arcAddr = event.GetErasableArc();
 ...
 ```
 
-#### **GetRemovableArcType**
+#### **GetErasableArcType**
 
 It returns sc-type of removable sc-arc.
 
 ```cpp
 ...
-ScAddr const arcType = event.GetRemovableArcType();
+ScAddr const arcType = event.GetErasableArcType();
 ...
 ```
 
 #### **GetArcSourceElement**
 
-To get source and target sc-elements of removable sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventRemoveOutputArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventRemoveInputArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
+To get source and target sc-elements of removable sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventEraseOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventEraseIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
 
 ```cpp
 ...
@@ -351,27 +351,27 @@ ScAddr const arcTargetElement = event.GetArcTargetElement();
 ...
 ```
 
-### **ScEventRemoveEdge**
+### **ScEventEraseEdge**
 
 This class represents sc-event of removing sc-edge from or to specified sc-element.
 
-#### **GetRemovableEdge**
+#### **GetErasableEdge**
 
 Method `GetAddedEdge` returns removable sc-edge from or to listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const edgeAddr = event.GetRemovableEdge();
+ScAddr const edgeAddr = event.GetErasableEdge();
 ...
 ```
 
-#### **GetRemovableEdgeType**
+#### **GetErasableEdgeType**
 
 It returns sc-type of removable sc-edge.
 
 ```cpp
 ...
-ScAddr const edgeType = event.GetRemovableEdgeType();
+ScAddr const edgeType = event.GetErasableEdgeType();
 ...
 ```
 
@@ -393,7 +393,7 @@ ScAddr const targetElementAddr = event.GetEdgeTargetElement();
 ...
 ```
 
-### **ScEventRemoveElement**
+### **ScEventEraseElement**
 
 This class represents sc-event of removing specified listen sc-element. You can use all methods from objects of this class that arc accessible from `ScElementaryEvent` class.
 

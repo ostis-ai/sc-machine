@@ -51,7 +51,7 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
           && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it3, 2))))
         continue;
 
-      // iterate input arcs for link
+      // iterate incoming sc-arcs for link
       it4 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it3, 2));
       while (sc_iterator3_next(it4) == SC_TRUE)
       {
@@ -68,7 +68,7 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
       }
       sc_iterator3_free(it4);
 
-      // iterate input arcs for arc
+      // iterate incoming sc-arcs for arc
       it4 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it3, 1));
       while (sc_iterator3_next(it4) == SC_TRUE)
       {
@@ -117,7 +117,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr result, sc_bool sys_off)
   sc_iterator3 *it1, *it2, *it3;
   sc_type el_type;
 
-  // iterate input arcs for elem
+  // iterate incoming sc-arcs for elem
   it1 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, elem);
   while (sc_iterator3_next(it1) == SC_TRUE)
   {
@@ -183,7 +183,7 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr result, sc_bool sys_of
     if (SC_ADDR_IS_EQUAL(sc_iterator3_value(it0, 0), keynode_typical_sc_neighborhood))
     {
       found = SC_TRUE;
-      // iterate input arcs for elem
+      // iterate incoming sc-arcs for elem
       it1 = sc_iterator3_f_a_a_new(s_default_ctx, elem, sc_type_arc_pos_const_perm, 0);
       while (sc_iterator3_next(it1) == SC_TRUE)
       {
@@ -252,7 +252,7 @@ void search_element_identifiers(sc_addr el, sc_addr result)
             s_default_ctx, keynode_identification_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm)
         == SC_TRUE)
     {
-      // iterate input arcs for sc-link
+      // iterate incoming sc-arcs for sc-link
       it2 = sc_iterator3_a_a_f_new(
           s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, sc_iterator5_value(it5, 2));
       while (sc_iterator3_next(it2) == SC_TRUE)
@@ -322,7 +322,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
     }
     sc_iterator3_free(sysElementIt3);
 
-    // iterate input arcs
+    // iterate incoming sc-arcs
     it2 = sc_iterator3_a_a_f_new(s_default_ctx, 0, 0, sc_iterator3_value(it1, 2));
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
@@ -335,7 +335,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
 
       search_arc_components(sc_iterator3_value(it2, 0), result, sys_off);
 
-      // iterate input arcs into found arc, to find relations
+      // iterate incoming sc-arcs into found arc, to find relations
       it3 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
       while (sc_iterator3_next(it3) == SC_TRUE)
       {
@@ -476,7 +476,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
     }
     sc_iterator3_free(it2);
 
-    // iterate output arcs
+    // iterate outgoing sc-arcs
     it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator3_value(it1, 2), 0, 0);
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
@@ -489,7 +489,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
 
       search_arc_components(sc_iterator3_value(it2, 2), result, sys_off);
 
-      // iterate input arcs into found arc, to find relations
+      // iterate incoming sc-arcs into found arc, to find relations
       it3 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
       while (sc_iterator3_next(it3) == SC_TRUE)
       {
@@ -538,7 +538,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
       if (SC_RESULT_OK == sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it2, 2), &el_type)
           && (el_type | sc_type_link))
       {
-        // iterate input arcs for link
+        // iterate incoming sc-arcs for link
         it3 = sc_iterator3_a_a_f_new(
             s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 2));
         while (sc_iterator3_next(it3) == SC_TRUE)
@@ -628,7 +628,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
       == sc_helper_check_arc(s_default_ctx, keynode_quasybinary_relation, param_rel, sc_type_arc_pos_const_perm))
   {
     // Search subclasses in quasybinary relation
-    // Iterate input arcs of quasybinary relation
+    // Iterate incoming sc-arcs of quasybinary relation
     it5 = sc_iterator5_a_a_f_a_f_new(
         s_default_ctx,
         sc_type_const,
@@ -726,7 +726,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     }
     sc_iterator5_free(it5);
 
-    // Iterate input arcs of quasybinary relation
+    // Iterate incoming sc-arcs of quasybinary relation
     it1 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_const | sc_type_node, sc_type_arc_pos_const_perm, param_elem);
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
@@ -769,7 +769,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
   }
   else
   {
-    // Iterate output arcs of given relation
+    // Iterate outgoing sc-arcs of given relation
     it5 = sc_iterator5_f_a_a_a_f_new(
         s_default_ctx, param_elem, sc_type_const, sc_type_const, sc_type_arc_pos_const_perm, param_rel);
     while (sc_iterator5_next(it5) == SC_TRUE)
@@ -790,7 +790,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     }
     sc_iterator5_free(it5);
 
-    // Iterate input arcs of given relation
+    // Iterate incoming sc-arcs of given relation
     it5 = sc_iterator5_a_a_f_a_f_new(
         s_default_ctx, sc_type_const, sc_type_const, param_elem, sc_type_arc_pos_const_perm, param_rel);
     while (sc_iterator5_next(it5) == SC_TRUE)
@@ -811,7 +811,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     }
     sc_iterator5_free(it5);
 
-    // Iterate input arcs for input element
+    // Iterate incoming sc-arcs for input element
     it1 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_const, sc_type_arc_pos_const_perm, param_elem);
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
@@ -819,7 +819,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
           && (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 0)) || IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 1))))
         continue;
 
-      // Iterate input arcs for input element
+      // Iterate incoming sc-arcs for input element
       it2 = sc_iterator3_f_a_f_new(s_default_ctx, param_rel, sc_type_arc_pos_const_perm, sc_iterator3_value(it1, 0));
       if (sc_iterator3_next(it2) == SC_TRUE)
       {

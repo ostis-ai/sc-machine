@@ -436,7 +436,7 @@ _SC_EXTERN sc_addr sc_memory_arc_new_ext(
  * permissions.
  */
 _SC_EXTERN sc_uint32
-sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
+sc_memory_get_element_outgoing_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
 /*!
  * @brief Retrieves the count of input sc-connectors for the specified sc-element.
@@ -465,7 +465,7 @@ sc_memory_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr a
  * permissions.
  */
 _SC_EXTERN sc_uint32
-sc_memory_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
+sc_memory_get_element_incoming_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
 /*!
  * @brief Retrieves the type of the specified sc-element.

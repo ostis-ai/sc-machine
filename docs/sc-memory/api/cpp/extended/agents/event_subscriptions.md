@@ -33,13 +33,13 @@ All these constructors are private, you can't call these. We provide more safe A
 
 All sc-event classes are in core keynodes:
 
-* `ScKeynodes::sc_event_add_output_arc`;
-* `ScKeynodes::sc_event_add_input_arc`;
+* `ScKeynodes::sc_event_add_outgoing_arc`;
+* `ScKeynodes::sc_event_add_incoming_arc`;
 * `ScKeynodes::sc_event_add_edge`;
-* `ScKeynodes::sc_event_remove_output_arc`;
-* `ScKeynodes::sc_event_remove_input_arc`;
-* `ScKeynodes::sc_event_remove_edge`;
-* `ScKeynodes::sc_event_remove_element`;
+* `ScKeynodes::sc_event_erase_outgoing_arc`;
+* `ScKeynodes::sc_event_erase_incoming_arc`;
+* `ScKeynodes::sc_event_erase_edge`;
+* `ScKeynodes::sc_event_erase_element`;
 * `ScKeynodes::sc_event_change_link_content`.
 
 Use them as `eventClassAddr` for `CreateElementaryEventSubscription`.
@@ -72,16 +72,16 @@ auto subscription = context->CreateElementaryEventSubscription(
   </tr>
 
   <tr>
-    <td><strong>ScEventAddOutputArc</strong></td>
+    <td><strong>ScEventAddOutgoingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_output_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
   elementAddr, 
-  [](ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -91,16 +91,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventAddInputArc</strong></td>
+    <td><strong>ScEventAddIncomingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_input_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   elementAddr, 
-  [](ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -129,16 +129,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveOutputArc</strong></td>
+    <td><strong>ScEventEraseOutgoingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_output_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventRemoveOutputArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
   elementAddr, 
-  [](ScEventRemoveOutputArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -148,16 +148,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveInputArc</strong></td>
+    <td><strong>ScEventEraseIncomingArc</strong></td>
     <td>
-      <scg src="../images/events/sc_event_input_arc.gwf"></scg>
+      <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventRemoveInputArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   elementAddr, 
-  [](ScEventRemoveInputArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -167,16 +167,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveEdge</strong></td>
+    <td><strong>ScEventEraseEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventRemoveEdge<ScType::EdgeUCommonConst>>(
+  ScEventEraseEdge<ScType::EdgeUCommonConst>>(
   elementAddr, 
-  [](ScEventRemoveEdge<ScType::EdgeUCommonConst> const & event) -> void
+  [](ScEventEraseEdge<ScType::EdgeUCommonConst> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -186,15 +186,15 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventRemoveElement</strong></td>
+    <td><strong>ScEventEraseElement</strong></td>
     <td>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventRemoveElement>(
+  ScEventEraseElement>(
   elementAddr, 
-  [](ScEventRemoveElement const & event) -> void
+  [](ScEventEraseElement const & event) -> void
 {
   // Handle sc-event.
 });
@@ -232,7 +232,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 
 <!-- no toc -->
 - [Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?](#whether-a-function-is-considered-an-agent-if-this-function-is-subscribed-to-a-sc-event-and-which-is-called-after-that-sc-event-occurs)
-- [Why can't you call the constructor of a subscription class to sc-event?](#why-cant-you-i-the-constructor-of-a-subscription-class-to-sc-event)
+- [Why can't you call the constructor of a subscription class to sc-event?](#why-cant-i-call-the-constructor-of-a-subscription-class-to-sc-event)
 
 ### **Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?**
 

@@ -10,14 +10,14 @@
 #include "sc-store/sc_types.h"
 
 extern sc_addr sc_event_unknown_addr;
-extern sc_addr sc_event_add_input_arc_addr;
-extern sc_addr sc_event_add_output_arc_addr;
+extern sc_addr sc_event_add_incoming_arc_addr;
+extern sc_addr sc_event_add_outgoing_arc_addr;
 extern sc_addr sc_event_add_edge_addr;
-extern sc_addr sc_event_remove_input_arc_addr;
-extern sc_addr sc_event_remove_output_arc_addr;
-extern sc_addr sc_event_remove_edge_addr;
-extern sc_addr sc_event_remove_element_addr;
-extern sc_addr sc_event_change_content_addr;
+extern sc_addr sc_event_erase_incoming_arc_addr;
+extern sc_addr sc_event_erase_outgoing_arc_addr;
+extern sc_addr sc_event_erase_edge_addr;
+extern sc_addr sc_event_erase_element_addr;
+extern sc_addr sc_event_change_link_content_addr;
 
 extern sc_addr myself_addr;
 extern sc_addr concept_guest_user_addr;

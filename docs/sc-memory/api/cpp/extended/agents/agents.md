@@ -26,10 +26,10 @@ agent_for_calculating_set_power
 <- abstract_sc_agent;
 => nrel_primary_initiation_condition: 
     // Class of sc-event and listen (subscription) sc-element
-    (sc_event_add_output_arc => action_initiated); 
+    (sc_event_add_outgoing_arc => action_initiated); 
 => nrel_sc_agent_action_class:
     // Class of actions to be interpreted by agent
-    action_for_сalculating_set_power; 
+    action_for_calculating_set_power; 
 => nrel_initiation_condition_and_result: 
     (..agent_for_calculating_set_power_initiation_condition 
         => ..agent_for_calculating_set_power_result_condition);
@@ -38,7 +38,7 @@ agent_for_calculating_set_power
 {
     action_initiated;
     action;
-    action_for_сalculating_set_power;
+    action_for_calculating_set_power;
     nrel_set_power;
 };
 => nrel_inclusion: 
@@ -57,17 +57,17 @@ agent_for_calculating_set_power
 // Full initiation condition of agent
 ..agent_for_calculating_set_power_initiation_condition
 = [*
-    action_for_сalculating_set_power _-> .._action;;
+    action_for_calculating_set_power _-> .._action;;
     action_initiated _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
 *];; 
 // Agent should check by this template that initiated action is instance of 
-// class `action_for_сalculating_set_power` and that it has argument.
+// class `action_for_calculating_set_power` and that it has argument.
 
 // Full result condition of agent
 ..agent_for_calculating_set_power_result_condition
 = [*
-    action_for_сalculating_set_power _-> .._action;;
+    action_for_calculating_set_power _-> .._action;;
     action_initiated _-> .._action;;
     action_finished_successfully _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
@@ -77,7 +77,7 @@ agent_for_calculating_set_power
 // and that it has result.
 ```
 
-<image src="../images/agents/agent_for_сalculating_set_power_specification.png"></image>
+<image src="../images/agents/agent_for_calculating_set_power_specification.png"></image>
 
 ## **What are ways of providing the agent's specification?**
 
@@ -112,9 +112,9 @@ This class can be used for all classes of agents. The example using this class i
 #include <sc-memory/sc_agent.hpp>
 
 // Override your agent class from `ScAgent` class and specify template argument 
-// as sc-event class. Here `ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>` 
+// as sc-event class. Here `ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>` 
 // is type of event to which the given agent reacts.
-class MyAgent : public ScAgent<ScEventAddInputArc<ScType::EdgeAccessConstPosPerm>>
+class MyAgent : public ScAgent<ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   // Here you should specify class of actions which the given agent interpreters. 
@@ -123,7 +123,7 @@ public:
   // Here you should implement program of the given agent. 
   // This overriding is required.
   ScResult DoProgram(
-    ScEventAddInputArc<ScType::EdgeAccessConstPosPerm> const & event, 
+    ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, 
     ScAction & action) override;
 
   // Other user-defined methods.
@@ -146,12 +146,12 @@ You can specify any existing event types as a template argument to the `ScAgent`
 
 #include <sc-memory/sc_agent.hpp>
 
-class MyAgent : public ScAgent<ScEventRemoveElement>
+class MyAgent : public ScAgent<ScEventEraseElement>
 {
 public:
   ScAddr GetActionClass() const override;
   ScResult DoProgram(
-    ScEventRemoveElement const & event, ScAction & action) override;
+    ScEventEraseElement const & event, ScAction & action) override;
 
   // Other user-defined methods.
 };
@@ -217,7 +217,7 @@ public:
     `ScActionAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
 
 !!! note
-    `ScActionEvent` is alias for `ScEventAddOutputArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
+    `ScActionEvent` is alias for `ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
 
 ---
 
@@ -430,7 +430,7 @@ ScAddr MyAgent::GetEventClass() const
 {
   // You must specify valid sc-address of event class. 
   // In other case, the given sc-agent can’t be registered in sc-memory.
-  return ScKeynodes::sc_event_add_output_arc;
+  return ScKeynodes::sc_event_add_outgoing_arc;
 }
 ```
 

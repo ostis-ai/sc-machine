@@ -276,7 +276,7 @@ sc_addr sc_storage_arc_new_ext(
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
-sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
+sc_uint32 sc_storage_get_element_outgoing_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
 /*!
  * @brief Retrieves the count of input sc-connectors for the specified sc-element.
@@ -301,7 +301,7 @@ sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
-sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
+sc_uint32 sc_storage_get_element_incoming_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
 /*!
  * @brief Retrieves the type of the specified sc-element.

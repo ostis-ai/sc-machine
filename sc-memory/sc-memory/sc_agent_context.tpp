@@ -64,7 +64,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
     std::function<sc_bool(TScEvent const &)> const & checkCallback)
@@ -94,11 +94,11 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<sc_bool(TScEvent const &)> const & checkCallback)
 {
-  return CreateEventWaiterWithCondition(subscriptionElementAddr, {}, checkCallback);
+  return CreateConditionWaiter(subscriptionElementAddr, {}, checkCallback);
 }
 
 template <class TScAgent, class... TScAddr>

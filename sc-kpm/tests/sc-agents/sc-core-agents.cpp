@@ -11,7 +11,7 @@ extern "C"
 #include "sc-utils/utils_keynodes.h"
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_outgoing_arc)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
   sc_addr init_memory_generated_structure;
@@ -58,7 +58,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
   sc_module_shutdown();
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_outgoing_arc_with_rel)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
@@ -113,7 +113,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
   sc_module_shutdown();
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_incoming_arc)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
@@ -164,7 +164,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
   sc_module_shutdown();
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc_with_rel)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_incoming_arc_with_rel)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 

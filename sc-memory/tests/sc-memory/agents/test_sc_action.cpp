@@ -226,8 +226,8 @@ TEST_F(ScActionTest, InitiateAndWaitAction)
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
   ScAction action =
-      m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action)
-          .SetArguments(ATestAddOutputArc::add_output_arc_action, ATestAddOutputArc::add_output_arc_action);
+      m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action)
+          .SetArguments(ATestAddOutgoingArc::add_outgoing_arc_action, ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
@@ -240,7 +240,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_THROW(action.FinishSuccessfully(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.IsInitiated());
   EXPECT_FALSE(action.IsFinished());
@@ -255,7 +255,7 @@ TEST_F(ScActionTest, InitiateInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_NO_THROW(action.Initiate());
   EXPECT_THROW(action.Initiate(), utils::ExceptionInvalidState);
   EXPECT_TRUE(action.IsInitiated());
@@ -265,7 +265,7 @@ TEST_F(ScActionTest, InitiateInitiatedAction)
 
 TEST_F(ScActionTest, InitiateFinishedAction)
 {
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_NO_THROW(action.Initiate());
   EXPECT_NO_THROW(action.FinishSuccessfully());
   ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
@@ -278,7 +278,7 @@ TEST_F(ScActionTest, InitiateFinishedAction)
 
 TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
 {
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_NO_THROW(action.InitiateAndWait(1));
   EXPECT_NO_THROW(action.FinishSuccessfully());
   ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
@@ -293,7 +293,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_THROW(action.FinishUnsuccessfully(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.IsInitiated());
   EXPECT_FALSE(action.IsFinished());
@@ -308,7 +308,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_THROW(action.FinishWithError(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.IsInitiated());
   EXPECT_FALSE(action.IsFinished());
@@ -323,7 +323,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyFinishedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
@@ -341,7 +341,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyFinishedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
@@ -359,7 +359,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorFinishedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
@@ -377,7 +377,7 @@ TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestAddOutputArc::add_output_arc_action);
+  ScAction action = m_ctx->CreateAction(ATestAddOutgoingArc::add_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());

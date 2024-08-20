@@ -169,12 +169,12 @@ public:
   _SC_EXTERN bool IsElement(ScAddr const & addr) const;
 
   /*!
-   * @brief Returns the count of output arcs for a specified sc-element.
+   * @brief Returns the count of outgoing sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of output arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of outgoing sc-arcs for the sc-element identified by the given sc-address.
    *
    * @param addr The sc-address of the sc-element to query.
-   * @return Returns the count of output arcs for the specified sc-element.
+   * @return Returns the count of outgoing sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *
@@ -188,12 +188,12 @@ public:
   _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & addr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of input arcs for a specified sc-element.
+   * @brief Returns the count of incoming sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of input arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of incoming sc-arcs for the sc-element identified by the given sc-address.
    *
    * @param addr The sc-address of the sc-element to query.
-   * @return Returns the count of input arcs for the specified sc-element.
+   * @return Returns the count of incoming sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or has not read permissions.
    *

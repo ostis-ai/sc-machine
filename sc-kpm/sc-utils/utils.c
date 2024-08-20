@@ -28,7 +28,7 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
   event_remove_elements = sc_event_subscription_new(
       s_erase_elements_ctx,
       keynode_action_initiated,
-      sc_event_add_output_arc_addr,
+      sc_event_add_outgoing_arc_addr,
       null_ptr,
       agent_erase_elements,
       null_ptr);

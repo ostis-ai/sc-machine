@@ -25,7 +25,7 @@ The initial construction of agent might look like this:
 
 ```scs
 ..action
-<- action_for_сalculating_set_power;
+<- action_for_calculating_set_power;
 <- action_initiated;
 -> rrel_1: ..some_set;;
 
@@ -41,7 +41,7 @@ The result construction of agent might look like this:
 
 ```scs
 ..action
-<- action_for_сalculating_set_power;
+<- action_for_calculating_set_power;
 <- action_initiated;
 <- action_finished_successfully;
 -> rrel_1: ..some_set;
@@ -66,8 +66,8 @@ You should get something like this structure:
 set-agents-module/
 ├── CMakeLists.txt
 ├── agents/
-│   ├── sc_agent_for_сalculating_set_power.hpp
-│   └── sc_agent_for_сalculating_set_power.сpp
+│   ├── sc_agent_for_calculating_set_power.hpp
+│   └── sc_agent_for_calculating_set_power.сpp
 ```
 
 ---
@@ -109,7 +109,7 @@ c. Override methods must be public. Otherwise, you won't be able to build your c
 
 d. You can implement other methods in agent's class.
 
-**sc_agent_for_сalculating_set_power.hpp**
+**sc_agent_for_calculating_set_power.hpp**
 
 ```cpp
 #pragma once
@@ -129,14 +129,14 @@ public:
 
 ### **5. Implement all declared methods of agent's class.**
 
-**sc_agent_for_сalculating_set_power.cpp**
+**sc_agent_for_calculating_set_power.cpp**
 
 ```cpp
-#include "sc_agent_for_сalculating_set_power.hpp"
+#include "sc_agent_for_calculating_set_power.hpp"
 
 ScAddr ScAgentForCalculatingPower::GetActionClass() const
 {
-  return m_memoryCtx.HelperFindBySystemIdtf("action_for_сalculating_set_power");
+  return m_memoryCtx.HelperFindBySystemIdtf("action_for_calculating_set_power");
 }
 // You must specify valid action class. In other case, the agent can’t be 
 // registered in sc-memory.
@@ -153,7 +153,7 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
 
   // `ScAction` class encapsulates information about sc-action. 
   // The provided action is action that the given agent interpreters right now. 
-  // It belongs to class action_for_сalculating_set_power`. 
+  // It belongs to class action_for_calculating_set_power`. 
   // Actions are copyable and movable. ScAction is derived from ScAddr.
 
   auto const & [setAddr] = action.GetArguments<1>(); 
@@ -227,8 +227,8 @@ For each agent, you can specify key sc-elements that this agent uses during the 
 set-agents-module/
  ├── CMakeLists.txt
  ├── agents/
- │   ├── sc_agent_for_сalculating_set_power.hpp
- │   └── sc_agent_for_сalculating_set_power.сpp
+ │   ├── sc_agent_for_calculating_set_power.hpp
+ │   └── sc_agent_for_calculating_set_power.сpp
 +├── keynodes/
 +│   └── sc_set_keynodes.hpp
 ```
@@ -253,8 +253,8 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 class ScSetKeynodes : public ScKeynodes
 {
 public:
-  static inline ScKeynode const action_for_сalculating_set_power{
-    "action_for_сalculating_set_power", ScType::NodeConstClass};
+  static inline ScKeynode const action_for_calculating_set_power{
+    "action_for_calculating_set_power", ScType::NodeConstClass};
   static inline ScKeynode const nrel_set_power{
     "nrel_set_power", ScType::NodeConstNoRole};
   // Here the first argument in constructor is system identifier of 
@@ -275,17 +275,17 @@ public:
 
 `ScKeynodes` class is base class for all classes with keynodes. It contains core keynodes, that can be used in each agent.
 
-**sc_agent_for_сalculating_set_power.cpp**
+**sc_agent_for_calculating_set_power.cpp**
 
 ```diff
-#include "sc_agent_for_сalculating_set_power.hpp"
+#include "sc_agent_for_calculating_set_power.hpp"
 
 #include "keynodes/sc_set_keynodes.hpp"
 
 ScAddr ScAgentForCalculatingPower::GetActionClass() const
 {
-- return m_memoryCtx.HelperFindBySystemIdtf("action_for_сalculating_set_power");
-+ return ScSetKeynodes::action_for_сalculating_set_power;
+- return m_memoryCtx.HelperFindBySystemIdtf("action_for_calculating_set_power");
++ return ScSetKeynodes::action_for_calculating_set_power;
 }
 
 ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAction & action)
@@ -312,8 +312,8 @@ Someone should subscribe your agent to event. It can be other agent, or any code
  set-agents-module/
  ├── CMakeLists.txt
  ├── agents/
- │   ├── sc_agent_for_сalculating_set_power.hpp
- │   └── sc_agent_for_сalculating_set_power.сpp
+ │   ├── sc_agent_for_calculating_set_power.hpp
+ │   └── sc_agent_for_calculating_set_power.сpp
  ├── keynodes/
  │   └── sc_set_keynodes.hpp
 +├── sc_set_module.hpp
@@ -340,12 +340,12 @@ class ScSetModule : public ScModule
 ```cpp
 #include "sc_set_module.hpp"
 
-#include "agents/sc_agent_for_сalculating_set_power.hpp"
+#include "agents/sc_agent_for_calculating_set_power.hpp"
 
 SC_MODULE_REGISTER(ScSetModule)
   ->Agent<ScAgentForCalculatingPower>();
   // This method pointers to module that agent class `ScAgentForCalculatingPower`
-  // should be subscribed to sc-event of adding output arc from sc-element
+  // should be subscribed to sc-event of adding outgoing sc-arc from sc-element
   // `action_initiated`. It is default parameter in these method if you want
   // register agent class derived from `ScActionAgent`.
 
@@ -392,12 +392,12 @@ To make sure how your agent works it is best to create tests and cover in them a
  set-agents-module/
  ├── CMakeLists.txt
  ├── agents/
- │   ├── sc_agent_for_сalculating_set_power.hpp
- │   └── sc_agent_for_сalculating_set_power.сpp
+ │   ├── sc_agent_for_calculating_set_power.hpp
+ │   └── sc_agent_for_calculating_set_power.сpp
  ├── keynodes/
  │   └── sc_set_keynodes.hpp
 +├── tests/
-+│   └── test_sc_agent_for_сalculating_set_power.cpp
++│   └── test_sc_agent_for_calculating_set_power.cpp
  ├── sc_set_module.hpp
  └── sc_set_module.cpp
 ```
@@ -427,12 +427,12 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 +add_test(NAME set-agents-tests COMMAND set-agents-tests)
 ```
 
-**test_sc_agent_for_сalculating_set_power.cpp**
+**test_sc_agent_for_calculating_set_power.cpp**
 
 ```cpp
 #include <sc-memory/sc_test.hpp>
 
-#include "agents/sc_agent_for_сalculating_set_power.hpp"
+#include "agents/sc_agent_for_calculating_set_power.hpp"
 #include "keynodes/sc_set_keynodes.hpp"
 
 using AgentTest = ScMemoryTest;
@@ -441,7 +441,7 @@ TEST_F(AgentTest, AgentForCalculatingSetPowerFinishedSuccessfully)
 {
   // Create action with class that your agent interpreters.
   ScAction action 
-    = m_ctx->CreateAction(ScSetKeynodes::action_for_сalculating_set_power);
+    = m_ctx->CreateAction(ScSetKeynodes::action_for_calculating_set_power);
 
   // Create set with two sc-elements.
   ScSet set = m_ctx->CreateSet();

@@ -36,14 +36,14 @@ TEST_F(ScEventTest, ThreadingSmoke)
   events.resize(eventsNum);
 
   std::vector<ScAddr> eventTypes = {
-      ScKeynodes::sc_event_add_input_arc,
-      ScKeynodes::sc_event_add_output_arc,
+      ScKeynodes::sc_event_add_incoming_arc,
+      ScKeynodes::sc_event_add_outgoing_arc,
       ScKeynodes::sc_event_add_edge,
-      ScKeynodes::sc_event_remove_input_arc,
-      ScKeynodes::sc_event_remove_output_arc,
-      ScKeynodes::sc_event_remove_edge,
-      ScKeynodes::sc_event_remove_element,
-      ScKeynodes::sc_event_change_content,
+      ScKeynodes::sc_event_erase_incoming_arc,
+      ScKeynodes::sc_event_erase_outgoing_arc,
+      ScKeynodes::sc_event_erase_edge,
+      ScKeynodes::sc_event_erase_element,
+      ScKeynodes::sc_event_change_link_content,
   };
 
   auto const randNode = [&nodes]()

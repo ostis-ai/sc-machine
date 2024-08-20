@@ -60,7 +60,7 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
         utils::ExceptionInvalidParams,
         "Not able to create elementary sc-event subscription due subscription sc-element is not valid.");
 
-  if (eventClassAddr == ScKeynodes::sc_event_change_content && !GetElementType(subscriptionElementAddr).IsLink())
+  if (eventClassAddr == ScKeynodes::sc_event_change_link_content && !GetElementType(subscriptionElementAddr).IsLink())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to create sc-event subscription of changing link content due subscription sc-element is not "
@@ -96,7 +96,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
   return eventWait;
 }
 
-std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
@@ -124,12 +124,12 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
   return eventWait;
 }
 
-std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiterWithCondition(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback)
 {
-  return CreateEventWaiterWithCondition(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
+  return CreateConditionWaiter(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
 }
 
 ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)
