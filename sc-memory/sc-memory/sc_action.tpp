@@ -43,7 +43,7 @@ ScAction & ScAction::FormResult(TScAddr const &... addrs)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to form result for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to form result for `" << this->Hash() << "` with class `" << GetClass().Hash()
                                         << "` due it had already been finished.");
 
   if (m_resultAddr.IsValid())
@@ -68,7 +68,7 @@ _SC_EXTERN ScAction & ScAction::UpdateResult(TScAddr const &... addrs)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to update result for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to update result for `" << this->Hash() << "` with class `" << GetClass().Hash()
                                           << "` due it had already been finished.");
 
   if (!m_resultAddr.IsValid())

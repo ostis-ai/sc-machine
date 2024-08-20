@@ -14,38 +14,44 @@
 ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const & actionClassAddr)
   : ScAddr(actionAddr)
   , m_ctx(ctx)
-  , m_actionClassAddr(actionClassAddr)
-  , m_resultAddr(ScAddr::Empty) {};
+  , m_resultAddr(ScAddr::Empty)
+{
+  SC_UNUSED(actionClassAddr);
+};
 
 ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr)
   : ScAddr(ctx->CreateNode(ScType::NodeConst))
   , m_ctx(ctx)
-  , m_actionClassAddr(actionClassAddr)
   , m_resultAddr(ScAddr::Empty)
 {
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_actionClassAddr, *this);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, actionClassAddr, *this);
 };
 
 ScAddr ScAction::GetClass()
 {
-  if (m_actionClassAddr.IsValid())
-    return m_actionClassAddr;
+  ScAddr resultClassAddr;
 
   ScIterator3Ptr const it3 = m_ctx->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
   while (it3->Next())
   {
-    m_actionClassAddr = it3->Get(2);
+    ScAddr const & actionClassAddr = it3->Get(0);
+    if (m_ctx->HelperCheckEdge(ScKeynodes::action_state, actionClassAddr, ScType::EdgeAccessConstPosPerm))
+      continue;
+
     ScIterator5Ptr const it5 = m_ctx->Iterator5(
         ScKeynodes::action,
         ScType::EdgeDCommonConst,
-        m_actionClassAddr,
+        actionClassAddr,
         ScType::EdgeAccessConstPosPerm,
         ScKeynodes::nrel_inclusion);
     if (it5->Next())
-      return m_actionClassAddr;
+    {
+      resultClassAddr = actionClassAddr;
+      break;
+    }
   }
 
-  return ScAddr::Empty;
+  return resultClassAddr;
 }
 
 ScAddr ScAction::GetArgument(size_t idx, ScAddr const & defaultArgumentAddr) const
@@ -88,13 +94,13 @@ ScStructure ScAction::GetResult() noexcept(false)
   if (!IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get result of action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to get result of action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                              << "` due it had not been initiated yet.");
 
   if (!IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get result of action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to get result of action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                              << "` due it had not been finished yet.");
 
   ScIterator5Ptr const & it5 = m_ctx->Iterator5(
@@ -102,7 +108,7 @@ ScStructure ScAction::GetResult() noexcept(false)
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash() << "` has not result structure.");
+        "Action `" << this->Hash() << "` with class `" << GetClass().Hash() << "` has not result structure.");
 
   m_resultAddr = it5->Get(2);
   return m_ctx->UseStructure(m_resultAddr);
@@ -113,7 +119,7 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to set result for `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to set result for `" << this->Hash() << "` with class `" << GetClass().Hash()
                                        << "` due it had already been finished.");
 
   if (m_resultAddr == structureAddr)
@@ -122,7 +128,7 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
   if (!m_ctx->IsElement(structureAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to set structure for action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to set structure for action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                                  << "`due settable structure is not valid.");
 
   if (m_resultAddr.IsValid())
@@ -142,13 +148,13 @@ sc_bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
   if (IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                         << "` due it had already been initiated.");
 
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                         << "` due it had already been finished.");
 
   auto wait = std::shared_ptr<ScWaiterActionFinished>(new ScWaiterActionFinished(*m_ctx, *this));
@@ -165,13 +171,13 @@ ScAction & ScAction::Initiate() noexcept(false)
   if (IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                         << "` due it had already been initiated.");
 
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                         << "` due it had already been finished.");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
@@ -184,13 +190,13 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
   if (!IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to finish action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to finish action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                       << "` due it had not been initiated yet.");
 
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to finish action `" << this->Hash() << "` with class `" << m_actionClassAddr.Hash()
+        "Not able to finish action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                       << "` due it had already been initiated.");
 
   if (!m_resultAddr.IsValid())

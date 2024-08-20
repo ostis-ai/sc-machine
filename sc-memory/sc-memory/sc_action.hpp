@@ -176,7 +176,6 @@ public:
 
 protected:
   class ScAgentContext * m_ctx;  ///< Context of the agent.
-  ScAddr m_actionClassAddr;      ///< Class of the action.
   ScAddr m_resultAddr;           ///< Result structure of the action.
 
   /*!

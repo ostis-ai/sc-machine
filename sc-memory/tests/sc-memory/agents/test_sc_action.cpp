@@ -9,8 +9,22 @@ using ScActionTest = ScMemoryTest;
 TEST_F(ScActionTest, CreateActionAndGetClass)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, testClassAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
+  ScAction action = m_ctx->CreateAction(testClassAddr);
+  EXPECT_EQ(action.GetClass(), testClassAddr);
+}
+
+TEST_F(ScActionTest, UseActionAndGetClass)
+{
+  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, testClassAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & actionAddr = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
+
+  ScAction action = m_ctx->UseAction(actionAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 
