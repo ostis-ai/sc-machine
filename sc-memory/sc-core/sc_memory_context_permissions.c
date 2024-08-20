@@ -238,7 +238,7 @@ sc_result _sc_memory_context_manager_on_identified_user(
   sc_unused(&connector_addr);
   sc_unused(&initiator_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
@@ -285,7 +285,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 {
   sc_unused(&initiator_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
@@ -297,16 +297,16 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 
   sc_memory_element_free(s_memory_default_ctx, connector_addr);
 
+  sc_addr const auth_arc_addr = sc_memory_arc_new(
+      s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_authenticated_user_addr, user_addr);
+  _sc_context_set_permissions_for_element(auth_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
+
   // Remove all negative sc-arcs
   sc_iterator3 * it3 = sc_iterator3_f_a_f_new(
       s_memory_default_ctx, manager->concept_authenticated_user_addr, sc_type_arc_neg_const_temp, user_addr);
   while (sc_iterator3_next(it3))
     sc_memory_element_free(s_memory_default_ctx, sc_iterator3_value(it3, 1));
   sc_iterator3_free(it3);
-
-  sc_addr const auth_arc_addr = sc_memory_arc_new(
-      s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_authenticated_user_addr, user_addr);
-  _sc_context_set_permissions_for_element(auth_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
   return SC_RESULT_OK;
 }
@@ -331,7 +331,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
@@ -388,7 +388,7 @@ sc_result _sc_memory_context_manager_on_new_user_in_users_set(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
@@ -437,7 +437,7 @@ sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
@@ -598,7 +598,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
@@ -699,7 +699,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
@@ -871,7 +871,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_withi
 
   sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_pos_const))
   {
     _sc_memory_context_manager_add_user_action_class_within_structure(
@@ -945,7 +945,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive accessory sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
