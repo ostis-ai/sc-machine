@@ -781,3 +781,29 @@ These examples can be reused for any of permissions classes described above.
 ---
 
 ## **Frequently Asked Questions**
+
+- [How to specify role for users in knowledge base and set permissions for this role?](#how-to-specify-role-for-users-in-knowledge-base-and-set-permissions-for-this-role)
+
+### **How to specify role for users in knowledge base and set permissions for this role?**
+
+A role for users should be understood as a class of users. You can specify permission for user classes.
+
+The following example shows how global and local permissions are specified for a class of users:
+
+```scs
+concept_users_class_1
+~> ..user_1;;
+
+nrel_users_set_action_class
+~> (concept_users_class_1 => action_read_from_sc_memory);;
+
+nrel_users_set_action_class_within_sc_structure
+~> (concept_users_class_1 => (action_read_from_sc_memory => ..structure));;
+
+..structure = [*
+    concept_users_class_2 ~> ..user_2;;
+    ..user_2 -> rrel_password: [password];;
+*];;
+```
+
+This example shows that all users from `concept_users_class_1` can view the entire knowledge base besides the structure describing users from `concept_users_class_2`.
