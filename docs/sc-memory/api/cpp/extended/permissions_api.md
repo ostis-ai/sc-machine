@@ -6,7 +6,7 @@
 
 This API allows to handle users and their permissions in knowledge base.
 
-## **What are user permissions?**
+## **Who are users of ostis-systems?**
 
 Users interact with ostis-systems. Users can be other systems, agents or people. All users of an ostis-system can perform actions on its knowledge base. There are six classes of user actions in knowledge base. Before a user action is  performed, it is checked whether the user has permissions to perform actions of the specified class.
 
@@ -19,7 +19,7 @@ user_mode = true
 ...
 ```
 
-## **How are user permissions handled?**
+## **How are users managed?**
 
 You can only work with memory through methods provided in `ScMemoryContext`. Each object of this class can be considered as an object that handles information about a user (including his permissions) when that user invokes methods through that object.
 
@@ -31,9 +31,177 @@ You can get user from object of context, if you need to handle this user.
 ScAddr const & userAddr = context.GetUser();
 ```
 
-In order for a user to successfully execute a method from `ScMemoryContext`, it is necessary that the knowledge base for that user specifies that it can perform the class of actions that corresponds to that method.
+If you create context via constructor, i.e. you can't use provided context, then this context will have guest user (user with `concept_guest_user`). It is default class for all users in sc-memory. You can specify permissions for this class. See documentation below to learn how to do it.
 
-## **Action classes used to handle user permissions**
+```cpp
+ScMemoryContext context;
+ScAddr const & guestUserAddr = context.GetUser();
+// This user should belongs 
+```
+
+## **How does the sc-machine identifies users?**
+
+You can identify user. User identification refers to the process of identifying a user on ostis-system, i.e., that the specified guest user is some user that is on the system.
+
+It is useful when your ostis-system implements functionality to work with guest users. The sc-machine provides users identification. You can identify some guest user as user that had been already registered in the system. Users identification allows you to implement your own agent to register/authorize users by password, token or something else.
+
+To identify user in the sc-memory, you should create connection between guest user and identified user.
+
+```scs
+..some_guest_user => nrel_identified_user: ..some_user;;
+```
+
+After that, all contexts that had specified guest user will have specified identified user. 
+
+To unidentify identified user, you can create reverse connection between specified guest user and specified identified user.
+
+## **How does the sc-machine authenticate users?**
+
+Users can be known in advance and then guest users and their identification is unnecessary, but all users should be authenticated in sc-memory. User authentication involves the process of verifying the authenticity of identified user and storing information about that user in sc-memory.
+
+To authenticate user in sc-memory, you should create connection between `concept_authentication_request` and user:
+
+```scs
+concept_authentication_request -> ..some_user;;
+```
+
+You should do it once, no more. After the sc-machine authenticates this user, it means that connection between `concept_authenticated_user` and user has been created and all contexts with this user have been authenticated.
+
+```scs
+concept_authenticated_user ~> ..some_user;;
+```
+
+If you remove this sc-arc between `concept_authenticated_user` and the user, then the user and all contexts with user will be also unauthenticated.
+
+## **Examples of using user identification and authentication**
+
+### **Example of user identification**
+
+You should identify guest user before authentication of user that will be identified. 
+
+```cpp
+ScMemoryContext context; // Some context with guest user.
+ScAddr const & guestUserAddr = context.GetUser();
+
+// Identify guest user.
+// Find a user, which was identified. You can provide your own logic of user
+// identification before.
+ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+
+ScAddr const & arcAddr = ScMemory::ms_globalContext->CreateEdge(
+  ScType::EdgeDCommonConst, guestUserAddr, userAddr1);
+ScMemory::ms_globalContext->CreateEdge(
+  ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_identified_user, arcAddr);
+// Only `ScMemory::ms_globalContext` can identify users.
+```
+
+After, you can authenticate identified user.
+
+### **Example of user authentication**
+
+To do this programly you can create waiter to wait sc-event of adding outgoing sc-arc from `concept_authenticated_user` and request user to be authenticated, i.e. create sc-arc between `concept_authentication_request` and user. After waiting this sc-event, your user will be authenticated.
+
+```cpp
+...
+// Find a user, which you want to authenticate.
+ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+
+// Before user authentication, specify that user isn't authenticated. 
+// This way, you can subscribe to sc-event of erasing negative sc-arc, 
+// because when you authenticate user, all existing negative sc-arcs 
+// between `concept_authenticated_user` and user are erased. This logic will 
+// help you to wait for user to be authenticated.
+ScMemory::ms_globalContext->CreateEdge(
+  ScType::EdgeAccessConstNegTemp, 
+  ScKeynodes::concept_authenticated_user,
+  userAddr1);
+
+// Create sc-event waiter to wait user to be authenticated.
+// You should subscribe to sc-event of erasing negative sc-arc incoming to
+// user.
+auto eventWaiter 
+  = ScMemory::ms_globalContext->CreateConditionWaiter<
+    ScEventEraseIncomingArc<ScType::EdgeAccessConstNegTemp>>(
+  userAddr1,
+  [&]() -> void
+  {
+    ScMemory::ms_globalContext->CreateEdge(
+      ScType::EdgeAccessConstPosPerm, 
+      ScKeynodes::concept_authentication_request, 
+      userAddr1);
+
+    // Only `ScMemory::ms_globalContext` can authenticate users.
+  },
+  [&](ScEventAddIncomingArc<ScType::EdgeAccessConstNegTemp> const & event) 
+    -> sc_bool
+  {
+    // Check that sc-arc from `concept_authenticated_user` is erased.
+    return event.GetArcSourceElement() 
+      == ScKeynodes::concept_authenticated_user;
+  });
+
+// After creation, call method `Wait` and specify time while you 
+// will wait sc-event for specified subscription sc-element.
+eventWaiter->Wait(200); // milliseconds
+// By default, this wait time equals to 5000 milliseconds.
+// You will wait until sc-event occurs or until specified time expires.
+```
+
+Yes, this way of waiting for user authentication is complicated, but it ensures that the NOT factors in the user information are accounted for. In the future, transaction mechanisms will be implemented in the sc-machine to simplify its API.
+
+### **Example of user unauthentication**
+
+To unauthenticate user, you must erase sc-arc between `concept_authenticated_user` and user.
+
+```cpp
+...
+// Find a user, which you want to unauthenticate.
+ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+
+// Create sc-event waiter to wait user to be unauthenticated.
+// You should subscribe to sc-event of adding negative sc-arc incoming to
+// user, because it will be added when you erase sc-arcs between 
+// `concept_authenticated_user` and user.
+auto eventWaiter 
+  = ScMemory::ms_globalContext->CreateConditionWaiter<
+    ScEventAddIncomingArc<ScType::EdgeAccessConstNegTemp>>(
+  userAddr1,
+  [&]() -> void
+  {
+    // Find and erase connection between `concept_authenticated_user`
+    // and user.
+    ScIterator3Ptr it3 = ScMemory::ms_globalContext->Iterator3(
+      ScKeynodes::concept_authenticated_user,
+      ScType::EdgeAccessConstPosTemp,
+      userAddr1
+    );
+    if (it3->Next())
+    {
+      ScMemory::ms_globalContext->EraseElement(it3->Get(1));
+    }
+
+    // Only `ScMemory::ms_globalContext` can unauthenticate users.
+  },
+  [&](ScEventAddIncomingArc<ScType::EdgeAccessConstNegTemp> const & event) 
+    -> sc_bool
+  {
+    // Check that sc-arc from `concept_authenticated_user` is added.
+    return event.GetArcSourceElement() 
+      == ScKeynodes::concept_authenticated_user;
+  });
+
+// After creation, call method `Wait` and specify time while you 
+// will wait sc-event for specified subscription sc-element.
+eventWaiter->Wait(200); // milliseconds
+```
+
+You can use these examples to identify guest users.
+
+## **How are user permissions managed?**
+
+### **Action classes used to handle user permissions**
+
+In order for a user to successfully execute a method from `ScMemoryContext`, it is necessary that the knowledge base for that user specifies that it can perform the class of actions that corresponds to that method.
 
 Description of action classes that users of ostis-system can perform in its knowledge base is represented below:
 
@@ -179,7 +347,7 @@ Each core method of [**C++ Core API**](../core/api.md) checks user permissions. 
   </tbody>
 </table>
 
-## **Global and local user permissions**
+### **Global and local user permissions**
 
 Depending on where the user can perform actions in the knowledge base, their permissions are divided into global and local permissions:
 
@@ -389,7 +557,7 @@ All sc-arcs from permissions classes (relations) must be permanent or temporary.
 
 ---
 
-## **Compatibility of global and local user permissions**
+### **Compatibility of global and local user permissions**
 
 Both global and local permissions can be described for the same user. It is important to know the logic of how they work together. For example, concrete user wants to handle some sc-construction. There may be several cases:
 
@@ -451,11 +619,11 @@ Both global and local permissions can be described for the same user. It is impo
 
 ---
 
-## **Examples of using user permissions**
+### **Examples of using user permissions**
 
 If you want to update permissions for a user, then you can describe them in the knowledge base in any format convenient for you (SCs-code or SCg-code) or do it programly.
 
-### **Example for adding (updating) user permissions**
+#### **Example for adding (updating) user permissions**
 
 If you want to add permissions for user constantly, specify permissions for this user in the knowledge base. See examples of local and global user permissions above.
 
@@ -471,8 +639,8 @@ ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
 // Before adding new user permissions, specify that user doesn't have these
 // permissions. This way, you can subscribe to sc-event of erasing negative 
 // sc-arc, because when you add new permissions for user, all existing 
-// negative sc-arcs to  permissions are erased. This logic will help you to 
-// wait for user's permissions will be changed.
+// negative sc-arcs to permissions are erased. This logic will help you to 
+// wait for user's permissions to be changed.
 ScAddr const & _actionClassArcAddr = context.CreateEdge(
   ScType::EdgeDCommonConst, 
   ScKeynodes::action_generate_in_sc_memory, 
@@ -490,7 +658,7 @@ context.CreateEdge(
 // You should subscribe to sc-event of erasing negative sc-arc. 
 // Negative sc-arc is erased when you added new permissions for user. 
 auto eventWaiter 
-  = context.CreateEventWaiter<
+  = context.CreateConditionWaiter<
     ScEventEraseOutgoingArc<ScType::EdgeAccessConstNegTemp>>(
   ScKeynodes::nrel_user_action_class_within_sc_structure,
   [&]() -> void
@@ -515,18 +683,33 @@ auto eventWaiter
     // permissions in sc-memory for other users, you should to update 
     // permissions for user of `context` or use `ScMemory::ms_globalContext` 
     // that has all permissions, by default.
+  },
+  [&](ScEventAddOutgoingArc<ScType::EdgeAccessConstNegTemp> const & event)
+    -> sc_bool
+  {
+    // Check that permissions for specified are updated.
+    ScAddr targetElementAddr = event.GetArcTargetElement();
+    if (context.GetElementType(event.GetArcTargetElement()) 
+        != ScType::EdgeDCommonConst)
+      return SC_FALSE;
+
+    ScAddr userAddr;
+    ScAddr permissionsAddr;
+    context.GetEdgeInfo(targetElementAddr, userAddr, permissionsAddr);
+
+    return userAddr == userAddr1;
   });
 
 // After creation, call method `Wait` and specify time while you 
-// will wait sc-event for specified subscription sc-element
+// will wait sc-event for specified subscription sc-element.
 eventWaiter->Wait(200); // milliseconds
 // By default, this wait time equals to 5000 milliseconds.
 // You will wait until sc-event occurs or until specified time expires.
 ```
 
-Yes, this way of waiting for permissions to change is complicated, but it ensures that the NOT factors in the user information are accounted for. In the future, transaction mechanisms will be implemented in the ыс0machine to simplify its API.
+Yes, this way of waiting for permissions to change is complicated, but it ensures that the NOT factors in the user information are accounted for. In the future, transaction mechanisms will be implemented in the sc-machine to simplify its API.
 
-### **Example for erasing user permissions**
+#### **Example for erasing user permissions**
 
 To erase permissions for a user, you must erase sc-arc from permissions class.
 
@@ -540,7 +723,7 @@ ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
 // You should subscribe to sc-event of adding negative sc-arc. 
 // Negative sc-arc is added when you erases user permissions. 
 auto eventWaiter 
-  = context.CreateEventWaiter<
+  = context.CreateConditionWaiter<
     ScEventAddOutgoingArc<ScType::EdgeAccessConstNegTemp>>(
   ScKeynodes::nrel_user_action_class_within_sc_structure,
   [&]() -> void
@@ -558,7 +741,7 @@ auto eventWaiter
       "_action_class_arc",
       ScType::EdgeAccessVarPosTemp >> "_permissions_arc",
       ScKeynodes::nrel_user_action_class_within_sc_structure 
-    )
+    );
     ScTemplateSearchResult result;
     if (context.HelperSearchTemplate(permissionsTemplate, result))
     {
@@ -571,13 +754,26 @@ auto eventWaiter
     // permissions in sc-memory for other users, you should to update 
     // permissions for user of `context` or use `ScMemory::ms_globalContext` 
     // that has all permissions, by default.
+  },
+  [&](ScEventAddOutgoingArc<ScType::EdgeAccessConstNegTemp> const & event)
+    -> sc_bool
+  {
+    // Check that permissions for specified are erased.
+    ScAddr targetElementAddr = event.GetArcTargetElement();
+    if (context.GetElementType(event.GetArcTargetElement()) 
+        != ScType::EdgeDCommonConst)
+      return SC_FALSE;
+
+    ScAddr userAddr;
+    ScAddr permissionsAddr;
+    context.GetEdgeInfo(targetElementAddr, userAddr, permissionsAddr);
+
+    return userAddr == userAddr1;
   });
 
 // After creation, call method `Wait` and specify time while you 
-// will wait sc-event for specified subscription sc-element
+// will wait sc-event for specified subscription sc-element.
 eventWaiter->Wait(200); // milliseconds
-// By default, this wait time equals to 5000 milliseconds.
-// You will wait until sc-event occurs or until specified time expires.
 ```
 
 These examples can be reused for any of permissions classes described above.
