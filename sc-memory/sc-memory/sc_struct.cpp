@@ -14,12 +14,6 @@ ScSet::ScSet(ScMemoryContext * ctx, ScAddr const & setAddr)
 {
 }
 
-ScSet::ScSet(ScMemoryContext & ctx, ScAddr const & setAddr)
-  : ScAddr(setAddr.IsValid() ? setAddr : ctx.CreateNode(ScType::NodeConst))
-  , m_ctx(&ctx)
-{
-}
-
 ScSet::~ScSet() = default;
 
 ScSet::ScSet(ScSet const & other)

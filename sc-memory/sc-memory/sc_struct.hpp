@@ -47,8 +47,6 @@ public:
 protected:
   _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr = ScAddr::Empty);
 
-  _SC_EXTERN ScSet(ScMemoryContext & ctx, ScAddr const & setAddr = ScAddr::Empty);
-
 private:
   ScMemoryContext * m_ctx;
 };

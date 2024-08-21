@@ -903,6 +903,8 @@ TEST_F(ScEventTest, InvalidEvents)
   EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   eventClassAddr = ScKeynodes::sc_event_change_link_content;
+  EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+
   nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }

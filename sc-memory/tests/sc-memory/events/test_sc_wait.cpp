@@ -64,7 +64,7 @@ TEST_F(ScWaiterTest, Smoke)
   EXPECT_TRUE(m_addr.IsValid());
 }
 
-TEST_F(ScWaiterTest, Valid)
+TEST_F(ScWaiterTest, EventWaiter)
 {
   WaitTestData data(m_addr);
   auto eventWaiter = m_ctx->CreateEventWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
@@ -82,13 +82,32 @@ TEST_F(ScWaiterTest, Valid)
   EXPECT_TRUE(data.m_isDone);
 }
 
-TEST_F(ScWaiterTest, TimeOut)
+TEST_F(ScWaiterTest, EventWaiterNotSuccess)
 {
   EXPECT_FALSE(
       m_ctx->CreateEventWaiter<ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>(m_addr)->Wait(1000));
 }
 
-TEST_F(ScWaiterTest, CondValid)
+TEST_F(ScWaiterTest, EventWaiterWithEventTypeKeynode)
+{
+  WaitTestData data(m_addr);
+  auto eventWaiter = m_ctx->CreateEventWaiter(
+      ScKeynodes::sc_event_generate_incoming_arc,
+      m_addr,
+      [&data]()
+      {
+        EmitEvent(data);
+      });
+  EXPECT_TRUE(eventWaiter->Wait(
+      5000,
+      [&data]()
+      {
+        data.m_isDone = true;
+      }));
+  EXPECT_TRUE(data.m_isDone);
+}
+
+TEST_F(ScWaiterTest, ConditionWaiter)
 {
   WaitTestData data(m_addr);
   auto waiter = m_ctx->CreateConditionWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
@@ -106,7 +125,7 @@ TEST_F(ScWaiterTest, CondValid)
   EXPECT_TRUE(data.m_isDone);
 }
 
-TEST_F(ScWaiterTest, CondValidFalse)
+TEST_F(ScWaiterTest, ConditionWaiterNotSuccess)
 {
   WaitTestData data(m_addr);
 
@@ -133,6 +152,25 @@ TEST_F(ScWaiterTest, CondValidFalse)
         result = SC_FALSE;
       }));
   EXPECT_FALSE(result);
+  EXPECT_TRUE(data.m_isDone);
+}
+
+TEST_F(ScWaiterTest, ConditionWaiterWithEventTypeKeynode)
+{
+  WaitTestData data(m_addr);
+  auto waiter = m_ctx->CreateConditionWaiter(
+      ScKeynodes::sc_event_generate_incoming_arc,
+      m_addr,
+      [&data]()
+      {
+        EmitEvent(data);
+      },
+      [](ScElementaryEvent const &) -> sc_bool
+      {
+        return SC_TRUE;
+      });
+
+  EXPECT_TRUE(waiter->Wait());
   EXPECT_TRUE(data.m_isDone);
 }
 
@@ -201,6 +239,8 @@ TEST_F(ScWaiterTest, InvalidEventsFotWaiters)
   EXPECT_THROW(m_ctx->CreateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   eventClassAddr = ScKeynodes::sc_event_change_link_content;
+  EXPECT_THROW(m_ctx->CreateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+
   nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->CreateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
@@ -215,6 +255,8 @@ TEST_F(ScWaiterTest, InvalidEventsFotWaitersWithConditions)
   EXPECT_THROW(m_ctx->CreateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   eventClassAddr = ScKeynodes::sc_event_change_link_content;
+  EXPECT_THROW(m_ctx->CreateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+
   nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->CreateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
