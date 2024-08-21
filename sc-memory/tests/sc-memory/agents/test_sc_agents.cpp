@@ -216,6 +216,26 @@ TEST_F(ScAgentTest, ATestDoProgramTwo)
   m_ctx->UnsubscribeAgent<ATestDoProgramTwo>();
 }
 
+TEST_F(ScAgentTest, ATestInvalidAbstractAgent)
+{
+  ATestDoProgram agent;
+  EXPECT_NO_THROW(agent.GetAbstractAgent());
+  EXPECT_THROW(agent.GetEventClass(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetEventSubscriptionElement(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionInvalidState);
+  EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
+  EXPECT_NO_THROW(agent.GetResultConditionTemplate());
+}
+
+TEST_F(ScAgentTest, ATestCallWithoutEventInitiation)
+{
+  ATestDoProgram agent;
+  ScAction action = m_ctx->CreateAction(agent.GetActionClass()).Initiate();
+  agent.DoProgram(action);
+  EXPECT_TRUE(ATestDoProgram::msWaiter.Wait());
+}
+
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
 {
   ATestCheckResult::msWaiter.Reset();

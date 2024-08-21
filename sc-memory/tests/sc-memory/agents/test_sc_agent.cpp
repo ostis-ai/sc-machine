@@ -166,20 +166,6 @@ ScAddr ATestDoProgramOne::GetActionClass() const
 
 ScResult ATestDoProgramOne::DoProgram(ScActionEvent const &, ScAction & action)
 {
-  auto [firstArgument, secondArgument] = action.GetArguments<2>();
-
-  if (!firstArgument.IsValid())
-  {
-    msWaiter.Unlock();
-    return action.FinishWithError();
-  }
-
-  if (!secondArgument.IsValid())
-  {
-    msWaiter.Unlock();
-    return action.FinishUnsuccessfully();
-  }
-
   msWaiter.Unlock();
   return action.FinishSuccessfully();
 }
@@ -193,19 +179,25 @@ ScAddr ATestDoProgramTwo::GetActionClass() const
 
 ScResult ATestDoProgramTwo::DoProgram(ScAction & action)
 {
-  auto [firstArgument, secondArgument] = action.GetArguments<2>();
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
 
-  if (!firstArgument.IsValid())
-  {
-    msWaiter.Unlock();
-    return action.FinishWithError();
-  }
+/// --------------------------------------
 
-  if (!secondArgument.IsValid())
-  {
-    msWaiter.Unlock();
-    return action.FinishUnsuccessfully();
-  }
+ScAddr ATestDoProgram::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScAddr ATestDoProgram::GetAbstractAgent() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;  // invalid abstract agent
+}
+
+ScResult ATestDoProgram::DoProgram(ScAction & action)
+{
+  GetAbstractAgent();
 
   msWaiter.Unlock();
   return action.FinishSuccessfully();
