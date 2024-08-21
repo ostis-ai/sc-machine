@@ -857,7 +857,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEvent)
 
 TEST_F(ScEventTest, InvalidSubscriptions)
 {
-  ScAddr nodeAddr{23124323};
+  ScAddr nodeAddr;
 
   EXPECT_THROW(
       m_ctx->CreateElementaryEventSubscription<ScEventGenerateConnector<ScType::EdgeAccess>>(nodeAddr, {}),
@@ -895,10 +895,14 @@ TEST_F(ScEventTest, InvalidSubscriptions)
 
 TEST_F(ScEventTest, InvalidEvents)
 {
-  ScAddr nodeAddr{23124323};
-  ScAddr eventClassAddr{23124323};
+  ScAddr nodeAddr;
+  ScAddr eventClassAddr;
   EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
+  eventClassAddr = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
+
+  eventClassAddr = ScKeynodes::sc_event_change_link_content;
   nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
