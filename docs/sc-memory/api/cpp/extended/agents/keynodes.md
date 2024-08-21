@@ -25,6 +25,14 @@ static ScKeynode const my_keynode_class{
 !!! warning
     Use this class only for static object declarations.
 
+Also, you can convert any keynode to string.
+
+```cpp
+std::string const & systemIdtf = my_keynode_class;
+```
+
+It can be useful if you want logging keynode system identifiers.
+
 ## **ScTemplateKeynode**
 
 It is a base class to create sc-templates as keynodes. This class is useful when you want use programmly represented sc-template in different places in the code or when you don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.

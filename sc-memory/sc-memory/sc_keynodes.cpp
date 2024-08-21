@@ -56,6 +56,11 @@ ScKeynode & ScKeynode::operator=(ScKeynode const & other)
   return *this;
 }
 
+ScKeynode::operator std::string() const
+{
+  return std::string(m_sysIdtf);
+}
+
 void ScKeynode::Initialize(ScMemoryContext * context)
 {
   ScSystemIdentifierQuintuple quintuple;

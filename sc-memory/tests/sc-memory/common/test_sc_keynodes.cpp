@@ -155,6 +155,11 @@ TEST_F(ScKeynodesTest, GetRrelIndex)
   EXPECT_THROW(ScKeynodes::GetRrelIndex(ScKeynodes::GetRrelIndexNum()), utils::ExceptionInvalidParams);
 }
 
+TEST_F(ScKeynodesTest, KeynodeToString)
+{
+  EXPECT_EQ(std::string(ScKeynodes::action), "action");
+}
+
 TEST_F(ScKeynodesTest, Events)
 {
   ScAddr keynodes[] = {

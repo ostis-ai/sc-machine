@@ -93,6 +93,8 @@ public:
 
   _SC_EXTERN ScKeynode & operator=(ScKeynode const & other);
 
+  _SC_EXTERN operator std::string() const;
+
 protected:
   std::string_view m_sysIdtf;
   ScType m_type;
