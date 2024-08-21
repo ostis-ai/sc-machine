@@ -260,7 +260,7 @@ public:
   // Here the first argument in constructor is system identifier of 
   // sc-keynode and the second argument is sc-type of this sc-keynode.
   // If there is no sc-keynode with such system identifier in 
-  // knowledge base, then the one with specified sc-type will be created.
+  // knowledge base, then the one with specified sc-type will be generated.
   // You don't should specify type of sc-keynode here, be default it is 
   // `ScType::NodeConst`. But you sure that your code will use this 
   // keynode with type `ScType::NodeConst` correctly.
@@ -449,7 +449,7 @@ TEST_F(AgentTest, AgentForCalculatingSetPowerFinishedSuccessfully)
   ScAddr nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
   set << nodeAddr1 << nodeAddr2;
 
-  // Set created set as argument for action.
+  // Set generated set as argument for action.
   action.SetArgument(1, set);
 
   // Initiate and wait while action will be finished.

@@ -142,7 +142,7 @@ SC_MODULE_REGISTER(MyModule)
 So you can load the initial specification for your agent into the knowledge base from the code. You can change it or not, it depends on your task.
 
 !!! note
-    If specification for an agent already exists in the knowledge base, no new connections will be created, i.e. there will be no duplicates.
+    If specification for an agent already exists in the knowledge base, no new connections will be generated, i.e. there will be no duplicates.
 
 !!! note
     All provided arguments must be valid, otherwise you module will not be registered, because errors will occur.

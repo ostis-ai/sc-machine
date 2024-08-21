@@ -32,7 +32,7 @@ ScAgentContext context;
 ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;
-// Create sc-event subscription for created sc-node (listen sc-element) 
+// Create sc-event subscription for generated sc-node (listen sc-element) 
 // and provide on-event callback.
 auto eventSubscription = context.CreateElementaryEventSubscription<MyEventType>(
   nodeAddr,
@@ -44,7 +44,7 @@ auto eventSubscription = context.CreateElementaryEventSubscription<MyEventType>(
 // Initiate sc-event. Create sc-arc from `nodeAddr`.
 ScAddr const & otherNodeAddr = context.CreateNode(ScType:::NodeConst);
 context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
-// After that sc-arc will be created, sc-event will occur 
+// After that sc-arc will be generated, sc-event will occur 
 // and specified on-event callback will be called.
 ...
 ```
@@ -63,7 +63,7 @@ If you don't know in advance what sc-event you need to subscribe for, you can us
 ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 // Choose sc-event type to subscribe or find it.
 ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_outgoing_arc;
-// Create sc-event subscription for created sc-node (listen sc-element) 
+// Create sc-event subscription for generated sc-node (listen sc-element) 
 // and provide on-event callback.
 auto eventSubscription = context.CreateElementaryEventSubscription(
   eventClassAddr,
@@ -76,7 +76,7 @@ auto eventSubscription = context.CreateElementaryEventSubscription(
 // Initiate sc-event. Create sc-arc from `nodeAddr`.
 ScAddr const & otherNodeAddr = context.CreateNode(ScType:::NodeConst);
 context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
-// After that sc-arc will be created, sc-event will occur 
+// After that sc-arc will be generated, sc-event will occur 
 // and specified on-event callback will be called.
 ...
 ```
@@ -94,7 +94,7 @@ You can create waiter for some sc-event. It is useful when your agent should wai
 ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;
-// Create sc-event waiter for created sc-node (listen sc-element).
+// Create sc-event waiter for generated sc-node (listen sc-element).
 auto eventWaiter = context.CreateEventWaiter<MyEventType>(
   nodeAddr,
   []() -> void
@@ -115,7 +115,7 @@ eventWaiter->Wait(200); // milliseconds
 // Some other code should initiate sc-event (create sc-arc from `nodeAddr`).
 ScAddr const & otherNodeAddr = context.CreateNode(ScType:::NodeConst);
 context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
-// After that sc-arc will be created and waiter will be resolved.
+// After that sc-arc will be generated and waiter will be resolved.
 ...
 ```
 
@@ -130,7 +130,7 @@ Just like for the method of creating sc-event subscription, if you don't know sc
 ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
 // Choose sc-event type to subscribe or find it.
 ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_outgoing_arc;
-// Create sc-event waiter for created sc-node (listen sc-element)   
+// Create sc-event waiter for generated sc-node (listen sc-element)   
 // and provide on-event callback.
 auto eventWaiter = context.CreateEventWaiter(
   eventClassAddr,
@@ -151,7 +151,7 @@ In addition to the waiting time, you can also specify check that will be called 
 ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;
-// Create sc-event waiter for created sc-node (listen sc-element).
+// Create sc-event waiter for generated sc-node (listen sc-element).
 auto eventWaiter = context.CreateConditionWaiter<MyEventType>(
   nodeAddr,
   []() -> void
@@ -175,7 +175,7 @@ eventWaiter->Wait(200); // milliseconds
 // Some other code should initiate sc-event (create sc-arc from `nodeAddr`).
 ScAddr const & otherNodeAddr = context.CreateNode(ScType:::NodeConst);
 context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
-// After that sc-arc will be created and waiter will be resolved.
+// After that sc-arc will be generated and waiter will be resolved.
 ...
 ```
 
@@ -187,9 +187,9 @@ Waiters with condition are very useful, when you want to call some agent and wai
 ScAddr const & actionAddr = context.CreateNode(ScType::NodeConst);
 context.CreateEdge(
     ScType::EdgeAccessConstPosPerm, MyKeynodes::my_action_class, actionAddr);
-// Create sc-event waiter for created action (listen sc-element).
+// Create sc-event waiter for generated action (listen sc-element).
 // You should wait while sc-arc in action from `action_finished_successfully`
-// will created.
+// will generated.
 auto eventWaiter = context.CreateConditionWaiter<
   ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   actionAddr,
