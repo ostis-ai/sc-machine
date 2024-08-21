@@ -26,7 +26,7 @@ agent_for_calculating_set_power
 <- abstract_sc_agent;
 => nrel_primary_initiation_condition: 
     // Class of sc-event and listen (subscription) sc-element
-    (sc_event_add_outgoing_arc => action_initiated); 
+    (sc_event_generate_outgoing_arc => action_initiated); 
 => nrel_sc_agent_action_class:
     // Class of actions to be interpreted by agent
     action_calculate_set_power; 
@@ -113,9 +113,9 @@ This class can be used for all classes of agents. The example using this class i
 #include <sc-memory/sc_agent.hpp>
 
 // Inherit your agent class from `ScAgent` class and specify template argument 
-// as sc-event class. Here `ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>` 
+// as sc-event class. Here `ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>` 
 // is type of event to which the given agent reacts.
-class MyAgent : public ScAgent<ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>
+class MyAgent : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   // Here you should specify class of actions which the given agent interpreters. 
@@ -124,7 +124,7 @@ public:
   // Here you should implement program of the given agent. 
   // This overriding is required.
   ScResult DoProgram(
-    ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, 
+    ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, 
     ScAction & action) override;
 
   // Other user-defined methods.
@@ -189,7 +189,7 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 
 In addition to agents that initiate actions themselves and then interpret these actions, there is a need to implement agents that interpret actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
 
-This class can be only used for agents that should be triggered to sc-event of adding output sc-arc from `action_initiated` class. These agents are named action agents. Action agent interpreters action initiated by other agent.
+This class can be only used for agents that should be triggered to sc-event of generating output sc-arc from `action_initiated` class. These agents are named action agents. Action agent interpreters action initiated by other agent.
 
 ```cpp
 // File my_agent.hpp
@@ -218,7 +218,7 @@ public:
     `ScActionAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
 
 !!! note
-    `ScActionEvent` is alias for `ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
+    `ScActionEvent` is alias for `ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
 
 ---
 
@@ -431,7 +431,7 @@ ScAddr MyAgent::GetEventClass() const
 {
   // You must specify valid sc-address of event class. 
   // In other case, the given sc-agent can’t be registered in sc-memory.
-  return ScKeynodes::sc_event_add_outgoing_arc;
+  return ScKeynodes::sc_event_generate_outgoing_arc;
 }
 ```
 
@@ -506,7 +506,7 @@ sc_bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
  // ScActionEvent is event type on which the given agent triggered. 
  // It is encapsulate information about sc-event. The provided event 
  // is event on which the agent is triggered  right now. It has methods 
- // to get information about initiated sc-event: GetUser, GetAddedArc, 
+ // to get information about initiated sc-event: GetUser, GetGeneratedArc, 
  // GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.
  // All events are not copyable and movable.
  return m_memoryCtx.HelperCheckEdge(

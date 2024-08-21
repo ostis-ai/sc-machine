@@ -356,7 +356,7 @@ TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
   ATestCheckResult agent;
   EXPECT_THROW(agent.GetAbstractAgent(), utils::ExceptionInvalidState);
   EXPECT_NO_THROW(agent.GetActionClass());
-  EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_add_outgoing_arc);
+  EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_generate_outgoing_arc);
   EXPECT_THROW(agent.GetEventSubscriptionElement(), utils::ExceptionInvalidState);
   EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionInvalidState);
   EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionInvalidState);

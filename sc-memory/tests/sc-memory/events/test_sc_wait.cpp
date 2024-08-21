@@ -67,7 +67,7 @@ TEST_F(ScWaiterTest, Smoke)
 TEST_F(ScWaiterTest, Valid)
 {
   WaitTestData data(m_addr);
-  auto eventWaiter = m_ctx->CreateEventWaiter<ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  auto eventWaiter = m_ctx->CreateEventWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
       m_addr,
       [&data]()
       {
@@ -84,19 +84,20 @@ TEST_F(ScWaiterTest, Valid)
 
 TEST_F(ScWaiterTest, TimeOut)
 {
-  EXPECT_FALSE(m_ctx->CreateEventWaiter<ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>>(m_addr)->Wait(1000));
+  EXPECT_FALSE(
+      m_ctx->CreateEventWaiter<ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>(m_addr)->Wait(1000));
 }
 
 TEST_F(ScWaiterTest, CondValid)
 {
   WaitTestData data(m_addr);
-  auto waiter = m_ctx->CreateConditionWaiter<ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  auto waiter = m_ctx->CreateConditionWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
       m_addr,
       [&data]()
       {
         EmitEvent(data);
       },
-      [](ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
+      [](ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
       {
         return SC_TRUE;
       });
@@ -109,13 +110,13 @@ TEST_F(ScWaiterTest, CondValidFalse)
 {
   WaitTestData data(m_addr);
 
-  auto waiter = m_ctx->CreateConditionWaiter<ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  auto waiter = m_ctx->CreateConditionWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
       m_addr,
       [&data]()
       {
         EmitEvent(data);
       },
-      [](ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
+      [](ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
       {
         return SC_FALSE;
       });
@@ -140,11 +141,13 @@ TEST_F(ScWaiterTest, InvalidWaiters)
   ScAddr nodeAddr{23124323};
 
   EXPECT_THROW(
-      m_ctx->CreateEventWaiter<ScEventAddOutgoingArc<ScType::EdgeAccess>>(nodeAddr, {}), utils::ExceptionInvalidParams);
+      m_ctx->CreateEventWaiter<ScEventGenerateOutgoingArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateEventWaiter<ScEventAddIncomingArc<ScType::EdgeAccess>>(nodeAddr, {}), utils::ExceptionInvalidParams);
+      m_ctx->CreateEventWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateEventWaiter<ScEventAddEdge<ScType::EdgeAccess>>(nodeAddr, {}), utils::ExceptionInvalidParams);
+      m_ctx->CreateEventWaiter<ScEventGenerateEdge<ScType::EdgeAccess>>(nodeAddr, {}), utils::ExceptionInvalidParams);
   EXPECT_THROW(
       m_ctx->CreateEventWaiter<ScEventEraseOutgoingArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
@@ -165,13 +168,14 @@ TEST_F(ScWaiterTest, InvalidWaitersWithCondition)
   ScAddr nodeAddr{23124323};
 
   EXPECT_THROW(
-      m_ctx->CreateConditionWaiter<ScEventAddOutgoingArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      m_ctx->CreateConditionWaiter<ScEventGenerateOutgoingArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateConditionWaiter<ScEventAddIncomingArc<ScType::EdgeAccess>>(nodeAddr, {}),
+      m_ctx->CreateConditionWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);
   EXPECT_THROW(
-      m_ctx->CreateConditionWaiter<ScEventAddEdge<ScType::EdgeAccess>>(nodeAddr, {}), utils::ExceptionInvalidParams);
+      m_ctx->CreateConditionWaiter<ScEventGenerateEdge<ScType::EdgeAccess>>(nodeAddr, {}),
+      utils::ExceptionInvalidParams);
   EXPECT_THROW(
       m_ctx->CreateConditionWaiter<ScEventEraseOutgoingArc<ScType::EdgeAccess>>(nodeAddr, {}),
       utils::ExceptionInvalidParams);

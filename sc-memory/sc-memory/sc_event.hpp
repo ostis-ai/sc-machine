@@ -123,23 +123,23 @@ private:
 };
 
 /*!
- * @class ScEventAddArc
+ * @class ScEventGenerateArc
  * @brief Represents an event where an arc is added.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventAddArc : public TScElementaryEvent<arcType>
+class _SC_EXTERN ScEventGenerateArc : public TScElementaryEvent<arcType>
 {
 public:
-  _SC_EXTERN virtual ScAddr GetAddedArc() const;
+  _SC_EXTERN virtual ScAddr GetGeneratedArc() const;
 
-  _SC_EXTERN virtual ScType GetAddedArcType() const;
+  _SC_EXTERN virtual ScType GetGeneratedArcType() const;
 
   _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
 
   _SC_EXTERN virtual ScAddr GetArcTargetElement() const;
 
 protected:
-  _SC_EXTERN ScEventAddArc(
+  _SC_EXTERN ScEventGenerateArc(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
@@ -149,11 +149,11 @@ protected:
 };
 
 /*!
- * @class ScEventAddEdge
+ * @class ScEventGenerateEdge
  * @brief Represents an event where an edge is added.
  */
 template <ScType const & edgeType>
-class _SC_EXTERN ScEventAddEdge : public TScElementaryEvent<edgeType>
+class _SC_EXTERN ScEventGenerateEdge : public TScElementaryEvent<edgeType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -161,16 +161,16 @@ class _SC_EXTERN ScEventAddEdge : public TScElementaryEvent<edgeType>
   friend class ScAgentAbstract;
 
 public:
-  _SC_EXTERN virtual ScAddr GetAddedEdge() const;
+  _SC_EXTERN virtual ScAddr GetGeneratedEdge() const;
 
-  _SC_EXTERN virtual ScType GetAddedEdgeType() const;
+  _SC_EXTERN virtual ScType GetGeneratedEdgeType() const;
 
   _SC_EXTERN virtual ScAddr GetEdgeSourceElement() const;
 
   _SC_EXTERN virtual ScAddr GetEdgeTargetElement() const;
 
 protected:
-  _SC_EXTERN ScEventAddEdge(
+  _SC_EXTERN ScEventGenerateEdge(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
@@ -178,15 +178,15 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_add_edge;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_edge;
 };
 
 /*!
- * @class ScEventAddOutgoingArc
+ * @class ScEventGenerateOutgoingArc
  * @brief Represents an event where an outgoing sc-arc is added.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventAddOutgoingArc : public ScEventAddArc<arcType>
+class _SC_EXTERN ScEventGenerateOutgoingArc : public ScEventGenerateArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -194,7 +194,7 @@ class _SC_EXTERN ScEventAddOutgoingArc : public ScEventAddArc<arcType>
   friend class ScAgentAbstract;
 
 protected:
-  _SC_EXTERN ScEventAddOutgoingArc(
+  _SC_EXTERN ScEventGenerateOutgoingArc(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
@@ -202,15 +202,15 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_add_outgoing_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_outgoing_arc;
 };
 
 /*!
- * @class ScEventAddIncomingArc
+ * @class ScEventGenerateIncomingArc
  * @brief Represents an event where an incoming sc-arc is added.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventAddIncomingArc final : public ScEventAddArc<arcType>
+class _SC_EXTERN ScEventGenerateIncomingArc final : public ScEventGenerateArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -223,7 +223,7 @@ public:
   _SC_EXTERN ScAddr GetArcTargetElement() const override;
 
 protected:
-  _SC_EXTERN ScEventAddIncomingArc(
+  _SC_EXTERN ScEventGenerateIncomingArc(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
@@ -231,7 +231,7 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_add_incoming_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_incoming_arc;
 };
 
 /*!
@@ -394,4 +394,4 @@ private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_change_link_content;
 };
 
-using ScActionEvent = ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>;
+using ScActionEvent = ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;

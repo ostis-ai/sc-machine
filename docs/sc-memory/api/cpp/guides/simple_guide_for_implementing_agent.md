@@ -147,7 +147,7 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
   // is triggered. It is encapsulate information about sc-event. 
   // The provided event is event on which the agent is triggered right now. 
   // It has methods to get information about initiated sc-event: `GetUser`, 
-  // `GetAddedArc`, `GetSubscriptionElement`, `GetArcSourceElement`, 
+  // `GetGeneratedArc`, `GetSubscriptionElement`, `GetArcSourceElement`, 
   // `GetArcTargetElement`. All events are not copyable and not movable. 
   // ScAction is derived from ScObject.
 

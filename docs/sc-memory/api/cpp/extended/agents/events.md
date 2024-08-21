@@ -25,9 +25,9 @@ Within the OSTIS technology, events are considered only situations in which rela
 The sc-machine provides functionality for subscribing to the following syntactic elementary types of sc-events:
 
 * `ScElementaryEvent` is base class for all sc-events, it can be used to handle all sc-events for specified sc-element;
-* `ScEventAddOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is created;
-* `ScEventAddIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is created;
-* `ScEventAddEdge`, emits each time, when sc-edge from or to specified sc-element is created;
+* `ScEventGenerateOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is created;
+* `ScEventGenerateIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is created;
+* `ScEventGenerateEdge`, emits each time, when sc-edge from or to specified sc-element is created;
 * `ScEventEraseOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is removing;
 * `ScEventEraseIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is removing;
 * `ScEventEraseEdge`, emits each time, when sc-edge from or to specified sc-element is removing;
@@ -37,9 +37,9 @@ The sc-machine provides functionality for subscribing to the following syntactic
 The following classes correspond to them:
 
 * `class ScElementaryEvent`;
-* `template <ScType const & arcType> class ScEventAddOutgoingArc`;
-* `template <ScType const & arcType> class ScEventAddIncomingArc`;
-* `template <ScType const & edgeType> class ScEventAddEdge`;
+* `template <ScType const & arcType> class ScEventGenerateOutgoingArc`;
+* `template <ScType const & arcType> class ScEventGenerateIncomingArc`;
+* `template <ScType const & edgeType> class ScEventGenerateEdge`;
 * `template <ScType const & arcType> class ScEventEraseOutgoingArc`;
 * `template <ScType const & arcType> class ScEventEraseIncomingArc`;
 * `template <ScType const & edgeType> class ScEventEraseEdge`;
@@ -93,7 +93,7 @@ To get information about sc-elements in initiated sc-event, you can use this met
   </tr>
 
   <tr>
-    <td><strong>ScEventAddOutgoingArc</strong></td>
+    <td><strong>ScEventGenerateOutgoingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -110,7 +110,7 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
   </tr>
 
   <tr>
-    <td><strong>ScEventAddIncomingArc</strong></td>
+    <td><strong>ScEventGenerateIncomingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -127,7 +127,7 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
   </tr>
 
   <tr>
-    <td><strong>ScEventAddEdge</strong></td>
+    <td><strong>ScEventGenerateEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -231,33 +231,33 @@ auto const [subscriptionElementAddr, _1, _2] = event.GetTriple();
 !!! note
     All described methods of `ScElementary` class are public and accessible from child classes.
 
-### **ScEventAddOutgoingArc** and **ScEventAddIncomingArc**
+### **ScEventGenerateOutgoingArc** and **ScEventGenerateIncomingArc**
 
-`ScEventAddOutgoingArc` is class that represents sc-event of adding output sc-arc from specified sc-element. `ScEventAddIncomingArc` represents sc-event of adding input sc-arc to specified sc-element.
+`ScEventGenerateOutgoingArc` is class that represents sc-event of generating output sc-arc from specified sc-element. `ScEventGenerateIncomingArc` represents sc-event of generating input sc-arc to specified sc-element.
 
-#### **GetAddedArc**
+#### **GetGeneratedArc**
 
-Method `GetAddedArc` returns added sc-arc from (for `ScEventAddOutgoingArc`) or to (for `ScEventAddIncomingArc) listen sc-element (subscription sc-element).
+Method `GetGeneratedArc` returns added sc-arc from (for `ScEventGenerateOutgoingArc`) or to (for `ScEventGenerateIncomingArc) listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const arcAddr = event.GetAddedArc();
+ScAddr const arcAddr = event.GetGeneratedArc();
 ...
 ```
 
-#### **GetAddedArcType**
+#### **GetGeneratedArcType**
 
 It returns sc-type of added sc-arc.
 
 ```cpp
 ...
-ScType const arcType = event.GetAddedArcType();
+ScType const arcType = event.GetGeneratedArcType();
 ...
 ```
 
 #### **GetArcSourceElement**
 
-To get source and target sc-elements of added sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventAddOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventAddIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
+To get source and target sc-elements of added sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventGenerateOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventGenerateIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
 
 ```cpp
 ...
@@ -273,27 +273,27 @@ ScAddr const targetElementAddr = event.GetArcTargetElement();
 ...
 ```
 
-### **ScEventAddEdge**
+### **ScEventGenerateEdge**
 
 This class represents sc-event of adding sc-edge from or to specified sc-element.
 
-#### **GetAddedEdge**
+#### **GetGeneratedEdge**
 
-Method `GetAddedEdge` returns added sc-edge from or to listen sc-element (subscription sc-element).
+Method `GetGeneratedEdge` returns added sc-edge from or to listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const edgeAddr = event.GetAddedEdge();
+ScAddr const edgeAddr = event.GetGeneratedEdge();
 ...
 ```
 
-#### **GetAddedEdgeType**
+#### **GetGeneratedEdgeType**
 
 It returns sc-type of added sc-edge.
 
 ```cpp
 ...
-ScAddr const edgeType = event.GetAddedEdgeType();
+ScAddr const edgeType = event.GetGeneratedEdgeType();
 ...
 ```
 

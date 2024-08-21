@@ -22,7 +22,7 @@ There are some examples of usage for specified `ScWaiter` objects:
 
 ```cpp
 auto waiter = context.CreateEventWaiter<
-  ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(nodeAddr);
+  ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(nodeAddr);
 waiter.Wait();
 ```
 
@@ -30,7 +30,7 @@ waiter.Wait();
 
 ```cpp
 auto const CheckCallback 
-  = [](ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const & event)
+  = [](ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event)
 {
   // Check condition here.
   // Return SC_TRUE or SC_FALSE depending on condition.
@@ -38,7 +38,7 @@ auto const CheckCallback
 };
 
 auto waiter = context.CreateConditionWaiter<
-  ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(nodeAddr, CheckCallback);
+  ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(nodeAddr, CheckCallback);
 // Provide wait time value.
 waiter.Wait(10000); // milliseconds.
 // By default, wait time value is 5000 milliseconds.

@@ -128,7 +128,7 @@ SC_MODULE_REGISTER(MyModule)
   ->AgentBuilder<MyAgent>()
     ->SetAbstractAgent(MyKeynodes::my_abstract_agent)
     ->SetPrimaryInitiationCondition({
-        ScKeynodes::sc_event_add_outgoing_arc, 
+        ScKeynodes::sc_event_generate_outgoing_arc, 
         ScKeynodes::action_initiated
     })
     ->SetActionClass(MyKeynodes::my_action_class)
@@ -165,7 +165,7 @@ Write scs-specification (or scg-specification) of your agent and connect it with
 my_abstract_agent
 <- abstract_sc_agent;
 => nrel_primary_initiation_condition: 
-    (sc_event_add_outgoing_arc => action_initiated); 
+    (sc_event_generate_outgoing_arc => action_initiated); 
 => nrel_sc_agent_action_class:
     my_action_class; 
 => nrel_initiation_condition_and_result: 

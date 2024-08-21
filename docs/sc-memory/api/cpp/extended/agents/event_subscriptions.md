@@ -33,9 +33,9 @@ All these constructors are private, you can't call these. We provide more safe A
 
 All sc-event classes are in core keynodes:
 
-* `ScKeynodes::sc_event_add_outgoing_arc`;
-* `ScKeynodes::sc_event_add_incoming_arc`;
-* `ScKeynodes::sc_event_add_edge`;
+* `ScKeynodes::sc_event_generate_outgoing_arc`;
+* `ScKeynodes::sc_event_generate_incoming_arc`;
+* `ScKeynodes::sc_event_generate_edge`;
 * `ScKeynodes::sc_event_erase_outgoing_arc`;
 * `ScKeynodes::sc_event_erase_incoming_arc`;
 * `ScKeynodes::sc_event_erase_edge`;
@@ -72,16 +72,16 @@ auto subscription = context->CreateElementaryEventSubscription(
   </tr>
 
   <tr>
-    <td><strong>ScEventAddOutgoingArc</strong></td>
+    <td><strong>ScEventGenerateOutgoingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -91,16 +91,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventAddIncomingArc</strong></td>
+    <td><strong>ScEventGenerateIncomingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -110,16 +110,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventAddEdge</strong></td>
+    <td><strong>ScEventGenerateEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAddEdge<ScType::EdgeUCommonConst>>(
+  ScEventGenerateEdge<ScType::EdgeUCommonConst>>(
   subscriptionElementAddr, 
-  [](ScEventAddEdge<ScType::EdgeUCommonConst> const & event) -> void
+  [](ScEventGenerateEdge<ScType::EdgeUCommonConst> const & event) -> void
 {
   // Handle sc-event.
 });

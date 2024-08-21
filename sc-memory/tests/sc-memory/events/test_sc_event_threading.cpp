@@ -36,9 +36,9 @@ TEST_F(ScEventTest, ThreadingSmoke)
   events.resize(eventsNum);
 
   std::vector<ScAddr> eventTypes = {
-      ScKeynodes::sc_event_add_incoming_arc,
-      ScKeynodes::sc_event_add_outgoing_arc,
-      ScKeynodes::sc_event_add_edge,
+      ScKeynodes::sc_event_generate_incoming_arc,
+      ScKeynodes::sc_event_generate_outgoing_arc,
+      ScKeynodes::sc_event_generate_edge,
       ScKeynodes::sc_event_erase_incoming_arc,
       ScKeynodes::sc_event_erase_outgoing_arc,
       ScKeynodes::sc_event_erase_edge,

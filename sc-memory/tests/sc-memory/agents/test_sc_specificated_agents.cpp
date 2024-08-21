@@ -11,7 +11,7 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
   test_specificated_agent
   <- abstract_sc_agent;
   => nrel_primary_initiation_condition: 
-    (sc_event_add_outgoing_arc => action_initiated);
+    (sc_event_generate_outgoing_arc => action_initiated);
   => nrel_sc_agent_action_class: 
     test_specificated_agent_action;
   => nrel_initiation_condition_and_result: 
@@ -381,9 +381,9 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_inclusion:
       test_specificated_agent_implementation
       (*
@@ -410,7 +410,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_inclusion:
       test_specificated_agent_implementation
       (*
@@ -438,7 +438,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_inclusion:
@@ -468,7 +468,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_sc_agent_action_class: 
@@ -504,7 +504,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_inclusion:
@@ -538,7 +538,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: ...;
@@ -575,7 +575,7 @@ TEST_F(
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: 
@@ -611,7 +611,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: 
@@ -654,7 +654,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_add_outgoing_arc => action_initiated);
+      (sc_event_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: 

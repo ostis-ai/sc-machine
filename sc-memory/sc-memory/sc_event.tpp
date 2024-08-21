@@ -17,31 +17,31 @@ TScElementaryEvent<elementType>::TScElementaryEvent(
   : ScElementaryEvent(eventClassAddr, userAddr, subscriptionElementAddr, connectorAddr, connectorType, otherAddr){};
 
 template <ScType const & arcType>
-ScAddr ScEventAddArc<arcType>::GetAddedArc() const
+ScAddr ScEventGenerateArc<arcType>::GetGeneratedArc() const
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & arcType>
-ScType ScEventAddArc<arcType>::GetAddedArcType() const
+ScType ScEventGenerateArc<arcType>::GetGeneratedArcType() const
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventAddArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventGenerateArc<arcType>::GetArcSourceElement() const
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventAddArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventGenerateArc<arcType>::GetArcTargetElement() const
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & arcType>
-ScEventAddArc<arcType>::ScEventAddArc(
+ScEventGenerateArc<arcType>::ScEventGenerateArc(
     ScAddr const & eventClassAddr,
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
@@ -57,14 +57,14 @@ ScEventAddArc<arcType>::ScEventAddArc(
         otherAddr){};
 
 template <ScType const & edgeType>
-ScEventAddEdge<edgeType>::ScEventAddEdge(
+ScEventGenerateEdge<edgeType>::ScEventGenerateEdge(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
   : TScElementaryEvent<edgeType>(
-        ScEventAddEdge<edgeType>::eventClassAddr,
+        ScEventGenerateEdge<edgeType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,
@@ -72,38 +72,38 @@ ScEventAddEdge<edgeType>::ScEventAddEdge(
         otherAddr){};
 
 template <ScType const & edgeType>
-ScAddr ScEventAddEdge<edgeType>::GetAddedEdge() const
+ScAddr ScEventGenerateEdge<edgeType>::GetGeneratedEdge() const
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & edgeType>
-ScType ScEventAddEdge<edgeType>::GetAddedEdgeType() const
+ScType ScEventGenerateEdge<edgeType>::GetGeneratedEdgeType() const
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
 template <ScType const & edgeType>
-ScAddr ScEventAddEdge<edgeType>::GetEdgeSourceElement() const
+ScAddr ScEventGenerateEdge<edgeType>::GetEdgeSourceElement() const
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & edgeType>
-ScAddr ScEventAddEdge<edgeType>::GetEdgeTargetElement() const
+ScAddr ScEventGenerateEdge<edgeType>::GetEdgeTargetElement() const
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-ScEventAddOutgoingArc<arcType>::ScEventAddOutgoingArc(
+ScEventGenerateOutgoingArc<arcType>::ScEventGenerateOutgoingArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventAddArc<arcType>(
-        ScEventAddOutgoingArc<arcType>::eventClassAddr,
+  : ScEventGenerateArc<arcType>(
+        ScEventGenerateOutgoingArc<arcType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,
@@ -111,26 +111,26 @@ ScEventAddOutgoingArc<arcType>::ScEventAddOutgoingArc(
         otherAddr){};
 
 template <ScType const & arcType>
-ScAddr ScEventAddIncomingArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventGenerateIncomingArc<arcType>::GetArcSourceElement() const
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventAddIncomingArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventGenerateIncomingArc<arcType>::GetArcTargetElement() const
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-_SC_EXTERN ScEventAddIncomingArc<arcType>::ScEventAddIncomingArc(
+_SC_EXTERN ScEventGenerateIncomingArc<arcType>::ScEventGenerateIncomingArc(
     ScAddr const & userAddr,
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
     ScAddr const & otherAddr)
-  : ScEventAddArc<arcType>(
-        ScEventAddIncomingArc<arcType>::eventClassAddr,
+  : ScEventGenerateArc<arcType>(
+        ScEventGenerateIncomingArc<arcType>::eventClassAddr,
         userAddr,
         subscriptionElementAddr,
         connectorAddr,

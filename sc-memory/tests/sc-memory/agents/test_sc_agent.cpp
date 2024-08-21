@@ -8,7 +8,7 @@ ScAddr ATestAddIncomingArc::GetActionClass() const
 }
 
 ScResult ATestAddIncomingArc::DoProgram(
-    ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -23,7 +23,7 @@ ScAddr ATestAddOutgoingArc::GetActionClass() const
 }
 
 ScResult ATestAddOutgoingArc::DoProgram(
-    ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -37,7 +37,7 @@ ScAddr ATestAddEdge::GetActionClass() const
   return ATestAddEdge::add_edge_action;
 }
 
-ScResult ATestAddEdge::DoProgram(ScEventAddEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
+ScResult ATestAddEdge::DoProgram(ScEventGenerateEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -120,7 +120,7 @@ ScAddr ATestAddMultipleOutputArc::GetActionClass() const
 }
 
 ScResult ATestAddMultipleOutputArc::DoProgram(
-    ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();

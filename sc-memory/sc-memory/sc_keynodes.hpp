@@ -254,13 +254,13 @@ public:
 
   _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_add_incoming_arc{
-      "sc_event_add_incoming_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_generate_incoming_arc{
+      "sc_event_generate_incoming_arc",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_add_outgoing_arc{
-      "sc_event_add_outgoing_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_generate_outgoing_arc{
+      "sc_event_generate_outgoing_arc",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_add_edge{"sc_event_add_edge", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_generate_edge{"sc_event_generate_edge", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_erase_incoming_arc{
       "sc_event_erase_incoming_arc",
       ScType::NodeConstClass};

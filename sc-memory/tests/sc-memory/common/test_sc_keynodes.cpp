@@ -65,10 +65,10 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
 
   EXPECT_TRUE(ScKeynodes::sc_event.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_add_incoming_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_add_incoming_arc) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_add_outgoing_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_add_outgoing_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_generate_incoming_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_generate_incoming_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_generate_outgoing_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_generate_outgoing_arc) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::sc_event_erase_incoming_arc.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_erase_incoming_arc) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::sc_event_erase_outgoing_arc.IsValid());
@@ -164,9 +164,9 @@ TEST_F(ScKeynodesTest, Events)
 {
   ScAddr keynodes[] = {
       ScKeynodes::sc_event_unknown,
-      ScKeynodes::sc_event_add_incoming_arc,
-      ScKeynodes::sc_event_add_outgoing_arc,
-      ScKeynodes::sc_event_add_edge,
+      ScKeynodes::sc_event_generate_incoming_arc,
+      ScKeynodes::sc_event_generate_outgoing_arc,
+      ScKeynodes::sc_event_generate_edge,
       ScKeynodes::sc_event_erase_incoming_arc,
       ScKeynodes::sc_event_erase_outgoing_arc,
       ScKeynodes::sc_event_erase_edge,

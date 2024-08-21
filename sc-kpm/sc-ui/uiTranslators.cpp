@@ -23,21 +23,21 @@ void ui_initialize_translators()
   ui_translator_sc2scs_event = sc_event_subscription_new(
       s_default_ctx,
       keynode_command_initiated,
-      sc_event_add_outgoing_arc_addr,
+      sc_event_generate_outgoing_arc_addr,
       0,
       uiSc2ScsTranslator::ui_translate_sc2scs,
       0);
   ui_translator_sc2scg_json_event = sc_event_subscription_new(
       s_default_ctx,
       keynode_command_initiated,
-      sc_event_add_outgoing_arc_addr,
+      sc_event_generate_outgoing_arc_addr,
       0,
       uiSc2SCgJsonTranslator::ui_translate_sc2scg_json,
       0);
   ui_translator_sc2scn_json_event = sc_event_subscription_new(
       s_default_ctx,
       keynode_command_initiated,
-      sc_event_add_outgoing_arc_addr,
+      sc_event_generate_outgoing_arc_addr,
       0,
       uiSc2SCnJsonTranslator::ui_translate_sc2scn,
       0);

@@ -458,16 +458,23 @@ sc_result ui_remove_displayed_result(sc_event_subscription *, sc_addr arg)
 // -------------------- Module ----------------------
 sc_result ui_initialize_commands()
 {
-  /*event_ui_start_result_translation = sc_event_subscription_new(keynode_action_finished, sc_event_add_outgoing_arc, 0,
-    ui_start_result_translation, 0); if (event_ui_start_result_translation == null) return SC_RESULT_ERROR;*/
+  /*event_ui_start_result_translation = sc_event_subscription_new(keynode_action_finished,
+    sc_event_generate_outgoing_arc, 0, ui_start_result_translation, 0); if (event_ui_start_result_translation == null)
+    return SC_RESULT_ERROR;*/
 
   event_ui_command_generate_instance = sc_event_subscription_new(
-      s_default_ctx, keynode_command_initiated, sc_event_add_outgoing_arc_addr, 0, ui_command_generate_instance, 0);
+      s_default_ctx,
+      keynode_command_initiated,
+      sc_event_generate_outgoing_arc_addr,
+      0,
+      ui_command_generate_instance,
+      0);
   if (event_ui_command_generate_instance == null_ptr)
     return SC_RESULT_ERROR;
 
-  /*event_ui_remove_displayed_result = sc_event_subscription_new(keynode_displayed_result, sc_event_add_outgoing_arc, 0,
-    ui_remove_displayed_result, 0); if (event_ui_remove_displayed_result == null) return SC_RESULT_ERROR;*/
+  /*event_ui_remove_displayed_result = sc_event_subscription_new(keynode_displayed_result,
+    sc_event_generate_outgoing_arc, 0, ui_remove_displayed_result, 0); if (event_ui_remove_displayed_result == null)
+    return SC_RESULT_ERROR;*/
 
   return SC_RESULT_OK;
 }

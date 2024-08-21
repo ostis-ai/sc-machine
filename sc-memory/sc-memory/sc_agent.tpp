@@ -468,16 +468,16 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
 
   ScIterator5Ptr it5;
   size_t otherVarPosition = 0u;
-  if (eventClassAddr == ScKeynodes::sc_event_add_incoming_arc
+  if (eventClassAddr == ScKeynodes::sc_event_generate_incoming_arc
       || eventClassAddr == ScKeynodes::sc_event_erase_incoming_arc)
   {
     it5 = this->m_memoryCtx.Iterator5(
         ScType::Unknown, ScType::Var, eventSubscriptionElement, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
   }
   else if (
-      eventClassAddr == ScKeynodes::sc_event_add_outgoing_arc
-      || eventClassAddr == ScKeynodes::sc_event_erase_outgoing_arc || eventClassAddr == ScKeynodes::sc_event_add_edge
-      || eventClassAddr == ScKeynodes::sc_event_erase_edge)
+      eventClassAddr == ScKeynodes::sc_event_generate_outgoing_arc
+      || eventClassAddr == ScKeynodes::sc_event_erase_outgoing_arc
+      || eventClassAddr == ScKeynodes::sc_event_generate_edge || eventClassAddr == ScKeynodes::sc_event_erase_edge)
   {
     it5 = this->m_memoryCtx.Iterator5(
         eventSubscriptionElement, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);

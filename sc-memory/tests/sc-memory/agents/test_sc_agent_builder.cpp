@@ -31,7 +31,7 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
   test_specificated_agent
   <- abstract_sc_agent;
   => nrel_primary_initiation_condition: 
-    (sc_event_add_outgoing_arc => action_initiated);
+    (sc_event_generate_outgoing_arc => action_initiated);
   => nrel_sc_agent_action_class: 
     test_specificated_agent_action;
   => nrel_initiation_condition_and_result: 
@@ -94,7 +94,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
       ->SetInitiationConditionAndResult({initiationConditionAddr, resultConditionAddr})
       ->FinishBuild();
@@ -123,7 +123,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasAlreadyFullSpecificatio
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
       ->SetInitiationConditionAndResult({initiationConditionAddr, resultConditionAddr})
       ->FinishBuild();
@@ -143,7 +143,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecificationWithTe
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(ATestSpecificatedAgent::test_specificated_agent_action)
       ->SetInitiationConditionAndResult(
           {ATestSpecificatedAgent::test_specificated_agent_initiation_condition,
@@ -191,7 +191,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedActionClass
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
@@ -206,7 +206,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedInitiationC
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
@@ -240,7 +240,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidEventSubscriptio
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScAddr{2421421}})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScAddr{2421421}})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
@@ -253,7 +253,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidActionClass)
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(ScAddr{2421421})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
@@ -272,7 +272,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidInitiationCondit
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
       ->SetInitiationConditionAndResult({ScAddr{2421421}, resultConditionAddr})
       ->FinishBuild();
@@ -292,7 +292,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidConditionResult)
   TestModule module;
   module.AgentBuilder<ATestSpecificatedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
-      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_add_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
       ->SetInitiationConditionAndResult({initiationConditionAddr, ScAddr{2421421}})
       ->FinishBuild();

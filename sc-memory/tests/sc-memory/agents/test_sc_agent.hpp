@@ -35,7 +35,7 @@ private:
   utils::ScLock m_lock;
 };
 
-class ATestAddIncomingArc : public ScAgent<ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestAddIncomingArc : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const add_incoming_arc_action{"add_incoming_arc_action", ScType::NodeConstClass};
@@ -43,10 +43,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+      override;
 };
 
-class ATestAddOutgoingArc : public ScAgent<ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestAddOutgoingArc : public ScAgent<ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const add_outgoing_arc_action{"add_outgoing_arc_action", ScType::NodeConstClass};
@@ -54,10 +55,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+      override;
 };
 
-class ATestAddEdge : public ScAgent<ScEventAddEdge<ScType::EdgeUCommonConst>>
+class ATestAddEdge : public ScAgent<ScEventGenerateEdge<ScType::EdgeUCommonConst>>
 {
 public:
   static inline ScKeynode const add_edge_action{"add_edge_action", ScType::NodeConstClass};
@@ -65,7 +67,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventAddEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventGenerateEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
 class ATestEraseIncomingArc : public ScAgent<ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>
@@ -123,14 +125,15 @@ public:
   ScResult DoProgram(ScEventChangeLinkContent const & event, ScAction & action) override;
 };
 
-class ATestAddMultipleOutputArc : public ScAgent<ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestAddMultipleOutputArc : public ScAgent<ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline TestWaiter msWaiter;
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+      override;
 };
 
 class ATestCheckResult : public ScActionAgent

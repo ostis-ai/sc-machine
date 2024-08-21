@@ -8,8 +8,8 @@
 
 std::unordered_map<std::string, std::string> const
     ScMemoryJsonEventsHandler::m_deprecatedEventsIdtfsToSystemEventsIdtfs = {
-        {"add_ingoing_edge", "sc_event_add_incoming_arc"},
-        {"add_outgoing_edge", "sc_event_add_outgoing_arc"},
+        {"add_ingoing_edge", "sc_event_generate_incoming_arc"},
+        {"add_outgoing_edge", "sc_event_generate_outgoing_arc"},
         {"remove_ingoing_edge", "sc_event_erase_incoming_arc"},
         {"remove_outgoing_edge", "sc_event_erase_outgoing_arc"},
         {"delete_element", "sc_event_erase_element"},
