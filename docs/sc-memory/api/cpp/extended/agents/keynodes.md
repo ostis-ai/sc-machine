@@ -20,7 +20,7 @@ static ScKeynode const my_keynode_class{
 ```
 
 !!! note
-    Keynodes can be defined not only in classes derived from the `ScKeynodes` class. You can define them as static objects anywhere.
+    Keynodes can be defined not only in classes inherited from the `ScKeynodes` class. You can define them as static objects anywhere.
 
 !!! warning
     Use this class only for static object declarations.

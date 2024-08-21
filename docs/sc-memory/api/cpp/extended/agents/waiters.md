@@ -1,10 +1,10 @@
-# **C++ Agents API**
+# **C++ Waiters API**
 
 !!! warning
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement agents on C++.
+This API provides functionality to implement waiters on C++.
 
 ## **ScWaiter** and **ScConditionWaiter**
 

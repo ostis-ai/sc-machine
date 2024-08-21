@@ -37,15 +37,15 @@ SC_MODULE_REGISTER(MyModule)
 // used to call methods for registering agents.
   ->Agent<MyAgent>(); 
   // It registers agent and returns object of `MyModule`.
-  // `MyAgent` is derived from `ScActionAgent`.
+  // `MyAgent` is inherited from `ScActionAgent`.
   // This method pointers to module that agent class `MyAgent`
   // should be subscribed to sc-event of adding outgoing sc-arc from 
   // sc-element `action_initiated`. It is default parameter
-  // in these method if you want register agent class derived 
+  // in these method if you want register agent class inherited 
   // from `ScActionAgent`.
 ```
 
-You must call `Agent` method for agent classes derived from `ScActionAgent` without arguments, but you should call it providing sc-event subscription sc-element for agent classes derived from `ScAgent`.
+You must call `Agent` method for agent classes inherited from `ScActionAgent` without arguments, but you should call it providing sc-event subscription sc-element for agent classes inherited from `ScAgent`.
 
 A module registers agents when the sc-memory initializes and it unregisters them when the sc-memory shutdowns.
 Also, you can use module to register a set of agents.
@@ -157,7 +157,7 @@ So you can load the initial specification for your agent into the knowledge base
 
 If you has specification for your agent in the knowledge base wrote in SCs-code or SCg-code, then you can just specify implementation of your agent.
 
-Write scs-specification (or scg-specification) of your agent and connect it with module that register your agent.
+Write scs-specification (or scg-specification) of your agent and use it with to register your agent within module.
 
 ```scs
 // Specification of agent in knowledge base.
@@ -216,7 +216,7 @@ SC_MODULE_REGISTER(MyModule)
 ```
 
 !!! note
-    If specification of your agent isn't full in the knowledge base, then module will not be registered, because errors will occur.
+    If specification of your agent isn't full in the knowledge base, then module will not be registered, because errors will occur. Other correctly specified agents will be registered without errors.
 
 ---
 

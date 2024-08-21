@@ -8,7 +8,7 @@ This API provides additional sc-memory methods that simplify working with it and
 
 ## **ScAgentContext**
 
-The `ScAgentContext` class is derived from `ScMemoryContext` class and provides functionality for managing agent-specific operations, including event subscriptions, actions, and structures within the sc-machine.
+The `ScAgentContext` class is inherited from `ScMemoryContext` class and provides functionality for managing agent-specific operations, including event subscriptions, actions, and structures within the sc-machine.
 
 !!! note
     All API methods are thread-safe.
@@ -205,10 +205,8 @@ auto eventWaiter = context.CreateConditionWaiter<
         ScType::EdgeAccessConstPosPerm> const & event) -> sc_bool
   {
     // Check sc-event here.
-    return context.HelperCheckEdge(
-        ScKeynodes::action_finished_successfully, 
-        event.GetSubscriptionElement(), 
-        ScType::EdgeAccessConstPosPerm);
+    return event.GetOtherElement()
+      == ScKeynodes::action_finished_successfully;
   });
 
 eventWaiter->Wait(200); // milliseconds
@@ -228,10 +226,10 @@ To subscribe agent class to sc-event use `SubscribeAgent`.
 
 ```cpp
 ...
-// For agent classes derived from `ScAgent` class write so.
+// For agent classes inherited from `ScAgent` class write so.
 context.SubscribeAgent<MyAgent>(mySubscriptionElementAddr);
 
-// For agent classes derived from `ScActionAgent` class write so.
+// For agent classes inherited from `ScActionAgent` class write so.
 context.SubscribeAgent<MyActionAgent>();
 ...
 ```
@@ -242,10 +240,10 @@ To unsubscribe agent class to sc-event use `UnsubscribeAgent`.
 
 ```cpp
 ...
-// For agent classes derived from `ScAgent` class write so.
+// For agent classes inherited from `ScAgent` class write so.
 context.UnsubscribeAgent<MyAgent>(mySubscriptionElementAddr);
 
-// For agent classes derived from `ScActionAgent` class write so.
+// For agent classes inherited from `ScActionAgent` class write so.
 context.UnsubscribeAgent<MyActionAgent>();
 ...
 ```
@@ -291,7 +289,7 @@ This method finds specification of abstract agent for specified agent implementa
 
 ### **CreateAction**
 
-All agents interpreter actions. We provide API to work with them. Use `CreateAction` to create object of `ScAction` class. To learn more about actions see [**C++ Action API**](actions.md).
+All agents perform actions. We provide API to work with them. Use `CreateAction` to create object of `ScAction` class. To learn more about actions see [**C++ Action API**](actions.md).
 
 ```cpp
 // Find action class and create action.
@@ -354,6 +352,10 @@ ScSet set = context.UseStructure(structureAddr);
 
 <!-- no toc -->
 - [How do I add my method to a `ScAgentContext`?](#how-do-i-add-my-method-to-a-scagentcontext)
+- [How can I wait for an event indefinitely?](#how-can-i-wait-for-an-event-indefinitely)
+- [What if I need to initiate agent on events from more then one different node?](#what-if-i-need-to-initiate-agent-on-events-from-more-then-one-different-node)
+- [When ScMultiset will be implemented?](#when-scmultiset-will-be-implemented)
+- [What is I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?](#what-is-i-need-to-initiate-agent-on-sceventgeneratingincomingarc-and-sceventgeneratingoutgoingarc-for-one-node)
 
 ### **How do I add my method to a `ScAgentContext`?**
 
@@ -374,3 +376,33 @@ public:
 ```
 
 You will be able to use context of class, which you specify, in the agent's methods.
+
+### **How can I wait for an event indefinitely?**
+
+By default, you can wait up to 5 seconds for an event to appear. You can wait for another time convenient for you. But we recommend waiting as long as you need, no longer. You don't need to create waiters for several minutes or hours when the agent performs much faster, in milliseconds.
+
+### **What if I need to initiate agent on events from more then one different node?**
+
+You can register an agent for not as many different sc-element, but for the same type of event. You can use `SubscribeAgent` and `UnsubscribeAgent` to do this.
+
+```cpp
+...
+context.SubscribeAgent<MyAgent>(nodeAddr1, nodeAddr2);
+// Here, you can provide array of subscriptions elements only 
+// for agent classes inherited from `ScAgent` class.
+```
+
+But remember, that you have to unsubscribe the agent while the system is shutting down.
+
+```cpp
+...
+context.UnsubscribeAgent<MyAgent>(nodeAddr1, nodeAddr2);
+```
+
+### **When ScMultiset will be implemented?**
+
+Now, `ScSet` and `ScStructure` are implemented only. `ScSet` stores unique sc-elements. `ScMultiset` will be implemented later.
+
+### **What is I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?**
+
+You can subscribe an agent to sc-event of generating sc-connector -- `ScEventGeneratingConnector`. Then the agent will be triggered on incoming and outgoing sc-arcs.

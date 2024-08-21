@@ -12,9 +12,9 @@ This API provides functionality to subscribe to sc-events on C++.
 
 Each sc-event subscription constructor, besides `ScElementaryEventSubscription` constructor, takes 3 parameters:
 
-* `context` - `ScMemoryContext` that will be used to work with sc-event;
-* `subscriptionElementAddr` - sc-address of sc-element that need to be listened for a specified sc-event;
-* `delegateFunc` - delegate to a callback function, that will be called on each event emit (`void delegateFunc(TScEvent const &)`), where `TScEvent` is corresponding sc-event class.
+* `context` is an object of `ScMemoryContext` that will be used to work with sc-event;
+* `subscriptionElementAddr` is an object of `ScAddr` of sc-element that need to be listened for a specified sc-event;
+* `delegateFunc` is a delegate to a callback function, that will be called on each event emit (`void delegateFunc(TScEvent const &)`), where `TScEvent` is corresponding sc-event class.
 
 !!! note
     Callback function will be called in another thread!
@@ -24,18 +24,20 @@ Each sc-event subscription constructor, besides `ScElementaryEventSubscription` 
 
 Constructor of `ScElementaryEventSubscription` class takes 4 parameters:
 
-* `context`, is `ScMemoryContext` that will be used to work with sc-event;
-* `eventClassAddr`, is sc-address of sc-event class;
-* `subscriptionElementAddr`, is sc-address of sc-element that need to be listened for a specified sc-event;
-* `delegateFunc`, is delegate to a callback function, that will be called on each event emit (`void delegateFunc(ScElementaryEvent const &)`).
+* `context` is an object of `ScMemoryContext` that will be used to work with sc-event;
+* `eventClassAddr` is an object of `ScAddr` of sc-event class;
+* `subscriptionElementAddr` is an object of `ScAddr` of sc-element that need to be listened for a specified sc-event;
+* `delegateFunc` is a delegate to a callback function, that will be called on each event emit (`void delegateFunc(ScElementaryEvent const &)`).
 
 All these constructors are private, you can't call these. We provide more safe API to create subscription. Use [**C++ Agent Context API**](agent_context.md) to create sc-event subscriptions.
 
 All sc-event classes are in core keynodes:
 
+* `ScKeynodes::sc_event_generate_connector`;
 * `ScKeynodes::sc_event_generate_outgoing_arc`;
 * `ScKeynodes::sc_event_generate_incoming_arc`;
 * `ScKeynodes::sc_event_generate_edge`;
+* `ScKeynodes::sc_event_erase_connector`;
 * `ScKeynodes::sc_event_erase_outgoing_arc`;
 * `ScKeynodes::sc_event_erase_incoming_arc`;
 * `ScKeynodes::sc_event_erase_edge`;
@@ -233,6 +235,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 <!-- no toc -->
 - [Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?](#whether-a-function-is-considered-an-agent-if-this-function-is-subscribed-to-a-sc-event-and-which-is-called-after-that-sc-event-occurs)
 - [Why can't you call the constructor of a subscription class to sc-event?](#why-cant-i-call-the-constructor-of-a-subscription-class-to-sc-event)
+- [Are `ScEventGenerateIncomingArc` or `ScEventGenerateOutgoingArc` events trigger when `ScEventGenerateEdge` event is triggered?](#are-sceventgenerateincomingarc-or-sceventgenerateoutgoingarc-events-trigger-when-sceventgenerateedge-event-is-triggered)
 
 ### **Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?**
 
@@ -241,3 +244,7 @@ No, such functions are not agents. Agents have a strict specification. See [C++ 
 ### **Why can't I call the constructor of a subscription class to sc-event?**
 
 First of all, it's not safe. We need more checks on input arguments because there are more of them. Secondly, it is correct from the OOP point of view. Constructors should not throw exceptions. Third, it is correct from the point of view of the architecture we use in the sc-machine. The `ScAgentContext` is a facade over all possible objects used by agents.
+
+### **Are `ScEventGenerateIncomingArc` or `ScEventGenerateOutgoingArc` events trigger when `ScEventGenerateEdge` event is triggered?**
+
+No, the `ScEventGenerateEdge` event only occurs when sc-edges are generated.

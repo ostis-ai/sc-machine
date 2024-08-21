@@ -133,7 +133,7 @@ action.SetArguments(argAddr1, argAddr2);
 
 ### **Action result**
 
-All actions should have result (result situation). Result situation is structure that contains all sc-constructions that indicate result of performed(or finished, not interpreted) action.
+All actions should have result (result situation). Result situation is structure that contains all sc-constructions that indicate result of performed (finished) action.
 
 #### **GetResult**
 
@@ -154,7 +154,7 @@ ScStructure const & actionResult = action.GetResult();
 
 ```cpp
 ...
-// Use this method in agent interpreting action 
+// Use this method in agent performing action 
 // to set new result.
 action.SetResult(resultStructure);
 ...
@@ -164,7 +164,7 @@ action.SetResult(resultStructure);
     If action has result, then existing result will be removed and the new one will be set.
 
 !!! warning
-    You can call this method for not finished, but initiated action only.
+    If you call this method for not finished, but initiated action only, the this method will throw `utils::ExceptionInvalidState`.
 
 #### **FormResult**
 
@@ -172,7 +172,7 @@ You must not create result structure. You can provide only elements of result fo
 
 ```cpp
 ...
-// Use this method in agent interpreting action 
+// Use this method in agent performing action 
 // to form new result with provided sc-elements.
 action.FormResult(elementAddr1, elementAddr2);
 ...
@@ -185,7 +185,7 @@ action.FormResult(elementAddr1, elementAddr2);
 
 ```cpp
 ...
-// Use this method in agent interpreting action
+// Use this method in agent performing action
 // for update existing result by new sc-elements.
 action.UpdateResult(elementAddr1, elementAddr2);
 ...
@@ -342,6 +342,8 @@ All these methods return object of `ScResult`. You should return it in agent pro
 
 <!-- no toc -->
 - [What is difference between `ScAction` and `ScEvent`?](#what-is-difference-between-scaction-and-scevent)
+- [What if I want to set some edge as action result and not structure with this edge?](#what-if-i-want-to-set-some-edge-as-action-result-and-not-structure-with-this-edge)
+- [What's the difference between ScSet and ScStructure?](#what-is-difference-between-scaction-and-scevent)
 
 ### **What is difference between `ScAction` and `ScEvent`?**
 
@@ -350,3 +352,7 @@ All these methods return object of `ScResult`. You should return it in agent pro
 ### **What if I want to set some edge as action result and not structure with this edge?**
 
 You're not allowed to do this. Action result must be a sc-structure. Action result is a situation that describes how action was performed. Situation is a sc-structure.
+
+### **What's the difference between `ScSet` and `ScStructure`?**
+
+`ScSet` is a class that represents sc-set. It is an entity that links one or more entities into a whole. `ScStructure` is a class represents sc-structure. It is a set of sc-elements, which includes sc-connections or sc-structures linking these sc-elements. Removal of one of sc-elements of the sc-structure may lead to violation of the integrity of this sc-structure. `ScSet` and `ScStructure`  do not differ functionally. `ScStructure` is a stricter representation of sc-set.

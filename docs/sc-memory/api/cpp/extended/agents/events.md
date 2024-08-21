@@ -13,12 +13,12 @@ The sc-machine uses event-driven model to manage processing information. The sc-
 These are methods that generate events: 
 
 - `CreateEdge`, 
-- `EraseElement` 
-- `SetLinkContent`).
+- `EraseElement`,
+- `SetLinkContent`.
 
 They publish events to an event queue without needing to know which consumers will receive them. These components filter and distribute events to appropriate consumers. They manage the flow of events and ensure that they reach the correct destinations. Event consumers are the components that listen for and process events. Event consumers can be modules, agents or something else.
 
-Within the OSTIS technology, events are considered only situations in which relationships have changed or new relationships have been generated, or link content have been changed.
+Within the OSTIS Technology, events are considered only situations in which relationships have changed or new relationships have been generated, or link content have been changed, or some sc-element have been erased.
 
 ## **ScEvent**
 
@@ -51,7 +51,7 @@ The following classes correspond to them:
 * `class ScEventChangeLinkContent`.
 
 !!! note
-    All these sc-events classes are derived from `TScElementaryEvent` class. `ScElementaryEvent` class is derived from `ScEvent` class that is interface class.
+    All these sc-events classes are inherited from `ScElementaryEvent` class. `ScElementaryEvent` class is inherited from `ScEvent` class that is an abstract class.
 
 !!! note
     Types of sc-connectors are specified for sc-events of adding (erasing) sc-arc (sc-edge). 
@@ -267,7 +267,7 @@ auto const [subscriptionElementAddr, _1, _2] = event.GetTriple();
 </table>
 
 !!! note
-    All described methods of `ScElementary` class are public and accessible from child classes.
+    All described methods of `ScElementaryEvent` class are public and accessible from child classes.
 
 ### **ScEventGenerateConnector**
 
@@ -427,7 +427,7 @@ auto const [elementAddr1, elementAddr2] = event.GetConnectorIncidentElements();
 
 #### **GetErasableArc**
 
-Method `GetErasableArc` returns erasable sc-arc from (for `ScEventEraseOutgoingArc`) or to (for `ScEventEraseIncomingArc) listen sc-element (subscription sc-element).
+Method `GetErasableArc` returns erasable sc-arc from (for `ScEventEraseOutgoingArc`) or to (for `ScEventEraseIncomingArc`) listen sc-element (subscription sc-element).
 
 ```cpp
 ...
@@ -507,11 +507,11 @@ ScAddr const targetElementAddr = event.GetEdgeTargetElement();
 
 ### **ScEventEraseElement**
 
-This class represents sc-event of erasing specified listen sc-element. You can use all methods from objects of this class that arc accessible from `ScElementaryEvent` class.
+This class represents sc-event of erasing specified listen sc-element. You can use all methods from objects of this class that are accessible from `ScElementaryEvent` class.
 
 ### **ScEventChangeLinkContent**
 
-This class represents sc-event of changing content for listen sc-link. You can use all methods from objects of this class that arc accessible from `ScElementaryEvent` class.
+This class represents sc-event of changing content for listen sc-link. You can use all methods from objects of this class that are accessible from `ScElementaryEvent` class.
 
 --- 
 
@@ -523,7 +523,7 @@ This class represents sc-event of changing content for listen sc-link. You can u
 
 ### **Is there sc-event of adding sc-node?**
 
-A sc-event is defined as the addition, modification or erasing of connections between sc-elements, or link content changing. This is so because knowledge is not a single sc-element, and knowledge is construction of three sc-elements at least. A sc-element does not carry any knowledge in itself. Therefore, a sc-event is considered to be emergence of some new knowledge.
+A sc-event is defined as the addition, modification or erasing of connections between sc-elements, or changing link content, or erasing sc-element. This is so because knowledge is not a single sc-element, and knowledge is construction of three sc-elements at least. A sc-element does not carry any knowledge in itself. Therefore, a sc-event is considered to be emergence of some new knowledge. But there is an exception, erasing sc-elements with no connections with other sc-elements is considered an event.
 
 ### **Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?**
 

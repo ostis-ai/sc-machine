@@ -9,7 +9,7 @@ All agents in C++ represent some classes in C++. To implement an agent in C++, y
 1. Write input (initial) construction and output (result) construction of your future agent in SC-code.
 2. Create folder with source and header files for sc-agent implementation.
 3. Also you need write `CMakeLists.txt` file. We use cmake to build projects in C++.
-4. In header file, define a class in C++ for this agent and specifies in it at least class of actions that this agent interprets and its program. In such class you can also specify primary initiation condition, initiation condition, and result condition.
+4. In header file, define a class in C++ for this agent and specifies in it at least class of actions that this agent performs and its program. In such class you can also specify primary initiation condition, initiation condition, and result condition.
 5. In source file, implement all declared methods of agent's class. You can also implement your own methods and use them in an agent program. You can use all C++ and OOP tools as much as possible. 
 6. Create file and implement class for keynodes used by implemented agent.
 7. Implement class for module for registering implemented agent.
@@ -54,7 +54,7 @@ The result construction of agent might look like this:
 
 <image src="../images/agents/agent_for_calculating_set_power_output_construction.png"></image>
 
-In addition to agents that initiate actions themselves and then interpret these actions, there is a need to implement agents that interpret actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
+In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
 
 --- 
 
@@ -92,7 +92,7 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 ---
 
-### **4. Define a class in C++ for this agent and specifies class of actions that this agent interprets and its program.**
+### **4. Define a class in C++ for this agent and specifies class of actions that this agent performs and its program.**
 
 An agent's class to be implemented must comply with the following requirements:
 
@@ -149,15 +149,15 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
   // It has methods to get information about initiated sc-event: `GetUser`, 
   // `GetGeneratedArc`, `GetSubscriptionElement`, `GetArcSourceElement`, 
   // `GetArcTargetElement`. All events are not copyable and not movable. 
-  // ScAction is derived from ScObject.
+  // ScAction is inherited from ScObject.
 
   // `ScAction` class encapsulates information about sc-action. 
-  // The provided action is action that the given agent interpreters right now. 
+  // The provided action is action that the given agent performs right now. 
   // It belongs to class action_calculate_set_power`. 
-  // Actions are copyable and movable. ScAction is derived from ScAddr.
+  // Actions are copyable and movable. ScAction is inherited from ScAddr.
 
   auto const & [setAddr] = action.GetArguments<1>(); 
-  // This method finds construction `action => rrel_1: setAddr`.
+  // This method finds construction `action -> rrel_1: setAddr`.
   // Here the 1 is number of arguments which action must have. In step 1, 
   // we specified that an action should have a set as its the first and 
   // only one argument. But the one who calls this agent may not specify argument 
@@ -197,18 +197,18 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
 
   action.FormResult(
     setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
-  SC_AGENT_LOG_DEBUG("Set power was counted.");
+  SC_AGENT_LOG_DEBUG("Set power was counted: " << setPower << ".");
 
   // At the end of the agent's program, you must call one of three methods 
   // (`FinishSuccessfully`, `FinishUnsuccessfully`, `FinishWithError`) to indicate 
-  // that the agent's interpretation of action is complete:
-  // - Method `FinishSuccessfully` indicates that action was interpreted by agent 
+  // that the agent's performing of action is complete:
+  // - Method `FinishSuccessfully` indicates that action was performed by agent 
   // successfully (sets class `action_finished_successfully`). 
   // It means that the agent solved specified task.
-  // - Method `FinishUnsuccessfully` indicates that action was interpreted by agent
+  // - Method `FinishUnsuccessfully` indicates that action was performed by agent
   // unsuccessfully (sets class `action_finished_unsuccessfully`). 
   // It means that the agent didn't solved specified task.
-  // - Method `FinishWithError` indicates that action was interpreted by agent
+  // - Method `FinishWithError` indicates that action was performed by agent
   // with error (sets class `action_finished_with_error`). 
   // It means that some incorrect situation in knowledge base occured.
   // All these methods return objects of `ScResult` class. 
@@ -295,9 +295,12 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
 - ScAddr const & nrelSetPowerAddr = m_memoryCtx.HelperFindBySystemIdtf("nrel_set_power");
 - ScAddr const & arcAccessAddr 
 -   = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
+- action.FormResult(
+    setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
 + ScAddr const & arcAccessAddr 
 +   = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScSetKeynodes::nrel_set_power, arcAddr);
-
++ action.FormResult(
+    setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, ScSetKeynodes::nrel_set_power);
   ...
 }
 ```
@@ -347,7 +350,7 @@ SC_MODULE_REGISTER(ScSetModule)
   // This method pointers to module that agent class `ScAgentForCalculatingPower`
   // should be subscribed to sc-event of adding outgoing sc-arc from sc-element
   // `action_initiated`. It is default parameter in these method if you want
-  // register agent class derived from `ScActionAgent`.
+  // register agent class inherited from `ScActionAgent`.
 
 // This way of registering agents makes it easier to write code. 
 // You don't have to think about unregistering agents after 
@@ -439,7 +442,7 @@ using AgentTest = ScMemoryTest;
 
 TEST_F(AgentTest, AgentForCalculatingSetPowerFinishedSuccessfully)
 {
-  // Create action with class that your agent interpreters.
+  // Create action with class that your agent performs.
   ScAction action 
     = m_ctx->CreateAction(ScSetKeynodes::action_calculate_set_power);
 

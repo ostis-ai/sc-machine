@@ -12,11 +12,11 @@ The sc-machine implements the **agent-driven model** to process information. In 
 
 All agents within the OSTIS Technology are divided into two classes: platform-independent, i.e. implemented only by means of SC-code, and platform-dependent, implemented by means of sc-machine API. This sc-machine presents a powerful, but simple API for developing and maintaining platform-dependent agents in C++.
 
-All agents react to the occurrence of events in sc-memory (sc-events). That is, an agent is called implicitly when an sc-event occurs, for which type this agent is already subscribed. Knowledge about which sc-event will cause this agent to be called (awakening of this agent) is called primary initiation condition. Upon awakening, the agent checks for the presence of its full initiation condition. If the full initiation condition is successfully checked, the agent initiates an action of some class and starts interpreting it with a agent program. After executing its program, the agent can check if there is a result.
+All agents react to the occurrence of events in sc-memory (sc-events). That is, an agent is called implicitly when an sc-event occurs, for which type this agent is already subscribed. Knowledge about which sc-event will cause this agent to be called (awakening of this agent) is called primary initiation condition. Upon awakening, the agent checks for the presence of its full initiation condition. If the full initiation condition is successfully checked, the agent initiates an action of some class and starts performing it with a agent program. After executing its program, the agent can check if there is a result.
 
 ## **What does agent specification represent?**
 
-All knowledge about an agent: *primary initiation condition*, *class of actions* it can interpret, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programly, using sc-machine API.
+All knowledge about an agent: *primary initiation condition*, *class of actions* it can perform, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programly, using sc-machine API.
 
 Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code and SCg-code. An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
 
@@ -28,7 +28,7 @@ agent_for_calculating_set_power
     // Class of sc-event and listen (subscription) sc-element
     (sc_event_generate_outgoing_arc => action_initiated); 
 => nrel_sc_agent_action_class:
-    // Class of actions to be interpreted by agent
+    // Class of actions to be performed by agent
     action_calculate_set_power; 
 => nrel_initiation_condition_and_result: 
     (..agent_for_calculating_set_power_initiation_condition 
@@ -118,7 +118,7 @@ This class can be used for all classes of agents. The example using this class i
 class MyAgent : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
-  // Here you should specify class of actions which the given agent interpreters. 
+  // Here you should specify class of actions which the given agent performs. 
   // This overriding is required.
   ScAddr GetActionClass() const override;
   // Here you should implement program of the given agent. 
@@ -187,9 +187,9 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 
 ### **ScActionAgent**
 
-In addition to agents that initiate actions themselves and then interpret these actions, there is a need to implement agents that interpret actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
+In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
 
-This class can be only used for agents that should be triggered to sc-event of generating output sc-arc from `action_initiated` class. These agents are named action agents. Action agent interpreters action initiated by other agent.
+This class can be only used for agents that should be triggered to sc-event of generating output sc-arc from `action_initiated` class. These agents are named action agents. Action agent performs action initiated by other agent.
 
 ```cpp
 // File my_agent.hpp
@@ -203,7 +203,7 @@ This class can be only used for agents that should be triggered to sc-event of g
 class MyAgent : public ScActionAgent
 {
 public:
-  // Here you should specify class of actions which the given agent interpreters. 
+  // Here you should specify class of actions which the given agent performs. 
   // This overriding is required.
   ScAddr GetActionClass() const override;
   // Here you should implement program of the given agent. 
@@ -226,7 +226,7 @@ public:
 
 There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
 
-This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should derive your agent class from these classes, not from the ScAgentAbstract class (see documentation above).
+This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should inherit your agent class from these classes, not from the ScAgentAbstract class (see documentation above).
 
 ---
 
@@ -234,7 +234,7 @@ This class does not provide methods to subscribe and unsubscribe a specified age
 
 #### **GetActionClass**
 
-It gets action class that the agent of specified class interpreters. If the abstract sc-agent for this agent class does not have an action class, then method will throw `utils::ExceptionInvalidState`.
+It gets action class that the agent of specified class performs. If the abstract sc-agent for this agent class does not have an action class, then method will throw `utils::ExceptionInvalidState`.
 
 ```cpp
 // File my_agent.cpp
@@ -255,15 +255,15 @@ See [**C++ Keynodes API**](keynodes.md) and learn how to define keynodes and use
 #### **DoProgram**
 
 In the agent's program lies its basic operating logic. Using program, the agent processes an input construction and generates an output construction.
-Each agent interprets action with the help of its program.
+Each agent performs action with the help of its program.
 
 ```cpp
 ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 {
   // Class `ScAction` encapsulates information about sc-action. The provided 
-  // action is action that the given agent interpreters right now. 
+  // action is action that the given agent performs right now. 
   // It belongs to `MyKeynodes::my_action` class. 
-  // Actions are copyable and movable. `ScAction` is derived from `ScAddr`.
+  // Actions are copyable and movable. `ScAction` is inherited from `ScAddr`.
  
   // Implement logic of your agent...
 
@@ -451,7 +451,7 @@ ScAddr MyAgent::GetEventSubscriptionElement() const
 ```
 
 !!! warning
-    Don't override `GetEventClass` and `GetEventSubscriptionElement` for agent with statically specified sc-event type. Your code can't be compiled. Override them, if your agent class derive `ScAgent<ScElementaryEvent>` (`ScBaseAgent`).
+    Don't override `GetEventClass` and `GetEventSubscriptionElement` for agent with statically specified sc-event type. Your code can't be compiled. Override them, if your agent class inherit `ScAgent<ScElementaryEvent>` (`ScBaseAgent`).
 
 #### **GetInitiationCondition**
 
@@ -603,6 +603,7 @@ sc_bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 - [Is it possible to create object of agent`s and call any of class methods?](#is-it-possible-to-create-object-of-agents-and-call-any-of-class-methods)
 - [Is agent's call protocol preserved?](#is-agents-call-protocol-preserved)
 - [What is advisable to do as an agent and what is not?](#what-is-advisable-to-do-as-an-agent-and-what-is-not)
+- [What's the purpose of result condition? What is it used for?](#whats-the-purpose-of-result-condition-what-is-it-used-for)
 
 ### **Is it possible to subscribe an agent for more than one sc-event?**
 
@@ -629,3 +630,7 @@ Until the sc-machine implements functionality for logging processes in sc-memory
 ### **What is advisable to do as an agent and what is not?**
 
 It depends on your goal. If you want to make an ostis-system, then the whole functionality of your system should be a collective of agents. If you want to use a machine as a database to store and process information in a convenient and simple way, not everything should be agents. To improve performance, use agents with static specification or without specification, combine multiple agents into one, optimize sc-memory requests and etc.
+
+### **What's the purpose of result condition? What is it used for?**
+
+Now, it has no effect on agent finishing. But in the future it can be used for verification and debugging of agents' work.
