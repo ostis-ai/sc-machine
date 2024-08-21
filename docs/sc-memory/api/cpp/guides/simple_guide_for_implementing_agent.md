@@ -25,7 +25,7 @@ The initial construction of agent might look like this:
 
 ```scs
 ..action
-<- action_for_calculating_set_power;
+<- action_calculate_set_power;
 <- action_initiated;
 -> rrel_1: ..some_set;;
 
@@ -41,7 +41,7 @@ The result construction of agent might look like this:
 
 ```scs
 ..action
-<- action_for_calculating_set_power;
+<- action_calculate_set_power;
 <- action_initiated;
 <- action_finished_successfully;
 -> rrel_1: ..some_set;
@@ -136,7 +136,7 @@ public:
 
 ScAddr ScAgentForCalculatingPower::GetActionClass() const
 {
-  return m_memoryCtx.HelperFindBySystemIdtf("action_for_calculating_set_power");
+  return m_memoryCtx.HelperFindBySystemIdtf("action_calculate_set_power");
 }
 // You must specify valid action class. In other case, the agent can’t be 
 // registered in sc-memory.
@@ -153,7 +153,7 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
 
   // `ScAction` class encapsulates information about sc-action. 
   // The provided action is action that the given agent interpreters right now. 
-  // It belongs to class action_for_calculating_set_power`. 
+  // It belongs to class action_calculate_set_power`. 
   // Actions are copyable and movable. ScAction is derived from ScAddr.
 
   auto const & [setAddr] = action.GetArguments<1>(); 
@@ -253,8 +253,8 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 class ScSetKeynodes : public ScKeynodes
 {
 public:
-  static inline ScKeynode const action_for_calculating_set_power{
-    "action_for_calculating_set_power", ScType::NodeConstClass};
+  static inline ScKeynode const action_calculate_set_power{
+    "action_calculate_set_power", ScType::NodeConstClass};
   static inline ScKeynode const nrel_set_power{
     "nrel_set_power", ScType::NodeConstNoRole};
   // Here the first argument in constructor is system identifier of 
@@ -284,8 +284,8 @@ public:
 
 ScAddr ScAgentForCalculatingPower::GetActionClass() const
 {
-- return m_memoryCtx.HelperFindBySystemIdtf("action_for_calculating_set_power");
-+ return ScSetKeynodes::action_for_calculating_set_power;
+- return m_memoryCtx.HelperFindBySystemIdtf("action_calculate_set_power");
++ return ScSetKeynodes::action_calculate_set_power;
 }
 
 ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAction & action)
@@ -441,7 +441,7 @@ TEST_F(AgentTest, AgentForCalculatingSetPowerFinishedSuccessfully)
 {
   // Create action with class that your agent interpreters.
   ScAction action 
-    = m_ctx->CreateAction(ScSetKeynodes::action_for_calculating_set_power);
+    = m_ctx->CreateAction(ScSetKeynodes::action_calculate_set_power);
 
   // Create set with two sc-elements.
   ScSet set = m_ctx->CreateSet();

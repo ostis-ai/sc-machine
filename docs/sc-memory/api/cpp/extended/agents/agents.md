@@ -29,7 +29,7 @@ agent_for_calculating_set_power
     (sc_event_add_outgoing_arc => action_initiated); 
 => nrel_sc_agent_action_class:
     // Class of actions to be interpreted by agent
-    action_for_calculating_set_power; 
+    action_calculate_set_power; 
 => nrel_initiation_condition_and_result: 
     (..agent_for_calculating_set_power_initiation_condition 
         => ..agent_for_calculating_set_power_result_condition);
@@ -38,7 +38,7 @@ agent_for_calculating_set_power
 {
     action_initiated;
     action;
-    action_for_calculating_set_power;
+    action_calculate_set_power;
     nrel_set_power;
 };
 => nrel_inclusion: 
@@ -57,17 +57,17 @@ agent_for_calculating_set_power
 // Full initiation condition of agent
 ..agent_for_calculating_set_power_initiation_condition
 = [*
-    action_for_calculating_set_power _-> .._action;;
+    action_calculate_set_power _-> .._action;;
     action_initiated _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
 *];; 
 // Agent should check by this template that initiated action is instance of 
-// class `action_for_calculating_set_power` and that it has argument.
+// class `action_calculate_set_power` and that it has argument.
 
 // Full result condition of agent
 ..agent_for_calculating_set_power_result_condition
 = [*
-    action_for_calculating_set_power _-> .._action;;
+    action_calculate_set_power _-> .._action;;
     action_initiated _-> .._action;;
     action_finished_successfully _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
@@ -82,13 +82,14 @@ agent_for_calculating_set_power
 ## **What are ways of providing the agent's specification?**
 
 The sc-machine API provides two types of functionalities to implement an agent in C++:
+
 a. when the agent's specification is represented in the knowledge base and used by the agent;
 b. when the agent's specification is represented in C++ code and also used by the agent.
 
 In both cases, the agent's specification can be static, dynamic, or semi-dynamic.
 
 1. **Static agent specification** is a specification provided externally in the agent's class (via overriding public getters). This specification isn't saved in the knowledge base because changes in the knowledge base can't automatically alter user-specified code. To provide this type of agent specification, you can use overriding public getters in your agent's class (see documentation below).
-2. **Dynamic agent specification** is a specification provided in the knowledge base or initially in the code but automatically saved into the knowledge base. After that, the first agent changes the specification of the second agent, and the second agent uses the changed specification. To implement this type of specification, use the API of `ScModule` class and the API of `ScAgentBuilder` class (see C++ Modules).
+2. **Dynamic agent specification** is a specification provided in the knowledge base or initially in the code but automatically saved into the knowledge base. After that, the first agent changes the specification of the second agent, and the second agent uses the changed specification. To implement this type of specification, use the API of `ScModule` class and the API of `ScAgentBuilder` class (see [**C++ Modules**](modules.md)).
 3. **Semi-dynamic agent specification** can be obtained when the specification is provided in the knowledge base or initially in the code and appended externally (via overriding public getters).
 
 Static agent specification can be useful if you are implementing an agent in C++ for the first time or if you want to minimize the number of searches in the knowledge base. Dynamic agent specification provides the opportunity to analyze and change this specification by other agents. Semi-dynamic specification can be useful if you want to change some parts of this specification but still want the agent's calls to be quick.
@@ -111,7 +112,7 @@ This class can be used for all classes of agents. The example using this class i
 
 #include <sc-memory/sc_agent.hpp>
 
-// Override your agent class from `ScAgent` class and specify template argument 
+// Inherit your agent class from `ScAgent` class and specify template argument 
 // as sc-event class. Here `ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>` 
 // is type of event to which the given agent reacts.
 class MyAgent : public ScAgent<ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>
@@ -157,7 +158,7 @@ public:
 };
 ```
 
-If you want to change specification of this agent in kb, then write like this:
+If you want to change specification of this agent in knowledge base, then write like this:
 
 ```cpp
 // File my_agent.hpp
@@ -179,7 +180,7 @@ public:
 This implementation allows to provide any sc-event type to `DoProgram`.
 
 !!! note
-    `MyAgent` is alias for ScAgent<ScElementaryEvent>`.
+    `ScBaseAgent` is alias for `ScAgent<ScElementaryEvent>`.
 
 !!! note
     If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`.
@@ -196,7 +197,7 @@ This class can be only used for agents that should be triggered to sc-event of a
 
 #include <sc-memory/sc_agent.hpp>
 
-// Override your agent class from `ScAgent` class and specify template argument 
+// Inherit your agent class from `ScAgent` class and specify template argument 
 // as sc-event class. Here `ScActionEvent` is type of event to which 
 // the given agent reacts.
 class MyAgent : public ScActionAgent

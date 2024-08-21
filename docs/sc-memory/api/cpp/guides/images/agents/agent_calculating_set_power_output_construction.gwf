@@ -40,7 +40,7 @@
         <node type="node/const/perm/group" idtf="action_finished_successfully" shapeColor="0" id="103716166366960" parent="0" left="0" top="0" right="215.25" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="120" y="205" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
-        <node type="node/const/perm/group" idtf="action_for_calculating_set_power" shapeColor="0" id="103716168805312" parent="0" left="0" top="0" right="250.75" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="53.575" y="143.5" haveBus="false" idtf_pos="5">
+        <node type="node/const/perm/group" idtf="action_calculate_set_power" shapeColor="0" id="103716168805312" parent="0" left="0" top="0" right="250.75" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="53.575" y="143.5" haveBus="false" idtf_pos="5">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/group" idtf="action_initiated" shapeColor="0" id="103716162738176" parent="0" left="0" top="0" right="122.688" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="85.575" y="168.5" haveBus="false" idtf_pos="0">

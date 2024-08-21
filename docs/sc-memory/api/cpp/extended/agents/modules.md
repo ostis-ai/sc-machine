@@ -160,7 +160,7 @@ If you has specification for your agent in the knowledge base wrote in SCs-code 
 Write scs-specification (or scg-specification) of your agent and connect it with module that register your agent.
 
 ```scs
-// Specification of agent in kb.
+// Specification of agent in knowledge base.
 // Abstract sc-agent
 my_abstract_agent
 <- abstract_sc_agent;
