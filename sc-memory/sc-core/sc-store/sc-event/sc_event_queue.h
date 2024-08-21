@@ -53,14 +53,19 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager);
 
 /*! Function that adds an sc-event to the event emission manager for processing.
  * @param manager Pointer to the sc_event_emission_manager managing event emission.
- * @param event Pointer to the sc-event to be added for processing.
- * @param connector_addr sc-address representing the sc-connector associated with the event.
- * @param other_addr sc-address representing the other sc-element associated with the event.
+ * @param event_subscription A pointer to sc-event subscription.
+ * @param connector_addr A sc-address of added/removed sc-connector (just for specified events).
+ * @param connector_type A sc-type of added/removed sc-connector (just for specified events).
+ * @param other_addr A sc-address of the second sc-element of sc-connector. If \p subscription_addr is a source, then \p
+ * other_addr is a target. If \p subscription_addr is a target, then \p other_addr is a source.
+ * @param callback A pointer function that is executed after the execution of a function that was called on the
+ * initiated event (it is used for events of erasing sc-connectors and sc-elements and event of changing link content).
+ * @param event_addr An argument of callback.
  * @note This function adds an sc-event to the event emission manager for asynchronous processing.
  */
 void _sc_event_emission_manager_add(
     sc_event_emission_manager * manager,
-    sc_event_subscription * event,
+    sc_event_subscription * event_subscription,
     sc_addr user_addr,
     sc_addr connector_addr,
     sc_type connector_type,

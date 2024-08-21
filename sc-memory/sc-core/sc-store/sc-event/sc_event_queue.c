@@ -21,21 +21,16 @@
  */
 typedef struct
 {
-  sc_event_subscription * event_subscription;  ///< Pointer to the sc-event associated with the worker.
-  sc_addr user_addr;                           ///< sc-address representing user that initiated this sc-event
-  sc_addr connector_addr;                      ///< sc-address representing the sc-connector associated with the event.
-  sc_type connector_type;                      ///< sc-type of the sc-connector associated with the event.
-  sc_addr other_addr;                          ///< sc-address representing the other element associated with the event.
-  sc_event_do_after_callback callback;
-  sc_addr event_addr;
+  sc_event_subscription * event_subscription;  ///< A pointer to the sc-event subscription associated with the event.
+  sc_addr user_addr;                           ///< A sc-address representing user that initiated this sc-event
+  sc_addr connector_addr;               ///< A sc-address representing the sc-connector associated with the event.
+  sc_type connector_type;               ///< A sc-type of the sc-connector associated with the event.
+  sc_addr other_addr;                   ///< A sc-address representing the other element associated with the event.
+  sc_event_do_after_callback callback;  ///< A pointer to function that is executed after the execution of a function
+                                        ///< that was called on the initiated event.
+  sc_addr event_addr;                   ///< An argument of callback.
 } sc_event;
 
-/*! Function that creates a new instance of sc_event.
- * @param event Pointer to the sc-event associated with the worker.
- * @param connector_addr sc-address representing the sc-connector associated with the event.
- * @param other_addr sc-address representing the other element associated with the event.
- * @returns Returns a pointer to the newly created sc_event.
- */
 sc_event * _sc_event_new(
     sc_event_subscription * event_subscription,
     sc_addr user_addr,
@@ -57,9 +52,6 @@ sc_event * _sc_event_new(
   return event;
 }
 
-/*! Function that destroys an instance of sc_event.
- * @param data Pointer to the sc_event to be destroyed.
- */
 void _sc_event_emission_pool_worker_data_destroy(sc_event * data)
 {
   sc_mem_free(data);

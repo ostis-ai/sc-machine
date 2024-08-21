@@ -248,21 +248,19 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   if (registration_manager == null_ptr || registration_manager->events_table == null_ptr)
     goto result;
 
-  // sc_set_lookup for all registered to specified sc-element events
+  // lookup for all registered to specified sc-element events
   if (registration_manager != null_ptr)
   {
-    sc_monitor_acquire_read(&registration_manager->events_table_monitor);
+    sc_monitor_acquire_write(&registration_manager->events_table_monitor);
     element_events_list =
         (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(element));
-    sc_monitor_release_read(&registration_manager->events_table_monitor);
+    if (element_events_list != null_ptr)
+      sc_hash_table_remove(registration_manager->events_table, TABLE_KEY(element));
+    sc_monitor_release_write(&registration_manager->events_table_monitor);
   }
 
   if (element_events_list != null_ptr)
   {
-    sc_monitor_acquire_write(&registration_manager->events_table_monitor);
-    sc_hash_table_remove(registration_manager->events_table, TABLE_KEY(element));
-    sc_monitor_release_write(&registration_manager->events_table_monitor);
-
     while (element_events_list != null_ptr)
     {
       event_subscription = (sc_event_subscription *)element_events_list->data;
@@ -328,17 +326,16 @@ sc_result sc_event_emit_impl(
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
   // if table is empty, then do nothing
+  sc_result result = SC_RESULT_NO;
   if (registration_manager == null_ptr || registration_manager->events_table == null_ptr)
     goto result;
 
-  // sc_set_lookup for all registered to specified sc-element events
+  // lookup for all registered to specified sc-element events
   sc_monitor_acquire_read(&registration_manager->events_table_monitor);
   if (registration_manager != null_ptr)
     element_events_list =
         (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(subscription_addr));
-  sc_monitor_release_read(&registration_manager->events_table_monitor);
 
-  sc_result result = SC_RESULT_NO;
   while (element_events_list != null_ptr)
   {
     event_subscription = (sc_event_subscription *)element_events_list->data;
@@ -361,6 +358,7 @@ sc_result sc_event_emit_impl(
 
     element_events_list = element_events_list->next;
   }
+  sc_monitor_release_read(&registration_manager->events_table_monitor);
 
 result:
   return result;
