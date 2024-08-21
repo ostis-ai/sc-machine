@@ -187,9 +187,9 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 
 ### **ScActionAgent**
 
-In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
+In multi-agent systems most of the agents are implemented to execute actions initiated by other agents. While `ScAgent` is useful to create broad event handling logic, using it to handle action initiations requires some boilerplate. We've implemented another agent class to make it easier for our users to implement action-executing agents. These agents are named action agents. Implementing these agents requires passing action class node rather than checking initiation condition manually.
 
-This class can be only used for agents that should be triggered to sc-event of generating output sc-arc from `action_initiated` class. These agents are named action agents. Action agent performs action initiated by other agent.
+This class can be only used for agents that should be triggered by generating an output sc-arc from `action_initiated` class node.
 
 ```cpp
 // File my_agent.hpp
