@@ -14,23 +14,6 @@
 #include "scg_to_scs_el.hpp"
 #include "gwf_parser.hpp"
 
-
-class SCsElement
-{
-public:
-  virtual void ConvertFromSCgElement(SCgElement* element);
-  virtual std::string Dump() const = 0;
-  virtual ~SCsElement() = default;
-};
-
-class SCsNode : public SCsElement
-{
-  void ConvertFromSCgElement(SCgElement* element) override;
-
-  std::string Dump() const override;
-};
-
-
 class Buffer
 {
 public:
@@ -45,6 +28,104 @@ private:
   std::string value;
 };
 
+class SCsElement
+{
+protected:
+  std::string mainIdtf;
+  std::string systemIdtf;
+
+public:
+  virtual void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) = 0;
+
+  virtual std::string Dump(std::string const & filepath) const = 0;
+
+  virtual ~SCsElement() = default;
+
+  void SetSystemIdtf(std::string const & idtf)
+  {
+    systemIdtf = idtf;
+  }
+
+  void SetMainIdtf(std::string const & idtf)
+  {
+    mainIdtf = idtf;
+  }
+};
+
+class SCsNode : public SCsElement
+{
+private:
+  std::string type;
+
+public:
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+
+  std::string Dump(std::string const & filepath) const override;
+};
+
+class SCsLink : public SCsElement
+{
+private:
+  bool isUrl{false};
+  std::string type;
+  std::string fileName;
+  std::string content;
+  std::string urlContent;
+
+public:
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+
+  std::string Dump(std::string const & filepath) const override;
+};
+
+class SCsConnector : public SCsElement
+{
+private:
+  std::string symbol;
+  bool isUnsupported;
+
+  std::string alias;
+  std::string sourceIdtf;
+  std::string targetIdtf;
+
+public:
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+
+  std::string Dump(std::string const & filepath) const override;
+};
+
+class SCsContour : public SCsElement
+{
+private:
+  std::list<std::shared_ptr<SCsElement>> elements;
+
+  class SCsNodeInContour : public SCsElement
+  {
+  private:
+    std::string contourIdtf;
+    std::string nodeIdtf;
+    size_t multipleArcCounter;
+
+  public:
+    void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+
+    std::string Dump(std::string const & filepath) const override;
+  };
+
+public:
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+
+  void AddElement(std::shared_ptr<SCsElement> const & element);
+
+  std::string Dump(std::string const & filepath) const override;
+};
+
+class SCsElementFactory
+{
+public:
+  static std::shared_ptr<SCsElement> CreateElementFromSCgElement(std::shared_ptr<SCgElement> const & element);
+};
+
 class SCsWriter
 {
 public:
@@ -52,39 +133,32 @@ public:
       std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elementsList,
       std::string const & filePath);
 
-private:
-  void ProcessElementsList(
-      std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elementsList,
-      Buffer & buffer,
-      std::string const & filePath);
-  void WriteNode(Buffer & buffer, std::shared_ptr<SCgElement> const & element, std::string const & filePath);
-  void WriteConnector(Buffer & buffer, std::shared_ptr<SCgConnector> const & element);
-  void WriteContour(Buffer & buffer, std::shared_ptr<SCgContour> const & element, int tabLevel);
-  void WriteLink(Buffer & buffer, std::shared_ptr<SCgLink> const & element, std::string const & filePath);
-  void WriteNodeForContour(
-      Buffer & buffer,
-      std::shared_ptr<SCgElement> const & node,
-      std::shared_ptr<SCgContour> const & contour);
-
-  void CorrectIdtf(Buffer & buffer, std::shared_ptr<SCgElement> const & element);
-
-  bool CheckForNode(
-    std::shared_ptr<SCgElement> const refElement,
-    std::vector<std::shared_ptr<SCgElement>> const & contourElements);
-
-  bool IsRussianIdtf(const std::string& idtf);
-
-  bool IsEnglishIdtf(const std::string& idtf);
-
-  std::string GenerateIdtfForUnresolvedCharacters(std::string & systemIdtf, const std::string & elementId, bool isVar);
-  std::string GenerateCorrectedIdtf(std::string & systemIdtf, std::string & elementId, bool isVar);
-  std::string CorrectIdtfForVariable(std::string  & systemIdtf);
-  std::string CorrectIdtfForNonVariable(std::string & systemIdtf);
-  void WriteMainIdtf(Buffer & buffer, const std::string & systemIdtf, const std::string & mainIdtf);
-  void ProcessSpecialTags(std::shared_ptr<SCgElement> const & element);
-
   // Utils
+  class CorrectorOfSCgIdtf
+  {
+  public:
+    static void CorrectIdtf(
+        std::shared_ptr<SCgElement> const & scgElement,
+        std::string & systemIdtf,
+        std::string & mainIdtf);
 
-  std::string MakeAlias(std::string const & prefix, std::string const & element_id);
-  bool IsVariable(std::string const & el_type);
+  private:
+    static bool IsRussianIdtf(std::string const & idtf);
+    static bool IsEnglishIdtf(std::string const & idtf);
+
+    static std::string GenerateIdtfForUnresolvedCharacters(
+        std::string & systemIdtf,
+        std::string const & elementId,
+        bool isVar);
+    static std::string GenerateCorrectedIdtf(std::string & systemIdtf, std::string const & elementId, bool isVar);
+    static std::string CorrectIdtfForVariable(std::string & systemIdtf);
+    static std::string CorrectIdtfForNonVariable(std::string & systemIdtf);
+  };
+
+  static void WriteMainIdtf(Buffer & buffer, std::string const & systemIdtf, std::string const & mainIdtf);
+  static bool CheckForNode(
+      std::shared_ptr<SCgElement> const refElement,
+      std::vector<std::shared_ptr<SCgElement>> const & contourElements);
+  static std::string MakeAlias(std::string const & prefix, std::string const & element_id);
+  static bool IsVariable(std::string const & el_type);
 };

@@ -59,7 +59,7 @@ std::shared_ptr<SCsTree> SCsTree::ParseTree(std::string const & input)
     else if (flag)
     {
       size_t elementEndPos = line.find(ELEMENT_END);
-      
+
       std::string content = line.substr(0, elementEndPos);
       utils::StringUtils::Trim(content);
 

@@ -149,7 +149,8 @@ private:
 class SCgBus : public SCgNode
 {
 public:
-  SCgBus(std::string const & id,
+  SCgBus(
+      std::string const & id,
       std::string const & parent,
       std::string const & idtf,
       std::string const & type,
@@ -289,11 +290,12 @@ private:
       std::string const & idtf,
       std::string const & type,
       xmlNodePtr el,
-      std::vector<std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>>> & connectorsList)
-      const;
+      std::vector<std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>>> &
+          connectorsList) const;
 
   void FillConnector(
-      std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>> const & connectorSourceTarget,
+      std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>> const &
+          connectorSourceTarget,
       std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elements);
 
   void FillContour(

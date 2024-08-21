@@ -234,8 +234,8 @@ std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
     std::string const & type,
     std::string const & tag,
     xmlNodePtr el,
-    std::vector<std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>>> & connectorsList)
-    const
+    std::vector<std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>>> &
+        connectorsList) const
 {
   auto const sourceId = GetXmlPropStr(el, ID_B);
   auto const targetId = GetXmlPropStr(el, ID_E);
@@ -252,7 +252,8 @@ std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
 }
 
 void GWFParser::FillConnector(
-    std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>> const & connectorSourceTarget,
+    std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>> const &
+        connectorSourceTarget,
     std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elements)
 {
   for (auto const & pair : connectorSourceTarget)
