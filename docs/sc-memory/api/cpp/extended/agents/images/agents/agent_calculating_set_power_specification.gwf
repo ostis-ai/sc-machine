@@ -113,7 +113,7 @@
         <node type="node/const/perm/relation" idtf="nrel_sc_agent_key_sc_elements" shapeColor="0" id="103716170148000" parent="0" left="0" top="0" right="235.688" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="-36.3983" y="986.61" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
-        <node type="node/const/perm/general" idtf="agent_for_calculating_set_power" shapeColor="0" id="103716166210752" parent="0" left="0" top="0" right="247.781" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="-149.958" y="44.5" haveBus="true" idtf_pos="0">
+        <node type="node/const/perm/general" idtf="agent_calculate_set_power" shapeColor="0" id="103716166210752" parent="0" left="0" top="0" right="247.781" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="-149.958" y="44.5" haveBus="true" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/relation" idtf="nrel_initiation_condition_and_result" shapeColor="0" id="103716168247104" parent="0" left="0" top="0" right="268.953" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="-72.8413" y="629.866" haveBus="false" idtf_pos="0">
@@ -137,7 +137,7 @@
         <node type="node/const/perm/tuple" idtf="" shapeColor="0" id="103716166137088" parent="0" x="86.7177" y="1066.07" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
-        <node type="node/const/perm/general" idtf="agent_for_calculating_set_power_implementation" shapeColor="0" id="103716171084032" parent="0" left="0" top="0" right="368.219" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="86.7887" y="1172.99" haveBus="true" idtf_pos="0">
+        <node type="node/const/perm/general" idtf="agent_calculate_set_power_implementation" shapeColor="0" id="103716171084032" parent="0" left="0" top="0" right="368.219" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="86.7887" y="1172.99" haveBus="true" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/relation" idtf="nrel_sc_agent_action_class" shapeColor="0" id="103716169603184" parent="0" left="0" top="0" right="202.375" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="-28.9583" y="281.5" haveBus="false" idtf_pos="0">

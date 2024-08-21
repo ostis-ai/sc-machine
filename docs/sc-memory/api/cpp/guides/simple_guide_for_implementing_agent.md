@@ -35,7 +35,7 @@ The initial construction of agent might look like this:
 -> ..element_3;;
 ```
 
-<image src="../images/agents/agent_for_calculating_set_power_input_construction.png"></image>
+<image src="../images/agents/agent_calculate_set_power_input_construction.png"></image>
 
 The result construction of agent might look like this:
 
@@ -52,7 +52,7 @@ The result construction of agent might look like this:
 *];;
 ```
 
-<image src="../images/agents/agent_for_calculating_set_power_output_construction.png"></image>
+<image src="../images/agents/agent_calculate_set_power_output_construction.png"></image>
 
 In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
 
@@ -66,8 +66,8 @@ You should get something like this structure:
 set-agents-module/
 ├── CMakeLists.txt
 ├── agents/
-│   ├── sc_agent_for_calculating_set_power.hpp
-│   └── sc_agent_for_calculating_set_power.сpp
+│   ├── sc_agent_calculate_set_power.hpp
+│   └── sc_agent_calculate_set_power.сpp
 ```
 
 ---
@@ -109,14 +109,14 @@ c. Override methods must be public. Otherwise, you won't be able to build your c
 
 d. You can implement other methods in agent's class.
 
-**sc_agent_for_calculating_set_power.hpp**
+**sc_agent_calculate_set_power.hpp**
 
 ```cpp
 #pragma once
 
 #include <sc-memory/sc_agent.hpp>
 
-class ScAgentForCalculatingPower : public ScActionAgent
+class ScAgentCalculateSetPower : public ScActionAgent
 {
 public:
   ScAddr GetActionClass() const override;
@@ -129,28 +129,20 @@ public:
 
 ### **5. Implement all declared methods of agent's class.**
 
-**sc_agent_for_calculating_set_power.cpp**
+**sc_agent_calculate_set_power.cpp**
 
 ```cpp
-#include "sc_agent_for_calculating_set_power.hpp"
+#include "sc_agent_calculate_set_power.hpp"
 
-ScAddr ScAgentForCalculatingPower::GetActionClass() const
+ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
   return m_memoryCtx.HelperFindBySystemIdtf("action_calculate_set_power");
 }
 // You must specify valid action class. In other case, the agent can’t be 
 // registered in sc-memory.
 
-ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 {
-  // `ScActionEvent` class is event type on which the given agent 
-  // is triggered. It is encapsulate information about sc-event. 
-  // The provided event is event on which the agent is triggered right now. 
-  // It has methods to get information about initiated sc-event: `GetUser`, 
-  // `GetGeneratedArc`, `GetSubscriptionElement`, `GetArcSourceElement`, 
-  // `GetArcTargetElement`. All events are not copyable and not movable. 
-  // ScAction is inherited from ScObject.
-
   // `ScAction` class encapsulates information about sc-action. 
   // The provided action is action that the given agent performs right now. 
   // It belongs to class action_calculate_set_power`. 
@@ -165,7 +157,7 @@ ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAc
   if (!m_memoryCtx.IsElement(setAddr))
   {
     SC_AGENT_LOG_ERROR("Action has not argument."); 
-    // output: "ScAgentForCalculatingPower: Action has not argument."
+    // output: "ScAgentCalculateSetPower: Action has not argument."
     return action.FinishWithError();
   }
   // There may be a situation where someone is trying to specify a number of 
@@ -227,8 +219,8 @@ For each agent, you can specify key sc-elements that this agent uses during the 
 set-agents-module/
  ├── CMakeLists.txt
  ├── agents/
- │   ├── sc_agent_for_calculating_set_power.hpp
- │   └── sc_agent_for_calculating_set_power.сpp
+ │   ├── sc_agent_calculate_set_power.hpp
+ │   └── sc_agent_calculate_set_power.сpp
 +├── keynodes/
 +│   └── sc_set_keynodes.hpp
 ```
@@ -275,20 +267,20 @@ public:
 
 `ScKeynodes` class is base class for all classes with keynodes. It contains core keynodes, that can be used in each agent.
 
-**sc_agent_for_calculating_set_power.cpp**
+**sc_agent_calculate_set_power.cpp**
 
 ```diff
-#include "sc_agent_for_calculating_set_power.hpp"
+#include "sc_agent_calculate_set_power.hpp"
 
 #include "keynodes/sc_set_keynodes.hpp"
 
-ScAddr ScAgentForCalculatingPower::GetActionClass() const
+ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
 - return m_memoryCtx.HelperFindBySystemIdtf("action_calculate_set_power");
 + return ScSetKeynodes::action_calculate_set_power;
 }
 
-ScResult ScAgentForCalculatingPower::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 {
   ...
 
@@ -315,8 +307,8 @@ Someone should subscribe your agent to event. It can be other agent, or any code
  set-agents-module/
  ├── CMakeLists.txt
  ├── agents/
- │   ├── sc_agent_for_calculating_set_power.hpp
- │   └── sc_agent_for_calculating_set_power.сpp
+ │   ├── sc_agent_calculate_set_power.hpp
+ │   └── sc_agent_calculate_set_power.сpp
  ├── keynodes/
  │   └── sc_set_keynodes.hpp
 +├── sc_set_module.hpp
@@ -343,11 +335,11 @@ class ScSetModule : public ScModule
 ```cpp
 #include "sc_set_module.hpp"
 
-#include "agents/sc_agent_for_calculating_set_power.hpp"
+#include "agents/sc_agent_calculate_set_power.hpp"
 
 SC_MODULE_REGISTER(ScSetModule)
-  ->Agent<ScAgentForCalculatingPower>();
-  // This method pointers to module that agent class `ScAgentForCalculatingPower`
+  ->Agent<ScAgentCalculateSetPower>();
+  // This method pointers to module that agent class `ScAgentCalculateSetPower`
   // should be subscribed to sc-event of adding outgoing sc-arc from sc-element
   // `action_initiated`. It is default parameter in these method if you want
   // register agent class inherited from `ScActionAgent`.
@@ -373,7 +365,7 @@ class ScSetModule : public ScModule
 
 ```diff
 SC_MODULE_REGISTER(ScSetModule)
-  ->Agent<ScAgentForCalculatingPower>();
+  ->Agent<ScAgentCalculateSetPower>();
 
 + // This method will be called once. 
 + void ScSetModule::Initialize(ScMemoryContext * context)
@@ -395,12 +387,12 @@ To make sure how your agent works it is best to create tests and cover in them a
  set-agents-module/
  ├── CMakeLists.txt
  ├── agents/
- │   ├── sc_agent_for_calculating_set_power.hpp
- │   └── sc_agent_for_calculating_set_power.сpp
+ │   ├── sc_agent_calculate_set_power.hpp
+ │   └── sc_agent_calculate_set_power.сpp
  ├── keynodes/
  │   └── sc_set_keynodes.hpp
 +├── tests/
-+│   └── test_sc_agent_for_calculating_set_power.cpp
++│   └── test_sc_agent_calculate_set_power.cpp
  ├── sc_set_module.hpp
  └── sc_set_module.cpp
 ```
@@ -430,17 +422,17 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 +add_test(NAME set-agents-tests COMMAND set-agents-tests)
 ```
 
-**test_sc_agent_for_calculating_set_power.cpp**
+**test_sc_agent_calculate_set_power.cpp**
 
 ```cpp
 #include <sc-memory/sc_test.hpp>
 
-#include "agents/sc_agent_for_calculating_set_power.hpp"
+#include "agents/sc_agent_calculate_set_power.hpp"
 #include "keynodes/sc_set_keynodes.hpp"
 
 using AgentTest = ScMemoryTest;
 
-TEST_F(AgentTest, AgentForCalculatingSetPowerFinishedSuccessfully)
+TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 {
   // Create action with class that your agent performs.
   ScAction action 

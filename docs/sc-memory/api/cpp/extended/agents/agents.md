@@ -22,7 +22,7 @@ Let's describe specification for abstract sc-agent of counting power of specifie
 
 ```scs
 // Abstract sc-agent
-agent_for_calculating_set_power
+agent_calculate_set_power
 <- abstract_sc_agent;
 => nrel_primary_initiation_condition: 
     // Class of sc-event and listen (subscription) sc-element
@@ -31,8 +31,8 @@ agent_for_calculating_set_power
     // Class of actions to be performed by agent
     action_calculate_set_power; 
 => nrel_initiation_condition_and_result: 
-    (..agent_for_calculating_set_power_initiation_condition 
-        => ..agent_for_calculating_set_power_result_condition);
+    (..agent_calculate_set_power_initiation_condition 
+        => ..agent_calculate_set_power_result_condition);
 <= nrel_sc_agent_key_sc_elements:
 // Set of key sc-elements used by this agent
 {
@@ -43,7 +43,7 @@ agent_for_calculating_set_power
 };
 => nrel_inclusion: 
     // Instance of abstract sc-agent; concrete implementation of agent in C++
-    agent_for_calculating_set_power_implementation 
+    agent_calculate_set_power_implementation 
     (*
         <- platform_dependent_abstract_sc_agent;;
         // Set of links with paths to sources of agent programs
@@ -55,7 +55,7 @@ agent_for_calculating_set_power
     *);;
 
 // Full initiation condition of agent
-..agent_for_calculating_set_power_initiation_condition
+..agent_calculate_set_power_initiation_condition
 = [*
     action_calculate_set_power _-> .._action;;
     action_initiated _-> .._action;;
@@ -65,7 +65,7 @@ agent_for_calculating_set_power
 // class `action_calculate_set_power` and that it has argument.
 
 // Full result condition of agent
-..agent_for_calculating_set_power_result_condition
+..agent_calculate_set_power_result_condition
 = [*
     action_calculate_set_power _-> .._action;;
     action_initiated _-> .._action;;
@@ -77,7 +77,7 @@ agent_for_calculating_set_power
 // and that it has result.
 ```
 
-<image src="../images/agents/agent_for_calculating_set_power_specification.png"></image>
+<image src="../images/agents/agent_calculate_set_power_specification.png"></image>
 
 ## **What are ways of providing the agent's specification?**
 
@@ -126,6 +126,24 @@ public:
   ScResult DoProgram(
     ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, 
     ScAction & action) override;
+
+  // Other user-defined methods.
+};
+```
+
+You can't override `DoProgram` without sc-event argument. There can be override one of these methods. 
+
+```cpp
+// File my_agent.hpp
+#pragma once
+
+#include <sc-memory/sc_agent.hpp>
+
+class MyAgent : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+{
+public:
+  ScAddr GetActionClass() const override;
+  ScResult DoProgram(ScAction & action) override;
 
   // Other user-defined methods.
 };
@@ -264,6 +282,12 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
   // action is action that the given agent performs right now. 
   // It belongs to `MyKeynodes::my_action` class. 
   // Actions are copyable and movable. `ScAction` is inherited from `ScAddr`.
+
+  // `ScActionEvent` class is event type on which the given agent 
+  // is triggered. It is encapsulate information about sc-event. 
+  // The provided event is event on which the agent is triggered right now. 
+  // It has methods to get information about initiated sc-event: `GetUser`, 
+  // `GetGeneratedArc`, `GetSubscriptionElement`, `GetArcSourceElement`.
  
   // Implement logic of your agent...
 

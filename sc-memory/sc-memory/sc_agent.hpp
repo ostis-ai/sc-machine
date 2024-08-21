@@ -31,6 +31,7 @@ class ScResult;
  * events.
  *
  * @tparam TScEvent The type of sc-event this agent handles.
+ * @tparam TScContext The type of sc-memory context that used by agent.
  */
 template <class TScEvent, class TScContext = ScAgentContext>
 class _SC_EXTERN ScAgentAbstract : public ScObject
@@ -260,6 +261,7 @@ protected:
  * to sc-events.
  *
  * @tparam TScEvent The type of sc-event this agent class handles.
+ * @tparam TScContext The type of sc-memory context that used by agent.
  */
 template <class TScEvent, class TScContext = ScAgentContext>
 class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent, TScContext>
@@ -491,7 +493,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  * public:
  *   ScAddr GetActionClass() const override;
  *
- *   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+ *   ScResult DoProgram(ScAction & action) override;
  * };
  *
  * // File my_agent.cpp:
@@ -503,7 +505,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  *   return MyKeynodes::my_agent_action;
  * }
  *
- * ScResult MyAgent::DoProgram(ScActionEvent const &, ScAction & action)
+ * ScResult MyAgent::DoProgram(ScAction & action)
  * {
  *   auto const & [argAddr1, argAddr2] = action.GetArguments<2>();
  *   if (!argAddr1.IsValid() || !argAddr2.IsValid())
