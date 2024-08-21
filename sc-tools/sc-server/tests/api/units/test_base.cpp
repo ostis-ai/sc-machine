@@ -1139,7 +1139,7 @@ TEST_F(ScServerTest, HandleEvents)
           "create",
           ScMemoryJsonPayload::array({
               {
-                  {"type", "add_outgoing_edge"},
+                  {"type", "generate_outgoing_edge"},
                   {"addr", addr1.Hash()},
               },
           }),

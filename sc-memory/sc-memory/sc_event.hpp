@@ -123,11 +123,50 @@ private:
 };
 
 /*!
+ * @class ScEventGenerateConnector
+ * @brief Represents an event where a sc-connector is added.
+ */
+template <ScType const & tConnectorType>
+class _SC_EXTERN ScEventGenerateConnector : public TScElementaryEvent<tConnectorType>
+{
+  template <class TScEvent>
+  friend class ScElementaryEventSubscription;
+  template <class TScEvent, class TScContext>
+  friend class ScAgentAbstract;
+
+public:
+  _SC_EXTERN virtual ScAddr GetGeneratedConnector() const;
+
+  _SC_EXTERN virtual ScType GetGeneratedConnectorType() const;
+
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const;
+
+protected:
+  _SC_EXTERN ScEventGenerateConnector(
+      ScAddr const & eventClassAddr,
+      ScAddr const & userAddr,
+      ScAddr const & subscriptionElementAddr,
+      ScAddr const & connectorAddr,
+      ScType const & connectorType,
+      ScAddr const & otherAddr);
+
+  _SC_EXTERN ScEventGenerateConnector(
+      ScAddr const & userAddr,
+      ScAddr const & subscriptionElementAddr,
+      ScAddr const & connectorAddr,
+      ScType const & connectorType,
+      ScAddr const & otherAddr);
+
+private:
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_connector;
+};
+
+/*!
  * @class ScEventGenerateArc
- * @brief Represents an event where an arc is added.
+ * @brief Represents an event where a sc-arc is added.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventGenerateArc : public TScElementaryEvent<arcType>
+class _SC_EXTERN ScEventGenerateArc : public ScEventGenerateConnector<arcType>
 {
 public:
   _SC_EXTERN virtual ScAddr GetGeneratedArc() const;
@@ -150,10 +189,10 @@ protected:
 
 /*!
  * @class ScEventGenerateEdge
- * @brief Represents an event where an edge is added.
+ * @brief Represents an event where a sc-edge is added.
  */
 template <ScType const & edgeType>
-class _SC_EXTERN ScEventGenerateEdge : public TScElementaryEvent<edgeType>
+class _SC_EXTERN ScEventGenerateEdge : public ScEventGenerateConnector<edgeType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -235,11 +274,50 @@ private:
 };
 
 /*!
+ * @class ScEventEraseConnector
+ * @brief Represents an event where a sc-connector is erased.
+ */
+template <ScType const & tConnectorType>
+class _SC_EXTERN ScEventEraseConnector : public TScElementaryEvent<tConnectorType>
+{
+  template <class TScEvent>
+  friend class ScElementaryEventSubscription;
+  template <class TScEvent, class TScContext>
+  friend class ScAgentAbstract;
+
+public:
+  _SC_EXTERN virtual ScAddr GetErasableConnector() const;
+
+  _SC_EXTERN virtual ScType GetErasableConnectorType() const;
+
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const;
+
+protected:
+  _SC_EXTERN ScEventEraseConnector(
+      ScAddr const & eventClassAddr,
+      ScAddr const & userAddr,
+      ScAddr const & subscriptionElementAddr,
+      ScAddr const & connectorAddr,
+      ScType const & connectorType,
+      ScAddr const & otherAddr);
+
+  _SC_EXTERN ScEventEraseConnector(
+      ScAddr const & userAddr,
+      ScAddr const & subscriptionElementAddr,
+      ScAddr const & connectorAddr,
+      ScType const & connectorType,
+      ScAddr const & otherAddr);
+
+private:
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_erase_connector;
+};
+
+/*!
  * @class ScEventEraseArc
- * @brief Represents an event where an arc is removed.
+ * @brief Represents an event where a sc-arc is erased.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventEraseArc : public TScElementaryEvent<arcType>
+class _SC_EXTERN ScEventEraseArc : public ScEventEraseConnector<arcType>
 {
 public:
   _SC_EXTERN virtual ScAddr GetErasableArc() const;
@@ -262,10 +340,10 @@ protected:
 
 /*!
  * @class ScEventEraseEdge
- * @brief Represents an event where an edge is removed.
+ * @brief Represents an event where a sc-edge is erased.
  */
 template <ScType const & edgeType>
-class _SC_EXTERN ScEventEraseEdge : public TScElementaryEvent<edgeType>
+class _SC_EXTERN ScEventEraseEdge : public ScEventEraseConnector<edgeType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -295,7 +373,7 @@ private:
 
 /*!
  * @class ScEventEraseOutgoingArc
- * @brief Represents an event where an outgoing sc-arc is removed.
+ * @brief Represents an event where an outgoing sc-arc is erased.
  */
 template <ScType const & arcType>
 class _SC_EXTERN ScEventEraseOutgoingArc final : public ScEventEraseArc<arcType>
@@ -319,7 +397,7 @@ private:
 
 /*!
  * @class ScEventEraseIncomingArc
- * @brief Represents an event where an incoming sc-arc is removed.
+ * @brief Represents an event where an incoming sc-arc is erased.
  */
 template <ScType const & arcType>
 class _SC_EXTERN ScEventEraseIncomingArc final : public ScEventEraseArc<arcType>

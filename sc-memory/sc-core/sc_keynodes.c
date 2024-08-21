@@ -11,9 +11,11 @@
 #include "sc-store/sc-container/sc-string/sc_string.h"
 
 sc_addr sc_event_unknown_addr;
+sc_addr sc_event_generate_connector_addr;
 sc_addr sc_event_generate_incoming_arc_addr;
 sc_addr sc_event_generate_outgoing_arc_addr;
 sc_addr sc_event_generate_edge_addr;
+sc_addr sc_event_erase_connector_addr;
 sc_addr sc_event_erase_incoming_arc_addr;
 sc_addr sc_event_erase_outgoing_arc_addr;
 sc_addr sc_event_erase_edge_addr;
@@ -72,11 +74,13 @@ sc_result sc_keynodes_resolve_keynode(
 sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_memory_generated_structure)
 {
   SC_RESOLVE_KEYNODE(ctx, sc_event_unknown_addr, sc_type_node_const_class, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, sc_event_generate_connector_addr, sc_type_node_const_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
       ctx, sc_event_generate_incoming_arc_addr, sc_type_node_const_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
       ctx, sc_event_generate_outgoing_arc_addr, sc_type_node_const_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, sc_event_generate_edge_addr, sc_type_node_const_class, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, sc_event_erase_connector_addr, sc_type_node_const_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, sc_event_erase_incoming_arc_addr, sc_type_node_const_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, sc_event_erase_outgoing_arc_addr, sc_type_node_const_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, sc_event_erase_edge_addr, sc_type_node_const_class, init_memory_generated_structure);

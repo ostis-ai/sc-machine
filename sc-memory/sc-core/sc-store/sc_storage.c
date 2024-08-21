@@ -459,7 +459,7 @@ end:
   sc_monitor_release_write(&storage->processes_monitor);
 }
 
-sc_result _sc_storage_element_remove(sc_addr addr)
+sc_result _sc_storage_element_erase(sc_addr addr)
 {
   sc_result result;
 
@@ -496,21 +496,27 @@ sc_result _sc_storage_element_remove(sc_addr addr)
     sc_monitor_acquire_write_n(2, beg_monitor, end_monitor);
 
     // outgoing sc-arcs
-    sc_addr prev_out_arc_addr = element->arc.prev_begin_out_arc;
+    sc_addr prev_out_connector_addr = element->arc.prev_begin_out_arc;
     sc_monitor * prev_out_arc_monitor = null_ptr;
-    if (SC_ADDR_IS_NOT_EQUAL(begin_addr, prev_out_arc_addr) && SC_ADDR_IS_NOT_EQUAL(end_addr, prev_out_arc_addr))
-      prev_out_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, prev_out_arc_addr);
+    if (SC_ADDR_IS_NOT_EQUAL(begin_addr, prev_out_connector_addr)
+        && SC_ADDR_IS_NOT_EQUAL(end_addr, prev_out_connector_addr))
+      prev_out_arc_monitor =
+          sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, prev_out_connector_addr);
 
-    sc_addr next_out_arc_addr = element->arc.next_begin_out_arc;
+    sc_addr next_out_connector_addr = element->arc.next_begin_out_arc;
     sc_monitor * next_out_arc_monitor = null_ptr;
-    if (SC_ADDR_IS_NOT_EQUAL(begin_addr, next_out_arc_addr) && SC_ADDR_IS_NOT_EQUAL(end_addr, next_out_arc_addr))
-      next_out_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, next_out_arc_addr);
+    if (SC_ADDR_IS_NOT_EQUAL(begin_addr, next_out_connector_addr)
+        && SC_ADDR_IS_NOT_EQUAL(end_addr, next_out_connector_addr))
+      next_out_arc_monitor =
+          sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, next_out_connector_addr);
 
     // incoming sc-arcs
-    sc_addr prev_in_arc_addr = element->arc.prev_end_in_arc;
+    sc_addr prev_in_connector_addr = element->arc.prev_end_in_arc;
     sc_monitor * prev_in_arc_monitor = null_ptr;
-    if (SC_ADDR_IS_NOT_EQUAL(begin_addr, prev_in_arc_addr) && SC_ADDR_IS_NOT_EQUAL(end_addr, prev_in_arc_addr))
-      prev_in_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, prev_in_arc_addr);
+    if (SC_ADDR_IS_NOT_EQUAL(begin_addr, prev_in_connector_addr)
+        && SC_ADDR_IS_NOT_EQUAL(end_addr, prev_in_connector_addr))
+      prev_in_arc_monitor =
+          sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, prev_in_connector_addr);
 
     sc_addr next_in_arc = element->arc.next_end_in_arc;
     sc_monitor * next_in_arc_monitor = null_ptr;
@@ -546,20 +552,20 @@ sc_result _sc_storage_element_remove(sc_addr addr)
     sc_monitor_acquire_write_n(3, prev_out_arc_monitor, next_out_arc_monitor, prev_in_arc_monitor, next_in_arc_monitor);
 #endif
 
-    if (SC_ADDR_IS_NOT_EMPTY(prev_out_arc_addr))
+    if (SC_ADDR_IS_NOT_EMPTY(prev_out_connector_addr))
     {
       sc_element * prev_el_arc;
-      result = sc_storage_get_element_by_addr(prev_out_arc_addr, &prev_el_arc);
+      result = sc_storage_get_element_by_addr(prev_out_connector_addr, &prev_el_arc);
       if (result == SC_RESULT_OK)
-        prev_el_arc->arc.next_begin_out_arc = next_out_arc_addr;
+        prev_el_arc->arc.next_begin_out_arc = next_out_connector_addr;
     }
 
-    if (SC_ADDR_IS_NOT_EMPTY(next_out_arc_addr))
+    if (SC_ADDR_IS_NOT_EMPTY(next_out_connector_addr))
     {
       sc_element * next_el_arc;
-      result = sc_storage_get_element_by_addr(next_out_arc_addr, &next_el_arc);
+      result = sc_storage_get_element_by_addr(next_out_connector_addr, &next_el_arc);
       if (result == SC_RESULT_OK)
-        next_el_arc->arc.prev_begin_out_arc = prev_out_arc_addr;
+        next_el_arc->arc.prev_begin_out_arc = prev_out_connector_addr;
     }
 
     sc_element * b_el;
@@ -567,7 +573,7 @@ sc_result _sc_storage_element_remove(sc_addr addr)
     if (result == SC_RESULT_OK)
     {
       if (SC_ADDR_IS_EQUAL(addr, b_el->first_out_arc))
-        b_el->first_out_arc = next_out_arc_addr;
+        b_el->first_out_arc = next_out_connector_addr;
 
       --b_el->outgoing_arcs_count;
 
@@ -580,10 +586,10 @@ sc_result _sc_storage_element_remove(sc_addr addr)
       }
     }
 
-    if (SC_ADDR_IS_NOT_EMPTY(prev_in_arc_addr))
+    if (SC_ADDR_IS_NOT_EMPTY(prev_in_connector_addr))
     {
       sc_element * prev_el_arc;
-      result = sc_storage_get_element_by_addr(prev_in_arc_addr, &prev_el_arc);
+      result = sc_storage_get_element_by_addr(prev_in_connector_addr, &prev_el_arc);
       if (result == SC_RESULT_OK)
         prev_el_arc->arc.next_end_in_arc = next_in_arc;
     }
@@ -593,7 +599,7 @@ sc_result _sc_storage_element_remove(sc_addr addr)
       sc_element * next_el_arc;
       result = sc_storage_get_element_by_addr(next_in_arc, &next_el_arc);
       if (result == SC_RESULT_OK)
-        next_el_arc->arc.prev_end_in_arc = prev_in_arc_addr;
+        next_el_arc->arc.prev_end_in_arc = prev_in_connector_addr;
     }
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
@@ -631,7 +637,7 @@ sc_result _sc_storage_element_remove(sc_addr addr)
       if (is_edge && is_not_loop)
       {
         if (SC_ADDR_IS_EQUAL(addr, e_el->first_out_arc))
-          e_el->first_out_arc = next_out_arc_addr;
+          e_el->first_out_arc = next_out_connector_addr;
 
         --e_el->outgoing_arcs_count;
       }
@@ -656,7 +662,7 @@ sc_result _sc_storage_element_remove(sc_addr addr)
   sc_storage_free_element(addr);
   sc_monitor_release_write(monitor);
 
-  // remove registered events before deletion
+  // erase registered events before deletion
   sc_event_notify_element_deleted(addr);
 
   return result;
@@ -678,8 +684,8 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   sc_pointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr));
   sc_queue_push(&iter_queue, p_addr);
 
-  sc_queue remove_queue;
-  sc_queue_init(&remove_queue);
+  sc_queue erase_queue;
+  sc_queue_init(&erase_queue);
   while (!sc_queue_empty(&iter_queue))
   {
     // get sc-addr for removing
@@ -697,15 +703,39 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
     sc_addr const begin_addr = el->arc.begin;
     sc_addr const end_addr = el->arc.end;
 
-    sc_result remove_incoming_arc_result = SC_RESULT_NO;
-    sc_result remove_outgoing_arc_result = SC_RESULT_NO;
-    sc_result remove_element_result = SC_RESULT_NO;
+    sc_result erase_incoming_connector_result = SC_RESULT_NO;
+    sc_result erase_outgoing_connector_result = SC_RESULT_NO;
+    sc_result erase_incoming_arc_result = SC_RESULT_NO;
+    sc_result erase_outgoing_arc_result = SC_RESULT_NO;
+    sc_result erase_element_result = SC_RESULT_NO;
 
     if ((el->flags.states & SC_STATE_IS_DELETABLE) != SC_STATE_IS_DELETABLE)
     {
+      if ((type & sc_type_arc_mask) != 0)
+      {
+        erase_incoming_connector_result = sc_event_emit(
+            ctx,
+            begin_addr,
+            sc_event_erase_connector_addr,
+            element_addr,
+            type,
+            end_addr,
+            sc_storage_element_free,
+            element_addr);
+        erase_outgoing_connector_result = sc_event_emit(
+            ctx,
+            end_addr,
+            sc_event_erase_connector_addr,
+            element_addr,
+            type,
+            begin_addr,
+            sc_storage_element_free,
+            element_addr);
+      }
+
       if (sc_type_has_subtype(type, sc_type_edge_common))
       {
-        remove_incoming_arc_result = sc_event_emit(
+        erase_incoming_arc_result = sc_event_emit(
             ctx,
             begin_addr,
             sc_event_erase_edge_addr,
@@ -714,7 +744,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             end_addr,
             sc_storage_element_free,
             element_addr);
-        remove_outgoing_arc_result = sc_event_emit(
+        erase_outgoing_arc_result = sc_event_emit(
             ctx,
             end_addr,
             sc_event_erase_edge_addr,
@@ -726,7 +756,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       }
       else if (sc_type_has_subtype(type, sc_type_arc_access) || sc_type_has_subtype(type, sc_type_arc_common))
       {
-        remove_outgoing_arc_result = sc_event_emit(
+        erase_outgoing_arc_result = sc_event_emit(
             ctx,
             begin_addr,
             sc_event_erase_outgoing_arc_addr,
@@ -735,7 +765,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             end_addr,
             sc_storage_element_free,
             element_addr);
-        remove_incoming_arc_result = sc_event_emit(
+        erase_incoming_arc_result = sc_event_emit(
             ctx,
             end_addr,
             sc_event_erase_incoming_arc_addr,
@@ -746,7 +776,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             element_addr);
       }
 
-      remove_element_result = sc_event_emit(
+      erase_element_result = sc_event_emit(
           ctx,
           element_addr,
           sc_event_erase_element_addr,
@@ -759,11 +789,12 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
       el->flags.states |= SC_STATE_IS_DELETABLE;
     }
 
-    if (remove_incoming_arc_result == SC_RESULT_OK || remove_outgoing_arc_result == SC_RESULT_OK
-        || remove_element_result == SC_RESULT_OK)
+    if (erase_incoming_connector_result == SC_RESULT_OK || erase_outgoing_connector_result == SC_RESULT_OK
+        || erase_incoming_arc_result == SC_RESULT_OK || erase_outgoing_arc_result == SC_RESULT_OK
+        || erase_element_result == SC_RESULT_OK)
       continue;
 
-    sc_queue_push(&remove_queue, p_addr);
+    sc_queue_push(&erase_queue, p_addr);
 
     sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, element_addr);
     sc_monitor_acquire_read(monitor);
@@ -812,16 +843,16 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   sc_queue_destroy(&iter_queue);
   sc_hash_table_destroy(cache_table);
 
-  while (!sc_queue_empty(&remove_queue))
+  while (!sc_queue_empty(&erase_queue))
   {
-    sc_addr_hash addr_int = (sc_pointer_to_sc_addr_hash)sc_queue_pop(&remove_queue);
+    sc_addr_hash addr_int = (sc_pointer_to_sc_addr_hash)sc_queue_pop(&erase_queue);
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
 
-    _sc_storage_element_remove(addr);
+    _sc_storage_element_erase(addr);
   }
 
-  sc_queue_destroy(&remove_queue);
+  sc_queue_destroy(&erase_queue);
 
   result = SC_RESULT_OK;
 error:
@@ -885,7 +916,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 }
 
 void _sc_storage_make_elements_incident_to_arc(
-    sc_addr arc_addr,
+    sc_addr connector_addr,
     sc_element * arc_el,
     sc_addr beg_addr,
     sc_element * beg_el,
@@ -895,48 +926,52 @@ void _sc_storage_make_elements_incident_to_arc(
 {
   sc_element *first_out_arc = null_ptr, *first_in_arc = null_ptr;
 
-  sc_addr first_out_arc_addr = beg_el->first_out_arc;
-  sc_addr first_in_arc_addr = end_el->first_in_arc;
+  sc_addr first_out_connector_addr = beg_el->first_out_arc;
+  sc_addr first_in_connector_addr = end_el->first_in_arc;
 
   sc_monitor * first_out_arc_monitor = null_ptr;
   sc_monitor * first_in_arc_monitor = null_ptr;
 
-  if (SC_ADDR_IS_NOT_EQUAL(first_out_arc_addr, beg_addr) && SC_ADDR_IS_NOT_EQUAL(first_out_arc_addr, end_addr))
-    first_out_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_out_arc_addr);
-  if (SC_ADDR_IS_NOT_EQUAL(first_in_arc_addr, beg_addr) && SC_ADDR_IS_NOT_EQUAL(first_in_arc_addr, end_addr))
-    first_in_arc_monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_in_arc_addr);
+  if (SC_ADDR_IS_NOT_EQUAL(first_out_connector_addr, beg_addr)
+      && SC_ADDR_IS_NOT_EQUAL(first_out_connector_addr, end_addr))
+    first_out_arc_monitor =
+        sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_out_connector_addr);
+  if (SC_ADDR_IS_NOT_EQUAL(first_in_connector_addr, beg_addr)
+      && SC_ADDR_IS_NOT_EQUAL(first_in_connector_addr, end_addr))
+    first_in_arc_monitor =
+        sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_in_connector_addr);
 
   sc_monitor_acquire_write_n(2, first_out_arc_monitor, first_in_arc_monitor);
 
-  if (SC_ADDR_IS_NOT_EMPTY(first_out_arc_addr))
-    sc_storage_get_element_by_addr(first_out_arc_addr, &first_out_arc);
+  if (SC_ADDR_IS_NOT_EMPTY(first_out_connector_addr))
+    sc_storage_get_element_by_addr(first_out_connector_addr, &first_out_arc);
 
-  if (SC_ADDR_IS_NOT_EMPTY(first_in_arc_addr))
-    sc_storage_get_element_by_addr(first_in_arc_addr, &first_in_arc);
+  if (SC_ADDR_IS_NOT_EMPTY(first_in_connector_addr))
+    sc_storage_get_element_by_addr(first_in_connector_addr, &first_in_arc);
 
   // set next outgoing sc-arc for our created arc
   if (is_reverse)
   {
-    arc_el->arc.next_end_out_arc = first_out_arc_addr;
-    arc_el->arc.next_begin_in_arc = first_in_arc_addr;
+    arc_el->arc.next_end_out_arc = first_out_connector_addr;
+    arc_el->arc.next_begin_in_arc = first_in_connector_addr;
   }
   else
   {
-    arc_el->arc.next_begin_out_arc = first_out_arc_addr;
-    arc_el->arc.next_end_in_arc = first_in_arc_addr;
+    arc_el->arc.next_begin_out_arc = first_out_connector_addr;
+    arc_el->arc.next_end_in_arc = first_in_connector_addr;
 
     if (first_out_arc)
-      first_out_arc->arc.prev_begin_out_arc = arc_addr;
+      first_out_arc->arc.prev_begin_out_arc = connector_addr;
 
     if (first_in_arc)
-      first_in_arc->arc.prev_end_in_arc = arc_addr;
+      first_in_arc->arc.prev_end_in_arc = connector_addr;
   }
 
   sc_monitor_release_write_n(2, first_out_arc_monitor, first_in_arc_monitor);
 
   // set our arc as first output/input at begin/end elements
-  beg_el->first_out_arc = arc_addr;
-  end_el->first_in_arc = arc_addr;
+  beg_el->first_out_arc = connector_addr;
+  end_el->first_in_arc = connector_addr;
 
   ++beg_el->outgoing_arcs_count;
   ++end_el->incoming_arcs_count;
@@ -944,34 +979,34 @@ void _sc_storage_make_elements_incident_to_arc(
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
 void _sc_storage_update_structure_arcs(
-    sc_addr arc_addr,
+    sc_addr connector_addr,
     sc_element * arc_el,
     sc_addr beg_addr,
     sc_addr end_addr,
     sc_element * end_el)
 {
   sc_element * first_in_accessed_arc = null_ptr;
-  sc_addr first_in_accessed_arc_addr = end_el->first_in_arc_from_structure;
+  sc_addr first_in_accessed_connector_addr = end_el->first_in_arc_from_structure;
   sc_monitor * first_in_accessed_arc_monitor = null_ptr;
 
-  if (SC_ADDR_IS_NOT_EQUAL(first_in_accessed_arc_addr, beg_addr)
-      && SC_ADDR_IS_NOT_EQUAL(first_in_accessed_arc_addr, end_addr))
+  if (SC_ADDR_IS_NOT_EQUAL(first_in_accessed_connector_addr, beg_addr)
+      && SC_ADDR_IS_NOT_EQUAL(first_in_accessed_connector_addr, end_addr))
     first_in_accessed_arc_monitor =
-        sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_in_accessed_arc_addr);
+        sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, first_in_accessed_connector_addr);
 
   sc_monitor_acquire_write(first_in_accessed_arc_monitor);
 
-  if (SC_ADDR_IS_NOT_EMPTY(first_in_accessed_arc_addr))
-    sc_storage_get_element_by_addr(first_in_accessed_arc_addr, &first_in_accessed_arc);
+  if (SC_ADDR_IS_NOT_EMPTY(first_in_accessed_connector_addr))
+    sc_storage_get_element_by_addr(first_in_accessed_connector_addr, &first_in_accessed_arc);
 
-  arc_el->arc.next_in_arc_from_structure = first_in_accessed_arc_addr;
+  arc_el->arc.next_in_arc_from_structure = first_in_accessed_connector_addr;
 
   if (first_in_accessed_arc)
-    first_in_accessed_arc->arc.prev_in_arc_from_structure = arc_addr;
+    first_in_accessed_arc->arc.prev_in_arc_from_structure = connector_addr;
 
   sc_monitor_release_write(first_in_accessed_arc_monitor);
 
-  end_el->first_in_arc_from_structure = arc_addr;
+  end_el->first_in_arc_from_structure = connector_addr;
 }
 #endif
 
@@ -988,27 +1023,27 @@ sc_addr sc_storage_arc_new_ext(
     sc_addr end_addr,
     sc_result * result)
 {
-  sc_addr arc_addr = SC_ADDR_EMPTY;
+  sc_addr connector_addr = SC_ADDR_EMPTY;
 
   if (sc_type_has_not_subtype_in_mask(type, sc_type_arc_mask))
   {
     *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
-    return arc_addr;
+    return connector_addr;
   }
 
   if (SC_ADDR_IS_EMPTY(beg_addr) || SC_ADDR_IS_EMPTY(end_addr))
   {
     *result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
-    return arc_addr;
+    return connector_addr;
   }
 
   sc_element *beg_el = null_ptr, *end_el = null_ptr;
 
-  sc_element * arc_el = sc_storage_allocate_new_element(ctx, &arc_addr);
+  sc_element * arc_el = sc_storage_allocate_new_element(ctx, &connector_addr);
   if (arc_el == null_ptr)
   {
     *result = SC_RESULT_ERROR_FULL_MEMORY;
-    return arc_addr;
+    return connector_addr;
   }
 
   arc_el->flags.type = type;
@@ -1032,35 +1067,40 @@ sc_addr sc_storage_arc_new_ext(
     goto error;
 
   // lock arcs to change output/input list
-  _sc_storage_make_elements_incident_to_arc(arc_addr, arc_el, beg_addr, beg_el, end_addr, end_el, SC_FALSE);
+  _sc_storage_make_elements_incident_to_arc(connector_addr, arc_el, beg_addr, beg_el, end_addr, end_el, SC_FALSE);
   if (is_edge && is_not_loop)
-    _sc_storage_make_elements_incident_to_arc(arc_addr, arc_el, end_addr, end_el, beg_addr, beg_el, SC_TRUE);
+    _sc_storage_make_elements_incident_to_arc(connector_addr, arc_el, end_addr, end_el, beg_addr, beg_el, SC_TRUE);
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   if (sc_type_is_structure_and_arc(beg_el->flags.type, type))
-    _sc_storage_update_structure_arcs(arc_addr, arc_el, beg_addr, end_addr, end_el);
+    _sc_storage_update_structure_arcs(connector_addr, arc_el, beg_addr, end_addr, end_el);
 #endif
 
   // emit events
   if (is_edge && is_not_loop)
   {
-    sc_event_emit(ctx, end_addr, sc_event_generate_edge_addr, arc_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
-    sc_event_emit(ctx, beg_addr, sc_event_generate_edge_addr, arc_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
+    sc_event_emit(ctx, end_addr, sc_event_generate_edge_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
+    sc_event_emit(ctx, beg_addr, sc_event_generate_edge_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
   }
   else
   {
     sc_event_emit(
-        ctx, beg_addr, sc_event_generate_outgoing_arc_addr, arc_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
+        ctx, beg_addr, sc_event_generate_outgoing_arc_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
     sc_event_emit(
-        ctx, end_addr, sc_event_generate_incoming_arc_addr, arc_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
+        ctx, end_addr, sc_event_generate_incoming_arc_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
   }
+
+  sc_event_emit(
+      ctx, end_addr, sc_event_generate_connector_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
+  sc_event_emit(
+      ctx, beg_addr, sc_event_generate_connector_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
 
   *result = SC_RESULT_OK;
-  return arc_addr;
+  return connector_addr;
 error:
-  sc_storage_free_element(arc_addr);
+  sc_storage_free_element(connector_addr);
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
   return SC_ADDR_EMPTY;
 }

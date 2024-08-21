@@ -165,9 +165,11 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx)
   // sc-events
   ScAddr events[] = {
       sc_event_unknown,
+      sc_event_generate_connector,
       sc_event_generate_incoming_arc,
       sc_event_generate_outgoing_arc,
       sc_event_generate_edge,
+      sc_event_erase_connector,
       sc_event_erase_incoming_arc,
       sc_event_erase_outgoing_arc,
       sc_event_erase_edge,

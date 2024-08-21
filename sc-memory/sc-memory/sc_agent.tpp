@@ -464,32 +464,17 @@ template <class TScEvent, class TScContext>
 ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr)
 {
   ScAddr const & eventClassAddr = event.GetEventClass();
-  auto [eventSubscriptionElement, _, otherElementAddr] = event.GetTriple();
+  auto [_eventSubscriptionElementAddr, _, _otherElementAddr] = event.GetTriple();
+  ScAddr const & eventSubscriptionElementAddr = _eventSubscriptionElementAddr;
+  ScAddr const & otherElementAddr = _otherElementAddr;
 
-  ScIterator5Ptr it5;
   size_t otherVarPosition = 0u;
-  if (eventClassAddr == ScKeynodes::sc_event_generate_incoming_arc
-      || eventClassAddr == ScKeynodes::sc_event_erase_incoming_arc)
-  {
-    it5 = this->m_memoryCtx.Iterator5(
-        ScType::Unknown, ScType::Var, eventSubscriptionElement, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
-  }
-  else if (
-      eventClassAddr == ScKeynodes::sc_event_generate_outgoing_arc
-      || eventClassAddr == ScKeynodes::sc_event_erase_outgoing_arc
-      || eventClassAddr == ScKeynodes::sc_event_generate_edge || eventClassAddr == ScKeynodes::sc_event_erase_edge)
-  {
-    it5 = this->m_memoryCtx.Iterator5(
-        eventSubscriptionElement, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
-
-    otherVarPosition = 2u;
-  }
 
   ScTemplateParams params;
-  if (it5 && it5->IsValid())
+  auto const & CheckIteratorAndUpdateParams = [&](ScIterator5Ptr const & it5)
   {
     ScIterator3Ptr const it3 =
-        this->m_memoryCtx.Iterator3(checkTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElement);
+        this->m_memoryCtx.Iterator3(checkTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElementAddr);
     if (it3->Next())
     {
       if (it5->Next())
@@ -515,6 +500,48 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
           << "` doesn't check initiated sc-event. Check that agent initiation "
              "condition and result templates are correct.");
     }
+  };
+
+  ScIterator5Ptr arcOrEdgeIt5;
+  if (eventClassAddr == ScKeynodes::sc_event_generate_incoming_arc
+      || eventClassAddr == ScKeynodes::sc_event_erase_incoming_arc)
+  {
+    arcOrEdgeIt5 = this->m_memoryCtx.Iterator5(
+        ScType::Unknown, ScType::Var, eventSubscriptionElementAddr, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+  }
+  else if (
+      eventClassAddr == ScKeynodes::sc_event_generate_outgoing_arc
+      || eventClassAddr == ScKeynodes::sc_event_erase_outgoing_arc
+      || eventClassAddr == ScKeynodes::sc_event_generate_edge || eventClassAddr == ScKeynodes::sc_event_erase_edge)
+  {
+    arcOrEdgeIt5 = this->m_memoryCtx.Iterator5(
+        eventSubscriptionElementAddr, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+
+    otherVarPosition = 2u;
+  }
+
+  ScIterator5Ptr connectorIt5;
+  ScIterator5Ptr reverseConnectorIt5;
+  if (eventClassAddr == ScKeynodes::sc_event_generate_connector
+      || eventClassAddr == ScKeynodes::sc_event_erase_connector)
+  {
+    connectorIt5 = this->m_memoryCtx.Iterator5(
+        ScType::Unknown, ScType::Var, eventSubscriptionElementAddr, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+    reverseConnectorIt5 = this->m_memoryCtx.Iterator5(
+        eventSubscriptionElementAddr, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+
+    otherVarPosition = 2u;
+  }
+
+  if (arcOrEdgeIt5 && arcOrEdgeIt5->IsValid())
+    CheckIteratorAndUpdateParams(arcOrEdgeIt5);
+  else
+  {
+    if (connectorIt5 && connectorIt5->IsValid())
+      CheckIteratorAndUpdateParams(connectorIt5);
+
+    if (reverseConnectorIt5 && reverseConnectorIt5->IsValid())
+      CheckIteratorAndUpdateParams(reverseConnectorIt5);
   }
 
   ScTemplate templ;

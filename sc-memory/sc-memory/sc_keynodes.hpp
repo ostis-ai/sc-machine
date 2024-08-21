@@ -50,7 +50,7 @@ public:
    * @brief Unregisters all keynodes.
    * @param context Sc-memory context used for unregistering keynodes.
    */
-  static void Unregister(ScMemoryContext *);
+  static void Unregister(ScMemoryContext * context);
 
 protected:
   static inline std::list<ScKeynode *> m_keynodes;
@@ -254,6 +254,9 @@ public:
 
   _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_generate_connector{
+      "sc_event_generate_connector",
+      ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_generate_incoming_arc{
       "sc_event_generate_incoming_arc",
       ScType::NodeConstClass};
@@ -261,6 +264,7 @@ public:
       "sc_event_generate_outgoing_arc",
       ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_generate_edge{"sc_event_generate_edge", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_erase_connector{"sc_event_erase_connector", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_erase_incoming_arc{
       "sc_event_erase_incoming_arc",
       ScType::NodeConstClass};
