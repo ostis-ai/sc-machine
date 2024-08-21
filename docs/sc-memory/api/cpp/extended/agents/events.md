@@ -369,21 +369,13 @@ ScAddr const edgeType = event.GetGeneratedEdgeType();
 ...
 ```
 
-#### **GetEdgeSourceElement**
+#### **GetEdgeIncidentElements**
 
-To get incident sc-elements of generated sc-edge you can use `GetEdgeSourceElement` and `GetEdgeTargetElement` methods.
-
-```cpp
-...
-ScAddr const sourceElementAddr = event.GetEdgeSourceElement();
-...
-```
-
-#### **GetEdgeTargetElement**
+To get incident sc-elements of generated sc-edge you can use `GetEdgeIncidentElements` method.
 
 ```cpp
 ...
-ScAddr const targetElementAddr = event.GetEdgeTargetElement();
+auto const [elementAddr1, elementAddr2] = event.GetEdgeIncidentElements();
 ...
 ```
 
@@ -487,21 +479,13 @@ ScAddr const edgeType = event.GetErasableEdgeType();
 ...
 ```
 
-#### **GetEdgeSourceElement**
+#### **GetEdgeIncidentElements**
 
-To get incident sc-elements of erasable sc-edge you can use `GetEdgeSourceElement` and `GetEdgeTargetElement` methods.
-
-```cpp
-...
-ScAddr const sourceElementAddr = event.GetEdgeSourceElement();
-...
-```
-
-#### **GetEdgeTargetElement**
+To get incident sc-elements of erasable sc-edge you can use `GetEdgeIncidentElements` method.
 
 ```cpp
 ...
-ScAddr const targetElementAddr = event.GetEdgeTargetElement();
+auto const [elementAddr, targetElementAddr] = event.GetEdgeIncidentElements();
 ...
 ```
 

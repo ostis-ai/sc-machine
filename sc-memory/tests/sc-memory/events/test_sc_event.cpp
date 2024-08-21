@@ -319,8 +319,9 @@ bool TestEventSubscriptionGenerateEdge(ScAgentContext * ctx)
   {
     EXPECT_EQ(event.GetGeneratedEdge(), edgeAddr);
     EXPECT_EQ(event.GetGeneratedEdgeType(), eventEdgeType);
-    EXPECT_TRUE(event.GetEdgeSourceElement() == nodeAddr1 || event.GetEdgeSourceElement() == nodeAddr2);
-    EXPECT_TRUE(event.GetEdgeTargetElement() == nodeAddr1 || event.GetEdgeTargetElement() == nodeAddr2);
+    auto [elementAddr1, elementAddr2] = event.GetEdgeIncidentElements();
+    EXPECT_TRUE(elementAddr1 == nodeAddr1 || elementAddr2 == nodeAddr1);
+    EXPECT_TRUE(elementAddr1 == nodeAddr2 || elementAddr2 == nodeAddr2);
     EXPECT_EQ(event.GetSubscriptionElement(), nodeAddr1);
 
     isDone = true;
@@ -606,8 +607,9 @@ bool TestEventSubscriptionEraseEdge(ScAgentContext * ctx)
     EXPECT_EQ(event.GetErasableEdge(), edgeAddr);
     EXPECT_TRUE(ctx->IsElement(edgeAddr));
     EXPECT_EQ(event.GetErasableEdgeType(), eventEdgeType);
-    EXPECT_TRUE(event.GetEdgeSourceElement() == nodeAddr1 || event.GetEdgeSourceElement() == nodeAddr2);
-    EXPECT_TRUE(event.GetEdgeTargetElement() == nodeAddr1 || event.GetEdgeTargetElement() == nodeAddr2);
+    auto [elementAddr1, elementAddr2] = event.GetEdgeIncidentElements();
+    EXPECT_TRUE(elementAddr1 == nodeAddr1 || elementAddr2 == nodeAddr1);
+    EXPECT_TRUE(elementAddr1 == nodeAddr2 || elementAddr2 == nodeAddr2);
     EXPECT_EQ(event.GetSubscriptionElement(), nodeAddr1);
 
     isDone = true;

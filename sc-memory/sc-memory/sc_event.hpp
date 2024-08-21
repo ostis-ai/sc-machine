@@ -204,9 +204,7 @@ public:
 
   _SC_EXTERN virtual ScType GetGeneratedEdgeType() const;
 
-  _SC_EXTERN virtual ScAddr GetEdgeSourceElement() const;
-
-  _SC_EXTERN virtual ScAddr GetEdgeTargetElement() const;
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const;
 
 protected:
   _SC_EXTERN ScEventGenerateEdge(
@@ -355,9 +353,7 @@ public:
 
   _SC_EXTERN virtual ScType GetErasableEdgeType() const;
 
-  _SC_EXTERN virtual ScAddr GetEdgeSourceElement() const;
-
-  _SC_EXTERN virtual ScAddr GetEdgeTargetElement() const;
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const;
 
 protected:
   _SC_EXTERN ScEventEraseEdge(

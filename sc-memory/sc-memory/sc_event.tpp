@@ -133,15 +133,9 @@ ScType ScEventGenerateEdge<edgeType>::GetGeneratedEdgeType() const
 }
 
 template <ScType const & edgeType>
-ScAddr ScEventGenerateEdge<edgeType>::GetEdgeSourceElement() const
+std::tuple<ScAddr, ScAddr> ScEventGenerateEdge<edgeType>::GetEdgeIncidentElements() const
 {
-  return ScElementaryEvent::GetOtherElement();
-}
-
-template <ScType const & edgeType>
-ScAddr ScEventGenerateEdge<edgeType>::GetEdgeTargetElement() const
-{
-  return ScElementaryEvent::GetSubscriptionElement();
+  return {ScElementaryEvent::GetOtherElement(), ScElementaryEvent::GetSubscriptionElement()};
 }
 
 template <ScType const & arcType>
@@ -288,15 +282,9 @@ ScType ScEventEraseEdge<edgeType>::GetErasableEdgeType() const
 }
 
 template <ScType const & edgeType>
-ScAddr ScEventEraseEdge<edgeType>::GetEdgeSourceElement() const
+std::tuple<ScAddr, ScAddr> ScEventEraseEdge<edgeType>::GetEdgeIncidentElements() const
 {
-  return ScElementaryEvent::GetSubscriptionElement();
-}
-
-template <ScType const & edgeType>
-ScAddr ScEventEraseEdge<edgeType>::GetEdgeTargetElement() const
-{
-  return ScElementaryEvent::GetOtherElement();
+  return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
 
 template <ScType const & edgeType>
