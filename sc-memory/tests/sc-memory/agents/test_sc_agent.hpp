@@ -31,6 +31,11 @@ public:
     m_lock.Unlock();
   }
 
+  void Reset()
+  {
+    m_lock.Lock();
+  }
+
 private:
   utils::ScLock m_lock;
 };
@@ -157,6 +162,26 @@ public:
 
   ScResult DoProgram(ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
       override;
+};
+
+class ATestDoProgramOne : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestDoProgramTwo : public ScActionAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScAction & action) override;
 };
 
 class ATestCheckResult : public ScActionAgent

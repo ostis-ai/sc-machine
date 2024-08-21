@@ -159,6 +159,60 @@ ScResult ATestGenerateMultipleOutputArc::DoProgram(
 
 /// --------------------------------------
 
+ScAddr ATestDoProgramOne::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScResult ATestDoProgramOne::DoProgram(ScActionEvent const &, ScAction & action)
+{
+  auto [firstArgument, secondArgument] = action.GetArguments<2>();
+
+  if (!firstArgument.IsValid())
+  {
+    msWaiter.Unlock();
+    return action.FinishWithError();
+  }
+
+  if (!secondArgument.IsValid())
+  {
+    msWaiter.Unlock();
+    return action.FinishUnsuccessfully();
+  }
+
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestDoProgramTwo::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScResult ATestDoProgramTwo::DoProgram(ScAction & action)
+{
+  auto [firstArgument, secondArgument] = action.GetArguments<2>();
+
+  if (!firstArgument.IsValid())
+  {
+    msWaiter.Unlock();
+    return action.FinishWithError();
+  }
+
+  if (!secondArgument.IsValid())
+  {
+    msWaiter.Unlock();
+    return action.FinishUnsuccessfully();
+  }
+
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
 ScAddr ATestCheckResult::GetActionClass() const
 {
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;

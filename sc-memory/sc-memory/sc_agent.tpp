@@ -144,6 +144,21 @@ ScTemplate ScAgentAbstract<TScEvent, TScContext>::GetInitiationConditionTemplate
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
+ScResult ScAgentAbstract<TScEvent, TScContext>::DoProgram(TScEvent const & event, ScAction & action)
+{
+  return ScResult(SC_RESULT_OK);
+}
+
+template <class TScEvent, class TScContext>
+ScResult ScAgentAbstract<TScEvent, TScContext>::DoProgram(ScAction & action)
+{
+  return ScResult(SC_RESULT_OK);
+}
+
+// LCOV_EXCL_STOP
+
+// LCOV_EXCL_START
+template <class TScEvent, class TScContext>
 sc_bool ScAgentAbstract<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
 {
   return SC_TRUE;
@@ -333,13 +348,18 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
 
   static_assert(
       should_be_no_more_than_one_override_initiation_condition_method_for<TScAgent>::value,
-      "TScAgent must have no more than one override method from GetInitiationCondition, GetInitiationConditionTemplate "
-      "and CheckInitiationCondition.");
+      "TScAgent must have no more than one override method from methods: `GetInitiationCondition`, "
+      "`GetInitiationConditionTemplate` "
+      "and `CheckInitiationCondition`.");
 
   static_assert(
       should_be_no_more_than_one_override_result_condition_method_for<TScAgent>::value,
-      "TScAgent must have no more than one override method from GetResultCondition, GetResultConditionTemplate and "
-      "CheckResultCondition.");
+      "TScAgent must have no more than one override method from methods: `GetResultCondition`, "
+      "`GetResultConditionTemplate` and "
+      "`CheckResultCondition`.");
+
+  static_assert(
+      should_be_one_override_do_program_for<TScAgent>::value, "TScAgent must have one override `DoProgram` method.");
 
   return [agentImplementationAddr](TScEvent const & event) -> void
   {
@@ -411,7 +431,11 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
       }
     }
 
-    ScResult result = agent.DoProgram(event, action);
+    ScResult result;
+    if constexpr (is_override_do_program_with_event_argument<TScAgent>::value)
+      result = agent.DoProgram(event, action);
+    else
+      result = agent.DoProgram(action);
 
     if (result == SC_RESULT_OK)
       SC_LOG_INFO("Agent `" << agentName << "` finished successfully");

@@ -31,6 +31,11 @@ public:
     m_lock.Unlock();
   }
 
+  void Reset()
+  {
+    m_lock.Lock();
+  }
+
 private:
   utils::ScLock m_lock;
 };

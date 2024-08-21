@@ -190,8 +190,36 @@ TEST_F(ScAgentTest, ATestGenerateMultipleOutputArc)
   m_ctx->UnsubscribeAgent<ATestGenerateMultipleOutputArc>(subscriptionElementAddr);
 }
 
+TEST_F(ScAgentTest, ATestDoProgramOne)
+{
+  m_ctx->SubscribeAgent<ATestDoProgramOne>();
+
+  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .Initiate();
+
+  EXPECT_TRUE(ATestDoProgramOne::msWaiter.Wait());
+
+  m_ctx->UnsubscribeAgent<ATestDoProgramOne>();
+}
+
+TEST_F(ScAgentTest, ATestDoProgramTwo)
+{
+  m_ctx->SubscribeAgent<ATestDoProgramTwo>();
+
+  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .Initiate();
+
+  EXPECT_TRUE(ATestDoProgramTwo::msWaiter.Wait());
+
+  m_ctx->UnsubscribeAgent<ATestDoProgramTwo>();
+}
+
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
 {
+  ATestCheckResult::msWaiter.Reset();
+
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
   m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -205,6 +233,8 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
 
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV2)
 {
+  ATestCheckResult::msWaiter.Reset();
+
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
   EXPECT_TRUE(m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -216,6 +246,8 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV2)
 
 TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV1)
 {
+  ATestCheckResult::msWaiter.Reset();
+
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
   m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -229,6 +261,8 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV1)
 
 TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV2)
 {
+  ATestCheckResult::msWaiter.Reset();
+
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
   EXPECT_TRUE(m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -240,6 +274,8 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV2)
 
 TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV1)
 {
+  ATestCheckResult::msWaiter.Reset();
+
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
   m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -255,6 +291,8 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV1)
 
 TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV2)
 {
+  ATestCheckResult::msWaiter.Reset();
+
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
   EXPECT_TRUE(m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -358,6 +396,8 @@ TEST_F(ScAgentTest, ActionDeactivated)
 
 TEST_F(ScAgentTest, RegisterAgentWithinModule)
 {
+  ATestGenerateOutgoingArc::msWaiter.Reset();
+
   ScAddr const & subscriptionElementAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   TestModule module;

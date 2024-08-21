@@ -13,11 +13,15 @@ class ScKeynode;
 class ScResult : public ScObject
 {
   template <class TScEvent, class TScContext>
+  friend class ScAgentAbstract;
+  template <class TScEvent, class TScContext>
   friend class ScAgent;
   friend class ScAction;
 
 private:
   sc_result m_code;
+
+  _SC_EXTERN ScResult();
 
   _SC_EXTERN ScResult(sc_result code);
 

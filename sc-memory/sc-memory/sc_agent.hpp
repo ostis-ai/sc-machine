@@ -45,6 +45,8 @@ class _SC_EXTERN ScAgentAbstract : public ScObject
   friend class ScAgentBuilder;
 
 public:
+  using TEventType = TScEvent;
+
   _SC_EXTERN ~ScAgentAbstract() override;
 
   /*!
@@ -174,7 +176,14 @@ public:
    * @param action A sc-action to be performed by the agent.
    * @return A result of the program execution.
    */
-  _SC_EXTERN virtual ScResult DoProgram(TScEvent const & event, ScAction & action) = 0;
+  _SC_EXTERN virtual ScResult DoProgram(TScEvent const & event, ScAction & action);
+
+  /*!
+   * @brief Executes the program associated with the agent.
+   * @param action A sc-action to be performed by the agent.
+   * @return A result of the program execution.
+   */
+  _SC_EXTERN virtual ScResult DoProgram(ScAction & action);
 
   /*!
    * @brief Gets the result of the agent's execution.
@@ -299,6 +308,44 @@ class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent, TScContext>
     static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
                                       ? check_override_result_condition_method_for<ScActionAgent, TScAgent>::value
                                       : check_override_result_condition_method_for<ScAgent, TScAgent>::value;
+  };
+
+  template <typename TScAgent>
+  class is_override_do_program_with_event_argument
+  {
+  private:
+    template <typename U>
+    static auto test(int)
+        -> decltype(std::declval<U>().DoProgram(std::declval<typename TScAgent::TEventType const &>(), std::declval<ScAction &>()), std::true_type());
+
+    template <typename>
+    static std::false_type test(...);
+
+  public:
+    static bool const value = decltype(test<TScAgent>(0))::value;
+  };
+
+  template <typename TScAgent>
+  class is_override_do_program_without_event_argument
+  {
+  private:
+    template <typename U>
+    static auto test(int) -> decltype(std::declval<U>().DoProgram(std::declval<ScAction &>()), std::true_type());
+
+    template <typename>
+    static std::false_type test(...);
+
+  public:
+    static bool const value = decltype(test<TScAgent>(0))::value;
+  };
+
+  template <typename TScAgent>
+  struct should_be_one_override_do_program_for
+  {
+  public:
+    static bool const value = is_override_do_program_with_event_argument<TScAgent>::value
+                                  + is_override_do_program_without_event_argument<TScAgent>::value
+                              == 1;
   };
 
   friend class ScModule;

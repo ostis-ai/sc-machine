@@ -6,6 +6,11 @@
 
 #include "sc_result.hpp"
 
+ScResult::ScResult()
+  : m_code(SC_RESULT_OK)
+{
+}
+
 ScResult::ScResult(sc_result code)
   : m_code(code)
 {
