@@ -82,8 +82,8 @@ sc_result ScElementaryEventSubscription<TScEvent>::Handler(
   {
     if constexpr (std::is_same<TScEvent, ScElementaryEvent>::value)
       delegateFunc(TScEvent(
-          userAddr,
           sc_event_subscription_get_event_type(event_subscription),
+          userAddr,
           sc_event_subscription_get_element(event_subscription),
           connectorAddr,
           connectorType,

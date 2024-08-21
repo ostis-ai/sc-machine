@@ -33,7 +33,8 @@ public:
 
   void Reset()
   {
-    m_lock.Lock();
+    if (!m_lock.IsLocked())
+      m_lock.Lock();
   }
 
 private:

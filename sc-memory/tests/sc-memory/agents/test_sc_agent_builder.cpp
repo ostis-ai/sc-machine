@@ -73,6 +73,8 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
 {
+  ATestSpecificatedAgent::msWaiter.Reset();
+
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
   ScAddr const & actionClassAddr =
@@ -108,6 +110,8 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasAlreadyFullSpecification)
 {
+  ATestSpecificatedAgent::msWaiter.Reset();
+
   std::string const & data = ATestSpecificatedAgentSpecification;
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -137,6 +141,8 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasAlreadyFullSpecificatio
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecificationWithTemplateKeynodes)
 {
+  ATestSpecificatedAgent::msWaiter.Reset();
+
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
