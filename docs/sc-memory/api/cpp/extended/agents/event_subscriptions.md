@@ -61,7 +61,7 @@ then it's would have an empty value):
 ...
 auto subscription = context->CreateElementaryEventSubscription(
   eventClassAddr,
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScElementaryEvent const & event) -> void
 {
   // Handle sc-event.
@@ -80,7 +80,7 @@ auto subscription = context->CreateElementaryEventSubscription(
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScEventAddOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
@@ -99,7 +99,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm>>(
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScEventAddIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
@@ -118,7 +118,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventAddEdge<ScType::EdgeUCommonConst>>(
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScEventAddEdge<ScType::EdgeUCommonConst> const & event) -> void
 {
   // Handle sc-event.
@@ -137,7 +137,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
@@ -156,7 +156,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>(
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
@@ -175,7 +175,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventEraseEdge<ScType::EdgeUCommonConst>>(
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScEventEraseEdge<ScType::EdgeUCommonConst> const & event) -> void
 {
   // Handle sc-event.
@@ -193,7 +193,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventEraseElement>(
-  elementAddr, 
+  subscriptionElementAddr, 
   [](ScEventEraseElement const & event) -> void
 {
   // Handle sc-event.
@@ -212,7 +212,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 ...
 auto subscription = context->CreateElementaryEventSubscription<
   ScEventChangeLinkContent>(
-  linkAddr, 
+  subscriptionElementAddr, 
   [](ScEventChangeLinkContent const & event) -> void
 {
   // Handle sc-event.
@@ -240,4 +240,4 @@ No, such functions are not agents. Agents have a strict specification. See [C++ 
 
 ### **Why can't I call the constructor of a subscription class to sc-event?**
 
-First of all, it's not safe. We need more checks on input arguments because there are more of them. Secondly, it is correct from the OOP point of view. Constructors should not throw exceptions. Third, it is correct from the point of view of the architecture we use in the sc-machine. The `ScAgentContext` is a facade over all possible objects in memory. 
+First of all, it's not safe. We need more checks on input arguments because there are more of them. Secondly, it is correct from the OOP point of view. Constructors should not throw exceptions. Third, it is correct from the point of view of the architecture we use in the sc-machine. The `ScAgentContext` is a facade over all possible objects used by agents.

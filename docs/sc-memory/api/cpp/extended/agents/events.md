@@ -10,21 +10,27 @@ This API describes how to work with sc-events.
 
 The sc-machine uses event-driven model to manage processing information. The sc-memory stores SC-code constructions, which are are graph structures, then any kind of events, occurring in sc-memory, is related to changes in these graph constructions.
 
-These are methods that generate events (`CreateEdge`, `EraseElement` and `SetLinkContent`). They publish events to an event queue without needing to know which consumers will receive them. These components filter and distribute events to appropriate consumers. They manage the flow of events and ensure that they reach the correct destinations. Event consumers are the components that listen for and process events. Event consumers can be modules, agents or something else.
+These are methods that generate events: 
 
-Within the OSTIS technology, events are considered only situations in which relationships have changed or new relationships have been created.
+- `CreateEdge`, 
+- `EraseElement` 
+- `SetLinkContent`).
+
+They publish events to an event queue without needing to know which consumers will receive them. These components filter and distribute events to appropriate consumers. They manage the flow of events and ensure that they reach the correct destinations. Event consumers are the components that listen for and process events. Event consumers can be modules, agents or something else.
+
+Within the OSTIS technology, events are considered only situations in which relationships have changed or new relationships have been created, or link content have been changed.
 
 ## **ScEvent**
 
 The sc-machine provides functionality for subscribing to the following syntactic elementary types of sc-events:
 
 * `ScElementaryEvent` is base class for all sc-events, it can be used to handle all sc-events for specified sc-element;
-* `ScEventAddOutgoingArc`, emits each time, when output (outgoing) sc-arc (from specified sc-element) is created;
-* `ScEventAddIncomingArc`, emits each time, when input (ingoing) sc-arc (to specified sc-element) is created;
-* `ScEventAddEdge`, emits each time, when sc-edge (from or to specified sc-element) is created;
-* `ScEventEraseOutgoingArc`, emits each time, when output (outgoing) sc-arc (from specified sc-element) is removing;
-* `ScEventEraseIncomingArc`, emits each time, when input (ingoing) sc-arc (to specified sc-element) is removing;
-* `ScEventEraseEdge`, emits each time, when sc-edge (from or to specified sc-element) is removing;
+* `ScEventAddOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is created;
+* `ScEventAddIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is created;
+* `ScEventAddEdge`, emits each time, when sc-edge from or to specified sc-element is created;
+* `ScEventEraseOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is removing;
+* `ScEventEraseIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is removing;
+* `ScEventEraseEdge`, emits each time, when sc-edge from or to specified sc-element is removing;
 * `ScEventEraseElement`, emits, when specified sc-element is removing;
 * `ScEventChangeLinkContent`, emits each time, when content of specified sc-link is changing.
 
@@ -93,10 +99,10 @@ To get information about sc-elements in initiated sc-event, you can use this met
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
-// `listenAddr` is sc-address of source sc-element 
+auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of added output sc-arc from `listenAddr`.
+// `arcAddr` is sc-address of added output sc-arc from `subscriptionElementAddr`.
 // `otherAddr` is sc-address of target sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -110,10 +116,10 @@ auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
-// `listenAddr` is sc-address of target sc-element 
+auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of target sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of added input sc-arc to `listenAddr`.
+// `arcAddr` is sc-address of added input sc-arc to `subscriptionElementAddr`.
 // `otherAddr` is sc-address of source sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -127,10 +133,10 @@ auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, edgeAddr, otherAddr] = event.GetTriple();
-// `listenAddr` is sc-address of source or target sc-element 
+auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source or target sc-element 
 // (listen it in sc-event).
-// `edgeAddr` is sc-address of added sc-edge to or from `listenAddr`.
+// `edgeAddr` is sc-address of added sc-edge to or from `subscriptionElementAddr`.
 // `otherAddr` is sc-address of source or target sc-element of `edgeAddr`.
 ...
       </code></pre>
@@ -144,10 +150,10 @@ auto const [listenAddr, edgeAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
-// `listenAddr` is sc-address of source sc-element 
+auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of removable output sc-arc from `listenAddr`.
+// `arcAddr` is sc-address of removable output sc-arc from `subscriptionElementAddr`.
 // `otherAddr` is sc-address of target sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -161,10 +167,10 @@ auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
-// `listenAddr` is sc-address of target sc-element 
+auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of target sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of removable input sc-arc to `listenAddr`.
+// `arcAddr` is sc-address of removable input sc-arc to `subscriptionElementAddr`.
 // `otherAddr` is sc-address of source sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -178,10 +184,10 @@ auto const [listenAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, edgeAddr, otherAddr] = event.GetTriple();
-// `listenAddr` is sc-address of source or target sc-element 
+auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source or target sc-element 
 // (listen it in sc-event).
-// `edgeAddr` is sc-address of removable sc-edge to or from `listenAddr`.
+// `edgeAddr` is sc-address of removable sc-edge to or from `subscriptionElementAddr`.
 // `otherAddr` is sc-address of source or target sc-element of `edgeAddr`.
 ...
       </code></pre>
@@ -194,8 +200,8 @@ auto const [listenAddr, edgeAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, _1, _2] = event.GetTriple();
-// `listenAddr` is sc-address of removable sc-element 
+auto const [subscriptionElementAddr, _1, _2] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of removable sc-element 
 // (listen it in sc-event).
 // `_1` is empty sc-address.
 // `_2` is empty sc-address.
@@ -211,8 +217,8 @@ auto const [listenAddr, _1, _2] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [listenAddr, _1, _2] = event.GetTriple();
-// `listenAddr` is sc-address of sc-link that has changable content 
+auto const [subscriptionElementAddr, _1, _2] = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of sc-link that has changable content 
 // (listen it in sc-event).
 // `_1` is empty sc-address.
 // `_2` is empty sc-address.
@@ -357,7 +363,7 @@ This class represents sc-event of removing sc-edge from or to specified sc-eleme
 
 #### **GetErasableEdge**
 
-Method `GetAddedEdge` returns removable sc-edge from or to listen sc-element (subscription sc-element).
+Method `GetErasableEdge` returns removable sc-edge from or to listen sc-element (subscription sc-element).
 
 ```cpp
 ...
@@ -411,7 +417,7 @@ This class represents sc-event of changing content for listen sc-link. You can u
 
 ### **Is there sc-event of adding sc-node?**
 
-A sc-event is defined as the addition, modification or removing of connections between sc-elements. This is so because knowledge is not a single sc-element, and knowledge is construction of three sc-elements at least. A sc-element does not carry any knowledge in itself. Therefore, a sc-event is considered to be emergence of some new knowledge.
+A sc-event is defined as the addition, modification or removing of connections between sc-elements, or link content changing. This is so because knowledge is not a single sc-element, and knowledge is construction of three sc-elements at least. A sc-element does not carry any knowledge in itself. Therefore, a sc-event is considered to be emergence of some new knowledge.
 
 ### **Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?**
 
