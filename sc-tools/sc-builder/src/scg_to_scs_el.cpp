@@ -234,7 +234,8 @@ bool SCgToSCsElement::ConvertSCgNodeTypeToSCsElementType(std::string const & nod
 
   if (symbol.empty())
   {
-    symbol = GetSCsElementTypeBySCgElementType(GetSCsElementTypeBySCgElementType(nodeType, "BackwardNodeTypes"), "NodeTypeSets");
+    symbol = GetSCsElementTypeBySCgElementType(
+        GetSCsElementTypeBySCgElementType(nodeType, "BackwardNodeTypes"), "NodeTypeSets");
   }
 
   if (symbol.empty())
@@ -252,7 +253,8 @@ bool SCgToSCsElement::ConvertSCgEdgeTypeToSCsElementType(std::string const & edg
 
   if (symbol.empty())
   {
-    symbol = GetSCsElementTypeBySCgElementType(GetSCsElementTypeBySCgElementType(edgeType, "BackwardEdgeTypes"), "EdgeTypes");
+    symbol = GetSCsElementTypeBySCgElementType(
+        GetSCsElementTypeBySCgElementType(edgeType, "BackwardEdgeTypes"), "EdgeTypes");
   }
 
   if (symbol.empty())

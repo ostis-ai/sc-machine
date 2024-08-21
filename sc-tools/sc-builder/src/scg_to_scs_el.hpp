@@ -16,10 +16,10 @@ private:
 
   static std::string GetSCsElementTypeBySCgElementType(std::string const & scgElement, std::string const & dict);
 
-  static  std::unordered_map<std::string, std::string> const m_nodeTypeSets;
-  static  std::unordered_map<std::string, std::string> const m_backwardNodeTypes;
-  static  std::unordered_map<std::string, std::string> const m_unsupportedNodeTypeSets;
-  static  std::unordered_map<std::string, std::string> const m_edgeTypes;
-  static  std::unordered_map<std::string, std::string> const m_backwardEdgeTypes;
-  static  std::unordered_map<std::string, std::string> const m_unsupportedEdgeTypes;
+  static std::unordered_map<std::string, std::string> const m_nodeTypeSets;
+  static std::unordered_map<std::string, std::string> const m_backwardNodeTypes;
+  static std::unordered_map<std::string, std::string> const m_unsupportedNodeTypeSets;
+  static std::unordered_map<std::string, std::string> const m_edgeTypes;
+  static std::unordered_map<std::string, std::string> const m_backwardEdgeTypes;
+  static std::unordered_map<std::string, std::string> const m_unsupportedEdgeTypes;
 };
