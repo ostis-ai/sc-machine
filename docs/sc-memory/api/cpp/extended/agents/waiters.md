@@ -38,7 +38,8 @@ auto const CheckCallback
 };
 
 auto waiter = context.CreateConditionWaiter<
-  ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(nodeAddr, CheckCallback);
+  ScEventGenerateIncomingArc<
+    ScType::EdgeAccessConstPosPerm>>(nodeAddr, CheckCallback);
 // Provide wait time value.
 waiter.Wait(10000); // milliseconds.
 // By default, wait time value is 5000 milliseconds.

@@ -74,6 +74,25 @@ auto subscription = context->CreateElementaryEventSubscription(
   </tr>
 
   <tr>
+    <td><strong>ScEventGenerateConnector</strong></td>
+    <td>
+      <scg src="../images/events/sc_event_connector.gwf"></scg>
+      <strong>Example C++ code</strong>:
+      <pre><code class="cpp">
+...
+auto subscription = context->CreateElementaryEventSubscription<
+  ScEventGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
+  subscriptionElementAddr, 
+  [](ScEventGenerateConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
+{
+  // Handle sc-event.
+});
+...
+      </code></pre>
+    </td>
+  </tr>
+
+  <tr>
     <td><strong>ScEventGenerateOutgoingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
@@ -122,6 +141,25 @@ auto subscription = context->CreateElementaryEventSubscription<
   ScEventGenerateEdge<ScType::EdgeUCommonConst>>(
   subscriptionElementAddr, 
   [](ScEventGenerateEdge<ScType::EdgeUCommonConst> const & event) -> void
+{
+  // Handle sc-event.
+});
+...
+      </code></pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>ScEventEraseConnector</strong></td>
+    <td>
+      <scg src="../images/events/sc_event_connector.gwf"></scg>
+      <strong>Example C++ code</strong>:
+      <pre><code class="cpp">
+...
+auto subscription = context->CreateElementaryEventSubscription<
+  ScEventEraseConnector<ScType::EdgeAccessConstPosPerm>>(
+  subscriptionElementAddr, 
+  [](ScEventEraseConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });

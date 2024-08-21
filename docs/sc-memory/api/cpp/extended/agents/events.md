@@ -99,15 +99,18 @@ To get information about sc-elements in initiated sc-event, you can use this met
   <tr>
   <td><strong>ScEventGenerateConnector</strong></td>
   <td>
-      <scg src="../images/events/sc_event_edge_connector.gwf"></scg>
+      <scg src="../images/events/sc_event_connector.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
-// `subscriptionElementAddr` is sc-address of source sc-element 
-// (listen it in sc-event).
-// `edgeAddr` is sc-address of generated sc-connector to or from `subscriptionElementAddr`.
-// `otherAddr` is sc-address of target sc-element of `arcAddr`.
+auto const [subscriptionElementAddr, edgeAddr, otherAddr] 
+  = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source or 
+// target sc-element (listen it in sc-event).
+// `connectorAddr` is sc-address of generated sc-connector 
+// to or from `subscriptionElementAddr`.
+// `otherAddr` is sc-address of source or target sc-element 
+// of `arcAddr`.
 ...
       </code></pre>
     </td>
@@ -120,10 +123,12 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+auto const [subscriptionElementAddr, arcAddr, otherAddr] 
+  = event.GetTriple();
 // `subscriptionElementAddr` is sc-address of source sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of generated outgoing sc-arc from `subscriptionElementAddr`.
+// `arcAddr` is sc-address of generated outgoing sc-arc 
+// from `subscriptionElementAddr`.
 // `otherAddr` is sc-address of target sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -137,10 +142,12 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+auto const [subscriptionElementAddr, arcAddr, otherAddr] 
+  = event.GetTriple();
 // `subscriptionElementAddr` is sc-address of target sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of generated incoming sc-arc to `subscriptionElementAddr`.
+// `arcAddr` is sc-address of generated incoming sc-arc 
+// to `subscriptionElementAddr`.
 // `otherAddr` is sc-address of source sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -154,11 +161,14 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
-// `subscriptionElementAddr` is sc-address of source or target sc-element 
-// (listen it in sc-event).
-// `edgeAddr` is sc-address of generated sc-edge to or from `subscriptionElementAddr`.
-// `otherAddr` is sc-address of source or target sc-element of `edgeAddr`.
+auto const [subscriptionElementAddr, edgeAddr, otherAddr] 
+  = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source 
+// or target sc-element (listen it in sc-event).
+// `edgeAddr` is sc-address of generated sc-edge 
+// to or from `subscriptionElementAddr`.
+// `otherAddr` is sc-address of source or target sc-element 
+// of `edgeAddr`.
 ...
       </code></pre>
     </td>
@@ -167,15 +177,18 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
   <tr>
   <td><strong>ScEventEraseConnector</strong></td>
   <td>
-    <scg src="../images/events/sc_event_edge.gwf"></scg>
+    <scg src="../images/events/sc_event_connector.gwf"></scg>
     <strong>Example C++ code</strong>:
     <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
-// `subscriptionElementAddr` is sc-address of source sc-element 
-// (listen it in sc-event).
-// `edgeAddr` is sc-address of erasable sc-connector to or from `subscriptionElementAddr`.
-// `otherAddr` is sc-address of target sc-element of `arcAddr`.
+auto const [subscriptionElementAddr, edgeAddr, otherAddr] 
+  = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source or
+// target sc-element (listen it in sc-event).
+// `connectorAddr` is sc-address of erasable sc-connector 
+// to or from `subscriptionElementAddr`.
+// `otherAddr` is sc-address of source or target sc-element 
+// of `arcAddr`.
 ...
       </code></pre>
     </td>
@@ -188,10 +201,12 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+auto const [subscriptionElementAddr, arcAddr, otherAddr] 
+  = event.GetTriple();
 // `subscriptionElementAddr` is sc-address of source sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of erasable outgoing sc-arc from `subscriptionElementAddr`.
+// `arcAddr` is sc-address of erasable outgoing sc-arc 
+// from `subscriptionElementAddr`.
 // `otherAddr` is sc-address of target sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -205,10 +220,12 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
+auto const [subscriptionElementAddr, arcAddr, otherAddr] 
+  = event.GetTriple();
 // `subscriptionElementAddr` is sc-address of target sc-element 
 // (listen it in sc-event).
-// `arcAddr` is sc-address of erasable incoming sc-arc to `subscriptionElementAddr`.
+// `arcAddr` is sc-address of erasable incoming sc-arc 
+// to `subscriptionElementAddr`.
 // `otherAddr` is sc-address of source sc-element of `arcAddr`.
 ...
       </code></pre>
@@ -222,11 +239,15 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
-// `subscriptionElementAddr` is sc-address of source or target sc-element 
+auto const [subscriptionElementAddr, edgeAddr, otherAddr] 
+  = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of source or 
+// target sc-element 
 // (listen it in sc-event).
-// `edgeAddr` is sc-address of erasable sc-edge to or from `subscriptionElementAddr`.
-// `otherAddr` is sc-address of source or target sc-element of `edgeAddr`.
+// `edgeAddr` is sc-address of erasable sc-edge 
+// to or from `subscriptionElementAddr`.
+// `otherAddr` is sc-address of source or target sc-element 
+// of `edgeAddr`.
 ...
       </code></pre>
     </td>
@@ -238,8 +259,10 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, _1, _2] = event.GetTriple();
-// `subscriptionElementAddr` is sc-address of erasable sc-element 
+auto const [subscriptionElementAddr, _1, _2] 
+  = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of erasable 
+// sc-element 
 // (listen it in sc-event).
 // `_1` is empty sc-address.
 // `_2` is empty sc-address.
@@ -255,8 +278,10 @@ auto const [subscriptionElementAddr, _1, _2] = event.GetTriple();
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, _1, _2] = event.GetTriple();
-// `subscriptionElementAddr` is sc-address of sc-link that has changable content 
+auto const [subscriptionElementAddr, _1, _2] 
+  = event.GetTriple();
+// `subscriptionElementAddr` is sc-address of sc-link 
+// that has changable content.
 // (listen it in sc-event).
 // `_1` is empty sc-address.
 // `_2` is empty sc-address.

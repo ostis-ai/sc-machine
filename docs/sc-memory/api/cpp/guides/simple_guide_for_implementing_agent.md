@@ -152,8 +152,8 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // This method finds construction `action -> rrel_1: setAddr`.
   // Here the 1 is number of arguments which action must have. In step 1, 
   // we specified that an action should have a set as its the first and 
-  // only one argument. But the one who calls this agent may not specify argument 
-  // for the action. So we need to check that the action has argument. 
+  // only one argument. But the one who calls this agent may not specify 
+  // argument for the action. So we need to check that the action has argument. 
   if (!m_memoryCtx.IsElement(setAddr))
   {
     SC_AGENT_LOG_ERROR("Action has not argument."); 
@@ -184,21 +184,21 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
     = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
     = m_memoryCtx.HelperFindBySystemIdtf("nrel_set_power");
-  ScAddr const & arcAccessAddr 
-    = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
+  ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
+    ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
 
   action.FormResult(
     setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
   SC_AGENT_LOG_DEBUG("Set power was counted: " << setPower << ".");
 
   // At the end of the agent's program, you must call one of three methods 
-  // (`FinishSuccessfully`, `FinishUnsuccessfully`, `FinishWithError`) to indicate 
-  // that the agent's performing of action is complete:
-  // - Method `FinishSuccessfully` indicates that action was performed by agent 
-  // successfully (sets class `action_finished_successfully`). 
+  // (`FinishSuccessfully`, `FinishUnsuccessfully`, `FinishWithError`) 
+  // to indicate that the agent's performing of action is complete:
+  // - Method `FinishSuccessfully` indicates that action was performed 
+  // by agent successfully (sets class `action_finished_successfully`). 
   // It means that the agent solved specified task.
-  // - Method `FinishUnsuccessfully` indicates that action was performed by agent
-  // unsuccessfully (sets class `action_finished_unsuccessfully`). 
+  // - Method `FinishUnsuccessfully` indicates that action was performed 
+  // by agent unsuccessfully (sets class `action_finished_unsuccessfully`). 
   // It means that the agent didn't solved specified task.
   // - Method `FinishWithError` indicates that action was performed by agent
   // with error (sets class `action_finished_with_error`). 
@@ -284,15 +284,20 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 {
   ...
 
-- ScAddr const & nrelSetPowerAddr = m_memoryCtx.HelperFindBySystemIdtf("nrel_set_power");
-- ScAddr const & arcAccessAddr 
--   = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
+- ScAddr const & nrelSetPowerAddr 
+-   = m_memoryCtx.HelperFindBySystemIdtf("nrel_set_power");
+- ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
+-   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
++ ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
++   ScType::EdgeAccessConstPosPerm, ScSetKeynodes::nrel_set_power, arcAddr);
 - action.FormResult(
     setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
-+ ScAddr const & arcAccessAddr 
-+   = m_memoryCtx.CreateEdge(ScType::EdgeAccessConstPosPerm, ScSetKeynodes::nrel_set_power, arcAddr);
 + action.FormResult(
-    setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, ScSetKeynodes::nrel_set_power);
++   setAddr, 
++   arcCommonAddr,
++   setPowerAddr,
++   arcAccessAddr, 
++   ScSetKeynodes::nrel_set_power);
   ...
 }
 ```
@@ -417,7 +422,9 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 # Create executable for tests.
 +add_executable(set-agents-tests ${TEST_SOURCES})
 +target_link_libraries(set-agents-tests LINK_PRIVATE set-agents)
-+target_include_directories(set-agents-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
++target_include_directories(set-agents-tests 
++    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
++)
 
 +add_test(NAME set-agents-tests COMMAND set-agents-tests)
 ```

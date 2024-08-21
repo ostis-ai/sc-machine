@@ -355,7 +355,7 @@ ScSet set = context.UseStructure(structureAddr);
 - [How can I wait for an event indefinitely?](#how-can-i-wait-for-an-event-indefinitely)
 - [What if I need to initiate agent on events from more then one different node?](#what-if-i-need-to-initiate-agent-on-events-from-more-then-one-different-node)
 - [When ScMultiset will be implemented?](#when-scmultiset-will-be-implemented)
-- [What is I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?](#what-is-i-need-to-initiate-agent-on-sceventgeneratingincomingarc-and-sceventgeneratingoutgoingarc-for-one-node)
+- [What do I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?](#what-do-i-need-to-initiate-agent-on-sceventgeneratingincomingarc-and-sceventgeneratingoutgoingarc-for-one-node)
 
 ### **How do I add my method to a `ScAgentContext`?**
 
@@ -403,6 +403,6 @@ context.UnsubscribeAgent<MyAgent>(nodeAddr1, nodeAddr2);
 
 Now, `ScSet` and `ScStructure` are implemented only. `ScSet` stores unique sc-elements. `ScMultiset` will be implemented later.
 
-### **What is I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?**
+### **What do I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?**
 
 You can subscribe an agent to sc-event of generating sc-connector -- `ScEventGeneratingConnector`. Then the agent will be triggered on incoming and outgoing sc-arcs.
