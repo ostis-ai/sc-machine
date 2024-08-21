@@ -105,6 +105,24 @@ ScEventGenerateArc<arcType>::ScEventGenerateArc(
         connectorType,
         otherAddr){};
 
+template <ScType const & arcType>
+ScAddr ScEventGenerateArc<arcType>::GetGeneratedConnector() const
+{
+  return ScElementaryEvent::GetConnector();
+}
+
+template <ScType const & arcType>
+ScType ScEventGenerateArc<arcType>::GetGeneratedConnectorType() const
+{
+  return ScElementaryEvent::GetConnectorType();
+}
+
+template <ScType const & arcType>
+std::tuple<ScAddr, ScAddr> ScEventGenerateArc<arcType>::GetConnectorIncidentElements() const
+{
+  return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
+}
+
 template <ScType const & edgeType>
 ScEventGenerateEdge<edgeType>::ScEventGenerateEdge(
     ScAddr const & userAddr,
@@ -268,6 +286,24 @@ ScEventEraseArc<arcType>::ScEventEraseArc(
         connectorAddr,
         connectorType,
         otherAddr){};
+
+template <ScType const & arcType>
+ScAddr ScEventEraseArc<arcType>::GetErasableConnector() const
+{
+  return ScElementaryEvent::GetConnector();
+}
+
+template <ScType const & arcType>
+ScType ScEventEraseArc<arcType>::GetErasableConnectorType() const
+{
+  return ScElementaryEvent::GetConnectorType();
+}
+
+template <ScType const & arcType>
+std::tuple<ScAddr, ScAddr> ScEventEraseArc<arcType>::GetConnectorIncidentElements() const
+{
+  return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
+}
 
 template <ScType const & edgeType>
 ScAddr ScEventEraseEdge<edgeType>::GetErasableEdge() const

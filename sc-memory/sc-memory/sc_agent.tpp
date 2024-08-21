@@ -136,11 +136,14 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetInitiationCondition() const
   return m_memoryCtx.GetEdgeSource(it5->Get(2));
 }
 
+// LCOV_EXCL_START
 template <class TScEvent, class TScContext>
 ScTemplate ScAgentAbstract<TScEvent, TScContext>::GetInitiationConditionTemplate() const
 {
   return ScTemplate();
 }
+
+// LCOV_EXCL_STOP
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
@@ -186,11 +189,14 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetResultCondition() const
   return m_memoryCtx.GetEdgeTarget(it5->Get(2));
 }
 
+// LCOV_EXCL_START
 template <class TScEvent, class TScContext>
 ScTemplate ScAgentAbstract<TScEvent, TScContext>::GetResultConditionTemplate() const
 {
   return ScTemplate();
 }
+
+// LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
 void ScAgentAbstract<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr)

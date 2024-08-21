@@ -185,6 +185,12 @@ protected:
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
+
+  _SC_EXTERN ScAddr GetGeneratedConnector() const override;
+
+  _SC_EXTERN ScType GetGeneratedConnectorType() const override;
+
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
 };
 
 /*!
@@ -334,6 +340,12 @@ protected:
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
+
+  _SC_EXTERN ScAddr GetErasableConnector() const override;
+
+  _SC_EXTERN ScType GetErasableConnectorType() const override;
+
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
 };
 
 /*!
