@@ -105,6 +105,8 @@ ScEventGenerateArc<arcType>::ScEventGenerateArc(
         connectorType,
         otherAddr){};
 
+// Ignore these methods, because they are protected.
+// LCOV_EXCL_START
 template <ScType const & arcType>
 ScAddr ScEventGenerateArc<arcType>::GetGeneratedConnector() const
 {
@@ -122,6 +124,8 @@ std::tuple<ScAddr, ScAddr> ScEventGenerateArc<arcType>::GetConnectorIncidentElem
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
+
+// LCOV_EXCL_STOP
 
 template <ScType const & edgeType>
 ScEventGenerateEdge<edgeType>::ScEventGenerateEdge(
@@ -287,6 +291,8 @@ ScEventEraseArc<arcType>::ScEventEraseArc(
         connectorType,
         otherAddr){};
 
+// Ignore these methods, because they are protected.
+// LCOV_EXCL_START
 template <ScType const & arcType>
 ScAddr ScEventEraseArc<arcType>::GetErasableConnector() const
 {
@@ -304,6 +310,8 @@ std::tuple<ScAddr, ScAddr> ScEventEraseArc<arcType>::GetConnectorIncidentElement
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
+
+// LCOV_EXCL_STOP
 
 template <ScType const & edgeType>
 ScAddr ScEventEraseEdge<edgeType>::GetErasableEdge() const
