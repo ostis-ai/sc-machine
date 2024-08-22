@@ -188,13 +188,13 @@ public:
     elements.push_back(element);
   }
 
-  std::vector<std::shared_ptr<SCgElement>> & GetElements()
+  std::list<std::shared_ptr<SCgElement>> & GetElements()
   {
     return elements;
   }
 
 private:
-  std::vector<std::shared_ptr<SCgElement>> elements;
+  std::list<std::shared_ptr<SCgElement>> elements;
 };
 
 class SCgConnector : public SCgElement

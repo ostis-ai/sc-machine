@@ -50,6 +50,16 @@ public:
   {
     mainIdtf = idtf;
   }
+
+  std::string GetSystemIdtf() const
+  {
+    return systemIdtf;
+  }
+
+  std::string GetMainIdtf() const
+  {
+    return mainIdtf;
+  }
 };
 
 class SCsNode : public SCsElement
@@ -85,6 +95,10 @@ private:
   bool isUnsupported;
 
   std::string alias;
+
+  std::shared_ptr<SCsElement> source;
+  std::shared_ptr<SCsElement> target;
+
   std::string sourceIdtf;
   std::string targetIdtf;
 
@@ -99,20 +113,13 @@ class SCsContour : public SCsElement
 private:
   std::list<std::shared_ptr<SCsElement>> elements;
 
-  class SCsNodeInContour : public SCsElement
-  {
-  private:
-    std::string contourIdtf;
-    std::string nodeIdtf;
-    size_t multipleArcCounter;
-
-  public:
-    void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
-
-    std::string Dump(std::string const & filepath) const override;
-  };
-
 public:
+
+  std::list<std::shared_ptr<SCsElement>> & GetContourElements()
+  {
+    return elements;
+  }
+
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
 
   void AddElement(std::shared_ptr<SCsElement> const & element);
@@ -125,6 +132,28 @@ class SCsElementFactory
 public:
   static std::shared_ptr<SCsElement> CreateElementFromSCgElement(std::shared_ptr<SCgElement> const & element);
 };
+
+class SCsNodeInContour : public SCsElement
+{
+private:
+  std::list<std::shared_ptr<SCsElement>> &contourElements;
+  std::string contourIdtf;
+  size_t multipleArcCounter;
+
+public:
+  SCsNodeInContour(std::list<std::shared_ptr<SCsElement>> &elements)
+    : contourElements(elements), multipleArcCounter(0) {}
+
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const &element) override;
+
+  std::string Dump(std::string const &filepath) const override;
+
+  void SetContourIdtf(std::string const &idtf)
+  {
+      contourIdtf = idtf;
+  }
+};
+
 
 class SCsWriter
 {
@@ -139,8 +168,7 @@ public:
   public:
     static void CorrectIdtf(
         std::shared_ptr<SCgElement> const & scgElement,
-        std::string & systemIdtf,
-        std::string & mainIdtf);
+        std::shared_ptr<SCsElement> & scsElement);
 
   private:
     static bool IsRussianIdtf(std::string const & idtf);
