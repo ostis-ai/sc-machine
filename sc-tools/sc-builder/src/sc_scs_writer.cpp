@@ -151,31 +151,33 @@ std::string SCsWriter::CorrectorOfSCgIdtf::CorrectIdtfForNonVariable(std::string
 
 void SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(
     std::shared_ptr<SCgElement> const & scgElement,
-    std::string & systemIdtf,
-    std::string & mainIdtf)
+    std::shared_ptr<SCsElement> & scsElement)
 {
-  systemIdtf = scgElement->GetIdtf();
+  scsElement->SetSystemIdtf(scgElement->GetIdtf());
   bool isVar = SCsWriter::IsVariable(scgElement->GetType());
+
+  std::string const & systemIdtf = scsElement->GetSystemIdtf();
 
   if (!IsEnglishIdtf(systemIdtf))
   {
     if (IsRussianIdtf(systemIdtf))
     {
-      mainIdtf = systemIdtf;
+      scsElement->SetMainIdtf(systemIdtf);
     }
-    systemIdtf.clear();
+    scsElement->SetSystemIdtf("");
   }
 
   std::string id = scgElement->GetId();
+  std::string correctedIdtf;
 
-  systemIdtf = GenerateCorrectedIdtf(systemIdtf, id, isVar);
-  scgElement->SetIdtf(systemIdtf);
+  correctedIdtf = GenerateCorrectedIdtf(correctedIdtf, id, isVar);
+  scsElement->SetSystemIdtf(correctedIdtf);
 
   auto const & tag = scgElement->GetTag();
   if (tag == PAIR || tag == ARC)
   {
     auto const & id = scgElement->GetId();
-    systemIdtf = SCsWriter::MakeAlias(EDGE, id);
+    scsElement->SetSystemIdtf(SCsWriter::MakeAlias(EDGE, id));
   }
 }
 
@@ -193,12 +195,7 @@ std::string SCsWriter::Write(
 
       auto scsElement = SCsElementFactory::CreateElementFromSCgElement(scgElement);
 
-      std::string systemIdtf;
-      std::string mainIdtf;
-      SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, systemIdtf, mainIdtf);
-
-      scsElement->SetMainIdtf(mainIdtf);
-      scsElement->SetSystemIdtf(systemIdtf);
+      SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, scsElement);
 
       // If an element has a parent, there must be a terminal ancestor element that has no parent
       // By starting with ancestors, we ensure that all elements are covered
@@ -408,8 +405,21 @@ void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scg
   }
 
   alias = SCsWriter::MakeAlias(EDGE, id);
-  sourceIdtf = connector->GetSource()->GetIdtf();
-  targetIdtf = connector->GetTarget()->GetIdtf();
+
+  // TO FUNC
+  auto const & scgSourceElement = connector->GetSource();
+  source = SCsElementFactory::CreateElementFromSCgElement(scgSourceElement);
+  source->ConvertFromSCgElement(scgSourceElement);
+
+  auto const & scgTargetElement = connector->GetTarget();
+  target = SCsElementFactory::CreateElementFromSCgElement(connector->GetTarget());
+  target->ConvertFromSCgElement(scgTargetElement);
+
+  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, target);
+  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, source);
+
+  sourceIdtf = source->GetSystemIdtf();
+  targetIdtf = target->GetSystemIdtf();
 }
 
 std::string SCsConnector::Dump(std::string const & filepath) const
@@ -451,9 +461,9 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
     SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Invalid SCgElement passed to SCsContour::ConvertFromSCgElement.");
   }
 
-  auto const & elements = contour->GetElements();
+  auto const & scgElements = contour->GetElements();
 
-  for (auto const & scgElement : elements)
+  for (auto const & scgElement : scgElements)
   {
     std::shared_ptr<SCsElement> scsElement = nullptr;
     std::string const & tag = scgElement->GetTag();
@@ -467,11 +477,17 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
       }
       else
       {
-        scsElement = std::make_shared<SCsNode>();
+        std::list<std::shared_ptr<SCsElement>> & elements = GetContourElements();
+        scsElement = std::make_shared<SCsNodeInContour>(elements);
       }
     }
     else if (tag == PAIR || tag == ARC)
     {
+      std::shared_ptr<SCgConnector> connector = std::dynamic_pointer_cast<SCgConnector>(scgElement);
+      if(connector->GetSource() == contour && connector->GetTarget() == scgElement)
+      {
+        continue;
+      }
       scsElement = std::make_shared<SCsConnector>();
     }
     else if (tag == CONTOUR)
@@ -486,6 +502,7 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
     if (scsElement)
     {
       scsElement->ConvertFromSCgElement(scgElement);
+      SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, scsElement);
       AddElement(scsElement);
     }
   }
@@ -520,34 +537,30 @@ std::string SCsContour::Dump(std::string const & filepath) const
 
 // SCsNode in contour
 
-void SCsContour::SCsNodeInContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
+void SCsNodeInContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
 {
-  std::shared_ptr<SCgContour> contour = std::dynamic_pointer_cast<SCgContour>(scgElement);
+  multipleArcCounter = 1;
 
-  size_t counter = 1;
-  // Counter of multiple arcs belonging to a node to a contour
-
-  auto & elements = contour->GetElements();
-
-  elements.erase(
+  contourElements.erase(
       std::remove_if(
-          elements.begin(),
-          elements.end(),
-          [&](std::shared_ptr<SCgElement> & element)
+          contourElements.begin(),
+          contourElements.end(),
+          [&](std::shared_ptr<SCsElement> const & element)
           {
-            auto connector = std::dynamic_pointer_cast<SCgConnector>(element);
-            if (connector && connector->GetSource()->GetIdtf() == contourIdtf
-                && connector->GetTarget()->GetIdtf() == nodeIdtf)
-            {
-              counter++;
-              return true;
-            }
-            return false;
+              auto connector = std::dynamic_pointer_cast<SCgConnector>(element);
+              if (connector && connector->GetSource()->GetIdtf() == contourIdtf
+                  && connector->GetTarget()->GetIdtf() == systemIdtf)
+              {
+                  ++multipleArcCounter;
+                  return true;
+              }
+              return false;
           }),
-      elements.end());
+      contourElements.end());
+
 }
 
-std::string SCsContour::SCsNodeInContour::Dump(std::string const & filepath) const
+std::string SCsNodeInContour::Dump(std::string const & filepath) const
 {
   Buffer buffer;
 
@@ -557,10 +570,10 @@ std::string SCsContour::SCsNodeInContour::Dump(std::string const & filepath) con
   }
 
   auto const edgeName =
-      (EDGE_FROM_CONTOUR + UNDERSCORE + contourIdtf + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE + nodeIdtf + UNDERSCORE
+      (EDGE_FROM_CONTOUR + UNDERSCORE + contourIdtf + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE + systemIdtf + UNDERSCORE
        + std::to_string(multipleArcCounter));
   buffer.Write(
-      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + contourIdtf + SPACE + SC_EDGE_MAIN_R + SPACE + nodeIdtf
+      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + contourIdtf + SPACE + SC_EDGE_MAIN_R + SPACE + systemIdtf
       + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
 
   return buffer.GetValue();
