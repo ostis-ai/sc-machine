@@ -50,7 +50,7 @@ context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 ```
 
 !!! note
-    You can provide empty on-event callback `{}`.
+    You can provide empty on-event callback `{}` in `CreateElementaryEventSubscription`.
 
 !!! warning
     You should provide valid subscription sc-element. Otherwise, exception will be thrown.
@@ -62,7 +62,7 @@ If you don't know in advance what sc-event you need to subscribe for, you can us
 // Create sc-event subscription (listen) sc-element.
 ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 // Choose sc-event type to subscribe or find it.
-ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_outgoing_arc;
+ScAddr const & eventClassAddr = GetSomeEventType(); // User-specified method.
 // Create sc-event subscription for generated sc-node (listen sc-element) 
 // and provide on-event callback.
 auto eventSubscription = context.CreateElementaryEventSubscription(
@@ -83,6 +83,9 @@ context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 
 !!! warning
     A sc-event class must be valid and must belong to `sc_event` class.
+  
+!!! note 
+    All sc-event classes provided by sc-machine always belongs to `sc_event` class.
 
 ### **CreateEventWaiter**
 
@@ -100,7 +103,7 @@ auto eventWaiter = context.CreateEventWaiter<MyEventType>(
   []() -> void
   {
     // Here you can provide some code, that will be called
-    // when you will `Wait` method.
+    // when you will call `Wait` method.
     // For example, it will be code, that initiate some sc-event.
     // By default, this callback is empty.
   });
@@ -129,7 +132,7 @@ Just like for the method of creating sc-event subscription, if you don't know sc
 // Find sc-event subscription (listen) sc-element.
 ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
 // Choose sc-event type to subscribe or find it.
-ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_outgoing_arc;
+ScAddr const & eventClassAddr = GetSomeEventType(); // User-specified method.
 // Create sc-event waiter for generated sc-node (listen sc-element)   
 // and provide on-event callback.
 auto eventWaiter = context.CreateEventWaiter(
@@ -157,7 +160,7 @@ auto eventWaiter = context.CreateConditionWaiter<MyEventType>(
   []() -> void
   {
     // Here you can also provide some code, that will be called
-    // when you will `Wait` method.
+    // when you will call `Wait` method.
     // For example, it will be code, that initiate some sc-event.
     // By default, this callback is empty.
   },

@@ -4,7 +4,7 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to handle C++ actions.
+This API provides functionality to handle sc-actions.
 
 ## **What is action?**
 
@@ -65,7 +65,7 @@ ScAddr const & argAddr = action.GetArgument(1);
     There is a limit to the number of order role relations. You can get from `rrel_1` up to and including `rrel_20`.
 
 !!! warning
-    This method will throw `utils::ExceptionInvalidParams` if you provide invalid index for argument (for example, 0 or 20).
+    This method will throw `utils::ExceptionInvalidParams` if you provide invalid index for argument (for example, 0 or 21).
 
 ```cpp
 ...
@@ -137,7 +137,7 @@ All actions should have result (result situation). Result situation is structure
 
 #### **GetResult**
 
-You get can result of any action.
+You get can result of any action. Result may be empty.
 
 ```cpp
 ...
@@ -168,7 +168,7 @@ action.SetResult(resultStructure);
 
 #### **FormResult**
 
-You must not create result structure. You can provide only elements of result for action.
+You may not create result structure. You can provide only elements of result for action.
 
 ```cpp
 ...

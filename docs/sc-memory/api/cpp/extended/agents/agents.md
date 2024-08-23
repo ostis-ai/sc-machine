@@ -215,9 +215,7 @@ This class can be only used for agents that should be triggered by generating an
 
 #include <sc-memory/sc_agent.hpp>
 
-// Inherit your agent class from `ScAgent` class and specify template argument 
-// as sc-event class. Here `ScActionEvent` is type of event to which 
-// the given agent reacts.
+// Inherit your agent class from `ScActionAgent` class.
 class MyAgent : public ScActionAgent
 {
 public:
@@ -227,6 +225,8 @@ public:
   // Here you should implement program of the given agent. 
   // This overriding is required.
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  // Here `ScActionEvent` is type of event to which 
+  // the given agent reacts.
 
   // Other user-defined methods.
 };
@@ -272,7 +272,7 @@ See [**C++ Keynodes API**](keynodes.md) and learn how to define keynodes and use
 
 #### **DoProgram**
 
-In the agent's program lies its basic operating logic. Using program, the agent processes an input construction and generates an output construction.
+This method is executed when agent checked initiation condition successfully. Using program, the agent processes an input construction and generates an output construction.
 Each agent performs action with the help of its program.
 
 ```cpp
@@ -304,7 +304,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 
 ##### Handling action arguments
 
-There are many variants of methods that get action arguments. Use them, they can help you to simplify code.
+There are many ways of methods that get action arguments. Use them, they can help you to simplify code.
 
 ```cpp
 ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
@@ -420,7 +420,7 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 ```
 
 !!! warning
-    The API of `ScAction` provides other methods. Not use `GetResult` for initiated but not finished action and `Initiate` for initiated or finished action.
+    The API of `ScAction` provides other methods. Don't use `GetResult` for initiated but not finished action and `Initiate` for initiated or finished action.
 
 ---
 

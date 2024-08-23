@@ -6,7 +6,7 @@
 
 This API provides functionality to define keynodes on C++.
 
-A keynode is a key sc-element used by some agent during its operation. Typically, keynodes can be classes and relations, which are sc-elements that agents use to find constructions in sc-memory or create new ones. However, keynodes can be any sc-elements, even connectors between sc-elements.
+A keynode is a key sc-element used by some program (agent) during its operation. Typically, keynodes can be classes and relations, which are sc-elements that program (agent) uses to find constructions in sc-memory or create new ones. However, keynodes can be any sc-elements, even connectors between sc-elements.
 
 ## **ScKeynode**
 
@@ -18,6 +18,9 @@ It is a base class for all keynodes. Use it to create keynodes in the `ScKeynode
 static ScKeynode const my_keynode_class{
     "my_keynode_class", ScType::NodeConstClass};
 ```
+
+!!! note
+    We recommend to name keynode as a system identifier of key element.
 
 !!! note
     Keynodes can be defined not only in classes inherited from the `ScKeynodes` class. You can define them as static objects anywhere.
@@ -97,4 +100,4 @@ Yes, the algorithm is exactly the same if you were to create this keynode in a s
 
 ### **When are keynodes initialized?**
 
-They are initialized during sc-memory initialization. Do not use them before the memory has not been initialized.
+They are initialized during sc-memory initialization. Do not use them before the memory has been initialized.
