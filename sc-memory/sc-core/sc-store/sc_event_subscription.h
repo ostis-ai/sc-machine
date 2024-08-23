@@ -70,6 +70,7 @@ _SC_EXTERN sc_event_subscription * sc_event_subscription_new(
  * @param ctx A sc-memory context used to create sc-event subscription.
  * @param subscription_addr sc-address of subscribed sc-element events.
  * @param event_type_addr Type of listening sc-events.
+ * @param event_element_type Type of arc to be involved in event.
  * @param data Pointer to user data.
  * @param callback Pointer to callback function. It would be calls, when event emitted.
  * @param delete_callback Pointer to callback function, that calls on subscribed sc-element deletion.

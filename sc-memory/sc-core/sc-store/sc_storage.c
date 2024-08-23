@@ -668,7 +668,7 @@ sc_result _sc_storage_element_erase(sc_addr addr)
   return result;
 }
 
-sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
+sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
 {
   sc_result result;
 
@@ -684,12 +684,11 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   sc_pointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr));
   sc_queue_push(&iter_queue, p_addr);
 
-  sc_queue erase_queue;
-  sc_queue_init(&erase_queue);
+  sc_queue addrs_with_not_emitted_erase_events;
+  sc_queue_init(&addrs_with_not_emitted_erase_events);
   while (!sc_queue_empty(&iter_queue))
   {
-    // get sc-addr for removing
-    sc_pointer p_addr = sc_queue_pop(&iter_queue);
+    p_addr = sc_queue_pop(&iter_queue);
 
     sc_addr element_addr;
     element_addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT((sc_pointer_to_sc_addr_hash)p_addr);
@@ -720,7 +719,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             element_addr,
             type,
             end_addr,
-            sc_storage_element_free,
+            sc_storage_element_erase,
             element_addr);
         erase_outgoing_connector_result = sc_event_emit(
             ctx,
@@ -729,7 +728,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             element_addr,
             type,
             begin_addr,
-            sc_storage_element_free,
+            sc_storage_element_erase,
             element_addr);
       }
 
@@ -742,7 +741,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             element_addr,
             type,
             end_addr,
-            sc_storage_element_free,
+            sc_storage_element_erase,
             element_addr);
         erase_outgoing_arc_result = sc_event_emit(
             ctx,
@@ -751,7 +750,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             element_addr,
             type,
             begin_addr,
-            sc_storage_element_free,
+            sc_storage_element_erase,
             element_addr);
       }
       else if (sc_type_has_subtype(type, sc_type_arc_access) || sc_type_has_subtype(type, sc_type_arc_common))
@@ -763,7 +762,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             element_addr,
             type,
             end_addr,
-            sc_storage_element_free,
+            sc_storage_element_erase,
             element_addr);
         erase_incoming_arc_result = sc_event_emit(
             ctx,
@@ -772,7 +771,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
             element_addr,
             type,
             begin_addr,
-            sc_storage_element_free,
+            sc_storage_element_erase,
             element_addr);
       }
 
@@ -783,7 +782,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
           SC_ADDR_EMPTY,
           0,
           SC_ADDR_EMPTY,
-          sc_storage_element_free,
+          sc_storage_element_erase,
           element_addr);
 
       el->flags.states |= SC_STATE_IS_DELETABLE;
@@ -794,7 +793,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
         || erase_element_result == SC_RESULT_OK)
       continue;
 
-    sc_queue_push(&erase_queue, p_addr);
+    sc_queue_push(&addrs_with_not_emitted_erase_events, p_addr);
 
     sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, element_addr);
     sc_monitor_acquire_read(monitor);
@@ -843,16 +842,16 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr)
   sc_queue_destroy(&iter_queue);
   sc_hash_table_destroy(cache_table);
 
-  while (!sc_queue_empty(&erase_queue))
+  while (!sc_queue_empty(&addrs_with_not_emitted_erase_events))
   {
-    sc_addr_hash addr_int = (sc_pointer_to_sc_addr_hash)sc_queue_pop(&erase_queue);
+    sc_addr_hash addr_int = (sc_pointer_to_sc_addr_hash)sc_queue_pop(&addrs_with_not_emitted_erase_events);
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
     addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
 
     _sc_storage_element_erase(addr);
   }
 
-  sc_queue_destroy(&erase_queue);
+  sc_queue_destroy(&addrs_with_not_emitted_erase_events);
 
   result = SC_RESULT_OK;
 error:

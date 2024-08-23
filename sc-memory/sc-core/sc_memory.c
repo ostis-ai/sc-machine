@@ -288,7 +288,7 @@ sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr)
       == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_ERASE_PERMISSIONS;
 
-  return sc_storage_element_free(ctx, addr);
+  return sc_storage_element_erase(ctx, addr);
 }
 
 sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type)

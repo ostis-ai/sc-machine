@@ -80,7 +80,7 @@ sc_bool sc_storage_is_initialized();
  * in the given sc-memory context.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
- * @param addr The sc-addr to be checked.
+ * @param addr A sc-address to be checked.
  *
  * @return Returns SC_TRUE if the specified sc-addr represents a valid sc-element,
  *         and SC_FALSE otherwise.
@@ -90,13 +90,13 @@ sc_bool sc_storage_is_initialized();
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 
 /*!
- * @brief Frees the memory occupied by a sc-element and all connected elements.
+ * @brief Erases the memory occupied by a sc-element and all connected sc-elements.
  *
- * This function frees the memory occupied by a sc-element identified by the provided
- * sc-addr, along with all the connected elements (input/output sc-connectors) related to it.
+ * This function erases the memory occupied by a sc-element identified by the provided
+ * sc-address, along with all the connected elements (input/output sc-connectors) related to it.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
- * @param addr The sc-addr of the sc-element to be freed.
+ * @param addr A sc-address of the sc-element to be freed.
  *
  * @return Returns SC_RESULT_OK if the operation executed successfully.
  *
@@ -108,7 +108,7 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
  * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a sc-connector.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
-sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
+sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr);
 
 /*!
  * @brief Creates a new sc-node with the specified type.
