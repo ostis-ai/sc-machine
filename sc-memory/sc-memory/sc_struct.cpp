@@ -9,7 +9,7 @@
 #include "sc_template.hpp"
 
 ScSet::ScSet(ScMemoryContext * ctx, ScAddr const & setAddr)
-  : ScAddr(setAddr.IsValid() ? setAddr : ctx->CreateNode(ScType::NodeConst))
+  : ScAddr(setAddr)
   , m_ctx(ctx)
 {
 }
@@ -94,12 +94,12 @@ bool ScSet::IsEmpty() const
   return !iter->Next();
 }
 
-ScStructure::ScStructure(ScMemoryContext * ctx, ScAddr const & structAddr)
-  : ScSet(ctx, structAddr.IsValid() ? structAddr : ctx->CreateNode(ScType::NodeConstStruct))
+ScStructure::ScStructure(ScMemoryContext * ctx, ScAddr const & structureAddr)
+  : ScSet(ctx, structureAddr)
 {
 }
 
-ScStructure::ScStructure(ScMemoryContext & ctx, ScAddr const & structAddr)
-  : ScSet(&ctx, structAddr.IsValid() ? structAddr : ctx.CreateNode(ScType::NodeConstStruct))
+ScStructure::ScStructure(ScMemoryContext & ctx, ScAddr const & structureAddr)
+  : ScSet(&ctx, structureAddr)
 {
 }

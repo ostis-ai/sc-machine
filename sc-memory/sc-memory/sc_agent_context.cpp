@@ -148,19 +148,22 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
 
 ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)
 {
-  ScAction action{this, actionClassAddr};
+  ScAddr const & actionAddr = CreateNode(ScType::NodeConst);
+  CreateEdge(ScType::EdgeAccessConstPosPerm, actionClassAddr, actionAddr);
+  ScAction action{this, actionAddr};
   return action;
 }
 
 ScAction ScAgentContext::UseAction(ScAddr const & actionAddr)
 {
-  ScAction action{this, actionAddr, ScAddr::Empty};
+  ScAction action{this, actionAddr};
   return action;
 }
 
 ScSet ScAgentContext::CreateSet()
 {
-  ScSet set{this};
+  ScAddr const & setAddr = CreateNode(ScType::NodeConst);
+  ScSet set{this, setAddr};
   return set;
 }
 
@@ -172,7 +175,8 @@ ScSet ScAgentContext::UseSet(ScAddr const & setAddr)
 
 ScStructure ScAgentContext::CreateStructure()
 {
-  ScStructure structure{this};
+  ScAddr const & structureAddr = CreateNode(ScType::NodeConstStruct);
+  ScStructure structure{this, structureAddr};
   return structure;
 }
 

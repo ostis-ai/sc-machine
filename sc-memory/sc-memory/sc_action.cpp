@@ -11,21 +11,10 @@
 #include "sc_event_wait.hpp"
 #include "sc_struct.hpp"
 
-ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const & actionClassAddr)
+ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionAddr)
   : ScAddr(actionAddr)
   , m_ctx(ctx)
-  , m_resultAddr(ScAddr::Empty)
-{
-  SC_UNUSED(actionClassAddr);
-};
-
-ScAction::ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr)
-  : ScAddr(ctx->CreateNode(ScType::NodeConst))
-  , m_ctx(ctx)
-  , m_resultAddr(ScAddr::Empty)
-{
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, actionClassAddr, *this);
-};
+  , m_resultAddr(ScAddr::Empty) {};
 
 ScAddr ScAction::GetClass()
 {

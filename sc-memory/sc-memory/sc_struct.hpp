@@ -45,7 +45,7 @@ public:
   /// TODO: implement +, -, == operators
 
 protected:
-  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr = ScAddr::Empty);
+  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr);
 
 private:
   ScMemoryContext * m_ctx;
@@ -57,7 +57,7 @@ class ScStructure : public ScSet
   friend class ScTemplateLoader;
 
 protected:
-  _SC_EXTERN ScStructure(ScMemoryContext * ctx, ScAddr const & structAddr = ScAddr::Empty);
+  _SC_EXTERN ScStructure(ScMemoryContext * ctx, ScAddr const & structureAddr);
 
-  _SC_EXTERN ScStructure(ScMemoryContext & ctx, ScAddr const & structAddr = ScAddr::Empty);
+  _SC_EXTERN ScStructure(ScMemoryContext & ctx, ScAddr const & structureAddr);
 };

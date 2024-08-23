@@ -182,16 +182,8 @@ protected:
    * @brief Constructor for ScAction.
    * @param ctx Context of the agent.
    * @param actionAddr An address of the action.
-   * @param actionClassAddr An address of the action class.
    */
-  _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionAddr, ScAddr const & actionClassAddr);
-
-  /*!
-   * @brief Constructor for ScAction.
-   * @param ctx Context of the agent.
-   * @param actionClassAddr An address of the action class.
-   */
-  _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionClassAddr);
+  _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionAddr);
 
   /*!
    * @brief Gets multiple arguments of the action.
