@@ -8,7 +8,7 @@ This API describes how to work with sc-events.
 
 ## **What is event-driven model?**
 
-The sc-machine uses event-driven model to manage processing information. The sc-memory stores SC-code constructions, which are graph structures, then any kind of events, occurring in sc-memory, is related to changes in these graph constructions.
+The sc-machine uses event-driven model to manage processing sc-constructions. The sc-memory stores SC-code constructions, which are graph structures, then any kind of events, occurring in sc-memory, is related to changes in these graph constructions.
 
 These are methods that generate events: 
 

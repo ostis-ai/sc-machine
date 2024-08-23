@@ -8,17 +8,17 @@ This API provides functionality to implement agents on C++.
 
 ## **What is the agent-driven model?**
 
-The sc-machine implements the **agent-driven model** to process information. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralized and most often independent of each other. 
+The sc-machine implements the **agent-driven model** to manage processing knowledge. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralized and most often independent of each other. 
 
-All agents within the OSTIS Technology are divided into two classes: platform-independent, i.e. implemented only by means of SC-code, and platform-dependent, implemented by means of sc-machine API. This sc-machine presents a powerful, but simple API for developing and maintaining platform-dependent agents in C++.
+All agents within the OSTIS Technology are divided into two classes: platform-independent, i.e. implemented only by means of SC-code, and platform-dependent, implemented by means of sc-machine API. Platform-independent agents can be implemented with help of SCP language which is interpreted by [**scp-machine**](https://github.com/ostis-ai/scp-machine). The sc-machine presents a powerful, but simple API for developing and maintaining platform-dependent agents in C++.
 
-All agents react to the occurrence of events in sc-memory (sc-events). That is, an agent is called implicitly when an sc-event occurs, for which type this agent is already subscribed. Knowledge about which sc-event will cause this agent to be called (awakening of this agent) is called primary initiation condition. Upon awakening, the agent checks for the presence of its full initiation condition. If the full initiation condition is successfully checked, the agent initiates an action of some class and starts performing it with a agent program. After executing its program, the agent can check if there is a result.
+All agents react to the occurrence of events in sc-memory (sc-events). That is, an agent is called implicitly when an sc-event occurs, for which type this agent is already subscribed. Knowledge about which sc-event will cause this agent to be called (awakening of this agent) is called primary initiation condition. Upon awakening, the agent checks for the presence of its full initiation condition. If the full initiation condition is successfully checked, the agent initiates an action of some class and starts performing it with a agent program (see [**C++ Actions API**](actions.md) to learn more about actions). After executing its program, the agent can check if there is a result.
 
 ## **What does agent specification represent?**
 
 All knowledge about an agent: *primary initiation condition*, *class of actions* it can perform, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programly, using sc-machine API.
 
-Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code and SCg-code. An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
+Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code (SCg-code). An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
 
 ```scs
 // Abstract sc-agent
@@ -83,8 +83,8 @@ agent_calculate_set_power
 
 The sc-machine API provides two types of functionalities to implement an agent in C++:
 
-a. when the agent's specification is represented in the knowledge base and used by the agent;
-b. when the agent's specification is represented in C++ code and also used by the agent.
+* when the agent's specification is represented in the knowledge base and used by the agent;
+* when the agent's specification is represented in C++ code and also used by the agent.
 
 In both cases, the agent's specification can be static, dynamic, or semi-dynamic.
 
@@ -104,7 +104,7 @@ There are two main classes that you can use to implement an agent: `ScAgent` and
 
 ### **ScAgent**
 
-This class can be used for all classes of agents. The example using this class is represented below.
+This class can be used for all types of platform-dependent agents. The example using this class is represented below.
 
 ```cpp
 // File my_agent.hpp
