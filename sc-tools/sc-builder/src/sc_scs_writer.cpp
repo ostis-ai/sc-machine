@@ -50,50 +50,6 @@ bool SCsWriter::IsVariable(std::string const & el_type)
 
 std::unordered_map<std::string, std::string> const IMAGE_FORMATS = {{".png", "format_png"}};
 
-// void SCsWriter::ProcessElementsList(
-//     std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elementsList,
-//     Buffer & buffer,
-//     std::string const & filePath)
-// {
-//   try
-//   {
-//     for (auto const & element : elementsList)
-//     {
-//       auto const & tag = element.second->GetTag();
-
-//       if (tag == NODE || tag == BUS)
-//       {
-//         // The type of each node must be specified
-//         WriteNode(buffer, element.second, filePath);
-//         continue;
-//       }
-
-//       auto const & parent = element.second->GetParent();
-
-//       // If an element has a parent, there must be a terminal ancestor element that has no parent
-//       // By starting with ancestors, we ensure that all elements are covered
-
-//       if (parent == NO_PARENT)
-//       {
-//         if (tag == PAIR || tag == ARC)
-//         {
-//           std::shared_ptr<SCgConnector> connector = std::dynamic_pointer_cast<SCgConnector>(element.second);
-//           WriteConnector(buffer, connector);
-//         }
-//         else if (tag == CONTOUR)
-//         {
-//           std::shared_ptr<SCgContour> contour = std::dynamic_pointer_cast<SCgContour>(element.second);
-//           WriteContour(buffer, contour, 1);
-//         }
-//       }
-//     }
-//   }
-//   catch (utils::ScException const & e)
-//   {
-//     SC_LOG_ERROR("SCSWriter: exception in process elements " << e.Message());
-//   }
-// }
-
 bool SCsWriter::CorrectorOfSCgIdtf::IsRussianIdtf(std::string const & idtf)
 {
   std::regex idtfPatternRus("^[0-9a-zA-Z_\\xD0\\x80-\\xD1\\x8F\\xD1\\x90-\\xD1\\x8F\\xD1\\x91\\xD0\\x81*' ]*$");
@@ -168,11 +124,11 @@ void SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(
   }
 
   std::string id = scgElement->GetId();
-  std::string correctedIdtf;
+  std::string correctedIdtf = scsElement->GetSystemIdtf();
 
   correctedIdtf = GenerateCorrectedIdtf(correctedIdtf, id, isVar);
   scsElement->SetSystemIdtf(correctedIdtf);
-
+  
   auto const & tag = scgElement->GetTag();
   if (tag == PAIR || tag == ARC)
   {
@@ -197,12 +153,25 @@ std::string SCsWriter::Write(
 
       SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, scsElement);
 
+      if(!scsElement->GetMainIdtf().empty())
+      {
+        SCsWriter::WriteMainIdtf(buffer, scsElement->GetSystemIdtf(), scsElement->GetMainIdtf());
+      }
+
       // If an element has a parent, there must be a terminal ancestor element that has no parent
       // By starting with ancestors, we ensure that all elements are covered
 
       if (scsElement)
       {
-        if (scgElement->GetParent() == NO_PARENT)
+        std::string const & scgParent = scgElement->GetParent();
+        std::string const & scgTag = scgElement->GetTag();
+
+        if (scgParent == NO_PARENT)
+        {
+          scsElement->ConvertFromSCgElement(scgElement);
+          buffer.Write(scsElement->Dump(filePath));
+        }
+        else if (scgTag == NODE || scgTag == BUS)
         {
           scsElement->ConvertFromSCgElement(scgElement);
           buffer.Write(scsElement->Dump(filePath));
@@ -274,11 +243,6 @@ std::string SCsNode::Dump(std::string const & filepath) const
 {
   Buffer buffer;
 
-  if (!mainIdtf.empty())
-  {
-    SCsWriter::WriteMainIdtf(buffer, systemIdtf, mainIdtf);
-  }
-
   buffer.Write(systemIdtf + NEWLINE + SPACE + SPACE + SC_EDGE_MAIN_L + SPACE + type + ELEMENT_END + NEWLINE + NEWLINE);
 
   return buffer.GetValue();
@@ -292,7 +256,6 @@ void SCsLink::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEleme
 
   int const contentType = std::stoi(link->GetContentType());
 
-  systemIdtf = link->GetIdtf();
   type = link->GetType();
   fileName = link->GetFileName();
 
@@ -328,11 +291,6 @@ void SCsLink::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEleme
 std::string SCsLink::Dump(std::string const & filePath) const
 {
   Buffer buffer;
-
-  if (!mainIdtf.empty())
-  {
-    SCsWriter::WriteMainIdtf(buffer, systemIdtf, mainIdtf);
-  }
 
   if (isUrl)
   {
@@ -412,11 +370,11 @@ void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scg
   source->ConvertFromSCgElement(scgSourceElement);
 
   auto const & scgTargetElement = connector->GetTarget();
-  target = SCsElementFactory::CreateElementFromSCgElement(connector->GetTarget());
+  target = SCsElementFactory::CreateElementFromSCgElement(scgTargetElement);
   target->ConvertFromSCgElement(scgTargetElement);
 
-  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, target);
-  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, source);
+  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgSourceElement, source);
+  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgTargetElement, target);
 
   sourceIdtf = source->GetSystemIdtf();
   targetIdtf = target->GetSystemIdtf();
@@ -426,16 +384,12 @@ std::string SCsConnector::Dump(std::string const & filepath) const
 {
   Buffer buffer;
 
-  if (!mainIdtf.empty())
-  {
-    SCsWriter::WriteMainIdtf(buffer, systemIdtf, mainIdtf);
-  }
-
   if (isUnsupported)
   {
     buffer.Write(
         alias + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + sourceIdtf + SPACE + SC_EDGE_DCOMMON_R + SPACE + targetIdtf
         + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE);
+
     buffer.Write(symbol + SPACE + SC_EDGE_MAIN_R + SPACE + alias + ELEMENT_END + NEWLINE);
   }
   else
@@ -478,13 +432,13 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
       else
       {
         std::list<std::shared_ptr<SCsElement>> & elements = GetContourElements();
-        scsElement = std::make_shared<SCsNodeInContour>(elements);
+        scsElement = std::make_shared<SCsNodeInContour>(elements, contour->GetId(), this->GetSystemIdtf());
       }
     }
     else if (tag == PAIR || tag == ARC)
     {
       std::shared_ptr<SCgConnector> connector = std::dynamic_pointer_cast<SCgConnector>(scgElement);
-      if(connector->GetSource() == contour && connector->GetTarget() == scgElement)
+      if (connector->GetSource() == contour && connector->GetTarget() == scgElement)
       {
         continue;
       }
@@ -501,8 +455,8 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
 
     if (scsElement)
     {
-      scsElement->ConvertFromSCgElement(scgElement);
       SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, scsElement);
+      scsElement->ConvertFromSCgElement(scgElement);
       AddElement(scsElement);
     }
   }
@@ -518,15 +472,18 @@ std::string SCsContour::Dump(std::string const & filepath) const
   Buffer buffer;
   Buffer contourBuffer;
 
-  if (!mainIdtf.empty())
-  {
-    SCsWriter::WriteMainIdtf(buffer, systemIdtf, mainIdtf);
-  }
-
   for (auto const & element : elements)
   {
-    contourBuffer.Write(element->Dump(filepath));
+      if (auto nodeInContour = std::dynamic_pointer_cast<SCsNodeInContour>(element))
+      {
+          buffer.Write(nodeInContour->Dump(filepath));
+      }
+      else
+      {
+          contourBuffer.Write(element->Dump(filepath));
+      }
   }
+
 
   buffer.Write(
       systemIdtf + SPACE + EQUAL + SPACE + OPEN_CONTOUR + NEWLINE + contourBuffer.GetValue() + NEWLINE + CLOSE_CONTOUR
@@ -540,6 +497,7 @@ std::string SCsContour::Dump(std::string const & filepath) const
 void SCsNodeInContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
 {
   multipleArcCounter = 1;
+  this->nodeId = scgElement->GetId();
 
   contourElements.erase(
       std::remove_if(
@@ -547,34 +505,28 @@ void SCsNodeInContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const &
           contourElements.end(),
           [&](std::shared_ptr<SCsElement> const & element)
           {
-              auto connector = std::dynamic_pointer_cast<SCgConnector>(element);
-              if (connector && connector->GetSource()->GetIdtf() == contourIdtf
-                  && connector->GetTarget()->GetIdtf() == systemIdtf)
-              {
-                  ++multipleArcCounter;
-                  return true;
-              }
-              return false;
+            auto connector = std::dynamic_pointer_cast<SCgConnector>(element);
+            if (connector && connector->GetSource()->GetIdtf() == contourId
+                && connector->GetTarget()->GetIdtf() == nodeId)
+            {
+              ++multipleArcCounter;
+              return true;
+            }
+            return false;
           }),
       contourElements.end());
-
 }
 
 std::string SCsNodeInContour::Dump(std::string const & filepath) const
 {
   Buffer buffer;
 
-  if (!mainIdtf.empty())
-  {
-    SCsWriter::WriteMainIdtf(buffer, systemIdtf, mainIdtf);
-  }
-
   auto const edgeName =
-      (EDGE_FROM_CONTOUR + UNDERSCORE + contourIdtf + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE + systemIdtf + UNDERSCORE
+      (EDGE_FROM_CONTOUR + UNDERSCORE + contourId + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE + nodeId + UNDERSCORE
        + std::to_string(multipleArcCounter));
   buffer.Write(
-      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + contourIdtf + SPACE + SC_EDGE_MAIN_R + SPACE + systemIdtf
-      + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
+      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + contourIdtf + SPACE + SC_EDGE_MAIN_R
+      + SPACE + systemIdtf + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
 
   return buffer.GetValue();
 }
