@@ -114,7 +114,6 @@ private:
   std::list<std::shared_ptr<SCsElement>> elements;
 
 public:
-
   std::list<std::shared_ptr<SCsElement>> & GetContourElements()
   {
     return elements;
@@ -136,24 +135,26 @@ public:
 class SCsNodeInContour : public SCsElement
 {
 private:
-  std::list<std::shared_ptr<SCsElement>> &contourElements;
-  std::string contourIdtf;
+  std::list<std::shared_ptr<SCsElement>> & contourElements;
   size_t multipleArcCounter;
+  std::string contourId;
+  std::string nodeId;
+
+  std::string contourIdtf;
 
 public:
-  SCsNodeInContour(std::list<std::shared_ptr<SCsElement>> &elements)
-    : contourElements(elements), multipleArcCounter(0) {}
-
-  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const &element) override;
-
-  std::string Dump(std::string const &filepath) const override;
-
-  void SetContourIdtf(std::string const &idtf)
+  SCsNodeInContour(std::list<std::shared_ptr<SCsElement>> & contourElements, std::string const & contourId, std::string const & contourIdtf)
+    : contourElements(contourElements)
+    , multipleArcCounter(0)
+    , contourId(contourId)
+    , contourIdtf(contourIdtf)
   {
-      contourIdtf = idtf;
   }
-};
 
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+
+  std::string Dump(std::string const & filepath) const override;
+};
 
 class SCsWriter
 {
@@ -166,9 +167,7 @@ public:
   class CorrectorOfSCgIdtf
   {
   public:
-    static void CorrectIdtf(
-        std::shared_ptr<SCgElement> const & scgElement,
-        std::shared_ptr<SCsElement> & scsElement);
+    static void CorrectIdtf(std::shared_ptr<SCgElement> const & scgElement, std::shared_ptr<SCsElement> & scsElement);
 
   private:
     static bool IsRussianIdtf(std::string const & idtf);
