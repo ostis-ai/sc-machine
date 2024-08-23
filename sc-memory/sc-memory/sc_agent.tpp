@@ -258,7 +258,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Not able to subscribe agent `" << agentName << "` to event `" << eventName
-                                          << "due subscription sc-element with address `"
+                                          << "because subscription sc-element with address `"
                                           << subscriptionElementAddr.Hash() << "` is not valid.");
     if (subscriptionsMap.find(subscriptionElementAddr) != subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
@@ -326,7 +326,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "Not able to unsubscribe agent `" << agentName << "` from event `" << eventClassName
-                                              << "due subscription sc-element with address `"
+                                              << "because subscription sc-element with address `"
                                               << subscriptionElementAddr.Hash() << "` is not valid.");
     }
 
@@ -391,7 +391,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
             ScKeynodes::action_deactivated, agent.GetActionClass(), ScType::EdgeAccessConstPosPerm))
     {
       SC_LOG_WARNING(
-          "Agent `" << agentName << "` was not started due actions with class `" << agent.GetActionClass().Hash()
+          "Agent `" << agentName << "` was not started because actions with class `" << agent.GetActionClass().Hash()
                     << "` are deactivated.");
       return;
     }
@@ -423,7 +423,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
           && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
       {
         SC_LOG_WARNING(
-            "Agent `" << agentName << "` was finished due its initiation condition was tested unsuccessfully.");
+            "Agent `" << agentName << "` was finished because its initiation condition was tested unsuccessfully.");
         return;
       }
     }
@@ -432,7 +432,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
       if (!agent.CheckInitiationCondition(event))
       {
         SC_LOG_WARNING(
-            "Agent `" << agentName << "` was finished due its initiation condition was tested unsuccessfully.");
+            "Agent `" << agentName << "` was finished because its initiation condition was tested unsuccessfully.");
         return;
       }
     }

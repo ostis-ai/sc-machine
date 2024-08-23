@@ -114,7 +114,7 @@ sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * sys
 
 /*! Resolve sc-element by specified string system identifier
  * @param system_idtf String that represents system identifier (it will be converted into utf-8)
- * @param type A sc-type of resolving sc-element
+ * @param type A sc-type of sc-element to be resolved
  * @param result Pointer to result sc-addr container
  * @param out_fiver Structure contains the 1th, 2d, 3d, 4th and 5th sc-element address of resolved fiver
  *                          addr1 (`addr`)

@@ -311,7 +311,7 @@ ScResult const & result = action.FinishUnsuccessfully();
 
 #### **IsFinishedWithError**
 
-The set of actions finished with error includes actions whose execution was not successfully finished from the point of view of subject who executed them, due to some error, such as incorrect specification of this action or violation of sc-memory integrity by some subject.
+The set of actions finished with error includes actions whose execution was not successfully finished from the point of view of subject who executed them, because to some error, such as incorrect specification of this action or violation of sc-memory integrity by some subject.
 
 ```cpp
 ...

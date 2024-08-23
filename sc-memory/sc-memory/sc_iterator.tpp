@@ -102,7 +102,7 @@ bool ScIterator3<ParamType1, ParamType2, ParamType3>::Next() const
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator3 is empty to iterate next");
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Unable to iterate next triple because sc-memory context is not authorized");
   default:
     break;
   }
@@ -130,7 +130,7 @@ ScAddr ScIterator3<ParamType1, ParamType2, ParamType3>::Get(size_t index) const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " due sc-memory context has not read permissions");
+            + " because sc-memory context has not read permissions");
   default:
     break;
   }
@@ -186,7 +186,7 @@ bool ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Ne
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator5 is empty to iterate next");
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Unable to iterate next triple because sc-memory context is not authorized");
   default:
     break;
   }
@@ -214,7 +214,7 @@ ScAddr ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " due sc-memory context has not read permissions");
+            + " because sc-memory context has not read permissions");
   default:
     break;
   }

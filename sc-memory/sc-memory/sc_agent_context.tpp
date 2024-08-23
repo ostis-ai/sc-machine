@@ -21,14 +21,14 @@ std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateE
   if (!IsElement(subscriptionElementAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to create sc-event subscription due subscription sc-element is not valid.");
+        "Not able to create sc-event subscription because subscription sc-element is not valid.");
 
   if constexpr (std::is_same<TScEvent, ScEventChangeLinkContent>::value)
   {
     if (!GetElementType(subscriptionElementAddr).IsLink())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Not able to create sc-event subscription of changing link content due subscription sc-element is not "
+          "Not able to create sc-event subscription of changing link content because subscription sc-element is not "
           "sc-link.");
   }
 
@@ -46,14 +46,15 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
 
   if (!IsElement(subscriptionElementAddr))
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Not able to create sc-event waiter due subscription sc-element is not valid.");
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-event waiter because subscription sc-element is not valid.");
 
   if constexpr (std::is_same<TScEvent, ScEventChangeLinkContent>::value)
   {
     if (!GetElementType(subscriptionElementAddr).IsLink())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Not able to create sc-event waiter of changing link content due subscription sc-element is not "
+          "Not able to create sc-event waiter of changing link content because subscription sc-element is not "
           "sc-link.");
   }
 
@@ -75,14 +76,15 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
   if (!IsElement(subscriptionElementAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to create sc-event waiter with condition due subscription sc-element is not valid.");
+        "Not able to create sc-event waiter with condition because subscription sc-element is not valid.");
 
   if constexpr (std::is_same<TScEvent, ScEventChangeLinkContent>::value)
   {
     if (!GetElementType(subscriptionElementAddr).IsLink())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Not able to create sc-event waiter with condition of changing link content due subscription sc-element is "
+          "Not able to create sc-event waiter with condition of changing link content because subscription sc-element "
+          "is "
           "not "
           "sc-link.");
   }

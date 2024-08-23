@@ -47,7 +47,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr con
           utils::ExceptionInvalidState,
           "Specified sc-element for agent class `"
               << TScAgent::template GetName<TScAgent>()
-              << "` is not abstract agent due it does not belong to class `abstract_sc_agent`.");
+              << "` is not abstract agent because it does not belong to class `abstract_sc_agent`.");
   };
 
   m_abstractAgentAddr = abstractAgentAddr;
@@ -172,7 +172,7 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
                 << "` belongs to class `platform_dependent_abstract_sc_agent` twice.");
 
       SC_LOG_WARNING(
-          "Agent implementation for class `" << agentClassName << "` was not generated due it already exists.");
+          "Agent implementation for class `" << agentClassName << "` was not generated because it already exists.");
     }
     else
     {
@@ -195,7 +195,7 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
     if (it5->Next())
       SC_LOG_WARNING(
           "Connection between specified abstract agent and agent implementation for class `"
-          << agentClassName << "` was not generated due it already exists.");
+          << agentClassName << "` was not generated because it already exists.");
     else
     {
       ScAddr const & arcAddr =
@@ -265,7 +265,8 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
         ScKeynodes::nrel_primary_initiation_condition);
     if (it5->Next())
       SC_LOG_WARNING(
-          "Primary initiation condition for class `" << agentClassName << "` was not generated due it already exists.");
+          "Primary initiation condition for class `" << agentClassName
+                                                     << "` was not generated because it already exists.");
     else
     {
       ScAddr const & primaryConditionAddr =
@@ -334,7 +335,7 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
     if (it5->Next())
       SC_LOG_WARNING(
           "Connection between specified abstract agent and action class for agent class `"
-          << agentClassName << "` was not generated due it already exists.");
+          << agentClassName << "` was not generated because it already exists.");
     else
     {
       ScAddr const & arcAddr = ctx->CreateEdge(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_actionClassAddr);
@@ -386,7 +387,7 @@ void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
     if (it5->Next())
       SC_LOG_WARNING(
           "Initiation condition and result for class `" << agentClassName
-                                                        << "` was not generated due it already exists.");
+                                                        << "` was not generated because it already exists.");
     else
     {
       ScAddr const & conditionAndResultAddr =
