@@ -49,6 +49,9 @@ Use them as `eventClassAddr` for `CreateElementaryEventSubscription`.
 The table of description (parameters of callback function named on pictures, if there are no parameter name on picture,
 then it's would have an empty value):
 
+!!! note
+    Here `context` is pointer to object of `ScAgentContext` class.
+
 <table width="95%">
   <tr>
     <th>Class</th>
@@ -262,9 +265,6 @@ auto subscription = context->CreateElementaryEventSubscription<
     </td>
   </tr>
 </table>
-
-!!! note
-    Here `context` is pointer to object of `ScAgentContext` class.
 
 --- 
 

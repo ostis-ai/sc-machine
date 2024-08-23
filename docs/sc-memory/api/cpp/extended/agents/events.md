@@ -8,7 +8,7 @@ This API describes how to work with sc-events.
 
 ## **What is event-driven model?**
 
-The sc-machine uses event-driven model to manage processing information. The sc-memory stores SC-code constructions, which are are graph structures, then any kind of events, occurring in sc-memory, is related to changes in these graph constructions.
+The sc-machine uses event-driven model to manage processing information. The sc-memory stores SC-code constructions, which are graph structures, then any kind of events, occurring in sc-memory, is related to changes in these graph constructions.
 
 These are methods that generate events: 
 
@@ -16,7 +16,7 @@ These are methods that generate events:
 - `EraseElement`,
 - `SetLinkContent`.
 
-They publish events to an event queue without needing to know which consumers will receive them. These components filter and distribute events to appropriate consumers. They manage the flow of events and ensure that they reach the correct destinations. Event consumers are the components that listen for and process events. Event consumers can be modules, agents or something else.
+They publish events to an event queue without needing to know which consumers will receive them. These components filter and distribute events to appropriate consumers. They manage the flow of events and ensure that they reach the correct destinations. Event consumers are the components that listen for and process events. Event consumers can be modules, agents or something else. See [**FAQ**](#frequently-asked-questions) to find out why it works that way.
 
 Within the OSTIS Technology, events are considered only situations in which relationships have changed or new relationships have been generated, or link content have been changed, or some sc-element have been erased.
 
@@ -522,17 +522,22 @@ This class represents sc-event of erasing specified listen sc-element. You can u
 
 This class represents sc-event of changing content for listen sc-link. You can use all methods from objects of this class that are accessible from `ScElementaryEvent` class.
 
+!!! note
+    For `ScEventEraseElement` and `ScEventChangeLinkContent` method `GetTriple` returns tuple of three sc-address. The first one is a sc-event subscription sc-element. The other ones should be empty sc-addresses.
+
 --- 
 
 ## **Frequently Asked Questions**
 
 <!-- no toc -->
-- [Is there sc-event of adding sc-node?](#is-there-sc-event-of-adding-sc-node)
+- [Is there sc-event of creating sc-node?](#is-there-sc-event-of-creating-sc-node)
 - [Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?](#is-fact-of-what-happened-recorded-in-the-knowledge-base-are-sc-events-recorded-in-the-knowledge-base)
 
-### **Is there sc-event of adding sc-node?**
+### **Is there sc-event of creating sc-node?**
 
 A sc-event is defined as the addition, modification or erasing of connections between sc-elements, or changing link content, or erasing sc-element. This is so because knowledge is not a single sc-element, and knowledge is construction of three sc-elements at least. A sc-element does not carry any knowledge in itself. Therefore, a sc-event is considered to be emergence of some new knowledge. But there is an exception, erasing sc-elements with no connections with other sc-elements is considered an event.
+
+Also, even if events were defined differently, it doesn't negate the fact that one cannot subscribe to sc-event of creating sc-node, since we don't know about that node in advance, because it doesn't exist.
 
 ### **Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?**
 
