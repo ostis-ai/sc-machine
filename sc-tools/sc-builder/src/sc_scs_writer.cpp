@@ -643,8 +643,9 @@ std::shared_ptr<SCsElement> SCsElementFactory::CreateAndConvertElementFromSCgEle
   }
   else if (tag == PAIR || tag == ARC)
   {
-    std::shared_ptr<SCgConnector> scgConnector= std::dynamic_pointer_cast<SCgConnector>(scgElement);
-    if (scgConnector && scgContour && scgConnector->GetSource() == scgContour && scgConnector->GetTarget()->GetTag() == NODE)
+    std::shared_ptr<SCgConnector> scgConnector = std::dynamic_pointer_cast<SCgConnector>(scgElement);
+    if (scgConnector && scgContour && scgConnector->GetSource() == scgContour
+        && scgConnector->GetTarget()->GetTag() == NODE)
     {
       // If there is an arc to a node in a contour,
       // then this node is in the contour, but not vice versa,
@@ -653,7 +654,10 @@ std::shared_ptr<SCsElement> SCsElementFactory::CreateAndConvertElementFromSCgEle
       auto scsConnector = std::make_shared<SCsConnector>();
       auto source = scgConnector->GetSource();
       scsElement = std::make_shared<SCsEdgeFromContourToNode>(
-          scgElements, scgConnector->GetTarget()->GetId(), scgConnector->GetSource()->GetId(), scsConnector->GetSourceTargetIdtf(source));
+          scgElements,
+          scgConnector->GetTarget()->GetId(),
+          scgConnector->GetSource()->GetId(),
+          scsConnector->GetSourceTargetIdtf(source));
     }
     else
     {
