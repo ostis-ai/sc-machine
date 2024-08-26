@@ -245,7 +245,7 @@ std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTree::Compare
   {
     if (node1->children.find(child2.first) == node1->children.end())
     {
-      differences->emplace_back("missing in node1", child2.first);
+      differences->emplace_back("missing", child2.first);
     }
   }
 

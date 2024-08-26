@@ -17,16 +17,16 @@ void Buffer::Write(std::string const & s)
 void Buffer::AddTabs(std::size_t const & count)
 {
   std::istringstream iss(value);
+  std::ostringstream new_value;
   std::string line;
-  std::string new_value;
   std::string tabs(count * 4, SPACE[0]);
 
   while (std::getline(iss, line))
   {
-    new_value += tabs + line + NEWLINE;
+    new_value << tabs << line << NEWLINE;
   }
 
-  value = new_value;
+  value = new_value.str();
 }
 
 std::string Buffer::GetValue() const
@@ -68,20 +68,14 @@ std::string SCsWriter::CorrectorOfSCgIdtf::GenerateCorrectedIdtf(
     bool isVar)
 {
   if (systemIdtf.empty())
-  {
     return GenerateIdtfForUnresolvedCharacters(systemIdtf, elementId, isVar);
-  }
-  else if (isVar)
-  {
-    if (systemIdtf[0] != UNDERSCORE[0])
-    {
-      return CorrectIdtfForVariable(systemIdtf);
-    }
-  }
-  else if (systemIdtf[0] == UNDERSCORE[0])
-  {
+
+  if (isVar && systemIdtf[0] != UNDERSCORE[0])
+    return CorrectIdtfForVariable(systemIdtf);
+
+  if (!isVar && systemIdtf[0] == UNDERSCORE[0])
     return CorrectIdtfForNonVariable(systemIdtf);
-  }
+
   return systemIdtf;
 }
 
@@ -128,7 +122,7 @@ void SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(
 
   correctedIdtf = GenerateCorrectedIdtf(correctedIdtf, id, isVar);
   scsElement->SetSystemIdtf(correctedIdtf);
-  
+
   auto const & tag = scgElement->GetTag();
   if (tag == PAIR || tag == ARC)
   {
@@ -138,22 +132,22 @@ void SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(
 }
 
 std::string SCsWriter::Write(
-    std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & scgElements,
-    std::string const & filePath)
+    std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & scgElementsMap,
+    std::string const & filePath) const
 {
   try
   {
     Buffer buffer;
 
-    for (auto const & scgElementPair : scgElements)
-    {
-      auto const & scgElement = scgElementPair.second;
+    auto scgElements = ConvertMapToList(scgElementsMap);
 
-      auto scsElement = SCsElementFactory::CreateElementFromSCgElement(scgElement);
+    for (auto const & scgElement : scgElements)
+    {
+      auto scsElement = SCsElementFactory::CreateAndConvertElementFromSCgElement(scgElement);
 
       SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, scsElement);
 
-      if(!scsElement->GetMainIdtf().empty())
+      if (!scsElement->GetMainIdtf().empty())
       {
         SCsWriter::WriteMainIdtf(buffer, scsElement->GetSystemIdtf(), scsElement->GetMainIdtf());
       }
@@ -168,25 +162,44 @@ std::string SCsWriter::Write(
 
         if (scgParent == NO_PARENT)
         {
+          if (scgTag == CONTOUR)
+          {
+            std::shared_ptr<SCsContour> contour = std::dynamic_pointer_cast<SCsContour>(scsElement);
+            contour->SetSCgElements(scgElements);
+            scsElement = contour;
+          }
           scsElement->ConvertFromSCgElement(scgElement);
           buffer.Write(scsElement->Dump(filePath));
         }
         else if (scgTag == NODE || scgTag == BUS)
         {
+          // All single nodes need to be written
           scsElement->ConvertFromSCgElement(scgElement);
           buffer.Write(scsElement->Dump(filePath));
         }
       }
     }
-
     return buffer.GetValue();
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR("SCSWriter: exception in process elements " << e.Message());
+    SC_LOG_ERROR("Exception in process elements: " << e.Message());
 
     return "";
   }
+}
+
+std::list<std::shared_ptr<SCgElement>> SCsWriter::ConvertMapToList(
+    std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & scgElements)
+{
+  std::list<std::shared_ptr<SCgElement>> elementList;
+
+  for (auto const & pair : scgElements)
+  {
+    elementList.push_back(pair.second);
+  }
+
+  return elementList;
 }
 
 void SCsWriter::WriteMainIdtf(Buffer & buffer, std::string const & systemIdtf, std::string const & mainIdtf)
@@ -205,21 +218,6 @@ void SCsWriter::WriteMainIdtf(Buffer & buffer, std::string const & systemIdtf, s
   buffer.Write(output + NEWLINE);
 }
 
-bool SCsWriter::CheckForNode(
-    std::shared_ptr<SCgElement> const refElement,
-    std::vector<std::shared_ptr<SCgElement>> const & contourElements)
-{
-  for (auto const & element : contourElements)
-  {
-    if (element == refElement)
-    {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 // Converter
 
 // SCsNode
@@ -233,7 +231,9 @@ void SCsNode::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEleme
 
   if (scsNodeType.empty())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + scgNodeType);
+    SC_THROW_EXCEPTION(
+        utils::ExceptionItemNotFound,
+        "SCsNode::ConvertFromSCgElement: No matching scs node type for scg node: " + scgNodeType);
   }
 
   type = scsNodeType;
@@ -250,41 +250,45 @@ std::string SCsNode::Dump(std::string const & filepath) const
 
 // SCsLink
 
+enum class ContentType
+{
+  String = 1,
+  Integer = 2,
+  Float = 3,
+  Image = 4
+};
+
 void SCsLink::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
 {
-  std::shared_ptr<SCgLink> link = std::dynamic_pointer_cast<SCgLink>(scgElement);
+  auto link = std::dynamic_pointer_cast<SCgLink>(scgElement);
+  if (!link)
+  {
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidType, "SCsLink::ConvertFromSCgElement: Invalid SCgElement passed to SCsLink.");
+  }
 
-  int const contentType = std::stoi(link->GetContentType());
-
+  ContentType contentType = static_cast<ContentType>(std::stoi(link->GetContentType()));
   type = link->GetType();
   fileName = link->GetFileName();
 
-  std::string contentRes;
-  std::string const & contentData = link->GetContentData();
-
   switch (contentType)
   {
-  // Content is string
-  case 1:
-    content = contentData;
+  case ContentType::String:
+    content = link->GetContentData();
     break;
-  // Content is int number
-  case 2:
-    content = DOUBLE_QUOTE + INT64 + contentData + DOUBLE_QUOTE;
+  case ContentType::Integer:
+    content = DOUBLE_QUOTE + INT64 + link->GetContentData() + DOUBLE_QUOTE;
     break;
-  // Content is float number
-  case 3:
-    content = DOUBLE_QUOTE + FLOAT + contentData + DOUBLE_QUOTE;
+  case ContentType::Float:
+    content = DOUBLE_QUOTE + FLOAT + link->GetContentData() + DOUBLE_QUOTE;
     break;
-  // Content is image (.png)
-  case 4:
-  {
-    urlContent = contentData;
+  case ContentType::Image:
+    urlContent = link->GetContentData();
     isUrl = true;
     break;
-  }
   default:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Content type not supported: " + link->GetId());
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidType, "SCsLink::ConvertFromSCgElement: Content type not supported: " + link->GetId());
   }
 }
 
@@ -312,13 +316,14 @@ std::string SCsLink::Dump(std::string const & filePath) const
     }
     else
     {
-      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "File extension not found: " + fileExtension);
+      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "SCsLink::Dump: File extension not found " + fileExtension);
     }
 
     std::ofstream file(fullPath, std::ios::binary);
     if (!file)
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Failed to open file for writing: " + fullPath.string());
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams, "SCsLink::Dump: Failed to open file for writing: " + fullPath.string());
     }
     file.write(urlContent.data(), urlContent.size());
     file.close();
@@ -351,6 +356,11 @@ std::string SCsLink::Dump(std::string const & filePath) const
 void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
 {
   std::shared_ptr<SCgConnector> connector = std::dynamic_pointer_cast<SCgConnector>(scgElement);
+  if (!connector)
+  {
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidType, "SCsConnector::ConvertFromSCgElement: Invalid SCgElement passed to SCsConnector.");
+  }
 
   std::string const & edgeType = connector->GetType();
   std::string const & id = connector->GetId();
@@ -359,25 +369,23 @@ void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scg
 
   if (symbol.empty())
   {
-    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "No matching scs node type for scg node: " + edgeType);
+    SC_THROW_EXCEPTION(
+        utils::ExceptionItemNotFound,
+        "SCsConnector::ConvertFromSCgElement: No matching scs node type for scg node: " + edgeType);
   }
 
   alias = SCsWriter::MakeAlias(EDGE, id);
 
-  // TO FUNC
-  auto const & scgSourceElement = connector->GetSource();
-  source = SCsElementFactory::CreateElementFromSCgElement(scgSourceElement);
-  source->ConvertFromSCgElement(scgSourceElement);
+  sourceIdtf = GetSourceTargetIdtf(connector->GetSource());
+  targetIdtf = GetSourceTargetIdtf(connector->GetTarget());
+}
 
-  auto const & scgTargetElement = connector->GetTarget();
-  target = SCsElementFactory::CreateElementFromSCgElement(scgTargetElement);
-  target->ConvertFromSCgElement(scgTargetElement);
-
-  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgSourceElement, source);
-  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgTargetElement, target);
-
-  sourceIdtf = source->GetSystemIdtf();
-  targetIdtf = target->GetSystemIdtf();
+std::string SCsConnector::GetSourceTargetIdtf(std::shared_ptr<SCgElement> const & element) const
+{
+  auto scsElement = SCsElementFactory::CreateAndConvertElementFromSCgElement(element);
+  scsElement->ConvertFromSCgElement(element);
+  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(element, scsElement);
+  return scsElement->GetSystemIdtf();
 }
 
 std::string SCsConnector::Dump(std::string const & filepath) const
@@ -409,40 +417,44 @@ std::string SCsConnector::Dump(std::string const & filepath) const
 void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
 {
   std::shared_ptr<SCgContour> contour = std::dynamic_pointer_cast<SCgContour>(scgElement);
-
   if (!contour)
   {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Invalid SCgElement passed to SCsContour::ConvertFromSCgElement.");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidType, "SCsContour::ConvertFromSCgElement Invalid SCgElement passed to SCsContour.");
   }
 
-  auto const & scgElements = contour->GetElements();
+  auto const & contourSCgElements = contour->GetElements();
 
-  for (auto const & scgElement : scgElements)
+  for (auto const & scgElement : contourSCgElements)
   {
     std::shared_ptr<SCsElement> scsElement = nullptr;
     std::string const & tag = scgElement->GetTag();
 
     if (tag == NODE || tag == BUS)
     {
-      SCgLink * link = dynamic_cast<SCgLink *>(scgElement.get());
-      if (link && link->GetContentType() != NO_CONTENT)
-      {
-        scsElement = std::make_shared<SCsLink>();
-      }
-      else
-      {
-        std::list<std::shared_ptr<SCsElement>> & elements = GetContourElements();
-        scsElement = std::make_shared<SCsNodeInContour>(elements, contour->GetId(), this->GetSystemIdtf());
-      }
+      // SCs cannot record individual nodes in a contour, so it is necessary to create
+      // an explicit connection between the contour and the node
+
+      scsElement =
+          std::make_shared<SCsNodeInContour>(scgElements, scgElement->GetId(), contour->GetId(), this->GetSystemIdtf());
     }
     else if (tag == PAIR || tag == ARC)
     {
       std::shared_ptr<SCgConnector> connector = std::dynamic_pointer_cast<SCgConnector>(scgElement);
-      if (connector->GetSource() == contour && connector->GetTarget() == scgElement)
+
+      // If there is an arc to a node in a contour,
+      // then this node is in the contour, but not vice versa,
+      // so we count multiple arcs from the NodeInContour
+
+      if (connector->GetSource() == contour && connector->GetTarget()->GetTag() == NODE)
       {
-        continue;
+        scsElement = std::make_shared<SCsEdgeFromContourToNode>(
+            scgElements, connector->GetTarget()->GetId(), contour->GetId(), this->GetSystemIdtf());
       }
-      scsElement = std::make_shared<SCsConnector>();
+      else
+      {
+        scsElement = std::make_shared<SCsConnector>();
+      }
     }
     else if (tag == CONTOUR)
     {
@@ -450,7 +462,8 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
     }
     else
     {
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Unsupported SCgElement type.");
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidType, "SCsContour::ConvertFromSCgElement: Unsupported SCgElement type.");
     }
 
     if (scsElement)
@@ -464,7 +477,7 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
 
 void SCsContour::AddElement(std::shared_ptr<SCsElement> const & element)
 {
-  elements.push_back(element);
+  scsElements.push_back(element);
 }
 
 std::string SCsContour::Dump(std::string const & filepath) const
@@ -472,18 +485,21 @@ std::string SCsContour::Dump(std::string const & filepath) const
   Buffer buffer;
   Buffer contourBuffer;
 
-  for (auto const & element : elements)
+  for (auto const & element : scsElements)
   {
-      if (auto nodeInContour = std::dynamic_pointer_cast<SCsNodeInContour>(element))
-      {
-          buffer.Write(nodeInContour->Dump(filepath));
-      }
-      else
-      {
-          contourBuffer.Write(element->Dump(filepath));
-      }
+    if (auto nodeInContour = std::dynamic_pointer_cast<SCsNodeInContour>(element))
+    {
+      buffer.Write(nodeInContour->Dump(filepath));
+    }
+    else if (auto edgeFromContourToNode = std::dynamic_pointer_cast<SCsEdgeFromContourToNode>(element))
+    {
+      buffer.Write(nodeInContour->Dump(filepath));
+    }
+    else
+    {
+      contourBuffer.Write(element->Dump(filepath));
+    }
   }
-
 
   buffer.Write(
       systemIdtf + SPACE + EQUAL + SPACE + OPEN_CONTOUR + NEWLINE + contourBuffer.GetValue() + NEWLINE + CLOSE_CONTOUR
@@ -492,49 +508,116 @@ std::string SCsContour::Dump(std::string const & filepath) const
   return buffer.GetValue();
 }
 
+// MultipluElements
+
+void SCsMultipleElement::CalculateMultipleArcs(size_t & multipleArcCounter)
+{
+  for (auto const & el : GetSCgElements())
+  {
+    auto const & tag = el->GetTag();
+    if (tag == NODE || tag == BUS)
+    {
+      auto const & parent = el->GetParent();
+      if (parent == GetContourId())
+      {
+        multipleArcCounter++;
+      }
+    }
+    else if (tag == PAIR || tag == ARC)
+    {
+      std::shared_ptr<SCgConnector> connector = std::dynamic_pointer_cast<SCgConnector>(el);
+      auto const & sourceId = connector->GetSource()->GetId();
+      auto const & targetId = connector->GetTarget()->GetId();
+      if (sourceId == GetContourId() && targetId == GetNodeId())
+      {
+        multipleArcCounter++;
+      }
+    }
+    else
+      continue;
+  }
+}
+
 // SCsNode in contour
 
-void SCsNodeInContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
+void SCsNodeInContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element)
 {
-  multipleArcCounter = 1;
-  this->nodeId = scgElement->GetId();
+  if (IsPairWritten(GetContourId(), GetNodeId()))
+  {
+    return;
+  }
 
-  contourElements.erase(
-      std::remove_if(
-          contourElements.begin(),
-          contourElements.end(),
-          [&](std::shared_ptr<SCsElement> const & element)
-          {
-            auto connector = std::dynamic_pointer_cast<SCgConnector>(element);
-            if (connector && connector->GetSource()->GetIdtf() == contourId
-                && connector->GetTarget()->GetIdtf() == nodeId)
-            {
-              ++multipleArcCounter;
-              return true;
-            }
-            return false;
-          }),
-      contourElements.end());
+  size_t multipleArcCounter = 1;
+
+  CalculateMultipleArcs(multipleArcCounter);
+
+  SetMultipleArcCounter(multipleArcCounter);
+  AddWrittenPair(GetContourId(), GetNodeId());
 }
 
 std::string SCsNodeInContour::Dump(std::string const & filepath) const
 {
   Buffer buffer;
 
-  auto const edgeName =
-      (EDGE_FROM_CONTOUR + UNDERSCORE + contourId + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE + nodeId + UNDERSCORE
-       + std::to_string(multipleArcCounter));
+  auto const edgeName = EDGE_FROM_CONTOUR + UNDERSCORE + GetContourId() + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE
+                        + GetNodeId() + UNDERSCORE + GetMultipleArcCounter();
+
   buffer.Write(
-      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + contourIdtf + SPACE + SC_EDGE_MAIN_R
-      + SPACE + systemIdtf + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
+      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + GetContourIdtf() + SPACE + SC_EDGE_MAIN_R + SPACE
+      + systemIdtf + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
+
+  return buffer.GetValue();
+}
+
+// SCsEdge from contour to node
+
+void SCsEdgeFromContourToNode::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element)
+{
+  if (IsPairWritten(GetContourId(), GetNodeId()))
+  {
+    return;
+  }
+
+  auto scsConnector = SCsElementFactory::CreateAndConvertElementFromSCgElement(element);
+  SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(element, scsConnector);
+
+  SetNodeIdtf(scsConnector->GetSystemIdtf());
+
+  size_t multipleArcCounter = 1;
+
+  CalculateMultipleArcs(multipleArcCounter);
+
+  SetMultipleArcCounter(multipleArcCounter);
+  AddWrittenPair(GetContourId(), GetNodeId());
+}
+
+std::string SCsEdgeFromContourToNode::Dump(std::string const & filepath) const
+{
+  Buffer buffer;
+
+  auto const edgeName = EDGE_FROM_CONTOUR + UNDERSCORE + GetContourId() + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE
+                        + GetNodeId() + UNDERSCORE + GetMultipleArcCounter();
+
+  buffer.Write(
+      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + GetContourIdtf() + SPACE + SC_EDGE_MAIN_R + SPACE
+      + GetNodeIdtf() + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
 
   return buffer.GetValue();
 }
 
 // SCsFactory
 
-std::shared_ptr<SCsElement> SCsElementFactory::CreateElementFromSCgElement(
+std::shared_ptr<SCsElement> SCsElementFactory::CreateAndConvertElementFromSCgElement(
     std::shared_ptr<SCgElement> const & scgElement)
+{
+  return CreateAndConvertElementFromSCgElement(scgElement, {}, nullptr, nullptr);
+}
+
+std::shared_ptr<SCsElement> SCsElementFactory::CreateAndConvertElementFromSCgElement(
+    std::shared_ptr<SCgElement> const & scgElement,
+    std::list<std::shared_ptr<SCgElement>> const & scgElements,
+    std::shared_ptr<SCgContour> const & scgContour,
+    std::shared_ptr<SCsContour> const & scsContour)
 {
   std::shared_ptr<SCsElement> scsElement = nullptr;
   std::string const & tag = scgElement->GetTag();
@@ -546,6 +629,13 @@ std::shared_ptr<SCsElement> SCsElementFactory::CreateElementFromSCgElement(
     {
       scsElement = std::make_shared<SCsLink>();
     }
+    else if (scgContour)
+    {
+      // SCs cannot record individual nodes in a contour, so it is necessary to create
+      // an explicit connection between the contour and the node
+      scsElement = std::make_shared<SCsNodeInContour>(
+          scgElements, scgElement->GetId(), scgContour->GetId(), scsContour->GetSystemIdtf());
+    }
     else
     {
       scsElement = std::make_shared<SCsNode>();
@@ -553,7 +643,22 @@ std::shared_ptr<SCsElement> SCsElementFactory::CreateElementFromSCgElement(
   }
   else if (tag == PAIR || tag == ARC)
   {
-    scsElement = std::make_shared<SCsConnector>();
+    std::shared_ptr<SCgConnector> scgConnector= std::dynamic_pointer_cast<SCgConnector>(scgElement);
+    if (scgConnector && scgContour && scgConnector->GetSource() == scgContour && scgConnector->GetTarget()->GetTag() == NODE)
+    {
+      // If there is an arc to a node in a contour,
+      // then this node is in the contour, but not vice versa,
+      // so we count multiple arcs from the NodeInContour
+
+      auto scsConnector = std::make_shared<SCsConnector>();
+      auto source = scgConnector->GetSource();
+      scsElement = std::make_shared<SCsEdgeFromContourToNode>(
+          scgElements, scgConnector->GetTarget()->GetId(), scgConnector->GetSource()->GetId(), scsConnector->GetSourceTargetIdtf(source));
+    }
+    else
+    {
+      scsElement = std::make_shared<SCsConnector>();
+    }
   }
   else if (tag == CONTOUR)
   {
@@ -561,7 +666,18 @@ std::shared_ptr<SCsElement> SCsElementFactory::CreateElementFromSCgElement(
   }
   else
   {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Unsupported SCgElement type.");
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidType, "SCsWriter::CreateAndConvertElementFromSCgElement: Unsupported SCgElement type.");
+  }
+
+  if (scsElement)
+  {
+    SCsWriter::CorrectorOfSCgIdtf::CorrectIdtf(scgElement, scsElement);
+    scsElement->ConvertFromSCgElement(scgElement);
+    if (scsContour)
+    {
+      scsContour->AddElement(scsElement);
+    }
   }
 
   return scsElement;

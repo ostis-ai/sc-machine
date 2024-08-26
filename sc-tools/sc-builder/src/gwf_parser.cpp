@@ -48,7 +48,7 @@ std::unordered_map<std::string, std::shared_ptr<SCgElement>> GWFParser::Parse(st
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR("SCSWriter: Error in parse " << e.Message());
+    SC_LOG_ERROR("GWFParser::Parse: Error in parse " << e.Message());
     xmlCleanupParser();
     return {};
   }
@@ -104,7 +104,8 @@ void GWFParser::ProcessStaticSector(
         }
         else
         {
-          SC_THROW_EXCEPTION(utils::ExceptionParseError, "Unknown tag  " << tag << " with id " << id);
+          SC_THROW_EXCEPTION(
+              utils::ExceptionParseError, "GWFParser::ProcessStaticSector: Unknown tag  " << tag << " with id " << id);
         }
 
         elements[id] = scgElement;
@@ -125,7 +126,7 @@ void GWFParser::ProcessStaticSector(
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR("SCSWriter: Exception caught in process static sector " + std::string(e.what()));
+    SC_LOG_ERROR("GWFParser::ProcessStaticSector: Exception caught in process static sector " + std::string(e.what()));
   }
 }
 
@@ -168,7 +169,8 @@ std::shared_ptr<SCgLink> GWFParser::CreateLink(
       }
       else
       {
-        SC_THROW_EXCEPTION(utils::ExceptionParseError, "Content type is not supported: " << contentType);
+        SC_THROW_EXCEPTION(
+            utils::ExceptionParseError, "GWFParser::CreateLink: Content type is not supported: " << contentType);
       }
 
       return std::make_shared<SCgLink>(id, parent, idtf, type, tag, contentType, mimeType, fileName, contentData);
@@ -272,11 +274,15 @@ void GWFParser::FillConnector(
 
     if (sourceEl == nullptr)
     {
-      SC_THROW_EXCEPTION(utils::ExceptionParseError, "Source element not found for connector " << connector->GetId());
+      SC_THROW_EXCEPTION(
+          utils::ExceptionParseError,
+          "GWFParser::FillConnector: Source element not found for connector " << connector->GetId());
     }
     if (targetEl == nullptr)
     {
-      SC_THROW_EXCEPTION(utils::ExceptionParseError, "Target element not found for connector " << connector->GetId());
+      SC_THROW_EXCEPTION(
+          utils::ExceptionParseError,
+          "GWFParser::FillConnector: Target element not found for connector " << connector->GetId());
     }
 
     connector->SetSource(sourceEl);

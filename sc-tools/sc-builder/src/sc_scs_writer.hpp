@@ -96,9 +96,6 @@ private:
 
   std::string alias;
 
-  std::shared_ptr<SCsElement> source;
-  std::shared_ptr<SCsElement> target;
-
   std::string sourceIdtf;
   std::string targetIdtf;
 
@@ -106,17 +103,31 @@ public:
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
 
   std::string Dump(std::string const & filepath) const override;
+
+  std::string GetSourceTargetIdtf(std::shared_ptr<SCgElement> const & element) const;
 };
 
 class SCsContour : public SCsElement
 {
 private:
-  std::list<std::shared_ptr<SCsElement>> elements;
+  std::list<std::shared_ptr<SCsElement>> scsElements;
+
+  std::list<std::shared_ptr<SCgElement>> scgElements;
 
 public:
   std::list<std::shared_ptr<SCsElement>> & GetContourElements()
   {
-    return elements;
+    return scsElements;
+  }
+
+  std::list<std::shared_ptr<SCgElement>> GetSCgElements()
+  {
+    return scgElements;
+  }
+
+  void SetSCgElements(std::list<std::shared_ptr<SCgElement>> elements)
+  {
+    scgElements = elements;
   }
 
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
@@ -126,28 +137,114 @@ public:
   std::string Dump(std::string const & filepath) const override;
 };
 
-class SCsElementFactory
+class SCsMultipleElement : public SCsElement
 {
 public:
-  static std::shared_ptr<SCsElement> CreateElementFromSCgElement(std::shared_ptr<SCgElement> const & element);
-};
-
-class SCsNodeInContour : public SCsElement
-{
-private:
-  std::list<std::shared_ptr<SCsElement>> & contourElements;
-  size_t multipleArcCounter;
-  std::string contourId;
-  std::string nodeId;
-
-  std::string contourIdtf;
-
-public:
-  SCsNodeInContour(std::list<std::shared_ptr<SCsElement>> & contourElements, std::string const & contourId, std::string const & contourIdtf)
-    : contourElements(contourElements)
-    , multipleArcCounter(0)
+  SCsMultipleElement(
+      std::list<std::shared_ptr<SCgElement>> const & scgElements,
+      std::string const & nodeId,
+      std::string const & contourId,
+      std::string const & contourIdtf)
+    : scgElements(scgElements)
+    , nodeId(nodeId)
     , contourId(contourId)
     , contourIdtf(contourIdtf)
+    , multipleArcCounter(0)
+  {
+  }
+
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override = 0;
+
+  std::string Dump(std::string const & filepath) const override = 0;
+
+  std::list<std::shared_ptr<SCgElement>> GetSCgElements()
+  {
+    return scgElements;
+  }
+
+  void SetMultipleArcCounter(size_t counter)
+  {
+    multipleArcCounter = counter;
+  }
+
+  std::string GetMultipleArcCounter() const
+  {
+    return std::to_string(multipleArcCounter);
+  }
+
+  void SetNodeId(std::string const & id)
+  {
+    nodeId = id;
+  }
+
+  std::string const & GetNodeId() const
+  {
+    return nodeId;
+  }
+
+  void SetNodeIdtf(std::string const & idtf)
+  {
+    nodeIdtf = idtf;
+  }
+
+  std::string const & GetNodeIdtf() const
+  {
+    return nodeIdtf;
+  }
+
+  void SetContourId(std::string const & id)
+  {
+    contourId = id;
+  }
+
+  std::string const & GetContourId() const
+  {
+    return contourId;
+  }
+
+  void SetContourIdtf(std::string const & idtf)
+  {
+    contourIdtf = idtf;
+  }
+
+  std::string const & GetContourIdtf() const
+  {
+    return contourIdtf;
+  }
+
+  void AddWrittenPair(std::string const & contourId, std::string const & nodeId)
+  {
+    writtenPairs[contourId] = nodeId;
+  }
+
+  bool IsPairWritten(std::string const & contourId, std::string const & nodeId) const
+  {
+    auto it = writtenPairs.find(contourId);
+    return it != writtenPairs.end() && it->second == nodeId;
+  }
+
+  void CalculateMultipleArcs(size_t & multipleArcCounter);
+
+private:
+  std::unordered_map<std::string, std::string> writtenPairs;
+  std::list<std::shared_ptr<SCgElement>> scgElements;
+
+  std::string nodeId;
+  std::string nodeIdtf;
+  std::string contourId;
+  std::string contourIdtf;
+  size_t multipleArcCounter;
+};
+
+class SCsNodeInContour : public SCsMultipleElement
+{
+public:
+  SCsNodeInContour(
+      std::list<std::shared_ptr<SCgElement>> const & scgElements,
+      std::string const & nodeId,
+      std::string const & contourId,
+      std::string const & contourIdtf)
+    : SCsMultipleElement(scgElements, nodeId, contourId, contourIdtf)
   {
   }
 
@@ -156,15 +253,47 @@ public:
   std::string Dump(std::string const & filepath) const override;
 };
 
+class SCsEdgeFromContourToNode : public SCsMultipleElement
+{
+public:
+  SCsEdgeFromContourToNode(
+      std::list<std::shared_ptr<SCgElement>> const & scgElements,
+      std::string const & nodeId,
+      std::string const & contourId,
+      std::string const & contourIdtf)
+    : SCsMultipleElement(scgElements, nodeId, contourId, contourIdtf)
+  {
+  }
+
+  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+
+  std::string Dump(std::string const & filepath) const override;
+};
+
+class SCsElementFactory
+{
+public:
+  static std::shared_ptr<SCsElement> CreateAndConvertElementFromSCgElement(
+      std::shared_ptr<SCgElement> const & scgElement);
+
+  static std::shared_ptr<SCsElement> CreateAndConvertElementFromSCgElement(
+      std::shared_ptr<SCgElement> const & scgElement,
+      std::list<std::shared_ptr<SCgElement>> const & scgElements,
+      std::shared_ptr<SCgContour> const & scgContour,
+      std::shared_ptr<SCsContour> const & scsContour);
+};
+
 class SCsWriter
 {
 public:
   std::string Write(
       std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elementsList,
-      std::string const & filePath);
+      std::string const & filePath) const;
 
   // Utils
+
   class CorrectorOfSCgIdtf
+
   {
   public:
     static void CorrectIdtf(std::shared_ptr<SCgElement> const & scgElement, std::shared_ptr<SCsElement> & scsElement);
@@ -182,10 +311,9 @@ public:
     static std::string CorrectIdtfForNonVariable(std::string & systemIdtf);
   };
 
+  static std::list<std::shared_ptr<SCgElement>> ConvertMapToList(
+      std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & scgElements);
   static void WriteMainIdtf(Buffer & buffer, std::string const & systemIdtf, std::string const & mainIdtf);
-  static bool CheckForNode(
-      std::shared_ptr<SCgElement> const refElement,
-      std::vector<std::shared_ptr<SCgElement>> const & contourElements);
   static std::string MakeAlias(std::string const & prefix, std::string const & element_id);
   static bool IsVariable(std::string const & el_type);
 };
