@@ -120,7 +120,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetInitiationConditionAndRe
 }
 
 template <class TScAgent>
-void ScAgentBuilder<TScAgent>::LoadSpecification(ScMemoryContext * ctx)
+void ScAgentBuilder<TScAgent>::ResolveSpecification(ScMemoryContext * ctx)
 {
   std::string const & agentClassName = TScAgent::template GetName<TScAgent>();
   std::string agentImplementationName;
@@ -501,7 +501,7 @@ ScModule * ScAgentBuilder<TScAgent>::FinishBuild()
 {
   m_initializeSpecification = [this](ScMemoryContext * ctx)
   {
-    LoadSpecification(ctx);
+    ResolveSpecification(ctx);
   };
 
   return m_module;

@@ -139,7 +139,7 @@ template <class TScAgent>
 void ScAgentContext::LoadAndSubscribeAgent(ScAddr const & agentImplementationAddr)
 {
   ScAgentBuilder<TScAgent> builder{agentImplementationAddr};
-  builder.LoadSpecification(this);
+  builder.ResolveSpecification(this);
 
   TScAgent::template Subscribe<TScAgent>(this, agentImplementationAddr);
 }

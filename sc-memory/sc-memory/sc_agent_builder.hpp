@@ -150,10 +150,10 @@ protected:
   _SC_EXTERN ScAddr GetAgentImplementation() const override;
 
   /*!
-   * @brief Loads specification for specified agent class `TScAgent`.
+   * @brief Resolves specification for specified agent class `TScAgent`.
    * @param ctx A sc-memory context used to load specification.
    */
-  _SC_EXTERN void LoadSpecification(ScMemoryContext * ctx);
+  _SC_EXTERN void ResolveSpecification(ScMemoryContext * ctx);
 
   _SC_EXTERN void ResolveAgentImplementation(
       ScMemoryContext * ctx,
