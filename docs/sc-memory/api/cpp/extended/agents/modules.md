@@ -139,7 +139,7 @@ SC_MODULE_REGISTER(MyModule)
     ->FinishBuild();
 ```
 
-So you can load the initial specification for your agent into the knowledge base from the code. You can change it or not, it depends on your task.
+So you can load the initial specification for your agent into the knowledge base from the code. You can change it or not, it depends on your problem.
 
 !!! note
     If specification for an agent already exists in the knowledge base, no new connections will be generated, i.e. there will be no duplicates.

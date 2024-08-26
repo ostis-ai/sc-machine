@@ -375,7 +375,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
       if (subscriptionElementAddr == ScKeynodes::action_initiated)
       {
         ScAddr const & actionAddr = otherElementAddr;
-        return agent.m_memoryCtx.UseAction(actionAddr);
+        return agent.m_memoryCtx.ConvertToAction(actionAddr);
       }
 
       return agent.m_memoryCtx.CreateAction(agent.GetActionClass()).Initiate();

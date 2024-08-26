@@ -293,7 +293,7 @@ TEST_F(ScTemplateCommonTest, a_a_a)
   // create template
   ScAddr const templStructAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(templStructAddr.IsValid());
-  ScStructure templStruct = m_ctx->UseStructure(templStructAddr);
+  ScStructure templStruct = m_ctx->ConvertToStructure(templStructAddr);
 
   templStruct << _structAddr << _apiai_locationAddr << _apiai_speechAddr << _langAddr << rrel_locationAddr
               << nrel_translationAddr << _struct_locationEdgeAddr << _rrel_locationEdgeAddr << _struct_speechEdgeAddr

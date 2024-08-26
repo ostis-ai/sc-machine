@@ -297,7 +297,7 @@ public:
    * @param actionAddr Address of the action.
    * @return ScAction object.
    */
-  _SC_EXTERN ScAction UseAction(ScAddr const & actionAddr);
+  _SC_EXTERN ScAction ConvertToAction(ScAddr const & actionAddr);
 
   /*!
    * @brief Creates a set.
@@ -310,7 +310,7 @@ public:
    * @param setAddr An address of the set.
    * @return ScSet object.
    */
-  _SC_EXTERN ScSet UseSet(ScAddr const & setAddr);
+  _SC_EXTERN ScSet ConvertToSet(ScAddr const & setAddr);
 
   /*!
    * @brief Creates a structure.
@@ -323,7 +323,7 @@ public:
    * @param structureAddr An address of the set.
    * @return ScStructure object.
    */
-  _SC_EXTERN ScStructure UseStructure(ScAddr const & structureAddr);
+  _SC_EXTERN ScStructure ConvertToStructure(ScAddr const & structureAddr);
 
 protected:
   /*!

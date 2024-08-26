@@ -119,7 +119,8 @@ class MyAgent : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessCons
 {
 public:
   // Here you should specify class of actions which the given agent performs. 
-  // This overriding is required.
+  // Here `GetActionClass` overrides `GetActionClass` 
+  // in `ScAgent` class. This overriding is required.
   ScAddr GetActionClass() const override;
   // Here you should implement program of the given agent. 
   // This overriding is required.
@@ -244,7 +245,9 @@ public:
 
 There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
 
-This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should inherit your agent class from these classes, not from the ScAgentAbstract class (see documentation above).
+This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should inherit your agent class from these classes, not from the `ScAgentAbstract` class (see documentation above).
+
+You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgentAbstract` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
 
 ---
 
@@ -375,10 +378,12 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
   // Some logic...
  
   action.FormResult(foundAddr1, generatedAddr1, ...); 
-  // Or you can use UpdateResult.
+  // Or you can use `UpdateResult` method.
   return action.FinishSuccessfully();
 }
 ```
+
+To learn more about methods of `ScAction` class, see [**C++ Actions API**](actions.md).
 
 ```cpp
 ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
@@ -479,7 +484,7 @@ ScAddr MyAgent::GetEventSubscriptionElement() const
 
 #### **GetInitiationCondition**
 
-It gets initiation condition for agent of this class. This method will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have initiation condition.
+It gets initiation condition for agent of this class. Initiation condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base before the agent performs an action. This method will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have initiation condition.
 
 You can redefine this method in your agent class.
 
@@ -550,7 +555,7 @@ sc_bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
 
 #### **GetResultCondition**
 
-It gets result condition for agent of this class. This method will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have result condition.
+It gets result condition for agent of this class. Result condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base after the agent has performed an action. This method will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have result condition.
 
 You can redefine this method in your agent class.
 
@@ -624,7 +629,7 @@ sc_bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 - [Is it possible to subscribe an agent for more than one sc-event?](#is-it-possible-to-subscribe-an-agent-for-more-than-one-sc-event)
 - [What happens if I don't specify full initiation condition in agent class?](#what-happens-if-i-dont-specify-full-initiation-condition-in-agent-class)
 - [Can there be an agent without primary initiation condition?](#can-there-be-an-agent-without-primary-initiation-condition)
-- [Is it possible to create object of agent`s and call any of class methods?](#is-it-possible-to-create-object-of-agents-and-call-any-of-class-methods)
+- [Is it possible to create object of `ScAgent` class and call any of class methods?](#is-it-possible-to-create-object-of-scagent-class-and-call-any-of-class-methods)
 - [Is agent's call protocol preserved?](#is-agents-call-protocol-preserved)
 - [What is advisable to do as an agent and what is not?](#what-is-advisable-to-do-as-an-agent-and-what-is-not)
 - [What's the purpose of result condition? What is it used for?](#whats-the-purpose-of-result-condition-what-is-it-used-for)
@@ -633,7 +638,9 @@ sc_bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 
 Future versions of the sc-machine will implement complex sc-events. Complex sc-events will be a set of elementary events. It will be possible to subscribe agents to such sc-events. 
 
-If it is a question of whether it is possible to subscribe the one and the same agent to two different elementary sc-events, it is better not to do it. Each agent should be subscribed to only one type of sc-event. If there is a subscribed to sign an agent to multiple sc-event types, you are probably doing something wrong.
+If it is a question of whether it is possible to subscribe the one and the same agent to two different elementary sc-events, it is better not to do it. Each agent should be subscribed to only one type of sc-event. If you need to subscribe an agent to multiple types of sc-events, you're probably doing something wrong.
+
+Consider an example. Suppose you want to implement an agent to recalculate power of a set, which will react when a sc-arc is removed from the set and when a sc-arc is added from it. You should not do such an agent. It is better to split these two logics into two independent objects: an agent that will react when a sc-arc is erased from the specified set and an agent that will react when a sc-arc is generated from this set.
 
 ### **What happens if I don't specify full initiation condition in agent class?**
 
@@ -643,7 +650,7 @@ We allow not specifying full initiation condition for agents. However, remember,
 
 No, agents can't be without primary initiation condition. Agents react to events in sc-memory. A primary initiation condition indicates which sc-event agent is registered for, i.e. when agent will be called.
 
-### **Is it possible to create object of agent`s and call any of class methods?**
+### **Is it possible to create object of `ScAgent` class and call any of class methods?**
 
 Yes, you can call a method of agent class through object of that class. But remember that you can't create necessary arguments for all methods.
 

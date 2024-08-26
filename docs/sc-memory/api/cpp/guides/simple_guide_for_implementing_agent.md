@@ -167,7 +167,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
   // To calculate power of the set, we can traverse all accessory constant 
   // positive permanents arcs from the set and count number of these arcs. 
-  // But, in any task, the presence of NON-factors must be considered, 
+  // But, in any problem, the presence of NON-factors must be considered, 
   // but this is omitted here.
   size_t setPower = 0;
   ScIterator3Ptr const it3 = m_memoryCtx.Iterator3( 
@@ -196,13 +196,13 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // to indicate that the agent's performing of action is complete:
   // - Method `FinishSuccessfully` indicates that action was performed 
   // by agent successfully (sets class `action_finished_successfully`). 
-  // It means that the agent solved specified task.
+  // It means that the agent solved specified problem.
   // - Method `FinishUnsuccessfully` indicates that action was performed 
   // by agent unsuccessfully (sets class `action_finished_unsuccessfully`). 
-  // It means that the agent didn't solved specified task.
+  // It means that the agent didn't solved specified problem.
   // - Method `FinishWithError` indicates that action was performed by agent
   // with error (sets class `action_finished_with_error`). 
-  // It means that some incorrect situation in knowledge base occured.
+  // It means that some incorrect situation was occurred in knowledge base.
   // All these methods return objects of `ScResult` class. 
   // You can’t create object of ScResult via constructor, because it is private.
   return action.FinishSuccessfully();

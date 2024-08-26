@@ -8,13 +8,13 @@ This API provides functionality to handle sc-actions.
 
 ## **What is action?**
 
-All actions are processes. Any process is performed by some subject. Each action can be defined as a process of solving some task, i.e. as a process of achieving the given goal with the given conditions. Each action denotes some transformation carried out in the external environment or in the memory of some system.
+All actions are processes. Any process is performed by some subject. Each action can be defined as a process of solving some problem, i.e. as a process of achieving the given goal with the given conditions. Each action denotes some transformation carried out in the external environment or in the memory of some system.
 
-Like an agent, an action has a specification. This specification includes: class, arguments, state, result. The specification of an action is called a problem (task).
+Like an agent, an action has a specification. This specification includes: class, arguments, state, result. The specification of an action is called a problem (problem).
 
 ## **ScAction**
 
-The sc-machine provides `ScAction` class to handle actions in sc-memory. You can't use constructors of this class, because they are private. Use `ScAgentContext` to create action with provided class or use the existing one.
+The sc-machine provides `ScAction` class to handle actions in sc-memory. You can't use constructors of this class, because they are private. Use `ScAgentContext` to create action with provided class or use the existing one. All methods of this class work directly with the knowledge base, there is no local cache.
 
 ```cpp
 // Find action class and create action.
@@ -24,9 +24,9 @@ ScAction action = context.CreateAction(actionClassAddr);
 ```
 
 ```cpp
-// Or find action and use it.
+// Or find action and convert it to object of `ScAction` class.
 ...
-ScAction action = context.UseAction(actionAddr);
+ScAction action = context.ConvertToAction(actionAddr);
 ...
 ```
 
@@ -347,12 +347,8 @@ All these methods return object of `ScResult`. You should return it in agent pro
 
 ### **What is difference between `ScAction` and `ScEvent`?**
 
-`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to solve specified problem (task). `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are performed by agents. Emergence of events in sc-memory leads to generation of new processes.
+`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to solve specified problem (problem). `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are performed by agents. Emergence of events in sc-memory leads to generation of new processes.
 
 ### **What if I want to set some edge as action result and not structure with this edge?**
 
 You're not allowed to do this. Action result must be a sc-structure. Action result is a situation that describes how action was performed. Situation is a sc-structure.
-
-### **What's the difference between `ScSet` and `ScStructure`?**
-
-`ScSet` is a class that represents sc-set. It is an entity that links one or more entities into a whole. `ScStructure` is a class represents sc-structure. It is a set of sc-elements, which includes sc-connections or sc-structures linking these sc-elements. Removal of one of sc-elements of the sc-structure may lead to violation of the integrity of this sc-structure. `ScSet` and `ScStructure`  do not differ functionally. `ScStructure` is a stricter representation of sc-set.

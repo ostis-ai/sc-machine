@@ -38,7 +38,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
   ScTemplateLoadContext ctx;
   ctx.HelperLoadTemplate(templ, templAddr);
 
-  ScStructure templateStruct = m_ctx->UseStructure(templAddr);
+  ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   {
     EXPECT_TRUE(templateStruct.HasElement(testClassAddr));
     EXPECT_TRUE(templateStruct.HasElement(testRelationAddr));
@@ -136,7 +136,7 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
   ctx.HelperLoadTemplate(templ, templAddr, params);
-  ScStructure templateStruct = m_ctx->UseStructure(templAddr);
+  ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   EXPECT_TRUE(templateStruct.HasElement(testObject));
 
   ScTemplate builtTemplate;

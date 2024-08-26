@@ -16,7 +16,7 @@ TEST_F(ScActionTest, CreateActionAndGetClass)
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 
-TEST_F(ScActionTest, UseActionAndGetClass)
+TEST_F(ScActionTest, ConvertToActionAndGetClass)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, testClassAddr);
@@ -24,7 +24,7 @@ TEST_F(ScActionTest, UseActionAndGetClass)
   ScAddr const & actionAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
 
-  ScAction action = m_ctx->UseAction(actionAddr);
+  ScAction action = m_ctx->ConvertToAction(actionAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 

@@ -154,7 +154,7 @@ ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)
   return action;
 }
 
-ScAction ScAgentContext::UseAction(ScAddr const & actionAddr)
+ScAction ScAgentContext::ConvertToAction(ScAddr const & actionAddr)
 {
   ScAction action{this, actionAddr};
   return action;
@@ -167,7 +167,7 @@ ScSet ScAgentContext::CreateSet()
   return set;
 }
 
-ScSet ScAgentContext::UseSet(ScAddr const & setAddr)
+ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr)
 {
   ScSet set{this, setAddr};
   return set;
@@ -180,7 +180,7 @@ ScStructure ScAgentContext::CreateStructure()
   return structure;
 }
 
-ScStructure ScAgentContext::UseStructure(ScAddr const & structureAddr)
+ScStructure ScAgentContext::ConvertToStructure(ScAddr const & structureAddr)
 {
   ScStructure structure{this, structureAddr};
   return structure;

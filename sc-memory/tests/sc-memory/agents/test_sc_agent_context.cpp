@@ -30,7 +30,7 @@ TEST_F(ScAgentContextTest, CreateSet)
   ScSet set = m_ctx->CreateSet();
   EXPECT_EQ(m_ctx->GetElementType(set), ScType::NodeConst);
 
-  ScSet set2 = m_ctx->UseSet(set);
+  ScSet set2 = m_ctx->ConvertToSet(set);
   EXPECT_EQ(set, set2);
 }
 
@@ -39,6 +39,6 @@ TEST_F(ScAgentContextTest, CreateStruct)
   ScStructure structure = m_ctx->CreateStructure();
   EXPECT_EQ(m_ctx->GetElementType(structure), ScType::NodeConstStruct);
 
-  ScSet structure2 = m_ctx->UseStructure(structure);
+  ScSet structure2 = m_ctx->ConvertToStructure(structure);
   EXPECT_EQ(structure, structure2);
 }

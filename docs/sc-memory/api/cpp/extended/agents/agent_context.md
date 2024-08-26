@@ -301,12 +301,12 @@ ScAction action = context.CreateAction(actionClassAddr);
 ...
 ```
 
-### **UseAction**
+### **ConvertToAction**
 
 ```cpp
-// Or find action and use it.
+// Or find action and convert it to object of `ScAction` class.
 ...
-ScAction action = context.UseAction(actionAddr);
+ScAction action = context.ConvertToAction(actionAddr);
 ...
 ```
 
@@ -321,12 +321,12 @@ ScSet set = context.CreateSet();
 ...
 ```
 
-### **UseSet**
+### **ConvertToSet**
 
 ```cpp
-// Or find set and use it.
+// Or find set and convert it to object of `ScSet` class.
 ...
-ScSet set = context.UseSet(setAddr);
+ScSet set = context.ConvertToSet(setAddr);
 ...
 ```
 
@@ -339,13 +339,13 @@ ScStructure structure = context.CreateStructure();
 ...
 ```
 
-### **UseStructure**
+### **ConvertToStructure**
 
 
 ```cpp
-// Or find set and use it.
+// Or find structure and convert it to object of `ScSet` class.
 ...
-ScSet set = context.UseStructure(structureAddr);
+ScStructure structure = context.ConvertToStructure(structureAddr);
 ...
 ```
 
@@ -404,8 +404,12 @@ context.UnsubscribeAgent<MyAgent>(nodeAddr1, nodeAddr2);
 
 ### **When ScMultiset will be implemented?**
 
-Now, `ScSet` and `ScStructure` are implemented only. `ScSet` stores unique sc-elements. `ScMultiset` will be implemented later.
+Now, `ScSet` and `ScStructure` are implemented only. `ScSet` stores unique sc-elements. `ScMultiset` will be implemented soon.
 
 ### **What do I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?**
 
 You can subscribe an agent to sc-event of generating sc-connector -- `ScEventGeneratingConnector`. Then the agent will be triggered on incoming and outgoing sc-arcs.
+
+### **What's the difference between `ScSet` and `ScStructure`?**
+
+`ScSet` is a class that represents sc-set. It is an entity that links one or more entities into a whole. `ScStructure` is a class represents sc-structure. It is a set of sc-elements, which includes sc-connections or sc-structures linking these sc-elements. Removal of one of sc-elements of the sc-structure may lead to violation of the integrity of this sc-structure. `ScSet` and `ScStructure`  do not differ functionally. `ScStructure` is a stricter representation of sc-set.

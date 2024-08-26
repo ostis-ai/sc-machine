@@ -6,7 +6,7 @@
 
 This API provides functionality to define keynodes on C++.
 
-A keynode is a key sc-element used by some program (agent) during its operation. Typically, keynodes can be classes and relations, which are sc-elements that program (agent) uses to find constructions in sc-memory or create new ones. However, keynodes can be any sc-elements, even connectors between sc-elements.
+A keynode is a key sc-element used by some program (agent) during its operation. Typically, keynodes can be classes and relations, which are sc-elements that program (agent) uses to find constructions in sc-memory or create new ones. However, keynodes can be any sc-elements (incl. connectors between sc-elements).
 
 ## **ScKeynode**
 
