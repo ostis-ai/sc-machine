@@ -69,7 +69,7 @@ ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const 
   ScIterator5Ptr const it = m_ctx->Iterator5(
       *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
 
-  if (it->Next())
+  while (it->Next())
     m_ctx->EraseElement(it->Get(1));
 
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, argumentAddr);
@@ -97,7 +97,7 @@ ScStructure ScAction::GetResult() noexcept(false)
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << GetClass().Hash() << "` has not result structure.");
+        "Action `" << this->Hash() << "` with class `" << GetClass().Hash() << "` does not have result structure.");
 
   m_resultAddr = it5->Get(2);
   return m_ctx->UseStructure(m_resultAddr);

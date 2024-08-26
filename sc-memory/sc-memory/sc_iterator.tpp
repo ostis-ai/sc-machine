@@ -130,7 +130,7 @@ ScAddr ScIterator3<ParamType1, ParamType2, ParamType3>::Get(size_t index) const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " because sc-memory context has not read permissions");
+            + " because sc-memory context does not have read permissions");
   default:
     break;
   }
@@ -214,7 +214,7 @@ ScAddr ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " because sc-memory context has not read permissions");
+            + " because sc-memory context does not have read permissions");
   default:
     break;
   }

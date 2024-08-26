@@ -60,9 +60,9 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetEventClass() const
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Abstract sc-agent `"
+        "Abstract sc-agent for agent implementation `"
             << this->GetName()
-            << "` has not primary initiation condition and result. Check that abstract sc-agent has specified "
+            << "` does not have primary initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
   return m_memoryCtx.GetEdgeSource(it5->Get(2));
@@ -80,9 +80,9 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetEventSubscriptionElement() cons
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Abstract sc-agent `"
+        "Abstract sc-agent for agent implementation `"
             << this->GetName()
-            << "` has not primary initiation condition and result. Check that abstract sc-agent has specified "
+            << "` does not have primary initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
   return m_memoryCtx.GetEdgeTarget(it5->Get(2));
@@ -101,7 +101,7 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetActionClass() const
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Abstract sc-agent `" << this->GetName()
-                              << "` has not action class. Check that abstract sc-agent has specified "
+                              << "` does not have action class. Check that abstract sc-agent has specified "
                                  "relation `nrel_sc_agent_action_class`.");
 
   return it5->Get(2);
@@ -128,9 +128,9 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetInitiationCondition() const
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Abstract sc-agent `"
+        "Abstract sc-agent for agent implementation `"
             << this->GetName()
-            << "` has not initiation condition and result. Check that abstract sc-agent has specified "
+            << "` does not have initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
   return m_memoryCtx.GetEdgeSource(it5->Get(2));
@@ -181,9 +181,9 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetResultCondition() const
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Abstract sc-agent `"
+        "Abstract sc-agent for agent implementation `"
             << this->GetName()
-            << "` has not initiation condition and result. Check that abstract sc-agent has specified "
+            << "` does not have initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
   return m_memoryCtx.GetEdgeTarget(it5->Get(2));
@@ -258,7 +258,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Not able to subscribe agent `" << agentName << "` to event `" << eventName
-                                          << "because subscription sc-element with address `"
+                                          << "because subscription sc-element with address hash `"
                                           << subscriptionElementAddr.Hash() << "` is not valid.");
     if (subscriptionsMap.find(subscriptionElementAddr) != subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
@@ -309,7 +309,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
   auto const & agentsMapIt = ScAgentAbstract<TScEvent>::m_events.find(agentName);
   if (agentsMapIt == ScAgentAbstract<TScEvent>::m_events.cend())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Agent `" << agentName << "` has not been subscribed to any events yet.");
+        utils::ExceptionInvalidState, "Agent `" << agentName << "` does not have been subscribed to any events yet.");
 
   ScAddrVector subscriptionVector{subscriptionAddrs...};
   // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
@@ -326,7 +326,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "Not able to unsubscribe agent `" << agentName << "` from event `" << eventClassName
-                                              << "because subscription sc-element with address `"
+                                              << "because subscription sc-element with address hash `"
                                               << subscriptionElementAddr.Hash() << "` is not valid.");
     }
 
@@ -334,7 +334,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
     if (it == subscriptionsMap.cend())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent `" << agentName << "` has not been subscribed to event `" << eventClassName << "("
+          "Agent `" << agentName << "` does not have been subscribed to event `" << eventClassName << "("
                     << subscriptionElementAddr.Hash() << ")` yet.");
 
     SC_LOG_INFO(
@@ -353,23 +353,23 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
 
   static_assert(
-      should_be_no_more_than_one_override_initiation_condition_method_for<TScAgent>::value,
+      HasNoMoreThanOneOverride<TScAgent>::InitiationConditionMethod::value,
       "TScAgent must have no more than one override method from methods: `GetInitiationCondition`, "
       "`GetInitiationConditionTemplate` "
       "and `CheckInitiationCondition`.");
 
   static_assert(
-      should_be_no_more_than_one_override_result_condition_method_for<TScAgent>::value,
+      HasNoMoreThanOneOverride<TScAgent>::ResultConditionMethod::value,
       "TScAgent must have no more than one override method from methods: `GetResultCondition`, "
       "`GetResultConditionTemplate` and "
       "`CheckResultCondition`.");
 
   static_assert(
-      should_be_one_override_do_program_for<TScAgent>::value, "TScAgent must have one override `DoProgram` method.");
+      HasOneOverride<TScAgent>::DoProgramMethod::value, "TScAgent must have one override `DoProgram` method.");
 
   return [agentImplementationAddr](TScEvent const & event) -> void
   {
-    auto const & CreateAction = [](TScEvent const & event, ScAgent & agent) -> ScAction
+    auto const & ResolveAction = [](TScEvent const & event, ScAgent & agent) -> ScAction
     {
       auto [subscriptionElementAddr, _, otherElementAddr] = event.GetTriple();
       if (subscriptionElementAddr == ScKeynodes::action_initiated)
@@ -387,58 +387,24 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
 
     agent.SetInitiator(event.GetUser());
     agent.SetImplementation(agentImplementationAddr);
-    if (ScMemory::ms_globalContext->HelperCheckEdge(
-            ScKeynodes::action_deactivated, agent.GetActionClass(), ScType::EdgeAccessConstPosPerm))
+    if (agent.IsActionClassDeactivated())
     {
       SC_LOG_WARNING(
-          "Agent `" << agentName << "` was not started because actions with class `" << agent.GetActionClass().Hash()
+          "Agent `" << agentName << "` was finished because actions with class `" << agent.GetActionClass().Hash()
                     << "` are deactivated.");
       return;
     }
 
-    ScAction action = CreateAction(event, agent);
-
-    if constexpr (std::is_same<
-                      decltype(&TScAgent::CheckInitiationCondition),
-                      decltype(&ScAgent::CheckInitiationCondition)>::value)
+    ScAction action = ResolveAction(event, agent);
+    if (!agent.template ValidateInitiationCondition<TScAgent>(event))
     {
-      ScTemplate initiationConditionTemplate;
-      if constexpr (std::is_same<
-                        decltype(&TScAgent::GetInitiationConditionTemplate),
-                        decltype(&ScAgent::GetInitiationConditionTemplate)>::value)
-      {
-        if (agent.MayBeSpecified())
-        {
-          ScAddr const & initiationConditionAddr = agent.GetInitiationCondition();
-          initiationConditionTemplate = agent.BuildCheckTemplate(event, initiationConditionAddr);
-        }
-      }
-      else
-      {
-        initiationConditionTemplate = agent.GetInitiationConditionTemplate();
-      }
-
-      ScTemplateSearchResult searchResult;
-      if (!initiationConditionTemplate.IsEmpty()
-          && !agent.m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult))
-      {
-        SC_LOG_WARNING(
-            "Agent `" << agentName << "` was finished because its initiation condition was tested unsuccessfully.");
-        return;
-      }
-    }
-    else
-    {
-      if (!agent.CheckInitiationCondition(event))
-      {
-        SC_LOG_WARNING(
-            "Agent `" << agentName << "` was finished because its initiation condition was tested unsuccessfully.");
-        return;
-      }
+      SC_LOG_WARNING(
+          "Agent `" << agentName << "` was finished because its initiation condition was checked unsuccessfully.");
+      return;
     }
 
     ScResult result;
-    if constexpr (is_override_do_program_with_event_argument<TScAgent>::value)
+    if constexpr (HasOverride<TScAgent>::DoProgramWithEventArgument::value)
       result = agent.DoProgram(event, action);
     else
       result = agent.DoProgram(action);
@@ -450,131 +416,198 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
     else
       SC_LOG_INFO("Agent `" << agentName << "` finished with error");
 
-    if constexpr (std::is_same<decltype(&TScAgent::CheckResultCondition), decltype(&ScAgent::CheckResultCondition)>::
-                      value)
+    if (!agent.template ValidateResultCondition<TScAgent>(event, action))
     {
-      ScTemplate resultConditionTemplate;
-      if constexpr (std::is_same<
-                        decltype(&TScAgent::GetResultConditionTemplate),
-                        decltype(&ScAgent::GetResultConditionTemplate)>::value)
-      {
-        if (agent.MayBeSpecified())
-        {
-          ScAddr const & resultConditionAddr = agent.GetResultCondition();
-          resultConditionTemplate = agent.BuildCheckTemplate(event, resultConditionAddr);
-        }
-      }
-      else
-      {
-        resultConditionTemplate = agent.GetResultConditionTemplate();
-      }
-
-      ScTemplateSearchResult searchResult;
-      if (!resultConditionTemplate.IsEmpty()
-          && !agent.m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult))
-      {
-        SC_LOG_WARNING("Result condition of agent `" << agentName << "` tested unsuccessfully.");
-        return;
-      }
+      SC_LOG_WARNING("Result condition of agent `" << agentName << "` checked unsuccessfully.");
+      return;
     }
-    else
-    {
-      if (!agent.CheckResultCondition(event, action))
-      {
-        SC_LOG_WARNING("Result condition of agent `" << agentName << "` tested unsuccessfully.");
-        return;
-      }
-    }
-
-    return;
   };
+}
+
+template <class TScEvent, class TScContext>
+bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated()
+{
+  return ScMemory::ms_globalContext->HelperCheckEdge(
+      ScKeynodes::action_deactivated, this->GetActionClass(), ScType::EdgeAccessConstPosPerm);
+}
+
+template <class TScEvent, class TScContext>
+template <class TScAgent>
+bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const & event)
+{
+  if constexpr (HasOverride<TScAgent>::CheckInitiationCondition::value)
+    return this->CheckInitiationCondition(event);
+
+  ScTemplate initiationConditionTemplate;
+  if constexpr (HasOverride<TScAgent>::GetInitiationConditionTemplate::value)
+  {
+    initiationConditionTemplate = this->GetInitiationConditionTemplate();
+  }
+  else if constexpr (HasOverride<TScAgent>::GetInitiationCondition::value)
+  {
+    ScAddr const & initiationConditionAddr = this->GetInitiationCondition();
+    initiationConditionTemplate = BuildCheckTemplate(event, initiationConditionAddr);
+  }
+  else if (this->MayBeSpecified())
+  {
+    ScAddr const & initiationConditionAddr = this->GetInitiationCondition();
+    initiationConditionTemplate = BuildCheckTemplate(event, initiationConditionAddr);
+  }
+
+  if (initiationConditionTemplate.IsEmpty())
+    return true;
+
+  ScTemplateSearchResult searchResult;
+  return this->m_memoryCtx.HelperSearchTemplate(initiationConditionTemplate, searchResult);
+}
+
+template <class TScEvent, class TScContext>
+template <class TScAgent>
+bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & event, ScAction & action)
+{
+  if constexpr (HasOverride<TScAgent>::CheckResultCondition::value)
+    return this->CheckResultCondition(event, action);
+
+  ScTemplate resultConditionTemplate;
+  if constexpr (HasOverride<TScAgent>::GetResultConditionTemplate::value)
+  {
+    resultConditionTemplate = this->GetResultConditionTemplate();
+  }
+  else if constexpr (HasOverride<TScAgent>::GetResultCondition::value)
+  {
+    ScAddr const & resultConditionAddr = this->GetResultCondition();
+    resultConditionTemplate = BuildCheckTemplate(event, resultConditionAddr);
+  }
+  else if (this->MayBeSpecified())
+  {
+    ScAddr const & resultConditionAddr = this->GetResultCondition();
+    resultConditionTemplate = BuildCheckTemplate(event, resultConditionAddr);
+  }
+
+  if (resultConditionTemplate.IsEmpty())
+    return true;
+
+  ScTemplateSearchResult searchResult;
+  return this->m_memoryCtx.HelperSearchTemplate(resultConditionTemplate, searchResult);
 }
 
 template <class TScEvent, class TScContext>
 ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr)
 {
-  ScAddr const & eventClassAddr = event.GetEventClass();
   auto [_eventSubscriptionElementAddr, _, _otherElementAddr] = event.GetTriple();
   ScAddr const & eventSubscriptionElementAddr = _eventSubscriptionElementAddr;
   ScAddr const & otherElementAddr = _otherElementAddr;
 
-  size_t otherVarPosition = 0u;
-
-  ScTemplateParams params;
-  auto const & CheckIteratorAndUpdateParams = [&](ScIterator5Ptr const & it5)
+  auto const & GetIteratorForEventTripleWithOutgoingArc = [&]() -> ScIterator5Ptr
   {
-    ScIterator3Ptr const it3 =
-        this->m_memoryCtx.Iterator3(checkTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElementAddr);
-    if (it3->Next())
+    return this->m_memoryCtx.Iterator5(
+        eventSubscriptionElementAddr, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+  };
+  auto const & GetIteratorForEventTripleWithIncomingArc = [&]() -> ScIterator5Ptr
+  {
+    return this->m_memoryCtx.Iterator5(
+        ScType::Unknown, ScType::Var, eventSubscriptionElementAddr, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
+  };
+
+  auto const & GetIteratorForEventTripleWithEdge = GetIteratorForEventTripleWithOutgoingArc;
+
+  auto const & GetIteratorForEventTripleWithConnectorWithOutgoingDirection = GetIteratorForEventTripleWithOutgoingArc;
+  auto const & GetIteratorForEventTripleWithConnectorWithIncomingDirection = GetIteratorForEventTripleWithOutgoingArc;
+
+  ScAddrToValueUnorderedMap<std::tuple<std::function<ScIterator5Ptr()>, size_t>> eventToEventTripleIterators = {
+      {ScKeynodes::sc_event_generate_incoming_arc, {GetIteratorForEventTripleWithIncomingArc, 0u}},
+      {ScKeynodes::sc_event_erase_incoming_arc, {GetIteratorForEventTripleWithIncomingArc, 0u}},
+      {ScKeynodes::sc_event_generate_outgoing_arc, {GetIteratorForEventTripleWithOutgoingArc, 2u}},
+      {ScKeynodes::sc_event_erase_outgoing_arc, {GetIteratorForEventTripleWithOutgoingArc, 2u}},
+      {ScKeynodes::sc_event_generate_edge, {GetIteratorForEventTripleWithEdge, 2u}},
+      {ScKeynodes::sc_event_erase_edge, {GetIteratorForEventTripleWithEdge, 2u}},
+      {ScKeynodes::sc_event_generate_connector, {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}},
+      {ScKeynodes::sc_event_erase_connector, {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}}};
+
+  ScAddr const & eventClassAddr = event.GetEventClass();
+  auto const & iteratorIt = eventToEventTripleIterators.find(eventClassAddr);
+  if (iteratorIt == eventToEventTripleIterators.cend())
+  {
+    SC_LOG_WARNING(
+        "Event class for agent class `"
+        << this->GetName()
+        << "` is unknown. It is impossible to check initiation condition (or result condition) template.");
+    return ScTemplate();
+  }
+
+  auto [getIteratorForEventTriple, otherElementPosition] = iteratorIt->second;
+  ScIterator5Ptr eventTripleIterator = getIteratorForEventTriple();
+  bool checkTemplateParamsIsGenerated = false;
+  ScTemplateParams checkTemplateParams;
+  if (eventTripleIterator->IsValid())
+    checkTemplateParamsIsGenerated = GenerateCheckTemplateParams(
+        checkTemplateAddr,
+        eventSubscriptionElementAddr,
+        otherElementAddr,
+        otherElementPosition,
+        eventTripleIterator,
+        checkTemplateParams);
+
+  if (checkTemplateParamsIsGenerated
+      && (eventClassAddr == ScKeynodes::sc_event_generate_connector
+          || eventClassAddr == ScKeynodes::sc_event_erase_connector))
+  {
+    eventTripleIterator = GetIteratorForEventTripleWithConnectorWithIncomingDirection();
+    if (eventTripleIterator->IsValid())
+      GenerateCheckTemplateParams(
+          checkTemplateAddr,
+          eventSubscriptionElementAddr,
+          otherElementAddr,
+          otherElementPosition,
+          eventTripleIterator,
+          checkTemplateParams);
+  }
+
+  ScTemplate checkTemplate;
+  this->m_memoryCtx.HelperBuildTemplate(checkTemplate, checkTemplateAddr, checkTemplateParams);
+  return checkTemplate;
+}
+
+template <class TScEvent, class TScContext>
+bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
+    ScAddr const & checkTemplateAddr,
+    ScAddr const & eventSubscriptionElementAddr,
+    ScAddr const & otherElementAddr,
+    size_t otherElementPosition,
+    ScIterator5Ptr const eventTripleIterator,
+    ScTemplateParams & checkTemplateParams)
+{
+  ScTemplateParams params;
+  ScIterator3Ptr const subscriptionElementIterator =
+      this->m_memoryCtx.Iterator3(checkTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElementAddr);
+  if (subscriptionElementIterator->Next())
+  {
+    if (eventTripleIterator->Next())
     {
-      if (it5->Next())
-      {
-        ScAddr const & otherVarAddr = it5->Get(otherVarPosition);
-        if (this->m_memoryCtx.GetElementType(otherVarAddr).IsVar() && otherVarAddr != otherElementAddr)
-          params.Add(it5->Get(otherVarPosition), otherElementAddr);
-      }
-      else
-      {
-        SC_LOG_WARNING(
-            "Initiation condition (or result) template of agent class `"
-            << this->GetName()
-            << "` checks initiated sc-event incorrectly. May be types of sc-elements "
-               "in initiation condition or result template are not correct. Check it.");
-      }
+      ScAddr const & otherVarAddr = eventTripleIterator->Get(otherElementPosition);
+      if (this->m_memoryCtx.GetElementType(otherVarAddr).IsVar() && otherVarAddr != otherElementAddr)
+        params.Add(otherElementPosition, otherElementAddr);
     }
     else
     {
       SC_LOG_WARNING(
-          "Initiation condition (or result) template of agent class `"
+          "Initiation condition (or result condition) template of agent class `"
           << this->GetName()
-          << "` doesn't check initiated sc-event. Check that agent initiation "
-             "condition and result templates are correct.");
+          << "` checks initiated sc-event incorrectly. May be types of sc-elements "
+             "in initiation condition or result template are not correct.");
+      return false;
     }
-  };
-
-  ScIterator5Ptr arcOrEdgeIt5;
-  if (eventClassAddr == ScKeynodes::sc_event_generate_incoming_arc
-      || eventClassAddr == ScKeynodes::sc_event_erase_incoming_arc)
-  {
-    arcOrEdgeIt5 = this->m_memoryCtx.Iterator5(
-        ScType::Unknown, ScType::Var, eventSubscriptionElementAddr, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
   }
-  else if (
-      eventClassAddr == ScKeynodes::sc_event_generate_outgoing_arc
-      || eventClassAddr == ScKeynodes::sc_event_erase_outgoing_arc
-      || eventClassAddr == ScKeynodes::sc_event_generate_edge || eventClassAddr == ScKeynodes::sc_event_erase_edge)
-  {
-    arcOrEdgeIt5 = this->m_memoryCtx.Iterator5(
-        eventSubscriptionElementAddr, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
-
-    otherVarPosition = 2u;
-  }
-
-  ScIterator5Ptr connectorIt5;
-  ScIterator5Ptr reverseConnectorIt5;
-  if (eventClassAddr == ScKeynodes::sc_event_generate_connector
-      || eventClassAddr == ScKeynodes::sc_event_erase_connector)
-  {
-    connectorIt5 = this->m_memoryCtx.Iterator5(
-        ScType::Unknown, ScType::Var, eventSubscriptionElementAddr, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
-    reverseConnectorIt5 = this->m_memoryCtx.Iterator5(
-        eventSubscriptionElementAddr, ScType::Var, ScType::Unknown, ScType::EdgeAccessConstPosPerm, checkTemplateAddr);
-
-    otherVarPosition = 2u;
-  }
-
-  if (arcOrEdgeIt5 && arcOrEdgeIt5->IsValid())
-    CheckIteratorAndUpdateParams(arcOrEdgeIt5);
   else
   {
-    if (connectorIt5 && connectorIt5->IsValid())
-      CheckIteratorAndUpdateParams(connectorIt5);
+    SC_LOG_WARNING(
+        "Initiation condition (or result condition) template of agent class `"
+        << this->GetName()
+        << "` doesn't check initiated sc-event. Check that agent initiation "
+           "condition and result templates are correct.");
 
-    if (reverseConnectorIt5 && reverseConnectorIt5->IsValid())
-      CheckIteratorAndUpdateParams(reverseConnectorIt5);
+    return false;
   }
 
-  ScTemplate templ;
-  this->m_memoryCtx.HelperBuildTemplate(templ, checkTemplateAddr, params);
-  return templ;
+  return true;
 }

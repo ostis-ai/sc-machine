@@ -55,12 +55,14 @@ public:
    *
    * This method searches in knowledge base the following construction
    *
+   * @code
    *             nrel_inclusion
    *                  |
    *                  |
    *                  |
    *                  \/
    * abstract_agent ======> agent_implementation
+   * @endcode
    *
    * and returns `abstract_agent`.
    *
@@ -75,6 +77,7 @@ public:
    *
    * This method searches in knowledge base the following construction
    *
+   * @code
    *   nrel_primary_initiation_condition
    *                  |
    *                  |
@@ -84,6 +87,7 @@ public:
    *                         ||
    *                         \/
    *               event_subscription_element
+   * @endcode
    *
    * and returns `event_class`.
    *
@@ -98,6 +102,7 @@ public:
    *
    * This method searches in knowledge base the following construction
    *
+   * @code
    *   nrel_primary_initiation_condition
    *                  |
    *                  |
@@ -107,6 +112,7 @@ public:
    *                         ||
    *                         \/
    *               event_subscription_element
+   * @endcode
    *
    * and returns `event_subscription_element`.
    *
@@ -117,16 +123,18 @@ public:
   _SC_EXTERN virtual ScAddr GetEventSubscriptionElement() const;
 
   /*!
-   * @brief Gets action class that the agent interpreters.
+   * @brief Gets action class that the agent performs.
    *
    * This method searches in knowledge base the following construction
    *
+   * @code
    *            nrel_sc_agent_action_class
    *                        |
    *                        |
    *                        |
    *                        \/
    * agent_implementation ======> action_class
+   * @endcode
    *
    * and returns `action_class`.
    *
@@ -147,6 +155,7 @@ public:
    *
    * This method searches in knowledge base the following construction
    *
+   * @code
    *   nrel_initiation_condition_and_result
    *                  |
    *                  |
@@ -156,6 +165,7 @@ public:
    *                           ||
    *                           \/
    *                      result_condition
+   * @endcode
    *
    * and returns `initiation_condition`.
    *
@@ -189,7 +199,7 @@ public:
   /*!
    * @brief Gets the result of the agent's execution.
    * @param event An initiated sc-event to which the agent reacted.
-   * @param action A sc-action that the agent interpreters.
+   * @param action A sc-action that the agent performs.
    * @return SC_TRUE if result condition was checked successfully, otherwise SC_FALSE.
    */
   _SC_EXTERN virtual sc_bool CheckResultCondition(TScEvent const & event, ScAction & action);
@@ -199,6 +209,7 @@ public:
    *
    * This method searches in knowledge base the following construction
    *
+   * @code
    *   nrel_initiation_condition_and_result
    *                  |
    *                  |
@@ -208,6 +219,7 @@ public:
    *                           ||
    *                           \/
    *                      result_condition
+   * @endcode
    *
    * and returns `result_condition`.
    *
@@ -227,8 +239,7 @@ protected:
   mutable TScContext m_memoryCtx;
   ScAddr m_agentImplementationAddr;
 
-  static inline std::unordered_map<std::string, std::unordered_map<ScAddr, ScEventSubscription *, ScAddrHashFunc>>
-      m_events;
+  static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_events;
 
   _SC_EXTERN ScAgentAbstract();
 
@@ -272,82 +283,127 @@ class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent, TScContext>
       "TScContext type must be derived from ScAgentContext type.");
   static_assert(std::is_move_constructible<TScContext>::value, "TScContext type must be movable constructible.");
 
-  // Each agent should be have no more than one of three methods working with initiation condition.
   template <typename TScAgent>
-  struct should_be_no_more_than_one_override_initiation_condition_method_for
+  struct HasOverride
   {
-    template <typename T1, typename T2>
-    struct check_override_initiation_condition_method_for
+    struct CheckInitiationCondition
     {
       static constexpr bool value =
-          (!std::is_same<decltype(&T1::CheckInitiationCondition), decltype(&T2::CheckInitiationCondition)>::value
-           + !std::is_same<decltype(&T1::GetInitiationCondition), decltype(&T2::GetInitiationCondition)>::value
-           + !std::is_same<
-               decltype(&T1::GetInitiationConditionTemplate),
-               decltype(&T2::GetInitiationConditionTemplate)>::value)
+          !std::is_same<decltype(&ScAgent::CheckInitiationCondition), decltype(&TScAgent::CheckInitiationCondition)>::
+              value;
+    };
+
+    struct GetInitiationCondition
+    {
+      static constexpr bool value =
+          !std::is_same<decltype(&ScAgent::GetInitiationCondition), decltype(&TScAgent::GetInitiationCondition)>::value;
+    };
+
+    struct GetInitiationConditionTemplate
+    {
+    private:
+      template <typename TBaseScAgent>
+      struct OverrideGetInitiationConditionTemplateFrom
+      {
+        static constexpr bool value = !std::is_same<
+            decltype(&TBaseScAgent::GetInitiationConditionTemplate),
+            decltype(&TScAgent::GetInitiationConditionTemplate)>::value;
+      };
+
+    public:
+      static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
+                                        ? OverrideGetInitiationConditionTemplateFrom<ScActionAgent>::value
+                                        : OverrideGetInitiationConditionTemplateFrom<ScAgent>::value;
+    };
+
+    struct DoProgramWithEventArgument
+    {
+    private:
+      template <typename U>
+      static auto test(int)
+          -> decltype(std::declval<U>().DoProgram(std::declval<typename TScAgent::TEventType const &>(), std::declval<ScAction &>()), std::true_type());
+
+      template <typename>
+      static std::false_type test(...);
+
+    public:
+      static bool const value = decltype(test<TScAgent>(0))::value;
+    };
+
+    struct DoProgramWithoutEventArgument
+    {
+    private:
+      template <typename U>
+      static auto test(int) -> decltype(std::declval<U>().DoProgram(std::declval<ScAction &>()), std::true_type());
+
+      template <typename>
+      static std::false_type test(...);
+
+    public:
+      static bool const value = decltype(test<TScAgent>(0))::value;
+    };
+
+    struct CheckResultCondition
+    {
+      static constexpr bool value =
+          !std::is_same<decltype(&ScAgent::CheckResultCondition), decltype(&TScAgent::CheckResultCondition)>::value;
+    };
+
+    struct GetResultCondition
+    {
+      static constexpr bool value =
+          !std::is_same<decltype(&ScAgent::GetResultCondition), decltype(&TScAgent::GetResultCondition)>::value;
+    };
+
+    struct GetResultConditionTemplate
+    {
+    private:
+      template <typename TBaseScAgent>
+      struct OverrideGetResultConditionTemplateFrom
+      {
+        static constexpr bool value = !std::is_same<
+            decltype(&TBaseScAgent::GetResultConditionTemplate),
+            decltype(&TScAgent::GetResultConditionTemplate)>::value;
+      };
+
+    public:
+      static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
+                                        ? OverrideGetResultConditionTemplateFrom<ScActionAgent>::value
+                                        : OverrideGetResultConditionTemplateFrom<ScAgent>::value;
+    };
+  };
+
+  template <typename TScAgent>
+  struct HasNoMoreThanOneOverride
+  {
+    // Each agent should have no more than one of three methods working with initiation condition.
+    struct InitiationConditionMethod
+    {
+      static constexpr bool value =
+          (HasOverride<TScAgent>::CheckInitiationCondition::value + HasOverride<TScAgent>::GetInitiationCondition::value
+           + HasOverride<TScAgent>::GetInitiationConditionTemplate::value)
           <= 1;
     };
 
-    static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
-                                      ? check_override_initiation_condition_method_for<ScActionAgent, TScAgent>::value
-                                      : check_override_initiation_condition_method_for<ScAgent, TScAgent>::value;
-  };
-
-  // Each agent should be have no more than one of three methods working with result condition.
-  template <typename TScAgent>
-  struct should_be_no_more_than_one_override_result_condition_method_for
-  {
-    template <typename T1, typename T2>
-    struct check_override_result_condition_method_for
+    // Each agent should have no more than one of three methods working with result condition.
+    struct ResultConditionMethod
     {
       static constexpr bool value =
-          (!std::is_same<decltype(&T1::CheckResultCondition), decltype(&T2::CheckResultCondition)>::value
-           + !std::is_same<decltype(&T1::GetResultCondition), decltype(&T2::GetResultCondition)>::value
-           + !std::is_same<decltype(&T1::GetResultConditionTemplate), decltype(&T2::GetResultConditionTemplate)>::value)
+          (HasOverride<TScAgent>::CheckResultCondition::value + HasOverride<TScAgent>::GetInitiationCondition::value
+           + HasOverride<TScAgent>::GetInitiationConditionTemplate::value)
           <= 1;
     };
-
-    static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
-                                      ? check_override_result_condition_method_for<ScActionAgent, TScAgent>::value
-                                      : check_override_result_condition_method_for<ScAgent, TScAgent>::value;
   };
 
   template <typename TScAgent>
-  class is_override_do_program_with_event_argument
-  {
-  private:
-    template <typename U>
-    static auto test(int)
-        -> decltype(std::declval<U>().DoProgram(std::declval<typename TScAgent::TEventType const &>(), std::declval<ScAction &>()), std::true_type());
-
-    template <typename>
-    static std::false_type test(...);
-
-  public:
-    static bool const value = decltype(test<TScAgent>(0))::value;
-  };
-
-  template <typename TScAgent>
-  class is_override_do_program_without_event_argument
-  {
-  private:
-    template <typename U>
-    static auto test(int) -> decltype(std::declval<U>().DoProgram(std::declval<ScAction &>()), std::true_type());
-
-    template <typename>
-    static std::false_type test(...);
-
-  public:
-    static bool const value = decltype(test<TScAgent>(0))::value;
-  };
-
-  template <typename TScAgent>
-  struct should_be_one_override_do_program_for
+  struct HasOneOverride
   {
   public:
-    static bool const value = is_override_do_program_with_event_argument<TScAgent>::value
-                                  + is_override_do_program_without_event_argument<TScAgent>::value
-                              == 1;
+    struct DoProgramMethod
+    {
+      static bool const value = HasOverride<TScAgent>::DoProgramWithEventArgument::value
+                                || HasOverride<TScAgent>::DoProgramWithoutEventArgument::value;
+    };
   };
 
   friend class ScModule;
@@ -361,6 +417,7 @@ private:
    * If provided agent implementation `agentImplementationAddr` is valid then this method searches in knowledge base the
    * following constructions
    *
+   * @code
    *             nrel_inclusion
    *                  |
    *                  |
@@ -377,6 +434,7 @@ private:
    *                         ||
    *                         \/
    *               event_subscription_element
+   * @endcode
    *
    * and subscribes the agent of this class to sc-event `event_class` with subscription sc-element
    * `event_subscription_element`, else subscribes the agent of this class to sc-event
@@ -407,6 +465,7 @@ private:
    * If provided agent implementation `agentImplementationAddr` is valid then this method searches in knowledge base the
    * following constructions
    *
+   * @code
    *             nrel_inclusion
    *                  |
    *                  |
@@ -423,6 +482,7 @@ private:
    *                         ||
    *                         \/
    *               event_subscription_element
+   * @endcode
    *
    * and unsubscribes the agent of this class from sc-event `event_class` with subscription sc-element
    * `event_subscription_element`, else unsubscribes the agent of this class from sc-event
@@ -462,13 +522,23 @@ protected:
   static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
 
 private:
-  /*!
-   * @brief Builds a check template for the given sc-event and template sc-address.
-   * @param event A sc-event to build the template for.
-   * @param checkTemplateAddr A sc-address of the check template.
-   * @return A built sc-template.
-   */
+  bool IsActionClassDeactivated();
+
+  template <class TScAgent>
+  bool ValidateInitiationCondition(TScEvent const & event);
+
+  template <class TScAgent>
+  bool ValidateResultCondition(TScEvent const & event, ScAction & action);
+
   ScTemplate BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr);
+
+  bool GenerateCheckTemplateParams(
+      ScAddr const & checkTemplateAddr,
+      ScAddr const & eventSubscriptionElementAddr,
+      ScAddr const & otherElementAddr,
+      size_t otherElementPosition,
+      ScIterator5Ptr const eventTripleIterator,
+      ScTemplateParams & checkTemplateParams);
 };
 
 using ScBaseAgent = ScAgent<ScElementaryEvent>;
@@ -478,7 +548,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  * @brief A specialized agent class for handling sc-actions.
  *
  * This class extends ScAgent and provides methods for subscribing and unsubscribing
- * to sc-action events. You can derive this class and implement your own agent class.
+ * to sc-action events. You can inherit this class and implement your own agent class.
  *
  * @warning Derived classes must override the methods: `GetActionClass` and `DoProgram`.
  *
@@ -525,7 +595,7 @@ class _SC_EXTERN ScActionAgent : public ScAgent<ScActionEvent>
 public:
   /*!
    * @brief Get sc-template that other sc-element of initiated sc-event belongs to action class that this agent class
-   * interpreters.
+   * performs.
    * @return ScTemplate of initiation condition of this agent class.
    */
   _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;

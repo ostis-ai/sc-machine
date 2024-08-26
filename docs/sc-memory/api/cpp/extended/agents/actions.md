@@ -270,7 +270,7 @@ sc_bool const isActionFinishedSuccessfully = action.IsFinishedSuccessfully();
 
 #### **FinishSuccessfully**
 
-You can successfully finish action that has not yet been finished.
+You can successfully finish action that does not have yet been finished.
 
 ```cpp
 ...

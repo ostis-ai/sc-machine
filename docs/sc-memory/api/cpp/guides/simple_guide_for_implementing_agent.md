@@ -156,8 +156,8 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // argument for the action. So we need to check that the action has argument. 
   if (!m_memoryCtx.IsElement(setAddr))
   {
-    SC_AGENT_LOG_ERROR("Action has not argument."); 
-    // output: "ScAgentCalculateSetPower: Action has not argument."
+    SC_AGENT_LOG_ERROR("Action does not have argument."); 
+    // output: "ScAgentCalculateSetPower: Action does not have argument."
     return action.FinishWithError();
   }
   // There may be a situation where someone is trying to specify a number of 
