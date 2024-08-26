@@ -53,7 +53,7 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
   if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event subscription because sc-event class is not belongs to `sc_event`.");
+        "Not able to create elementary sc-event subscription because sc-event class does not belongs to `sc_event`.");
 
   if (!IsElement(subscriptionElementAddr))
     SC_THROW_EXCEPTION(
@@ -84,7 +84,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
   if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event waiter because sc-event class is not belongs to `sc_event`.");
+        "Not able to create elementary sc-event waiter because sc-event class does not belongs to `sc_event`.");
 
   if (!IsElement(subscriptionElementAddr))
     SC_THROW_EXCEPTION(

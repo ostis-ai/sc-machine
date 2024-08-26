@@ -155,6 +155,31 @@ protected:
    */
   _SC_EXTERN void LoadSpecification(ScMemoryContext * ctx);
 
+  _SC_EXTERN void ResolveAgentImplementation(
+      ScMemoryContext * ctx,
+      std::string & agentImplementationName,
+      std::string const & agentClassName);
+
+  _SC_EXTERN void ResolveAbstractAgent(
+      ScMemoryContext * ctx,
+      std::string const & agentImplementationName,
+      std::string const & agentClassName);
+
+  _SC_EXTERN void ResolvePrimaryInitiationCondition(
+      ScMemoryContext * ctx,
+      std::string const & abstractAgentName,
+      std::string const & agentClassName);
+
+  _SC_EXTERN void ResolveActionClass(
+      ScMemoryContext * ctx,
+      std::string const & abstractAgentName,
+      std::string const & agentClassName);
+
+  _SC_EXTERN void ResolveInitiationConditionAndResultCondition(
+      ScMemoryContext * ctx,
+      std::string const & abstractAgentName,
+      std::string const & agentClassName);
+
   /*!
    * @brief Initializes the agent builder with the given memory context.
    * @param ctx A sc-memory context for initialization.

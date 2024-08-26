@@ -213,7 +213,7 @@ void ScAgentAbstract<TScEvent, TScContext>::SetImplementation(ScAddr const & age
 template <class TScEvent, class TScContext>
 sc_bool ScAgentAbstract<TScEvent, TScContext>::MayBeSpecified() const
 {
-  return m_agentImplementationAddr.IsValid();
+  return m_memoryCtx.IsElement(m_agentImplementationAddr);
 }
 
 template <class TScEvent, class TScContext>
@@ -512,7 +512,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
   auto const & GetIteratorForEventTripleWithEdge = GetIteratorForEventTripleWithOutgoingArc;
 
   auto const & GetIteratorForEventTripleWithConnectorWithOutgoingDirection = GetIteratorForEventTripleWithOutgoingArc;
-  auto const & GetIteratorForEventTripleWithConnectorWithIncomingDirection = GetIteratorForEventTripleWithOutgoingArc;
+  auto const & GetIteratorForEventTripleWithConnectorWithIncomingDirection = GetIteratorForEventTripleWithIncomingArc;
 
   ScAddrToValueUnorderedMap<std::tuple<std::function<ScIterator5Ptr()>, size_t>> eventToEventTripleIterators = {
       {ScKeynodes::sc_event_generate_incoming_arc, {GetIteratorForEventTripleWithIncomingArc, 0u}},
@@ -554,6 +554,8 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
   {
     eventTripleIterator = GetIteratorForEventTripleWithConnectorWithIncomingDirection();
     if (eventTripleIterator->IsValid())
+    {
+      otherElementPosition = 0u;
       GenerateCheckTemplateParams(
           checkTemplateAddr,
           eventSubscriptionElementAddr,
@@ -561,6 +563,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
           otherElementPosition,
           eventTripleIterator,
           checkTemplateParams);
+    }
   }
 
   ScTemplate checkTemplate;

@@ -99,7 +99,7 @@ public:
   /*!
    * @brief Creates sc-event wait for specified event class and subscription sc-element.
    *
-   * This function allows user to create a wait mechanism that will trigger
+   * This function allows user to create a wait mechanism that will be triggered
    * when sc-event of specified class occurs. An optional callback can be
    * provided to execute when the wait starts.
    *
@@ -134,7 +134,7 @@ public:
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
    *
-   * This function allows user to create a wait mechanism that will trigger
+   * This function allows user to create a wait mechanism that will be triggered
    * when sc-event of specified class occurs, provided that the specified condition
    * is met. An optional callback can be provided to execute when the wait starts.
    *
@@ -176,7 +176,7 @@ public:
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
    *
-   * This function allows user to create a wait mechanism that will trigger
+   * This function allows user to create a wait mechanism that will be triggered
    * when sc-event of the specified class occurs, provided that the specified condition
    * is met. This version does not include an initiate callback.
    *
@@ -211,7 +211,7 @@ public:
 
   /*!
    * @brief Subscribes agent class to specified sc-events.
-   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @tparam TScAgent An agent class to be subscribed from the event.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    * @warning Specified agent class must be derived from class `ScAgent`.
    * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
@@ -224,7 +224,7 @@ public:
   /*!
    * @brief Subscribes agent class to sc-event of adding outgoing sc-arc from `action_initiated` to some formed
    * sc-action.
-   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @tparam TScAgent An agent class to be subscribed from the event.
    * @warning Specified agent class must be derived from class `ScAgentAction`.
    * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
    * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
@@ -234,8 +234,8 @@ public:
 
   /*!
    * @brief Unsubscribes agent class from specified sc-events.
-   * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe from.
+   * @tparam TScAgent An agent class to be subscribed from the event.
+   * @param subscriptionAddrs A list of sc-addresses of sc-elements to unsubscribe from.
    * @warning Specified agent class must be derived from class `ScAgent`.
    *  @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
@@ -247,7 +247,7 @@ public:
   /*!
    * @brief Unsubscribes agent class from sc-event of adding outgoing sc-arc from `action_initiated` to some formed
    * sc-action.
-   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @tparam TScAgent An agent class to be subscribed from the event.
    * @warning Specified agent class must be derived from class `ScAgentAction`.
    * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
@@ -257,7 +257,7 @@ public:
 
   /*!
    * @brief Loads specification of agent implementation and subscribes agent class.
-   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @tparam TScAgent An agent class to be subscribed from the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
    * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
@@ -306,7 +306,7 @@ public:
   _SC_EXTERN ScSet CreateSet();
 
   /*!
-   * @brief Create ScSet object for provided set.
+   * @brief Creates ScSet object for provided set.
    * @param setAddr An address of the set.
    * @return ScSet object.
    */
@@ -319,7 +319,7 @@ public:
   _SC_EXTERN ScStructure CreateStructure();
 
   /*!
-   * @brief Create ScStructure object for provided set.
+   * @brief Creates ScStructure object for provided set.
    * @param structureAddr An address of the set.
    * @return ScStructure object.
    */

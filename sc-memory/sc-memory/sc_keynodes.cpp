@@ -1,6 +1,6 @@
 /*
  * This source file is part of an OSTIS project. For the lat_est info, see http://ostis.net
- * Distribut_ed under the MIT License
+ * Distributed under the MIT License
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 

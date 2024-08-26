@@ -440,7 +440,7 @@ private:
    * `event_subscription_element`, else subscribes the agent of this class to sc-event
    * `TScEvent` with subscription sc-elements from `subscriptionAddrs`.
    *
-   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @tparam TScAgent An agent class to be subscribed from the event.
    * @param ctx A sc-memory context used to subscribe agent class to specified sc-event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
@@ -512,7 +512,7 @@ protected:
 
   /*!
    * @brief Gets the callback function for agent class.
-   * @tparam TScAgent An agent class to be subscribed to the event.
+   * @tparam TScAgent An agent class to be subscribed from the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
    * @return A function that takes an sc-event and returns an sc-result.

@@ -120,7 +120,7 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
         "Not able to set structure for action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                                  << "`because settable structure is not valid.");
 
-  if (m_resultAddr.IsValid())
+  if (m_ctx->IsElement(m_resultAddr))
     m_ctx->EraseElement(m_resultAddr);
 
   m_resultAddr = structureAddr;
@@ -188,7 +188,7 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
         "Not able to finish action `" << this->Hash() << "` with class `" << GetClass().Hash()
                                       << "` because it had already been initiated.");
 
-  if (!m_resultAddr.IsValid())
+  if (!m_ctx->IsElement(m_resultAddr))
     m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
 
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, *this, m_resultAddr);
