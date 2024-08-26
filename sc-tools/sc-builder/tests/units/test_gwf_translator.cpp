@@ -164,7 +164,6 @@ TEST_F(GWFTranslatorTest, EmptyContour)
   bool const diff = SCsTree::CompareTrees(trees)->empty();
 
   EXPECT_TRUE(diff);
-  SCsTree::PrintDifferences(SCsTree::CompareTrees(trees));
 }
 
 TEST_F(GWFTranslatorTest, LotOfContours)
@@ -175,11 +174,6 @@ TEST_F(GWFTranslatorTest, LotOfContours)
   bool const diff = SCsTree::CompareTrees(trees)->empty();
 
   EXPECT_TRUE(diff);
-
-  SCsTree::PrintTree(trees.first);
-  SCsTree::PrintTree(trees.second);
-
-  SCsTree::PrintDifferences(SCsTree::CompareTrees(trees));
 }
 
 TEST_F(GWFTranslatorTest, ContentTypes)
