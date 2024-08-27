@@ -51,7 +51,7 @@ public:
  * This class extends ScAgentBuilderAbstract and provides methods for setting various properties of the agent and
  * finalizing the build process.
  *
- * ScAgentBuilder can be used to load existing specification of specified sc-agent of generate new one.
+ * ScAgentBuilder can be used to load existing specification of specified sc-agent or generate new one.
  *
  * @tparam TScAgent A type of sc-agent to be built.
  */
@@ -125,23 +125,23 @@ protected:
 
   // abstract agent
   ScAddr m_abstractAgentAddr;
-  ScInitializeCallback m_initializeAbstractAgent;
+  ScInitializeCallback m_checkAbstractAgent;
 
   // primary initiation condition
   ScAddr m_eventClassAddr;
   ScAddr m_eventSubscriptionElementAddr;
-  ScInitializeCallback m_initializePrimaryInitiationCondition;
+  ScInitializeCallback m_checkPrimaryInitiationCondition;
 
   // action class
   ScAddr m_actionClassAddr;
-  ScInitializeCallback m_initializeActionClass;
+  ScInitializeCallback m_checkActionClass;
 
   // initiation condition and result
   ScAddr m_initiationConditionAddr;
   ScAddr m_resultConditionAddr;
-  ScInitializeCallback m_initializeInitiationConditionAndResult;
+  ScInitializeCallback m_checkInitiationConditionAndResult;
 
-  ScInitializeCallback m_initializeSpecification;
+  ScInitializeCallback m_resolveSpecification;
 
   /*!
    * @brief Gets agent implementation for specified agent class `TScAgent`.

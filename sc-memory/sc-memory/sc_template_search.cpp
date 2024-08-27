@@ -339,7 +339,7 @@ private:
           priorityTripleIdx = FindTripleWithMostMinimalOutputArcsForFirstItem(connectivityComponentsTriples);
       }
 
-      // save triple in which the first item address has the most minimal count of input/outgoing sc-arcs in vector
+      // save triple in which the first item address has the most minimal count of incoming/outgoing sc-arcs in vector
       // with more priority
       if (priorityTripleIdx != -1)
       {

@@ -218,7 +218,7 @@ _SC_EXTERN sc_bool sc_memory_is_element_ext(sc_memory_context const * ctx, sc_ad
  * @brief Frees the memory occupied by a sc-element and all connected elements.
  *
  * This function frees the memory occupied by a sc-element identified by the provided
- * sc-addr, along with all the connected elements (input/output sc-connectors) related to it.
+ * sc-addr, along with all the connected elements (incoming/outgoing sc-connectors) related to it.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-element to be freed.

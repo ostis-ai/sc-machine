@@ -104,7 +104,7 @@ public:
    * provided to execute when the wait starts.
    *
    * @param eventClassAddr An address of sc-event class to wait for.
-   *                       This must be valid sc-element of type `sc_event`.
+   *                       This must be valid sc-element belongs to `sc_event` class.
    * @param subscriptionElementAddr An address of subscription sc-element, which must be valid sc-element.
    * @param initiateCallback An optional callback function that will be called when the wait starts.
    *                         It takes no parameters. Defaults to an empty function if not provided.
@@ -139,7 +139,7 @@ public:
    * is met. An optional callback can be provided to execute when the wait starts.
    *
    * @param eventClassAddr An address of sc-event class to wait for.
-   *                       This must be valid sc-element of type `sc_event`.
+   *                       This must be valid sc-element belongs to `sc_event` class.
    * @param subscriptionElementAddr An address of the subscription element, which must be valid sc-element.
    * @param initiateCallback A callback function that will be called when the wait starts.
    *                         It takes no parameters.

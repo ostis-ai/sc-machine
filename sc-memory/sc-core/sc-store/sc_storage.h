@@ -93,7 +93,7 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
  * @brief Erases the memory occupied by a sc-element and all connected sc-elements.
  *
  * This function erases the memory occupied by a sc-element identified by the provided
- * sc-address, along with all the connected elements (input/output sc-connectors) related to it.
+ * sc-address, along with all the connected elements (incoming/outgoing sc-connectors) related to it.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr A sc-address of the sc-element to be freed.

@@ -32,7 +32,7 @@ ScAddr ScAgentBuilder<TScAgent>::GetAgentImplementation() const noexcept
 template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr const & abstractAgentAddr) noexcept
 {
-  m_initializeAbstractAgent = [this](ScMemoryContext * context)
+  m_checkAbstractAgent = [this](ScMemoryContext * context)
   {
     if (!context->IsElement(m_abstractAgentAddr))
       SC_THROW_EXCEPTION(
@@ -59,7 +59,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetPrimaryInitiationConditi
 {
   auto [eventClassAddr, eventSubscriptionElementAddr] = primaryInitiationCondition;
 
-  m_initializePrimaryInitiationCondition = [this](ScMemoryContext * context)
+  m_checkPrimaryInitiationCondition = [this](ScMemoryContext * context)
   {
     if (!context->IsElement(m_eventClassAddr))
       SC_THROW_EXCEPTION(
@@ -81,7 +81,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetPrimaryInitiationConditi
 template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const & actionClassAddr) noexcept
 {
-  m_initializeActionClass = [this](ScMemoryContext * context)
+  m_checkActionClass = [this](ScMemoryContext * context)
   {
     if (!context->IsElement(m_actionClassAddr))
       SC_THROW_EXCEPTION(
@@ -99,7 +99,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetInitiationConditionAndRe
 {
   auto [initiationConditionAddr, resultConditionAddr] = initiationCondition;
 
-  m_initializeInitiationConditionAndResult = [this](ScMemoryContext * context)
+  m_checkInitiationConditionAndResult = [this](ScMemoryContext * context)
   {
     if (!context->IsElement(m_initiationConditionAddr))
       SC_THROW_EXCEPTION(
@@ -500,7 +500,7 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
 template <class TScAgent>
 ScModule * ScAgentBuilder<TScAgent>::FinishBuild() noexcept
 {
-  m_initializeSpecification = [this](ScMemoryContext * context)
+  m_resolveSpecification = [this](ScMemoryContext * context)
   {
     ResolveSpecification(context);
   };
@@ -511,20 +511,20 @@ ScModule * ScAgentBuilder<TScAgent>::FinishBuild() noexcept
 template <class TScAgent>
 void ScAgentBuilder<TScAgent>::Initialize(ScMemoryContext * context) noexcept(false)
 {
-  if (m_initializeAbstractAgent)
-    m_initializeAbstractAgent(context);
+  if (m_checkAbstractAgent)
+    m_checkAbstractAgent(context);
 
-  if (m_initializePrimaryInitiationCondition)
-    m_initializePrimaryInitiationCondition(context);
+  if (m_checkPrimaryInitiationCondition)
+    m_checkPrimaryInitiationCondition(context);
 
-  if (m_initializeActionClass)
-    m_initializeActionClass(context);
+  if (m_checkActionClass)
+    m_checkActionClass(context);
 
-  if (m_initializeInitiationConditionAndResult)
-    m_initializeInitiationConditionAndResult(context);
+  if (m_checkInitiationConditionAndResult)
+    m_checkInitiationConditionAndResult(context);
 
-  if (m_initializeSpecification)
-    m_initializeSpecification(context);
+  if (m_resolveSpecification)
+    m_resolveSpecification(context);
 }
 
 template <class TScAgent>

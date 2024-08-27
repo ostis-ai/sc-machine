@@ -70,13 +70,11 @@ sc_result ScElementaryEventSubscription<TScEvent>::Handle(
     sc_type connectorType,
     sc_addr otherAddr) noexcept
 {
-  sc_result result = SC_RESULT_ERROR;
-
   auto * eventSubscription = (ScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
 
   DelegateFunc delegateFunc = eventSubscription->m_delegate;
   if (delegateFunc == nullptr)
-    return result;
+    return SC_RESULT_ERROR;
 
   try
   {
