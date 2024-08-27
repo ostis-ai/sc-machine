@@ -52,7 +52,7 @@ void ScKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+    if (!context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
       context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
   };
 
@@ -94,7 +94,7 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+    if (!context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
       context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
   };
 
@@ -211,7 +211,7 @@ ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)
   {
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "You should use index in range[1; " << std::to_string(kKeynodeRrelListNum) << "]");
+        "You should use index in range[1; " << std::to_string(kKeynodeRrelListNum) << "].");
   }
 
   return kKeynodeRrelList[idx - 1];
