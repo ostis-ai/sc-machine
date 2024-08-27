@@ -20,7 +20,7 @@ bool ScLink::IsValid() const
 ScLink::Type ScLink::DetermineType() const
 {
   ScAddr typeEdge, typeAddr;
-  _DetermineTypeEdgeImpl(typeEdge, typeAddr);
+  DetermineTypeEdgeImpl(typeEdge, typeAddr);
 
   if (typeAddr == Type2Addr<std::string>())
     return Type::String;
@@ -111,7 +111,7 @@ std::string ScLink::GetAsString() const
   }
 }
 
-bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
+bool ScLink::DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
 {
   // set type
   ScTemplate templ;

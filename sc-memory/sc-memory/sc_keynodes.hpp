@@ -281,52 +281,6 @@ public:
       "sc_event_before_change_link_content",
       ScType::NodeConstClass};
 
-  _SC_EXTERN static inline ScKeynode const sc_result_class{"sc_result", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_ok{"sc_result_ok", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_no{"sc_result_no", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_unknown{"sc_result_unknown", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error{"sc_result_error", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_invalid_params{
-      "sc_result_error_invalid_params",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_invalid_type{
-      "sc_result_error_invalid_type",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_io{"sc_result_error_io", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_invalid_state{
-      "sc_result_error_invalid_state",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_not_found{
-      "sc_result_error_not_found",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_full_memory{
-      "sc_result_error_full_memory",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_addr_is_not_valid{
-      "sc_result_error_addr_is_not_valid",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_element_is_not_node{
-      "sc_result_error_element_is_not_node",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_element_is_not_link{
-      "sc_result_error_element_is_not_link",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_element_is_not_connector{
-      "sc_result_error_element_is_not_corrector",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_file_memory_io{
-      "sc_result_error_file_memory_io",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_stream_io{
-      "sc_result_error_stream_io",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_invalid_system_identifier{
-      "sc_result_error_invalid_system_identifier",
-      ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_result_error_duplicated_system_identifier{
-      "sc_result_error_duplicated_system_identifier",
-      ScType::NodeConstClass};
-
   _SC_EXTERN static inline ScKeynode const binary_type{"binary_type", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const binary_float{"binary_float", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const binary_double{"binary_double", ScType::NodeConstClass};

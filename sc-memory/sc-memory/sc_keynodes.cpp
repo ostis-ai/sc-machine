@@ -147,13 +147,6 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx)
 
   internal::ScKeynodesRegister::Register(ctx);
 
-  // init sc_result set
-  for (size_t i = 0; i < SC_RESULT_COUNT; ++i)
-  {
-    ScAddr const resultAddr = GetResultCodeAddr(static_cast<sc_result>(i));
-    ResolveArc(sc_result_class, resultAddr);
-  }
-
   // resolve rrel_n relations
   for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
   {
@@ -212,43 +205,13 @@ void ScKeynodes::Shutdown(ScMemoryContext * ctx)
   internal::ScKeynodesRegister::Unregister(ctx);
 }
 
-ScAddr const & ScKeynodes::GetResultCodeAddr(sc_result resCode)
-{
-  switch (resCode)
-  {
-  case SC_RESULT_ERROR_FULL_MEMORY:
-    return sc_result_error_full_memory;
-  case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    return sc_result_error_addr_is_not_valid;
-  case SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE:
-    return sc_result_error_element_is_not_node;
-  case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
-    return sc_result_error_element_is_not_link;
-  case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
-    return sc_result_error_element_is_not_connector;
-  case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    return sc_result_error_file_memory_io;
-  case SC_RESULT_ERROR_STREAM_IO:
-    return sc_result_error_stream_io;
-  case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
-    return sc_result_error_invalid_system_identifier;
-  case SC_RESULT_ERROR_DUPLICATED_SYSTEM_IDENTIFIER:
-    return sc_result_error_duplicated_system_identifier;
-  case SC_RESULT_UNKNOWN:
-    return sc_result_unknown;
-  default:
-    break;
-  }
-
-  return sc_result_error;
-}
-
 ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)
 {
   if (idx == 0 || idx >= kKeynodeRrelListNum)
   {
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "You should use index in range[1; " + std::to_string(kKeynodeRrelListNum) + "]");
+        utils::ExceptionInvalidParams,
+        "You should use index in range[1; " << std::to_string(kKeynodeRrelListNum) << "]");
   }
 
   return kKeynodeRrelList[idx - 1];

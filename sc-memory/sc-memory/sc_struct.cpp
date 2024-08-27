@@ -16,20 +16,6 @@ ScSet::ScSet(ScMemoryContext * ctx, ScAddr const & setAddr)
 
 ScSet::~ScSet() = default;
 
-ScSet::ScSet(ScSet const & other)
-  : ScAddr(other)
-{
-  m_ctx = other.m_ctx;
-}
-
-ScSet & ScSet::operator=(ScSet const & other)
-{
-  ScAddr::operator=(other);
-  m_ctx = other.m_ctx;
-
-  return *this;
-}
-
 bool ScSet::Append(ScAddr const & elAddr)
 {
   if (!HasElement(elAddr))
@@ -100,6 +86,6 @@ ScStructure::ScStructure(ScMemoryContext * ctx, ScAddr const & structureAddr)
 }
 
 ScStructure::ScStructure(ScMemoryContext & ctx, ScAddr const & structureAddr)
-  : ScSet(&ctx, structureAddr)
+  : ScStructure(&ctx, structureAddr)
 {
 }

@@ -17,10 +17,6 @@ class ScSet : public ScAddr
 public:
   _SC_EXTERN ~ScSet();
 
-  _SC_EXTERN ScSet(ScSet const & other);
-
-  _SC_EXTERN ScSet & operator=(ScSet const &);
-
   /* Append element into sc-hash-map. If element already exist, then doesn't append it and return false; otherwise
    * returns true. */
   _SC_EXTERN bool Append(ScAddr const & elAddr);

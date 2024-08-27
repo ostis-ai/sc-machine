@@ -14,7 +14,10 @@ ScObject::~ScObject() = default;
 
 std::string ScObject::GetName() const
 {
-  return Demangle(typeid(*this).name());
+  if (m_name.empty())
+    m_name = Demangle(typeid(*this).name());
+
+  return m_name;
 }
 
 std::string ScObject::Demangle(std::string const & mangled_name)

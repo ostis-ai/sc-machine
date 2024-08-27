@@ -36,7 +36,7 @@ public:
     Custom
   };
 
-  _SC_EXTERN ScLink(ScMemoryContext & ctx, ScAddr const & linkAddr = ScAddr::Empty);
+  _SC_EXTERN ScLink(ScMemoryContext & ctx, ScAddr const & linkAddr);
 
   // Check if this class has reference to sc-link element
   _SC_EXTERN bool IsValid() const;
@@ -93,7 +93,7 @@ public:
     ScAddr const newType = Type2Addr<Type>();
     bool needAppend = true;
     ScAddr typeEdge, typeAddr;
-    if (_DetermineTypeEdgeImpl(typeEdge, typeAddr))
+    if (DetermineTypeEdgeImpl(typeEdge, typeAddr))
     {
       if (typeAddr == newType)
         needAppend = false;
@@ -128,7 +128,7 @@ public:
   _SC_EXTERN std::string GetAsString() const;
 
 protected:
-  _SC_EXTERN bool _DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const;
+  _SC_EXTERN bool DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const;
 
 private:
   ScMemoryContext * m_ctx;

@@ -44,7 +44,7 @@ class ScAgentBuilder;
  *   ->Agent<MyAgent>();
  *
  * \endcode
- * @note Not recommended to use interface API to implement module classes. Use example defines instead.
+ * @note Not recommended to use interface API to implement module classes. Use `SC_MODULE_REGISTER` instead of.
  */
 class _SC_EXTERN ScModule : public ScObject
 {
@@ -55,7 +55,7 @@ public:
 
   /*!
    * @brief Reminds agent and it initiation condition to register it with module after.
-   * @param TScAgent An agent class to be subscribe to.
+   * @tparam TScAgent An agent class to subscribe.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    * @returns A pointer to module instance.
    */
@@ -66,8 +66,8 @@ public:
   _SC_EXTERN ScModule * Agent(TScAddr const &... subscriptionAddrs);
 
   /*!
-   * @brief Reminds action agent and it initiation condition to register it with module after.
-   * @param TScAgent An agent class to be subscribe to.
+   * @brief Remembers action agent and it initiation condition to register it with module after.
+   * @tparam TScAgent An agent class to subscribe.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    * @returns A pointer to module instance.
    */
@@ -76,7 +76,7 @@ public:
 
   /*!
    * @brief Creates an agent builder for the specified agent implementation.
-   * @param TScAgent An agent class to be subscribe to.
+   * @tparam TScAgent An agent class to subscribe.
    * @param agentImplementationAddr A sc-address of the agent implementation.
    * @return A pointer to the created agent builder.
    */
