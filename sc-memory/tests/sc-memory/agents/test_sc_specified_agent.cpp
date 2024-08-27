@@ -1,8 +1,8 @@
-#include "test_sc_specificated_agent.hpp"
+#include "test_sc_specified_agent.hpp"
 
 /// --------------------------------------
 
-ScResult ATestSpecificatedAgent::DoProgram(ScElementaryEvent const &, ScAction & action)
+ScResult ATestSpecifiedAgent::DoProgram(ScElementaryEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();

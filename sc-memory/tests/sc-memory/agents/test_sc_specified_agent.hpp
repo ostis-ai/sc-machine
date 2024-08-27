@@ -41,27 +41,27 @@ private:
   utils::ScLock m_lock;
 };
 
-class ATestSpecificatedAgent : public ScAgent<ScElementaryEvent>
+class ATestSpecifiedAgent : public ScAgent<ScElementaryEvent>
 {
 public:
   static inline TestWaiter msWaiter;
-  static inline ScKeynode const test_specificated_agent_implementation =
-      ScKeynode("test_specificated_agent_implementation", ScType::NodeConst);
-  static inline ScKeynode const test_specificated_agent_action =
-      ScKeynode("test_specificated_agent_action", ScType::NodeConstClass);
+  static inline ScKeynode const test_specified_agent_implementation =
+      ScKeynode("test_specified_agent_implementation", ScType::NodeConst);
+  static inline ScKeynode const test_specified_agent_action =
+      ScKeynode("test_specified_agent_action", ScType::NodeConstClass);
 
-  static inline ScTemplateKeynode const & test_specificated_agent_initiation_condition =
-      ScTemplateKeynode("test_specificated_agent_initiation_condition")
+  static inline ScTemplateKeynode const & test_specified_agent_initiation_condition =
+      ScTemplateKeynode("test_specified_agent_initiation_condition")
           .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
-          .Triple(test_specificated_agent_action, ScType::EdgeAccessVarPosPerm, "_action");
+          .Triple(test_specified_agent_action, ScType::EdgeAccessVarPosPerm, "_action");
 
-  static inline ScTemplateKeynode const & test_specificated_agent_initiation_condition_in_kb =
-      ScTemplateKeynode("test_specificated_agent_initiation_condition");
+  static inline ScTemplateKeynode const & test_specified_agent_initiation_condition_in_kb =
+      ScTemplateKeynode("test_specified_agent_initiation_condition");
 
-  static inline ScTemplateKeynode const & test_specificated_agent_result_condition =
-      ScTemplateKeynode("test_specificated_agent_result_condition")
+  static inline ScTemplateKeynode const & test_specified_agent_result_condition =
+      ScTemplateKeynode("test_specified_agent_result_condition")
           .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
-          .Triple(test_specificated_agent_action, ScType::EdgeAccessVarPosPerm, "_action")
+          .Triple(test_specified_agent_action, ScType::EdgeAccessVarPosPerm, "_action")
           .Quintuple(
               "_action",
               ScType::EdgeDCommonVar,
@@ -69,8 +69,8 @@ public:
               ScType::EdgeAccessVarPosPerm,
               ScKeynodes::nrel_result);
 
-  static inline ScTemplateKeynode const & test_specificated_agent_result_condition_in_kb =
-      ScTemplateKeynode("test_specificated_agent_result_condition");
+  static inline ScTemplateKeynode const & test_specified_agent_result_condition_in_kb =
+      ScTemplateKeynode("test_specified_agent_result_condition");
 
   ScResult DoProgram(ScElementaryEvent const & event, ScAction & action) override;
 };

@@ -3,7 +3,7 @@
 
 #include "sc-memory/sc_agent.hpp"
 
-#include "test_sc_specificated_agent.hpp"
+#include "test_sc_specified_agent.hpp"
 #include "test_sc_module.hpp"
 
 using ScAgentBuilderTest = ScMemoryTest;
@@ -11,39 +11,39 @@ using ScAgentBuilderTest = ScMemoryTest;
 static std::string const agentInitiationCondition = R"(
   @contour = [*
     action_initiated _-> _action;;
-    test_specificated_agent_action _-> _action;;
+    test_specified_agent_action _-> _action;;
   *];; 
 
-  @contour => nrel_system_identifier: [test_specificated_agent_initiation_condition];;
+  @contour => nrel_system_identifier: [test_specified_agent_initiation_condition];;
 )";
 
 static std::string const agentResultCondition = R"(
   @contour = [*
     action_initiated _-> _action;;
-    test_specificated_agent_action _-> _action;;
+    test_specified_agent_action _-> _action;;
     _action _=> nrel_result:: _result;;
   *];; 
 
-  @contour => nrel_system_identifier: [test_specificated_agent_result_condition];;
+  @contour => nrel_system_identifier: [test_specified_agent_result_condition];;
 )";
 
-static std::string const ATestSpecificatedAgentSpecification = R"(
-  test_specificated_agent
+static std::string const ATestSpecifiedAgentSpecification = R"(
+  test_specified_agent
   <- abstract_sc_agent;
   => nrel_primary_initiation_condition: 
     (sc_event_after_generate_outgoing_arc => action_initiated);
   => nrel_sc_agent_action_class: 
-    test_specificated_agent_action;
+    test_specified_agent_action;
   => nrel_initiation_condition_and_result: 
-    (test_specificated_agent_initiation_condition => test_specificated_agent_result_condition);
+    (test_specified_agent_initiation_condition => test_specified_agent_result_condition);
   <= nrel_sc_agent_key_sc_elements: 
     {
       action_initiated;
       action;
-      test_specificated_agent_action
+      test_specified_agent_action
     };
   => nrel_inclusion: 
-    ATestSpecificatedAgent
+    ATestSpecifiedAgent
     (*
       <- platform_dependent_abstract_sc_agent;;
       <= nrel_sc_agent_program: 
@@ -53,48 +53,47 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
       };;
     *);;
 
-  test_specificated_agent_initiation_condition_new
+  test_specified_agent_initiation_condition_new
   = [*
     action_initiated _-> _action;;
-    test_specificated_agent_action _-> _action;;
+    test_specified_agent_action _-> _action;;
   *];;
 
-  test_specificated_agent_result_condition_new
+  test_specified_agent_result_condition_new
   = [*
     action_initiated _-> _action;;
-    test_specificated_agent_action _-> _action;;
+    test_specified_agent_action _-> _action;;
     _action _=> nrel_result:: _result;;
   *];;
 
-  test_specificated_agent_action
+  test_specified_agent_action
   <- sc_node_class;
   <= nrel_inclusion: sc_action;;
 )";
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecification)
 {
-  ATestSpecificatedAgent::msWaiter.Reset();
+  ATestSpecifiedAgent::msWaiter.Reset();
 
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
   ScAddr const & actionClassAddr =
-      m_ctx->HelperResolveSystemIdtf("test_specificated_agent_action", ScType::NodeConstClass);
+      m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
 
   {
     SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
     EXPECT_TRUE(helper.GenerateBySCsText(agentInitiationCondition));
   }
-  ScAddr const & initiationConditionAddr =
-      m_ctx->HelperFindBySystemIdtf("test_specificated_agent_initiation_condition");
+  ScAddr const & initiationConditionAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_initiation_condition");
 
   {
     SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
     EXPECT_TRUE(helper.GenerateBySCsText(agentResultCondition));
   }
-  ScAddr const & resultConditionAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_result_condition");
+  ScAddr const & resultConditionAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_result_condition");
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
@@ -103,29 +102,29 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecification)
   module.Register(&*m_ctx);
 
   m_ctx->CreateAction(actionClassAddr).SetArguments().Initiate();
-  EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasAlreadyFullSpecification)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasAlreadyFullSpecification)
 {
-  ATestSpecificatedAgent::msWaiter.Reset();
+  ATestSpecifiedAgent::msWaiter.Reset();
 
-  std::string const & data = ATestSpecificatedAgentSpecification;
+  std::string const & data = ATestSpecifiedAgentSpecification;
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  ScAddr const & abstractAgentAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent");
-  ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_action");
+  ScAddr const & abstractAgentAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent");
+  ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_action");
 
   ScAddr const & initiationConditionAddr =
-      m_ctx->HelperFindBySystemIdtf("test_specificated_agent_initiation_condition_new");
-  ScAddr const & resultConditionAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_result_condition_new");
+      m_ctx->HelperFindBySystemIdtf("test_specified_agent_initiation_condition_new");
+  ScAddr const & resultConditionAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_result_condition_new");
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
@@ -134,107 +133,107 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasAlreadyFullSpecificatio
   module.Register(&*m_ctx);
 
   m_ctx->CreateAction(actionClassAddr).SetArguments().Initiate();
-  EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecificationWithTemplateKeynodes)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecificationWithTemplateKeynodes)
 {
-  ATestSpecificatedAgent::msWaiter.Reset();
+  ATestSpecifiedAgent::msWaiter.Reset();
 
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
-      ->SetActionClass(ATestSpecificatedAgent::test_specificated_agent_action)
+      ->SetActionClass(ATestSpecifiedAgent::test_specified_agent_action)
       ->SetInitiationConditionAndResult(
-          {ATestSpecificatedAgent::test_specificated_agent_initiation_condition,
-           ATestSpecificatedAgent::test_specificated_agent_result_condition})
+          {ATestSpecifiedAgent::test_specified_agent_initiation_condition,
+           ATestSpecifiedAgent::test_specified_agent_result_condition})
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestSpecificatedAgent::test_specificated_agent_action).SetArguments().Initiate();
-  EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
+  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecificationWithTemplateKeynodesInKB)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecificationWithTemplateKeynodesInKB)
 {
-  ATestSpecificatedAgent::msWaiter.Reset();
+  ATestSpecifiedAgent::msWaiter.Reset();
 
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
-      ->SetActionClass(ATestSpecificatedAgent::test_specificated_agent_action)
+      ->SetActionClass(ATestSpecifiedAgent::test_specified_agent_action)
       ->SetInitiationConditionAndResult(
-          {ATestSpecificatedAgent::test_specificated_agent_initiation_condition_in_kb,
-           ATestSpecificatedAgent::test_specificated_agent_result_condition_in_kb})
+          {ATestSpecifiedAgent::test_specified_agent_initiation_condition_in_kb,
+           ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestSpecificatedAgent::test_specificated_agent_action).SetArguments().Initiate();
-  EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
+  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedAbstractAgent)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedAbstractAgent)
 {
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()->FinishBuild();
+  module.AgentBuilder<ATestSpecifiedAgent>()->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasInvalidAbstractAgent)
-{
-  ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
-
-  TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()->SetAbstractAgent(abstractAgentAddr)->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
-}
-
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedPrimaryInitiationCondition)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasInvalidAbstractAgent)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()->SetAbstractAgent(abstractAgentAddr)->FinishBuild();
+  module.AgentBuilder<ATestSpecifiedAgent>()->SetAbstractAgent(abstractAgentAddr)->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedActionClass)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedPrimaryInitiationCondition)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()->SetAbstractAgent(abstractAgentAddr)->FinishBuild();
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+}
+
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedActionClass)
+{
+  ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
+
+  TestModule module;
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedInitiationConditionAndResult)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedInitiationConditionAndResult)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
   ScAddr const & actionClassAddr =
-      m_ctx->HelperResolveSystemIdtf("test_specificated_agent_action", ScType::NodeConstClass);
+      m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
@@ -242,46 +241,46 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedInitiationC
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidAbstractAgent)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidAbstractAgent)
 {
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()->SetAbstractAgent(ScAddr{2421421})->FinishBuild();
+  module.AgentBuilder<ATestSpecifiedAgent>()->SetAbstractAgent(ScAddr{2421421})->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidEventClass)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventClass)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScAddr{2421421}, ScKeynodes::action_initiated})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidEventSubscriptionElement)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventSubscriptionElement)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScAddr{2421421}})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidActionClass)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidActionClass)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(ScAddr{2421421})
@@ -289,18 +288,18 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidActionClass)
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidInitiationCondition)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidInitiationCondition)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
   ScAddr const & actionClassAddr =
-      m_ctx->HelperResolveSystemIdtf("test_specificated_agent_action", ScType::NodeConstClass);
+      m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
 
   ScAddr const & resultConditionAddr =
-      m_ctx->HelperResolveSystemIdtf("test_specificated_agent_result_condition", ScType::NodeConstStruct);
+      m_ctx->HelperResolveSystemIdtf("test_specified_agent_result_condition", ScType::NodeConstStruct);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
@@ -309,18 +308,18 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidInitiationCondit
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
-TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentSetInvalidConditionResult)
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidConditionResult)
 {
   ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
   ScAddr const & actionClassAddr =
-      m_ctx->HelperResolveSystemIdtf("test_specificated_agent_action", ScType::NodeConstClass);
+      m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
 
   ScAddr const & initiationConditionAddr =
-      m_ctx->HelperResolveSystemIdtf("test_specificated_agent_initiation_condition", ScType::NodeConstStruct);
+      m_ctx->HelperResolveSystemIdtf("test_specified_agent_initiation_condition", ScType::NodeConstStruct);
 
   TestModule module;
-  module.AgentBuilder<ATestSpecificatedAgent>()
+  module.AgentBuilder<ATestSpecifiedAgent>()
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(actionClassAddr)
