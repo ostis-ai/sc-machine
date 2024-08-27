@@ -223,7 +223,7 @@ You can also create waiters with conditions dynamically, providing sc-event clas
 
 ### **SubscribeAgent**
 
-`ScModule` provides API to register agents statically (see [**C++ Modules API**](modules.md)). `ScAgentContext` also provides methods to register agents. It can be useful if you want to register agents dynamically.
+`ScModule` provides API to subscribe agents to sc-events statically (see [**C++ Modules API**](modules.md)). `ScAgentContext` also provides methods to subscribe agents to sc-events. It can be useful if you want to subscribe agents to sc-events dynamically.
 
 To subscribe agent class to sc-event use `SubscribeAgent`.
 
@@ -252,7 +252,7 @@ context.UnsubscribeAgent<MyActionAgent>();
 ```
 
 !!! note
-    If you registered some agent, you should unregister it after. Otherwise, when you will stop the sc-machine, warnings about it will be gotten.
+    If you subscribed some agent to sc-event, you should unsubscribe it from this sc-event after. Otherwise, when you will stop the sc-machine, warnings about it will be gotten.
 
 !!! warning
     You must provide valid subscription sc-elements.
@@ -270,7 +270,7 @@ context.LoadAndSubscribeAgent<MyAgent>(agentImplementationAddr);
 !!! note
     If some specification elements will be not found, then exceptions will be thrown. Sure, that specification is full, and that it is loaded to knowledge base. This method doesn't load specification to knowledge base for specified agent class.
 
-This method finds specification of abstract agent for specified agent implementation and uses this specification to register specified agent.
+This method finds specification of abstract agent for specified agent implementation and uses this specification to subscribe specified agent to sc-event.
 
 ### **DestroyAndUnsubscribeAgent**
 
@@ -280,7 +280,7 @@ context.DestroyAndUnsubscribeAgent<MyAgent>(agentImplementationAddr);
 ...
 ```
 
-This method finds specification of abstract agent for specified agent implementation and uses this specification to unregister specified agent.
+This method finds specification of abstract agent for specified agent implementation and uses this specification to unsubscribe specified agent from sc-event.
 
 !!! note
     If some specification elements will be not found, then exceptions will be thrown. Sure, that specification is full, and that it is loaded to knowledge base. This method doesn't load specification to knowledge base for specified agent class.
@@ -386,7 +386,7 @@ By default, you can wait up to 5 seconds for an event to appear. You can wait fo
 
 ### **What if I need to initiate agent on events from more then one different node?**
 
-You can register an agent for not as many different sc-element, but for the same type of event. You can use `SubscribeAgent` and `UnsubscribeAgent` to do this.
+You can subscribe an agent to many different sc-elements, but for the same type of sc-event. You can use `SubscribeAgent` and `UnsubscribeAgent` to do this.
 
 ```cpp
 ...

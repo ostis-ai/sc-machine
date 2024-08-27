@@ -202,7 +202,7 @@ This implementation allows to provide any sc-event type to `DoProgram`.
     `ScBaseAgent` is alias for `ScAgent<ScElementaryEvent>`.
 
 !!! note
-    If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`.
+    If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**] to learn how to implement agents with specification in the knowledge base.
 
 ### **ScActionAgent**
 
@@ -266,7 +266,7 @@ It gets action class that the agent of specified class performs. If the abstract
 ScAddr MyAgent::GetActionClass() const
 {
   // You must specify valid sc-address of action class. 
-  // In other case, the given sc-agent can’t be registered in sc-memory.
+  // In other case, the given sc-agent can’t be subscribed to sc-event.
   return MyKeynodes::my_action;
 }
 ```
@@ -441,7 +441,7 @@ You can redefine this method in your agent class.
 ScAddr MyAgent::GetAbstractAgent() const
 {
   // You must specify valid sc-address of abstract agent. 
-  // In other case, the given sc-agent can’t be registered in sc-memory.
+  // In other case, the given sc-agent can’t be subscribed to sc-event.
   return MyKeynodes::my_abstract_agent;
 }
 ```
@@ -459,7 +459,7 @@ You can redefine this method in your agent class.
 ScAddr MyAgent::GetEventClass() const
 {
   // You must specify valid sc-address of event class. 
-  // In other case, the given sc-agent can’t be registered in sc-memory.
+  // In other case, the given sc-agent can’t be subscribed to sc-event.
   return ScKeynodes::sc_event_generate_outgoing_arc;
 }
 ```
@@ -474,7 +474,7 @@ You can redefine this method in your agent class.
 ScAddr MyAgent::GetEventSubscriptionElement() const
 {
   // You must specify valid sc-address of sc-event subscription sc-element. 
-  // In other case, the given sc-agent can’t be registered in sc-memory.
+  // In other case, the given sc-agent can’t be subscribed to sc-event.
   return ScKeynodes::action_initiated;
 }
 ```
@@ -648,7 +648,7 @@ We allow not specifying full initiation condition for agents. However, remember,
 
 ### **Can there be an agent without primary initiation condition?**
 
-No, agents can't be without primary initiation condition. Agents react to events in sc-memory. A primary initiation condition indicates which sc-event agent is registered for, i.e. when agent will be called.
+No, agents can't be without primary initiation condition. Agents react to events in sc-memory. A primary initiation condition indicates which sc-event agent is subscribed to, i.e. when agent will be called.
 
 ### **Is it possible to create object of `ScAgent` class and call any of class methods?**
 

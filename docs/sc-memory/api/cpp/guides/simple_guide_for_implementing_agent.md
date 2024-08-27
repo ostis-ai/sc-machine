@@ -12,7 +12,7 @@ All agents in C++ represent some classes in C++. To implement an agent in C++, y
 4. In header file, define a class in C++ for this agent and specifies in it at least class of actions that this agent performs and its program. In such class you can also specify primary initiation condition, initiation condition, and result condition.
 5. In source file, implement all declared methods of agent's class. You can also implement your own methods and use them in an agent program. You can use all C++ and OOP tools as much as possible. 
 6. Create file and implement class for keynodes used by implemented agent.
-7. Implement class for module for registering implemented agent.
+7. Implement class for module for subscribing implemented agent.
 8. Write tests for implemented agent.
 
 ---
@@ -139,7 +139,7 @@ ScAddr ScAgentCalculateSetPower::GetActionClass() const
   return m_memoryCtx.HelperFindBySystemIdtf("action_calculate_set_power");
 }
 // You must specify valid action class. In other case, the agent can’t be 
-// registered in sc-memory.
+// subscribed to sc-event.
 
 ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 {
@@ -304,9 +304,9 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
 ---
 
-### **7. Implement module class to register your agent.**
+### **7. Implement module class to subscribe your agent to specified sc-event.**
 
-Someone should subscribe your agent to event. It can be other agent, or any code at all. You can implement class, that allows register agents. This class is named sc-module. Each sc-module should register agents with common sense.
+Someone should subscribe your agent to event. It can be other agent, or any code at all. You can implement class, that allows subscribing agents. This class is named sc-module. Each sc-module should subscribe agents with common sense.
 
 ```diff
  set-agents-module/
@@ -330,7 +330,7 @@ Someone should subscribe your agent to event. It can be other agent, or any code
 class ScSetModule : public ScModule
 {
   // Here class is empty. You doesn't need to implement any methods. 
-  // `ScModule` class contains all necessary API to register your 
+  // `ScModule` class contains all necessary API to subscribe your 
   // agents as separate sc-module.
 };
 ```
@@ -346,11 +346,11 @@ SC_MODULE_REGISTER(ScSetModule)
   ->Agent<ScAgentCalculateSetPower>();
   // This method pointers to module that agent class `ScAgentCalculateSetPower`
   // should be subscribed to sc-event of adding outgoing sc-arc from sc-element
-  // `action_initiated`. It is default parameter in these method if you want
-  // register agent class inherited from `ScActionAgent`.
+  // `action_initiated`. It is default parameter in these method if you want to
+  // subscribe agent class inherited from `ScActionAgent`.
 
-// This way of registering agents makes it easier to write code. 
-// You don't have to think about unregistering agents after 
+// This way of subscribing agents makes it easier to write code. 
+// You don't have to think about unsubscribing agents after 
 // the system shutdown - your module will do it all by itself.
 ```
 

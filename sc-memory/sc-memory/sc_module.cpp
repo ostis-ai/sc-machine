@@ -20,11 +20,11 @@ void ScModule::Register(ScMemoryContext * ctx)
 
   for (auto const & agentInfo : m_agents)
   {
-    auto [builder, registerCallback, _, addrs] = agentInfo;
+    auto [builder, subscribeCallback, _, addrs] = agentInfo;
     if (builder != nullptr)
       builder->Initialize(ctx);
     ScAddr const & agentImplementationAddr = builder ? builder->GetAgentImplementation() : ScAddr::Empty;
-    registerCallback(ctx, agentImplementationAddr, addrs);
+    subscribeCallback(ctx, agentImplementationAddr, addrs);
   }
 }
 
@@ -32,9 +32,9 @@ void ScModule::Unregister(ScMemoryContext * ctx)
 {
   for (auto const & agentInfo : m_agents)
   {
-    auto [builder, _, unregisterCallback, addrs] = agentInfo;
+    auto [builder, _, unsubscribeCallback, addrs] = agentInfo;
     ScAddr const & agentImplementationAddr = builder ? builder->GetAgentImplementation() : ScAddr::Empty;
-    unregisterCallback(ctx, agentImplementationAddr, addrs);
+    unsubscribeCallback(ctx, agentImplementationAddr, addrs);
     if (builder != nullptr)
       builder->Shutdown(ctx);
 

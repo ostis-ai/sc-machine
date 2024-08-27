@@ -84,12 +84,12 @@ public:
   _SC_EXTERN ScAgentBuilder<TScAgent> * AgentBuilder(ScAddr const & agentImplementationAddr = ScAddr::Empty);
 
   /*!
-   * @brief Registers all module agents.
+   * @brief Subscribes all module agents.
    * @returns Result of initializing.
    */
   _SC_EXTERN void Register(ScMemoryContext * ctx);
 
-  /*! Unregisters all module agents.
+  /*! Unsubscribes all module agents.
    * @returns Result of shutdown.
    */
   _SC_EXTERN void Unregister(ScMemoryContext * ctx);

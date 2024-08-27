@@ -4,15 +4,15 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement modules for registering agents on C++.
+This API provides functionality to implement modules for subscribe/unsubscribe agents to/from sc-events on C++.
 
 ---
 
 ## **ScModule**
 
-This class is a base class for registering agents. It's like a complex component that contains connected agents.
+This class is a base class for subscribing/unsubscribing agents to/from sc-events. It's like a complex component that contains connected agents.
 
-To register your agents, implement module class and call `Agent` methods to register agents.
+To subscribe your agents to sc-events, implement module class and call `Agent` methods to subscribe these agents.
 
 ```cpp
 // File my_module.hpp
@@ -34,21 +34,21 @@ class MyModule : public ScModule
 
 SC_MODULE_REGISTER(MyModule)
 // It initializes static object of `MyModule` class that can be 
-// used to call methods for registering agents.
+// used to call methods for subscribing agents to sc-events.
   ->Agent<MyAgent>(); 
-  // It registers agent and returns object of `MyModule`.
+  // It subscribes agent and returns object of `MyModule`.
   // `MyAgent` is inherited from `ScActionAgent`.
   // This method pointers to module that agent class `MyAgent`
   // should be subscribed to sc-event of adding outgoing sc-arc from 
   // sc-element `action_initiated`. It is default parameter
-  // in these method if you want register agent class inherited 
+  // in these method if you want to subscribe agent class inherited 
   // from `ScActionAgent`.
 ```
 
 You must call `Agent` method for agent classes inherited from `ScActionAgent` without arguments, but you should call it providing sc-event subscription sc-element for agent classes inherited from `ScAgent`.
 
-A module registers agents when the sc-memory initializes and it unregisters them when the sc-memory shutdowns.
-Also, you can use module to register a set of agents.
+A module subscribed agents when the sc-memory initializes and it unsubscribes them when the sc-memory shutdowns.
+Also, you can use module to subscribe a set of agents.
 
 ```cpp
 // File my_module.cpp:
@@ -106,7 +106,7 @@ SC_MODULE_REGISTER(MyModule)
 
 ## **Dynamic agent specification**
 
-Modules allow to register agents with dynamic specification provided in knowledge base or in code. Dynamic specification can be changed by other agents. To learn more about types of agent specifications in [C++ Agents API](agents.md).
+Modules allow to subscribe agents with dynamic specification provided in knowledge base or in code. Dynamic specification can be changed by other agents. To learn more about types of agent specifications in [C++ Agents API](agents.md).
 
 For this `ScModule` class has `AgentBuilder` method. You can call this method with agent class providing keynode of agent implementation specified in knowledge base or calling methods after this method to set the specification elements for the given agent.
 
@@ -145,7 +145,7 @@ So you can load the initial specification for your agent into the knowledge base
     If specification for an agent already exists in the knowledge base, no new connections will be generated, i.e. there will be no duplicates.
 
 !!! note
-    All provided arguments must be valid, otherwise you module will not be registered, because errors will occur.
+    All provided arguments must be valid, otherwise you module will not be subscribed, because errors will occur.
 
 !!! warning
     If specification for an agent isn't already in the knowledge base, you should call all the methods listed after `AgentBuilder` call.
@@ -157,7 +157,7 @@ So you can load the initial specification for your agent into the knowledge base
 
 If you has specification for your agent in the knowledge base wrote in SCs-code or SCg-code, then you can just specify implementation of your agent.
 
-Write scs-specification (or scg-specification) of your agent and use it with to register your agent within module.
+Write scs-specification (or scg-specification) of your agent and use it with to subscribe your agent within module.
 
 ```scs
 // Specification of agent in knowledge base.
@@ -216,25 +216,25 @@ SC_MODULE_REGISTER(MyModule)
 ```
 
 !!! note
-    If specification of your agent isn't full in the knowledge base, then module will not be registered, because errors will occur. Other correctly specified agents will be registered without errors.
+    If specification of your agent isn't full in the knowledge base, then module will not be subscribed, because errors will occur. Other correctly specified agents will be subscribed without errors.
 
 ---
 
 ## **Frequently Asked Questions**
 
 <!-- no toc -->
-- [Is it possible to register an agent without calling a method to register it?](#is-it-possible-to-register-an-agent-without-calling-a-method-to-register-it)
-- [Is it possible to create one module and register all agents in it?](#is-it-possible-to-create-one-module-and-register-all-agents-in-it)
-- [If there is a difference in what order to register agents?](#if-there-is-a-difference-in-what-order-to-register-agents)
+- [Is it possible to subscribe an agent without calling a method to subscribe it?](#is-it-possible-to-subscribe-an-agent-without-calling-a-method-to-subscribe-it)
+- [Is it possible to create one module and subscribe all agents in it?](#is-it-possible-to-create-one-module-and-subscribe-all-agents-in-it)
+- [If there is a difference in what order to subscribe agents?](#if-there-is-a-difference-in-what-order-to-subscribe-agents)
 
-### **Is it possible to register an agent without calling a method to register it?**
+### **Is it possible to subscribe an agent without calling a method to subscribe it?**
 
-You can implement an agent that will traverse all agent specifications in the knowledge base and register agents according its specifications.
+You can implement an agent that will traverse all agent specifications in the knowledge base and subscribe agents according its specifications.
 
-### **Is it possible to create one module and register all agents in it?**
+### **Is it possible to create one module and subscribe all agents in it?**
 
 You can do that, but we advise you to build components from agents, meaning agents should be included in the same module if they make sense to be in the same component. Get used to having every module be a component.
 
-### **If there is a difference in what order to register agents?**
+### **If there is a difference in what order to subscribe agents?**
 
 Probably, not. Agents shouldn't be dependent on each other. But if you did, it's better not to do so.

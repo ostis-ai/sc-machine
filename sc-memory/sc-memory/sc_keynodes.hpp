@@ -22,33 +22,33 @@ namespace internal
 
 /*!
  * @class ScKeynodesRegister
- * @brief A base class to register keynodes. It stores keynodes and resolves them after memory initialization.
+ * @brief A base class to initialize/destroy keynodes. It stores keynodes and resolves them after memory initialization.
  * @warning This class is for internal usage only.
  */
 class ScKeynodesRegister
 {
 public:
   /*!
-   * @brief Stores keynode data to register it later.
-   * @param keynode Pointer to the keynode data to be stored.
+   * @brief Stores keynode data to initialize it later.
+   * @param keynode A pointer to the keynode data to be stored.
    */
   static void Remember(ScKeynode * keynode);
 
   /*!
    * @brief Removes keynode data from the stored list.
-   * @param keynode Pointer to the keynode data to be removed.
+   * @param keynode A pointer to the keynode data to be removed.
    */
   static void Forget(ScKeynode * keynode);
 
   /*!
-   * @brief Registers all stored keynodes.
-   * @param context Sc-memory context to resolve keynodes.
+   * @brief Initializes all stored keynodes.
+   * @param context A sc-memory context to resolve keynodes.
    */
   static void Register(ScMemoryContext * context);
 
   /*!
-   * @brief Unregisters all keynodes.
-   * @param context Sc-memory context used for unregistering keynodes.
+   * @brief Destroys all keynodes.
+   * @param context A sc-memory context used for destroying keynodes.
    */
   static void Unregister(ScMemoryContext * context);
 
