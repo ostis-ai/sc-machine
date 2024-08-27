@@ -81,6 +81,24 @@ public:
 };
 ```
 
+You don't have to inherit class `ScKeynodes`, you can do it this way.
+
+```cpp
+// File my_keynodes.hpp:
+#pragma once
+
+#include <sc-memory/sc_keynodes.hpp>
+
+class MyKeynodes
+{
+public:
+  static inline ScKeynode const my_keynode_class_a{
+    "my_keynode_class_a", ScType::NodeConstClass};
+  static inline ScKeynode const my_keynode_relation_b{
+    "my_keynode_relation_b", ScType::NodeConstNoRole};
+};
+```
+
 --- 
 
 ## **Frequently Asked Questions**
