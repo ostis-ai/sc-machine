@@ -12,8 +12,8 @@ This type of objects is used to wait until some event emits. It is usually used,
 result of another one. There are next kind of `ScWaiter` objects:
 
 * `ScWaiter` locks run flow until simple event emits. You can see the list of these events in the [**C++ Events API**](events.md).
-* `ScConditionWaiter` locks run flow until simple event emits and specified conditional check returns `SC_TRUE`. In other
-  words, this works like an `ScWaiter`, but returns to run flow if special condition function returns `SC_TRUE`. Condition
+* `ScConditionWaiter` locks run flow until simple event emits and specified conditional check returns `true`. In other
+  words, this works like an `ScWaiter`, but returns to run flow if special condition function returns `true`. Condition
   function receives 3 parameters (see [**C++ Events API**](events.md) for more details about them).
 
 ## **ScWaiter**
@@ -103,7 +103,7 @@ auto waiter = context.ScConditionWaiter<
       // when waiter will start to wait for sc-event to occur.
     },
     [](ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>> 
-        const & event) -> sc_bool
+        const & event) -> bool
     {
       // Check here, that occurred sc-event is sc-event that this waiter 
       // has been waiting for.
@@ -132,8 +132,8 @@ auto const CheckCallback
   = [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event)
 {
   // Check condition here.
-  // Return SC_TRUE or SC_FALSE depending on condition.
-  return SC_FALSE;
+  // Return true or false depending on condition.
+  return false;
 };
 
 auto waiter = context.CreateConditionWaiter<

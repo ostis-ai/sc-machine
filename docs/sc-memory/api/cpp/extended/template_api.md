@@ -342,7 +342,7 @@ templ.Triple(
   ScType::NodeVar >> "_x"
 );
 bool const hasAliasX = templ.HasReplacement("_x");
-// The value of `hasAliasX` be equal to `SC_TRUE`.
+// The value of `hasAliasX` be equal to `true`.
 ...
 ```
 
@@ -372,14 +372,14 @@ size_t const tripleCount = templ.Size();
 ### **IsEmpty**
 
 If you need sc-template to be empty you don't have to add any constructions into it. But you should know
-that result of generation by this sc-template is always `SC_TRUE` and result of searching by this sc-template is always
-`SC_FALSE`. To check that sc-template is empty use the method `IsEmpty`.
+that result of generation by this sc-template is always `true` and result of searching by this sc-template is always
+`false`. To check that sc-template is empty use the method `IsEmpty`.
 
 ```cpp
 ...
 ScTemplate templ;
 bool const isEmpty = templ.IsEmpty();
-// The value of `isEmpty` be equal to `SC_TRUE`.
+// The value of `isEmpty` be equal to `true`.
 ...
 ```
 
@@ -538,7 +538,7 @@ To check that replacements map is empty use the method `IsEmpty`.
 ...
 ScTemplateParams params;
 bool const isEmpty = params.IsEmpty();
-// The value of `isEmpty` be equal to `SC_TRUE`.
+// The value of `isEmpty` be equal to `true`.
 ...
 ```
 
@@ -587,10 +587,10 @@ bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 ScAddr setAddr;
 bool replExist = result.Get("_x", setAddr);
-// The value of `replExist` be equal to `SC_TRUE`.
+// The value of `replExist` be equal to `true`.
 
 bool replExist = result.Get("_y", setAddr);
-// The value of `replExist` be equal to `SC_FALSE`.
+// The value of `replExist` be equal to `false`.
 ...
 ```
 
@@ -637,7 +637,7 @@ ScTemplateResultItem result;
 bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
-// The value of `replExist` be equal to `SC_TRUE`.
+// The value of `replExist` be equal to `true`.
 ...
 ```
 
@@ -740,10 +740,10 @@ bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 ScTemplateResultItem item;
 bool constrExist = result.Get(0, item);
-// The value of `constrExist` be equal to `SC_TRUE`.
+// The value of `constrExist` be equal to `true`.
 
 constrExist = result.Get(1, item);
-// The value of `constrExist` be equal to `SC_FALSE` and item is not valid.
+// The value of `constrExist` be equal to `false` and item is not valid.
 ...
 ```
 
@@ -839,7 +839,7 @@ ScTemplateSearchResult result;
 bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 bool const count = result.IsEmpty();
-// The value of `count` be equal to `SC_FALSE`.
+// The value of `count` be equal to `false`.
 ...
 ```
 

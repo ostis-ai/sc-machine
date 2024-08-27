@@ -32,7 +32,7 @@ public:
     ScAddr const addr = m_ctx->CreateLink();
 
     ScLink link(*m_ctx, addr);
-    BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), SC_TRUE);
+    BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), true);
   }
 };
 
@@ -45,6 +45,6 @@ public:
 
     ScLink link(*m_ctx, addr);
     std::string const & content = "same content";
-    BENCHMARK_BUILTIN_EXPECT(link.Set(content), SC_TRUE);
+    BENCHMARK_BUILTIN_EXPECT(link.Set(content), true);
   }
 };

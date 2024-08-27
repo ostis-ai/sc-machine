@@ -216,7 +216,7 @@ Use this method to check that specified action is initiated.
 
 ```cpp
 ...
-sc_bool const isActionInitiated = action.IsInitiated();
+bool const isActionInitiated = action.IsInitiated();
 ...
 ```
 
@@ -248,7 +248,7 @@ Use this method to check that specified action is finished.
 
 ```cpp
 ...
-sc_bool const isActionFinished = action.IsFinished();
+bool const isActionFinished = action.IsFinished();
 ...
 ```
 
@@ -264,7 +264,7 @@ The set of actions finished successfully includes actions that have been success
 
 ```cpp
 ...
-sc_bool const isActionFinishedSuccessfully = action.IsFinishedSuccessfully();
+bool const isActionFinishedSuccessfully = action.IsFinishedSuccessfully();
 ...
 ```
 
@@ -288,7 +288,7 @@ The set of actions finished unsuccessfully includes actions that were not succes
 
 ```cpp
 ...
-sc_bool const isActionFinishedUnsuccessfully = action.IsFinishedUnsuccessfully();
+bool const isActionFinishedUnsuccessfully = action.IsFinishedUnsuccessfully();
 ...
 ```
 
@@ -315,7 +315,7 @@ The set of actions finished with error includes actions whose execution was not 
 
 ```cpp
 ...
-sc_bool const isActionFinishedWithError = action.IsFinishedWithError();
+bool const isActionFinishedWithError = action.IsFinishedWithError();
 ...
 ```
 

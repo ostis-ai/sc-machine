@@ -109,9 +109,9 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetActionClass() const
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-sc_bool ScAgentBase<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & event)
+bool ScAgentBase<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & event)
 {
-  return SC_TRUE;
+  return true;
 }
 
 // LCOV_EXCL_STOP
@@ -162,9 +162,9 @@ ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(ScAction & action)
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-sc_bool ScAgentBase<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
+bool ScAgentBase<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
 {
-  return SC_TRUE;
+  return true;
 }
 
 // LCOV_EXCL_STOP
@@ -211,7 +211,7 @@ void ScAgentBase<TScEvent, TScContext>::SetImplementation(ScAddr const & agentIm
 }
 
 template <class TScEvent, class TScContext>
-sc_bool ScAgentBase<TScEvent, TScContext>::MayBeSpecified() const
+bool ScAgentBase<TScEvent, TScContext>::MayBeSpecified() const
 {
   return m_memoryCtx.IsElement(m_agentImplementationAddr);
 }

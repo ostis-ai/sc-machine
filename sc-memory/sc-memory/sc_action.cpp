@@ -127,12 +127,12 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
   return *this;
 }
 
-sc_bool ScAction::IsInitiated() const
+bool ScAction::IsInitiated() const
 {
   return m_ctx->HelperCheckEdge(ScKeynodes::action_initiated, *this, ScType::EdgeAccessConstPosPerm);
 }
 
-sc_bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
+bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
 {
   if (IsInitiated())
     SC_THROW_EXCEPTION(
@@ -198,12 +198,12 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
 }
 
-sc_bool ScAction::IsFinished() const
+bool ScAction::IsFinished() const
 {
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished, *this, ScType::EdgeAccessConstPosPerm);
 }
 
-sc_bool ScAction::IsFinishedSuccessfully() const
+bool ScAction::IsFinishedSuccessfully() const
 {
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished_successfully, *this, ScType::EdgeAccessConstPosPerm);
 }
@@ -214,7 +214,7 @@ ScResult ScAction::FinishSuccessfully() noexcept(false)
   return SC_RESULT_OK;
 }
 
-sc_bool ScAction::IsFinishedUnsuccessfully() const
+bool ScAction::IsFinishedUnsuccessfully() const
 {
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished_unsuccessfully, *this, ScType::EdgeAccessConstPosPerm);
 }
@@ -225,7 +225,7 @@ ScResult ScAction::FinishUnsuccessfully() noexcept(false)
   return SC_RESULT_NO;
 }
 
-sc_bool ScAction::IsFinishedWithError() const
+bool ScAction::IsFinishedWithError() const
 {
   return m_ctx->HelperCheckEdge(ScKeynodes::action_finished_with_error, *this, ScType::EdgeAccessConstPosPerm);
 }

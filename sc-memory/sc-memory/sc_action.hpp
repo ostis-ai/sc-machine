@@ -111,16 +111,16 @@ public:
    * @brief Checks if the action is initiated.
    * @return True if the action is initiated, false otherwise.
    */
-  _SC_EXTERN sc_bool IsInitiated() const;
+  _SC_EXTERN bool IsInitiated() const;
 
   /*!
    * @brief Initiates and waits the action.
    * @param waitTime_ms Wait time (in milliseconds) of action being finished. Be default, it equals to 5000
    * milliseconds.
-   * @return SC_TRUE if the action has been waited, otherwise SC_FALSE.
+   * @return true if the action has been waited, otherwise true.
    * @throws utils::ExceptionInvalidState if the action is already initiated or finished.
    */
-  _SC_EXTERN sc_bool InitiateAndWait(sc_uint32 waitTime_ms = 5000u) noexcept(false);
+  _SC_EXTERN bool InitiateAndWait(sc_uint32 waitTime_ms = 5000u) noexcept(false);
 
   /*!
    * @brief Initiates the action.
@@ -133,13 +133,13 @@ public:
    * @brief Checks if the action is finished.
    * @return True if the action is finished, false otherwise.
    */
-  _SC_EXTERN sc_bool IsFinished() const;
+  _SC_EXTERN bool IsFinished() const;
 
   /*!
    * @brief Checks if the action is finished successfully.
    * @return True if the action is finished successfully, false otherwise.
    */
-  _SC_EXTERN sc_bool IsFinishedSuccessfully() const;
+  _SC_EXTERN bool IsFinishedSuccessfully() const;
 
   /*!
    * @brief Marks the action as finished successfully.
@@ -152,7 +152,7 @@ public:
    * @brief Checks if the action is finished unsuccessfully.
    * @return True if the action is finished unsuccessfully, false otherwise.
    */
-  _SC_EXTERN sc_bool IsFinishedUnsuccessfully() const;
+  _SC_EXTERN bool IsFinishedUnsuccessfully() const;
 
   /*!
    * @brief Marks the action as finished unsuccessfully.
@@ -165,7 +165,7 @@ public:
    * @brief Checks if the action is finished with an error.
    * @return True if the action is finished with an error, false otherwise.
    */
-  _SC_EXTERN sc_bool IsFinishedWithError() const;
+  _SC_EXTERN bool IsFinishedWithError() const;
 
   /*!
    * @brief Marks the action as finished with an error.

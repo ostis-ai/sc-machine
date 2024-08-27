@@ -342,7 +342,7 @@ for (ScAddr const & addr : addrList)
 for (ScAddr const & addr : addrList)
 {
   if (addr.IsValid())
-    return SC_TRUE;
+    return true;
 }
 ```
 

@@ -24,7 +24,7 @@ public:
       m_contents.pop_back();
     }
 
-    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(content).empty(), SC_FALSE);
+    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(content).empty(), false);
   }
 
   void Setup(size_t objectsNum) override
@@ -48,7 +48,7 @@ public:
 
       std::string content = result.str();
       ScLink link(*m_ctx, addr);
-      BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), SC_TRUE);
+      BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), true);
 
       m_contents.push_back(content);
     }

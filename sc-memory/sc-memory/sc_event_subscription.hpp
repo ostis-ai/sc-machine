@@ -63,14 +63,14 @@ protected:
       ScAddr const & subscriptionElementAddr,
       DelegateFunc const & func = DelegateFunc());
 
-  _SC_EXTERN static sc_result Handler(
+  _SC_EXTERN static sc_result Handle(
       sc_event_subscription const * event_subscription,
       sc_addr userAddr,
       sc_addr connectorAddr,
       sc_type connectorType,
       sc_addr otherAddr);
 
-  _SC_EXTERN static sc_result HandlerDelete(sc_event_subscription const * event);
+  _SC_EXTERN static sc_result HandleDelete(sc_event_subscription const * event);
 
 private:
   sc_event_subscription * m_event_subscription;

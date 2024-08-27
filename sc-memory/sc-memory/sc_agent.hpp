@@ -146,9 +146,9 @@ public:
   /*!
    * @brief Checks initiation condition for agent of this class.
    * @param event An initiated sc-event to which the agent reacted.
-   * @return SC_TRUE if initiation condition was checked successfully, otherwise SC_FALSE.
+   * @return true if initiation condition was checked successfully, otherwise true.
    */
-  _SC_EXTERN virtual sc_bool CheckInitiationCondition(TScEvent const & event);
+  _SC_EXTERN virtual bool CheckInitiationCondition(TScEvent const & event);
 
   /*!
    * @brief Gets initiation condition for agent of this class.
@@ -200,9 +200,9 @@ public:
    * @brief Gets the result of the agent's execution.
    * @param event An initiated sc-event to which the agent reacted.
    * @param action A sc-action that the agent performs.
-   * @return SC_TRUE if result condition was checked successfully, otherwise SC_FALSE.
+   * @return true if result condition was checked successfully, otherwise true.
    */
-  _SC_EXTERN virtual sc_bool CheckResultCondition(TScEvent const & event, ScAction & action);
+  _SC_EXTERN virtual bool CheckResultCondition(TScEvent const & event, ScAction & action);
 
   /*!
    * @brief Gets result condition for agent of this class.
@@ -257,9 +257,9 @@ protected:
 
   /*!
    * @brief Checks if the agent may be specified in knowledge base.
-   * @return SC_TRUE if the agent has implementation in knowledge base, otherwise SC_FALSE.
+   * @return true if the agent has implementation in knowledge base, otherwise true.
    */
-  _SC_EXTERN sc_bool MayBeSpecified() const;
+  _SC_EXTERN bool MayBeSpecified() const;
 
   static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
 };

@@ -37,12 +37,12 @@ private:
      * @param startDelegate Delegate function to call at the start of the wait.
      * @return True if resolved, false if timeout.
      */
-    sc_bool Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate);
+    bool Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate);
 
   private:
-    std::mutex m_mutex;               ///< Mutex for thread safety.
-    std::condition_variable m_cond;   ///< Condition variable for waiting.
-    sc_bool m_isResolved = SC_FALSE;  ///< Flag indicating if the condition is resolved.
+    std::mutex m_mutex;              ///< Mutex for thread safety.
+    std::condition_variable m_cond;  ///< Condition variable for waiting.
+    bool m_isResolved = false;       ///< Flag indicating if the condition is resolved.
   };
 
 public:
@@ -67,7 +67,7 @@ public:
    * @param onWaitUnsuccess Function to call on unsuccessful wait.
    * @return True if resolved, false if timeout.
    */
-  _SC_EXTERN sc_bool Wait(
+  _SC_EXTERN bool Wait(
       sc_uint32 timeout_ms = 5000,
       std::function<void(void)> const & onWaitSuccess = {},
       std::function<void(void)> const & onWaitUnsuccess = {});
@@ -110,7 +110,7 @@ protected:
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr);
 
-  virtual sc_bool OnEvent(TScEvent const & event);
+  virtual bool OnEvent(TScEvent const & event);
 
 private:
   ScElementaryEventSubscription<TScEvent> m_event;
@@ -129,7 +129,7 @@ class _SC_EXTERN ScConditionWaiter final : public ScEventWaiter<TScEvent>
   friend class ScAgentContext;
 
 protected:
-  using DelegateCheckFunc = std::function<sc_bool(TScEvent const &)>;
+  using DelegateCheckFunc = std::function<bool(TScEvent const &)>;
 
   /*!
    * @brief Constructor for ScConditionWaiter.
@@ -156,7 +156,7 @@ protected:
       DelegateCheckFunc const & func);
 
 private:
-  sc_bool OnEvent(TScEvent const & event) override;
+  bool OnEvent(TScEvent const & event) override;
 
 private:
   DelegateCheckFunc m_checkFunc;
@@ -180,7 +180,7 @@ protected:
   _SC_EXTERN ScWaiterActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
 
 private:
-  sc_bool OnEvent(ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) override;
+  bool OnEvent(ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) override;
 };
 
 #include "sc_event_wait.tpp"

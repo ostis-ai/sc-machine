@@ -414,9 +414,9 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 ```cpp
 ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 {
-  action.IsInitiated(); // result: SC_TRUE
-  action.IsFinished(); // result: SC_FALSE
-  action.IsFinishedSuccessfully(); // result: SC_FALSE
+  action.IsInitiated(); // result: true
+  action.IsFinished(); // result: false
+  action.IsFinishedSuccessfully(); // result: false
 
   // Some logic...
 
@@ -530,7 +530,7 @@ ScTemplate MyAgent::GetInitiationConditionTemplate() const
 For speed, you can implement the agent initiation condition in the form of checks on iterators.
 
 ```cpp
-sc_bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
+bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
 {
  // ScActionEvent is event type on which the given agent triggered. 
  // It is encapsulate information about sc-event. The provided event 
@@ -608,7 +608,7 @@ ScTemplate MyAgent::GetResultConditionTemplate() const
 For speed, you can implement the agent result condition in the form of checks on iterators.
 
 ```cpp
-sc_bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
+bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 {
   return m_memoryCtx.HelperCheckEdge(
     ScType::EdgeAccessConstPosPerm, action.GetResult(), MyKeynodes::my_class);

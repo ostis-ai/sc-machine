@@ -94,7 +94,7 @@ template <typename ParamType1, typename ParamType2, typename ParamType3>
 bool ScIterator3<ParamType1, ParamType2, ParamType3>::Next() const
 {
   sc_result result;
-  sc_bool status = sc_iterator3_next_ext(m_iterator, &result);
+  bool status = sc_iterator3_next_ext(m_iterator, &result);
 
   switch (result)
   {
@@ -107,7 +107,7 @@ bool ScIterator3<ParamType1, ParamType2, ParamType3>::Next() const
     break;
   }
 
-  return status == SC_TRUE;
+  return status == true;
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
@@ -178,7 +178,7 @@ template <typename ParamType1, typename ParamType2, typename ParamType3, typenam
 bool ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Next() const
 {
   sc_result result;
-  sc_bool status = sc_iterator5_next_ext(m_iterator, &result);
+  bool status = sc_iterator5_next_ext(m_iterator, &result);
 
   switch (result)
   {
@@ -191,7 +191,7 @@ bool ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Ne
     break;
   }
 
-  return status == SC_TRUE;
+  return status == true;
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>

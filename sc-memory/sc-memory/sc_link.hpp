@@ -54,7 +54,7 @@ public:
     auto * copy = (sc_char *)calloc(str.size(), sizeof(sc_char));
     memcpy(copy, str.c_str(), str.size());
 
-    stream.reset(new ScStream(copy, str.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK, SC_TRUE));
+    stream.reset(new ScStream(copy, str.size(), SC_STREAM_FLAG_READ | SC_STREAM_FLAG_SEEK, true));
   }
 
   template <typename Type>

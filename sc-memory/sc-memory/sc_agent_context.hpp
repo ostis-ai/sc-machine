@@ -145,7 +145,7 @@ public:
    *                         It takes no parameters.
    * @param checkCallback A callback function that will be called to check if condition is met.
    *                      It takes a const reference to `ScElementaryEvent` object as a parameter and
-   *                      returns an `sc_bool`.
+   *                      returns an `bool`.
    * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class address or subscription sc-element is not valid.
    */
@@ -153,7 +153,7 @@ public:
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback);
+      std::function<bool(ScElementaryEvent const &)> const & checkCallback);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified subscription sc-element, initiate callback, and check
@@ -162,7 +162,7 @@ public:
    * @param subscriptionElementAddr An address of subscription sc-element.
    * @param initiateCallback A callback function that will be called when the wait starts. It takes no parameters.
    * @param checkCallback A callback function that will be called to check if the condition is met. It takes a const
-   * reference to TScEvent as a parameter and returns an sc_bool.
+   * reference to TScEvent as a parameter and returns an bool.
    * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If subscription sc-element is not valid or if TScEvent is not derived from
    * ScElementaryEvent.
@@ -171,7 +171,7 @@ public:
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<sc_bool(TScEvent const &)> const & checkCallback);
+      std::function<bool(TScEvent const &)> const & checkCallback);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
@@ -185,21 +185,21 @@ public:
    * @param subscriptionElementAddr An address of subscription sc-element, which must be a valid sc-element.
    * @param checkCallback A callback function that will be called to check if condition is met.
    *                      It takes a const reference to `ScElementaryEvent` object as a parameter and
-   *                      returns an `sc_bool`.
+   *                      returns an `bool`.
    * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      std::function<sc_bool(ScElementaryEvent const &)> const & checkCallback);
+      std::function<bool(ScElementaryEvent const &)> const & checkCallback);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified subscription sc-element and check callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
    * @param subscriptionElementAddr A address of subscription sc-element.
    * @param checkCallback A callback function that will be called to check if the condition is met. It takes a const
-   * reference to TScEvent as a parameter and returns an sc_bool.
+   * reference to TScEvent as a parameter and returns an bool.
    * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If subscription sc-element is not valid or if TScEvent is not derived from
    * ScElementaryEvent.
@@ -207,7 +207,7 @@ public:
   template <class TScEvent>
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
-      std::function<sc_bool(TScEvent const &)> const & checkCallback);
+      std::function<bool(TScEvent const &)> const & checkCallback);
 
   /*!
    * @brief Subscribes agent class to specified sc-events.

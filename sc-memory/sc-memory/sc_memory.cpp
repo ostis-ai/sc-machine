@@ -101,7 +101,7 @@ bool ScMemory::Shutdown(bool saveState /* = true */)
 
   utils::ScLog::SetUp("Console", "", "Info");
 
-  sc_bool result = sc_memory_shutdown(saveState);
+  bool result = sc_memory_shutdown(saveState);
 
   delete ms_globalContext;
   ms_globalContext = nullptr;
@@ -227,7 +227,7 @@ bool ScMemoryContext::IsElement(ScAddr const & addr) const
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_bool status = sc_memory_is_element_ext(m_context, *addr, &result);
+  bool status = sc_memory_is_element_ext(m_context, *addr, &result);
 
   switch (result)
   {
@@ -961,7 +961,7 @@ bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType c
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_bool status = sc_helper_check_arc_ext(m_context, *begin, *end, *edgeType, &result);
+  bool status = sc_helper_check_arc_ext(m_context, *begin, *end, *edgeType, &result);
 
   switch (result)
   {

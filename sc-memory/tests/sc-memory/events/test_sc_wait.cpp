@@ -116,9 +116,9 @@ TEST_F(ScWaiterTest, ConditionWaiter)
       {
         EmitEvent(data);
       },
-      [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
+      [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> bool
       {
-        return SC_TRUE;
+        return true;
       });
 
   EXPECT_TRUE(waiter->Wait());
@@ -135,21 +135,21 @@ TEST_F(ScWaiterTest, ConditionWaiterNotSuccess)
       {
         EmitEvent(data);
       },
-      [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> sc_bool
+      [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &) -> bool
       {
-        return SC_FALSE;
+        return false;
       });
 
-  sc_bool result = SC_TRUE;
+  bool result = true;
   EXPECT_FALSE(waiter->Wait(
       2000,
       [&result]()
       {
-        result = SC_TRUE;
+        result = true;
       },
       [&result]()
       {
-        result = SC_FALSE;
+        result = false;
       }));
   EXPECT_FALSE(result);
   EXPECT_TRUE(data.m_isDone);
@@ -165,9 +165,9 @@ TEST_F(ScWaiterTest, ConditionWaiterWithEventTypeKeynode)
       {
         EmitEvent(data);
       },
-      [](ScElementaryEvent const &) -> sc_bool
+      [](ScElementaryEvent const &) -> bool
       {
-        return SC_TRUE;
+        return true;
       });
 
   EXPECT_TRUE(waiter->Wait());

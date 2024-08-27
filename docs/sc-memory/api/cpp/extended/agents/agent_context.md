@@ -164,7 +164,7 @@ auto eventWaiter = context.CreateConditionWaiter<MyEventType>(
     // For example, it will be code, that initiate some sc-event.
     // By default, this callback is empty.
   },
-  [](MyEventType const & event) -> sc_bool
+  [](MyEventType const & event) -> bool
   {
     // Here you can specify check for sc-event that will occur.
     // This check should return bool value.
@@ -205,7 +205,7 @@ auto eventWaiter = context.CreateConditionWaiter<
         actionAddr);
   },
   [](ScEventAfterGenerateIncomingArc<
-        ScType::EdgeAccessConstPosPerm> const & event) -> sc_bool
+        ScType::EdgeAccessConstPosPerm> const & event) -> bool
   {
     // Check sc-event here.
     return event.GetOtherElement()

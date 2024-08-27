@@ -36,7 +36,7 @@ ScStream::ScStream(sc_char const * buffer, size_t bufferSize, sc_uint8 flags)
   m_stream = sc_stream_memory_new(buffer, (sc_uint)bufferSize, flags, SC_FALSE);
 }
 
-ScStream::ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags, sc_bool dataOwner)
+ScStream::ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags, bool dataOwner)
 {
   m_stream = sc_stream_memory_new(buffer, (sc_uint)bufferSize, flags, dataOwner);
 }
@@ -132,7 +132,7 @@ bool ScStreamConverter::StreamToString(ScStreamPtr const & stream, std::string &
 {
   size_t const bytesCount = stream->Size();
   if (bytesCount == 0)
-    return SC_FALSE;
+    return false;
 
   char * data = new char[bytesCount];
   size_t readBytes;
@@ -141,7 +141,7 @@ bool ScStreamConverter::StreamToString(ScStreamPtr const & stream, std::string &
 
   delete[] data;
 
-  return SC_TRUE;
+  return true;
 }
 
 ScStreamPtr ScStreamConverter::StreamFromString(std::string const & str)

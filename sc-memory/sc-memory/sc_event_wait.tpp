@@ -43,9 +43,9 @@ ScEventWaiter<TScEvent>::ScEventWaiter(
 }
 
 template <class TScEvent>
-sc_bool ScEventWaiter<TScEvent>::OnEvent(TScEvent const &)
+bool ScEventWaiter<TScEvent>::OnEvent(TScEvent const &)
 {
-  return SC_TRUE;
+  return true;
 }
 
 template <class TScEvent>
@@ -70,7 +70,7 @@ ScConditionWaiter<TScEvent>::ScConditionWaiter(
 }
 
 template <class TScEvent>
-sc_bool ScConditionWaiter<TScEvent>::OnEvent(TScEvent const & event)
+bool ScConditionWaiter<TScEvent>::OnEvent(TScEvent const & event)
 {
   return m_checkFunc(event);
 }

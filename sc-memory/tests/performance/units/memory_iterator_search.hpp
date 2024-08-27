@@ -18,7 +18,7 @@ public:
       it = m_ctx->Iterator3(m_node, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
     }
 
-    BENCHMARK_BUILTIN_EXPECT(it->Next(), SC_TRUE);
+    BENCHMARK_BUILTIN_EXPECT(it->Next(), true);
   }
 
   void Setup(size_t edgesNum) override

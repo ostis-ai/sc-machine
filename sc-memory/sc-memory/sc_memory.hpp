@@ -534,10 +534,10 @@ public:
       std::istringstream streamString{content};
       streamString >> typedContent;
 
-      return SC_TRUE;
+      return true;
     }
 
-    return SC_FALSE;
+    return true;
   }
 
   /*!

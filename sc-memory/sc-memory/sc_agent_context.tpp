@@ -68,7 +68,7 @@ template <class TScEvent>
 std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
-    std::function<sc_bool(TScEvent const &)> const & checkCallback)
+    std::function<bool(TScEvent const &)> const & checkCallback)
 {
   static_assert(
       std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
@@ -84,9 +84,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Not able to create sc-event waiter with condition of changing link content because subscription sc-element "
-          "is "
-          "not "
-          "sc-link.");
+          "is not sc-link.");
   }
 
   auto eventWait = std::shared_ptr<ScConditionWaiter<TScEvent>>(
@@ -98,7 +96,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
 template <class TScEvent>
 std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & subscriptionElementAddr,
-    std::function<sc_bool(TScEvent const &)> const & checkCallback)
+    std::function<bool(TScEvent const &)> const & checkCallback)
 {
   return CreateConditionWaiter(subscriptionElementAddr, {}, checkCallback);
 }

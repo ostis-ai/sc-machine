@@ -31,7 +31,7 @@ There is a quintuple of sc-node with its system identifier.
 To set system identifier for some sc-node or sc-link, use the method `HelperSetSystemIdtf`. If passed system identifier
 is not valid then the method `HelperSetSystemIdtf` will throw the exception `utils::ExceptionInvalidParams` with 
 description of the error. If passed system identifier is already used for other sc-element then the method will return
-`SC_FALSE`.
+`false`.
 
 ```cpp
 ...
@@ -39,7 +39,7 @@ ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
     = context.HelperSetSystemIdtf("my_node", nodeAddr);
-// The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
+// The value of `isSystemIdentifierSet` must be equal to `true`.
 ...
 ```
 
@@ -80,7 +80,7 @@ ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
     = context.HelperSetSystemIdtf("my_node", nodeAddr);
-// The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
+// The value of `isSystemIdentifierSet` must be equal to `true`.
 
 std::string const & systemIdtf = context.HelperGetSystemIdtf(nodeAddr);
 // The value of `systemIdtf` must be equal to `"my_node"`.
@@ -90,7 +90,7 @@ std::string const & systemIdtf = context.HelperGetSystemIdtf(nodeAddr);
 ## **HelperFindBySystemIdtf**
 
 You can find sc-element by its system identifier. For this use the method `HelperFindBySystemIdtf`. It will return 
-`SC_TRUE` if there is sc-element with provided system identifier, otherwise `SC_FALSE`.
+`true` if there is sc-element with provided system identifier, otherwise `false`.
 
 ```cpp
 ...
@@ -98,12 +98,12 @@ ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
     = context.HelperSetSystemIdtf("my_node", nodeAddr);
-// The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
+// The value of `isSystemIdentifierSet` must be equal to `true`.
 
 ScAddr resultAddr;
 bool const & isElementWithSystemIdtfFound 
     = context.HelperFindBySystemIdtf("my_node", resultAddr);
-// The value of `isElementWithSystemIdtfFound` must be equal to `SC_TRUE` 
+// The value of `isElementWithSystemIdtfFound` must be equal to `true` 
 // and the value of `resultAddr` must be equal to the value of `nodeAddr`.
 
 // Or use the another definition of this method.
@@ -125,7 +125,7 @@ ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 
 bool const & isSystemIdentifierSet 
     = context.HelperSetSystemIdtf("my_node", nodeAddr);
-// The value of `isSystemIdentifierSet` must be equal to `SC_TRUE`.
+// The value of `isSystemIdentifierSet` must be equal to `true`.
 
 ScSystemIdentifierQuintuple quintuple;
 bool const & isElementWithSystemIdtfFound 

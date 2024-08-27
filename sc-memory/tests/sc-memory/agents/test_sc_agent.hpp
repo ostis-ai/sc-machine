@@ -228,7 +228,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  sc_bool CheckInitiationCondition(ScActionEvent const & event) override;
+  bool CheckInitiationCondition(ScActionEvent const & event) override;
 
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
@@ -254,7 +254,7 @@ public:
 
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 
-  sc_bool CheckResultCondition(ScActionEvent const & event, ScAction & action) override;
+  bool CheckResultCondition(ScActionEvent const & event, ScAction & action) override;
 };
 
 class ATestActionDeactivated : public ScActionAgent

@@ -21,8 +21,8 @@ ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
       *TScEvent::eventClassAddr,
       *TScEvent::elementType,
       (sc_pointer)this,
-      &ScElementaryEventSubscription::Handler,
-      &ScElementaryEventSubscription::HandlerDelete);
+      &ScElementaryEventSubscription::Handle,
+      &ScElementaryEventSubscription::HandleDelete);
 }
 
 template <class TScEvent>
@@ -39,8 +39,8 @@ ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
       *eventClassAddr,
       *ScType::Unknown,
       (sc_pointer)this,
-      &ScElementaryEventSubscription::Handler,
-      &ScElementaryEventSubscription::HandlerDelete);
+      &ScElementaryEventSubscription::Handle,
+      &ScElementaryEventSubscription::HandleDelete);
 }
 
 template <class TScEvent>
@@ -63,7 +63,7 @@ void ScElementaryEventSubscription<TScEvent>::RemoveDelegate()
 }
 
 template <class TScEvent>
-sc_result ScElementaryEventSubscription<TScEvent>::Handler(
+sc_result ScElementaryEventSubscription<TScEvent>::Handle(
     sc_event_subscription const * event_subscription,
     sc_addr userAddr,
     sc_addr connectorAddr,
@@ -101,7 +101,7 @@ sc_result ScElementaryEventSubscription<TScEvent>::Handler(
 }
 
 template <class TScEvent>
-sc_result ScElementaryEventSubscription<TScEvent>::HandlerDelete(sc_event_subscription const * event_subscription)
+sc_result ScElementaryEventSubscription<TScEvent>::HandleDelete(sc_event_subscription const * event_subscription)
 {
   auto * eventSubscription = (ScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
 
