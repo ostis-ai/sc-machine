@@ -9,7 +9,7 @@
 #include "sc_event.hpp"
 #include "sc_keynodes.hpp"
 
-ScActionAgent::ScActionAgent() = default;
+ScActionAgent::ScActionAgent() noexcept = default;
 
 ScTemplate ScActionAgent::GetInitiationConditionTemplate() const
 {

@@ -6,17 +6,17 @@
 
 #include "sc_event_wait.hpp"
 
-ScWaiter::Impl::Impl() = default;
-ScWaiter::Impl::~Impl() = default;
+ScWaiter::Impl::Impl() noexcept = default;
+ScWaiter::Impl::~Impl() noexcept = default;
 
-void ScWaiter::Impl::Resolve()
+void ScWaiter::Impl::Resolve() noexcept
 {
   std::unique_lock<std::mutex> lock(m_mutex);
   m_isResolved = true;
   m_cond.notify_one();
 }
 
-bool ScWaiter::Impl::Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate)
+bool ScWaiter::Impl::Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate) noexcept
 {
   std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -37,14 +37,14 @@ bool ScWaiter::Impl::Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelega
   return true;
 }
 
-ScWaiter::~ScWaiter() = default;
+ScWaiter::~ScWaiter() noexcept = default;
 
-void ScWaiter::Resolve()
+void ScWaiter::Resolve() noexcept
 {
   m_impl.Resolve();
 }
 
-ScWaiter * ScWaiter::SetOnWaitStartDelegate(DelegateFunc const & startDelegate)
+ScWaiter * ScWaiter::SetOnWaitStartDelegate(DelegateFunc const & startDelegate) noexcept
 {
   m_waitStartDelegate = startDelegate;
   return this;

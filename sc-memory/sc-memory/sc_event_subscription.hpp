@@ -18,10 +18,10 @@
 class _SC_EXTERN ScEventSubscription : public ScObject
 {
 public:
-  _SC_EXTERN ~ScEventSubscription() override;
+  _SC_EXTERN ~ScEventSubscription() noexcept override;
 
   /* Remove delegate function */
-  _SC_EXTERN virtual void RemoveDelegate() = 0;
+  _SC_EXTERN virtual void RemoveDelegate() noexcept = 0;
 };
 
 SHARED_PTR_TYPE(ScEventSubscription);
@@ -44,33 +44,33 @@ class _SC_EXTERN ScElementaryEventSubscription final : public ScEventSubscriptio
 public:
   using DelegateFunc = std::function<void(TScEvent const & event)>;
 
-  _SC_EXTERN ~ScElementaryEventSubscription() override;
+  _SC_EXTERN ~ScElementaryEventSubscription() noexcept override;
 
   /* Set specified function as a delegate that will be called on event emit */
-  _SC_EXTERN void SetDelegate(DelegateFunc && func);
+  _SC_EXTERN void SetDelegate(DelegateFunc && func) noexcept;
 
-  _SC_EXTERN void RemoveDelegate() override;
+  _SC_EXTERN void RemoveDelegate() noexcept override;
 
 protected:
   explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
       ScAddr const & subscriptionElementAddr,
-      DelegateFunc const & func = DelegateFunc());
+      DelegateFunc const & func = DelegateFunc()) noexcept;
 
   explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      DelegateFunc const & func = DelegateFunc());
+      DelegateFunc const & func = DelegateFunc()) noexcept;
 
   _SC_EXTERN static sc_result Handle(
       sc_event_subscription const * event_subscription,
       sc_addr userAddr,
       sc_addr connectorAddr,
       sc_type connectorType,
-      sc_addr otherAddr);
+      sc_addr otherAddr) noexcept;
 
-  _SC_EXTERN static sc_result HandleDelete(sc_event_subscription const * event);
+  _SC_EXTERN static sc_result HandleDelete(sc_event_subscription const * event) noexcept;
 
 private:
   sc_event_subscription * m_event_subscription;

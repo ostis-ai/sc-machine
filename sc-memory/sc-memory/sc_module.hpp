@@ -49,9 +49,9 @@ class ScAgentBuilder;
 class _SC_EXTERN ScModule : public ScObject
 {
 public:
-  _SC_EXTERN ~ScModule() override;
+  _SC_EXTERN ~ScModule() noexcept override;
 
-  _SC_EXTERN static ScModule * Create(ScModule * module);
+  _SC_EXTERN static ScModule * Create(ScModule * module) noexcept;
 
   /*!
    * @brief Reminds agent and it initiation condition to register it with module after.
@@ -63,7 +63,7 @@ public:
       class TScAgent,
       class... TScAddr,
       typename = std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>>
-  _SC_EXTERN ScModule * Agent(TScAddr const &... subscriptionAddrs);
+  _SC_EXTERN ScModule * Agent(TScAddr const &... subscriptionAddrs) noexcept;
 
   /*!
    * @brief Remembers action agent and it initiation condition to register it with module after.
@@ -72,7 +72,7 @@ public:
    * @returns A pointer to module instance.
    */
   template <class TScAgent, typename = std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>>
-  _SC_EXTERN ScModule * Agent();
+  _SC_EXTERN ScModule * Agent() noexcept;
 
   /*!
    * @brief Creates an agent builder for the specified agent implementation.
@@ -81,18 +81,18 @@ public:
    * @return A pointer to the created agent builder.
    */
   template <class TScAgent>
-  _SC_EXTERN ScAgentBuilder<TScAgent> * AgentBuilder(ScAddr const & agentImplementationAddr = ScAddr::Empty);
+  _SC_EXTERN ScAgentBuilder<TScAgent> * AgentBuilder(ScAddr const & agentImplementationAddr = ScAddr::Empty) noexcept;
 
   /*!
    * @brief Subscribes all module agents.
    * @returns Result of initializing.
    */
-  _SC_EXTERN void Register(ScMemoryContext * ctx);
+  _SC_EXTERN void Register(ScMemoryContext * ctx) noexcept;
 
   /*! Unsubscribes all module agents.
    * @returns Result of shutdown.
    */
-  _SC_EXTERN void Unregister(ScMemoryContext * ctx);
+  _SC_EXTERN void Unregister(ScMemoryContext * ctx) noexcept;
 
   /*!
    * @brief Initializes the module with the given memory context.
@@ -114,10 +114,10 @@ protected:
       m_agents;
 
   template <class TScAgent>
-  ScAgentSubscribeCallback GetAgentSubscribeCallback();
+  ScAgentSubscribeCallback GetAgentSubscribeCallback() noexcept;
 
   template <class TScAgent>
-  ScAgentUnsubscribeCallback GetAgentUnsubscribeCallback();
+  ScAgentUnsubscribeCallback GetAgentUnsubscribeCallback() noexcept;
 };
 
 /// Registers module class instance

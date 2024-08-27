@@ -9,7 +9,7 @@
 #include "sc_agent_builder.hpp"
 
 template <class TScAgent, class... TScAddr, typename>
-ScModule * ScModule::Agent(TScAddr const &... subscriptionAddrs)
+ScModule * ScModule::Agent(TScAddr const &... subscriptionAddrs) noexcept
 {
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
@@ -23,7 +23,7 @@ ScModule * ScModule::Agent(TScAddr const &... subscriptionAddrs)
 }
 
 template <class TScAgent>
-ScAgentBuilder<TScAgent> * ScModule::AgentBuilder(ScAddr const & agentImplementationAddr)
+ScAgentBuilder<TScAgent> * ScModule::AgentBuilder(ScAddr const & agentImplementationAddr) noexcept
 {
   auto * builder = new ScAgentBuilder<TScAgent>(this, agentImplementationAddr);
   m_agents.push_back({builder, GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>(), {}});
@@ -31,14 +31,14 @@ ScAgentBuilder<TScAgent> * ScModule::AgentBuilder(ScAddr const & agentImplementa
 }
 
 template <class TScAgent, typename>
-ScModule * ScModule::Agent()
+ScModule * ScModule::Agent() noexcept
 {
   m_agents.push_back({nullptr, GetAgentSubscribeCallback<TScAgent>(), GetAgentUnsubscribeCallback<TScAgent>(), {}});
   return this;
 }
 
 template <class TScAgent>
-ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback()
+ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback() noexcept
 {
   return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
@@ -53,7 +53,7 @@ ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback()
 }
 
 template <class TScAgent>
-ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback()
+ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback() noexcept
 {
   return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {

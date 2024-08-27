@@ -15,7 +15,7 @@
  * Base class for all objects that has meta data.
  * If you override it, then call any constructor of ScObject in your custom constructors.
  */
-class ScObject
+class _SC_EXTERN ScObject
 {
 public:
   _SC_EXTERN ScObject();

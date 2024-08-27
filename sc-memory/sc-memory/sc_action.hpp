@@ -27,7 +27,7 @@ public:
    * @brief Gets class of the action.
    * @return ScAddr representing class of the action.
    */
-  _SC_EXTERN ScAddr GetClass();
+  _SC_EXTERN ScAddr GetClass() noexcept;
 
   /*!
    * @brief Gets argument of the action by index.
@@ -35,7 +35,7 @@ public:
    * @param defaultArgumentAddr Default address to return if argument is not found.
    * @return ScAddr of argument or defaultArgumentAddr if argument is not found.
    */
-  _SC_EXTERN ScAddr GetArgument(size_t idx, ScAddr const & defaultArgumentAddr = ScAddr::Empty) const;
+  _SC_EXTERN ScAddr GetArgument(size_t idx, ScAddr const & defaultArgumentAddr = ScAddr::Empty) const noexcept;
 
   /*!
    * @brief Gets argument of the action by order relation.
@@ -44,7 +44,7 @@ public:
    * @return ScAddr of argument or defaultArgumentAddr if argument is not found.
    */
   _SC_EXTERN ScAddr
-  GetArgument(ScAddr const & orderRelationAddr, ScAddr const & defaultArgumentAddr = ScAddr::Empty) const;
+  GetArgument(ScAddr const & orderRelationAddr, ScAddr const & defaultArgumentAddr = ScAddr::Empty) const noexcept;
 
   /*!
    * @brief Gets multiple arguments of the action.
@@ -52,7 +52,7 @@ public:
    * @return Tuple of ScAddr representing action arguments.
    */
   template <std::size_t N>
-  _SC_EXTERN auto GetArguments();
+  _SC_EXTERN auto GetArguments() noexcept;
 
   /*!
    * @brief Sets argument of the action by index.
@@ -111,7 +111,7 @@ public:
    * @brief Checks if the action is initiated.
    * @return True if the action is initiated, false otherwise.
    */
-  _SC_EXTERN bool IsInitiated() const;
+  _SC_EXTERN bool IsInitiated() const noexcept;
 
   /*!
    * @brief Initiates and waits the action.
@@ -133,13 +133,13 @@ public:
    * @brief Checks if the action is finished.
    * @return True if the action is finished, false otherwise.
    */
-  _SC_EXTERN bool IsFinished() const;
+  _SC_EXTERN bool IsFinished() const noexcept;
 
   /*!
    * @brief Checks if the action is finished successfully.
    * @return True if the action is finished successfully, false otherwise.
    */
-  _SC_EXTERN bool IsFinishedSuccessfully() const;
+  _SC_EXTERN bool IsFinishedSuccessfully() const noexcept;
 
   /*!
    * @brief Marks the action as finished successfully.
@@ -152,7 +152,7 @@ public:
    * @brief Checks if the action is finished unsuccessfully.
    * @return True if the action is finished unsuccessfully, false otherwise.
    */
-  _SC_EXTERN bool IsFinishedUnsuccessfully() const;
+  _SC_EXTERN bool IsFinishedUnsuccessfully() const noexcept;
 
   /*!
    * @brief Marks the action as finished unsuccessfully.
@@ -165,7 +165,7 @@ public:
    * @brief Checks if the action is finished with an error.
    * @return True if the action is finished with an error, false otherwise.
    */
-  _SC_EXTERN bool IsFinishedWithError() const;
+  _SC_EXTERN bool IsFinishedWithError() const noexcept;
 
   /*!
    * @brief Marks the action as finished with an error.
@@ -183,7 +183,7 @@ protected:
    * @param ctx Context of the agent.
    * @param actionAddr An address of the action.
    */
-  _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionAddr);
+  _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionAddr) noexcept;
 
   /*!
    * @brief Gets multiple arguments of the action.
@@ -191,7 +191,7 @@ protected:
    * @return Tuple of ScAddr representing arguments.
    */
   template <std::size_t... Is>
-  _SC_EXTERN auto GetArgumentsImpl(std::index_sequence<Is...>);
+  _SC_EXTERN auto GetArgumentsImpl(std::index_sequence<Is...>) noexcept;
 
   /*!
    * @brief Marks the action as finished and add action state class to the action.
@@ -199,7 +199,7 @@ protected:
    * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
    */
-  void Finish(ScAddr const & actionStateAddr);
+  void Finish(ScAddr const & actionStateAddr) noexcept(false);
 };
 
 #include "sc_action.tpp"

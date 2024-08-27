@@ -66,14 +66,14 @@ public:
    * @brief Constructs an ScAgentBuilder with the given agent implementation.
    * @param agentImplementationAddr A sc-address of the agent implementation.
    */
-  _SC_EXTERN ScAgentBuilder(ScAddr const & agentImplementationAddr);
+  _SC_EXTERN ScAgentBuilder(ScAddr const & agentImplementationAddr) noexcept;
 
   /*!
    * @brief Constructs an ScAgentBuilder with the given module and agent implementation.
    * @param module A module associated with the agent.
    * @param agentImplementationAddr A sc-address of the agent implementation.
    */
-  _SC_EXTERN ScAgentBuilder(ScModule * module, ScAddr const & agentImplementationAddr);
+  _SC_EXTERN ScAgentBuilder(ScModule * module, ScAddr const & agentImplementationAddr) noexcept;
 
   /*!
    * @brief Sets abstract agent address for specified agent class `TScAgent`.
@@ -81,7 +81,7 @@ public:
    * @return The current instance of ScAgentBuilder.
    * @throws utils::ExceptionInvalidState if the specified abstract agent is not valid.
    */
-  _SC_EXTERN ScAgentBuilder * SetAbstractAgent(ScAddr const & abstractAgentAddr);
+  _SC_EXTERN ScAgentBuilder * SetAbstractAgent(ScAddr const & abstractAgentAddr) noexcept;
 
   /*!
    * @brief Sets primary initiation condition for specified agent class `TScAgent`.
@@ -90,7 +90,7 @@ public:
    * @throws utils::ExceptionInvalidState if the specified event class or subscription element is not valid.
    */
   _SC_EXTERN ScAgentBuilder * SetPrimaryInitiationCondition(
-      std::tuple<ScAddr, ScAddr> const & primaryInitiationCondition);
+      std::tuple<ScAddr, ScAddr> const & primaryInitiationCondition) noexcept;
 
   /*!
    * @brief Sets action class for specified agent class `TScAgent`.
@@ -98,7 +98,7 @@ public:
    * @return The current instance of ScAgentBuilder.
    * @throws utils::ExceptionInvalidState if the specified action class is not valid.
    */
-  _SC_EXTERN ScAgentBuilder * SetActionClass(ScAddr const & actionClassAddr);
+  _SC_EXTERN ScAgentBuilder * SetActionClass(ScAddr const & actionClassAddr) noexcept;
 
   /*!
    * @brief Sets initiation condition and result for specified agent class `TScAgent`
@@ -107,14 +107,14 @@ public:
    * @throws utils::ExceptionInvalidState if the specified initiation or result condition is not valid.
    */
   _SC_EXTERN ScAgentBuilder * SetInitiationConditionAndResult(
-      std::tuple<ScAddr, ScAddr> const & initiationConditionAndResult);
+      std::tuple<ScAddr, ScAddr> const & initiationConditionAndResult) noexcept;
 
   /*!
    * @brief Finalizes build process of specification for specified agent class `TScAgent` and returns the associated
    * module.
    * @return A module associated with the built agent.
    */
-  _SC_EXTERN ScModule * FinishBuild();
+  _SC_EXTERN ScModule * FinishBuild() noexcept;
 
 protected:
   using ScInitializeCallback = std::function<void(ScMemoryContext *)>;
@@ -147,50 +147,50 @@ protected:
    * @brief Gets agent implementation for specified agent class `TScAgent`.
    * @return A sc-address of agent implementation.
    */
-  _SC_EXTERN ScAddr GetAgentImplementation() const override;
+  _SC_EXTERN ScAddr GetAgentImplementation() const noexcept override;
 
   /*!
    * @brief Resolves specification for specified agent class `TScAgent`.
    * @param ctx A sc-memory context used to load specification.
    */
-  _SC_EXTERN void ResolveSpecification(ScMemoryContext * ctx);
+  _SC_EXTERN void ResolveSpecification(ScMemoryContext * ctx) noexcept(false);
 
   _SC_EXTERN void ResolveAgentImplementation(
       ScMemoryContext * ctx,
       std::string & agentImplementationName,
-      std::string const & agentClassName);
+      std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolveAbstractAgent(
       ScMemoryContext * ctx,
       std::string const & agentImplementationName,
-      std::string const & agentClassName);
+      std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolvePrimaryInitiationCondition(
       ScMemoryContext * ctx,
       std::string const & abstractAgentName,
-      std::string const & agentClassName);
+      std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolveActionClass(
       ScMemoryContext * ctx,
       std::string const & abstractAgentName,
-      std::string const & agentClassName);
+      std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolveInitiationConditionAndResultCondition(
       ScMemoryContext * ctx,
       std::string const & abstractAgentName,
-      std::string const & agentClassName);
+      std::string const & agentClassName) noexcept(false);
 
   /*!
    * @brief Initializes the agent builder with the given memory context.
    * @param ctx A sc-memory context for initialization.
    */
-  _SC_EXTERN void Initialize(ScMemoryContext * ctx) override;
+  _SC_EXTERN void Initialize(ScMemoryContext * ctx) noexcept(false) override;
 
   /*!
    * @brief Shuts down the agent builder with the given memory context.
    * @param ctx A sc-memory context for shutdown.
    */
-  _SC_EXTERN void Shutdown(ScMemoryContext * ctx) override;
+  _SC_EXTERN void Shutdown(ScMemoryContext * ctx) noexcept(false) override;
 };
 
 #include "sc_agent_builder.tpp"

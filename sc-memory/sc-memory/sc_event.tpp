@@ -16,14 +16,14 @@ TScElementaryEvent<elementType>::TScElementaryEvent(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScElementaryEvent(eventClassAddr, userAddr, subscriptionElementAddr, connectorAddr, connectorType, otherAddr){};
 
 // ScEventAfterGenerateConnector
 //-------------------------------------------------------------------------
 
 template <ScType const & connectorType>
-std::tuple<ScAddr, ScAddr> ScEventAfterGenerateConnector<connectorType>::GetConnectorIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventAfterGenerateConnector<connectorType>::GetConnectorIncidentElements() const noexcept
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
@@ -35,7 +35,7 @@ ScEventAfterGenerateConnector<tConnectorType>::ScEventAfterGenerateConnector(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : TScElementaryEvent<tConnectorType>(
         eventClassAddr,
         userAddr,
@@ -50,7 +50,7 @@ ScEventAfterGenerateConnector<tConnectorType>::ScEventAfterGenerateConnector(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventAfterGenerateConnector<tConnectorType>(
         ScEventAfterGenerateConnector::eventClassAddr,
         userAddr,
@@ -62,7 +62,7 @@ ScEventAfterGenerateConnector<tConnectorType>::ScEventAfterGenerateConnector(
 // Ignore these methods, because they can't be used.
 // LCOV_EXCL_START
 template <ScType const & connectorType>
-ScAddr ScEventAfterGenerateConnector<connectorType>::GetOtherElement() const
+ScAddr ScEventAfterGenerateConnector<connectorType>::GetOtherElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }
@@ -73,25 +73,25 @@ ScAddr ScEventAfterGenerateConnector<connectorType>::GetOtherElement() const
 //-------------------------------------------------------------------------
 
 template <ScType const & arcType>
-ScAddr ScEventAfterGenerateArc<arcType>::GetArc() const
+ScAddr ScEventAfterGenerateArc<arcType>::GetArc() const noexcept
 {
   return GetConnector();
 }
 
 template <ScType const & arcType>
-ScType ScEventAfterGenerateArc<arcType>::GetArcType() const
+ScType ScEventAfterGenerateArc<arcType>::GetArcType() const noexcept
 {
   return GetConnectorType();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventAfterGenerateArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventAfterGenerateArc<arcType>::GetArcSourceElement() const noexcept
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventAfterGenerateArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventAfterGenerateArc<arcType>::GetArcTargetElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }
@@ -103,7 +103,7 @@ ScEventAfterGenerateArc<arcType>::ScEventAfterGenerateArc(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventAfterGenerateConnector<arcType>(
         eventClassAddr,
         userAddr,
@@ -113,13 +113,13 @@ ScEventAfterGenerateArc<arcType>::ScEventAfterGenerateArc(
         otherAddr){};
 
 template <ScType const & arcType>
-ScAddr ScEventAfterGenerateArc<arcType>::GetConnector() const
+ScAddr ScEventAfterGenerateArc<arcType>::GetConnector() const noexcept
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & arcType>
-ScType ScEventAfterGenerateArc<arcType>::GetConnectorType() const
+ScType ScEventAfterGenerateArc<arcType>::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
@@ -127,7 +127,7 @@ ScType ScEventAfterGenerateArc<arcType>::GetConnectorType() const
 // Ignore these methods, because they can't be used.
 // LCOV_EXCL_START
 template <ScType const & arcType>
-std::tuple<ScAddr, ScAddr> ScEventAfterGenerateArc<arcType>::GetConnectorIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventAfterGenerateArc<arcType>::GetConnectorIncidentElements() const noexcept
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
@@ -138,19 +138,19 @@ std::tuple<ScAddr, ScAddr> ScEventAfterGenerateArc<arcType>::GetConnectorInciden
 //-------------------------------------------------------------------------
 
 template <ScType const & edgeType>
-ScAddr ScEventAfterGenerateEdge<edgeType>::GetEdge() const
+ScAddr ScEventAfterGenerateEdge<edgeType>::GetEdge() const noexcept
 {
   return GetConnector();
 }
 
 template <ScType const & edgeType>
-ScType ScEventAfterGenerateEdge<edgeType>::GetEdgeType() const
+ScType ScEventAfterGenerateEdge<edgeType>::GetEdgeType() const noexcept
 {
   return GetConnectorType();
 }
 
 template <ScType const & edgeType>
-std::tuple<ScAddr, ScAddr> ScEventAfterGenerateEdge<edgeType>::GetEdgeIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventAfterGenerateEdge<edgeType>::GetEdgeIncidentElements() const noexcept
 {
   return GetConnectorIncidentElements();
 }
@@ -161,7 +161,7 @@ ScEventAfterGenerateEdge<edgeType>::ScEventAfterGenerateEdge(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventAfterGenerateConnector<edgeType>(
         ScEventAfterGenerateEdge<edgeType>::eventClassAddr,
         userAddr,
@@ -171,19 +171,19 @@ ScEventAfterGenerateEdge<edgeType>::ScEventAfterGenerateEdge(
         otherAddr){};
 
 template <ScType const & edgeType>
-ScAddr ScEventAfterGenerateEdge<edgeType>::GetConnector() const
+ScAddr ScEventAfterGenerateEdge<edgeType>::GetConnector() const noexcept
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & edgeType>
-ScType ScEventAfterGenerateEdge<edgeType>::GetConnectorType() const
+ScType ScEventAfterGenerateEdge<edgeType>::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
 template <ScType const & edgeType>
-std::tuple<ScAddr, ScAddr> ScEventAfterGenerateEdge<edgeType>::GetConnectorIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventAfterGenerateEdge<edgeType>::GetConnectorIncidentElements() const noexcept
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
@@ -197,7 +197,7 @@ ScEventAfterGenerateOutgoingArc<arcType>::ScEventAfterGenerateOutgoingArc(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventAfterGenerateArc<arcType>(
         ScEventAfterGenerateOutgoingArc<arcType>::eventClassAddr,
         userAddr,
@@ -210,13 +210,13 @@ ScEventAfterGenerateOutgoingArc<arcType>::ScEventAfterGenerateOutgoingArc(
 //-------------------------------------------------------------------------
 
 template <ScType const & arcType>
-ScAddr ScEventAfterGenerateIncomingArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventAfterGenerateIncomingArc<arcType>::GetArcSourceElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventAfterGenerateIncomingArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventAfterGenerateIncomingArc<arcType>::GetArcTargetElement() const noexcept
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
@@ -227,7 +227,7 @@ _SC_EXTERN ScEventAfterGenerateIncomingArc<arcType>::ScEventAfterGenerateIncomin
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventAfterGenerateArc<arcType>(
         ScEventAfterGenerateIncomingArc<arcType>::eventClassAddr,
         userAddr,
@@ -240,19 +240,19 @@ _SC_EXTERN ScEventAfterGenerateIncomingArc<arcType>::ScEventAfterGenerateIncomin
 //-------------------------------------------------------------------------
 
 template <ScType const & connectorType>
-ScAddr ScEventBeforeEraseConnector<connectorType>::GetConnector() const
+ScAddr ScEventBeforeEraseConnector<connectorType>::GetConnector() const noexcept
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & connectorType>
-ScType ScEventBeforeEraseConnector<connectorType>::GetConnectorType() const
+ScType ScEventBeforeEraseConnector<connectorType>::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
 template <ScType const & connectorType>
-std::tuple<ScAddr, ScAddr> ScEventBeforeEraseConnector<connectorType>::GetConnectorIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventBeforeEraseConnector<connectorType>::GetConnectorIncidentElements() const noexcept
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
@@ -264,7 +264,7 @@ ScEventBeforeEraseConnector<tConnectorType>::ScEventBeforeEraseConnector(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : TScElementaryEvent<tConnectorType>(
         eventClassAddr,
         userAddr,
@@ -279,7 +279,7 @@ ScEventBeforeEraseConnector<tConnectorType>::ScEventBeforeEraseConnector(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventBeforeEraseConnector<tConnectorType>(
         ScEventBeforeEraseConnector::eventClassAddr,
         userAddr,
@@ -291,7 +291,7 @@ ScEventBeforeEraseConnector<tConnectorType>::ScEventBeforeEraseConnector(
 // Ignore these methods, because they can't be used.
 // LCOV_EXCL_START
 template <ScType const & connectorType>
-ScAddr ScEventBeforeEraseConnector<connectorType>::GetOtherElement() const
+ScAddr ScEventBeforeEraseConnector<connectorType>::GetOtherElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }
@@ -302,25 +302,25 @@ ScAddr ScEventBeforeEraseConnector<connectorType>::GetOtherElement() const
 //-------------------------------------------------------------------------
 
 template <ScType const & arcType>
-ScAddr ScEventBeforeEraseArc<arcType>::GetArc() const
+ScAddr ScEventBeforeEraseArc<arcType>::GetArc() const noexcept
 {
   return GetConnector();
 }
 
 template <ScType const & arcType>
-ScType ScEventBeforeEraseArc<arcType>::GetArcType() const
+ScType ScEventBeforeEraseArc<arcType>::GetArcType() const noexcept
 {
   return GetConnectorType();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventBeforeEraseArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventBeforeEraseArc<arcType>::GetArcSourceElement() const noexcept
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventBeforeEraseArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventBeforeEraseArc<arcType>::GetArcTargetElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }
@@ -332,7 +332,7 @@ ScEventBeforeEraseArc<arcType>::ScEventBeforeEraseArc(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventBeforeEraseConnector<arcType>(
         eventClassAddr,
         userAddr,
@@ -342,13 +342,13 @@ ScEventBeforeEraseArc<arcType>::ScEventBeforeEraseArc(
         otherAddr){};
 
 template <ScType const & arcType>
-ScAddr ScEventBeforeEraseArc<arcType>::GetConnector() const
+ScAddr ScEventBeforeEraseArc<arcType>::GetConnector() const noexcept
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & arcType>
-ScType ScEventBeforeEraseArc<arcType>::GetConnectorType() const
+ScType ScEventBeforeEraseArc<arcType>::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
@@ -356,7 +356,7 @@ ScType ScEventBeforeEraseArc<arcType>::GetConnectorType() const
 // Ignore these methods, because they can't be used.
 // LCOV_EXCL_START
 template <ScType const & arcType>
-std::tuple<ScAddr, ScAddr> ScEventBeforeEraseArc<arcType>::GetConnectorIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventBeforeEraseArc<arcType>::GetConnectorIncidentElements() const noexcept
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
@@ -367,19 +367,19 @@ std::tuple<ScAddr, ScAddr> ScEventBeforeEraseArc<arcType>::GetConnectorIncidentE
 //-------------------------------------------------------------------------
 
 template <ScType const & edgeType>
-ScAddr ScEventBeforeEraseEdge<edgeType>::GetEdge() const
+ScAddr ScEventBeforeEraseEdge<edgeType>::GetEdge() const noexcept
 {
   return GetConnector();
 }
 
 template <ScType const & edgeType>
-ScType ScEventBeforeEraseEdge<edgeType>::GetEdgeType() const
+ScType ScEventBeforeEraseEdge<edgeType>::GetEdgeType() const noexcept
 {
   return GetConnectorType();
 }
 
 template <ScType const & edgeType>
-std::tuple<ScAddr, ScAddr> ScEventBeforeEraseEdge<edgeType>::GetEdgeIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventBeforeEraseEdge<edgeType>::GetEdgeIncidentElements() const noexcept
 {
   return GetConnectorIncidentElements();
 }
@@ -390,7 +390,7 @@ ScEventBeforeEraseEdge<edgeType>::ScEventBeforeEraseEdge(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventBeforeEraseConnector<edgeType>(
         ScEventBeforeEraseEdge<edgeType>::eventClassAddr,
         userAddr,
@@ -400,19 +400,19 @@ ScEventBeforeEraseEdge<edgeType>::ScEventBeforeEraseEdge(
         otherAddr){};
 
 template <ScType const & edgeType>
-ScAddr ScEventBeforeEraseEdge<edgeType>::GetConnector() const
+ScAddr ScEventBeforeEraseEdge<edgeType>::GetConnector() const noexcept
 {
   return ScElementaryEvent::GetConnector();
 }
 
 template <ScType const & edgeType>
-ScType ScEventBeforeEraseEdge<edgeType>::GetConnectorType() const
+ScType ScEventBeforeEraseEdge<edgeType>::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
 template <ScType const & edgeType>
-std::tuple<ScAddr, ScAddr> ScEventBeforeEraseEdge<edgeType>::GetConnectorIncidentElements() const
+std::tuple<ScAddr, ScAddr> ScEventBeforeEraseEdge<edgeType>::GetConnectorIncidentElements() const noexcept
 {
   return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
 }
@@ -426,7 +426,7 @@ ScEventBeforeEraseOutgoingArc<arcType>::ScEventBeforeEraseOutgoingArc(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventBeforeEraseArc<arcType>(
         ScEventBeforeEraseOutgoingArc<arcType>::eventClassAddr,
         userAddr,
@@ -439,13 +439,13 @@ ScEventBeforeEraseOutgoingArc<arcType>::ScEventBeforeEraseOutgoingArc(
 //-------------------------------------------------------------------------
 
 template <ScType const & arcType>
-ScAddr ScEventBeforeEraseIncomingArc<arcType>::GetArcSourceElement() const
+ScAddr ScEventBeforeEraseIncomingArc<arcType>::GetArcSourceElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }
 
 template <ScType const & arcType>
-ScAddr ScEventBeforeEraseIncomingArc<arcType>::GetArcTargetElement() const
+ScAddr ScEventBeforeEraseIncomingArc<arcType>::GetArcTargetElement() const noexcept
 {
   return ScElementaryEvent::GetSubscriptionElement();
 }
@@ -456,7 +456,7 @@ ScEventBeforeEraseIncomingArc<arcType>::ScEventBeforeEraseIncomingArc(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : ScEventBeforeEraseArc<arcType>(
         ScEventBeforeEraseIncomingArc<arcType>::eventClassAddr,
         userAddr,

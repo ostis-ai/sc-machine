@@ -28,7 +28,7 @@ void internal::ScKeynodesRegister::Register(ScMemoryContext * context)
 
 void internal::ScKeynodesRegister::Unregister(ScMemoryContext *) {}
 
-ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type)
+ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type) noexcept
   : ScAddr(ScAddr::Empty)
   , m_sysIdtf(sysIdtf)
   , m_type(type)
@@ -37,12 +37,12 @@ ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type)
     internal::ScKeynodesRegister::Remember(this);
 }
 
-ScKeynode::~ScKeynode()
+ScKeynode::~ScKeynode() noexcept
 {
   internal::ScKeynodesRegister::Forget(this);
 }
 
-ScKeynode::operator std::string() const
+ScKeynode::operator std::string() const noexcept
 {
   return std::string(m_sysIdtf);
 }
@@ -69,14 +69,14 @@ void ScKeynode::Initialize(ScMemoryContext * context)
   }
 }
 
-ScTemplateKeynode::ScTemplateKeynode(std::string_view const & sysIdtf)
+ScTemplateKeynode::ScTemplateKeynode(std::string_view const & sysIdtf) noexcept
   : ScKeynode(sysIdtf)
 {
   if (!m_sysIdtf.empty())
     internal::ScKeynodesRegister::Remember(this);
 }
 
-ScTemplateKeynode::~ScTemplateKeynode() = default;
+ScTemplateKeynode::~ScTemplateKeynode() noexcept = default;
 
 ScTemplateKeynode::ScTemplateKeynode(ScTemplateKeynode && other) noexcept
   : ScKeynode(other)

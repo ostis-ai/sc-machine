@@ -79,7 +79,7 @@ public:
   std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> CreateElementaryEventSubscription(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      std::function<void(ScElementaryEvent const &)> const & eventCallback);
+      std::function<void(ScElementaryEvent const &)> const & eventCallback) noexcept(false);
 
   /*!
    * @brief Creates elementary sc-event subscription for specified subscription sc-element and sc-event callback.
@@ -94,7 +94,7 @@ public:
   template <class TScEvent>
   _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<TScEvent>> CreateElementaryEventSubscription(
       ScAddr const & subscriptionElementAddr,
-      std::function<void(TScEvent const &)> const & eventCallback);
+      std::function<void(TScEvent const &)> const & eventCallback) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait for specified event class and subscription sc-element.
@@ -114,7 +114,7 @@ public:
   _SC_EXTERN std::shared_ptr<ScWaiter> CreateEventWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      std::function<void(void)> const & initiateCallback = {});
+      std::function<void(void)> const & initiateCallback = {}) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait for the specified subscription sc-element and optional initiate callback.
@@ -129,7 +129,7 @@ public:
   template <class TScEvent>
   _SC_EXTERN std::shared_ptr<ScWaiter> CreateEventWaiter(
       ScAddr const & subscriptionElementAddr,
-      std::function<void(void)> const & initiateCallback = {});
+      std::function<void(void)> const & initiateCallback = {}) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
@@ -153,7 +153,7 @@ public:
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<bool(ScElementaryEvent const &)> const & checkCallback);
+      std::function<bool(ScElementaryEvent const &)> const & checkCallback) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified subscription sc-element, initiate callback, and check
@@ -171,7 +171,7 @@ public:
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<bool(TScEvent const &)> const & checkCallback);
+      std::function<bool(TScEvent const &)> const & checkCallback) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
@@ -192,7 +192,7 @@ public:
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      std::function<bool(ScElementaryEvent const &)> const & checkCallback);
+      std::function<bool(ScElementaryEvent const &)> const & checkCallback) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified subscription sc-element and check callback.
@@ -207,7 +207,7 @@ public:
   template <class TScEvent>
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
-      std::function<bool(TScEvent const &)> const & checkCallback);
+      std::function<bool(TScEvent const &)> const & checkCallback) noexcept(false);
 
   /*!
    * @brief Subscribes agent class to specified sc-events.
@@ -219,7 +219,7 @@ public:
    */
   template <class TScAgent, class... TScAddr>
   _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(
-      TScAddr const &... subscriptionAddrs);
+      TScAddr const &... subscriptionAddrs) noexcept(false);
 
   /*!
    * @brief Subscribes agent class to sc-event of adding outgoing sc-arc from `action_initiated` to some formed
@@ -230,7 +230,8 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
    */
   template <class TScAgent>
-  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent();
+  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent() noexcept(
+      false);
 
   /*!
    * @brief Unsubscribes agent class from specified sc-events.
@@ -242,7 +243,7 @@ public:
    */
   template <class TScAgent, class... TScAddr>
   _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(
-      TScAddr const &... subscriptionAddrs);
+      TScAddr const &... subscriptionAddrs) noexcept(false);
 
   /*!
    * @brief Unsubscribes agent class from sc-event of adding outgoing sc-arc from `action_initiated` to some formed
@@ -253,7 +254,8 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
    */
   template <class TScAgent>
-  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent();
+  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent() noexcept(
+      false);
 
   /*!
    * @brief Loads specification of agent implementation and subscribes agent class.
@@ -268,7 +270,7 @@ public:
    * sc-agent for this agent class does not have a primary initiation condition.
    */
   template <class TScAgent>
-  _SC_EXTERN void LoadAndSubscribeAgent(ScAddr const & agentImplementationAddr);
+  _SC_EXTERN void LoadAndSubscribeAgent(ScAddr const & agentImplementationAddr) noexcept(false);
 
   /*!
    * @brief Remove from program specification of agent and unsubscribes agent class.
@@ -283,21 +285,21 @@ public:
    * sc-agent for this agent class does not have a primary initiation condition.
    */
   template <class TScAgent>
-  _SC_EXTERN void DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr);
+  _SC_EXTERN void DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr) noexcept(false);
 
   /*!
    * @brief Creates an action with a given action class.
    * @param actionClassAddr An address of the action class.
    * @return ScAction object.
    */
-  _SC_EXTERN ScAction CreateAction(ScAddr const & actionClassAddr);
+  _SC_EXTERN ScAction CreateAction(ScAddr const & actionClassAddr) noexcept(false);
 
   /*!
    * @brief Create ScAction object for provided action.
    * @param actionAddr Address of the action.
    * @return ScAction object.
    */
-  _SC_EXTERN ScAction ConvertToAction(ScAddr const & actionAddr);
+  _SC_EXTERN ScAction ConvertToAction(ScAddr const & actionAddr) noexcept(false);
 
   /*!
    * @brief Creates a set.
@@ -310,7 +312,7 @@ public:
    * @param setAddr An address of the set.
    * @return ScSet object.
    */
-  _SC_EXTERN ScSet ConvertToSet(ScAddr const & setAddr);
+  _SC_EXTERN ScSet ConvertToSet(ScAddr const & setAddr) noexcept(false);
 
   /*!
    * @brief Creates a structure.
@@ -323,7 +325,7 @@ public:
    * @param structureAddr An address of the set.
    * @return ScStructure object.
    */
-  _SC_EXTERN ScStructure ConvertToStructure(ScAddr const & structureAddr);
+  _SC_EXTERN ScStructure ConvertToStructure(ScAddr const & structureAddr) noexcept(false);
 
 protected:
   /*!

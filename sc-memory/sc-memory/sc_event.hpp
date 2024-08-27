@@ -25,13 +25,13 @@ class _SC_EXTERN ScEvent : public ScObject
   friend class ScElementaryEventSubscription;
 
 public:
-  _SC_EXTERN virtual ~ScEvent();
+  _SC_EXTERN virtual ~ScEvent() noexcept;
 
-  _SC_EXTERN virtual ScAddr GetEventClass() const = 0;
+  _SC_EXTERN virtual ScAddr GetEventClass() const noexcept = 0;
 
-  _SC_EXTERN virtual ScAddr GetUser() const = 0;
+  _SC_EXTERN virtual ScAddr GetUser() const noexcept = 0;
 
-  _SC_EXTERN virtual ScAddr GetSubscriptionElement() const = 0;
+  _SC_EXTERN virtual ScAddr GetSubscriptionElement() const noexcept = 0;
 };
 
 /*!
@@ -46,35 +46,35 @@ class _SC_EXTERN ScElementaryEvent : public ScEvent
   friend class ScElementaryEventSubscription;
 
 public:
-  _SC_EXTERN ScAddr GetEventClass() const override;
+  _SC_EXTERN ScAddr GetEventClass() const noexcept override;
 
-  _SC_EXTERN ScAddr GetUser() const override;
+  _SC_EXTERN ScAddr GetUser() const noexcept override;
 
-  _SC_EXTERN ScAddr GetSubscriptionElement() const override;
+  _SC_EXTERN ScAddr GetSubscriptionElement() const noexcept override;
 
   /*!
    * @brief Gets a triple associated with the event.
    * @return An array representing the triple.
    */
-  _SC_EXTERN std::tuple<ScAddr, ScAddr, ScAddr> GetTriple() const;
+  _SC_EXTERN std::tuple<ScAddr, ScAddr, ScAddr> GetTriple() const noexcept;
 
   /*!
    * @brief Gets a connector element outgoing from or ingoing to a subscription element.
    * @return ScAddr representing a connector element from/to a subscription element.
    */
-  _SC_EXTERN virtual ScAddr GetConnector() const;
+  _SC_EXTERN virtual ScAddr GetConnector() const noexcept;
 
   /*!
    * @brief Gets a type of connector element outgoing from or ingoing to a subscription element.
    * @return ScType representing a type of connector element outgoing from or ingoing to a subscription element.
    */
-  _SC_EXTERN virtual ScType GetConnectorType() const;
+  _SC_EXTERN virtual ScType GetConnectorType() const noexcept;
 
   /*!
    * @brief Gets other element of connector outgoing from or ingoing to subscription element.
    * @return ScAddr representing other element of connector outgoing from or ingoing to subscription element.
    */
-  _SC_EXTERN virtual ScAddr GetOtherElement() const;
+  _SC_EXTERN virtual ScAddr GetOtherElement() const noexcept;
 
 protected:
   _SC_EXTERN ScElementaryEvent(
@@ -83,7 +83,7 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
 private:
   ScAddr m_eventClassAddr;
@@ -116,7 +116,7 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
 private:
   static inline ScType const & elementType = _elementType;
@@ -136,7 +136,7 @@ class _SC_EXTERN ScEventAfterGenerateConnector : public TScElementaryEvent<tConn
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const;
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept;
 
 protected:
   _SC_EXTERN ScEventAfterGenerateConnector(
@@ -145,16 +145,16 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
   _SC_EXTERN ScEventAfterGenerateConnector(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetOtherElement() const override;
+  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_connector;
@@ -168,13 +168,13 @@ template <ScType const & arcType>
 class _SC_EXTERN ScEventAfterGenerateArc : public ScEventAfterGenerateConnector<arcType>
 {
 public:
-  _SC_EXTERN virtual ScAddr GetArc() const;
+  _SC_EXTERN virtual ScAddr GetArc() const noexcept;
 
-  _SC_EXTERN virtual ScType GetArcType() const;
+  _SC_EXTERN virtual ScType GetArcType() const noexcept;
 
-  _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
+  _SC_EXTERN virtual ScAddr GetArcSourceElement() const noexcept;
 
-  _SC_EXTERN virtual ScAddr GetArcTargetElement() const;
+  _SC_EXTERN virtual ScAddr GetArcTargetElement() const noexcept;
 
 protected:
   _SC_EXTERN ScEventAfterGenerateArc(
@@ -183,13 +183,13 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const noexcept override;
 
-  _SC_EXTERN ScType GetConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const noexcept override;
 
-  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept override;
 };
 
 /*!
@@ -205,11 +205,11 @@ class _SC_EXTERN ScEventAfterGenerateEdge final : public ScEventAfterGenerateCon
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN virtual ScAddr GetEdge() const;
+  _SC_EXTERN virtual ScAddr GetEdge() const noexcept;
 
-  _SC_EXTERN virtual ScType GetEdgeType() const;
+  _SC_EXTERN virtual ScType GetEdgeType() const noexcept;
 
-  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const;
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const noexcept;
 
 protected:
   _SC_EXTERN ScEventAfterGenerateEdge(
@@ -217,13 +217,13 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const noexcept override;
 
-  _SC_EXTERN ScType GetConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const noexcept override;
 
-  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept override;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_edge;
@@ -247,7 +247,7 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_outgoing_arc;
@@ -266,9 +266,9 @@ class _SC_EXTERN ScEventAfterGenerateIncomingArc final : public ScEventAfterGene
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN ScAddr GetArcSourceElement() const override;
+  _SC_EXTERN ScAddr GetArcSourceElement() const noexcept;
 
-  _SC_EXTERN ScAddr GetArcTargetElement() const override;
+  _SC_EXTERN ScAddr GetArcTargetElement() const noexcept;
 
 protected:
   _SC_EXTERN ScEventAfterGenerateIncomingArc(
@@ -276,7 +276,7 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_incoming_arc;
@@ -295,11 +295,11 @@ class _SC_EXTERN ScEventBeforeEraseConnector : public TScElementaryEvent<tConnec
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN ScAddr GetConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const noexcept override;
 
-  _SC_EXTERN ScType GetConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const noexcept override;
 
-  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const;
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept;
 
 protected:
   _SC_EXTERN ScEventBeforeEraseConnector(
@@ -308,16 +308,16 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
   _SC_EXTERN ScEventBeforeEraseConnector(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetOtherElement() const override;
+  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_connector;
@@ -331,13 +331,13 @@ template <ScType const & arcType>
 class _SC_EXTERN ScEventBeforeEraseArc : public ScEventBeforeEraseConnector<arcType>
 {
 public:
-  _SC_EXTERN virtual ScAddr GetArc() const;
+  _SC_EXTERN virtual ScAddr GetArc() const noexcept;
 
-  _SC_EXTERN virtual ScType GetArcType() const;
+  _SC_EXTERN virtual ScType GetArcType() const noexcept;
 
-  _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
+  _SC_EXTERN virtual ScAddr GetArcSourceElement() const noexcept;
 
-  _SC_EXTERN virtual ScAddr GetArcTargetElement() const;
+  _SC_EXTERN virtual ScAddr GetArcTargetElement() const noexcept;
 
 protected:
   _SC_EXTERN ScEventBeforeEraseArc(
@@ -346,13 +346,13 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const noexcept;
 
-  _SC_EXTERN ScType GetConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const noexcept;
 
-  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept;
 };
 
 /*!
@@ -368,11 +368,11 @@ class _SC_EXTERN ScEventBeforeEraseEdge final : public ScEventBeforeEraseConnect
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN virtual ScAddr GetEdge() const;
+  _SC_EXTERN virtual ScAddr GetEdge() const noexcept;
 
-  _SC_EXTERN virtual ScType GetEdgeType() const;
+  _SC_EXTERN virtual ScType GetEdgeType() const noexcept;
 
-  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const;
+  _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const noexcept;
 
 protected:
   _SC_EXTERN ScEventBeforeEraseEdge(
@@ -380,13 +380,13 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const noexcept override;
 
-  _SC_EXTERN ScType GetConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const noexcept override;
 
-  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept override;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_edge;
@@ -410,7 +410,7 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_outgoing_arc;
@@ -429,9 +429,9 @@ class _SC_EXTERN ScEventBeforeEraseIncomingArc final : public ScEventBeforeErase
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN ScAddr GetArcSourceElement() const override;
+  _SC_EXTERN ScAddr GetArcSourceElement() const noexcept;
 
-  _SC_EXTERN ScAddr GetArcTargetElement() const override;
+  _SC_EXTERN ScAddr GetArcTargetElement() const noexcept;
 
 protected:
   _SC_EXTERN ScEventBeforeEraseIncomingArc(
@@ -439,7 +439,7 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_incoming_arc;
@@ -464,13 +464,13 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const noexcept override;
 
-  _SC_EXTERN ScType GetConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const noexcept override;
 
-  _SC_EXTERN ScAddr GetOtherElement() const override;
+  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_element;
@@ -493,13 +493,13 @@ protected:
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
-      ScAddr const & otherAddr);
+      ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const noexcept override;
 
-  _SC_EXTERN ScType GetConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const noexcept override;
 
-  _SC_EXTERN ScAddr GetOtherElement() const override;
+  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_change_link_content;

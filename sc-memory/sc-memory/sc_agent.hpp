@@ -48,7 +48,7 @@ class _SC_EXTERN ScAgentBase : public ScObject
 public:
   using TEventType = TScEvent;
 
-  _SC_EXTERN ~ScAgentBase() override;
+  _SC_EXTERN ~ScAgentBase() noexcept override;
 
   /*!
    * @brief Gets abstract agent for agent of this class.
@@ -70,7 +70,7 @@ public:
    * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is not included in any
    * abstract sc-agent.
    */
-  _SC_EXTERN virtual ScAddr GetAbstractAgent() const;
+  _SC_EXTERN virtual ScAddr GetAbstractAgent() const noexcept(false);
 
   /*!
    * @brief Gets the sc-event class to which the agent class is subscribed.
@@ -95,7 +95,7 @@ public:
    * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have a primary
    * initiation condition.
    */
-  _SC_EXTERN virtual ScAddr GetEventClass() const;
+  _SC_EXTERN virtual ScAddr GetEventClass() const noexcept(false);
 
   /*!
    * @brief Gets sc-event subscription sc-element for which sc-event initiates.
@@ -120,7 +120,7 @@ public:
    * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have a primary
    * initiation condition.
    */
-  _SC_EXTERN virtual ScAddr GetEventSubscriptionElement() const;
+  _SC_EXTERN virtual ScAddr GetEventSubscriptionElement() const noexcept(false);
 
   /*!
    * @brief Gets action class that the agent performs.
@@ -141,7 +141,7 @@ public:
    * @return A sc-address of the action class.
    * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have an action class.
    */
-  _SC_EXTERN virtual ScAddr GetActionClass() const;
+  _SC_EXTERN virtual ScAddr GetActionClass() const noexcept(false);
 
   /*!
    * @brief Checks initiation condition for agent of this class.
@@ -173,7 +173,7 @@ public:
    * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have an initiation
    * condition.
    */
-  _SC_EXTERN virtual ScAddr GetInitiationCondition() const;
+  _SC_EXTERN virtual ScAddr GetInitiationCondition() const noexcept(false);
 
   /*!
    * @brief Gets initiation condition template represented in program.
@@ -227,7 +227,7 @@ public:
    * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have an result
    * condition.
    */
-  _SC_EXTERN virtual ScAddr GetResultCondition() const;
+  _SC_EXTERN virtual ScAddr GetResultCondition() const noexcept(false);
 
   /*!
    * @brief Gets result condition template represented in program.
@@ -241,27 +241,27 @@ protected:
 
   static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_events;
 
-  _SC_EXTERN ScAgentBase();
+  _SC_EXTERN ScAgentBase() noexcept;
 
   /*!
    * @brief Sets initiator of the agent.
    * @param userAddr A sc-address of user that initiated this agent.
    */
-  _SC_EXTERN void SetInitiator(ScAddr const & userAddr);
+  _SC_EXTERN void SetInitiator(ScAddr const & userAddr) noexcept;
 
   /*!
    * @brief Sets the implementation of the agent of this class.
    * @param agentImplementationAddr A sc-address of the agent implementation.
    */
-  _SC_EXTERN void SetImplementation(ScAddr const & agentImplementationAddr);
+  _SC_EXTERN void SetImplementation(ScAddr const & agentImplementationAddr) noexcept;
 
   /*!
    * @brief Checks if the agent may be specified in knowledge base.
    * @return true if the agent has implementation in knowledge base, otherwise true.
    */
-  _SC_EXTERN bool MayBeSpecified() const;
+  _SC_EXTERN bool MayBeSpecified() const noexcept;
 
-  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
+  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr) noexcept;
 };
 
 /*!
@@ -457,7 +457,7 @@ private:
   static _SC_EXTERN void Subscribe(
       ScMemoryContext * ctx,
       ScAddr const & agentImplementationAddr,
-      TScAddr const &... subscriptionAddrs);
+      TScAddr const &... subscriptionAddrs) noexcept(false);
 
   /*!
    * @brief Unsubscribes agent class from specified sc-events.
@@ -505,10 +505,10 @@ private:
   static _SC_EXTERN void Unsubscribe(
       ScMemoryContext * ctx,
       ScAddr const & agentImplementationAddr,
-      TScAddr const &... subscriptionAddrs);
+      TScAddr const &... subscriptionAddrs) noexcept(false);
 
 protected:
-  _SC_EXTERN explicit ScAgent();
+  _SC_EXTERN explicit ScAgent() noexcept;
 
   /*!
    * @brief Gets the callback function for agent class.
@@ -519,18 +519,18 @@ protected:
    * @warning Specified agent class must be derived from class `ScAgent`.
    */
   template <class TScAgent>
-  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr);
+  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr) noexcept;
 
 private:
-  bool IsActionClassDeactivated();
+  bool IsActionClassDeactivated() noexcept;
 
   template <class TScAgent>
-  bool ValidateInitiationCondition(TScEvent const & event);
+  bool ValidateInitiationCondition(TScEvent const & event) noexcept;
 
   template <class TScAgent>
-  bool ValidateResultCondition(TScEvent const & event, ScAction & action);
+  bool ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept;
 
-  ScTemplate BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr);
+  ScTemplate BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr) noexcept;
 
   bool GenerateCheckTemplateParams(
       ScAddr const & checkTemplateAddr,
@@ -538,7 +538,7 @@ private:
       ScAddr const & otherElementAddr,
       size_t otherElementPosition,
       ScIterator5Ptr const eventTripleIterator,
-      ScTemplateParams & checkTemplateParams);
+      ScTemplateParams & checkTemplateParams) noexcept;
 };
 
 using ScBaseAgent = ScAgent<ScElementaryEvent>;
@@ -601,7 +601,7 @@ public:
   _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;
 
 protected:
-  ScActionAgent();
+  ScActionAgent() noexcept;
 };
 
 #include "sc_agent.tpp"

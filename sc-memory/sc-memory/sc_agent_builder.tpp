@@ -11,26 +11,26 @@
 #include "sc_keynodes.hpp"
 
 template <class TScAgent>
-ScAgentBuilder<TScAgent>::ScAgentBuilder(ScAddr const & agentImplementationAddr)
+ScAgentBuilder<TScAgent>::ScAgentBuilder(ScAddr const & agentImplementationAddr) noexcept
   : ScAgentBuilder(nullptr, agentImplementationAddr)
 {
 }
 
 template <class TScAgent>
-ScAgentBuilder<TScAgent>::ScAgentBuilder(ScModule * module, ScAddr const & agentImplementationAddr)
+ScAgentBuilder<TScAgent>::ScAgentBuilder(ScModule * module, ScAddr const & agentImplementationAddr) noexcept
   : m_module(module)
   , m_agentImplementationAddr(agentImplementationAddr)
 {
 }
 
 template <class TScAgent>
-ScAddr ScAgentBuilder<TScAgent>::GetAgentImplementation() const
+ScAddr ScAgentBuilder<TScAgent>::GetAgentImplementation() const noexcept
 {
   return m_agentImplementationAddr;
 }
 
 template <class TScAgent>
-ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr const & abstractAgentAddr)
+ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr const & abstractAgentAddr) noexcept
 {
   m_initializeAbstractAgent = [this](ScMemoryContext * ctx)
   {
@@ -55,7 +55,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr con
 
 template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetPrimaryInitiationCondition(
-    std::tuple<ScAddr, ScAddr> const & primaryInitiationCondition)
+    std::tuple<ScAddr, ScAddr> const & primaryInitiationCondition) noexcept
 {
   auto [eventClassAddr, eventSubscriptionElementAddr] = primaryInitiationCondition;
 
@@ -79,7 +79,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetPrimaryInitiationConditi
 }
 
 template <class TScAgent>
-ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const & actionClassAddr)
+ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const & actionClassAddr) noexcept
 {
   m_initializeActionClass = [this](ScMemoryContext * ctx)
   {
@@ -95,7 +95,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const
 
 template <class TScAgent>
 ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetInitiationConditionAndResult(
-    std::tuple<ScAddr, ScAddr> const & initiationCondition)
+    std::tuple<ScAddr, ScAddr> const & initiationCondition) noexcept
 {
   auto [initiationConditionAddr, resultConditionAddr] = initiationCondition;
 
@@ -120,7 +120,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetInitiationConditionAndRe
 }
 
 template <class TScAgent>
-void ScAgentBuilder<TScAgent>::ResolveSpecification(ScMemoryContext * ctx)
+void ScAgentBuilder<TScAgent>::ResolveSpecification(ScMemoryContext * ctx) noexcept(false)
 {
   std::string const & agentClassName = TScAgent::template GetName<TScAgent>();
   std::string agentImplementationName;
@@ -141,7 +141,7 @@ template <class TScAgent>
 void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
     ScMemoryContext * ctx,
     std::string & agentImplementationName,
-    std::string const & agentClassName)
+    std::string const & agentClassName) noexcept(false)
 {
   if (m_agentImplementationAddr.IsValid())
   {
@@ -205,7 +205,7 @@ template <class TScAgent>
 void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
     ScMemoryContext * ctx,
     std::string const & agentImplementationName,
-    std::string const & agentClassName)
+    std::string const & agentClassName) noexcept(false)
 {
   if (m_abstractAgentAddr.IsValid())
   {
@@ -280,7 +280,7 @@ template <class TScAgent>
 void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
     ScMemoryContext * ctx,
     std::string const & abstractAgentName,
-    std::string const & agentClassName)
+    std::string const & agentClassName) noexcept(false)
 {
   if (m_eventClassAddr.IsValid() && m_eventSubscriptionElementAddr.IsValid())
   {
@@ -357,7 +357,7 @@ template <class TScAgent>
 void ScAgentBuilder<TScAgent>::ResolveActionClass(
     ScMemoryContext * ctx,
     std::string const & abstractAgentName,
-    std::string const & agentClassName)
+    std::string const & agentClassName) noexcept(false)
 {
   if (m_actionClassAddr.IsValid())
   {
@@ -418,7 +418,7 @@ template <class TScAgent>
 void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
     ScMemoryContext * ctx,
     std::string const & abstractAgentName,
-    std::string const & agentClassName)
+    std::string const & agentClassName) noexcept(false)
 {
   if (m_initiationConditionAddr.IsValid() && m_resultConditionAddr.IsValid())
   {
@@ -497,7 +497,7 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
 }
 
 template <class TScAgent>
-ScModule * ScAgentBuilder<TScAgent>::FinishBuild()
+ScModule * ScAgentBuilder<TScAgent>::FinishBuild() noexcept
 {
   m_initializeSpecification = [this](ScMemoryContext * ctx)
   {
@@ -508,7 +508,7 @@ ScModule * ScAgentBuilder<TScAgent>::FinishBuild()
 }
 
 template <class TScAgent>
-void ScAgentBuilder<TScAgent>::Initialize(ScMemoryContext * ctx)
+void ScAgentBuilder<TScAgent>::Initialize(ScMemoryContext * ctx) noexcept(false)
 {
   if (m_initializeAbstractAgent)
     m_initializeAbstractAgent(ctx);
@@ -527,6 +527,6 @@ void ScAgentBuilder<TScAgent>::Initialize(ScMemoryContext * ctx)
 }
 
 template <class TScAgent>
-void ScAgentBuilder<TScAgent>::Shutdown(ScMemoryContext *)
+void ScAgentBuilder<TScAgent>::Shutdown(ScMemoryContext *) noexcept(false)
 {
 }

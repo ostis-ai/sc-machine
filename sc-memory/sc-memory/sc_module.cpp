@@ -6,14 +6,14 @@
 
 #include "sc-memory/sc_module.hpp"
 
-ScModule::~ScModule() = default;
+ScModule::~ScModule() noexcept = default;
 
-ScModule * ScModule::Create(ScModule * module)
+ScModule * ScModule::Create(ScModule * module) noexcept
 {
   return module;
 }
 
-void ScModule::Register(ScMemoryContext * ctx)
+void ScModule::Register(ScMemoryContext * ctx) noexcept
 {
   SC_LOG_INFO("Initialize " << this->GetName());
   Initialize(ctx);
@@ -28,7 +28,7 @@ void ScModule::Register(ScMemoryContext * ctx)
   }
 }
 
-void ScModule::Unregister(ScMemoryContext * ctx)
+void ScModule::Unregister(ScMemoryContext * ctx) noexcept
 {
   for (auto const & agentInfo : m_agents)
   {

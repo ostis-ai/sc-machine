@@ -78,6 +78,7 @@ encapsulated this logic;
 
 ### Changed
 
+- Rename action answer to action result
 - Rename `ScWait` to `ScWaiter`
 - Rename `ScEvent` to `ScEventSubscription`
 - Make template build methods to throw exceptions instead of return errors

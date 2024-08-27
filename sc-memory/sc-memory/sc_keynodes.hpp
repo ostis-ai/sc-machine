@@ -85,11 +85,13 @@ public:
    * @param sysIdtf A system identifier of the sc-keynode to be resolved.
    * @param type A sc-type of the sc-keynode to be resolved.
    */
-  _SC_EXTERN explicit ScKeynode(std::string_view const & sysIdtf = "", ScType const & type = ScType::NodeConst);
+  _SC_EXTERN explicit ScKeynode(
+      std::string_view const & sysIdtf = "",
+      ScType const & type = ScType::NodeConst) noexcept;
 
-  _SC_EXTERN ~ScKeynode();
+  _SC_EXTERN ~ScKeynode() noexcept;
 
-  _SC_EXTERN operator std::string() const;
+  _SC_EXTERN operator std::string() const noexcept;
 
 protected:
   std::string_view m_sysIdtf;
@@ -139,9 +141,9 @@ public:
    * @brief Defines a keynode for sc-template with the provided system identifier `sysIdtf`.
    * @param sysIdtf A system identifier of the sc-template keynode to be resolved.
    */
-  _SC_EXTERN explicit ScTemplateKeynode(std::string_view const & sysIdtf = "");
+  _SC_EXTERN explicit ScTemplateKeynode(std::string_view const & sysIdtf = "") noexcept;
 
-  _SC_EXTERN ~ScTemplateKeynode();
+  _SC_EXTERN ~ScTemplateKeynode() noexcept;
 
   _SC_EXTERN ScTemplateKeynode(ScTemplateKeynode && other) noexcept;
 
@@ -150,7 +152,7 @@ public:
    * @note This method can be used in the same way as a method `Triple` of the class `ScTemplate`.
    */
   template <typename T1, typename T2, typename T3>
-  _SC_EXTERN ScTemplateKeynode Triple(T1 const & param1, T2 const & param2, T3 const & param3) noexcept(false);
+  _SC_EXTERN ScTemplateKeynode Triple(T1 const & param1, T2 const & param2, T3 const & param3) noexcept;
 
   /*!
    * @brief Appends provided quintuple to sc-template keynode.
@@ -158,14 +160,13 @@ public:
    */
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
   _SC_EXTERN ScTemplateKeynode
-  Quintuple(T1 const & param1, T2 const & param2, T3 const & param3, T4 const & param4, T5 const & param5) noexcept(
-      false);
+  Quintuple(T1 const & param1, T2 const & param2, T3 const & param3, T4 const & param4, T5 const & param5) noexcept;
 
 private:
   std::list<std::function<void(ScTemplate &)>> m_constructionInitializers;
 
   template <typename T>
-  static auto HandleParam(T const & param);
+  static auto HandleParam(T const & param) noexcept;
 
   /*!
    * @brief Initializes the keynode with the given context and memory structure address.

@@ -273,7 +273,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 <!-- no toc -->
 - [Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?](#whether-a-function-is-considered-an-agent-if-this-function-is-subscribed-to-a-sc-event-and-which-is-called-after-that-sc-event-occurs)
 - [Why can't you call the constructor of a subscription class to sc-event?](#why-cant-i-call-the-constructor-of-a-subscription-class-to-sc-event)
-- [Are `ScEventAfterGenerateIncomingArc` or `ScEventAfterGenerateOutgoingArc` events trigger when `ScEventAfterGenerateEdge` event is triggered?](#are-sceventgenerateincomingarc-or-sceventgenerateoutgoingarc-events-trigger-when-sceventgenerateedge-event-is-triggered)
+- [Are `ScEventAfterGenerateIncomingArc` or `ScEventAfterGenerateOutgoingArc` events trigger when `ScEventAfterGenerateEdge` event is triggered?](#are-sceventaftergenerateincomingarc-or-sceventaftergenerateoutgoingarc-events-trigger-when-sceventaftergenerateedge-event-is-triggered)
 
 ### **Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?**
 

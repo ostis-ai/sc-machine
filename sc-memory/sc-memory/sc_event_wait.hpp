@@ -26,10 +26,10 @@ private:
   class Impl
   {
   public:
-    Impl();
-    virtual ~Impl();
+    Impl() noexcept;
+    virtual ~Impl() noexcept;
 
-    void Resolve();
+    void Resolve() noexcept;
 
     /*!
      * @brief Waits for condition to be resolved or a timeout.
@@ -37,7 +37,7 @@ private:
      * @param startDelegate Delegate function to call at the start of the wait.
      * @return True if resolved, false if timeout.
      */
-    bool Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate);
+    bool Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate) noexcept;
 
   private:
     std::mutex m_mutex;              ///< Mutex for thread safety.
@@ -46,19 +46,19 @@ private:
   };
 
 public:
-  _SC_EXTERN ~ScWaiter() override;
+  _SC_EXTERN ~ScWaiter() noexcept override;
 
   /*!
    * @brief Resolves the wait condition.
    */
-  _SC_EXTERN void Resolve();
+  _SC_EXTERN void Resolve() noexcept;
 
   /*!
    * @brief Sets a delegate function to be called at the start of the wait.
    * @param startDelegate Delegate function.
    * @return Pointer to the current ScWaiter object.
    */
-  _SC_EXTERN ScWaiter * SetOnWaitStartDelegate(DelegateFunc const & startDelegate);
+  _SC_EXTERN ScWaiter * SetOnWaitStartDelegate(DelegateFunc const & startDelegate) noexcept;
 
   /*!
    * @brief Waits for condition to be resolved or a timeout.
@@ -97,7 +97,7 @@ protected:
    * @param ctx A sc-memory context used to wait sc-event.
    * @param subscriptionElementAddr An address of sc-element to wait sc-event for.
    */
-  _SC_EXTERN ScEventWaiter(ScMemoryContext const & ctx, ScAddr const & subscriptionElementAddr);
+  _SC_EXTERN ScEventWaiter(ScMemoryContext const & ctx, ScAddr const & subscriptionElementAddr) noexcept;
 
   /*!
    * @brief Constructor for ScEventWaiter.
@@ -108,7 +108,7 @@ protected:
   _SC_EXTERN ScEventWaiter(
       ScMemoryContext const & ctx,
       ScAddr const & eventClassAddr,
-      ScAddr const & subscriptionElementAddr);
+      ScAddr const & subscriptionElementAddr) noexcept;
 
   virtual bool OnEvent(TScEvent const & event);
 
@@ -140,7 +140,7 @@ protected:
   _SC_EXTERN ScConditionWaiter(
       ScMemoryContext const & ctx,
       ScAddr const & subscriptionElementAddr,
-      DelegateCheckFunc const & func);
+      DelegateCheckFunc const & func) noexcept;
 
   /*!
    * @brief Constructor for ScConditionWaiter.
@@ -153,7 +153,7 @@ protected:
       ScMemoryContext const & ctx,
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
-      DelegateCheckFunc const & func);
+      DelegateCheckFunc const & func) noexcept;
 
 private:
   bool OnEvent(TScEvent const & event) override;

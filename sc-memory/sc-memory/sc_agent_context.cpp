@@ -43,7 +43,7 @@ ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
 std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
-    std::function<void(ScElementaryEvent const &)> const & eventCallback)
+    std::function<void(ScElementaryEvent const &)> const & eventCallback) noexcept(false)
 {
   if (!IsElement(eventClassAddr))
     SC_THROW_EXCEPTION(
@@ -75,7 +75,7 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
 std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
-    std::function<void(void)> const & initiateCallback)
+    std::function<void(void)> const & initiateCallback) noexcept(false)
 {
   if (!IsElement(eventClassAddr))
     SC_THROW_EXCEPTION(
@@ -109,7 +109,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
-    std::function<bool(ScElementaryEvent const &)> const & checkCallback)
+    std::function<bool(ScElementaryEvent const &)> const & checkCallback) noexcept(false)
 {
   if (!IsElement(eventClassAddr))
     SC_THROW_EXCEPTION(
@@ -144,12 +144,12 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
 std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
-    std::function<bool(ScElementaryEvent const &)> const & checkCallback)
+    std::function<bool(ScElementaryEvent const &)> const & checkCallback) noexcept(false)
 {
   return CreateConditionWaiter(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
 }
 
-ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)
+ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr) noexcept(false)
 {
   ScAddr const & actionAddr = CreateNode(ScType::NodeConst);
   CreateEdge(ScType::EdgeAccessConstPosPerm, actionClassAddr, actionAddr);
@@ -157,7 +157,7 @@ ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr)
   return action;
 }
 
-ScAction ScAgentContext::ConvertToAction(ScAddr const & actionAddr)
+ScAction ScAgentContext::ConvertToAction(ScAddr const & actionAddr) noexcept(false)
 {
   ScAction action{this, actionAddr};
   return action;
@@ -170,7 +170,7 @@ ScSet ScAgentContext::CreateSet()
   return set;
 }
 
-ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr)
+ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr) noexcept(false)
 {
   ScSet set{this, setAddr};
   return set;
@@ -183,7 +183,7 @@ ScStructure ScAgentContext::CreateStructure()
   return structure;
 }
 
-ScStructure ScAgentContext::ConvertToStructure(ScAddr const & structureAddr)
+ScStructure ScAgentContext::ConvertToStructure(ScAddr const & structureAddr) noexcept(false)
 {
   ScStructure structure{this, structureAddr};
   return structure;

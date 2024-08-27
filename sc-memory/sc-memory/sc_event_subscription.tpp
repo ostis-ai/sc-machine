@@ -12,7 +12,7 @@ template <class TScEvent>
 ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
     ScMemoryContext const & ctx,
     ScAddr const & subscriptionElementAddr,
-    DelegateFunc const & func)
+    DelegateFunc const & func) noexcept
 {
   m_delegate = func;
   m_event_subscription = sc_event_subscription_with_user_new(
@@ -30,7 +30,7 @@ ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
     ScMemoryContext const & ctx,
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
-    DelegateFunc const & func)
+    DelegateFunc const & func) noexcept
 {
   m_delegate = func;
   m_event_subscription = sc_event_subscription_with_user_new(
@@ -44,20 +44,20 @@ ScElementaryEventSubscription<TScEvent>::ScElementaryEventSubscription(
 }
 
 template <class TScEvent>
-ScElementaryEventSubscription<TScEvent>::~ScElementaryEventSubscription()
+ScElementaryEventSubscription<TScEvent>::~ScElementaryEventSubscription() noexcept
 {
   if (m_event_subscription)
     sc_event_subscription_destroy(m_event_subscription);
 }
 
 template <class TScEvent>
-void ScElementaryEventSubscription<TScEvent>::SetDelegate(DelegateFunc && func)
+void ScElementaryEventSubscription<TScEvent>::SetDelegate(DelegateFunc && func) noexcept
 {
   m_delegate = func;
 }
 
 template <class TScEvent>
-void ScElementaryEventSubscription<TScEvent>::RemoveDelegate()
+void ScElementaryEventSubscription<TScEvent>::RemoveDelegate() noexcept
 {
   m_delegate = DelegateFunc();
 }
@@ -68,7 +68,7 @@ sc_result ScElementaryEventSubscription<TScEvent>::Handle(
     sc_addr userAddr,
     sc_addr connectorAddr,
     sc_type connectorType,
-    sc_addr otherAddr)
+    sc_addr otherAddr) noexcept
 {
   sc_result result = SC_RESULT_ERROR;
 
@@ -101,7 +101,8 @@ sc_result ScElementaryEventSubscription<TScEvent>::Handle(
 }
 
 template <class TScEvent>
-sc_result ScElementaryEventSubscription<TScEvent>::HandleDelete(sc_event_subscription const * event_subscription)
+sc_result ScElementaryEventSubscription<TScEvent>::HandleDelete(
+    sc_event_subscription const * event_subscription) noexcept
 {
   auto * eventSubscription = (ScElementaryEventSubscription *)sc_event_subscription_get_data(event_subscription);
 

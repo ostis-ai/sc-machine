@@ -9,7 +9,7 @@
 // ScEvent
 //-------------------------------------------------------------------------
 
-ScEvent::~ScEvent() = default;
+ScEvent::~ScEvent() noexcept = default;
 
 // ScElementaryEvent
 //-------------------------------------------------------------------------
@@ -20,7 +20,7 @@ ScElementaryEvent::ScElementaryEvent(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : m_eventClassAddr(eventClassAddr)
   , m_userAddr(userAddr)
   , m_subscriptionAddr(subscriptionElementAddr)
@@ -28,37 +28,37 @@ ScElementaryEvent::ScElementaryEvent(
   , m_connectorType(connectorType)
   , m_otherAddr(otherAddr) {};
 
-ScAddr ScElementaryEvent::GetEventClass() const
+ScAddr ScElementaryEvent::GetEventClass() const noexcept
 {
   return m_eventClassAddr;
 }
 
-ScAddr ScElementaryEvent::GetUser() const
+ScAddr ScElementaryEvent::GetUser() const noexcept
 {
   return m_userAddr;
 }
 
-ScAddr ScElementaryEvent::GetSubscriptionElement() const
+ScAddr ScElementaryEvent::GetSubscriptionElement() const noexcept
 {
   return m_subscriptionAddr;
 }
 
-std::tuple<ScAddr, ScAddr, ScAddr> ScElementaryEvent::GetTriple() const
+std::tuple<ScAddr, ScAddr, ScAddr> ScElementaryEvent::GetTriple() const noexcept
 {
   return {m_subscriptionAddr, m_connectorAddr, m_otherAddr};
 }
 
-ScAddr ScElementaryEvent::GetConnector() const
+ScAddr ScElementaryEvent::GetConnector() const noexcept
 {
   return m_connectorAddr;
 }
 
-ScType ScElementaryEvent::GetConnectorType() const
+ScType ScElementaryEvent::GetConnectorType() const noexcept
 {
   return m_connectorType;
 }
 
-ScAddr ScElementaryEvent::GetOtherElement() const
+ScAddr ScElementaryEvent::GetOtherElement() const noexcept
 {
   return m_otherAddr;
 }
@@ -71,7 +71,7 @@ ScEventBeforeEraseElement::ScEventBeforeEraseElement(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : TScElementaryEvent(
         ScEventBeforeEraseElement::eventClassAddr,
         userAddr,
@@ -82,17 +82,17 @@ ScEventBeforeEraseElement::ScEventBeforeEraseElement(
 
 // Ignore these methods, because they can't be used.
 // LCOV_EXCL_START
-ScAddr ScEventBeforeEraseElement::GetConnector() const
+ScAddr ScEventBeforeEraseElement::GetConnector() const noexcept
 {
   return ScElementaryEvent::GetConnector();
 }
 
-ScType ScEventBeforeEraseElement::GetConnectorType() const
+ScType ScEventBeforeEraseElement::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
-ScAddr ScEventBeforeEraseElement::GetOtherElement() const
+ScAddr ScEventBeforeEraseElement::GetOtherElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }
@@ -107,7 +107,7 @@ ScEventBeforeChangeLinkContent::ScEventBeforeChangeLinkContent(
     ScAddr const & subscriptionElementAddr,
     ScAddr const & connectorAddr,
     ScType const & connectorType,
-    ScAddr const & otherAddr)
+    ScAddr const & otherAddr) noexcept
   : TScElementaryEvent(
         ScEventBeforeChangeLinkContent::eventClassAddr,
         userAddr,
@@ -118,17 +118,17 @@ ScEventBeforeChangeLinkContent::ScEventBeforeChangeLinkContent(
 
 // Ignore these methods, because they can't be used.
 // LCOV_EXCL_START
-ScAddr ScEventBeforeChangeLinkContent::GetConnector() const
+ScAddr ScEventBeforeChangeLinkContent::GetConnector() const noexcept
 {
   return ScElementaryEvent::GetConnector();
 }
 
-ScType ScEventBeforeChangeLinkContent::GetConnectorType() const
+ScType ScEventBeforeChangeLinkContent::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
 
-ScAddr ScEventBeforeChangeLinkContent::GetOtherElement() const
+ScAddr ScEventBeforeChangeLinkContent::GetOtherElement() const noexcept
 {
   return ScElementaryEvent::GetOtherElement();
 }

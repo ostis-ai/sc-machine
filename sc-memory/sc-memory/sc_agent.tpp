@@ -15,19 +15,19 @@
 #include "sc_keynodes.hpp"
 
 template <class TScEvent, class TScContext>
-ScAgentBase<TScEvent, TScContext>::ScAgentBase()
+ScAgentBase<TScEvent, TScContext>::ScAgentBase() noexcept
   : m_memoryCtx(nullptr)
 {
 }
 
 template <class TScEvent, class TScContext>
-ScAgentBase<TScEvent, TScContext>::~ScAgentBase()
+ScAgentBase<TScEvent, TScContext>::~ScAgentBase() noexcept
 {
   m_memoryCtx.Destroy();
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetAbstractAgent() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetAbstractAgent() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       ScType::NodeConst,
@@ -46,7 +46,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetAbstractAgent() const
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const noexcept(false)
 {
   if constexpr (!std::is_same<TScEvent, ScElementaryEvent>::value)
     return TScEvent::eventClassAddr;
@@ -69,7 +69,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -89,7 +89,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetActionClass() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetActionClass() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -117,7 +117,7 @@ bool ScAgentBase<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const 
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetInitiationCondition() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetInitiationCondition() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -170,7 +170,7 @@ bool ScAgentBase<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, S
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetResultCondition() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -199,31 +199,31 @@ ScTemplate ScAgentBase<TScEvent, TScContext>::GetResultConditionTemplate() const
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-void ScAgentBase<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr)
+void ScAgentBase<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr) noexcept
 {
   m_memoryCtx = ScAgentContext(userAddr);
 }
 
 template <class TScEvent, class TScContext>
-void ScAgentBase<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplementationAddr)
+void ScAgentBase<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplementationAddr) noexcept
 {
   m_agentImplementationAddr = agentImplementationAddr;
 }
 
 template <class TScEvent, class TScContext>
-bool ScAgentBase<TScEvent, TScContext>::MayBeSpecified() const
+bool ScAgentBase<TScEvent, TScContext>::MayBeSpecified() const noexcept
 {
   return m_memoryCtx.IsElement(m_agentImplementationAddr);
 }
 
 template <class TScEvent, class TScContext>
-std::function<void(TScEvent const &)> ScAgentBase<TScEvent, TScContext>::GetCallback(ScAddr const &)
+std::function<void(TScEvent const &)> ScAgentBase<TScEvent, TScContext>::GetCallback(ScAddr const &) noexcept
 {
   return {};
 }
 
 template <class TScEvent, class TScContext>
-ScAgent<TScEvent, TScContext>::ScAgent()
+ScAgent<TScEvent, TScContext>::ScAgent() noexcept
   : ScAgentBase<TScEvent>(){};
 
 template <class TScEvent, class TScContext>
@@ -231,7 +231,7 @@ template <class TScAgent, class... TScAddr>
 void ScAgent<TScEvent, TScContext>::Subscribe(
     ScMemoryContext * ctx,
     ScAddr const & agentImplementationAddr,
-    TScAddr const &... subscriptionAddrs)
+    TScAddr const &... subscriptionAddrs) noexcept(false)
 {
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
   static_assert(
@@ -295,7 +295,7 @@ template <class TScAgent, class... TScAddr>
 void ScAgent<TScEvent, TScContext>::Unsubscribe(
     ScMemoryContext * ctx,
     ScAddr const & agentImplementationAddr,
-    TScAddr const &... subscriptionAddrs)
+    TScAddr const &... subscriptionAddrs) noexcept(false)
 {
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
   static_assert(
@@ -348,7 +348,8 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
 
 template <class TScEvent, class TScContext>
 template <class TScAgent>
-std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback(ScAddr const & agentImplementationAddr)
+std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback(
+    ScAddr const & agentImplementationAddr) noexcept
 {
   static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
 
@@ -425,7 +426,7 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
 }
 
 template <class TScEvent, class TScContext>
-bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated()
+bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated() noexcept
 {
   return ScMemory::ms_globalContext->HelperCheckEdge(
       ScKeynodes::action_deactivated, this->GetActionClass(), ScType::EdgeAccessConstPosPerm);
@@ -433,7 +434,7 @@ bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated()
 
 template <class TScEvent, class TScContext>
 template <class TScAgent>
-bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const & event)
+bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const & event) noexcept
 {
   if constexpr (HasOverride<TScAgent>::CheckInitiationCondition::value)
     return this->CheckInitiationCondition(event);
@@ -463,7 +464,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
 
 template <class TScEvent, class TScContext>
 template <class TScAgent>
-bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & event, ScAction & action)
+bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept
 {
   if constexpr (HasOverride<TScAgent>::CheckResultCondition::value)
     return this->CheckResultCondition(event, action);
@@ -492,7 +493,9 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
 }
 
 template <class TScEvent, class TScContext>
-ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr)
+ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(
+    TScEvent const & event,
+    ScAddr const & checkTemplateAddr) noexcept
 {
   auto [_eventSubscriptionElementAddr, _, _otherElementAddr] = event.GetTriple();
   ScAddr const & eventSubscriptionElementAddr = _eventSubscriptionElementAddr;
@@ -579,7 +582,7 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
     ScAddr const & otherElementAddr,
     size_t otherElementPosition,
     ScIterator5Ptr const eventTripleIterator,
-    ScTemplateParams & checkTemplateParams)
+    ScTemplateParams & checkTemplateParams) noexcept
 {
   ScTemplateParams params;
   ScIterator3Ptr const subscriptionElementIterator =

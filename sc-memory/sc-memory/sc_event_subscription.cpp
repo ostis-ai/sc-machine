@@ -6,4 +6,4 @@
 
 #include "sc_event_subscription.hpp"
 
-ScEventSubscription::~ScEventSubscription() = default;
+ScEventSubscription::~ScEventSubscription() noexcept = default;

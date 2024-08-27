@@ -10,13 +10,13 @@
 #include "sc_struct.hpp"
 
 template <std::size_t N>
-_SC_EXTERN auto ScAction::GetArguments()
+_SC_EXTERN auto ScAction::GetArguments() noexcept
 {
   return GetArgumentsImpl(std::make_index_sequence<N>{});
 }
 
 template <std::size_t... Is>
-_SC_EXTERN auto ScAction::GetArgumentsImpl(std::index_sequence<Is...>)
+_SC_EXTERN auto ScAction::GetArgumentsImpl(std::index_sequence<Is...>) noexcept
 {
   return std::make_tuple(GetArgument(Is + 1)...);
 }

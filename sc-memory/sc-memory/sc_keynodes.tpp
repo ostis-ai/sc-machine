@@ -22,7 +22,7 @@ struct IsValidTemplateItem
 }  // namespace
 
 template <typename T>
-auto ScTemplateKeynode::HandleParam(T const & param)
+auto ScTemplateKeynode::HandleParam(T const & param) noexcept
 {
   if constexpr (std::is_same<T, ScKeynode>::value)
   {
@@ -41,7 +41,7 @@ auto ScTemplateKeynode::HandleParam(T const & param)
 }
 
 template <typename T1, typename T2, typename T3>
-ScTemplateKeynode ScTemplateKeynode::Triple(T1 const & param1, T2 const & param2, T3 const & param3) noexcept(false)
+ScTemplateKeynode ScTemplateKeynode::Triple(T1 const & param1, T2 const & param2, T3 const & param3) noexcept
 {
   static_assert(IsValidTemplateItem<T1>::value, "Parameter 1 must be either ScKeynode or ScTemplateItem");
   static_assert(IsValidTemplateItem<T2>::value, "Parameter 2 must be either ScKeynode or ScTemplateItem");
@@ -61,7 +61,7 @@ ScTemplateKeynode ScTemplateKeynode::Quintuple(
     T2 const & param2,
     T3 const & param3,
     T4 const & param4,
-    T5 const & param5) noexcept(false)
+    T5 const & param5) noexcept
 {
   static_assert(IsValidTemplateItem<T1>::value, "Parameter 1 must be either ScKeynode or ScTemplateItem");
   static_assert(IsValidTemplateItem<T2>::value, "Parameter 2 must be either ScKeynode or ScTemplateItem");
