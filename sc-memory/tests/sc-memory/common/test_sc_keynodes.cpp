@@ -84,46 +84,6 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(ScKeynodes::sc_event_before_change_link_content.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_change_link_content) == ScType::NodeConstClass);
 
-  EXPECT_TRUE(ScKeynodes::sc_result_class.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_class) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_ok.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_ok) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_no.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_no) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_unknown.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_unknown) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_invalid_params.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_invalid_params) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_invalid_type.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_invalid_type) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_io.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_io) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_invalid_state.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_invalid_state) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_not_found.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_not_found) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_full_memory.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_full_memory) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_addr_is_not_valid.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_addr_is_not_valid) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_element_is_not_node.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_element_is_not_node) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_element_is_not_link.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_element_is_not_link) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_element_is_not_connector.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_element_is_not_connector) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_file_memory_io.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_file_memory_io) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_stream_io.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_stream_io) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_invalid_system_identifier.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_error_invalid_system_identifier) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_result_error_duplicated_system_identifier.IsValid());
-  EXPECT_TRUE(
-      m_ctx->GetElementType(ScKeynodes::sc_result_error_duplicated_system_identifier) == ScType::NodeConstClass);
-
   EXPECT_TRUE(ScKeynodes::binary_type.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_type) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::binary_float.IsValid());

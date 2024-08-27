@@ -251,7 +251,7 @@ TEST_F(ScActionTest, InitiateAndWaitAction)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
-TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyNotInitiatedAction)
+TEST_F(ScActionTest, FinishSuccessfullyNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
@@ -304,7 +304,7 @@ TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
   EXPECT_FALSE(action.IsInitiated());
 }
 
-TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)
+TEST_F(ScActionTest, FinishUnsuccessfullyNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
@@ -319,7 +319,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyNotInitiatedAction)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
-TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorNotInitiatedAction)
+TEST_F(ScActionTest, FinishWithErrorNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 

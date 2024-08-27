@@ -236,7 +236,7 @@ TEST_F(ScAgentTest, ATestCallWithoutEventInitiation)
   EXPECT_TRUE(ATestDoProgram::msWaiter.Wait());
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
+TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentWithWaitingAgentWaiter)
 {
   ATestCheckResult::msWaiter.Reset();
 
@@ -251,7 +251,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV1)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV2)
+TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentWithWaitingActionToBeFinished)
 {
   ATestCheckResult::msWaiter.Reset();
 
@@ -264,7 +264,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentV2)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV1)
+TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentWithWaitingAgentWaiter)
 {
   ATestCheckResult::msWaiter.Reset();
 
@@ -279,7 +279,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV1)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
-TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV2)
+TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentWithWaitingActionToBeFinished)
 {
   ATestCheckResult::msWaiter.Reset();
 
@@ -292,7 +292,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentV2)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
-TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV1)
+TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsWithWaitingAgentWaiter)
 {
   ATestCheckResult::msWaiter.Reset();
 
@@ -309,7 +309,7 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV1)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
-TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsV2)
+TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsWithWaitingActionToBeFinished)
 {
   ATestCheckResult::msWaiter.Reset();
 

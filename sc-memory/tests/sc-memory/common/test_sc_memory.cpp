@@ -143,29 +143,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 
-  ScAddrVector const & keynodesAddrs = {
-      ScKeynodes::sc_event, ScKeynodes::sc_result_class, ScKeynodes::binary_type, testTemplate};
-
-  ScAddrVector const & resultCodes = {
-      ScKeynodes::sc_result_ok,
-      ScKeynodes::sc_result_no,
-      ScKeynodes::sc_result_unknown,
-      ScKeynodes::sc_result_error,
-      ScKeynodes::sc_result_error_invalid_params,
-      ScKeynodes::sc_result_error_invalid_type,
-      ScKeynodes::sc_result_invalid_state,
-      ScKeynodes::sc_result_error_not_found,
-      ScKeynodes::sc_result_error_stream_io,
-      ScKeynodes::sc_result_error_not_found,
-      ScKeynodes::sc_result_error_full_memory,
-      ScKeynodes::sc_result_error_addr_is_not_valid,
-      ScKeynodes::sc_result_error_element_is_not_node,
-      ScKeynodes::sc_result_error_element_is_not_link,
-      ScKeynodes::sc_result_error_element_is_not_connector,
-      ScKeynodes::sc_result_error_file_memory_io,
-      ScKeynodes::sc_result_error_stream_io,
-      ScKeynodes::sc_result_error_invalid_system_identifier,
-      ScKeynodes::sc_result_error_duplicated_system_identifier};
+  ScAddrVector const & keynodesAddrs = {ScKeynodes::sc_event, ScKeynodes::binary_type, testTemplate};
 
   ScAddrVector const & events = {
       ScKeynodes::sc_event_after_generate_incoming_arc,
@@ -193,7 +171,7 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
       ScKeynodes::binary_uint64,
       ScKeynodes::binary_custom};
 
-  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, events, resultCodes, binaryTypes};
+  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, events, binaryTypes};
 
   ScAddrVector allKeynodes;
   for (ScAddrVector const & keynodes : keynodesVectors)
