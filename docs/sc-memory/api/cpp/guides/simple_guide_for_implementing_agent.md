@@ -94,21 +94,6 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 ### **4. Define a class in C++ for this agent and specifies class of actions that this agent performs and its program.**
 
-An agent's class to be implemented must comply with the following requirements:
-
-a. It must inherit one of the common classes for implementing agents: 
-  
-  - `template <class TScEvent> class ScAgent`,
-  - or `class ScActionAgent`.
-
-The base class `ScAgent` contains API to implement agents that react to any sc-events. The base class `ScActionAgent` inherits base class `ScAgent` and provides API to implement agents that react to sc-events of initiating sc-action.
-
-b. It must override at least methods `ScAddr GetAction() const` and `ScResult DoProgram(ScActionEvent const & event, ScAction & action)`.
-
-c. Override methods must be public. Otherwise, you won't be able to build your code because the sc-machine won't be able to call methods on your agent class.
-
-d. You can implement other methods in agent's class.
-
 **sc_agent_calculate_set_power.hpp**
 
 ```cpp
@@ -124,6 +109,21 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 ```
+
+An agent's class to be implemented must comply with the following requirements:
+
+* It must inherit one of the common classes for implementing agents: 
+  
+  - `template <class TScEvent> class ScAgent`,
+  - or `class ScActionAgent`.
+
+The base class `ScAgent` contains API to implement agents that react to any sc-events. The base class `ScActionAgent` inherits base class `ScAgent` and provides API to implement agents that react to sc-events of initiating sc-action.
+
+* It must override at least methods `ScAddr GetAction() const` and `ScResult DoProgram(ScActionEvent const & event, ScAction & action)`.
+
+* Override methods must be public. Otherwise, you won't be able to build your code because the sc-machine won't be able to call methods on your agent class.
+
+* You can implement other methods in agent's class.
 
 ---
 
