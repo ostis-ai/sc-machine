@@ -1,7 +1,7 @@
 #include "sc_test.hpp"
 
 #include "sc-memory/sc_agent_context.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 using ScAgentContextTest = ScMemoryTest;
 

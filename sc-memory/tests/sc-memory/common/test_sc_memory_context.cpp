@@ -8,7 +8,7 @@
 #include "sc-memory/sc_memory.hpp"
 
 #include "sc-core/sc_keynodes.h"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "sc_test.hpp"
 

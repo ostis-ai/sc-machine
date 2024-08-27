@@ -7,7 +7,7 @@
 #include "sc_action.hpp"
 
 #include "sc_agent_context.hpp"
-#include "sc_struct.hpp"
+#include "sc_structure.hpp"
 
 template <std::size_t N>
 _SC_EXTERN auto ScAction::GetArguments() noexcept

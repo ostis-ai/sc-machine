@@ -9,7 +9,7 @@
 #include "sc_agent_context.hpp"
 #include "sc_result.hpp"
 #include "sc_event_wait.hpp"
-#include "sc_struct.hpp"
+#include "sc_structure.hpp"
 
 ScAction::ScAction(ScAgentContext * context, ScAddr const & actionAddr) noexcept
   : ScAddr(actionAddr)

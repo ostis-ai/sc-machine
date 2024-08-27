@@ -13,7 +13,7 @@
 #include "sc_template_private.hpp"
 #include "sc_memory.hpp"
 
-#include "sc_struct.hpp"
+#include "sc_structure.hpp"
 
 class ScTemplateLoader
 {

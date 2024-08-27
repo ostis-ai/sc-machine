@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_struct.hpp"
+#include "sc_structure.hpp"
 #include "sc_memory.hpp"
 #include "sc_template.hpp"
 

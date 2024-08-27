@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "sc_test.hpp"
 

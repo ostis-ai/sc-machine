@@ -8,7 +8,7 @@
 
 #include "sc_memory.hpp"
 
-#include "sc_struct.hpp"
+#include "sc_structure.hpp"
 
 void internal::ScKeynodesRegister::Remember(ScKeynode * keynode)
 {

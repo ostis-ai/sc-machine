@@ -15,7 +15,7 @@
 #include "sc_template.hpp"
 
 #include "sc_stream.hpp"
-#include "sc_struct.hpp"
+#include "sc_structure.hpp"
 #include "sc_link.hpp"
 
 #include "sc_object.hpp"

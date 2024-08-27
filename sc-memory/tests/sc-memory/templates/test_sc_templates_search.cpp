@@ -2,7 +2,7 @@
 
 #include "sc-memory/sc_link.hpp"
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "template_test_utils.hpp"
 
