@@ -24,7 +24,7 @@ class ScAction;
 class ScResult;
 
 /*!
- * @class ScAgentAbstract
+ * @class ScAgentBase
  * @brief An abstract base class for agents.
  *
  * This class provides a base implementation for agents, offering methods for initialization, shutdown, and handling
@@ -34,7 +34,7 @@ class ScResult;
  * @tparam TScContext The type of sc-memory context that used by agent.
  */
 template <class TScEvent, class TScContext = ScAgentContext>
-class _SC_EXTERN ScAgentAbstract : public ScObject
+class _SC_EXTERN ScAgentBase : public ScObject
 {
   static_assert(std::is_base_of<class ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
   static_assert(
@@ -48,7 +48,7 @@ class _SC_EXTERN ScAgentAbstract : public ScObject
 public:
   using TEventType = TScEvent;
 
-  _SC_EXTERN ~ScAgentAbstract() override;
+  _SC_EXTERN ~ScAgentBase() override;
 
   /*!
    * @brief Gets abstract agent for agent of this class.
@@ -241,7 +241,7 @@ protected:
 
   static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_events;
 
-  _SC_EXTERN ScAgentAbstract();
+  _SC_EXTERN ScAgentBase();
 
   /*!
    * @brief Sets initiator of the agent.
@@ -268,14 +268,14 @@ protected:
  * @class ScAgent
  * @brief A class for agents that can subscribe to any elementary sc-events.
  *
- * This class extends ScAgentAbstract and provides methods for subscribing and unsubscribing
+ * This class extends ScAgentBase and provides methods for subscribing and unsubscribing
  * to sc-events.
  *
  * @tparam TScEvent The type of sc-event this agent class handles.
  * @tparam TScContext The type of sc-memory context that used by agent.
  */
 template <class TScEvent, class TScContext = ScAgentContext>
-class _SC_EXTERN ScAgent : public ScAgentAbstract<TScEvent, TScContext>
+class _SC_EXTERN ScAgent : public ScAgentBase<TScEvent, TScContext>
 {
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
   static_assert(

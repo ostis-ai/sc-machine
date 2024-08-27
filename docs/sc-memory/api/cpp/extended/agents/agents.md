@@ -241,13 +241,13 @@ public:
 
 ---
 
-### **ScAgentAbstract**
+### **ScAgentBase**
 
 There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
 
-This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should inherit your agent class from these classes, not from the `ScAgentAbstract` class (see documentation above).
+This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should inherit your agent class from these classes, not from the `ScAgentBase` class (see documentation above).
 
-You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgentAbstract` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
+You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgentBase` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
 
 ---
 

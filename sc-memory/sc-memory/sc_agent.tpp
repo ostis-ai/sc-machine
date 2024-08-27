@@ -15,19 +15,19 @@
 #include "sc_keynodes.hpp"
 
 template <class TScEvent, class TScContext>
-ScAgentAbstract<TScEvent, TScContext>::ScAgentAbstract()
+ScAgentBase<TScEvent, TScContext>::ScAgentBase()
   : m_memoryCtx(nullptr)
 {
 }
 
 template <class TScEvent, class TScContext>
-ScAgentAbstract<TScEvent, TScContext>::~ScAgentAbstract()
+ScAgentBase<TScEvent, TScContext>::~ScAgentBase()
 {
   m_memoryCtx.Destroy();
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentAbstract<TScEvent, TScContext>::GetAbstractAgent() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetAbstractAgent() const
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       ScType::NodeConst,
@@ -46,7 +46,7 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetAbstractAgent() const
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentAbstract<TScEvent, TScContext>::GetEventClass() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const
 {
   if constexpr (!std::is_same<TScEvent, ScElementaryEvent>::value)
     return TScEvent::eventClassAddr;
@@ -69,7 +69,7 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetEventClass() const
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentAbstract<TScEvent, TScContext>::GetEventSubscriptionElement() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -89,7 +89,7 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetEventSubscriptionElement() cons
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentAbstract<TScEvent, TScContext>::GetActionClass() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetActionClass() const
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -109,7 +109,7 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetActionClass() const
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-sc_bool ScAgentAbstract<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & event)
+sc_bool ScAgentBase<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & event)
 {
   return SC_TRUE;
 }
@@ -117,7 +117,7 @@ sc_bool ScAgentAbstract<TScEvent, TScContext>::CheckInitiationCondition(TScEvent
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentAbstract<TScEvent, TScContext>::GetInitiationCondition() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetInitiationCondition() const
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -138,7 +138,7 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetInitiationCondition() const
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-ScTemplate ScAgentAbstract<TScEvent, TScContext>::GetInitiationConditionTemplate() const
+ScTemplate ScAgentBase<TScEvent, TScContext>::GetInitiationConditionTemplate() const
 {
   return ScTemplate();
 }
@@ -147,13 +147,13 @@ ScTemplate ScAgentAbstract<TScEvent, TScContext>::GetInitiationConditionTemplate
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-ScResult ScAgentAbstract<TScEvent, TScContext>::DoProgram(TScEvent const & event, ScAction & action)
+ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(TScEvent const & event, ScAction & action)
 {
   return ScResult(SC_RESULT_OK);
 }
 
 template <class TScEvent, class TScContext>
-ScResult ScAgentAbstract<TScEvent, TScContext>::DoProgram(ScAction & action)
+ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(ScAction & action)
 {
   return ScResult(SC_RESULT_OK);
 }
@@ -162,7 +162,7 @@ ScResult ScAgentAbstract<TScEvent, TScContext>::DoProgram(ScAction & action)
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-sc_bool ScAgentAbstract<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
+sc_bool ScAgentBase<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
 {
   return SC_TRUE;
 }
@@ -170,7 +170,7 @@ sc_bool ScAgentAbstract<TScEvent, TScContext>::CheckResultCondition(TScEvent con
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentAbstract<TScEvent, TScContext>::GetResultCondition() const
+ScAddr ScAgentBase<TScEvent, TScContext>::GetResultCondition() const
 {
   ScIterator5Ptr const it5 = m_memoryCtx.Iterator5(
       GetAbstractAgent(),
@@ -191,7 +191,7 @@ ScAddr ScAgentAbstract<TScEvent, TScContext>::GetResultCondition() const
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-ScTemplate ScAgentAbstract<TScEvent, TScContext>::GetResultConditionTemplate() const
+ScTemplate ScAgentBase<TScEvent, TScContext>::GetResultConditionTemplate() const
 {
   return ScTemplate();
 }
@@ -199,32 +199,32 @@ ScTemplate ScAgentAbstract<TScEvent, TScContext>::GetResultConditionTemplate() c
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-void ScAgentAbstract<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr)
+void ScAgentBase<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr)
 {
   m_memoryCtx = ScAgentContext(userAddr);
 }
 
 template <class TScEvent, class TScContext>
-void ScAgentAbstract<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplementationAddr)
+void ScAgentBase<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplementationAddr)
 {
   m_agentImplementationAddr = agentImplementationAddr;
 }
 
 template <class TScEvent, class TScContext>
-sc_bool ScAgentAbstract<TScEvent, TScContext>::MayBeSpecified() const
+sc_bool ScAgentBase<TScEvent, TScContext>::MayBeSpecified() const
 {
   return m_memoryCtx.IsElement(m_agentImplementationAddr);
 }
 
 template <class TScEvent, class TScContext>
-std::function<void(TScEvent const &)> ScAgentAbstract<TScEvent, TScContext>::GetCallback(ScAddr const &)
+std::function<void(TScEvent const &)> ScAgentBase<TScEvent, TScContext>::GetCallback(ScAddr const &)
 {
   return {};
 }
 
 template <class TScEvent, class TScContext>
 ScAgent<TScEvent, TScContext>::ScAgent()
-  : ScAgentAbstract<TScEvent>(){};
+  : ScAgentBase<TScEvent>(){};
 
 template <class TScEvent, class TScContext>
 template <class TScAgent, class... TScAddr>
@@ -242,8 +242,8 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
-  if (!ScAgentAbstract<TScEvent>::m_events.count(agentName))
-    ScAgentAbstract<TScEvent>::m_events.insert({agentName, {}});
+  if (!ScAgentBase<TScEvent>::m_events.count(agentName))
+    ScAgentBase<TScEvent>::m_events.insert({agentName, {}});
 
   ScAddrVector subscriptionVector{subscriptionAddrs...};
   // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
@@ -251,7 +251,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
   std::string const & eventName = ScEvent::GetName<TScEvent>();
-  auto & subscriptionsMap = ScAgentAbstract<TScEvent>::m_events.find(agentName)->second;
+  auto & subscriptionsMap = ScAgentBase<TScEvent>::m_events.find(agentName)->second;
   for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
     if (!ctx->IsElement(subscriptionElementAddr))
@@ -306,8 +306,8 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
-  auto const & agentsMapIt = ScAgentAbstract<TScEvent>::m_events.find(agentName);
-  if (agentsMapIt == ScAgentAbstract<TScEvent>::m_events.cend())
+  auto const & agentsMapIt = ScAgentBase<TScEvent>::m_events.find(agentName);
+  if (agentsMapIt == ScAgentBase<TScEvent>::m_events.cend())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Agent `" << agentName << "` does not have been subscribed to any events yet.");
 

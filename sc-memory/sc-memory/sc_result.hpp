@@ -13,7 +13,7 @@ class ScKeynode;
 class ScResult : public ScObject
 {
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
   template <class TScEvent, class TScContext>
   friend class ScAgent;
   friend class ScAction;

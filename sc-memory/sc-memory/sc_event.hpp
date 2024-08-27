@@ -106,7 +106,7 @@ class _SC_EXTERN TScElementaryEvent : public ScElementaryEvent
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 protected:
   _SC_EXTERN TScElementaryEvent(
@@ -132,7 +132,7 @@ class _SC_EXTERN ScEventGenerateConnector : public TScElementaryEvent<tConnector
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 public:
   _SC_EXTERN virtual ScAddr GetGeneratedConnector() const;
@@ -203,7 +203,7 @@ class _SC_EXTERN ScEventGenerateEdge : public ScEventGenerateConnector<edgeType>
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 public:
   _SC_EXTERN virtual ScAddr GetGeneratedEdge() const;
@@ -234,7 +234,7 @@ class _SC_EXTERN ScEventGenerateOutgoingArc : public ScEventGenerateArc<arcType>
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 protected:
   _SC_EXTERN ScEventGenerateOutgoingArc(
@@ -258,7 +258,7 @@ class _SC_EXTERN ScEventGenerateIncomingArc final : public ScEventGenerateArc<ar
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 public:
   _SC_EXTERN ScAddr GetArcSourceElement() const override;
@@ -287,7 +287,7 @@ class _SC_EXTERN ScEventEraseConnector : public TScElementaryEvent<tConnectorTyp
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 public:
   _SC_EXTERN virtual ScAddr GetErasableConnector() const;
@@ -358,7 +358,7 @@ class _SC_EXTERN ScEventEraseEdge : public ScEventEraseConnector<edgeType>
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 public:
   _SC_EXTERN virtual ScAddr GetErasableEdge() const;
@@ -389,7 +389,7 @@ class _SC_EXTERN ScEventEraseOutgoingArc final : public ScEventEraseArc<arcType>
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 protected:
   _SC_EXTERN ScEventEraseOutgoingArc(
@@ -413,7 +413,7 @@ class _SC_EXTERN ScEventEraseIncomingArc final : public ScEventEraseArc<arcType>
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 public:
   _SC_EXTERN ScAddr GetArcSourceElement() const override;
@@ -443,7 +443,7 @@ class _SC_EXTERN ScEventEraseElement final : public TScElementaryEvent<ScType::U
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 protected:
   _SC_EXTERN ScEventEraseElement(
@@ -466,7 +466,7 @@ class _SC_EXTERN ScEventChangeLinkContent final : public TScElementaryEvent<ScTy
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
   template <class TScEvent, class TScContext>
-  friend class ScAgentAbstract;
+  friend class ScAgentBase;
 
 protected:
   _SC_EXTERN ScEventChangeLinkContent(
