@@ -106,7 +106,7 @@ class ScAgentCalculateSetPower : public ScActionAgent
 public:
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScAction & action) override;
 };
 ```
 
@@ -133,6 +133,8 @@ The base class `ScAgent` contains API to implement agents that react to any sc-e
 
 ```cpp
 #include "sc_agent_calculate_set_power.hpp"
+
+#include <sc-memory/sc_memory_headers.hpp>
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
@@ -272,7 +274,9 @@ public:
 ```diff
 #include "sc_agent_calculate_set_power.hpp"
 
-#include "keynodes/sc_set_keynodes.hpp"
+#include <sc-memory/sc_memory_headers.hpp>
+
++ #include "keynodes/sc_set_keynodes.hpp"
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
@@ -287,11 +291,11 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 - ScAddr const & nrelSetPowerAddr 
 -   = m_memoryCtx.HelperFindBySystemIdtf("nrel_set_power");
 - ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
--   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
+-   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
 + ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
-+   ScType::EdgeAccessConstPosPerm, ScSetKeynodes::nrel_set_power, arcAddr);
++   ScType::EdgeAccessConstPosPerm, ScSetKeynodes::nrel_set_power, arcCommonAddr);
 - action.FormResult(
-    setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
+-   setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
 + action.FormResult(
 +   setAddr, 
 +   arcCommonAddr,
@@ -433,6 +437,8 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 ```cpp
 #include <sc-memory/sc_test.hpp>
+
+#include <sc-memory/sc_memory_headers.hpp>
 
 #include "agents/sc_agent_calculate_set_power.hpp"
 #include "keynodes/sc_set_keynodes.hpp"

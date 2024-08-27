@@ -71,7 +71,7 @@ agent_calculate_set_power
     action_initiated _-> .._action;;
     action_finished_successfully _-> .._action;;
     .._action _-> rrel_1:: .._parameter;;
-    .._action _=> nrel_result:: .._result;;
+    .._action _=> nrel_result:: .._result (* <- sc_node_struct;; *);;
 *];;
 // Agent should check by this template that initiated action is finished 
 // and that it has result.
