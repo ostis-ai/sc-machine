@@ -36,7 +36,7 @@ public:
     Custom
   };
 
-  _SC_EXTERN ScLink(ScMemoryContext & ctx, ScAddr const & linkAddr);
+  _SC_EXTERN ScLink(ScMemoryContext & context, ScAddr const & linkAddr);
 
   // Check if this class has reference to sc-link element
   _SC_EXTERN bool IsValid() const;
@@ -79,7 +79,7 @@ public:
   template <typename Type>
   _SC_EXTERN inline bool IsType() const
   {
-    return m_ctx->HelperCheckEdge(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
+    return m_context->HelperCheckEdge(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
   }
 
   template <typename Type>
@@ -87,7 +87,7 @@ public:
   {
     ScStreamPtr stream;
     Value2Stream(value, stream);
-    if (!m_ctx->SetLinkContent(*this, stream))
+    if (!m_context->SetLinkContent(*this, stream))
       return false;
 
     ScAddr const newType = Type2Addr<Type>();
@@ -98,12 +98,12 @@ public:
       if (typeAddr == newType)
         needAppend = false;
       else
-        m_ctx->EraseElement(typeEdge);
+        m_context->EraseElement(typeEdge);
     }
 
     // append into set
     if (needAppend)
-      return m_ctx->CreateEdge(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
+      return m_context->CreateEdge(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
 
     return true;
   }
@@ -111,7 +111,7 @@ public:
   template <typename Type>
   _SC_EXTERN Type Get() const
   {
-    ScStreamPtr const stream = m_ctx->GetLinkContent(*this);
+    ScStreamPtr const stream = m_context->GetLinkContent(*this);
 
     // Check for invalid address.
     if (!stream || !stream->IsValid())
@@ -131,7 +131,7 @@ protected:
   _SC_EXTERN bool DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const;
 
 private:
-  ScMemoryContext * m_ctx;
+  ScMemoryContext * m_context;
 };
 
 template <>

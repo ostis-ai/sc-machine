@@ -48,11 +48,11 @@ ScAction & ScAction::FormResult(TScAddr const &... addrs)
 
   if (m_resultAddr.IsValid())
   {
-    m_ctx->EraseElement(m_resultAddr);
-    m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+    m_context->EraseElement(m_resultAddr);
+    m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);
   }
 
-  ScStructure resultStruct = m_ctx->ConvertToStructure(m_resultAddr);
+  ScStructure resultStruct = m_context->ConvertToStructure(m_resultAddr);
   for (ScAddr const & addr : ScAddrVector{addrs...})
     resultStruct << addr;
 
@@ -72,9 +72,9 @@ _SC_EXTERN ScAction & ScAction::UpdateResult(TScAddr const &... addrs)
                                           << "` because it had already been finished.");
 
   if (!m_resultAddr.IsValid())
-    m_resultAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+    m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);
 
-  ScStructure resultStruct = m_ctx->ConvertToStructure(m_resultAddr);
+  ScStructure resultStruct = m_context->ConvertToStructure(m_resultAddr);
   for (ScAddr const & addr : ScAddrVector{addrs...})
     resultStruct << addr;
 

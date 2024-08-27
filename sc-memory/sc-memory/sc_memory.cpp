@@ -71,8 +71,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   g_log_set_default_handler(_logPrintHandler, nullptr);
 
   ms_globalContext = new ScMemoryContext();
-  sc_memory_context * ctx = sc_memory_initialize(&params, &ms_globalContext->m_context);
-  if (ctx == nullptr)
+  sc_memory_context * context = sc_memory_initialize(&params, &ms_globalContext->m_context);
+  if (context == nullptr)
     return false;
 
   ScAddr initMemoryGeneratedStructureAddr;
@@ -667,10 +667,10 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
 void _PushLinkAddr(void * _data, sc_addr const link_addr)
 {
   void ** data = ((void **)_data);
-  auto * ctx = (sc_memory_context *)data[0];
+  auto * context = (sc_memory_context *)data[0];
 
   if (_sc_memory_context_check_local_and_global_permissions(
-          (sc_memory_context_manager *)sc_memory_get_context_manager(), ctx, SC_CONTEXT_PERMISSIONS_READ, link_addr)
+          (sc_memory_context_manager *)sc_memory_get_context_manager(), context, SC_CONTEXT_PERMISSIONS_READ, link_addr)
       == SC_FALSE)
     return;
 

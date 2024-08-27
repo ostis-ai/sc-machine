@@ -300,8 +300,8 @@ public:
   _SC_EXTERN static size_t GetRrelIndexNum();
 
 private:
-  static _SC_EXTERN void Initialize(ScMemoryContext * ctx);
-  static _SC_EXTERN void Shutdown(ScMemoryContext * ctx);
+  static _SC_EXTERN void Initialize(ScMemoryContext * context);
+  static _SC_EXTERN void Shutdown(ScMemoryContext * context);
 
   static _SC_EXTERN ScAddr const & GetResultCodeAddr(sc_result resCode);
 };

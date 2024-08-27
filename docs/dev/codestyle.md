@@ -335,7 +335,7 @@ else {
 
 ```cpp
 for (ScAddr const & addr : addrList)
-  ctx.EraseElement(addr);
+  context.EraseElement(addr);
 
 ...
 

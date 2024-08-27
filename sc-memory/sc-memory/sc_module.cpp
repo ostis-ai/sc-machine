@@ -13,37 +13,37 @@ ScModule * ScModule::Create(ScModule * module) noexcept
   return module;
 }
 
-void ScModule::Register(ScMemoryContext * ctx) noexcept
+void ScModule::Register(ScMemoryContext * context) noexcept
 {
   SC_LOG_INFO("Initialize " << this->GetName());
-  Initialize(ctx);
+  Initialize(context);
 
   for (auto const & agentInfo : m_agents)
   {
     auto [builder, subscribeCallback, _, addrs] = agentInfo;
     if (builder != nullptr)
-      builder->Initialize(ctx);
+      builder->Initialize(context);
     ScAddr const & agentImplementationAddr = builder ? builder->GetAgentImplementation() : ScAddr::Empty;
-    subscribeCallback(ctx, agentImplementationAddr, addrs);
+    subscribeCallback(context, agentImplementationAddr, addrs);
   }
 }
 
-void ScModule::Unregister(ScMemoryContext * ctx) noexcept
+void ScModule::Unregister(ScMemoryContext * context) noexcept
 {
   for (auto const & agentInfo : m_agents)
   {
     auto [builder, _, unsubscribeCallback, addrs] = agentInfo;
     ScAddr const & agentImplementationAddr = builder ? builder->GetAgentImplementation() : ScAddr::Empty;
-    unsubscribeCallback(ctx, agentImplementationAddr, addrs);
+    unsubscribeCallback(context, agentImplementationAddr, addrs);
     if (builder != nullptr)
-      builder->Shutdown(ctx);
+      builder->Shutdown(context);
 
     delete builder;
   }
   m_agents.clear();
 
   SC_LOG_INFO("Shutdown " << this->GetName());
-  Shutdown(ctx);
+  Shutdown(context);
 }
 
 void ScModule::Initialize(ScMemoryContext *) {}

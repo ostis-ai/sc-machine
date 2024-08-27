@@ -13,9 +13,9 @@
 #include "sc_timer.hpp"
 
 template <class TScEvent>
-ScEventWaiter<TScEvent>::ScEventWaiter(ScMemoryContext const & ctx, ScAddr const & subscriptionElementAddr) noexcept
+ScEventWaiter<TScEvent>::ScEventWaiter(ScMemoryContext const & context, ScAddr const & subscriptionElementAddr) noexcept
   : m_event(
-        ctx,
+        context,
         subscriptionElementAddr,
         [this](TScEvent const & event)
         {
@@ -27,11 +27,11 @@ ScEventWaiter<TScEvent>::ScEventWaiter(ScMemoryContext const & ctx, ScAddr const
 
 template <class TScEvent>
 ScEventWaiter<TScEvent>::ScEventWaiter(
-    ScMemoryContext const & ctx,
+    ScMemoryContext const & context,
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr) noexcept
   : m_event(
-        ctx,
+        context,
         eventClassAddr,
         subscriptionElementAddr,
         [this](ScElementaryEvent const & event)
@@ -50,21 +50,21 @@ bool ScEventWaiter<TScEvent>::OnEvent(TScEvent const &)
 
 template <class TScEvent>
 ScConditionWaiter<TScEvent>::ScConditionWaiter(
-    ScMemoryContext const & ctx,
+    ScMemoryContext const & context,
     ScAddr const & subscriptionElementAddr,
     DelegateCheckFunc const & func) noexcept
-  : ScEventWaiter<TScEvent>(ctx, subscriptionElementAddr)
+  : ScEventWaiter<TScEvent>(context, subscriptionElementAddr)
   , m_checkFunc(std::move(func))
 {
 }
 
 template <class TScEvent>
 ScConditionWaiter<TScEvent>::ScConditionWaiter(
-    ScMemoryContext const & ctx,
+    ScMemoryContext const & context,
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     DelegateCheckFunc const & func) noexcept
-  : ScEventWaiter<TScEvent>(ctx, eventClassAddr, subscriptionElementAddr)
+  : ScEventWaiter<TScEvent>(context, eventClassAddr, subscriptionElementAddr)
   , m_checkFunc(std::move(func))
 {
 }

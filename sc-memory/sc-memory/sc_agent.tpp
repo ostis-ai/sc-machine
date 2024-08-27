@@ -229,7 +229,7 @@ ScAgent<TScEvent, TScContext>::ScAgent() noexcept
 template <class TScEvent, class TScContext>
 template <class TScAgent, class... TScAddr>
 void ScAgent<TScEvent, TScContext>::Subscribe(
-    ScMemoryContext * ctx,
+    ScMemoryContext * context,
     ScAddr const & agentImplementationAddr,
     TScAddr const &... subscriptionAddrs) noexcept(false)
 {
@@ -238,7 +238,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   TScAgent agent;
-  agent.SetInitiator(ctx->GetUser());
+  agent.SetInitiator(context->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
@@ -254,7 +254,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
   auto & subscriptionsMap = ScAgentBase<TScEvent>::m_events.find(agentName)->second;
   for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
-    if (!ctx->IsElement(subscriptionElementAddr))
+    if (!context->IsElement(subscriptionElementAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Not able to subscribe agent `" << agentName << "` to event `" << eventName
@@ -275,7 +275,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
       subscriptionsMap.insert(
           {subscriptionElementAddr,
            new ScElementaryEventSubscription(
-               *ctx,
+               *context,
                agent.GetEventClass(),
                subscriptionElementAddr,
                TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
@@ -285,7 +285,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
       subscriptionsMap.insert(
           {subscriptionElementAddr,
            new ScElementaryEventSubscription<TScEvent>(
-               *ctx, subscriptionElementAddr, TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
+               *context, subscriptionElementAddr, TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
     }
   }
 }
@@ -293,7 +293,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
 template <class TScEvent, class TScContext>
 template <class TScAgent, class... TScAddr>
 void ScAgent<TScEvent, TScContext>::Unsubscribe(
-    ScMemoryContext * ctx,
+    ScMemoryContext * context,
     ScAddr const & agentImplementationAddr,
     TScAddr const &... subscriptionAddrs) noexcept(false)
 {
@@ -302,7 +302,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
   TScAgent agent;
-  agent.SetInitiator(ctx->GetUser());
+  agent.SetInitiator(context->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
@@ -322,7 +322,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
   {
     if constexpr (!std::is_same<TScEvent, ScEventBeforeEraseElement>::value)
     {
-      if (!ctx->IsElement(subscriptionElementAddr))
+      if (!context->IsElement(subscriptionElementAddr))
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "Not able to unsubscribe agent `" << agentName << "` from event `" << eventClassName

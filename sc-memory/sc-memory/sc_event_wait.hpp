@@ -94,19 +94,19 @@ class _SC_EXTERN ScEventWaiter : public ScWaiter
 protected:
   /*!
    * @brief Constructor for ScEventWaiter.
-   * @param ctx A sc-memory context used to wait sc-event.
+   * @param context A sc-memory context used to wait sc-event.
    * @param subscriptionElementAddr An address of sc-element to wait sc-event for.
    */
-  _SC_EXTERN ScEventWaiter(ScMemoryContext const & ctx, ScAddr const & subscriptionElementAddr) noexcept;
+  _SC_EXTERN ScEventWaiter(ScMemoryContext const & context, ScAddr const & subscriptionElementAddr) noexcept;
 
   /*!
    * @brief Constructor for ScEventWaiter.
-   * @param ctx A sc-memory context used to wait sc-event.
+   * @param context A sc-memory context used to wait sc-event.
    * @param eventClassAddr A type of sc-event.
    * @param subscriptionElementAddr An address of sc-element to wait sc-event for.
    */
   _SC_EXTERN ScEventWaiter(
-      ScMemoryContext const & ctx,
+      ScMemoryContext const & context,
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr) noexcept;
 
@@ -133,24 +133,24 @@ protected:
 
   /*!
    * @brief Constructor for ScConditionWaiter.
-   * @param ctx A sc-memory context used to wait sc-event with condition.
+   * @param context A sc-memory context used to wait sc-event with condition.
    * @param subscriptionElementAddr An address of sc-element to wait event for.
    * @param func Delegate function to check the condition.
    */
   _SC_EXTERN ScConditionWaiter(
-      ScMemoryContext const & ctx,
+      ScMemoryContext const & context,
       ScAddr const & subscriptionElementAddr,
       DelegateCheckFunc const & func) noexcept;
 
   /*!
    * @brief Constructor for ScConditionWaiter.
-   * @param ctx A sc-memory context used to wait sc-event with condition.
+   * @param context A sc-memory context used to wait sc-event with condition.
    * @param eventClassAddr A type of sc-event.
    * @param subscriptionElementAddr An address of sc-element to wait event for.
    * @param func Delegate function to check the condition.
    */
   _SC_EXTERN ScConditionWaiter(
-      ScMemoryContext const & ctx,
+      ScMemoryContext const & context,
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       DelegateCheckFunc const & func) noexcept;
@@ -174,10 +174,10 @@ class _SC_EXTERN ScWaiterActionFinished final
 protected:
   /*!
    * @brief Constructor for ScWaiterActionFinished.
-   * @param ctx A sc-memory context used to wait while action will be finished.
+   * @param context A sc-memory context used to wait while action will be finished.
    * @param actionAddr An address of the action.
    */
-  _SC_EXTERN ScWaiterActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
+  _SC_EXTERN ScWaiterActionFinished(ScMemoryContext const & context, ScAddr const & actionAddr);
 
 private:
   bool OnEvent(ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) override;

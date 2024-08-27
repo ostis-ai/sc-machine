@@ -175,15 +175,15 @@ public:
   _SC_EXTERN ScResult FinishWithError() noexcept(false);
 
 protected:
-  class ScAgentContext * m_ctx;  ///< Context of the agent.
-  ScAddr m_resultAddr;           ///< Result structure of the action.
+  class ScAgentContext * m_context;  ///< Context of the agent.
+  ScAddr m_resultAddr;               ///< Result structure of the action.
 
   /*!
    * @brief Constructor for ScAction.
-   * @param ctx Context of the agent.
+   * @param context Context of the agent.
    * @param actionAddr An address of the action.
    */
-  _SC_EXTERN ScAction(ScAgentContext * ctx, ScAddr const & actionAddr) noexcept;
+  _SC_EXTERN ScAction(ScAgentContext * context, ScAddr const & actionAddr) noexcept;
 
   /*!
    * @brief Gets multiple arguments of the action.

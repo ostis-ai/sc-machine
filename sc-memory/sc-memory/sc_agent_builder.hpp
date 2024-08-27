@@ -33,15 +33,15 @@ public:
 
   /*!
    * @brief Initializes the agent builder with the given memory context.
-   * @param ctx A sc-memory context for initialization.
+   * @param context A sc-memory context for initialization.
    */
-  _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx) = 0;
+  _SC_EXTERN virtual void Initialize(ScMemoryContext * context) = 0;
 
   /*!
    * @brief Shuts down the agent builder with the given memory context.
-   * @param ctx A sc-memory context for shutdown.
+   * @param context A sc-memory context for shutdown.
    */
-  _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx) = 0;
+  _SC_EXTERN virtual void Shutdown(ScMemoryContext * context) = 0;
 };
 
 /*!
@@ -151,46 +151,46 @@ protected:
 
   /*!
    * @brief Resolves specification for specified agent class `TScAgent`.
-   * @param ctx A sc-memory context used to load specification.
+   * @param context A sc-memory context used to load specification.
    */
-  _SC_EXTERN void ResolveSpecification(ScMemoryContext * ctx) noexcept(false);
+  _SC_EXTERN void ResolveSpecification(ScMemoryContext * context) noexcept(false);
 
   _SC_EXTERN void ResolveAgentImplementation(
-      ScMemoryContext * ctx,
+      ScMemoryContext * context,
       std::string & agentImplementationName,
       std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolveAbstractAgent(
-      ScMemoryContext * ctx,
+      ScMemoryContext * context,
       std::string const & agentImplementationName,
       std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolvePrimaryInitiationCondition(
-      ScMemoryContext * ctx,
+      ScMemoryContext * context,
       std::string const & abstractAgentName,
       std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolveActionClass(
-      ScMemoryContext * ctx,
+      ScMemoryContext * context,
       std::string const & abstractAgentName,
       std::string const & agentClassName) noexcept(false);
 
   _SC_EXTERN void ResolveInitiationConditionAndResultCondition(
-      ScMemoryContext * ctx,
+      ScMemoryContext * context,
       std::string const & abstractAgentName,
       std::string const & agentClassName) noexcept(false);
 
   /*!
    * @brief Initializes the agent builder with the given memory context.
-   * @param ctx A sc-memory context for initialization.
+   * @param context A sc-memory context for initialization.
    */
-  _SC_EXTERN void Initialize(ScMemoryContext * ctx) noexcept(false) override;
+  _SC_EXTERN void Initialize(ScMemoryContext * context) noexcept(false) override;
 
   /*!
    * @brief Shuts down the agent builder with the given memory context.
-   * @param ctx A sc-memory context for shutdown.
+   * @param context A sc-memory context for shutdown.
    */
-  _SC_EXTERN void Shutdown(ScMemoryContext * ctx) noexcept(false) override;
+  _SC_EXTERN void Shutdown(ScMemoryContext * context) noexcept(false) override;
 };
 
 #include "sc_agent_builder.tpp"

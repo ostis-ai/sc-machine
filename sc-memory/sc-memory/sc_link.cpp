@@ -6,15 +6,15 @@
 
 #include "sc_link.hpp"
 
-ScLink::ScLink(ScMemoryContext & ctx, ScAddr const & linkAddr)
+ScLink::ScLink(ScMemoryContext & context, ScAddr const & linkAddr)
   : ScAddr(linkAddr)
-  , m_ctx(&ctx)
+  , m_context(&context)
 {
 }
 
 bool ScLink::IsValid() const
 {
-  return m_ctx->GetElementType(*this).IsLink();
+  return m_context->GetElementType(*this).IsLink();
 }
 
 ScLink::Type ScLink::DetermineType() const
@@ -120,7 +120,7 @@ bool ScLink::DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
   templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", *this);
 
   ScTemplateSearchResult res;
-  if (m_ctx->HelperSearchTemplate(templ, res))
+  if (m_context->HelperSearchTemplate(templ, res))
   {
     outType = res[0]["_type"];
     outEdge = res[0]["_edge"];

@@ -40,14 +40,14 @@ ScModule * ScModule::Agent() noexcept
 template <class TScAgent>
 ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback() noexcept
 {
-  return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
+  return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
     if (agentImplementationAddr.IsValid())
-      TScAgent::template Subscribe<TScAgent>(ctx, agentImplementationAddr);
+      TScAgent::template Subscribe<TScAgent>(context, agentImplementationAddr);
     else
     {
       for (ScAddr const & addr : addrs)
-        TScAgent::template Subscribe<TScAgent>(ctx, agentImplementationAddr, addr);
+        TScAgent::template Subscribe<TScAgent>(context, agentImplementationAddr, addr);
     }
   };
 }
@@ -55,14 +55,14 @@ ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback() noexcep
 template <class TScAgent>
 ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback() noexcept
 {
-  return [](ScMemoryContext * ctx, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
+  return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
     if (agentImplementationAddr.IsValid())
-      TScAgent::template Unsubscribe<TScAgent>(ctx, agentImplementationAddr);
+      TScAgent::template Unsubscribe<TScAgent>(context, agentImplementationAddr);
     else
     {
       for (ScAddr const & addr : addrs)
-        TScAgent::template Unsubscribe<TScAgent>(ctx, agentImplementationAddr, addr);
+        TScAgent::template Unsubscribe<TScAgent>(context, agentImplementationAddr, addr);
     }
   };
 }

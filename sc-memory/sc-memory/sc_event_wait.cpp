@@ -70,8 +70,8 @@ bool ScWaiter::Wait(
   return result;
 }
 
-ScWaiterActionFinished::ScWaiterActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr)
-  : ScEventWaiter<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(ctx, actionAddr)
+ScWaiterActionFinished::ScWaiterActionFinished(ScMemoryContext const & contexttexttexttext, ScAddr const & actionAddr)
+  : ScEventWaiter<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(contexttexttexttext, actionAddr)
 {
 }
 

@@ -126,32 +126,32 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
 size_t const kKeynodeRrelListNum = 20;
 std::array<ScAddr, kKeynodeRrelListNum> kKeynodeRrelList;
 
-void ScKeynodes::Initialize(ScMemoryContext * ctx)
+void ScKeynodes::Initialize(ScMemoryContext * context)
 {
-  ScAddr const & contextStructureAddr = ctx->GetContextStructure();
+  ScAddr const & contextStructureAddr = context->GetContextStructure();
 
   auto const & ResolveArc = [&](ScAddr const & beginAddr, ScAddr const & endAddr)
   {
     ScAddr arcAddr;
-    ScIterator3Ptr it3 = ctx->Iterator3(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+    ScIterator3Ptr it3 = context->Iterator3(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
     if (it3->Next())
       arcAddr = it3->Get(1);
     else
-      arcAddr = ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+      arcAddr = context->CreateEdge(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
 
     if (contextStructureAddr.IsValid())
-      ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, arcAddr);
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, arcAddr);
   };
 
   SC_LOG_INFO("Initialize " << GetName<ScKeynodes>());
 
-  internal::ScKeynodesRegister::Register(ctx);
+  internal::ScKeynodesRegister::Register(context);
 
   // resolve rrel_n relations
   for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
   {
     ScAddr & item = kKeynodeRrelList[i];
-    item = ctx->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
+    item = context->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
   }
 
   // command states
@@ -199,10 +199,10 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx)
   }
 }
 
-void ScKeynodes::Shutdown(ScMemoryContext * ctx)
+void ScKeynodes::Shutdown(ScMemoryContext * context)
 {
   SC_LOG_INFO("Shutdown " << GetName<ScKeynodes>());
-  internal::ScKeynodesRegister::Unregister(ctx);
+  internal::ScKeynodesRegister::Unregister(context);
 }
 
 ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)

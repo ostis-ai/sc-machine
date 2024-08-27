@@ -87,24 +87,24 @@ public:
    * @brief Subscribes all module agents.
    * @returns Result of initializing.
    */
-  _SC_EXTERN void Register(ScMemoryContext * ctx) noexcept;
+  _SC_EXTERN void Register(ScMemoryContext * context) noexcept;
 
   /*! Unsubscribes all module agents.
    * @returns Result of shutdown.
    */
-  _SC_EXTERN void Unregister(ScMemoryContext * ctx) noexcept;
+  _SC_EXTERN void Unregister(ScMemoryContext * context) noexcept;
 
   /*!
    * @brief Initializes the module with the given memory context.
-   * @param ctx A sc-memory context for initialization.
+   * @param context A sc-memory context for initialization.
    */
-  _SC_EXTERN virtual void Initialize(ScMemoryContext * ctx);
+  _SC_EXTERN virtual void Initialize(ScMemoryContext * context);
 
   /*!
    * @brief Shuts down the module with the given memory context.
    * @param A The sc-memory context for shutdown.
    */
-  _SC_EXTERN virtual void Shutdown(ScMemoryContext * ctx);
+  _SC_EXTERN virtual void Shutdown(ScMemoryContext * context);
 
 protected:
   /// Registered agents

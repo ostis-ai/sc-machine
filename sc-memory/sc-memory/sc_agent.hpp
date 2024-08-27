@@ -441,7 +441,7 @@ private:
    * `TScEvent` with subscription sc-elements from `subscriptionAddrs`.
    *
    * @tparam TScAgent An agent class to be subscribed from the event.
-   * @param ctx A sc-memory context used to subscribe agent class to specified sc-event.
+   * @param context A sc-memory context used to subscribe agent class to specified sc-event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
@@ -455,7 +455,7 @@ private:
    */
   template <class TScAgent, class... TScAddr>
   static _SC_EXTERN void Subscribe(
-      ScMemoryContext * ctx,
+      ScMemoryContext * context,
       ScAddr const & agentImplementationAddr,
       TScAddr const &... subscriptionAddrs) noexcept(false);
 
@@ -489,7 +489,7 @@ private:
    * `TScEvent` with subscription sc-elements from `subscriptionAddrs`.
    *
    * @tparam TScAgent An agent class to be unsubscribed from the event.
-   * @param ctx A sc-memory context used to unsubscribe agent class from specified sc-event.
+   * @param context A sc-memory context used to unsubscribe agent class from specified sc-event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to unsubscribe from.
@@ -503,7 +503,7 @@ private:
    */
   template <class TScAgent, class... TScAddr>
   static _SC_EXTERN void Unsubscribe(
-      ScMemoryContext * ctx,
+      ScMemoryContext * context,
       ScAddr const & agentImplementationAddr,
       TScAddr const &... subscriptionAddrs) noexcept(false);
 

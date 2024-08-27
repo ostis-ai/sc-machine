@@ -53,12 +53,12 @@ public:
 
 protected:
   explicit _SC_EXTERN ScElementaryEventSubscription(
-      ScMemoryContext const & ctx,
+      ScMemoryContext const & context,
       ScAddr const & subscriptionElementAddr,
       DelegateFunc const & func = DelegateFunc()) noexcept;
 
   explicit _SC_EXTERN ScElementaryEventSubscription(
-      ScMemoryContext const & ctx,
+      ScMemoryContext const & context,
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       DelegateFunc const & func = DelegateFunc()) noexcept;
