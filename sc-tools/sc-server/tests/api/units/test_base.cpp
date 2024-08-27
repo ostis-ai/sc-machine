@@ -1212,6 +1212,39 @@ TEST_F(ScServerTest, HandleEvents)
   client.Stop();
 }
 
+TEST_F(ScServerTest, UnknownEvent)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const & addr1 = m_ctx->CreateNode(ScType::NodeConst);
+
+  std::string payloadString = ScMemoryJsonConverter::From(
+      0,
+      "events",
+      ScMemoryJsonPayload::object({{
+          "create",
+          ScMemoryJsonPayload::array({
+              {
+                  {"type", "unknown_event"},
+                  {"addr", addr1.Hash()},
+              },
+          }),
+      }}));
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+  EXPECT_FALSE(response["event"].get<sc_bool>());
+
+  client.Stop();
+}
+
 TEST_F(ScServerTest, Unknown)
 {
   ScClient client;

@@ -44,7 +44,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
   else if (requestPayload.find("delete") != requestPayload.cend())
     responsePayload = HandleDelete(sessionId, requestPayload["delete"], errorsPayload);
   else
-    errorsPayload = "Unknown event request";
+    errorsPayload = "Unknown sc-event request.";
 
   status = errorsPayload.empty();
 
@@ -54,7 +54,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScServerSessionId const & sessionId,
     ScMemoryJsonPayload const & message,
-    ScMemoryJsonPayload &)
+    ScMemoryJsonPayload & errorsPayload)
 {
   auto const & onEmitEvent =
       [](ScServer * server, size_t id, ScServerSessionId const & handle, ScElementaryEvent const & event)
@@ -81,10 +81,20 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScAddr const & subscriptionElementAddr = ScAddr(atom["addr"].get<size_t>());
 
     auto const & it = m_deprecatedEventsIdtfsToSystemEventsIdtfs.find(eventClass);
-    if (it != m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
-      eventClass = it->second;
+    if (it == m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
+    {
+      errorsPayload = "Unknown sc-event type with system identifier `" + eventClass + "`.";
+      return responsePayload;
+    }
+    eventClass = it->second;
 
     ScAddr const & eventClassAddr = m_context->HelperFindBySystemIdtf(eventClass);
+    if (!eventClassAddr.IsValid())
+    {
+      errorsPayload = "Invalid sc-event type with system identifier `" + eventClass + "`.";
+      return responsePayload;
+    }
+
     ScEventSubscription * subscription = new ScElementaryEventSubscription<>(
         *m_context,
         eventClassAddr,
