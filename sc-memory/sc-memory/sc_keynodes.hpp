@@ -89,10 +89,6 @@ public:
 
   _SC_EXTERN ~ScKeynode();
 
-  _SC_EXTERN ScKeynode(ScKeynode const & other);
-
-  _SC_EXTERN ScKeynode & operator=(ScKeynode const & other);
-
   _SC_EXTERN operator std::string() const;
 
 protected:
@@ -147,7 +143,7 @@ public:
 
   _SC_EXTERN ~ScTemplateKeynode();
 
-  _SC_EXTERN ScTemplateKeynode(ScTemplateKeynode && other);
+  _SC_EXTERN ScTemplateKeynode(ScTemplateKeynode && other) noexcept;
 
   /*!
    * @brief Appends provided triple to sc-template keynode.

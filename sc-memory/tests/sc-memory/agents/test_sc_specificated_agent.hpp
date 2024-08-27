@@ -55,6 +55,9 @@ public:
           .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
           .Triple(test_specificated_agent_action, ScType::EdgeAccessVarPosPerm, "_action");
 
+  static inline ScTemplateKeynode const & test_specificated_agent_initiation_condition_in_kb =
+      ScTemplateKeynode("test_specificated_agent_initiation_condition");
+
   static inline ScTemplateKeynode const & test_specificated_agent_result_condition =
       ScTemplateKeynode("test_specificated_agent_result_condition")
           .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
@@ -65,6 +68,9 @@ public:
               ScType::NodeVar,
               ScType::EdgeAccessVarPosPerm,
               ScKeynodes::nrel_result);
+
+  static inline ScTemplateKeynode const & test_specificated_agent_result_condition_in_kb =
+      ScTemplateKeynode("test_specificated_agent_result_condition");
 
   ScResult DoProgram(ScElementaryEvent const & event, ScAction & action) override;
 };

@@ -163,6 +163,30 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecificationWithTe
   module.Unregister(&*m_ctx);
 }
 
+TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasFullSpecificationWithTemplateKeynodesInKB)
+{
+  ATestSpecificatedAgent::msWaiter.Reset();
+
+  ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
+
+  TestModule module;
+  module.AgentBuilder<ATestSpecificatedAgent>()
+      ->SetAbstractAgent(abstractAgentAddr)
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetActionClass(ATestSpecificatedAgent::test_specificated_agent_action)
+      ->SetInitiationConditionAndResult(
+          {ATestSpecificatedAgent::test_specificated_agent_initiation_condition_in_kb,
+           ATestSpecificatedAgent::test_specificated_agent_result_condition_in_kb})
+      ->FinishBuild();
+  module.Register(&*m_ctx);
+
+  m_ctx->CreateAction(ATestSpecificatedAgent::test_specificated_agent_action).SetArguments().Initiate();
+  EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
+
+  module.Unregister(&*m_ctx);
+}
+
 TEST_F(ScAgentBuilderTest, ProgrammlySpecificatedAgentHasNotSpecifiedAbstractAgent)
 {
   TestModule module;

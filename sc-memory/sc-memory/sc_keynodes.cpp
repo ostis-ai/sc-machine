@@ -1,5 +1,5 @@
 /*
- * This source file is part of an OSTIS project. For the lat_est info, see http://ostis.net
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
  * Distributed under the MIT License
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
@@ -33,27 +33,13 @@ ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type)
   , m_sysIdtf(sysIdtf)
   , m_type(type)
 {
-  internal::ScKeynodesRegister::Remember(this);
+  if (!m_sysIdtf.empty())
+    internal::ScKeynodesRegister::Remember(this);
 }
 
 ScKeynode::~ScKeynode()
 {
   internal::ScKeynodesRegister::Forget(this);
-}
-
-ScKeynode::ScKeynode(ScKeynode const & other)
-  : ScAddr(other)
-  , m_sysIdtf(other.m_sysIdtf)
-  , m_type(other.m_type)
-{
-}
-
-ScKeynode & ScKeynode::operator=(ScKeynode const & other)
-{
-  this->m_realAddr = other.m_realAddr;
-  this->m_sysIdtf = other.m_sysIdtf;
-  this->m_type = other.m_type;
-  return *this;
 }
 
 ScKeynode::operator std::string() const
@@ -63,17 +49,23 @@ ScKeynode::operator std::string() const
 
 void ScKeynode::Initialize(ScMemoryContext * context)
 {
+  ScAddr const & contextStructureAddr = context->GetContextStructure();
+  auto const & AppendToContextStructure = [&](ScAddr const & addr)
+  {
+    if (context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
+  };
+
   ScSystemIdentifierQuintuple quintuple;
   context->HelperResolveSystemIdtf(std::string(m_sysIdtf), m_type, quintuple);
   this->m_realAddr = quintuple.addr1.GetRealAddr();
 
-  ScAddr const & contextStructureAddr = context->GetContextStructure();
   if (contextStructureAddr.IsValid())
   {
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr1);
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr2);
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr3);
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr4);
+    AppendToContextStructure(quintuple.addr1);
+    AppendToContextStructure(quintuple.addr2);
+    AppendToContextStructure(quintuple.addr3);
+    AppendToContextStructure(quintuple.addr4);
   }
 }
 
@@ -84,9 +76,9 @@ ScTemplateKeynode::ScTemplateKeynode(std::string_view const & sysIdtf)
     internal::ScKeynodesRegister::Remember(this);
 }
 
-ScTemplateKeynode::~ScTemplateKeynode() {}
+ScTemplateKeynode::~ScTemplateKeynode() = default;
 
-ScTemplateKeynode::ScTemplateKeynode(ScTemplateKeynode && other)
+ScTemplateKeynode::ScTemplateKeynode(ScTemplateKeynode && other) noexcept
   : ScKeynode(other)
   , ScTemplate(std::move(other))
   , m_constructionInitializers(other.m_constructionInitializers)
@@ -99,21 +91,35 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
 {
   this->Clear();
 
-  for (auto const & initializer : m_constructionInitializers)
-    initializer(*this);
-
-  context->HelperLoadTemplate(*this, *this);
+  ScAddr const & contextStructureAddr = context->GetContextStructure();
+  auto const & AppendToContextStructure = [&](ScAddr const & addr)
+  {
+    if (context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
+  };
 
   ScSystemIdentifierQuintuple quintuple;
-  context->HelperSetSystemIdtf(std::string(m_sysIdtf), *this, quintuple);
+  std::string const & sysIdtf = std::string(m_sysIdtf);
+  if (!context->HelperFindBySystemIdtf(sysIdtf, quintuple))
+  {
+    for (auto const & initializer : m_constructionInitializers)
+      initializer(*this);
 
-  ScAddr const & contextStructureAddr = context->GetContextStructure();
+    context->HelperLoadTemplate(*this, *this);
+    context->HelperSetSystemIdtf(sysIdtf, *this, quintuple);
+  }
+  else
+  {
+    this->m_realAddr = quintuple.addr1.GetRealAddr();
+    context->HelperBuildTemplate(*this, *this);
+  }
+
   if (contextStructureAddr.IsValid())
   {
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr1);
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr2);
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr3);
-    context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, quintuple.addr4);
+    AppendToContextStructure(quintuple.addr1);
+    AppendToContextStructure(quintuple.addr2);
+    AppendToContextStructure(quintuple.addr3);
+    AppendToContextStructure(quintuple.addr4);
   }
 }
 

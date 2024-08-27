@@ -124,13 +124,13 @@ ScAddr ScIterator3<ParamType1, ParamType2, ParamType3>::Get(size_t index) const
   case SC_RESULT_ERROR_INVALID_PARAMS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+        "Index=" << std::to_string(index) << " must be < size=" << std::to_string(m_tripleSize));
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " because sc-memory context does not have read permissions");
+        "Not able to get sc-element sc-address by index="
+            << std::to_string(index) << " because sc-memory context does not have read permissions");
   default:
     break;
   }
@@ -208,13 +208,13 @@ ScAddr ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::
   case SC_RESULT_ERROR_INVALID_PARAMS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+        "Index=" << std::to_string(index) << " must be < size=" << std::to_string(m_tripleSize));
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " because sc-memory context does not have read permissions");
+        "Not able to get sc-element sc-address by index="
+            << std::to_string(index) << " because sc-memory context does not have read permissions");
   default:
     break;
   }
