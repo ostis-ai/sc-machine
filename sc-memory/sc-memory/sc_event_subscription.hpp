@@ -12,7 +12,8 @@
 
 #include "utils/sc_lock.hpp"
 
-/* Base class for sc-events
+/*!
+ * Base class for sc-events subscriptions
  */
 class _SC_EXTERN ScEventSubscription : public ScObject
 {
@@ -30,6 +31,7 @@ class _SC_EXTERN ScElementaryEventSubscription final : public ScEventSubscriptio
 {
   static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
 
+  friend class ScMemoryContext;
   friend class ScAgentContext;
   template <class TScEventType>
   friend class ScEventWaiter;
@@ -44,14 +46,12 @@ public:
 
   _SC_EXTERN ~ScElementaryEventSubscription() override;
 
-  /* Set specified function as a delegate that will be calls on event emit */
+  /* Set specified function as a delegate that will be called on event emit */
   _SC_EXTERN void SetDelegate(DelegateFunc && func);
 
   _SC_EXTERN void RemoveDelegate() override;
 
 protected:
-  friend class ScMemoryContext;
-
   explicit _SC_EXTERN ScElementaryEventSubscription(
       ScMemoryContext const & ctx,
       ScAddr const & subscriptionElementAddr,

@@ -65,24 +65,24 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
 
   EXPECT_TRUE(ScKeynodes::sc_event.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_generate_connector.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_generate_connector) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_generate_incoming_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_generate_incoming_arc) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_generate_outgoing_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_generate_outgoing_arc) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_erase_connector.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_erase_connector) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_erase_incoming_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_erase_incoming_arc) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_erase_outgoing_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_erase_outgoing_arc) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_erase_edge.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_erase_edge) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_erase_element.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_erase_element) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::sc_event_change_link_content.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_change_link_content) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_after_generate_connector.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_connector) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_after_generate_incoming_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_incoming_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_after_generate_outgoing_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_outgoing_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_before_erase_connector.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_connector) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_before_erase_incoming_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_incoming_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_before_erase_outgoing_arc.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_outgoing_arc) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_before_erase_edge.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_edge) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_before_erase_element.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_element) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::sc_event_before_change_link_content.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_change_link_content) == ScType::NodeConstClass);
 
   EXPECT_TRUE(ScKeynodes::sc_result_class.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_result_class) == ScType::NodeConstClass);
@@ -168,16 +168,16 @@ TEST_F(ScKeynodesTest, Events)
 {
   ScAddr keynodes[] = {
       ScKeynodes::sc_event_unknown,
-      ScKeynodes::sc_event_generate_connector,
-      ScKeynodes::sc_event_generate_incoming_arc,
-      ScKeynodes::sc_event_generate_outgoing_arc,
-      ScKeynodes::sc_event_generate_edge,
-      ScKeynodes::sc_event_erase_connector,
-      ScKeynodes::sc_event_erase_incoming_arc,
-      ScKeynodes::sc_event_erase_outgoing_arc,
-      ScKeynodes::sc_event_erase_edge,
-      ScKeynodes::sc_event_erase_element,
-      ScKeynodes::sc_event_change_link_content,
+      ScKeynodes::sc_event_after_generate_connector,
+      ScKeynodes::sc_event_after_generate_incoming_arc,
+      ScKeynodes::sc_event_after_generate_outgoing_arc,
+      ScKeynodes::sc_event_after_generate_edge,
+      ScKeynodes::sc_event_before_erase_connector,
+      ScKeynodes::sc_event_before_erase_incoming_arc,
+      ScKeynodes::sc_event_before_erase_outgoing_arc,
+      ScKeynodes::sc_event_before_erase_edge,
+      ScKeynodes::sc_event_before_erase_element,
+      ScKeynodes::sc_event_before_change_link_content,
   };
 
   for (ScAddr event : keynodes)

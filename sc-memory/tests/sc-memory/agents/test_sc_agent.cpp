@@ -8,7 +8,7 @@ ScAddr ATestGenerateConnector::GetActionClass() const
 }
 
 ScResult ATestGenerateConnector::DoProgram(
-    ScEventGenerateConnector<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -23,7 +23,7 @@ ScAddr ATestGenerateIncomingArc::GetActionClass() const
 }
 
 ScResult ATestGenerateIncomingArc::DoProgram(
-    ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -38,7 +38,7 @@ ScAddr ATestGenerateOutgoingArc::GetActionClass() const
 }
 
 ScResult ATestGenerateOutgoingArc::DoProgram(
-    ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -52,7 +52,7 @@ ScAddr ATestGenerateEdge::GetActionClass() const
   return ATestGenerateEdge::add_edge_action;
 }
 
-ScResult ATestGenerateEdge::DoProgram(ScEventGenerateEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
+ScResult ATestGenerateEdge::DoProgram(ScEventAfterGenerateEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -66,7 +66,7 @@ ScAddr ATestEraseConnector::GetActionClass() const
 }
 
 ScResult ATestEraseConnector::DoProgram(
-    ScEventEraseConnector<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -81,7 +81,7 @@ ScAddr ATestEraseIncomingArc::GetActionClass() const
 }
 
 ScResult ATestEraseIncomingArc::DoProgram(
-    ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -96,7 +96,7 @@ ScAddr ATestEraseOutgoingArc::GetActionClass() const
 }
 
 ScResult ATestEraseOutgoingArc::DoProgram(
-    ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -110,7 +110,7 @@ ScAddr ATestEraseEdge::GetActionClass() const
   return ATestEraseEdge::erase_edge_action;
 }
 
-ScResult ATestEraseEdge::DoProgram(ScEventEraseEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
+ScResult ATestEraseEdge::DoProgram(ScEventBeforeEraseEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -123,7 +123,7 @@ ScAddr ATestEraseElement::GetActionClass() const
   return ATestEraseElement::erase_element_action;
 }
 
-ScResult ATestEraseElement::DoProgram(ScEventEraseElement const &, ScAction & action)
+ScResult ATestEraseElement::DoProgram(ScEventBeforeEraseElement const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -136,7 +136,7 @@ ScAddr ATestChangeLinkContent::GetActionClass() const
   return ATestChangeLinkContent::content_change_action;
 }
 
-ScResult ATestChangeLinkContent::DoProgram(ScEventChangeLinkContent const &, ScAction & action)
+ScResult ATestChangeLinkContent::DoProgram(ScEventBeforeChangeLinkContent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -150,7 +150,7 @@ ScAddr ATestGenerateMultipleOutputArc::GetActionClass() const
 }
 
 ScResult ATestGenerateMultipleOutputArc::DoProgram(
-    ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
     ScAction & action)
 {
   msWaiter.Unlock();

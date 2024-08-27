@@ -168,14 +168,14 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
       ScKeynodes::sc_result_error_duplicated_system_identifier};
 
   ScAddrVector const & events = {
-      ScKeynodes::sc_event_generate_incoming_arc,
-      ScKeynodes::sc_event_generate_outgoing_arc,
-      ScKeynodes::sc_event_generate_edge,
-      ScKeynodes::sc_event_erase_incoming_arc,
-      ScKeynodes::sc_event_erase_outgoing_arc,
-      ScKeynodes::sc_event_erase_edge,
-      ScKeynodes::sc_event_erase_element,
-      ScKeynodes::sc_event_change_link_content,
+      ScKeynodes::sc_event_after_generate_incoming_arc,
+      ScKeynodes::sc_event_after_generate_outgoing_arc,
+      ScKeynodes::sc_event_after_generate_edge,
+      ScKeynodes::sc_event_before_erase_incoming_arc,
+      ScKeynodes::sc_event_before_erase_outgoing_arc,
+      ScKeynodes::sc_event_before_erase_edge,
+      ScKeynodes::sc_event_before_erase_element,
+      ScKeynodes::sc_event_before_change_link_content,
       ScKeynodes::sc_event_unknown,
   };
 

@@ -25,30 +25,30 @@ Within the OSTIS Technology, events are considered only situations in which rela
 The sc-machine provides functionality for subscribing to the following syntactic elementary types of sc-events:
 
 * `ScElementaryEvent` is base class for all sc-events, it can be used to handle all sc-events for specified sc-element;
-* `ScEventGenerateConnector`, emits each time, when sc-connector from or to specified sc-element is generated;
-* `ScEventGenerateOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is generated;
-* `ScEventGenerateIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is generated;
-* `ScEventGenerateEdge`, emits each time, when sc-edge from or to specified sc-element is generated;
-* `ScEventEraseConnector`, emits each time, when sc-connector from or to specified sc-element is erasing;
-* `ScEventEraseOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is erasing;
-* `ScEventEraseIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is erasing;
-* `ScEventEraseEdge`, emits each time, when sc-edge from or to specified sc-element is erasing;
-* `ScEventEraseElement`, emits, when specified sc-element is erasing;
-* `ScEventChangeLinkContent`, emits each time, when content of specified sc-link is changing.
+* `ScEventAfterGenerateConnector`, emits each time, when sc-connector from or to specified sc-element is generated;
+* `ScEventAfterGenerateOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is generated;
+* `ScEventAfterGenerateIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is generated;
+* `ScEventAfterGenerateEdge`, emits each time, when sc-edge from or to specified sc-element is generated;
+* `ScEventBeforeEraseConnector`, emits each time, when sc-connector from or to specified sc-element is erasing;
+* `ScEventBeforeEraseOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is erasing;
+* `ScEventBeforeEraseIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is erasing;
+* `ScEventBeforeEraseEdge`, emits each time, when sc-edge from or to specified sc-element is erasing;
+* `ScEventBeforeEraseElement`, emits, when specified sc-element is erasing;
+* `ScEventBeforeChangeLinkContent`, emits each time, when content of specified sc-link is changing.
 
 The following classes correspond to them:
 
 * `class ScElementaryEvent`;
-* `template <ScType const & connectorType> class ScEventGenerateConnector`;
-* `template <ScType const & arcType> class ScEventGenerateOutgoingArc`;
-* `template <ScType const & arcType> class ScEventGenerateIncomingArc`;
-* `template <ScType const & edgeType> class ScEventGenerateEdge`;
-* `template <ScType const & connectorType> class ScEventEraseConnector`;
-* `template <ScType const & arcType> class ScEventEraseOutgoingArc`;
-* `template <ScType const & arcType> class ScEventEraseIncomingArc`;
-* `template <ScType const & edgeType> class ScEventEraseEdge`;
-* `class ScEventEraseElement`;
-* `class ScEventChangeLinkContent`.
+* `template <ScType const & connectorType> class ScEventAfterGenerateConnector`;
+* `template <ScType const & arcType> class ScEventAfterGenerateOutgoingArc`;
+* `template <ScType const & arcType> class ScEventAfterGenerateIncomingArc`;
+* `template <ScType const & edgeType> class ScEventAfterGenerateEdge`;
+* `template <ScType const & connectorType> class ScEventBeforeEraseConnector`;
+* `template <ScType const & arcType> class ScEventBeforeEraseOutgoingArc`;
+* `template <ScType const & arcType> class ScEventBeforeEraseIncomingArc`;
+* `template <ScType const & edgeType> class ScEventBeforeEraseEdge`;
+* `class ScEventBeforeEraseElement`;
+* `class ScEventBeforeChangeLinkContent`.
 
 !!! note
     All these sc-events classes are inherited from `ScElementaryEvent` class. `ScElementaryEvent` class is inherited from `ScEvent` class that is an abstract class.
@@ -97,7 +97,7 @@ To get information about sc-elements in initiated sc-event, you can use this met
   </tr>
 
   <tr>
-  <td><strong>ScEventGenerateConnector</strong></td>
+  <td><strong>ScEventAfterGenerateConnector</strong></td>
   <td>
       <scg src="../images/events/sc_event_connector.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -117,7 +117,7 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr]
   </tr>
 
   <tr>
-    <td><strong>ScEventGenerateOutgoingArc</strong></td>
+    <td><strong>ScEventAfterGenerateOutgoingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -136,7 +136,7 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr]
   </tr>
 
   <tr>
-    <td><strong>ScEventGenerateIncomingArc</strong></td>
+    <td><strong>ScEventAfterGenerateIncomingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -155,7 +155,7 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr]
   </tr>
 
   <tr>
-    <td><strong>ScEventGenerateEdge</strong></td>
+    <td><strong>ScEventAfterGenerateEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -175,7 +175,7 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr]
   </tr>
 
   <tr>
-  <td><strong>ScEventEraseConnector</strong></td>
+  <td><strong>ScEventBeforeEraseConnector</strong></td>
   <td>
     <scg src="../images/events/sc_event_connector.gwf"></scg>
     <strong>Example C++ code</strong>:
@@ -195,7 +195,7 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr]
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseOutgoingArc</strong></td>
+    <td><strong>ScEventBeforeEraseOutgoingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -214,7 +214,7 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr]
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseIncomingArc</strong></td>
+    <td><strong>ScEventBeforeEraseIncomingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -233,7 +233,7 @@ auto const [subscriptionElementAddr, arcAddr, otherAddr]
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseEdge</strong></td>
+    <td><strong>ScEventBeforeEraseEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -254,7 +254,7 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr]
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseElement</strong></td>
+    <td><strong>ScEventBeforeEraseElement</strong></td>
     <td>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
@@ -272,7 +272,7 @@ auto const [subscriptionElementAddr, _1, _2]
   </tr>
 
   <tr>
-    <td><strong>ScEventChangeLinkContent</strong></td>
+    <td><strong>ScEventBeforeChangeLinkContent</strong></td>
     <td>
       <scg src="../images/events/sc_event_content.gwf"></scg>
       <strong>Example C++ code</strong>:
@@ -294,27 +294,27 @@ auto const [subscriptionElementAddr, _1, _2]
 !!! note
     All described methods of `ScElementaryEvent` class are public and accessible from child classes.
 
-### **ScEventGenerateConnector**
+### **ScEventAfterGenerateConnector**
 
-`ScEventGenerateConnector` is class that represents sc-event of generating sc-connector to or from specified sc-element.
+`ScEventAfterGenerateConnector` is class that represents sc-event of generating sc-connector to or from specified sc-element.
 
-#### **GetGeneratedConnector**
+#### **GetConnector**
 
-Method `GetGeneratedConnector` returns generated sc-connector to or from listen sc-element (subscription sc-element).
+Method `GetConnector` returns generated sc-connector to or from listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const connectorAddr = event.GetGeneratedConnector();
+ScAddr const connectorAddr = event.GetConnector();
 ...
 ```
 
-#### **GetGeneratedConnectorType**
+#### **GetConnectorType**
 
 It returns sc-type of generated sc-connector.
 
 ```cpp
 ...
-ScType const connectorType = event.GetGeneratedConnectorType();
+ScType const connectorType = event.GetConnectorType();
 ...
 ```
 
@@ -328,33 +328,33 @@ auto const [elementAddr1, elementAddr2] = event.GetConnectorIncidentElements();
 ...
 ```
 
-### **ScEventGenerateOutgoingArc** and **ScEventGenerateIncomingArc**
+### **ScEventAfterGenerateOutgoingArc** and **ScEventAfterGenerateIncomingArc**
 
-`ScEventGenerateOutgoingArc` is class that represents sc-event of generating outgoing sc-arc from specified sc-element. `ScEventGenerateIncomingArc` represents sc-event of generating incoming sc-arc to specified sc-element.
+`ScEventAfterGenerateOutgoingArc` is class that represents sc-event of generating outgoing sc-arc from specified sc-element. `ScEventAfterGenerateIncomingArc` represents sc-event of generating incoming sc-arc to specified sc-element.
 
-#### **GetGeneratedArc**
+#### **GetArc**
 
-Method `GetGeneratedArc` returns generated sc-arc from (for `ScEventGenerateOutgoingArc`) or to (for `ScEventGenerateIncomingArc) listen sc-element (subscription sc-element).
+Method `GetArc` returns generated sc-arc from (for `ScEventAfterGenerateOutgoingArc`) or to (for `ScEventAfterGenerateIncomingArc) listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const arcAddr = event.GetGeneratedArc();
+ScAddr const arcAddr = event.GetArc();
 ...
 ```
 
-#### **GetGeneratedArcType**
+#### **GetArcType**
 
 It returns sc-type of generated sc-arc.
 
 ```cpp
 ...
-ScType const arcType = event.GetGeneratedArcType();
+ScType const arcType = event.GetArcType();
 ...
 ```
 
 #### **GetArcSourceElement**
 
-To get source and target sc-elements of generated sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventGenerateOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventGenerateIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
+To get source and target sc-elements of generated sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventAfterGenerateOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventAfterGenerateIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
 
 ```cpp
 ...
@@ -370,27 +370,27 @@ ScAddr const targetElementAddr = event.GetArcTargetElement();
 ...
 ```
 
-### **ScEventGenerateEdge**
+### **ScEventAfterGenerateEdge**
 
 This class represents sc-event of adding sc-edge from or to specified sc-element.
 
-#### **GetGeneratedEdge**
+#### **GetEdge**
 
-Method `GetGeneratedEdge` returns generated sc-edge from or to listen sc-element (subscription sc-element).
+Method `GetEdge` returns generated sc-edge from or to listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const edgeAddr = event.GetGeneratedEdge();
+ScAddr const edgeAddr = event.GetEdge();
 ...
 ```
 
-#### **GetGeneratedEdgeType**
+#### **GetEdgeType**
 
 It returns sc-type of generated sc-edge.
 
 ```cpp
 ...
-ScAddr const edgeType = event.GetGeneratedEdgeType();
+ScAddr const edgeType = event.GetEdgeType();
 ...
 ```
 
@@ -404,27 +404,27 @@ auto const [elementAddr1, elementAddr2] = event.GetEdgeIncidentElements();
 ...
 ```
 
-### **ScEventEraseConnector**
+### **ScEventBeforeEraseConnector**
 
-`ScEventEraseConnector` is class that represents sc-event of erasing sc-connector to or from specified sc-element.
+`ScEventBeforeEraseConnector` is class that represents sc-event of erasing sc-connector to or from specified sc-element.
 
-#### **GetErasableConnector**
+#### **GetConnector**
 
-Method `GetErasableConnector` returns erasable sc-connector to or from listen sc-element (subscription sc-element).
+Method `GetConnector` returns erasable sc-connector to or from listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const connectorAddr = event.GetErasableConnector();
+ScAddr const connectorAddr = event.GetConnector();
 ...
 ```
 
-#### **GetErasableConnectorType**
+#### **GetConnectorType**
 
 It returns sc-type of erasable sc-connector.
 
 ```cpp
 ...
-ScType const connectorType = event.GetErasableConnectorType();
+ScType const connectorType = event.GetConnectorType();
 ...
 ```
 
@@ -438,33 +438,33 @@ auto const [elementAddr1, elementAddr2] = event.GetConnectorIncidentElements();
 ...
 ```
 
-### **ScEventEraseOutgoingArc** and **ScEventEraseIncomingArc**
+### **ScEventBeforeEraseOutgoingArc** and **ScEventBeforeEraseIncomingArc**
 
-`ScEventEraseOutgoingArc` is class that represents sc-event of erasing outgoing sc-arc from specified sc-element. `ScEventEraseIncomingArc` represents sc-event of erasing incoming sc-arc to specified sc-element.
+`ScEventBeforeEraseOutgoingArc` is class that represents sc-event of erasing outgoing sc-arc from specified sc-element. `ScEventBeforeEraseIncomingArc` represents sc-event of erasing incoming sc-arc to specified sc-element.
 
-#### **GetErasableArc**
+#### **GetArc**
 
-Method `GetErasableArc` returns erasable sc-arc from (for `ScEventEraseOutgoingArc`) or to (for `ScEventEraseIncomingArc`) listen sc-element (subscription sc-element).
+Method `GetArc` returns erasable sc-arc from (for `ScEventBeforeEraseOutgoingArc`) or to (for `ScEventBeforeEraseIncomingArc`) listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const arcAddr = event.GetErasableArc();
+ScAddr const arcAddr = event.GetArc();
 ...
 ```
 
-#### **GetErasableArcType**
+#### **GetArcType**
 
 It returns sc-type of erasable sc-arc.
 
 ```cpp
 ...
-ScAddr const arcType = event.GetErasableArcType();
+ScAddr const arcType = event.GetArcType();
 ...
 ```
 
 #### **GetArcSourceElement**
 
-To get source and target sc-elements of erasable sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventEraseOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventEraseIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
+To get source and target sc-elements of erasable sc-arc you can use `GetArcSourceElement` and `GetArcTargetElement` methods. For `ScEventBeforeEraseOutgoingArc` method `GetArcSourceElement` returns sc-address of listen sc-element, for `ScEventBeforeEraseIncomingArc` method `GetArcTargetElement` returns sc-address of listen sc-element.
 
 ```cpp
 ...
@@ -480,27 +480,27 @@ ScAddr const arcTargetElement = event.GetArcTargetElement();
 ...
 ```
 
-### **ScEventEraseEdge**
+### **ScEventBeforeEraseEdge**
 
 This class represents sc-event of erasing sc-edge from or to specified sc-element.
 
-#### **GetErasableEdge**
+#### **GetEdge**
 
-Method `GetErasableEdge` returns erasable sc-edge from or to listen sc-element (subscription sc-element).
+Method `GetEdge` returns erasable sc-edge from or to listen sc-element (subscription sc-element).
 
 ```cpp
 ...
-ScAddr const edgeAddr = event.GetErasableEdge();
+ScAddr const edgeAddr = event.GetEdge();
 ...
 ```
 
-#### **GetErasableEdgeType**
+#### **GetEdgeType**
 
 It returns sc-type of erasable sc-edge.
 
 ```cpp
 ...
-ScAddr const edgeType = event.GetErasableEdgeType();
+ScAddr const edgeType = event.GetEdgeType();
 ...
 ```
 
@@ -514,16 +514,16 @@ auto const [elementAddr, targetElementAddr] = event.GetEdgeIncidentElements();
 ...
 ```
 
-### **ScEventEraseElement**
+### **ScEventBeforeEraseElement**
 
 This class represents sc-event of erasing specified listen sc-element. You can use all methods from objects of this class that are accessible from `ScElementaryEvent` class.
 
-### **ScEventChangeLinkContent**
+### **ScEventBeforeChangeLinkContent**
 
 This class represents sc-event of changing content for listen sc-link. You can use all methods from objects of this class that are accessible from `ScElementaryEvent` class.
 
 !!! note
-    For `ScEventEraseElement` and `ScEventChangeLinkContent` method `GetTriple` returns tuple of three sc-address. The first one is a sc-event subscription sc-element. The other ones should be empty sc-addresses.
+    For `ScEventBeforeEraseElement` and `ScEventBeforeChangeLinkContent` method `GetTriple` returns tuple of three sc-address. The first one is a sc-event subscription sc-element. The other ones should be empty sc-addresses.
 
 --- 
 

@@ -167,7 +167,7 @@ private:
  * @brief Implements waiting for an action to finish.
  */
 class _SC_EXTERN ScWaiterActionFinished final
-  : public ScEventWaiter<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+  : public ScEventWaiter<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
   friend class ScAction;
 
@@ -180,7 +180,7 @@ protected:
   _SC_EXTERN ScWaiterActionFinished(ScMemoryContext const & ctx, ScAddr const & actionAddr);
 
 private:
-  sc_bool OnEvent(ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) override;
+  sc_bool OnEvent(ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) override;
 };
 
 #include "sc_event_wait.tpp"

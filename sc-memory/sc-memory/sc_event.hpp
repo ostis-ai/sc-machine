@@ -23,7 +23,6 @@ class _SC_EXTERN ScEvent : public ScObject
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
-  friend class ScEventSubscriptionFactory;
 
 public:
   _SC_EXTERN virtual ~ScEvent();
@@ -36,10 +35,10 @@ public:
 };
 
 /*!
- * @class ScEvent
- * @brief Represents a basic sc-event.
+ * @class ScElementaryEvent
+ * @brief Represents a elementary (basic) sc-event.
  *
- * ScEvent is a subclass of ScEvent that represents basic events in the sc-memory.
+ * ScElementaryEvent is a subclass of ScEvent that represents basic events in the sc-memory.
  */
 class _SC_EXTERN ScElementaryEvent : public ScEvent
 {
@@ -63,19 +62,19 @@ public:
    * @brief Gets a connector element outgoing from or ingoing to a subscription element.
    * @return ScAddr representing a connector element from/to a subscription element.
    */
-  _SC_EXTERN ScAddr GetConnector() const;
+  _SC_EXTERN virtual ScAddr GetConnector() const;
 
   /*!
    * @brief Gets a type of connector element outgoing from or ingoing to a subscription element.
    * @return ScType representing a type of connector element outgoing from or ingoing to a subscription element.
    */
-  _SC_EXTERN ScType GetConnectorType() const;
+  _SC_EXTERN virtual ScType GetConnectorType() const;
 
   /*!
    * @brief Gets other element of connector outgoing from or ingoing to subscription element.
    * @return ScAddr representing other element of connector outgoing from or ingoing to subscription element.
    */
-  _SC_EXTERN ScAddr GetOtherElement() const;
+  _SC_EXTERN virtual ScAddr GetOtherElement() const;
 
 protected:
   _SC_EXTERN ScElementaryEvent(
@@ -86,6 +85,7 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+private:
   ScAddr m_eventClassAddr;
   ScAddr m_userAddr;
   ScAddr m_subscriptionAddr;
@@ -95,10 +95,11 @@ protected:
 };
 
 /*!
- * @class ScElementaryEvent
- * @brief Represents a basic sc-event.
+ * @class TScElementaryEvent
+ * @brief Represents a elementary (basic) sc-event.
  *
- * ScElementaryEvent is a subclass of ScEvent that represents basic events in the sc-memory.
+ * TScElementaryEvent is a subclass of ScElementaryEvent that represents elementary events in the sc-memory. With this
+ * class, sc-event types can be defined statically.
  */
 template <ScType const & _elementType>
 class _SC_EXTERN TScElementaryEvent : public ScElementaryEvent
@@ -123,11 +124,11 @@ private:
 };
 
 /*!
- * @class ScEventGenerateConnector
- * @brief Represents an event where a sc-connector is added.
+ * @class ScEventAfterGenerateConnector
+ * @brief Represents an event where a sc-connector is generated.
  */
 template <ScType const & tConnectorType>
-class _SC_EXTERN ScEventGenerateConnector : public TScElementaryEvent<tConnectorType>
+class _SC_EXTERN ScEventAfterGenerateConnector : public TScElementaryEvent<tConnectorType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -135,14 +136,10 @@ class _SC_EXTERN ScEventGenerateConnector : public TScElementaryEvent<tConnector
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN virtual ScAddr GetGeneratedConnector() const;
-
-  _SC_EXTERN virtual ScType GetGeneratedConnectorType() const;
-
   _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const;
 
 protected:
-  _SC_EXTERN ScEventGenerateConnector(
+  _SC_EXTERN ScEventAfterGenerateConnector(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
@@ -150,35 +147,37 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
-  _SC_EXTERN ScEventGenerateConnector(
+  _SC_EXTERN ScEventAfterGenerateConnector(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+  _SC_EXTERN ScAddr GetOtherElement() const override;
+
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_connector;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_connector;
 };
 
 /*!
- * @class ScEventGenerateArc
- * @brief Represents an event where a sc-arc is added.
+ * @class ScEventAfterGenerateArc
+ * @brief Represents an event where a sc-arc is generated.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventGenerateArc : public ScEventGenerateConnector<arcType>
+class _SC_EXTERN ScEventAfterGenerateArc : public ScEventAfterGenerateConnector<arcType>
 {
 public:
-  _SC_EXTERN virtual ScAddr GetGeneratedArc() const;
+  _SC_EXTERN virtual ScAddr GetArc() const;
 
-  _SC_EXTERN virtual ScType GetGeneratedArcType() const;
+  _SC_EXTERN virtual ScType GetArcType() const;
 
   _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
 
   _SC_EXTERN virtual ScAddr GetArcTargetElement() const;
 
 protected:
-  _SC_EXTERN ScEventGenerateArc(
+  _SC_EXTERN ScEventAfterGenerateArc(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
@@ -186,19 +185,19 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
-  _SC_EXTERN ScAddr GetGeneratedConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const override;
 
-  _SC_EXTERN ScType GetGeneratedConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const override;
 
   _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
 };
 
 /*!
- * @class ScEventGenerateEdge
- * @brief Represents an event where a sc-edge is added.
+ * @class ScEventAfterGenerateEdge
+ * @brief Represents an event where a sc-edge is generated.
  */
 template <ScType const & edgeType>
-class _SC_EXTERN ScEventGenerateEdge : public ScEventGenerateConnector<edgeType>
+class _SC_EXTERN ScEventAfterGenerateEdge final : public ScEventAfterGenerateConnector<edgeType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -206,30 +205,36 @@ class _SC_EXTERN ScEventGenerateEdge : public ScEventGenerateConnector<edgeType>
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN virtual ScAddr GetGeneratedEdge() const;
+  _SC_EXTERN virtual ScAddr GetEdge() const;
 
-  _SC_EXTERN virtual ScType GetGeneratedEdgeType() const;
+  _SC_EXTERN virtual ScType GetEdgeType() const;
 
   _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const;
 
 protected:
-  _SC_EXTERN ScEventGenerateEdge(
+  _SC_EXTERN ScEventAfterGenerateEdge(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+  _SC_EXTERN ScAddr GetConnector() const override;
+
+  _SC_EXTERN ScType GetConnectorType() const override;
+
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
+
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_edge;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_edge;
 };
 
 /*!
- * @class ScEventGenerateOutgoingArc
- * @brief Represents an event where an outgoing sc-arc is added.
+ * @class ScEventAfterGenerateOutgoingArc
+ * @brief Represents an event where an outgoing sc-arc is generated.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventGenerateOutgoingArc : public ScEventGenerateArc<arcType>
+class _SC_EXTERN ScEventAfterGenerateOutgoingArc final : public ScEventAfterGenerateArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -237,7 +242,7 @@ class _SC_EXTERN ScEventGenerateOutgoingArc : public ScEventGenerateArc<arcType>
   friend class ScAgentBase;
 
 protected:
-  _SC_EXTERN ScEventGenerateOutgoingArc(
+  _SC_EXTERN ScEventAfterGenerateOutgoingArc(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
@@ -245,15 +250,15 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_outgoing_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_outgoing_arc;
 };
 
 /*!
- * @class ScEventGenerateIncomingArc
- * @brief Represents an event where an incoming sc-arc is added.
+ * @class ScEventAfterGenerateIncomingArc
+ * @brief Represents an event where an incoming sc-arc is generated.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventGenerateIncomingArc final : public ScEventGenerateArc<arcType>
+class _SC_EXTERN ScEventAfterGenerateIncomingArc final : public ScEventAfterGenerateArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -266,7 +271,7 @@ public:
   _SC_EXTERN ScAddr GetArcTargetElement() const override;
 
 protected:
-  _SC_EXTERN ScEventGenerateIncomingArc(
+  _SC_EXTERN ScEventAfterGenerateIncomingArc(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
@@ -274,15 +279,15 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_generate_incoming_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_incoming_arc;
 };
 
 /*!
- * @class ScEventEraseConnector
+ * @class ScEventBeforeEraseConnector
  * @brief Represents an event where a sc-connector is erased.
  */
 template <ScType const & tConnectorType>
-class _SC_EXTERN ScEventEraseConnector : public TScElementaryEvent<tConnectorType>
+class _SC_EXTERN ScEventBeforeEraseConnector : public TScElementaryEvent<tConnectorType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -290,14 +295,14 @@ class _SC_EXTERN ScEventEraseConnector : public TScElementaryEvent<tConnectorTyp
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN virtual ScAddr GetErasableConnector() const;
+  _SC_EXTERN ScAddr GetConnector() const override;
 
-  _SC_EXTERN virtual ScType GetErasableConnectorType() const;
+  _SC_EXTERN ScType GetConnectorType() const override;
 
   _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const;
 
 protected:
-  _SC_EXTERN ScEventEraseConnector(
+  _SC_EXTERN ScEventBeforeEraseConnector(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
@@ -305,35 +310,37 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
-  _SC_EXTERN ScEventEraseConnector(
+  _SC_EXTERN ScEventBeforeEraseConnector(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+  _SC_EXTERN ScAddr GetOtherElement() const override;
+
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_erase_connector;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_connector;
 };
 
 /*!
- * @class ScEventEraseArc
+ * @class ScEventBeforeEraseArc
  * @brief Represents an event where a sc-arc is erased.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventEraseArc : public ScEventEraseConnector<arcType>
+class _SC_EXTERN ScEventBeforeEraseArc : public ScEventBeforeEraseConnector<arcType>
 {
 public:
-  _SC_EXTERN virtual ScAddr GetErasableArc() const;
+  _SC_EXTERN virtual ScAddr GetArc() const;
 
-  _SC_EXTERN virtual ScType GetErasableArcType() const;
+  _SC_EXTERN virtual ScType GetArcType() const;
 
   _SC_EXTERN virtual ScAddr GetArcSourceElement() const;
 
   _SC_EXTERN virtual ScAddr GetArcTargetElement() const;
 
 protected:
-  _SC_EXTERN ScEventEraseArc(
+  _SC_EXTERN ScEventBeforeEraseArc(
       ScAddr const & eventClassAddr,
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
@@ -341,19 +348,19 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
-  _SC_EXTERN ScAddr GetErasableConnector() const override;
+  _SC_EXTERN ScAddr GetConnector() const override;
 
-  _SC_EXTERN ScType GetErasableConnectorType() const override;
+  _SC_EXTERN ScType GetConnectorType() const override;
 
   _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
 };
 
 /*!
- * @class ScEventEraseEdge
+ * @class ScEventBeforeEraseEdge
  * @brief Represents an event where a sc-edge is erased.
  */
 template <ScType const & edgeType>
-class _SC_EXTERN ScEventEraseEdge : public ScEventEraseConnector<edgeType>
+class _SC_EXTERN ScEventBeforeEraseEdge final : public ScEventBeforeEraseConnector<edgeType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -361,30 +368,36 @@ class _SC_EXTERN ScEventEraseEdge : public ScEventEraseConnector<edgeType>
   friend class ScAgentBase;
 
 public:
-  _SC_EXTERN virtual ScAddr GetErasableEdge() const;
+  _SC_EXTERN virtual ScAddr GetEdge() const;
 
-  _SC_EXTERN virtual ScType GetErasableEdgeType() const;
+  _SC_EXTERN virtual ScType GetEdgeType() const;
 
   _SC_EXTERN virtual std::tuple<ScAddr, ScAddr> GetEdgeIncidentElements() const;
 
 protected:
-  _SC_EXTERN ScEventEraseEdge(
+  _SC_EXTERN ScEventBeforeEraseEdge(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+  _SC_EXTERN ScAddr GetConnector() const override;
+
+  _SC_EXTERN ScType GetConnectorType() const override;
+
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const override;
+
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_erase_edge;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_edge;
 };
 
 /*!
- * @class ScEventEraseOutgoingArc
+ * @class ScEventBeforeEraseOutgoingArc
  * @brief Represents an event where an outgoing sc-arc is erased.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventEraseOutgoingArc final : public ScEventEraseArc<arcType>
+class _SC_EXTERN ScEventBeforeEraseOutgoingArc final : public ScEventBeforeEraseArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -392,7 +405,7 @@ class _SC_EXTERN ScEventEraseOutgoingArc final : public ScEventEraseArc<arcType>
   friend class ScAgentBase;
 
 protected:
-  _SC_EXTERN ScEventEraseOutgoingArc(
+  _SC_EXTERN ScEventBeforeEraseOutgoingArc(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
@@ -400,15 +413,15 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_erase_outgoing_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_outgoing_arc;
 };
 
 /*!
- * @class ScEventEraseIncomingArc
+ * @class ScEventBeforeEraseIncomingArc
  * @brief Represents an event where an incoming sc-arc is erased.
  */
 template <ScType const & arcType>
-class _SC_EXTERN ScEventEraseIncomingArc final : public ScEventEraseArc<arcType>
+class _SC_EXTERN ScEventBeforeEraseIncomingArc final : public ScEventBeforeEraseArc<arcType>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -421,7 +434,7 @@ public:
   _SC_EXTERN ScAddr GetArcTargetElement() const override;
 
 protected:
-  _SC_EXTERN ScEventEraseIncomingArc(
+  _SC_EXTERN ScEventBeforeEraseIncomingArc(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
@@ -429,16 +442,16 @@ protected:
       ScAddr const & otherAddr);
 
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_erase_incoming_arc;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_incoming_arc;
 };
 
 #include "sc_event.tpp"
 
 /*!
- * @class ScEventEraseElement
+ * @class ScEventBeforeEraseElement
  * @brief Represents an event where an element is erased.
  */
-class _SC_EXTERN ScEventEraseElement final : public TScElementaryEvent<ScType::Unknown>
+class _SC_EXTERN ScEventBeforeEraseElement final : public TScElementaryEvent<ScType::Unknown>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -446,22 +459,28 @@ class _SC_EXTERN ScEventEraseElement final : public TScElementaryEvent<ScType::U
   friend class ScAgentBase;
 
 protected:
-  _SC_EXTERN ScEventEraseElement(
+  _SC_EXTERN ScEventBeforeEraseElement(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+  _SC_EXTERN ScAddr GetConnector() const override;
+
+  _SC_EXTERN ScType GetConnectorType() const override;
+
+  _SC_EXTERN ScAddr GetOtherElement() const override;
+
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_erase_element;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_element;
 };
 
 /*!
- * @class ScEventChangeLinkContent
+ * @class ScEventBeforeChangeLinkContent
  * @brief Represents an event where the content of an element is changed.
  */
-class _SC_EXTERN ScEventChangeLinkContent final : public TScElementaryEvent<ScType::Unknown>
+class _SC_EXTERN ScEventBeforeChangeLinkContent final : public TScElementaryEvent<ScType::Unknown>
 {
   template <class TScEvent>
   friend class ScElementaryEventSubscription;
@@ -469,15 +488,21 @@ class _SC_EXTERN ScEventChangeLinkContent final : public TScElementaryEvent<ScTy
   friend class ScAgentBase;
 
 protected:
-  _SC_EXTERN ScEventChangeLinkContent(
+  _SC_EXTERN ScEventBeforeChangeLinkContent(
       ScAddr const & userAddr,
       ScAddr const & subscriptionElementAddr,
       ScAddr const & connectorAddr,
       ScType const & connectorType,
       ScAddr const & otherAddr);
 
+  _SC_EXTERN ScAddr GetConnector() const override;
+
+  _SC_EXTERN ScType GetConnectorType() const override;
+
+  _SC_EXTERN ScAddr GetOtherElement() const override;
+
 private:
-  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_change_link_content;
+  static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_change_link_content;
 };
 
-using ScActionEvent = ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;
+using ScActionEvent = ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;

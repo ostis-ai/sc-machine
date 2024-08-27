@@ -26,7 +26,7 @@ agent_calculate_set_power
 <- abstract_sc_agent;
 => nrel_primary_initiation_condition: 
     // Class of sc-event and listen (subscription) sc-element
-    (sc_event_generate_outgoing_arc => action_initiated); 
+    (sc_event_after_generate_outgoing_arc => action_initiated); 
 => nrel_sc_agent_action_class:
     // Class of actions to be performed by agent
     action_calculate_set_power; 
@@ -113,9 +113,9 @@ This class can be used for all types of platform-dependent agents. The example u
 #include <sc-memory/sc_agent.hpp>
 
 // Inherit your agent class from `ScAgent` class and specify template argument 
-// as sc-event class. Here `ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>` 
+// as sc-event class. Here `ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>` 
 // is type of event to which the given agent reacts.
-class MyAgent : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+class MyAgent : public ScAgent<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   // Here you should specify class of actions which the given agent performs. 
@@ -125,7 +125,7 @@ public:
   // Here you should implement program of the given agent. 
   // This overriding is required.
   ScResult DoProgram(
-    ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, 
+    ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, 
     ScAction & action) override;
 
   // Other user-defined methods.
@@ -140,7 +140,7 @@ You can't override `DoProgram` without sc-event argument. There can be override 
 
 #include <sc-memory/sc_agent.hpp>
 
-class MyAgent : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+class MyAgent : public ScAgent<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   ScAddr GetActionClass() const override;
@@ -166,12 +166,12 @@ You can specify any existing event types as a template argument to the `ScAgent`
 
 #include <sc-memory/sc_agent.hpp>
 
-class MyAgent : public ScAgent<ScEventEraseElement>
+class MyAgent : public ScAgent<ScEventBeforeEraseElement>
 {
 public:
   ScAddr GetActionClass() const override;
   ScResult DoProgram(
-    ScEventEraseElement const & event, ScAction & action) override;
+    ScEventBeforeEraseElement const & event, ScAction & action) override;
 
   // Other user-defined methods.
 };
@@ -237,7 +237,7 @@ public:
     `ScActionAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
 
 !!! note
-    `ScActionEvent` is alias for `ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
+    `ScActionEvent` is alias for `ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
 
 ---
 
@@ -290,7 +290,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
   // is triggered. It is encapsulate information about sc-event. 
   // The provided event is event on which the agent is triggered right now. 
   // It has methods to get information about initiated sc-event: `GetUser`, 
-  // `GetGeneratedArc`, `GetSubscriptionElement`, `GetArcSourceElement`.
+  // `GetArc`, `GetSubscriptionElement`, `GetArcSourceElement`.
  
   // Implement logic of your agent...
 
@@ -460,7 +460,7 @@ ScAddr MyAgent::GetEventClass() const
 {
   // You must specify valid sc-address of event class. 
   // In other case, the given sc-agent can’t be subscribed to sc-event.
-  return ScKeynodes::sc_event_generate_outgoing_arc;
+  return ScKeynodes::sc_event_after_generate_outgoing_arc;
 }
 ```
 
@@ -535,7 +535,7 @@ sc_bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
  // ScActionEvent is event type on which the given agent triggered. 
  // It is encapsulate information about sc-event. The provided event 
  // is event on which the agent is triggered  right now. It has methods 
- // to get information about initiated sc-event: GetUser, GetGeneratedArc, 
+ // to get information about initiated sc-event: GetUser, GetArc, 
  // GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.
  // All events are not copyable and movable.
  return m_memoryCtx.HelperCheckEdge(

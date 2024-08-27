@@ -11,7 +11,7 @@ static std::string const ATestSpecificatedAgentSpecification = R"(
   test_specificated_agent
   <- abstract_sc_agent;
   => nrel_primary_initiation_condition: 
-    (sc_event_generate_outgoing_arc => action_initiated);
+    (sc_event_after_generate_outgoing_arc => action_initiated);
   => nrel_sc_agent_action_class: 
     test_specificated_agent_action;
   => nrel_initiation_condition_and_result: 
@@ -383,9 +383,9 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_inclusion:
       test_specificated_agent_implementation
       (*
@@ -412,7 +412,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_inclusion:
       test_specificated_agent_implementation
       (*
@@ -440,7 +440,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_inclusion:
@@ -470,7 +470,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_sc_agent_action_class: 
@@ -506,7 +506,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithNotSpe
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_inclusion:
@@ -540,7 +540,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: ...;
@@ -577,7 +577,7 @@ TEST_F(
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: 
@@ -613,7 +613,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithInvali
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: 
@@ -656,7 +656,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasSpecificationWithSpecif
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: 
@@ -711,7 +711,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasFullSpecificationButCon
     test_specificated_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
-      (sc_event_generate_outgoing_arc => action_initiated);
+      (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specificated_agent_action;
     => nrel_initiation_condition_and_result: 
@@ -840,7 +840,7 @@ static std::string const ATestSpecificatedAgentSpecificationErasingEdge = R"(
   test_specificated_agent
   <- abstract_sc_agent;
   => nrel_primary_initiation_condition: 
-    (sc_event_erase_edge => test_set);
+    (sc_event_before_erase_edge => test_set);
   => nrel_sc_agent_action_class: 
     test_specificated_agent_action;
   => nrel_initiation_condition_and_result: 
@@ -909,7 +909,7 @@ static std::string const ATestSpecificatedAgentSpecificationErasingConnector = R
   test_specificated_agent
   <- abstract_sc_agent;
   => nrel_primary_initiation_condition: 
-    (sc_event_erase_connector => test_set);
+    (sc_event_before_erase_connector => test_set);
   => nrel_sc_agent_action_class: 
     test_specificated_agent_action;
   => nrel_initiation_condition_and_result: 
@@ -978,7 +978,7 @@ static std::string const ATestSpecificatedAgentSpecificationGeneratingIncomingAr
   test_specificated_agent
   <- abstract_sc_agent;
   => nrel_primary_initiation_condition: 
-    (sc_event_generate_incoming_arc => test_set);
+    (sc_event_after_generate_incoming_arc => test_set);
   => nrel_sc_agent_action_class: 
     test_specificated_agent_action;
   => nrel_initiation_condition_and_result: 

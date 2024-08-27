@@ -60,7 +60,8 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
         utils::ExceptionInvalidParams,
         "Not able to create elementary sc-event subscription because subscription sc-element is not valid.");
 
-  if (eventClassAddr == ScKeynodes::sc_event_change_link_content && !GetElementType(subscriptionElementAddr).IsLink())
+  if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
+      && !GetElementType(subscriptionElementAddr).IsLink())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to create sc-event subscription of changing link content because subscription sc-element is not "
@@ -91,7 +92,8 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
         utils::ExceptionInvalidParams,
         "Not able to create sc-event waiter because subscription sc-element is not valid.");
 
-  if (eventClassAddr == ScKeynodes::sc_event_change_link_content && !GetElementType(subscriptionElementAddr).IsLink())
+  if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
+      && !GetElementType(subscriptionElementAddr).IsLink())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to create sc-event waiter of changing link content because subscription sc-element is not "
@@ -125,7 +127,8 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
         utils::ExceptionInvalidParams,
         "Not able to create sc-event waiter with condition because subscription sc-element is not valid.");
 
-  if (eventClassAddr == ScKeynodes::sc_event_change_link_content && !GetElementType(subscriptionElementAddr).IsLink())
+  if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
+      && !GetElementType(subscriptionElementAddr).IsLink())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to create sc-event waiter with condition of changing link content because subscription sc-element is "

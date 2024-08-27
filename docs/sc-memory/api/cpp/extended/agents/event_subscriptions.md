@@ -33,16 +33,16 @@ All these constructors are private, you can't call these. We provide more safe A
 
 All sc-event classes are in core keynodes:
 
-* `ScKeynodes::sc_event_generate_connector`;
-* `ScKeynodes::sc_event_generate_outgoing_arc`;
-* `ScKeynodes::sc_event_generate_incoming_arc`;
-* `ScKeynodes::sc_event_generate_edge`;
-* `ScKeynodes::sc_event_erase_connector`;
-* `ScKeynodes::sc_event_erase_outgoing_arc`;
-* `ScKeynodes::sc_event_erase_incoming_arc`;
-* `ScKeynodes::sc_event_erase_edge`;
-* `ScKeynodes::sc_event_erase_element`;
-* `ScKeynodes::sc_event_change_link_content`.
+* `ScKeynodes::sc_event_after_generate_connector`;
+* `ScKeynodes::sc_event_after_generate_outgoing_arc`;
+* `ScKeynodes::sc_event_after_generate_incoming_arc`;
+* `ScKeynodes::sc_event_after_generate_edge`;
+* `ScKeynodes::sc_event_before_erase_connector`;
+* `ScKeynodes::sc_event_before_erase_outgoing_arc`;
+* `ScKeynodes::sc_event_before_erase_incoming_arc`;
+* `ScKeynodes::sc_event_before_erase_edge`;
+* `ScKeynodes::sc_event_before_erase_element`;
+* `ScKeynodes::sc_event_before_change_link_content`.
 
 Use them as `eventClassAddr` for `CreateElementaryEventSubscription`.
 
@@ -77,16 +77,16 @@ auto subscription = context->CreateElementaryEventSubscription(
   </tr>
 
   <tr>
-    <td><strong>ScEventGenerateConnector</strong></td>
+    <td><strong>ScEventAfterGenerateConnector</strong></td>
     <td>
       <scg src="../images/events/sc_event_connector.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventGenerateConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -96,16 +96,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventGenerateOutgoingArc</strong></td>
+    <td><strong>ScEventAfterGenerateOutgoingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -115,16 +115,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventGenerateIncomingArc</strong></td>
+    <td><strong>ScEventAfterGenerateIncomingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -134,16 +134,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventGenerateEdge</strong></td>
+    <td><strong>ScEventAfterGenerateEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventGenerateEdge<ScType::EdgeUCommonConst>>(
+  ScEventAfterGenerateEdge<ScType::EdgeUCommonConst>>(
   subscriptionElementAddr, 
-  [](ScEventGenerateEdge<ScType::EdgeUCommonConst> const & event) -> void
+  [](ScEventAfterGenerateEdge<ScType::EdgeUCommonConst> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -153,16 +153,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseConnector</strong></td>
+    <td><strong>ScEventBeforeEraseConnector</strong></td>
     <td>
       <scg src="../images/events/sc_event_connector.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventEraseConnector<ScType::EdgeAccessConstPosPerm>>(
+  ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventEraseConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -172,16 +172,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseOutgoingArc</strong></td>
+    <td><strong>ScEventBeforeEraseOutgoingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_outgoing_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -191,16 +191,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseIncomingArc</strong></td>
+    <td><strong>ScEventBeforeEraseIncomingArc</strong></td>
     <td>
       <scg src="../images/events/sc_event_incoming_arc.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
-  [](ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -210,16 +210,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseEdge</strong></td>
+    <td><strong>ScEventBeforeEraseEdge</strong></td>
     <td>
       <scg src="../images/events/sc_event_edge.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventEraseEdge<ScType::EdgeUCommonConst>>(
+  ScEventBeforeEraseEdge<ScType::EdgeUCommonConst>>(
   subscriptionElementAddr, 
-  [](ScEventEraseEdge<ScType::EdgeUCommonConst> const & event) -> void
+  [](ScEventBeforeEraseEdge<ScType::EdgeUCommonConst> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -229,15 +229,15 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventEraseElement</strong></td>
+    <td><strong>ScEventBeforeEraseElement</strong></td>
     <td>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventEraseElement>(
+  ScEventBeforeEraseElement>(
   subscriptionElementAddr, 
-  [](ScEventEraseElement const & event) -> void
+  [](ScEventBeforeEraseElement const & event) -> void
 {
   // Handle sc-event.
 });
@@ -247,16 +247,16 @@ auto subscription = context->CreateElementaryEventSubscription<
   </tr>
 
   <tr>
-    <td><strong>ScEventChangeLinkContent</strong></td>
+    <td><strong>ScEventBeforeChangeLinkContent</strong></td>
     <td>
       <scg src="../images/events/sc_event_content.gwf"></scg>
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventChangeLinkContent>(
+  ScEventBeforeChangeLinkContent>(
   subscriptionElementAddr, 
-  [](ScEventChangeLinkContent const & event) -> void
+  [](ScEventBeforeChangeLinkContent const & event) -> void
 {
   // Handle sc-event.
 });
@@ -273,7 +273,7 @@ auto subscription = context->CreateElementaryEventSubscription<
 <!-- no toc -->
 - [Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?](#whether-a-function-is-considered-an-agent-if-this-function-is-subscribed-to-a-sc-event-and-which-is-called-after-that-sc-event-occurs)
 - [Why can't you call the constructor of a subscription class to sc-event?](#why-cant-i-call-the-constructor-of-a-subscription-class-to-sc-event)
-- [Are `ScEventGenerateIncomingArc` or `ScEventGenerateOutgoingArc` events trigger when `ScEventGenerateEdge` event is triggered?](#are-sceventgenerateincomingarc-or-sceventgenerateoutgoingarc-events-trigger-when-sceventgenerateedge-event-is-triggered)
+- [Are `ScEventAfterGenerateIncomingArc` or `ScEventAfterGenerateOutgoingArc` events trigger when `ScEventAfterGenerateEdge` event is triggered?](#are-sceventgenerateincomingarc-or-sceventgenerateoutgoingarc-events-trigger-when-sceventgenerateedge-event-is-triggered)
 
 ### **Whether a function is considered an agent if this function is subscribed to a sc-event and which is called after that sc-event occurs?**
 
@@ -283,6 +283,6 @@ No, such functions are not agents. Agents have a strict specification. See [C++ 
 
 First of all, it's not safe. We need more checks on input arguments because there are more of them. Secondly, it is correct from the OOP point of view. Constructors should not throw exceptions. Third, it is correct from the point of view of the architecture we use in the sc-machine. The `ScAgentContext` is a facade over all possible objects used by agents.
 
-### **Are `ScEventGenerateIncomingArc` or `ScEventGenerateOutgoingArc` events trigger when `ScEventGenerateEdge` event is triggered?**
+### **Are `ScEventAfterGenerateIncomingArc` or `ScEventAfterGenerateOutgoingArc` events trigger when `ScEventAfterGenerateEdge` event is triggered?**
 
-No, the `ScEventGenerateEdge` event only occurs when sc-edges are generated.
+No, the `ScEventAfterGenerateEdge` event only occurs when sc-edges are generated.

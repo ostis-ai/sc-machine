@@ -320,7 +320,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
   auto & subscriptionsMap = agentsMapIt->second;
   for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
-    if constexpr (!std::is_same<TScEvent, ScEventEraseElement>::value)
+    if constexpr (!std::is_same<TScEvent, ScEventBeforeEraseElement>::value)
     {
       if (!ctx->IsElement(subscriptionElementAddr))
         SC_THROW_EXCEPTION(
@@ -515,14 +515,15 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
   auto const & GetIteratorForEventTripleWithConnectorWithIncomingDirection = GetIteratorForEventTripleWithIncomingArc;
 
   ScAddrToValueUnorderedMap<std::tuple<std::function<ScIterator5Ptr()>, size_t>> eventToEventTripleIterators = {
-      {ScKeynodes::sc_event_generate_incoming_arc, {GetIteratorForEventTripleWithIncomingArc, 0u}},
-      {ScKeynodes::sc_event_erase_incoming_arc, {GetIteratorForEventTripleWithIncomingArc, 0u}},
-      {ScKeynodes::sc_event_generate_outgoing_arc, {GetIteratorForEventTripleWithOutgoingArc, 2u}},
-      {ScKeynodes::sc_event_erase_outgoing_arc, {GetIteratorForEventTripleWithOutgoingArc, 2u}},
-      {ScKeynodes::sc_event_generate_edge, {GetIteratorForEventTripleWithEdge, 2u}},
-      {ScKeynodes::sc_event_erase_edge, {GetIteratorForEventTripleWithEdge, 2u}},
-      {ScKeynodes::sc_event_generate_connector, {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}},
-      {ScKeynodes::sc_event_erase_connector, {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}}};
+      {ScKeynodes::sc_event_after_generate_incoming_arc, {GetIteratorForEventTripleWithIncomingArc, 0u}},
+      {ScKeynodes::sc_event_before_erase_incoming_arc, {GetIteratorForEventTripleWithIncomingArc, 0u}},
+      {ScKeynodes::sc_event_after_generate_outgoing_arc, {GetIteratorForEventTripleWithOutgoingArc, 2u}},
+      {ScKeynodes::sc_event_before_erase_outgoing_arc, {GetIteratorForEventTripleWithOutgoingArc, 2u}},
+      {ScKeynodes::sc_event_after_generate_edge, {GetIteratorForEventTripleWithEdge, 2u}},
+      {ScKeynodes::sc_event_before_erase_edge, {GetIteratorForEventTripleWithEdge, 2u}},
+      {ScKeynodes::sc_event_after_generate_connector,
+       {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}},
+      {ScKeynodes::sc_event_before_erase_connector, {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}}};
 
   ScAddr const & eventClassAddr = event.GetEventClass();
   auto const & iteratorIt = eventToEventTripleIterators.find(eventClassAddr);
@@ -549,8 +550,8 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildCheckTemplate(TScEvent const & ev
         checkTemplateParams);
 
   if (checkTemplateParamsIsGenerated
-      && (eventClassAddr == ScKeynodes::sc_event_generate_connector
-          || eventClassAddr == ScKeynodes::sc_event_erase_connector))
+      && (eventClassAddr == ScKeynodes::sc_event_after_generate_connector
+          || eventClassAddr == ScKeynodes::sc_event_before_erase_connector))
   {
     eventTripleIterator = GetIteratorForEventTripleWithConnectorWithIncomingDirection();
     if (eventTripleIterator->IsValid())

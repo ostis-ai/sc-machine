@@ -715,7 +715,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
         erase_incoming_connector_result = sc_event_emit(
             ctx,
             begin_addr,
-            sc_event_erase_connector_addr,
+            sc_event_before_erase_connector_addr,
             element_addr,
             type,
             end_addr,
@@ -724,7 +724,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
         erase_outgoing_connector_result = sc_event_emit(
             ctx,
             end_addr,
-            sc_event_erase_connector_addr,
+            sc_event_before_erase_connector_addr,
             element_addr,
             type,
             begin_addr,
@@ -737,7 +737,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
         erase_incoming_arc_result = sc_event_emit(
             ctx,
             begin_addr,
-            sc_event_erase_edge_addr,
+            sc_event_before_erase_edge_addr,
             element_addr,
             type,
             end_addr,
@@ -746,7 +746,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
         erase_outgoing_arc_result = sc_event_emit(
             ctx,
             end_addr,
-            sc_event_erase_edge_addr,
+            sc_event_before_erase_edge_addr,
             element_addr,
             type,
             begin_addr,
@@ -758,7 +758,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
         erase_outgoing_arc_result = sc_event_emit(
             ctx,
             begin_addr,
-            sc_event_erase_outgoing_arc_addr,
+            sc_event_before_erase_outgoing_arc_addr,
             element_addr,
             type,
             end_addr,
@@ -767,7 +767,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
         erase_incoming_arc_result = sc_event_emit(
             ctx,
             end_addr,
-            sc_event_erase_incoming_arc_addr,
+            sc_event_before_erase_incoming_arc_addr,
             element_addr,
             type,
             begin_addr,
@@ -778,7 +778,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
       erase_element_result = sc_event_emit(
           ctx,
           element_addr,
-          sc_event_erase_element_addr,
+          sc_event_before_erase_element_addr,
           SC_ADDR_EMPTY,
           0,
           SC_ADDR_EMPTY,
@@ -1078,21 +1078,37 @@ sc_addr sc_storage_arc_new_ext(
   // emit events
   if (is_edge && is_not_loop)
   {
-    sc_event_emit(ctx, end_addr, sc_event_generate_edge_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
-    sc_event_emit(ctx, beg_addr, sc_event_generate_edge_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
+    sc_event_emit(
+        ctx, end_addr, sc_event_after_generate_edge_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
+    sc_event_emit(
+        ctx, beg_addr, sc_event_after_generate_edge_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
   }
   else
   {
     sc_event_emit(
-        ctx, beg_addr, sc_event_generate_outgoing_arc_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
+        ctx,
+        beg_addr,
+        sc_event_after_generate_outgoing_arc_addr,
+        connector_addr,
+        type,
+        end_addr,
+        null_ptr,
+        SC_ADDR_EMPTY);
     sc_event_emit(
-        ctx, end_addr, sc_event_generate_incoming_arc_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
+        ctx,
+        end_addr,
+        sc_event_after_generate_incoming_arc_addr,
+        connector_addr,
+        type,
+        beg_addr,
+        null_ptr,
+        SC_ADDR_EMPTY);
   }
 
   sc_event_emit(
-      ctx, end_addr, sc_event_generate_connector_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
+      ctx, end_addr, sc_event_after_generate_connector_addr, connector_addr, type, beg_addr, null_ptr, SC_ADDR_EMPTY);
   sc_event_emit(
-      ctx, beg_addr, sc_event_generate_connector_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
+      ctx, beg_addr, sc_event_after_generate_connector_addr, connector_addr, type, end_addr, null_ptr, SC_ADDR_EMPTY);
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
 
@@ -1312,7 +1328,8 @@ sc_result sc_storage_set_link_content(
     goto error;
   }
 
-  sc_event_emit(ctx, addr, sc_event_change_link_content_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY, null_ptr, SC_ADDR_EMPTY);
+  sc_event_emit(
+      ctx, addr, sc_event_before_change_link_content_addr, SC_ADDR_EMPTY, 0, SC_ADDR_EMPTY, null_ptr, SC_ADDR_EMPTY);
 
   sc_monitor_release_write(monitor);
   sc_mem_free(string);

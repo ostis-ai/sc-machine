@@ -165,16 +165,16 @@ void ScKeynodes::Initialize(ScMemoryContext * ctx)
   // sc-events
   ScAddr events[] = {
       sc_event_unknown,
-      sc_event_generate_connector,
-      sc_event_generate_incoming_arc,
-      sc_event_generate_outgoing_arc,
-      sc_event_generate_edge,
-      sc_event_erase_connector,
-      sc_event_erase_incoming_arc,
-      sc_event_erase_outgoing_arc,
-      sc_event_erase_edge,
-      sc_event_erase_element,
-      sc_event_change_link_content};
+      sc_event_after_generate_connector,
+      sc_event_after_generate_incoming_arc,
+      sc_event_after_generate_outgoing_arc,
+      sc_event_after_generate_edge,
+      sc_event_before_erase_connector,
+      sc_event_before_erase_incoming_arc,
+      sc_event_before_erase_outgoing_arc,
+      sc_event_before_erase_edge,
+      sc_event_before_erase_element,
+      sc_event_before_change_link_content};
   for (auto const & event : events)
   {
     ResolveArc(sc_event, event);

@@ -254,27 +254,35 @@ public:
 
   _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_generate_connector{
-      "sc_event_generate_connector",
+  _SC_EXTERN static inline ScKeynode const sc_event_after_generate_connector{
+      "sc_event_after_generate_connector",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_generate_incoming_arc{
-      "sc_event_generate_incoming_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_after_generate_incoming_arc{
+      "sc_event_after_generate_incoming_arc",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_generate_outgoing_arc{
-      "sc_event_generate_outgoing_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_after_generate_outgoing_arc{
+      "sc_event_after_generate_outgoing_arc",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_generate_edge{"sc_event_generate_edge", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_erase_connector{"sc_event_erase_connector", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_erase_incoming_arc{
-      "sc_event_erase_incoming_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_after_generate_edge{
+      "sc_event_after_generate_edge",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_erase_outgoing_arc{
-      "sc_event_erase_outgoing_arc",
+  _SC_EXTERN static inline ScKeynode const sc_event_before_erase_connector{
+      "sc_event_before_erase_connector",
       ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_erase_edge{"sc_event_erase_edge", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_erase_element{"sc_event_erase_element", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_change_link_content{
-      "sc_event_change_link_content",
+  _SC_EXTERN static inline ScKeynode const sc_event_before_erase_incoming_arc{
+      "sc_event_before_erase_incoming_arc",
+      ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_before_erase_outgoing_arc{
+      "sc_event_before_erase_outgoing_arc",
+      ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_before_erase_edge{
+      "sc_event_before_erase_edge",
+      ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_before_erase_element{
+      "sc_event_before_erase_element",
+      ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_before_change_link_content{
+      "sc_event_before_change_link_content",
       ScType::NodeConstClass};
 
   _SC_EXTERN static inline ScKeynode const sc_result_class{"sc_result", ScType::NodeConstClass};

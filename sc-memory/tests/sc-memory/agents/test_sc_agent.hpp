@@ -40,7 +40,7 @@ private:
   utils::ScLock m_lock;
 };
 
-class ATestGenerateConnector : public ScAgent<ScEventGenerateConnector<ScType::EdgeAccessConstPosPerm>>
+class ATestGenerateConnector : public ScAgent<ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const generate_connector_action{"generate_connector_action", ScType::NodeConstClass};
@@ -48,11 +48,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventGenerateConnector<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+  ScResult DoProgram(ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
       override;
 };
 
-class ATestGenerateIncomingArc : public ScAgent<ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestGenerateIncomingArc : public ScAgent<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const generate_incoming_arc_action{"generate_incoming_arc_action", ScType::NodeConstClass};
@@ -60,11 +60,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+  ScResult DoProgram(ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
       override;
 };
 
-class ATestGenerateOutgoingArc : public ScAgent<ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestGenerateOutgoingArc : public ScAgent<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const generate_outgoing_arc_action{"generate_outgoing_arc_action", ScType::NodeConstClass};
@@ -72,11 +72,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+  ScResult DoProgram(ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
       override;
 };
 
-class ATestGenerateEdge : public ScAgent<ScEventGenerateEdge<ScType::EdgeUCommonConst>>
+class ATestGenerateEdge : public ScAgent<ScEventAfterGenerateEdge<ScType::EdgeUCommonConst>>
 {
 public:
   static inline ScKeynode const add_edge_action{"add_edge_action", ScType::NodeConstClass};
@@ -84,10 +84,10 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventGenerateEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventAfterGenerateEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
-class ATestEraseConnector : public ScAgent<ScEventEraseConnector<ScType::EdgeAccessConstPosPerm>>
+class ATestEraseConnector : public ScAgent<ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const erase_connector_action{"erase_connector_action", ScType::NodeConstClass};
@@ -95,10 +95,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventEraseConnector<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+      override;
 };
 
-class ATestEraseIncomingArc : public ScAgent<ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestEraseIncomingArc : public ScAgent<ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const erase_incoming_arc_action{"erase_incoming_arc_action", ScType::NodeConstClass};
@@ -106,10 +107,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+      override;
 };
 
-class ATestEraseOutgoingArc : public ScAgent<ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestEraseOutgoingArc : public ScAgent<ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline ScKeynode const erase_outgoing_arc_action{"erase_outgoing_arc_action", ScType::NodeConstClass};
@@ -117,10 +119,11 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+      override;
 };
 
-class ATestEraseEdge : public ScAgent<ScEventEraseEdge<ScType::EdgeUCommonConst>>
+class ATestEraseEdge : public ScAgent<ScEventBeforeEraseEdge<ScType::EdgeUCommonConst>>
 {
 public:
   static inline ScKeynode const erase_edge_action{"erase_edge_action", ScType::NodeConstClass};
@@ -128,10 +131,10 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventEraseEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventBeforeEraseEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
-class ATestEraseElement : public ScAgent<ScEventEraseElement>
+class ATestEraseElement : public ScAgent<ScEventBeforeEraseElement>
 {
 public:
   static inline ScKeynode const erase_element_action{"erase_element_action", ScType::NodeConstClass};
@@ -139,10 +142,10 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventEraseElement const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventBeforeEraseElement const & event, ScAction & action) override;
 };
 
-class ATestChangeLinkContent : public ScAgent<ScEventChangeLinkContent>
+class ATestChangeLinkContent : public ScAgent<ScEventBeforeChangeLinkContent>
 {
 public:
   static inline ScKeynode const content_change_action{"content_change_action", ScType::NodeConstClass};
@@ -150,17 +153,17 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventChangeLinkContent const & event, ScAction & action) override;
+  ScResult DoProgram(ScEventBeforeChangeLinkContent const & event, ScAction & action) override;
 };
 
-class ATestGenerateMultipleOutputArc : public ScAgent<ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>
+class ATestGenerateMultipleOutputArc : public ScAgent<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   static inline TestWaiter msWaiter;
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScEventGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
+  ScResult DoProgram(ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event, ScAction & action)
       override;
 };
 

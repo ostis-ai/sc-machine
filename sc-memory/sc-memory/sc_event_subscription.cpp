@@ -6,8 +6,4 @@
 
 #include "sc_event_subscription.hpp"
 
-#include "sc_memory.hpp"
-
-#include "sc_keynodes.hpp"
-
 ScEventSubscription::~ScEventSubscription() = default;
