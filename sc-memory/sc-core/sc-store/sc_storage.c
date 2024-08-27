@@ -58,7 +58,7 @@ sc_result sc_storage_initialize(sc_memory_params const * params)
 
   sc_storage_dump_manager_initialize(&storage->dump_manager, params);
 
-  sc_event_subscription_manager_initialize(&storage->events_registration_manager);
+  sc_event_subscription_manager_initialize(&storage->events_subscription_manager);
   sc_event_emission_manager_initialize(&storage->events_emission_manager, params);
 
   return result;
@@ -72,8 +72,8 @@ sc_result sc_storage_shutdown(sc_bool save_state)
   sc_event_emission_manager_stop(storage->events_emission_manager);
   sc_event_emission_manager_shutdown(storage->events_emission_manager);
   storage->events_emission_manager = null_ptr;
-  sc_event_subscription_manager_shutdown(storage->events_registration_manager);
-  storage->events_registration_manager = null_ptr;
+  sc_event_subscription_manager_shutdown(storage->events_subscription_manager);
+  storage->events_subscription_manager = null_ptr;
 
   sc_storage_dump_manager_shutdown(storage->dump_manager);
 
@@ -137,9 +137,9 @@ sc_event_emission_manager * sc_storage_get_event_emission_manager()
   return storage ? storage->events_emission_manager : null_ptr;
 }
 
-sc_event_subscription_manager * sc_storage_get_event_registration_manager()
+sc_event_subscription_manager * sc_storage_get_event_subscription_manager()
 {
-  return storage ? storage->events_registration_manager : null_ptr;
+  return storage ? storage->events_subscription_manager : null_ptr;
 }
 
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr)

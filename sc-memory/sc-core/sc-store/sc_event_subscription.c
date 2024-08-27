@@ -156,7 +156,7 @@ sc_event_subscription * sc_event_subscription_new(
   sc_monitor_init(&event_subscription->monitor);
 
   // register created event_subscription
-  sc_event_subscription_manager * manager = sc_storage_get_event_registration_manager();
+  sc_event_subscription_manager * manager = sc_storage_get_event_subscription_manager();
   _sc_event_subscription_manager_add(manager, event_subscription);
 
   return event_subscription;
@@ -191,7 +191,7 @@ sc_event_subscription * sc_event_subscription_with_user_new(
   sc_monitor_init(&event_subscription->monitor);
 
   // register created event_subscription
-  sc_event_subscription_manager * manager = sc_storage_get_event_registration_manager();
+  sc_event_subscription_manager * manager = sc_storage_get_event_subscription_manager();
   _sc_event_subscription_manager_add(manager, event_subscription);
 
   return event_subscription;
@@ -202,11 +202,11 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
   if (event_subscription == null_ptr)
     return SC_RESULT_NO;
 
-  sc_event_subscription_manager * registration_manager = sc_storage_get_event_registration_manager();
+  sc_event_subscription_manager * subscription_manager = sc_storage_get_event_subscription_manager();
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
   sc_monitor_acquire_write(&event_subscription->monitor);
-  if (_sc_event_subscription_manager_remove(registration_manager, event_subscription) != SC_RESULT_OK)
+  if (_sc_event_subscription_manager_remove(subscription_manager, event_subscription) != SC_RESULT_OK)
   {
     sc_monitor_release_write(&event_subscription->monitor);
     return SC_RESULT_ERROR;
@@ -241,22 +241,22 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   sc_hash_table_list * element_events_list = null_ptr;
   sc_event_subscription * event_subscription = null_ptr;
 
-  sc_event_subscription_manager * registration_manager = sc_storage_get_event_registration_manager();
+  sc_event_subscription_manager * subscription_manager = sc_storage_get_event_subscription_manager();
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
   // do nothing, if there are no registered events
-  if (registration_manager == null_ptr || registration_manager->events_table == null_ptr)
+  if (subscription_manager == null_ptr || subscription_manager->events_table == null_ptr)
     goto result;
 
   // lookup for all registered to specified sc-element events
-  if (registration_manager != null_ptr)
+  if (subscription_manager != null_ptr)
   {
-    sc_monitor_acquire_write(&registration_manager->events_table_monitor);
+    sc_monitor_acquire_write(&subscription_manager->events_table_monitor);
     element_events_list =
-        (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(element));
+        (sc_hash_table_list *)sc_hash_table_get(subscription_manager->events_table, TABLE_KEY(element));
     if (element_events_list != null_ptr)
-      sc_hash_table_remove(registration_manager->events_table, TABLE_KEY(element));
-    sc_monitor_release_write(&registration_manager->events_table_monitor);
+      sc_hash_table_remove(subscription_manager->events_table, TABLE_KEY(element));
+    sc_monitor_release_write(&subscription_manager->events_table_monitor);
   }
 
   if (element_events_list != null_ptr)
@@ -322,19 +322,19 @@ sc_result sc_event_emit_impl(
   sc_hash_table_list * element_events_list = null_ptr;
   sc_event_subscription * event_subscription = null_ptr;
 
-  sc_event_subscription_manager * registration_manager = sc_storage_get_event_registration_manager();
+  sc_event_subscription_manager * subscription_manager = sc_storage_get_event_subscription_manager();
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
   // if table is empty, then do nothing
   sc_result result = SC_RESULT_NO;
-  if (registration_manager == null_ptr || registration_manager->events_table == null_ptr)
+  if (subscription_manager == null_ptr || subscription_manager->events_table == null_ptr)
     goto result;
 
   // lookup for all registered to specified sc-element events
-  sc_monitor_acquire_read(&registration_manager->events_table_monitor);
-  if (registration_manager != null_ptr)
+  sc_monitor_acquire_read(&subscription_manager->events_table_monitor);
+  if (subscription_manager != null_ptr)
     element_events_list =
-        (sc_hash_table_list *)sc_hash_table_get(registration_manager->events_table, TABLE_KEY(subscription_addr));
+        (sc_hash_table_list *)sc_hash_table_get(subscription_manager->events_table, TABLE_KEY(subscription_addr));
 
   while (element_events_list != null_ptr)
   {
@@ -358,7 +358,7 @@ sc_result sc_event_emit_impl(
 
     element_events_list = element_events_list->next;
   }
-  sc_monitor_release_read(&registration_manager->events_table_monitor);
+  sc_monitor_release_read(&subscription_manager->events_table_monitor);
 
 result:
   return result;

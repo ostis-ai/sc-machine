@@ -25,14 +25,14 @@ struct _sc_storage
   sc_monitor processes_monitor;
   sc_storage_dump_manager * dump_manager;
   sc_event_emission_manager * events_emission_manager;
-  sc_event_subscription_manager * events_registration_manager;
+  sc_event_subscription_manager * events_subscription_manager;
 };
 
 struct _sc_storage * sc_storage_get();
 
 sc_event_emission_manager * sc_storage_get_event_emission_manager();
 
-sc_event_subscription_manager * sc_storage_get_event_registration_manager();
+sc_event_subscription_manager * sc_storage_get_event_subscription_manager();
 
 sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_addr * addr);
 
