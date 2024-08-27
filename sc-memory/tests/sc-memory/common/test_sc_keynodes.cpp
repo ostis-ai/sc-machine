@@ -103,8 +103,6 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(ScKeynodes::binary_uint16.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_uint16) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::binary_uint16.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_uint16) == ScType::NodeConstClass);
-  EXPECT_TRUE(ScKeynodes::binary_uint64.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_uint64) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::binary_string.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_string) == ScType::NodeConstClass);

@@ -73,13 +73,14 @@ TEST_F(ScWaiterTest, EventWaiter)
       {
         EmitEvent(data);
       });
+  bool hasWaited = false;
   EXPECT_TRUE(eventWaiter->Wait(
       5000,
-      [&data]()
+      [&hasWaited]()
       {
-        data.m_isDone = true;
+        hasWaited = true;
       }));
-  EXPECT_TRUE(data.m_isDone);
+  EXPECT_TRUE(hasWaited);
 }
 
 TEST_F(ScWaiterTest, EventWaiterNotSuccess)
@@ -98,13 +99,14 @@ TEST_F(ScWaiterTest, EventWaiterWithEventTypeKeynode)
       {
         EmitEvent(data);
       });
+  bool hasWaited = false;
   EXPECT_TRUE(eventWaiter->Wait(
       5000,
-      [&data]()
+      [&hasWaited]()
       {
-        data.m_isDone = true;
+        hasWaited = true;
       }));
-  EXPECT_TRUE(data.m_isDone);
+  EXPECT_TRUE(hasWaited);
 }
 
 TEST_F(ScWaiterTest, ConditionWaiter)
@@ -236,10 +238,11 @@ TEST_F(ScWaiterTest, InvalidWaitersWithCondition)
 
 TEST_F(ScWaiterTest, InvalidEventsFotWaiters)
 {
-  ScAddr nodeAddr;
+  ScAddr nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr eventClassAddr;
   EXPECT_THROW(m_ctx->CreateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
+  nodeAddr.Reset();
   eventClassAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->CreateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
@@ -252,10 +255,11 @@ TEST_F(ScWaiterTest, InvalidEventsFotWaiters)
 
 TEST_F(ScWaiterTest, InvalidEventsFotWaitersWithConditions)
 {
-  ScAddr nodeAddr;
+  ScAddr nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr eventClassAddr;
   EXPECT_THROW(m_ctx->CreateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
+  nodeAddr.Reset();
   eventClassAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->CreateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 

@@ -707,6 +707,8 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndGetRem
     EXPECT_EQ(event.GetSubscriptionElement(), nodeAddr1);
     EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
     EXPECT_NO_THROW(m_ctx->GetElementType(nodeAddr1));
+
+    isDone = true;
   };
 
   CreateNode();
@@ -719,10 +721,10 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndGetRem
   while (!isDone && !timer.IsTimeOut())
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  EXPECT_FALSE(isDone);
+  EXPECT_TRUE(isDone);
 }
 
-TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndThrowException)
+TEST_F(ScEventTest, CreateEventSubscriptionWithStaticEventEraseElementAndInitiateEventAndThrowException)
 {
   ScAddr nodeAddr1;
   auto const & CreateNode = [this, &nodeAddr1]()
@@ -739,6 +741,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndThrowE
   bool isDone = false;
   auto const & OnEvent = [&](ScEventBeforeEraseElement const &)
   {
+    isDone = true;
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Test exception");
   };
 
@@ -752,10 +755,10 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndThrowE
   while (!isDone && !timer.IsTimeOut())
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  EXPECT_FALSE(isDone);
+  EXPECT_TRUE(isDone);
 }
 
-TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndGetRemovedElementTypeV2)
+TEST_F(ScEventTest, CreateEventSubscriptionWithDynamicEventEraseElementAndInitiateEventAndGetRemovedElementType)
 {
   ScAddr nodeAddr1;
   auto const & CreateNode = [this, &nodeAddr1]()
@@ -774,6 +777,8 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndGetRem
   {
     EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
     m_ctx->GetElementType(nodeAddr1);
+
+    isDone = true;
   };
 
   CreateNode();
@@ -787,10 +792,10 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndGetRem
   while (!isDone && !timer.IsTimeOut())
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  EXPECT_FALSE(isDone);
+  EXPECT_TRUE(isDone);
 }
 
-TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndThrowExceptionV2)
+TEST_F(ScEventTest, CreateEventSubscriptionWithDynamicEventEraseElementAndInitiateEventAndThrowException)
 {
   ScAddr nodeAddr1;
   auto const & CreateNode = [this, &nodeAddr1]()
@@ -807,6 +812,7 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndThrowE
   bool isDone = false;
   auto const & OnEvent = [&](ScElementaryEvent const &)
   {
+    isDone = true;
     SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Test exception");
   };
 
@@ -821,10 +827,10 @@ TEST_F(ScEventTest, CreateEventSubscriptionEraseElementAndInitiateEventAndThrowE
   while (!isDone && !timer.IsTimeOut())
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  EXPECT_FALSE(isDone);
+  EXPECT_TRUE(isDone);
 }
 
-TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEvent)
+TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEventSetNewContent)
 {
   ScAddr linkAddr;
   auto const & CreateNode = [this, &linkAddr]()
@@ -837,6 +843,41 @@ TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEvent)
   auto const & EmitEvent = [this, &linkAddr]()
   {
     m_ctx->SetLinkContent(linkAddr, "new content");
+  };
+
+  bool isDone = false;
+  auto const & OnEvent = [&](ScEventBeforeChangeLinkContent const & event)
+  {
+    EXPECT_EQ(event.GetSubscriptionElement(), linkAddr);
+    isDone = true;
+  };
+
+  CreateNode();
+
+  auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeChangeLinkContent>(linkAddr, OnEvent);
+  ScTimer timer(kTestTimeout);
+
+  EmitEvent();
+
+  while (!isDone && !timer.IsTimeOut())
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  EXPECT_TRUE(isDone);
+}
+
+TEST_F(ScEventTest, CreateEventSubscriptionChangeLinkContentAndInitiateEventSetTheSameContent)
+{
+  ScAddr linkAddr;
+  auto const & CreateNode = [this, &linkAddr]()
+  {
+    linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+    m_ctx->SetLinkContent(linkAddr, "old content");
+    EXPECT_TRUE(linkAddr.IsValid());
+  };
+
+  auto const & EmitEvent = [this, &linkAddr]()
+  {
+    m_ctx->SetLinkContent(linkAddr, "old content");
   };
 
   bool isDone = false;
@@ -901,10 +942,11 @@ TEST_F(ScEventTest, InvalidSubscriptions)
 
 TEST_F(ScEventTest, InvalidEvents)
 {
-  ScAddr nodeAddr;
+  ScAddr nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr eventClassAddr;
   EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
+  nodeAddr.Reset();
   eventClassAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
@@ -915,7 +957,7 @@ TEST_F(ScEventTest, InvalidEvents)
   EXPECT_THROW(m_ctx->CreateElementaryEventSubscription(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScEventTest, SetRemoveDelegateFunc)
+TEST_F(ScEventTest, SetRemoveDelegateFuncForSubscriptionWithStaticEventType)
 {
   ScAddr linkAddr;
   auto const & CreateNode = [this, &linkAddr]()
@@ -940,7 +982,7 @@ TEST_F(ScEventTest, SetRemoveDelegateFunc)
   CreateNode();
   auto eventSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeChangeLinkContent>(linkAddr, {});
 
-  ScTimer timer = ScTimer(kTestTimeout);
+  ScTimer timer(kTestTimeout);
   EmitEvent();
 
   while (!isDone && !timer.IsTimeOut())
@@ -970,7 +1012,7 @@ TEST_F(ScEventTest, SetRemoveDelegateFunc)
   EXPECT_FALSE(isDone);
 }
 
-TEST_F(ScEventTest, SetRemoveDelegateFuncV2)
+TEST_F(ScEventTest, SetRemoveDelegateFuncForSubscriptionWithDynamicEventType)
 {
   ScAddr linkAddr;
   auto const & CreateNode = [this, &linkAddr]()
@@ -997,7 +1039,7 @@ TEST_F(ScEventTest, SetRemoveDelegateFuncV2)
   auto eventSubscription =
       m_ctx->CreateElementaryEventSubscription(ScKeynodes::sc_event_before_change_link_content, linkAddr, {});
 
-  ScTimer timer = ScTimer(kTestTimeout);
+  ScTimer timer(kTestTimeout);
   EmitEvent();
 
   while (!isDone && !timer.IsTimeOut())

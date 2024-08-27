@@ -751,7 +751,6 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentHasFullSpecificationButCon
     <- sc_node_class;
     <= nrel_inclusion: sc_action;;
   )";
-  ;
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
@@ -827,7 +826,6 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentUnsuccessfullInitiationCon
   m_ctx->LoadAndSubscribeAgent<ATestSpecificatedAgent>(ATestSpecificatedAgent::test_specificated_agent_implementation);
 
   ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specificated_agent_action");
-  ScAddr const & argAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   m_ctx->CreateAction(actionClassAddr).Initiate();
   EXPECT_FALSE(ATestSpecificatedAgent::msWaiter.Wait(0.1));
@@ -1030,7 +1028,7 @@ TEST_F(ScSpecificatedAgentTest, ATestSpecificatedAgentGeneratingIncomingArcHasFu
   ScAddr const & testOtherSetAddr = m_ctx->HelperFindBySystemIdtf("test_other_set");
   ScAddr const & testRelation = m_ctx->HelperFindBySystemIdtf("test_relation");
   ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testOtherSetAddr, testSetAddr);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
 
   EXPECT_TRUE(ATestSpecificatedAgent::msWaiter.Wait());
 
