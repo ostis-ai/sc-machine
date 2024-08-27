@@ -236,7 +236,7 @@ public:
   _SC_EXTERN virtual ScTemplate GetResultConditionTemplate() const;
 
 protected:
-  mutable TScContext m_memoryCtx;
+  mutable TScContext m_context;
   ScAddr m_agentImplementationAddr;
 
   static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_events;

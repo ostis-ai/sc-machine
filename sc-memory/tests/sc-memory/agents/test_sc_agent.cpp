@@ -260,12 +260,11 @@ ScAddr ATestCheckInitiationCondition::GetActionClass() const
 
 bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionEvent const & event)
 {
-  return m_memoryCtx.HelperCheckEdge(
+  return m_context.HelperCheckEdge(
              ATestGenerateOutgoingArc::generate_outgoing_arc_action,
              event.GetArcTargetElement(),
              ScType::EdgeAccessConstPosPerm)
-         && m_memoryCtx.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)
-                ->Next();
+         && m_context.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
 }
 
 ScResult ATestCheckInitiationCondition::DoProgram(ScActionEvent const &, ScAction & action)
@@ -310,9 +309,8 @@ ScResult ATestCheckResultCondition::DoProgram(ScActionEvent const &, ScAction & 
 
 bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const & event, ScAction & action)
 {
-  return m_memoryCtx.HelperCheckEdge(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm)
-         && m_memoryCtx.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)
-                ->Next();
+  return m_context.HelperCheckEdge(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm)
+         && m_context.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
 }
 
 /// --------------------------------------

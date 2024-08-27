@@ -138,7 +138,7 @@ The base class `ScAgent` contains API to implement agents that react to any sc-e
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
-  return m_memoryCtx.HelperFindBySystemIdtf("action_calculate_set_power");
+  return m_context.HelperFindBySystemIdtf("action_calculate_set_power");
 }
 // You must specify valid action class. In other case, the agent can’t be 
 // subscribed to sc-event.
@@ -156,7 +156,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // we specified that an action should have a set as its the first and 
   // only one argument. But the one who calls this agent may not specify 
   // argument for the action. So we need to check that the action has argument. 
-  if (!m_memoryCtx.IsElement(setAddr))
+  if (!m_context.IsElement(setAddr))
   {
     SC_AGENT_LOG_ERROR("Action does not have argument."); 
     // output: "ScAgentCalculateSetPower: Action does not have argument."
@@ -172,7 +172,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // But, in any problem, the presence of NON-factors must be considered, 
   // but this is omitted here.
   size_t setPower = 0;
-  ScIterator3Ptr const it3 = m_memoryCtx.Iterator3( 
+  ScIterator3Ptr const it3 = m_context.Iterator3( 
     setAddr,
     ScType::EdgeAccessConstPosPerm,
     ScType::NodeConst
@@ -180,13 +180,13 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   while (it3->Next())
     ++setPower;
 
-  ScAddr const & setPowerAddr = m_memoryCtx.CreateLink(ScType::LinkConst);
-  m_memoryCtx.SetLinkContent(setPowerAddr, setPower);
+  ScAddr const & setPowerAddr = m_context.CreateLink(ScType::LinkConst);
+  m_context.SetLinkContent(setPowerAddr, setPower);
   ScAddr const & arcCommonAddr 
-    = m_memoryCtx.CreateEdge(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
+    = m_context.CreateEdge(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
-    = m_memoryCtx.HelperFindBySystemIdtf("nrel_set_power");
-  ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
+    = m_context.HelperFindBySystemIdtf("nrel_set_power");
+  ScAddr const & arcAccessAddr = m_context.CreateEdge(
     ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
 
   action.FormResult(
@@ -280,7 +280,7 @@ public:
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
-- return m_memoryCtx.HelperFindBySystemIdtf("action_calculate_set_power");
+- return m_context.HelperFindBySystemIdtf("action_calculate_set_power");
 + return ScSetKeynodes::action_calculate_set_power;
 }
 
@@ -289,10 +289,10 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   ...
 
 - ScAddr const & nrelSetPowerAddr 
--   = m_memoryCtx.HelperFindBySystemIdtf("nrel_set_power");
-- ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
+-   = m_context.HelperFindBySystemIdtf("nrel_set_power");
+- ScAddr const & arcAccessAddr = m_context.CreateEdge(
 -   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
-+ ScAddr const & arcAccessAddr = m_memoryCtx.CreateEdge(
++ ScAddr const & arcAccessAddr = m_context.CreateEdge(
 +   ScType::EdgeAccessConstPosPerm, ScSetKeynodes::nrel_set_power, arcCommonAddr);
 - action.FormResult(
 -   setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);

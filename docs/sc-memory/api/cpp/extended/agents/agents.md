@@ -362,7 +362,7 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 {
   // You can use object of ScAction as object of ScAddr.
-  ScIterator3Ptr const it3 = m_memoryCtx.Iterator3(action, ..., ...);
+  ScIterator3Ptr const it3 = m_context.Iterator3(action, ..., ...);
 
   // Some logic...
 
@@ -538,7 +538,7 @@ bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
  // to get information about initiated sc-event: GetUser, GetArc, 
  // GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.
  // All events are not copyable and movable.
- return m_memoryCtx.HelperCheckEdge(
+ return m_context.HelperCheckEdge(
    ScType::EdgeAccessConstPosPerm, 
    MyKeynodes::my_action, 
    event.GetArcTargetElement());
@@ -610,7 +610,7 @@ For speed, you can implement the agent result condition in the form of checks on
 ```cpp
 bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 {
-  return m_memoryCtx.HelperCheckEdge(
+  return m_context.HelperCheckEdge(
     ScType::EdgeAccessConstPosPerm, action.GetResult(), MyKeynodes::my_class);
 }
 ```
