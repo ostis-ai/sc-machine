@@ -13,7 +13,7 @@ ScModule * ScModule::Create(ScModule * module) noexcept
   return module;
 }
 
-void ScModule::Register(ScMemoryContext * context) noexcept
+void ScModule::Register(ScMemoryContext * context) noexcept(false)
 {
   SC_LOG_INFO("Initialize " << this->GetName());
   Initialize(context);
@@ -28,7 +28,7 @@ void ScModule::Register(ScMemoryContext * context) noexcept
   }
 }
 
-void ScModule::Unregister(ScMemoryContext * context) noexcept
+void ScModule::Unregister(ScMemoryContext * context) noexcept(false)
 {
   for (auto const & agentInfo : m_agents)
   {
@@ -36,9 +36,11 @@ void ScModule::Unregister(ScMemoryContext * context) noexcept
     ScAddr const & agentImplementationAddr = builder ? builder->GetAgentImplementation() : ScAddr::Empty;
     unsubscribeCallback(context, agentImplementationAddr, addrs);
     if (builder != nullptr)
+    {
       builder->Shutdown(context);
-
-    delete builder;
+      delete builder;
+      builder = nullptr;
+    }
   }
   m_agents.clear();
 

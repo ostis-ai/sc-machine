@@ -87,12 +87,12 @@ public:
    * @brief Subscribes all module agents.
    * @returns Result of initializing.
    */
-  _SC_EXTERN void Register(ScMemoryContext * context) noexcept;
+  _SC_EXTERN void Register(ScMemoryContext * context) noexcept(false);
 
   /*! Unsubscribes all module agents.
    * @returns Result of shutdown.
    */
-  _SC_EXTERN void Unregister(ScMemoryContext * context) noexcept;
+  _SC_EXTERN void Unregister(ScMemoryContext * context) noexcept(false);
 
   /*!
    * @brief Initializes the module with the given memory context.
