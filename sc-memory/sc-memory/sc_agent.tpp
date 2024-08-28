@@ -37,7 +37,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetAbstractAgent() const noexcept(fals
       ScKeynodes::nrel_inclusion);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
+        utils::ExceptionItemNotFound,
         "Agent implementation `" << this->GetName()
                                  << "` is not included to any abstract sc-agent. Check that agent implementation has "
                                     "specified relation `nrel_inclusion`.");
@@ -59,7 +59,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const noexcept(false)
       ScKeynodes::nrel_primary_initiation_condition);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
+        utils::ExceptionItemNotFound,
         "Abstract sc-agent for agent implementation `"
             << this->GetName()
             << "` does not have primary initiation condition and result. Check that abstract sc-agent has specified "
@@ -79,7 +79,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const no
       ScKeynodes::nrel_primary_initiation_condition);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
+        utils::ExceptionItemNotFound,
         "Abstract sc-agent for agent implementation `"
             << this->GetName()
             << "` does not have primary initiation condition and result. Check that abstract sc-agent has specified "
@@ -99,7 +99,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetActionClass() const noexcept(false)
       ScKeynodes::nrel_sc_agent_action_class);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
+        utils::ExceptionItemNotFound,
         "Abstract sc-agent `" << this->GetName()
                               << "` does not have action class. Check that abstract sc-agent has specified "
                                  "relation `nrel_sc_agent_action_class`.");
@@ -127,7 +127,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetInitiationCondition() const noexcep
       ScKeynodes::nrel_initiation_condition_and_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
+        utils::ExceptionItemNotFound,
         "Abstract sc-agent for agent implementation `"
             << this->GetName()
             << "` does not have initiation condition and result. Check that abstract sc-agent has specified "
@@ -180,7 +180,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetResultCondition() const noexcept(fa
       ScKeynodes::nrel_initiation_condition_and_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
+        utils::ExceptionItemNotFound,
         "Abstract sc-agent for agent implementation `"
             << this->GetName()
             << "` does not have initiation condition and result. Check that abstract sc-agent has specified "

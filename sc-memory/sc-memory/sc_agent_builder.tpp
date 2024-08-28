@@ -143,7 +143,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
     std::string & agentImplementationName,
     std::string const & agentClassName) noexcept(false)
 {
-  if (m_agentImplementationAddr.IsValid())
+  if (context->IsElement(m_agentImplementationAddr))
   {
     agentImplementationName = context->HelperGetSystemIdtf(m_agentImplementationAddr);
 
@@ -170,7 +170,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
   agentImplementationName = agentClassName;
 
   m_agentImplementationAddr = context->HelperFindBySystemIdtf(agentImplementationName);
-  if (m_agentImplementationAddr.IsValid())
+  if (context->IsElement(m_agentImplementationAddr))
   {
     ScIterator3Ptr const it3 = context->Iterator3(
         ScKeynodes::platform_dependent_abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_agentImplementationAddr);
@@ -207,7 +207,7 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
     std::string const & agentImplementationName,
     std::string const & agentClassName) noexcept(false)
 {
-  if (m_abstractAgentAddr.IsValid())
+  if (context->IsElement(m_abstractAgentAddr))
   {
     ScIterator5Ptr const it5 = context->Iterator5(
         m_abstractAgentAddr,
@@ -282,7 +282,7 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
     std::string const & abstractAgentName,
     std::string const & agentClassName) noexcept(false)
 {
-  if (m_eventClassAddr.IsValid() && m_eventSubscriptionElementAddr.IsValid())
+  if (context->IsElement(m_eventClassAddr) && context->IsElement(m_eventSubscriptionElementAddr))
   {
     ScIterator5Ptr const it5 = context->Iterator5(
         m_abstractAgentAddr,
@@ -359,7 +359,7 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
     std::string const & abstractAgentName,
     std::string const & agentClassName) noexcept(false)
 {
-  if (m_actionClassAddr.IsValid())
+  if (context->IsElement(m_actionClassAddr))
   {
     ScIterator5Ptr const it5 = context->Iterator5(
         m_abstractAgentAddr,
@@ -420,7 +420,7 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
     std::string const & abstractAgentName,
     std::string const & agentClassName) noexcept(false)
 {
-  if (m_initiationConditionAddr.IsValid() && m_resultConditionAddr.IsValid())
+  if (context->IsElement(m_initiationConditionAddr) && context->IsElement(m_resultConditionAddr))
   {
     ScIterator5Ptr const it5 = context->Iterator5(
         m_abstractAgentAddr,

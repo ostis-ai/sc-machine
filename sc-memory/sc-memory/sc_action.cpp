@@ -142,14 +142,14 @@ bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
   if (IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
-                                       << " because it had already been initiated.");
+        "Not able to initiate and wait action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                                << " because it had already been initiated.");
 
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
-                                       << " because it had already been finished.");
+        "Not able to initiate and wait action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                                << " because it had already been finished.");
 
   auto wait = std::shared_ptr<ScWaiterActionFinished>(new ScWaiterActionFinished(*m_context, *this));
   wait->SetOnWaitStartDelegate(
@@ -261,7 +261,7 @@ std::string ScAction::GetActionClassPrettyString() const
 {
   ScAddr const & actionClassAddr = GetClass();
   std::string actionClassName;
-  if (actionClassAddr.IsValid())
+  if (m_context->IsElement(actionClassAddr))
   {
     actionClassName = m_context->HelperGetSystemIdtf(actionClassAddr);
     if (actionClassName.empty())

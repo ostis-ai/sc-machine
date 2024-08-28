@@ -60,7 +60,7 @@ void ScKeynode::Initialize(ScMemoryContext * context)
   context->HelperResolveSystemIdtf(std::string(m_sysIdtf), m_type, quintuple);
   this->m_realAddr = quintuple.addr1.GetRealAddr();
 
-  if (contextStructureAddr.IsValid())
+  if (context->IsElement(contextStructureAddr))
   {
     AppendToContextStructure(quintuple.addr1);
     AppendToContextStructure(quintuple.addr2);
@@ -114,7 +114,7 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
     context->HelperBuildTemplate(*this, *this);
   }
 
-  if (contextStructureAddr.IsValid())
+  if (context->IsElement(contextStructureAddr))
   {
     AppendToContextStructure(quintuple.addr1);
     AppendToContextStructure(quintuple.addr2);
@@ -139,7 +139,7 @@ void ScKeynodes::Initialize(ScMemoryContext * context)
     else
       arcAddr = context->CreateEdge(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
 
-    if (contextStructureAddr.IsValid())
+    if (context->IsElement(contextStructureAddr))
       context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, arcAddr);
   };
 

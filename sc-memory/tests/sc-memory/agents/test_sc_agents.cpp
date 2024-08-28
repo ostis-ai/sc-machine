@@ -220,10 +220,10 @@ TEST_F(ScAgentTest, ATestInvalidAbstractAgent)
 {
   ATestDoProgram agent;
   EXPECT_NO_THROW(agent.GetAbstractAgent());
-  EXPECT_THROW(agent.GetEventClass(), utils::ExceptionInvalidState);
-  EXPECT_THROW(agent.GetEventSubscriptionElement(), utils::ExceptionInvalidState);
-  EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionInvalidState);
-  EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetEventClass(), utils::ExceptionItemNotFound);
+  EXPECT_THROW(agent.GetEventSubscriptionElement(), utils::ExceptionItemNotFound);
+  EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionItemNotFound);
+  EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionItemNotFound);
   EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
   EXPECT_NO_THROW(agent.GetResultConditionTemplate());
 }
@@ -467,12 +467,12 @@ TEST_F(ScAgentTest, RegisterActionInitiatedAgentWithinModule)
 TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
 {
   ATestCheckResult agent;
-  EXPECT_THROW(agent.GetAbstractAgent(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetAbstractAgent(), utils::ExceptionItemNotFound);
   EXPECT_NO_THROW(agent.GetActionClass());
   EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_after_generate_outgoing_arc);
   EXPECT_EQ(agent.GetEventSubscriptionElement(), ScKeynodes::action_initiated);
-  EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionInvalidState);
-  EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionInvalidState);
+  EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionItemNotFound);
+  EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionItemNotFound);
   EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
   EXPECT_NO_THROW(agent.GetResultConditionTemplate());
   EXPECT_EQ(agent.GetName(), "ATestCheckResult");

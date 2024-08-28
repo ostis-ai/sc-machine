@@ -59,13 +59,13 @@ protected:
         }
       }
 
-      if (!itemAddr.IsValid())
+      if (!m_context.IsElement(itemAddr))
       {
         if (item.IsAddr())
           itemAddr = item.m_addrValue;
         else if (item.IsType())
         {
-          if (sourceAddr.IsValid() && targetAddr.IsValid())
+          if (m_context.IsElement(sourceAddr) && m_context.IsElement(targetAddr))
             itemAddr = m_context.CreateEdge(item.m_typeValue, sourceAddr, targetAddr);
           else if (item.m_typeValue.IsLink())
             itemAddr = m_context.CreateLink(item.m_typeValue);

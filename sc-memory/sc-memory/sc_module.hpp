@@ -38,7 +38,7 @@ class ScAgentBuilder;
  * // File my_module.cpp:
  * #include "my-module/my_module.hpp"
  *
- * #include "my-module/agents/my_agent.hpp"
+ * #include "my-module/agent/my_agent.hpp"
  *
  * SC_MODULE_REGISTER(MyModule)
  *   ->Agent<MyAgent>();

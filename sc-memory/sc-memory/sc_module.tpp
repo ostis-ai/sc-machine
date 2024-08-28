@@ -42,7 +42,7 @@ ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback() noexcep
 {
   return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
-    if (agentImplementationAddr.IsValid())
+    if (context->IsElement(agentImplementationAddr))
       TScAgent::template Subscribe<TScAgent>(context, agentImplementationAddr);
     else
     {
@@ -57,7 +57,7 @@ ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback() noe
 {
   return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
   {
-    if (agentImplementationAddr.IsValid())
+    if (context->IsElement(agentImplementationAddr))
       TScAgent::template Unsubscribe<TScAgent>(context, agentImplementationAddr);
     else
     {

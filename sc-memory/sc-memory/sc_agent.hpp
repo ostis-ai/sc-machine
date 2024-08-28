@@ -567,7 +567,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  * };
  *
  * // File my_agent.cpp:
- * #include "my-module/agents/my_agent.hpp"
+ * #include "my-module/agent/my_agent.hpp"
  * #include "my-module/keynodes/my_keynodes.hpp"
  *
  * ScAddr MyAgent::GetActionClass() const
@@ -578,7 +578,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  * ScResult MyAgent::DoProgram(ScAction & action)
  * {
  *   auto const & [argAddr1, argAddr2] = action.GetArguments<2>();
- *   if (!argAddr1.IsValid() || !argAddr2.IsValid())
+ *   if (!m_context.IsElement(argAddr1) || !m_context.IsElement(argAddr2))
  *     return action.FinishWithError();
  *
  *   // Write agent logic here.
