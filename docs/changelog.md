@@ -37,7 +37,7 @@ encapsulated this logic;
 - Implement `ScTemplateKeynode` class to represent static object of sc-template
 - Implement `ScKeynode` class to represent static object of key sc-element used in agents
 - New implementation of `ScAgent` class for any types of agents
-- Implement `ScActionAgent` class to implement agents interpreting initiated actions
+- Implement `ScActionInitiatedAgent` class to implement agents interpreting initiated actions
 - Implement sc-event classes hierarchy
 - Implement new C++ Agents API based on template programming
 - Add unordered_map type with `ScAddr` as key

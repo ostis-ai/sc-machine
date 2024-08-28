@@ -232,7 +232,7 @@ To subscribe agent class to sc-event use `SubscribeAgent`.
 // For agent classes inherited from `ScAgent` class write so.
 context.SubscribeAgent<MyAgent>(mySubscriptionElementAddr);
 
-// For agent classes inherited from `ScActionAgent` class write so.
+// For agent classes inherited from `ScActionInitiatedAgent` class write so.
 context.SubscribeAgent<MyActionAgent>();
 ...
 ```
@@ -246,7 +246,7 @@ To unsubscribe agent class to sc-event use `UnsubscribeAgent`.
 // For agent classes inherited from `ScAgent` class write so.
 context.UnsubscribeAgent<MyAgent>(mySubscriptionElementAddr);
 
-// For agent classes inherited from `ScActionAgent` class write so.
+// For agent classes inherited from `ScActionInitiatedAgent` class write so.
 context.UnsubscribeAgent<MyActionAgent>();
 ...
 ```

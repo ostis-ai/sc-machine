@@ -37,15 +37,15 @@ SC_MODULE_REGISTER(MyModule)
 // used to call methods for subscribing agents to sc-events.
   ->Agent<MyAgent>(); 
   // It subscribes agent and returns object of `MyModule`.
-  // `MyAgent` is inherited from `ScActionAgent`.
+  // `MyAgent` is inherited from `ScActionInitiatedAgent`.
   // This method pointers to module that agent class `MyAgent`
   // should be subscribed to sc-event of adding outgoing sc-arc from 
   // sc-element `action_initiated`. It is default parameter
   // in these method if you want to subscribe agent class inherited 
-  // from `ScActionAgent`.
+  // from `ScActionInitiatedAgent`.
 ```
 
-You must call `Agent` method for agent classes inherited from `ScActionAgent` without arguments, but you should call it providing sc-event subscription sc-element for agent classes inherited from `ScAgent`.
+You must call `Agent` method for agent classes inherited from `ScActionInitiatedAgent` without arguments, but you should call it providing sc-event subscription sc-element for agent classes inherited from `ScAgent`.
 
 A module subscribed agents when the sc-memory initializes and it unsubscribes them when the sc-memory shutdowns.
 Also, you can use module to subscribe a set of agents.

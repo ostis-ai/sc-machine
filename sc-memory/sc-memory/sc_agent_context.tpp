@@ -102,7 +102,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
 }
 
 template <class TScAgent, class... TScAddr>
-typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent(
+typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent(
     TScAddr const &... subscriptionAddrs)
 {
   static_assert(
@@ -112,14 +112,14 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
 }
 
 template <class TScAgent>
-typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent()
+typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent()
 {
   TScAgent::template Subscribe<TScAgent>(this, ScAddr::Empty, ScKeynodes::action_initiated);
 }
 
 template <class TScAgent, class... TScAddr>
-typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type ScAgentContext::UnsubscribeAgent(
-    TScAddr const &... subscriptionAddrs)
+typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::
+    UnsubscribeAgent(TScAddr const &... subscriptionAddrs)
 {
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
@@ -128,7 +128,8 @@ typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type 
 }
 
 template <class TScAgent>
-typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type ScAgentContext::UnsubscribeAgent()
+typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::
+    UnsubscribeAgent()
 {
   TScAgent::template Unsubscribe<TScAgent>(this, ScAddr::Empty, ScKeynodes::action_initiated);
 }

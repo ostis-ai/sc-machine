@@ -311,8 +311,8 @@ class _SC_EXTERN ScAgent : public ScAgentBase<TScEvent, TScContext>
       };
 
     public:
-      static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
-                                        ? OverrideGetInitiationConditionTemplateFrom<ScActionAgent>::value
+      static constexpr bool value = std::is_base_of<ScActionInitiatedAgent, TScAgent>::value
+                                        ? OverrideGetInitiationConditionTemplateFrom<ScActionInitiatedAgent>::value
                                         : OverrideGetInitiationConditionTemplateFrom<ScAgent>::value;
     };
 
@@ -367,8 +367,8 @@ class _SC_EXTERN ScAgent : public ScAgentBase<TScEvent, TScContext>
       };
 
     public:
-      static constexpr bool value = std::is_base_of<ScActionAgent, TScAgent>::value
-                                        ? OverrideGetResultConditionTemplateFrom<ScActionAgent>::value
+      static constexpr bool value = std::is_base_of<ScActionInitiatedAgent, TScAgent>::value
+                                        ? OverrideGetResultConditionTemplateFrom<ScActionInitiatedAgent>::value
                                         : OverrideGetResultConditionTemplateFrom<ScAgent>::value;
     };
   };
@@ -407,7 +407,7 @@ class _SC_EXTERN ScAgent : public ScAgentBase<TScEvent, TScContext>
   };
 
   friend class ScModule;
-  friend class ScActionAgent;
+  friend class ScActionInitiatedAgent;
   friend class ScAgentContext;
 
 private:
@@ -544,7 +544,7 @@ private:
 using ScBaseAgent = ScAgent<ScElementaryEvent>;
 
 /*!
- * @class ScActionAgent
+ * @class ScActionInitiatedAgent
  * @brief A specialized agent class for handling sc-actions.
  *
  * This class extends ScAgent and provides methods for subscribing and unsubscribing
@@ -558,7 +558,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  *
  * #include <sc-memory/sc_agent.hpp>
  *
- * class MyAgent : public ScActionAgent
+ * class MyAgent : public ScActionInitiatedAgent
  * {
  * public:
  *   ScAddr GetActionClass() const override;
@@ -588,7 +588,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  * }
  * @endcode
  */
-class _SC_EXTERN ScActionAgent : public ScAgent<ScActionEvent>
+class _SC_EXTERN ScActionInitiatedAgent : public ScAgent<ScActionEvent>
 {
   friend class ScAgentContext;
 
@@ -601,7 +601,7 @@ public:
   _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;
 
 protected:
-  ScActionAgent() noexcept;
+  ScActionInitiatedAgent() noexcept;
 };
 
 #include "sc_agent.tpp"

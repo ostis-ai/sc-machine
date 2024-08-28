@@ -42,7 +42,7 @@ ScAddr const & actionClassAddr = action.GetClass();
 
 ### **GetArgument**
 
-Actions can have arguments. Action arguments are some objects on which this action should be performed. If action has arguments in knowledge base, then you will get them. There are a couple of getters for this.
+Actions can have arguments. Action arguments are some objects using which this action should be performed. If action has arguments in knowledge base, then you will get them. There are a couple of getters for this.
 
 ```cpp
 ...
@@ -205,7 +205,7 @@ action.UpdateResult(elementAddr1, elementAddr2);
 All actions have state. There are three states of actions provided by this API:
 
 * action isn't initiated;
-* action is initiated, but isn't finished, that is, action is performed;
+* action is initiated, but isn't finished (that is, action is being performed);
 * action is finished.
 
 You can initiate, wait or finish actions.

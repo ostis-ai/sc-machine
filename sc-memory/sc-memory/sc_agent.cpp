@@ -9,9 +9,9 @@
 #include "sc_event.hpp"
 #include "sc_keynodes.hpp"
 
-ScActionAgent::ScActionAgent() noexcept = default;
+ScActionInitiatedAgent::ScActionInitiatedAgent() noexcept = default;
 
-ScTemplate ScActionAgent::GetInitiationConditionTemplate() const
+ScTemplate ScActionInitiatedAgent::GetInitiationConditionTemplate() const
 {
   ScTemplate templ;
   templ.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar);

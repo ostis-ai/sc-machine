@@ -100,7 +100,7 @@ Static agent specification can be useful if you are implementing an agent in C++
 
 Here, the API for implementing an agent with a static specification will be discussed. This is the easiest implementation variant to understand for you. To learn about dynamic agent specification, see [**C++ Modules API**](modules.md).
 
-There are two main classes that you can use to implement an agent: `ScAgent` and `ScActionAgent`.
+There are two main classes that you can use to implement an agent: `ScAgent` and `ScActionInitiatedAgent`.
 
 ### **ScAgent**
 
@@ -204,7 +204,7 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 !!! note
     If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**] to learn how to implement agents with specification in the knowledge base.
 
-### **ScActionAgent**
+### **ScActionInitiatedAgent**
 
 In multi-agent systems most of the agents are implemented to execute actions initiated by other agents. While `ScAgent` is useful to create broad event handling logic, using it to handle action initiations requires some boilerplate. We've implemented another agent class to make it easier for our users to implement action-executing agents. These agents are named action agents. Implementing these agents requires passing action class node rather than checking initiation condition manually.
 
@@ -216,8 +216,8 @@ This class can be only used for agents that should be triggered by generating an
 
 #include <sc-memory/sc_agent.hpp>
 
-// Inherit your agent class from `ScActionAgent` class.
-class MyAgent : public ScActionAgent
+// Inherit your agent class from `ScActionInitiatedAgent` class.
+class MyAgent : public ScActionInitiatedAgent
 {
 public:
   // Here you should specify class of actions which the given agent performs. 
@@ -234,7 +234,7 @@ public:
 ```
 
 !!! note
-    `ScActionAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
+    `ScActionInitiatedAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
 
 !!! note
     `ScActionEvent` is alias for `ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
@@ -245,7 +245,7 @@ public:
 
 There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
 
-This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionAgent`. You should inherit your agent class from these classes, not from the `ScAgentBase` class (see documentation above).
+This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionInitiatedAgent`. You should inherit your agent class from these classes, not from the `ScAgentBase` class (see documentation above).
 
 You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgentBase` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
 

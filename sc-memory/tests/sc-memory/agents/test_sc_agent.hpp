@@ -167,7 +167,7 @@ public:
       override;
 };
 
-class ATestDoProgramOne : public ScActionAgent
+class ATestDoProgramOne : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -177,7 +177,7 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
-class ATestDoProgramTwo : public ScActionAgent
+class ATestDoProgramTwo : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -199,7 +199,7 @@ public:
   ScResult DoProgram(ScAction & action) override;
 };
 
-class ATestCheckResult : public ScActionAgent
+class ATestCheckResult : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -209,7 +209,7 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
-class ATestGetInitiationConditionTemplate : public ScActionAgent
+class ATestGetInitiationConditionTemplate : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -221,7 +221,7 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
-class ATestCheckInitiationCondition : public ScActionAgent
+class ATestCheckInitiationCondition : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -233,7 +233,7 @@ public:
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };
 
-class ATestGetResultConditionTemplate : public ScActionAgent
+class ATestGetResultConditionTemplate : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -245,7 +245,7 @@ public:
   ScTemplate GetResultConditionTemplate() const override;
 };
 
-class ATestCheckResultCondition : public ScActionAgent
+class ATestCheckResultCondition : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;
@@ -257,7 +257,7 @@ public:
   bool CheckResultCondition(ScActionEvent const & event, ScAction & action) override;
 };
 
-class ATestActionDeactivated : public ScActionAgent
+class ATestActionDeactivated : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;

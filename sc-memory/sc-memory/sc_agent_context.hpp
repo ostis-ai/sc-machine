@@ -17,7 +17,7 @@ class ScEventSubscription;
 template <class TScEvent>
 class ScElementaryEventSubscription;
 class ScWaiter;
-class ScActionAgent;
+class ScActionInitiatedAgent;
 
 /*!
  * @class ScAgentContext
@@ -218,7 +218,7 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
    */
   template <class TScAgent, class... TScAddr>
-  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent(
+  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type SubscribeAgent(
       TScAddr const &... subscriptionAddrs) noexcept(false);
 
   /*!
@@ -230,8 +230,8 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
    */
   template <class TScAgent>
-  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type SubscribeAgent() noexcept(
-      false);
+  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type
+  SubscribeAgent() noexcept(false);
 
   /*!
    * @brief Unsubscribes agent class from specified sc-events.
@@ -242,7 +242,7 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
    */
   template <class TScAgent, class... TScAddr>
-  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent(
+  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type UnsubscribeAgent(
       TScAddr const &... subscriptionAddrs) noexcept(false);
 
   /*!
@@ -254,8 +254,8 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
    */
   template <class TScAgent>
-  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>::type UnsubscribeAgent() noexcept(
-      false);
+  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type
+  UnsubscribeAgent() noexcept(false);
 
   /*!
    * @brief Loads specification of agent implementation and subscribes agent class.

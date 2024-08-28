@@ -101,7 +101,7 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 #include <sc-memory/sc_agent.hpp>
 
-class ScAgentCalculateSetPower : public ScActionAgent
+class ScAgentCalculateSetPower : public ScActionInitiatedAgent
 {
 public:
   ScAddr GetActionClass() const override;
@@ -115,9 +115,9 @@ An agent's class to be implemented must comply with the following requirements:
 * It must inherit one of the common classes for implementing agents: 
   
   - `template <class TScEvent> class ScAgent`,
-  - or `class ScActionAgent`.
+  - or `class ScActionInitiatedAgent`.
 
-The base class `ScAgent` contains API to implement agents that react to any sc-events. The base class `ScActionAgent` inherits base class `ScAgent` and provides API to implement agents that react to sc-events of initiating sc-action.
+The base class `ScAgent` contains API to implement agents that react to any sc-events. The base class `ScActionInitiatedAgent` inherits base class `ScAgent` and provides API to implement agents that react to sc-events of initiating sc-action.
 
 * It must override at least methods `ScAddr GetAction() const` and `ScResult DoProgram(ScActionEvent const & event, ScAction & action)`.
 
@@ -351,7 +351,7 @@ SC_MODULE_REGISTER(ScSetModule)
   // This method pointers to module that agent class `ScAgentCalculateSetPower`
   // should be subscribed to sc-event of adding outgoing sc-arc from sc-element
   // `action_initiated`. It is default parameter in these method if you want to
-  // subscribe agent class inherited from `ScActionAgent`.
+  // subscribe agent class inherited from `ScActionInitiatedAgent`.
 
 // This way of subscribing agents makes it easier to write code. 
 // You don't have to think about unsubscribing agents after 

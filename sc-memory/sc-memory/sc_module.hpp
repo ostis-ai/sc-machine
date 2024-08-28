@@ -13,7 +13,7 @@
 #include "sc_memory.hpp"
 
 class ScKeynodes;
-class ScActionAgent;
+class ScActionInitiatedAgent;
 class ScAgentBuilderAbstract;
 template <class TScAgent>
 class ScAgentBuilder;
@@ -62,7 +62,7 @@ public:
   template <
       class TScAgent,
       class... TScAddr,
-      typename = std::enable_if<!std::is_base_of<ScActionAgent, TScAgent>::value>>
+      typename = std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>>
   _SC_EXTERN ScModule * Agent(TScAddr const &... subscriptionAddrs) noexcept;
 
   /*!
@@ -71,7 +71,7 @@ public:
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    * @returns A pointer to module instance.
    */
-  template <class TScAgent, typename = std::enable_if<std::is_base_of<ScActionAgent, TScAgent>::value>>
+  template <class TScAgent, typename = std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>>
   _SC_EXTERN ScModule * Agent() noexcept;
 
   /*!
