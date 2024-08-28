@@ -36,14 +36,14 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr con
   {
     if (!context->IsElement(m_abstractAgentAddr))
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
+          utils::ExceptionInvalidParams,
           "Specified abstract agent for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
 
     ScIterator3Ptr it3 =
         context->Iterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
     if (!it3->Next())
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
+          utils::ExceptionInvalidParams,
           "Specified sc-element for agent class `"
               << TScAgent::template GetName<TScAgent>()
               << "` is not abstract agent, because it does not belong to class `abstract_sc_agent`.");
@@ -63,12 +63,12 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetPrimaryInitiationConditi
   {
     if (!context->IsElement(m_eventClassAddr))
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
+          utils::ExceptionInvalidParams,
           "Specified sc-event class for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
 
     if (!context->IsElement(m_eventSubscriptionElementAddr))
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
+          utils::ExceptionInvalidParams,
           "Specified sc-event subscription sc-element for agent class `" << TScAgent::template GetName<TScAgent>()
                                                                          << "` is not valid.");
   };
@@ -85,7 +85,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const
   {
     if (!context->IsElement(m_actionClassAddr))
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
+          utils::ExceptionInvalidParams,
           "Specified action class for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
   };
 
@@ -103,13 +103,13 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetInitiationConditionAndRe
   {
     if (!context->IsElement(m_initiationConditionAddr))
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
+          utils::ExceptionInvalidParams,
           "Specified initiation condition template for agent class `" << TScAgent::template GetName<TScAgent>()
                                                                       << "` is not valid.");
 
     if (!context->IsElement(m_resultConditionAddr))
       SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
+          utils::ExceptionInvalidParams,
           "Specified result condition template for agent class `" << TScAgent::template GetName<TScAgent>()
                                                                   << "` is not valid.");
   };

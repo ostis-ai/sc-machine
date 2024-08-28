@@ -259,7 +259,7 @@ You should distinguish between an abstract sc-agent as some class of functional 
 
 #### **GetActionClass**
 
-It gets action class that the agent of specified class performs. If the abstract sc-agent for this agent class does not have an action class, then method will throw `utils::ExceptionInvalidState`.
+It gets action class that the agent of specified class performs. If the abstract sc-agent for this agent class does not have an action class, then method will throw `utils::ExceptionItemNotFound`.
 
 ```cpp
 // File my_agent.cpp
@@ -437,7 +437,7 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 
 #### **GetAbstractAgent**
 
-It searches abstract agent for agent of specified class. If the agent implementation for this agent class is not included in any abstract sc-agent, then `GetAbstractAgent` will throw `utils::ExceptionInvalidState`.
+It searches abstract agent for agent of specified class. If the agent implementation for this agent class is not included in any abstract sc-agent, then `GetAbstractAgent` will throw `utils::ExceptionItemNotFound`.
 
 You can redefine this method in your agent class.
 
@@ -455,7 +455,7 @@ ScAddr MyAgent::GetAbstractAgent() const
 
 #### **GetEventClass**
 
-It searches the sc-event class to which the agent class is subscribed. It will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have primary initiation condition.
+It searches the sc-event class to which the agent class is subscribed. It will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have primary initiation condition.
 
 You can redefine this method in your agent class.
 
@@ -470,7 +470,7 @@ ScAddr MyAgent::GetEventClass() const
 
 #### **GetEventSubscriptionElement**
 
-This method searches sc-event subscription sc-element for which sc-event initiates. It will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have primary initiation condition.
+This method searches sc-event subscription sc-element for which sc-event initiates. It will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have primary initiation condition.
 
 You can redefine this method in your agent class.
 
@@ -488,7 +488,7 @@ ScAddr MyAgent::GetEventSubscriptionElement() const
 
 #### **GetInitiationCondition**
 
-It gets initiation condition for agent of this class. Initiation condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base before the agent performs an action. This method will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have initiation condition.
+It gets initiation condition for agent of this class. Initiation condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base before the agent performs an action. This method will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have initiation condition.
 
 You can redefine this method in your agent class.
 
@@ -566,7 +566,7 @@ bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
 
 #### **GetResultCondition**
 
-It gets result condition for agent of this class. Result condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base after the agent has performed an action. This method will throw `utils::ExceptionInvalidState` if the abstract sc-agent for this agent class does not have result condition.
+It gets result condition for agent of this class. Result condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base after the agent has performed an action. This method will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have result condition.
 
 You can redefine this method in your agent class.
 
@@ -659,7 +659,7 @@ bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 
 ### **Is it possible to subscribe an agent for more than one sc-event?**
 
-Future versions of the sc-machine will implement complex sc-events. Complex sc-events will be a set of elementary events. It will be possible to subscribe agents to such sc-events. 
+Future versions of the sc-machine will implement complex sc-events. Complex sc-events will be a set of elementary events. It will be possible to subscribe agents to such sc-events.
 
 If it is a question of whether it is possible to subscribe the one and the same agent to two different elementary sc-events, it is better not to do it. Each agent should be subscribed to only one type of sc-event. If you need to subscribe an agent to multiple types of sc-events, you're probably doing something wrong.
 

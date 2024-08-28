@@ -62,7 +62,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const noexcept(false)
         utils::ExceptionItemNotFound,
         "Abstract sc-agent for agent implementation `"
             << this->GetName()
-            << "` does not have primary initiation condition and result. Check that abstract sc-agent has specified "
+            << "` does not have primary initiation condition. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
   return m_context.GetEdgeSource(it5->Get(2));
@@ -82,7 +82,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const no
         utils::ExceptionItemNotFound,
         "Abstract sc-agent for agent implementation `"
             << this->GetName()
-            << "` does not have primary initiation condition and result. Check that abstract sc-agent has specified "
+            << "` does not have primary initiation condition. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
   return m_context.GetEdgeTarget(it5->Get(2));
@@ -149,13 +149,13 @@ ScTemplate ScAgentBase<TScEvent, TScContext>::GetInitiationConditionTemplate() c
 template <class TScEvent, class TScContext>
 ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(TScEvent const & event, ScAction & action)
 {
-  return ScResult(SC_RESULT_OK);
+  return SC_RESULT_OK;
 }
 
 template <class TScEvent, class TScContext>
 ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(ScAction & action)
 {
-  return ScResult(SC_RESULT_OK);
+  return SC_RESULT_OK;
 }
 
 // LCOV_EXCL_STOP
@@ -384,10 +384,11 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
 
     TScAgent agent;
     std::string const & agentName = agent.GetName();
-    SC_LOG_INFO("Agent `" << agentName << "` started");
+    //SC_LOG_INFO("Agent `" << agentName << "` reacted to primary initiation condition.");
 
     agent.SetInitiator(event.GetUser());
     agent.SetImplementation(agentImplementationAddr);
+
     if (agent.IsActionClassDeactivated())
     {
       SC_LOG_WARNING(
@@ -397,17 +398,20 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
     }
 
     ScAction action = ResolveAction(event, agent);
+    //SC_LOG_INFO("Agent `" << agentName << "` started checking initiation condition.");
     if (!agent.template ValidateInitiationCondition<TScAgent>(event))
     {
       SC_LOG_WARNING(
           "Agent `" << agentName << "` was finished because its initiation condition was checked unsuccessfully.");
       return;
     }
+    //SC_LOG_INFO("Agent `" << agentName << "` finished checking initiation condition.");
 
     ScResult result;
 
     try
     {
+      SC_LOG_INFO("Agent `" << agentName << "` started performing action.");
       if constexpr (HasOverride<TScAgent>::DoProgramWithEventArgument::value)
         result = agent.DoProgram(event, action);
       else
@@ -423,17 +427,19 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
     }
 
     if (result == SC_RESULT_OK)
-      SC_LOG_INFO("Agent `" << agentName << "` finished successfully");
+      SC_LOG_INFO("Agent `" << agentName << "` finished performing action successfully.");
     else if (result == SC_RESULT_NO)
-      SC_LOG_INFO("Agent `" << agentName << "` finished unsuccessfully");
+      SC_LOG_INFO("Agent `" << agentName << "` finished performing action unsuccessfully.");
     else
-      SC_LOG_INFO("Agent `" << agentName << "` finished with error");
+      SC_LOG_INFO("Agent `" << agentName << "` finished performing action with error.");
 
+    //SC_LOG_INFO("Agent `" << agentName << "` started checking result condition.");
     if (!agent.template ValidateResultCondition<TScAgent>(event, action))
     {
       SC_LOG_WARNING("Result condition of agent `" << agentName << "` checked unsuccessfully.");
       return;
     }
+    //SC_LOG_INFO("Agent `" << agentName << "` finished checking result condition.");
   };
 }
 
@@ -605,14 +611,14 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
     {
       ScAddr const & otherVarAddr = eventTripleIterator->Get(otherElementPosition);
       if (this->m_context.GetElementType(otherVarAddr).IsVar() && otherVarAddr != otherElementAddr)
-        params.Add(otherElementPosition, otherElementAddr);
+        params.Add(otherVarAddr, otherElementAddr);
     }
     else
     {
       SC_LOG_WARNING(
           "Initiation condition (or result condition) template of agent class `"
           << this->GetName()
-          << "` checks initiated sc-event incorrectly. May be types of sc-elements "
+          << "` checks initiated sc-event incorrectly. Maybe types of sc-elements "
              "in initiation condition or result template are not correct.");
       return false;
     }

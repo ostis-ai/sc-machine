@@ -79,7 +79,7 @@ public:
    * @brief Sets abstract agent address for specified agent class `TScAgent`.
    * @param abstractAgentAddr A sc-address of abstract agent.
    * @return The current instance of ScAgentBuilder.
-   * @throws utils::ExceptionInvalidState if the specified abstract agent is not valid.
+   * @throws utils::ExceptionInvalidParams if the specified abstract agent is not valid.
    */
   _SC_EXTERN ScAgentBuilder * SetAbstractAgent(ScAddr const & abstractAgentAddr) noexcept;
 
@@ -87,7 +87,7 @@ public:
    * @brief Sets primary initiation condition for specified agent class `TScAgent`.
    * @param primaryInitiationCondition A tuple containing sc-event class and sc-event subscription sc-element.
    * @return The current instance of ScAgentBuilder.
-   * @throws utils::ExceptionInvalidState if the specified event class or subscription element is not valid.
+   * @throws utils::ExceptionInvalidParams if the specified event class or subscription element is not valid.
    */
   _SC_EXTERN ScAgentBuilder * SetPrimaryInitiationCondition(
       std::tuple<ScAddr, ScAddr> const & primaryInitiationCondition) noexcept;
@@ -96,7 +96,7 @@ public:
    * @brief Sets action class for specified agent class `TScAgent`.
    * @param actionClassAddr A sc-address of the action class.
    * @return The current instance of ScAgentBuilder.
-   * @throws utils::ExceptionInvalidState if the specified action class is not valid.
+   * @throws utils::ExceptionInvalidParams if the specified action class is not valid.
    */
   _SC_EXTERN ScAgentBuilder * SetActionClass(ScAddr const & actionClassAddr) noexcept;
 
@@ -104,7 +104,7 @@ public:
    * @brief Sets initiation condition and result for specified agent class `TScAgent`
    * @param initiationConditionAndResult A tuple containing initiation condition and result condition
    * @return The current instance of ScAgentBuilder.
-   * @throws utils::ExceptionInvalidState if the specified initiation or result condition is not valid.
+   * @throws utils::ExceptionInvalidParams if the specified initiation or result condition is not valid.
    */
   _SC_EXTERN ScAgentBuilder * SetInitiationConditionAndResult(
       std::tuple<ScAddr, ScAddr> const & initiationConditionAndResult) noexcept;

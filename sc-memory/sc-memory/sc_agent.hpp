@@ -67,7 +67,7 @@ public:
    * and returns `abstract_agent`.
    *
    * @return A sc-address of abstract agent.
-   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is not included in any
+   * @throws utils::ExceptionItemNotFound if the agent implementation for this agent class is not included in any
    * abstract sc-agent.
    */
   _SC_EXTERN virtual ScAddr GetAbstractAgent() const noexcept(false);
@@ -92,7 +92,7 @@ public:
    * and returns `event_class`.
    *
    * @return A sc-address of the event class.
-   * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have a primary
+   * @throws utils::ExceptionItemNotFound if the abstract sc-agent for this agent class does not have a primary
    * initiation condition.
    */
   _SC_EXTERN virtual ScAddr GetEventClass() const noexcept(false);
@@ -117,7 +117,7 @@ public:
    * and returns `event_subscription_element`.
    *
    * @return A sc-address of sc-event subscription sc-element.
-   * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have a primary
+   * @throws utils::ExceptionItemNotFound if the abstract sc-agent for this agent class does not have a primary
    * initiation condition.
    */
   _SC_EXTERN virtual ScAddr GetEventSubscriptionElement() const noexcept(false);
@@ -139,7 +139,7 @@ public:
    * and returns `action_class`.
    *
    * @return A sc-address of the action class.
-   * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have an action class.
+   * @throws utils::ExceptionItemNotFound if the abstract sc-agent for this agent class does not have an action class.
    */
   _SC_EXTERN virtual ScAddr GetActionClass() const noexcept(false);
 
@@ -170,7 +170,7 @@ public:
    * and returns `initiation_condition`.
    *
    * @return A sc-address of initiation condition.
-   * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have an initiation
+   * @throws utils::ExceptionItemNotFound if the abstract sc-agent for this agent class does not have an initiation
    * condition.
    */
   _SC_EXTERN virtual ScAddr GetInitiationCondition() const noexcept(false);
@@ -224,7 +224,7 @@ public:
    * and returns `result_condition`.
    *
    * @return A sc-address of result condition.
-   * @throws utils::ExceptionInvalidState if the abstract sc-agent for this agent class does not have an result
+   * @throws utils::ExceptionItemNotFound if the abstract sc-agent for this agent class does not have an result
    * condition.
    */
   _SC_EXTERN virtual ScAddr GetResultCondition() const noexcept(false);

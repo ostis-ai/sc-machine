@@ -199,7 +199,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasInvalidAbstractAgent)
 
   TestModule module;
   module.AgentBuilder<ATestSpecifiedAgent>()->SetAbstractAgent(abstractAgentAddr)->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedPrimaryInitiationCondition)
@@ -245,7 +245,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidAbstractAgent)
 {
   TestModule module;
   module.AgentBuilder<ATestSpecifiedAgent>()->SetAbstractAgent(ScAddr{2421421})->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventClass)
@@ -258,7 +258,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventClass)
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScAddr{2421421}, ScKeynodes::action_initiated})
       ->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventSubscriptionElement)
@@ -271,7 +271,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventSubscriptionEl
       ->SetAbstractAgent(abstractAgentAddr)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScAddr{2421421}})
       ->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidActionClass)
@@ -285,7 +285,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidActionClass)
       ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
       ->SetActionClass(ScAddr{2421421})
       ->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidInitiationCondition)
@@ -305,7 +305,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidInitiationCondition
       ->SetActionClass(actionClassAddr)
       ->SetInitiationConditionAndResult({ScAddr{2421421}, resultConditionAddr})
       ->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidConditionResult)
@@ -325,5 +325,5 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidConditionResult)
       ->SetActionClass(actionClassAddr)
       ->SetInitiationConditionAndResult({initiationConditionAddr, ScAddr{2421421}})
       ->FinishBuild();
-  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
 }

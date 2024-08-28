@@ -8,8 +8,9 @@
 
 #include "sc_object.hpp"
 
-class ScKeynode;
-
+/*!
+ * @brief This class represents a result of performing sc-action.
+ */
 class ScResult : public ScObject
 {
   template <class TScEvent, class TScContext>
