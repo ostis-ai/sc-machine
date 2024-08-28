@@ -20,37 +20,37 @@ std::string ScObject::GetName() const
   return m_name;
 }
 
-std::string ScObject::Demangle(std::string const & mangled_name)
+std::string ScObject::Demangle(std::string const & mangledName)
 {
   std::string demangled;
   size_t i = 0;
 
-  if (mangled_name[0] == 'N')
+  if (mangledName[0] == 'N')
     ++i;
 
-  while (i < mangled_name.size() && std::isdigit(mangled_name[i]))
+  while (i < mangledName.size() && std::isdigit(mangledName[i]))
   {
     // Read the length of the next part
     size_t len = 0;
-    while (i < mangled_name.size() && std::isdigit(mangled_name[i]))
+    while (i < mangledName.size() && std::isdigit(mangledName[i]))
     {
-      len = len * 10 + (mangled_name[i] - '0');
+      len = len * 10 + (mangledName[i] - '0');
       ++i;
     }
 
     // Extract the part of the name
-    if (i + len <= mangled_name.size())
+    if (i + len <= mangledName.size())
     {
       if (!demangled.empty())
         demangled += "::";
 
-      demangled += mangled_name.substr(i, len);
+      demangled += mangledName.substr(i, len);
       i += len;
     }
     else
     {
       // If the length is invalid, return the original mangled name
-      return mangled_name;
+      return mangledName;
     }
   }
 

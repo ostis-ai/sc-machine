@@ -35,5 +35,5 @@ public:
 private:
   mutable std::string m_name;
 
-  static _SC_EXTERN std::string Demangle(std::string const & mangled_name);
+  static _SC_EXTERN std::string Demangle(std::string const & mangledName);
 };
