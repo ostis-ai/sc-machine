@@ -113,9 +113,11 @@ This class can be used for all types of platform-dependent agents. The example u
 #include <sc-memory/sc_agent.hpp>
 
 // Inherit your agent class from `ScAgent` class and specify template argument 
-// as sc-event class. Here `ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>` 
-// is type of event to which the given agent reacts.
-class MyAgent : public ScAgent<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+// as sc-event class. Here `ScEventAfterGenerateIncomingArc<
+// ScType::EdgeAccessConstPosPerm>` is type of event to which the given 
+// agent reacts.
+class MyAgent : public ScAgent<
+  ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   // Here you should specify class of actions which the given agent performs. 
@@ -125,7 +127,8 @@ public:
   // Here you should implement program of the given agent. 
   // This overriding is required.
   ScResult DoProgram(
-    ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event, 
+    ScEventAfterGenerateIncomingArc<
+      ScType::EdgeAccessConstPosPerm> const & event, 
     ScAction & action) override;
 
   // Other user-defined methods.
@@ -140,7 +143,8 @@ You can't override `DoProgram` without sc-event argument. There can be override 
 
 #include <sc-memory/sc_agent.hpp>
 
-class MyAgent : public ScAgent<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+class MyAgent : public ScAgent<
+  ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
 {
 public:
   ScAddr GetActionClass() const override;

@@ -129,7 +129,8 @@ waiter.Wait();
 
 ```cpp
 auto const CheckCallback 
-  = [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event)
+  = [](ScEventAfterGenerateIncomingArc<
+    ScType::EdgeAccessConstPosPerm> const & event)
 {
   // Check condition here.
   // Return true or false depending on condition.
