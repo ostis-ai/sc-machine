@@ -27,7 +27,7 @@ public:
    * @brief Gets class of the action.
    * @return ScAddr representing class of the action.
    */
-  _SC_EXTERN ScAddr GetClass() noexcept;
+  _SC_EXTERN ScAddr GetClass() const noexcept;
 
   /*!
    * @brief Gets argument of the action by index.
@@ -200,6 +200,27 @@ protected:
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
    */
   void Finish(ScAddr const & actionStateAddr) noexcept(false);
+
+private:
+  /*!
+   * @brief Retrieves a user-friendly string representation of the action's name.
+   *
+   * If the action's system identifier cannot be retrieved or is empty, it falls back to using the hash of the action.
+   *
+   * @return A string containing the action's name wrapped in backticks, or an empty string if no name is available.
+   */
+  std::string GetActionPrettyString() const;
+
+  /*!
+   * @brief Retrieves a formatted string that describes class of the action.
+   *
+   * If the action class address is valid, it attempts to retrieve the class's system identifier. If the identifier is
+   * empty, it falls back to using the hash of the class address.
+   *
+   * @return A string containing "with class" followed by the class name wrapped in backticks, or an empty string if no
+   * class name is available.
+   */
+  std::string GetActionClassPrettyString() const;
 };
 
 #include "sc_action.tpp"

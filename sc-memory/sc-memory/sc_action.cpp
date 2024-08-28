@@ -18,7 +18,7 @@ ScAction::ScAction(ScAgentContext * context, ScAddr const & actionAddr) noexcept
 {
 }
 
-ScAddr ScAction::GetClass() noexcept
+ScAddr ScAction::GetClass() const noexcept
 {
   ScAddr resultClassAddr;
 
@@ -85,21 +85,21 @@ ScStructure ScAction::GetResult() noexcept(false)
   if (!IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get result of action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                             << "` because it had not been initiated yet.");
+        "Not able to get result of action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                            << "` because it had not been initiated yet.");
 
   if (!IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get result of action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                             << "` because it had not been finished yet.");
+        "Not able to get result of action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                            << " because it had not been finished yet.");
 
   ScIterator5Ptr const & it5 = m_context->Iterator5(
       *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Action `" << this->Hash() << "` with class `" << GetClass().Hash() << "` does not have result structure.");
+        "Action " << GetActionPrettyString() << GetActionClassPrettyString() << " does not have result structure.");
 
   m_resultAddr = it5->Get(2);
   return m_context->ConvertToStructure(m_resultAddr);
@@ -110,8 +110,8 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to set result for `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                       << "` because it had already been finished.");
+        "Not able to set result for " << GetActionPrettyString() << GetActionClassPrettyString()
+                                      << " because it had already been finished.");
 
   if (m_resultAddr == structureAddr)
     return *this;
@@ -119,8 +119,8 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
   if (!m_context->IsElement(structureAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to set structure for action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                                 << "`because settable structure is not valid.");
+        "Not able to set structure for action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                                << " because settable structure is not valid.");
 
   if (m_context->IsElement(m_resultAddr))
     m_context->EraseElement(m_resultAddr);
@@ -139,14 +139,14 @@ bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
   if (IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                        << "` because it had already been initiated.");
+        "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                       << " because it had already been initiated.");
 
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                        << "` because it had already been finished.");
+        "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                       << " because it had already been finished.");
 
   auto wait = std::shared_ptr<ScWaiterActionFinished>(new ScWaiterActionFinished(*m_context, *this));
   wait->SetOnWaitStartDelegate(
@@ -162,14 +162,14 @@ ScAction & ScAction::Initiate() noexcept(false)
   if (IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                        << "` because it had already been initiated.");
+        "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                       << " because it had already been initiated.");
 
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to initiate action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                        << "` because it had already been finished.");
+        "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                       << " because it had already been finished.");
 
   m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
 
@@ -181,14 +181,14 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
   if (!IsInitiated())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to finish action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                      << "` because it had not been initiated yet.");
+        "Not able to finish action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                     << " because it had not been initiated yet.");
 
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to finish action `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                      << "` because it had already been initiated.");
+        "Not able to finish action " << GetActionPrettyString() << GetActionClassPrettyString()
+                                     << " because it had already been finished.");
 
   if (!m_context->IsElement(m_resultAddr))
     m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);
@@ -236,4 +236,41 @@ ScResult ScAction::FinishWithError() noexcept(false)
 {
   Finish(ScKeynodes::action_finished_with_error);
   return SC_RESULT_ERROR;
+}
+
+std::string ScAction::GetActionPrettyString() const
+{
+  std::string actionName = m_context->HelperGetSystemIdtf(*this);
+  if (actionName.empty())
+    actionName = std::to_string(this->Hash());
+
+  if (!actionName.empty())
+  {
+    std::stringstream stream;
+    stream << "`" << actionName << "`";
+    return stream.str();
+  }
+
+  return actionName;
+}
+
+std::string ScAction::GetActionClassPrettyString() const
+{
+  ScAddr const & actionClassAddr = GetClass();
+  std::string actionClassName;
+  if (actionClassAddr.IsValid())
+  {
+    actionClassName = m_context->HelperGetSystemIdtf(actionClassAddr);
+    if (actionClassName.empty())
+      actionClassName = std::to_string(actionClassAddr.Hash());
+  }
+
+  if (!actionClassName.empty())
+  {
+    std::stringstream stream;
+    stream << " with class `" << actionClassName << "`";
+    return stream.str();
+  }
+
+  return actionClassName;
 }
