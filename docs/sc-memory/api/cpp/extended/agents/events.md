@@ -532,6 +532,7 @@ This class represents sc-event of changing content for listen sc-link. You can u
 <!-- no toc -->
 - [Is there sc-event of creating sc-node?](#is-there-sc-event-of-creating-sc-node)
 - [Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?](#is-fact-of-what-happened-recorded-in-the-knowledge-base-are-sc-events-recorded-in-the-knowledge-base)
+- [Why do we need connector events?](#why-do-we-need-connector-events)
 
 ### **Is there sc-event of creating sc-node?**
 
@@ -542,3 +543,9 @@ Also, even if events were defined differently, it doesn't negate the fact that o
 ### **Is fact of what happened recorded in the knowledge base? Are sc-events recorded in the knowledge base?**
 
 Right now, sc-events are not recorded in the knowledge base. It will be implemented in the future versions of the sc-machine.
+
+### **Why do we need connector events?**
+
+Event of generating (erasing) sc-connector is needed to subscribe to both generating (erasing) sc-arc and sc-edge.
+
+For example, man B is a brother for woman A, and man B is a brother for man C. Here, the relation `to be a brother` between woman A and man B is oriented, i.e. they are connected by a sc-arc, not by a sc-edge, and the relation `to be a brother` between man C and man B is undirected, i.e. these men are connected by a sc-edge. In order for an agent to react to appearance of both a sc-arc and a sc-edge from man B to woman A and man C correspondingly, it is necessary to subscribe that agent to appearance of a sc-connector, i.e sc-arc or sc-edge from man B.
