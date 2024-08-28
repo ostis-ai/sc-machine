@@ -13,11 +13,11 @@ typedef struct _sc_event_subscription_manager sc_event_subscription_manager;
 
 /*! Event callback function type.
  * It takes 5 parameters:
- * - pointer to sc-event subscription,
- * - sc-address of user that initiated sc-event,
- * - sc-address of generated/generated sc-connector,
- * - sc-type of generated/erasable sc-connector,
- * - sc-address of another end of generated/generated sc-connector,
+ * @param event_subscription A pointer to sc-event subscription,
+ * @param user_addr A sc-address of user that initiated sc-event,
+ * @param connector_addr A sc-address of generated/generated sc-connector,
+ * @param connector_type A sc-type of generated/erasable sc-connector,
+ * @param other_addr A sc-address of another end of generated/generated sc-connector,
  * So it can be empty.
  */
 typedef sc_result (*sc_event_callback_with_user)(

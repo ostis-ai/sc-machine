@@ -694,9 +694,14 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
     element_addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT((sc_pointer_to_sc_addr_hash)p_addr);
     element_addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT((sc_pointer_to_sc_addr_hash)p_addr);
 
+    sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, element_addr);
+    sc_monitor_acquire_read(monitor);
     result = sc_storage_get_element_by_addr(element_addr, &el);
     if (result != SC_RESULT_OK)
+    {
+      sc_monitor_release_read(monitor);
       continue;
+    }
 
     sc_type const type = el->flags.type;
     sc_addr const begin_addr = el->arc.begin;
@@ -791,12 +796,12 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
     if (erase_incoming_connector_result == SC_RESULT_OK || erase_outgoing_connector_result == SC_RESULT_OK
         || erase_incoming_arc_result == SC_RESULT_OK || erase_outgoing_arc_result == SC_RESULT_OK
         || erase_element_result == SC_RESULT_OK)
+    {
+      sc_monitor_release_read(monitor);
       continue;
+    }
 
     sc_queue_push(&addrs_with_not_emitted_erase_events, p_addr);
-
-    sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, element_addr);
-    sc_monitor_acquire_read(monitor);
 
     sc_addr connector_addr = el->first_out_arc;
     while (SC_ADDR_IS_NOT_EMPTY(connector_addr))

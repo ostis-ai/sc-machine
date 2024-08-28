@@ -248,15 +248,15 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   if (subscription_manager == null_ptr || subscription_manager->events_table == null_ptr)
     goto result;
 
+  // TODO(NikitaZotov): Implement monitor for `subscription_manager` to synchronize its freeing.
   // lookup for all registered to specified sc-element events
+  sc_monitor_acquire_write(&subscription_manager->events_table_monitor);
   if (subscription_manager != null_ptr)
   {
-    sc_monitor_acquire_write(&subscription_manager->events_table_monitor);
     element_events_list =
         (sc_hash_table_list *)sc_hash_table_get(subscription_manager->events_table, TABLE_KEY(element));
     if (element_events_list != null_ptr)
       sc_hash_table_remove(subscription_manager->events_table, TABLE_KEY(element));
-    sc_monitor_release_write(&subscription_manager->events_table_monitor);
   }
 
   if (element_events_list != null_ptr)
@@ -278,6 +278,7 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
     }
     sc_hash_table_list_destroy(element_events_list);
   }
+  sc_monitor_release_write(&subscription_manager->events_table_monitor);
 
 result:
   return SC_RESULT_OK;
@@ -330,6 +331,7 @@ sc_result sc_event_emit_impl(
   if (subscription_manager == null_ptr || subscription_manager->events_table == null_ptr)
     goto result;
 
+  // TODO(NikitaZotov): Implement monitor for `subscription_manager` to synchronize its freeing.
   // lookup for all registered to specified sc-element events
   sc_monitor_acquire_read(&subscription_manager->events_table_monitor);
   if (subscription_manager != null_ptr)
