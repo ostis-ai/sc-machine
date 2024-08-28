@@ -113,8 +113,10 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
 TEST_F(ScKeynodesTest, GetRrelIndex)
 {
   EXPECT_EQ(ScKeynodes::GetRrelIndexNum(), 20u);
+  EXPECT_THROW(ScKeynodes::GetRrelIndex(0), utils::ExceptionInvalidParams);
   EXPECT_TRUE(ScKeynodes::GetRrelIndex(1).IsValid());
-  EXPECT_THROW(ScKeynodes::GetRrelIndex(ScKeynodes::GetRrelIndexNum()), utils::ExceptionInvalidParams);
+  EXPECT_TRUE(ScKeynodes::GetRrelIndex(ScKeynodes::GetRrelIndexNum()).IsValid());
+  EXPECT_THROW(ScKeynodes::GetRrelIndex(ScKeynodes::GetRrelIndexNum() + 1), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScKeynodesTest, KeynodeToString)

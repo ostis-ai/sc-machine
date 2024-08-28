@@ -207,7 +207,7 @@ void ScKeynodes::Shutdown(ScMemoryContext * context)
 
 ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)
 {
-  if (idx == 0 || idx >= kKeynodeRrelListNum)
+  if (idx == 0 || idx > kKeynodeRrelListNum)
   {
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
