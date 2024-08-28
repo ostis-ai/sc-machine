@@ -505,11 +505,18 @@ You can specify the initiation condition template in code rather than in the kno
 ScTemplate MyAgent::GetInitiationConditionTemplate() const
 {
   ScTemplate initiationCondition;
-  // You must specify in template of initiation condition 
-  // a triple in place of which you can substitute initiated 
-  // event, otherwise your agent will be called even when 
-  // initiation condition is fulfilled for the action of 
-  // another agent.
+  // For sc-event of generating (erasing) sc-connector 
+  // (sc-arc or sc-edge), you must specify in template of 
+  // initiation condition a triple in place of which 
+  // agent have to substitute sc-elements involved in 
+  // initiated event. These elements will be the 
+  // sc-connector (sc-arc or sc-edge) and its incident 
+  // sc-elements. For sc-event of changing sc-link content 
+  // (or erasing sc-element), you should use sc-link 
+  // (sc-element) in template of initiation condition 
+  // explicitly. Otherwise your agent will be called even 
+  // when initiation condition is fulfilled for the action 
+  // of another agent.
   initiationCondition.Triple(
     ScKeynodes::action_initiated,
     ScType::EdgeAccessVarPosPerm,
@@ -576,10 +583,17 @@ You can specify the result condition template in code rather than in the knowled
 ScTemplate MyAgent::GetResultConditionTemplate() const
 {
   ScTemplate resultCondition;
-  // You must specify in template of result condition 
-  // a triple in place of which you can substitute initiated 
-  // event, otherwise your agent will be finished even when 
-  // result condition is fulfilled for the action of 
+  // For sc-event of generating (erasing) sc-connector 
+  // (sc-arc or sc-edge), you must specify in template of 
+  // result condition a triple in place of which 
+  // agent have to substitute sc-elements involved in 
+  // initiated event. These elements will be the 
+  // sc-connector (sc-arc or sc-edge) and its incident 
+  // sc-elements. For sc-event of changing sc-link content 
+  // (or erasing sc-element), you should use sc-link 
+  // (sc-element) in template of result condition 
+  // explicitly. Otherwise your agent will be finished even 
+  // when result condition is fulfilled for the action of 
   // another agent.
   resultCondition.Triple(
     ScKeynodes::action_initiated,
@@ -595,9 +609,14 @@ ScTemplate MyAgent::GetResultConditionTemplate() const
   resultCondition.Quintuple(
     "_action",
     ScType::EdgeDCommonVar,
-    ScType::NodeVarStruct,
+    ScType::NodeVarStruct >> "_result",
     ScType::EdgeAccessVarPosPerm,
     ScKeynodes::nrel_result
+  );
+  resultCondition.Triple(
+    "_result",
+    ScType::EdgeAccessVarPosPerm,
+    MyKeynodes::my_class
   );
   return resultCondition;
 }

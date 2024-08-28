@@ -22,7 +22,7 @@ Within the OSTIS Technology, events are considered only situations in which rela
 
 ## **ScEvent**
 
-The sc-machine provides functionality for subscribing to the following syntactic elementary types of sc-events:
+The sc-machine provides functionality for subscribing to the following elementary types of sc-events:
 
 * `ScElementaryEvent` is base class for all sc-events, it can be used to handle all sc-events for specified sc-element;
 * `ScEventAfterGenerateConnector`, emits each time, when sc-connector from or to specified sc-element is generated;

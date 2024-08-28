@@ -148,7 +148,7 @@ ScStructure const & actionResult = action.GetResult();
 ```
 
 !!! warning
-    You can call this method for finished action only. It prevents a situation where an agent that performs an action is still forming a result for that action, and you haven't waited for it and already want to get result for that action.
+    If you call this method for not finished action, then this method will throw `utils::ExceptionInvalidState`. It prevents a situation where an agent that performs an action is still forming a result for that action, and you haven't waited for it and already want to get result for that action.
 
 #### **SetResult**
 
@@ -279,6 +279,9 @@ ScResult const & result = action.FinishSuccessfully();
 ...
 ```
 
+!!! warning
+    If you finish action successfully that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
+
 #### **IsFinishedUnsuccessfully**
 
 The set of actions finished unsuccessfully includes actions that were not successfully finished from the point of view of subject who performed them for some reason. There are two main reasons why this situation may occur:
@@ -292,9 +295,6 @@ bool const isActionFinishedUnsuccessfully = action.IsFinishedUnsuccessfully();
 ...
 ```
 
-!!! warning
-    You can't successfully finish action that are finished or not initiated.
-
 #### **FinishUnsuccessfully**
 
 You can finish unsuccessfully action that not finished yet.
@@ -307,7 +307,7 @@ ScResult const & result = action.FinishUnsuccessfully();
 ```
 
 !!! warning
-    You can't finish unsuccessfully action that finished or not initiated.
+    If you finish action unsuccessfully that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
 
 #### **IsFinishedWithError**
 
@@ -331,7 +331,7 @@ ScResult const & result = action.FinishWithError();
 ```
 
 !!! warning
-    You can't finish action with error that finished or not initiated.
+    If you finish action with error that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
 
 
 All these methods return object of `ScResult`. You should return it in agent program. You can't call constructor of `ScResult` to create new object.
@@ -351,4 +351,4 @@ All these methods return object of `ScResult`. You should return it in agent pro
 
 ### **What if I want to set some edge as action result and not structure with this edge?**
 
-You're not allowed to do this. Action result must be a sc-structure. Action result is a situation that describes how action was performed. Situation is a sc-structure.
+You're not allowed to do this. Action result should be a atomic formula (statement, situation or structure). Action result describes how action was performed. In the future, action can be non-atomic logical formula.

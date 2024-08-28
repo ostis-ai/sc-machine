@@ -139,6 +139,7 @@ The base class `ScAgent` contains API to implement agents that react to any sc-e
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
   return m_context.HelperFindBySystemIdtf("action_calculate_set_power");
+  // You have to make sure that this class is in the knowledge base.
 }
 // You must specify valid action class. In other case, the agent can’t be 
 // subscribed to sc-event.
@@ -186,6 +187,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
     = m_context.CreateEdge(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
     = m_context.HelperFindBySystemIdtf("nrel_set_power");
+  // You have to make sure that this norole relation is in the knowledge base.
   ScAddr const & arcAccessAddr = m_context.CreateEdge(
     ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
 

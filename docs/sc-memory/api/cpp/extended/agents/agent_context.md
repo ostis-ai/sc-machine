@@ -356,7 +356,7 @@ ScStructure structure = context.ConvertToStructure(structureAddr);
 <!-- no toc -->
 - [How do I add my method to a `ScAgentContext`?](#how-do-i-add-my-method-to-a-scagentcontext)
 - [How can I wait for an event indefinitely?](#how-can-i-wait-for-an-event-indefinitely)
-- [What if I need to initiate agent on events from more then one different node?](#what-if-i-need-to-initiate-agent-on-events-from-more-then-one-different-node)
+- [What if I need to initiate agent on events from different nodes?](#what-if-i-need-to-initiate-agent-on-events-from-differents-nodes)
 - [When ScMultiset will be implemented?](#when-scmultiset-will-be-implemented)
 - [What do I need to initiate agent on `ScEventGeneratingIncomingArc` and `ScEventGeneratingOutgoingArc` for one node?](#what-do-i-need-to-initiate-agent-on-sceventgeneratingincomingarc-and-sceventgeneratingoutgoingarc-for-one-node)
 
@@ -384,7 +384,7 @@ You will be able to use context of class, which you specify, in the agent's meth
 
 By default, you can wait up to 5 seconds for an event to appear. You can wait for another time convenient for you. But we recommend waiting as long as you need, no longer. You don't need to create waiters for several minutes or hours when the agent performs much faster, in milliseconds.
 
-### **What if I need to initiate agent on events from more then one different node?**
+### **What if I need to initiate agent on events from different nodes?**
 
 You can subscribe an agent to many different sc-elements, but for the same type of sc-event. You can use `SubscribeAgent` and `UnsubscribeAgent` to do this.
 
@@ -413,3 +413,7 @@ You can subscribe an agent to sc-event of generating sc-connector -- `ScEventGen
 ### **What's the difference between `ScSet` and `ScStructure`?**
 
 `ScSet` is a class that represents sc-set. It is an entity that links one or more entities into a whole. `ScStructure` is a class represents sc-structure. It is a set of sc-elements, which includes sc-connections or sc-structures linking these sc-elements. Removal of one of sc-elements of the sc-structure may lead to violation of the integrity of this sc-structure. `ScSet` and `ScStructure`  do not differ functionally. `ScStructure` is a stricter representation of sc-set.
+
+### **How can I wait for an event indefinitely?**
+
+You can't wait indefinitely for an event, there is always a maximum waiting time after which you stop waiting.
