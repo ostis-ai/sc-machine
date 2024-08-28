@@ -1,7 +1,7 @@
 # **Implementing agent in C++**
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.10.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
 All agents in C++ represent some classes in C++. To implement an agent in C++, you need to perform the following common steps:
@@ -65,7 +65,7 @@ You should get something like this structure:
 ```plaintext
 set-agents-module/
 ├── CMakeLists.txt
-├── agents/
+├── agent/
 │   ├── sc_agent_calculate_set_power.hpp
 │   └── sc_agent_calculate_set_power.сpp
 ```
@@ -81,7 +81,7 @@ The `CMakeLists.txt` file should describe a process of building your agent code.
 ```cmake
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "*.cpp" "*.hpp"
-    "agents/*.cpp" "agents/*.hpp"
+    "agent/*.cpp" "agent/*.hpp"
 )
 
 # Create and link your library with using libraries.
@@ -222,7 +222,7 @@ For each agent, you can specify key sc-elements that this agent uses during the 
 ```diff
 set-agents-module/
  ├── CMakeLists.txt
- ├── agents/
+ ├── agent/
  │   ├── sc_agent_calculate_set_power.hpp
  │   └── sc_agent_calculate_set_power.сpp
 +├── keynodes/
@@ -234,7 +234,7 @@ set-agents-module/
 ```diff
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "*.cpp" "*.hpp"
-    "agents/*.cpp" "agents/*.hpp"
+    "agent/*.cpp" "agent/*.hpp"
 +   "keynodes/*.cpp" "keynodes/*.hpp"
 )
 ```
@@ -317,7 +317,7 @@ Someone should subscribe your agent to event. It can be other agent, or any code
 ```diff
  set-agents-module/
  ├── CMakeLists.txt
- ├── agents/
+ ├── agent/
  │   ├── sc_agent_calculate_set_power.hpp
  │   └── sc_agent_calculate_set_power.сpp
  ├── keynodes/
@@ -346,7 +346,7 @@ class ScSetModule : public ScModule
 ```cpp
 #include "sc_set_module.hpp"
 
-#include "agents/sc_agent_calculate_set_power.hpp"
+#include "agent/sc_agent_calculate_set_power.hpp"
 
 SC_MODULE_REGISTER(ScSetModule)
   ->Agent<ScAgentCalculateSetPower>();
@@ -397,7 +397,7 @@ To make sure how your agent works it is best to create tests and cover in them a
 ```diff
  set-agents-module/
  ├── CMakeLists.txt
- ├── agents/
+ ├── agent/
  │   ├── sc_agent_calculate_set_power.hpp
  │   └── sc_agent_calculate_set_power.сpp
  ├── keynodes/
@@ -413,7 +413,7 @@ To make sure how your agent works it is best to create tests and cover in them a
 ```diff
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "*.cpp" "*.hpp"
-    "agents/*.cpp" "agents/*.hpp"
+    "agent/*.cpp" "agent/*.hpp"
     "keynodes/*.cpp" "keynodes/*.hpp"
 )
 
@@ -442,7 +442,7 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 #include <sc-memory/sc_memory_headers.hpp>
 
-#include "agents/sc_agent_calculate_set_power.hpp"
+#include "agent/sc_agent_calculate_set_power.hpp"
 #include "keynodes/sc_set_keynodes.hpp"
 
 using AgentTest = ScMemoryTest;

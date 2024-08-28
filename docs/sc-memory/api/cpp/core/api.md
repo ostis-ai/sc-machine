@@ -1,7 +1,7 @@
 # **C++ Core API**
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.9.0.
 ---
 
 The API provides core functionality for creating, retrieving and erasing sc-elements in sc-memory.

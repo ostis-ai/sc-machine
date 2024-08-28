@@ -1,7 +1,7 @@
 # **C++ Actions API**
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.10.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
 This API provides functionality to handle sc-actions.
@@ -94,9 +94,6 @@ auto const & [argAddr1, argAddr2, _] = action.GetArguments<3>();
 ...
 ```
 
-!!! note
-    `GetArguments` uses `GetArgument` for each argument.
-
 ### **SetArgument**
 
 You can set arguments for specified action.
@@ -127,9 +124,6 @@ action.SetArgument(1, argAddr);
 action.SetArguments(argAddr1, argAddr2);
 ...
 ```
-
-!!! note
-    `SetArguments` uses `SetArgument` for each argument.
 
 ### **Action result**
 
@@ -351,4 +345,4 @@ All these methods return object of `ScResult`. You should return it in agent pro
 
 ### **What if I want to set some edge as action result and not structure with this edge?**
 
-You're not allowed to do this. Action result should be a atomic formula (statement, situation or structure). Action result describes how action was performed. In the future, action can be non-atomic logical formula.
+You're not allowed to do this. Action result should be a atomic formula (statement, situation or structure). Action result describes how action was performed. In the future, result can be non-atomic logical formula.

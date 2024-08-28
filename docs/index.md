@@ -14,10 +14,10 @@
             * C++ Agents API: - *documentation of C++ Agents API for creating agents*
                 * [C++ Events API](sc-memory/api/cpp/extended/agents/events.md) 
                 * [C++ Event subscriptions API](sc-memory/api/cpp/extended/agents/event_subscriptions.md) 
-                * [C++ Waiters API](sc-memory/api/cpp/extended/agents/waiters.md) 
-                * [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md)
+                * [C++ Waiters API](sc-memory/api/cpp/extended/agents/waiters.md)
                 * [C++ Keynodes API](sc-memory/api/cpp/extended/agents/keynodes.md)
-                * [C++ Actions API](sc-memory/api/cpp/extended/agents/actions.md)
+                * [C++ Actions API](sc-memory/api/cpp/extended/agents/actions.md) 
+                * [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md)
                 * [C++ Agent context API](sc-memory/api/cpp/extended/agents/agent_context.md)
                 * [C++ Modules API](sc-memory/api/cpp/extended/agents/modules.md)
         * C++ Guides:

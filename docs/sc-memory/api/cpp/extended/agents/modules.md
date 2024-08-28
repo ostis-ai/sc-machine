@@ -1,7 +1,7 @@
 # **C++ Modules API**
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.10.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
 This API provides functionality to implement modules for subscribe/unsubscribe agents to/from sc-events on C++.
@@ -30,7 +30,7 @@ class MyModule : public ScModule
 #include "my-module/my_module.hpp"
 
 #include "my-module/keynodes/my_keynodes.hpp"
-#include "my-module/agents/my_agent.hpp"
+#include "my-module/agent/my_agent.hpp"
 
 SC_MODULE_REGISTER(MyModule)
 // It initializes static object of `MyModule` class that can be 
@@ -54,11 +54,11 @@ Also, you can use module to subscribe a set of agents.
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/agents/my_agent1.hpp"
-#include "my-module/agents/my_agent2.hpp"
-#include "my-module/agents/my_agent3.hpp"
-#include "my-module/agents/my_agent4.hpp"
-#include "my-module/agents/my_agent5.hpp"
+#include "my-module/agent/my_agent1.hpp"
+#include "my-module/agent/my_agent2.hpp"
+#include "my-module/agent/my_agent3.hpp"
+#include "my-module/agent/my_agent4.hpp"
+#include "my-module/agent/my_agent5.hpp"
 
 SC_MODULE_REGISTER(MyModule)
   ->Agent<MyAgent1>()
@@ -85,7 +85,7 @@ class MyModule : public ScModule
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/agents/my_agent.hpp"
+#include "my-module/agent/my_agent.hpp"
 
 SC_MODULE_REGISTER(MyModule)
   ->Agent<MyAgent>(); 
@@ -122,7 +122,7 @@ You can specify initial specification for your agent class in code with help of 
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/agents/my_agent.hpp"
+#include "my-module/agent/my_agent.hpp"
 
 SC_MODULE_REGISTER(MyModule)
   ->AgentBuilder<MyAgent>()
@@ -208,7 +208,7 @@ my_agent_result_condition_template
 // File my_module.cpp:
 #include "my-module/my_module.hpp"
 
-#include "my-module/agents/my_agent.hpp"
+#include "my-module/agent/my_agent.hpp"
 
 SC_MODULE_REGISTER(MyModule)
   ->AgentBuilder<MyAgent>(ScKeynodes::my_agent_implementation)

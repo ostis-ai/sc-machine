@@ -1,6 +1,6 @@
 # **C++ Agent context API**
 
-!!! warning
+!!! note
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 ---
 

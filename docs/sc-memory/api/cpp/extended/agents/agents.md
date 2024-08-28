@@ -1,7 +1,7 @@
 # **C++ Agents API**
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.10.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
 This API provides functionality to implement agents on C++.
@@ -307,7 +307,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 ```
 
 !!! warning
-    If you don't catch sc-exceptions in `DoProgram` then sc-machine will catch them and will warn you about it.
+    If you don't catch sc-exceptions in `DoProgram` then sc-machine will catch them and will finish action with error and will warn you about it.
 
 ##### Handling action arguments
 

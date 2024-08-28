@@ -1,7 +1,7 @@
 # **ScEventSubscription API**
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.10.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
 This API provides functionality to subscribe to sc-events on C++.
