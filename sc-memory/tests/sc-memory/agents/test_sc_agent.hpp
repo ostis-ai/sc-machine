@@ -199,6 +199,16 @@ public:
   ScResult DoProgram(ScAction & action) override;
 };
 
+class ATestException : public ScActionInitiatedAgent
+{
+public:
+  ScAddr GetActionClass() const override;
+
+  static inline TestWaiter msWaiter;
+
+  ScResult DoProgram(ScAction & action) override;
+};
+
 class ATestCheckResult : public ScActionInitiatedAgent
 {
 public:

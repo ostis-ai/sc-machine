@@ -236,6 +236,20 @@ TEST_F(ScAgentTest, ATestCallWithoutEventInitiation)
   EXPECT_TRUE(ATestDoProgram::msWaiter.Wait());
 }
 
+TEST_F(ScAgentTest, ATestExceptionInDoProgram)
+{
+  m_ctx->SubscribeAgent<ATestException>();
+
+  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+                        .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+                        .Initiate();
+
+  EXPECT_FALSE(ATestException::msWaiter.Wait(0.1));
+  EXPECT_TRUE(action.IsFinishedWithError());
+
+  m_ctx->UnsubscribeAgent<ATestException>();
+}
+
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentWithWaitingAgentWaiter)
 {
   ATestCheckResult::msWaiter.Reset();

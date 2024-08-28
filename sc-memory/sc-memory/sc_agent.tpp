@@ -405,10 +405,22 @@ std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback
     }
 
     ScResult result;
-    if constexpr (HasOverride<TScAgent>::DoProgramWithEventArgument::value)
-      result = agent.DoProgram(event, action);
-    else
-      result = agent.DoProgram(action);
+
+    try
+    {
+      if constexpr (HasOverride<TScAgent>::DoProgramWithEventArgument::value)
+        result = agent.DoProgram(event, action);
+      else
+        result = agent.DoProgram(action);
+    }
+    catch (utils::ScException const & exception)
+    {
+      action.FinishWithError();
+      SC_LOG_ERROR(
+          "Agent `" << agentName << "` was finished because error was occurred.\nError description:\n"
+                    << exception.Description());
+      return;
+    }
 
     if (result == SC_RESULT_OK)
       SC_LOG_INFO("Agent `" << agentName << "` finished successfully");

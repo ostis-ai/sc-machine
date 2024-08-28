@@ -205,6 +205,19 @@ ScResult ATestDoProgram::DoProgram(ScAction & action)
 
 /// --------------------------------------
 
+ScAddr ATestException::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScResult ATestException::DoProgram(ScAction & action)
+{
+  SC_THROW_EXCEPTION(utils::ScException, "Some exception.");
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
 ScAddr ATestCheckResult::GetActionClass() const
 {
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
