@@ -11,6 +11,11 @@
 
 ScActionInitiatedAgent::ScActionInitiatedAgent() noexcept = default;
 
+ScAddr ScActionInitiatedAgent::GetEventSubscriptionElement() const
+{
+  return ScKeynodes::action_initiated;
+}
+
 ScTemplate ScActionInitiatedAgent::GetInitiationConditionTemplate() const
 {
   ScTemplate templ;

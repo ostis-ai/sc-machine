@@ -593,6 +593,9 @@ class _SC_EXTERN ScActionInitiatedAgent : public ScAgent<ScActionEvent>
   friend class ScAgentContext;
 
 public:
+  //! Returns `ScKeynodes::action_initiated`.
+  _SC_EXTERN ScAddr GetEventSubscriptionElement() const override;
+
   /*!
    * @brief Get sc-template that other sc-element of initiated sc-event belongs to action class that this agent class
    * performs.

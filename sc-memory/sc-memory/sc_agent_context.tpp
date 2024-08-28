@@ -114,7 +114,7 @@ typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::valu
 template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent()
 {
-  TScAgent::template Subscribe<TScAgent>(this, ScAddr::Empty, ScKeynodes::action_initiated);
+  TScAgent::template Subscribe<TScAgent>(this, ScAddr::Empty);
 }
 
 template <class TScAgent, class... TScAddr>
@@ -131,7 +131,7 @@ template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::
     UnsubscribeAgent()
 {
-  TScAgent::template Unsubscribe<TScAgent>(this, ScAddr::Empty, ScKeynodes::action_initiated);
+  TScAgent::template Unsubscribe<TScAgent>(this, ScAddr::Empty);
 }
 
 template <class TScAgent>

@@ -247,7 +247,7 @@ void ScAgent<TScEvent, TScContext>::Subscribe(
 
   ScAddrVector subscriptionVector{subscriptionAddrs...};
   // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
-  if (agent.MayBeSpecified() && subscriptionVector.empty())
+  if (agent.MayBeSpecified() || subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
   std::string const & eventName = ScEvent::GetName<TScEvent>();
@@ -313,7 +313,7 @@ void ScAgent<TScEvent, TScContext>::Unsubscribe(
 
   ScAddrVector subscriptionVector{subscriptionAddrs...};
   // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
-  if (agent.MayBeSpecified() && subscriptionVector.empty())
+  if (agent.MayBeSpecified() || subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
   std::string const & eventClassName = ScEvent::GetName<TScEvent>();

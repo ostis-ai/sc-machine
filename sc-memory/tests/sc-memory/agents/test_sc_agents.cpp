@@ -433,13 +433,30 @@ TEST_F(ScAgentTest, RegisterAgentWithinModule)
   module.Unregister(&*m_ctx);
 }
 
+TEST_F(ScAgentTest, RegisterActionInitiatedAgentWithinModule)
+{
+  ATestGenerateOutgoingArc::msWaiter.Reset();
+
+  TestModule module;
+  module.Agent<ATestCheckResult>();
+  module.Register(&*m_ctx);
+
+  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .Initiate();
+
+  EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+
+  module.Unregister(&*m_ctx);
+}
+
 TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
 {
   ATestCheckResult agent;
   EXPECT_THROW(agent.GetAbstractAgent(), utils::ExceptionInvalidState);
   EXPECT_NO_THROW(agent.GetActionClass());
   EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_after_generate_outgoing_arc);
-  EXPECT_THROW(agent.GetEventSubscriptionElement(), utils::ExceptionInvalidState);
+  EXPECT_EQ(agent.GetEventSubscriptionElement(), ScKeynodes::action_initiated);
   EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionInvalidState);
   EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionInvalidState);
   EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
