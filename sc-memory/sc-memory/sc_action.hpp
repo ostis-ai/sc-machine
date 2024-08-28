@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <string>
 #include <utility>
 
 #include "sc_addr.hpp"
@@ -177,6 +178,7 @@ public:
 protected:
   class ScAgentContext * m_context;  ///< Context of the agent.
   ScAddr m_resultAddr;               ///< Result structure of the action.
+  mutable ScAddr m_actionClassAddr;          ///< Class of the action.
 
   /*!
    * @brief Constructor for ScAction.

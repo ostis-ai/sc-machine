@@ -14,7 +14,7 @@
 
 template <class TScEvent>
 ScEventWaiter<TScEvent>::ScEventWaiter(ScMemoryContext const & context, ScAddr const & subscriptionElementAddr) noexcept
-  : m_event(
+  : m_eventSubscription(
         context,
         subscriptionElementAddr,
         [this](TScEvent const & event)
@@ -30,7 +30,7 @@ ScEventWaiter<TScEvent>::ScEventWaiter(
     ScMemoryContext const & context,
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr) noexcept
-  : m_event(
+  : m_eventSubscription(
         context,
         eventClassAddr,
         subscriptionElementAddr,

@@ -206,7 +206,7 @@ This implementation allows to provide any sc-event type to `DoProgram`.
     `ScBaseAgent` is alias for `ScAgent<ScElementaryEvent>`.
 
 !!! note
-    If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**] to learn how to implement agents with specification in the knowledge base.
+    If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**](modules.md) to learn how to implement agents with specification in the knowledge base.
 
 ### **ScActionInitiatedAgent**
 

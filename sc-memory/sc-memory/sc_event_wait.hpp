@@ -113,7 +113,7 @@ protected:
   virtual bool OnEvent(TScEvent const & event);
 
 private:
-  ScElementaryEventSubscription<TScEvent> m_event;
+  ScElementaryEventSubscription<TScEvent> m_eventSubscription;
 };
 
 /*!

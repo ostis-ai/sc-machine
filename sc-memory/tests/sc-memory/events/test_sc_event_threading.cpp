@@ -32,8 +32,8 @@ TEST_F(ScEventTest, ThreadingSmoke)
   }
 
   // create random events for each node
-  std::vector<std::shared_ptr<ScEventSubscription>> events;
-  events.resize(eventsNum);
+  std::vector<std::shared_ptr<ScEventSubscription>> eventSubscriptions;
+  eventSubscriptions.resize(eventsNum);
 
   std::vector<ScAddr> eventTypes = {
       ScKeynodes::sc_event_after_generate_connector,
@@ -57,7 +57,7 @@ TEST_F(ScEventTest, ThreadingSmoke)
 
   for (size_t i = 0; i < eventsNum; ++i)
   {
-    events[i] = m_ctx->CreateElementaryEventSubscription(
+    eventSubscriptions[i] = m_ctx->CreateElementaryEventSubscription(
         eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ChangeContent event
         randNode(),
         [&](ScElementaryEvent const &)
@@ -98,5 +98,5 @@ TEST_F(ScEventTest, ThreadingSmoke)
     }
   }
 
-  events.clear();
+  eventSubscriptions.clear();
 }

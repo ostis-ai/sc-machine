@@ -15,12 +15,15 @@ ScAction::ScAction(ScAgentContext * context, ScAddr const & actionAddr) noexcept
   : ScAddr(actionAddr)
   , m_context(context)
   , m_resultAddr(ScAddr::Empty)
+  , m_actionClassAddr(ScAddr::Empty)
 {
 }
 
 ScAddr ScAction::GetClass() const noexcept
 {
-  ScAddr resultClassAddr;
+  if (m_context->IsElement(m_actionClassAddr)
+      && m_context->HelperCheckEdge(m_actionClassAddr, *this, ScType::EdgeAccessConstPosPerm))
+    return m_actionClassAddr;
 
   ScIterator3Ptr const it3 = m_context->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
   while (it3->Next())
@@ -37,12 +40,12 @@ ScAddr ScAction::GetClass() const noexcept
         ScKeynodes::nrel_inclusion);
     if (it5->Next())
     {
-      resultClassAddr = actionClassAddr;
+      m_actionClassAddr = actionClassAddr;
       break;
     }
   }
 
-  return resultClassAddr;
+  return m_actionClassAddr;
 }
 
 ScAddr ScAction::GetArgument(size_t idx, ScAddr const & defaultArgumentAddr) const noexcept
