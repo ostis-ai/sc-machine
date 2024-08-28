@@ -80,25 +80,6 @@ ScEventBeforeEraseElement::ScEventBeforeEraseElement(
         connectorType,
         otherAddr) {};
 
-// Ignore these methods, because they can't be used.
-// LCOV_EXCL_START
-ScAddr ScEventBeforeEraseElement::GetConnector() const noexcept
-{
-  return ScElementaryEvent::GetConnector();
-}
-
-ScType ScEventBeforeEraseElement::GetConnectorType() const noexcept
-{
-  return ScElementaryEvent::GetConnectorType();
-}
-
-ScAddr ScEventBeforeEraseElement::GetOtherElement() const noexcept
-{
-  return ScElementaryEvent::GetOtherElement();
-}
-
-// LCOV_EXCL_END
-
 // ScEventBeforeChangeLinkContent
 //-------------------------------------------------------------------------
 
@@ -115,22 +96,3 @@ ScEventBeforeChangeLinkContent::ScEventBeforeChangeLinkContent(
         connectorAddr,
         connectorType,
         otherAddr) {};
-
-// Ignore these methods, because they can't be used.
-// LCOV_EXCL_START
-ScAddr ScEventBeforeChangeLinkContent::GetConnector() const noexcept
-{
-  return ScElementaryEvent::GetConnector();
-}
-
-ScType ScEventBeforeChangeLinkContent::GetConnectorType() const noexcept
-{
-  return ScElementaryEvent::GetConnectorType();
-}
-
-ScAddr ScEventBeforeChangeLinkContent::GetOtherElement() const noexcept
-{
-  return ScElementaryEvent::GetOtherElement();
-}
-
-// LCOV_EXCL_END

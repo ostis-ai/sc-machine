@@ -154,8 +154,6 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
-
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_after_generate_connector;
 };
@@ -189,7 +187,7 @@ protected:
 
   _SC_EXTERN ScType GetConnectorType() const noexcept override;
 
-  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept override;
+  using ScEventAfterGenerateConnector<arcType>::GetConnectorIncidentElements;
 };
 
 /*!
@@ -317,7 +315,7 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
+  // using ScElementaryEvent::GetOtherElement();
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_connector;
@@ -352,7 +350,7 @@ protected:
 
   _SC_EXTERN ScType GetConnectorType() const noexcept;
 
-  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements() const noexcept;
+  using ScEventBeforeEraseConnector<arcType>::GetConnectorIncidentElements;
 };
 
 /*!
@@ -466,11 +464,9 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const noexcept override;
-
-  _SC_EXTERN ScType GetConnectorType() const noexcept override;
-
-  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
+  using TScElementaryEvent::GetConnector;
+  using TScElementaryEvent::GetConnectorType;
+  using TScElementaryEvent::GetOtherElement;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_element;
@@ -495,11 +491,9 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr) noexcept;
 
-  _SC_EXTERN ScAddr GetConnector() const noexcept override;
-
-  _SC_EXTERN ScType GetConnectorType() const noexcept override;
-
-  _SC_EXTERN ScAddr GetOtherElement() const noexcept override;
+  using TScElementaryEvent::GetConnector;
+  using TScElementaryEvent::GetConnectorType;
+  using TScElementaryEvent::GetOtherElement;
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_change_link_content;

@@ -59,16 +59,6 @@ ScEventAfterGenerateConnector<tConnectorType>::ScEventAfterGenerateConnector(
         connectorType,
         otherAddr){};
 
-// Ignore these methods, because they can't be used.
-// LCOV_EXCL_START
-template <ScType const & connectorType>
-ScAddr ScEventAfterGenerateConnector<connectorType>::GetOtherElement() const noexcept
-{
-  return ScElementaryEvent::GetOtherElement();
-}
-
-// LCOV_EXCL_END
-
 // ScEventAfterGenerateArc
 //-------------------------------------------------------------------------
 
@@ -123,16 +113,6 @@ ScType ScEventAfterGenerateArc<arcType>::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
-
-// Ignore these methods, because they can't be used.
-// LCOV_EXCL_START
-template <ScType const & arcType>
-std::tuple<ScAddr, ScAddr> ScEventAfterGenerateArc<arcType>::GetConnectorIncidentElements() const noexcept
-{
-  return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
-}
-
-// LCOV_EXCL_END
 
 // ScEventAfterGenerateEdge
 //-------------------------------------------------------------------------
@@ -288,16 +268,6 @@ ScEventBeforeEraseConnector<tConnectorType>::ScEventBeforeEraseConnector(
         connectorType,
         otherAddr){};
 
-// Ignore these methods, because they can't be used.
-// LCOV_EXCL_START
-template <ScType const & connectorType>
-ScAddr ScEventBeforeEraseConnector<connectorType>::GetOtherElement() const noexcept
-{
-  return ScElementaryEvent::GetOtherElement();
-}
-
-// LCOV_EXCL_END
-
 // ScEventBeforeEraseArc
 //-------------------------------------------------------------------------
 
@@ -352,16 +322,6 @@ ScType ScEventBeforeEraseArc<arcType>::GetConnectorType() const noexcept
 {
   return ScElementaryEvent::GetConnectorType();
 }
-
-// Ignore these methods, because they can't be used.
-// LCOV_EXCL_START
-template <ScType const & arcType>
-std::tuple<ScAddr, ScAddr> ScEventBeforeEraseArc<arcType>::GetConnectorIncidentElements() const noexcept
-{
-  return {ScElementaryEvent::GetSubscriptionElement(), ScElementaryEvent::GetOtherElement()};
-}
-
-// LCOV_EXCL_END
 
 // ScEventBeforeEraseEdge
 //-------------------------------------------------------------------------
