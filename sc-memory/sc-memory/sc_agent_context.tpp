@@ -17,22 +17,7 @@ std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateE
     ScAddr const & subscriptionElementAddr,
     std::function<void(TScEvent const &)> const & eventCallback)
 {
-  static_assert(
-      std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
-
-  if (!IsElement(subscriptionElementAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event subscription because subscription sc-element is not valid.");
-
-  if constexpr (std::is_same<TScEvent, ScEventBeforeChangeLinkContent>::value)
-  {
-    if (!GetElementType(subscriptionElementAddr).IsLink())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
-          "Not able to create sc-event subscription of changing link content because subscription sc-element is not "
-          "sc-link.");
-  }
+  ValidateEventElements<TScEvent>(subscriptionElementAddr, "elementary sc-event subscription");
 
   return std::shared_ptr<ScElementaryEventSubscription<TScEvent>>(
       new ScElementaryEventSubscription<TScEvent>(*this, subscriptionElementAddr, eventCallback));
@@ -43,22 +28,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback)
 {
-  static_assert(
-      std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
-
-  if (!IsElement(subscriptionElementAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event waiter because subscription sc-element is not valid.");
-
-  if constexpr (std::is_same<TScEvent, ScEventBeforeChangeLinkContent>::value)
-  {
-    if (!GetElementType(subscriptionElementAddr).IsLink())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
-          "Not able to create sc-event waiter of changing link content because subscription sc-element is not "
-          "sc-link.");
-  }
+  ValidateEventElements<TScEvent>(subscriptionElementAddr, "sc-event waiter");
 
   auto eventWait =
       std::shared_ptr<ScEventWaiter<TScEvent>>(new ScEventWaiter<TScEvent>(*this, subscriptionElementAddr));
@@ -72,22 +42,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     std::function<void(void)> const & initiateCallback,
     std::function<bool(TScEvent const &)> const & checkCallback)
 {
-  static_assert(
-      std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
-
-  if (!IsElement(subscriptionElementAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event waiter with condition because subscription sc-element is not valid.");
-
-  if constexpr (std::is_same<TScEvent, ScEventBeforeChangeLinkContent>::value)
-  {
-    if (!GetElementType(subscriptionElementAddr).IsLink())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
-          "Not able to create sc-event waiter with condition of changing link content because subscription sc-element "
-          "is not sc-link.");
-  }
+  ValidateEventElements<TScEvent>(subscriptionElementAddr, "condition waiter");
 
   auto eventWait = std::shared_ptr<ScConditionWaiter<TScEvent>>(
       new ScConditionWaiter<TScEvent>(*this, subscriptionElementAddr, checkCallback));
@@ -149,4 +104,26 @@ template <class TScAgent>
 void ScAgentContext::DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr)
 {
   ScAgentManager<TScAgent>::Unsubscribe(this, agentImplementationAddr);
+}
+
+template <class TScEvent>
+void ScAgentContext::ValidateEventElements(ScAddr const & subscriptionElementAddr, std::string const & validatorName)
+{
+  static_assert(
+      std::is_base_of<ScElementaryEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+
+  if (!IsElement(subscriptionElementAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create " << validatorName << " because subscription sc-element is not valid.");
+
+  if constexpr (std::is_same<TScEvent, ScEventBeforeChangeLinkContent>::value)
+  {
+    if (!GetElementType(subscriptionElementAddr).IsLink())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Not able to create " << validatorName
+                                << " of changing link content because subscription sc-element is not "
+                                   "sc-link.");
+  }
 }

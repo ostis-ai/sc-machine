@@ -45,27 +45,7 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
     ScAddr const & subscriptionElementAddr,
     std::function<void(ScElementaryEvent const &)> const & eventCallback) noexcept(false)
 {
-  if (!IsElement(eventClassAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event subscription because sc-event class is not valid.");
-
-  if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event subscription because sc-event class does not belongs to `sc_event`.");
-
-  if (!IsElement(subscriptionElementAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event subscription because subscription sc-element is not valid.");
-
-  if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
-      && !GetElementType(subscriptionElementAddr).IsLink())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event subscription of changing link content because subscription sc-element is not "
-        "sc-link.");
+  ValidateEventElements(eventClassAddr, subscriptionElementAddr, "elementary sc-event subscription");
 
   return std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>>(
       new ScElementaryEventSubscription<ScElementaryEvent>(
@@ -77,27 +57,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback) noexcept(false)
 {
-  if (!IsElement(eventClassAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event waiter because sc-event class is not valid.");
-
-  if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event waiter because sc-event class does not belongs to `sc_event`.");
-
-  if (!IsElement(subscriptionElementAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event waiter because subscription sc-element is not valid.");
-
-  if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
-      && !GetElementType(subscriptionElementAddr).IsLink())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event waiter of changing link content because subscription sc-element is not "
-        "sc-link.");
+  ValidateEventElements(eventClassAddr, subscriptionElementAddr, "sc-event waiter");
 
   auto eventWait = std::shared_ptr<ScEventWaiter<ScElementaryEvent>>(
       new ScEventWaiter<ScElementaryEvent>(*this, eventClassAddr, subscriptionElementAddr));
@@ -111,29 +71,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     std::function<void(void)> const & initiateCallback,
     std::function<bool(ScElementaryEvent const &)> const & checkCallback) noexcept(false)
 {
-  if (!IsElement(eventClassAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event waiter with condition because sc-event class is not valid.");
-
-  if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create elementary sc-event waiter with condition because sc-event class is not belongs to "
-        "`sc_event`.");
-
-  if (!IsElement(subscriptionElementAddr))
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event waiter with condition because subscription sc-element is not valid.");
-
-  if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
-      && !GetElementType(subscriptionElementAddr).IsLink())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "Not able to create sc-event waiter with condition of changing link content because subscription sc-element is "
-        "not "
-        "sc-link.");
+  ValidateEventElements(eventClassAddr, subscriptionElementAddr, "condition waiter");
 
   auto eventWait = std::shared_ptr<ScConditionWaiter<ScElementaryEvent>>(
       new ScConditionWaiter<ScElementaryEvent>(*this, eventClassAddr, subscriptionElementAddr, checkCallback));
@@ -187,4 +125,35 @@ ScStructure ScAgentContext::ConvertToStructure(ScAddr const & structureAddr) noe
 {
   ScStructure structure{this, structureAddr};
   return structure;
+}
+
+void ScAgentContext::ValidateEventElements(
+    ScAddr const & eventClassAddr,
+    ScAddr const & subscriptionElementAddr,
+    std::string const & validatorName)
+{
+  if (!IsElement(eventClassAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create " << validatorName << " because sc-event class is not valid.");
+
+  if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create " << validatorName
+                              << " because sc-event class is not belongs to "
+                                 "`sc_event`.");
+
+  if (!IsElement(subscriptionElementAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create " << validatorName << " because subscription sc-element is not valid.");
+
+  if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
+      && !GetElementType(subscriptionElementAddr).IsLink())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create " << validatorName
+                              << " of changing link content because subscription sc-element is "
+                                 "not sc-link.");
 }

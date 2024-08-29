@@ -84,7 +84,7 @@ public:
   /*!
    * @brief Creates elementary sc-event subscription for specified subscription sc-element and sc-event callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
-   * @param subscriptionElementAddr An address of subscription sc-element.
+   * @param subscriptionElementAddr An address of subscription sc-element, which must be a valid sc-element.
    * @param eventCallback A callback function that will be called when sc-event occurs. It takes a const reference to
    * TScEvent as a parameter.
    * @return A shared pointer to created `ScElementaryEventSubscription`.
@@ -119,7 +119,7 @@ public:
   /*!
    * @brief Creates sc-event wait for the specified subscription sc-element and optional initiate callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
-   * @param subscriptionElementAddr An address of subscription sc-element.
+   * @param subscriptionElementAddr An address of subscription sc-element, which must be a valid sc-element.
    * @param initiateCallback An optional callback function that will be called when the wait starts. It takes no
    * parameters.
    * @return A shared pointer to created `ScWaiter`.
@@ -159,7 +159,7 @@ public:
    * @brief Creates sc-event wait with condition for the specified subscription sc-element, initiate callback, and check
    * callback.
    * @tparam TScEvent A type of sc-event. It must be derived from ScElementaryEvent.
-   * @param subscriptionElementAddr An address of subscription sc-element.
+   * @param subscriptionElementAddr An address of subscription sc-element, which must be a valid sc-element.
    * @param initiateCallback A callback function that will be called when the wait starts. It takes no parameters.
    * @param checkCallback A callback function that will be called to check if the condition is met. It takes a const
    * reference to TScEvent as a parameter and returns an bool.
@@ -333,6 +333,17 @@ protected:
    * @param userAddr Address of the user.
    */
   _SC_EXTERN explicit ScAgentContext(ScAddr const & userAddr) noexcept;
+
+private:
+  //! Validate sc-event class and subscription sc-element for subscriptions and waiters.
+  _SC_EXTERN void ValidateEventElements(
+      ScAddr const & eventClassAddr,
+      ScAddr const & subscriptionElementAddr,
+      std::string const & validatorName);
+
+  //! Validate sc-event class and subscription sc-element for template subscriptions and waiters.
+  template <class TScEvent>
+  _SC_EXTERN void ValidateEventElements(ScAddr const & subscriptionElementAddr, std::string const & validatorName);
 };
 
 #include "sc_agent_context.tpp"
