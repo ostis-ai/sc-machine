@@ -300,6 +300,8 @@ ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & act
 }
 ```
 
+`ScAgent` class has field `m_context`. It is an object of `ScAgentContext` class. You can use to complete operations in sc-memory. See [**C++ Agent context API**](agent_context.md) to learn more about accessible methods.
+
 !!! warning
     If you don't catch sc-exceptions in `DoProgram` then sc-machine will catch them and will finish action with error and will warn you about it.
 
