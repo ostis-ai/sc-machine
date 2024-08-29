@@ -250,15 +250,75 @@ ScAddr ATestGetInitiationConditionTemplate::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate() const
+ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate(ScActionEvent const & event) const
 {
   ScTemplate initiationCondition;
-  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action");
+  initiationCondition.Triple(
+      event.GetSubscriptionElement(), ScType::EdgeAccessVarPosPerm, event.GetOtherElement() >> "_action");
+  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, "_action");
   initiationCondition.Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
   return initiationCondition;
 }
 
 ScResult ATestGetInitiationConditionTemplate::DoProgram(ScActionEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScAddr ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement::GetInitiationCondition() const
+{
+  return initiationCondition;
+}
+
+ScResult ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement::DoProgram(
+    ScActionEvent const &,
+    ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScAddr ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple::GetInitiationCondition() const
+{
+  return initiationCondition;
+}
+
+ScResult ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple::DoProgram(
+    ScActionEvent const &,
+    ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
+ScAddr ATestGetInitiationConditionTemplateHasEventTripleTwice::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScAddr ATestGetInitiationConditionTemplateHasEventTripleTwice::GetInitiationCondition() const
+{
+  return initiationCondition;
+}
+
+ScResult ATestGetInitiationConditionTemplateHasEventTripleTwice::DoProgram(ScActionEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -320,10 +380,10 @@ ScResult ATestCheckResultCondition::DoProgram(ScActionEvent const &, ScAction & 
   return action.FinishSuccessfully();
 }
 
-bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const & event, ScAction & action)
+bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const &, ScAction & action)
 {
   return m_context.HelperCheckEdge(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm)
-         && m_context.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
+         && m_context.Iterator3(action, ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
 }
 
 /// --------------------------------------

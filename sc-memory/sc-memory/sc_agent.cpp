@@ -16,9 +16,9 @@ ScAddr ScActionInitiatedAgent::GetEventSubscriptionElement() const
   return ScKeynodes::action_initiated;
 }
 
-ScTemplate ScActionInitiatedAgent::GetInitiationConditionTemplate() const
+ScTemplate ScActionInitiatedAgent::GetInitiationConditionTemplate(ScActionEvent const & event) const
 {
   ScTemplate templ;
-  templ.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  templ.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, event.GetOtherElement());
   return templ;
 }

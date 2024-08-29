@@ -51,15 +51,15 @@ public:
       ScKeynode("test_specified_agent_action", ScType::NodeConstClass);
 
   static inline ScTemplateKeynode const & test_specified_agent_initiation_condition =
-      ScTemplateKeynode("test_specified_agent_initiation_condition")
+      ScTemplateKeynode("test_specified_agent_initiation_condition_programly_specified")
           .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
           .Triple(test_specified_agent_action, ScType::EdgeAccessVarPosPerm, "_action");
 
   static inline ScTemplateKeynode const & test_specified_agent_initiation_condition_in_kb =
-      ScTemplateKeynode("test_specified_agent_initiation_condition");
+      ScTemplateKeynode("test_specified_agent_initiation_condition_programly_specified");
 
   static inline ScTemplateKeynode const & test_specified_agent_result_condition =
-      ScTemplateKeynode("test_specified_agent_result_condition")
+      ScTemplateKeynode("test_specified_agent_result_condition_programly_specified")
           .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
           .Triple(test_specified_agent_action, ScType::EdgeAccessVarPosPerm, "_action")
           .Quintuple(
@@ -70,7 +70,8 @@ public:
               ScKeynodes::nrel_result);
 
   static inline ScTemplateKeynode const & test_specified_agent_result_condition_in_kb =
-      ScTemplateKeynode("test_specified_agent_result_condition");
+      ScTemplateKeynode("test_specified_agent_result_condition_programly_specified");
+  static inline ScKeynode const concept_set = ScKeynode("concept_set");
 
   ScResult DoProgram(ScElementaryEvent const & event, ScAction & action) override;
 };

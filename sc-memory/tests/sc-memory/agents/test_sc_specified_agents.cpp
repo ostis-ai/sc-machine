@@ -42,11 +42,7 @@ static std::string const ATestSpecifiedAgentSpecification = R"(
 
   ..test_specified_agent_result
   = [*
-    test_specified_agent_action _-> .._action;;
-    action_initiated _-> .._action;;
-    action_finished _-> .._action;;
-    .._action _-> rrel_1:: .._parameter;;
-    .._action _=> nrel_result:: .._result;;
+    concept_set _-> _...;;
   *];;
 
   test_specified_agent_action
@@ -659,10 +655,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedIni
 
     ..test_specified_agent_result
     = [*
-      test_specified_agent_action _-> .._action;;
-      action_finished _-> .._action;;
-      .._action _-> rrel_1:: .._parameter;;
-      .._action _=> nrel_result:: .._result;;
+      concept_set _-> _...;;
     *];;
 
     test_specified_agent_action
@@ -678,7 +671,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedIni
       utils::ExceptionInvalidState);
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecificationButConditionsDontContainEventTriple)
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecificationButInitiationConditionDoesntContainEventTriple)
 {
   ATestSpecifiedAgent::msWaiter.Reset();
 
@@ -716,10 +709,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecificationButCondition
 
     ..test_specified_agent_result
     = [*
-      test_specified_agent_action _-> .._action;;
-      action_finished _-> .._action;;
-      .._action _-> rrel_1:: .._parameter;;
-      .._action _=> nrel_result:: .._result;;
+      concept_set _-> _...;;
     *];;
 
     test_specified_agent_action
@@ -736,7 +726,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecificationButCondition
   ScAddr const & argAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   m_ctx->CreateAction(actionClassAddr).SetArguments(argAddr).Initiate();
-  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
+  EXPECT_FALSE(ATestSpecifiedAgent::msWaiter.Wait(0.2));
 
   m_ctx->DestroyAndUnsubscribeAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 }
@@ -783,7 +773,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentUnsubscribeNotSubscribed)
       utils::ExceptionInvalidState);
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentUnsuccessfullInitiationConditionPass)
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentUnsuccessfulInitiationConditionPass)
 {
   ATestSpecifiedAgent::msWaiter.Reset();
 
@@ -797,7 +787,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentUnsuccessfullInitiationCondition
   ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_action");
 
   m_ctx->CreateAction(actionClassAddr).Initiate();
-  EXPECT_FALSE(ATestSpecifiedAgent::msWaiter.Wait(0.1));
+  EXPECT_FALSE(ATestSpecifiedAgent::msWaiter.Wait(0.2));
 
   m_ctx->DestroyAndUnsubscribeAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 }
@@ -835,7 +825,7 @@ static std::string const ATestSpecifiedAgentSpecificationErasingEdge = R"(
 
   ..test_specified_agent_result
   = [*
-    test_other_set _<=> test_relation:: test_set;;
+    concept_set _-> _...;;
   *];;
 
   test_specified_agent_action
@@ -903,7 +893,7 @@ static std::string const ATestSpecifiedAgentSpecificationErasingConnector = R"(
 
   ..test_specified_agent_result
   = [*
-    test_other_set _<=> test_relation:: test_set;;
+    concept_set _-> _...;;
   *];;
 
   test_specified_agent_action
@@ -971,7 +961,7 @@ static std::string const ATestSpecifiedAgentSpecificationGeneratingIncomingArc =
 
   ..test_specified_agent_result
   = [*
-    test_other_set _-> test_relation:: test_set;;
+    concept_set _-> _...;;
   *];;
 
   test_specified_agent_action

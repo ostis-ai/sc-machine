@@ -47,10 +47,9 @@ ScAction & ScAction::FormResult(TScAddr const &... addrs)
                                         << "` because it had already been finished.");
 
   if (m_context->IsElement(m_resultAddr))
-  {
     m_context->EraseElement(m_resultAddr);
-    m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);
-  }
+
+  m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);
 
   ScStructure resultStruct = m_context->ConvertToStructure(m_resultAddr);
   for (ScAddr const & addr : ScAddrVector{addrs...})

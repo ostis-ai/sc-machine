@@ -224,8 +224,6 @@ TEST_F(ScAgentTest, ATestInvalidAbstractAgent)
   EXPECT_THROW(agent.GetEventSubscriptionElement(), utils::ExceptionItemNotFound);
   EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionItemNotFound);
   EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionItemNotFound);
-  EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
-  EXPECT_NO_THROW(agent.GetResultConditionTemplate());
 }
 
 TEST_F(ScAgentTest, ATestCallWithoutEventInitiation)
@@ -355,6 +353,45 @@ TEST_F(ScAgentTest, ATestGetInitiationConditionTemplate)
   m_ctx->UnsubscribeAgent<ATestGetInitiationConditionTemplate>();
 }
 
+TEST_F(ScAgentTest, ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement)
+{
+  m_ctx->SubscribeAgent<ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement>();
+
+  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .Initiate();
+
+  EXPECT_FALSE(ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement::msWaiter.Wait(0.2));
+
+  m_ctx->UnsubscribeAgent<ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement>();
+}
+
+TEST_F(ScAgentTest, ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple)
+{
+  m_ctx->SubscribeAgent<ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple>();
+
+  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .Initiate();
+
+  EXPECT_FALSE(ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple::msWaiter.Wait(0.2));
+
+  m_ctx->UnsubscribeAgent<ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple>();
+}
+
+TEST_F(ScAgentTest, ATestGetInitiationConditionTemplateHasEventTripleTwice)
+{
+  m_ctx->SubscribeAgent<ATestGetInitiationConditionTemplateHasEventTripleTwice>();
+
+  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .Initiate();
+
+  EXPECT_FALSE(ATestGetInitiationConditionTemplateHasEventTripleTwice::msWaiter.Wait(0.2));
+
+  m_ctx->UnsubscribeAgent<ATestGetInitiationConditionTemplateHasEventTripleTwice>();
+}
+
 TEST_F(ScAgentTest, ATestCheckInitiationCondition)
 {
   m_ctx->SubscribeAgent<ATestCheckInitiationCondition>();
@@ -471,9 +508,7 @@ TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
   EXPECT_NO_THROW(agent.GetActionClass());
   EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_after_generate_outgoing_arc);
   EXPECT_EQ(agent.GetEventSubscriptionElement(), ScKeynodes::action_initiated);
-  EXPECT_THROW(agent.GetInitiationCondition(), utils::ExceptionItemNotFound);
   EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionItemNotFound);
-  EXPECT_NO_THROW(agent.GetInitiationConditionTemplate());
   EXPECT_NO_THROW(agent.GetResultConditionTemplate());
   EXPECT_EQ(agent.GetName(), "ATestCheckResult");
 }

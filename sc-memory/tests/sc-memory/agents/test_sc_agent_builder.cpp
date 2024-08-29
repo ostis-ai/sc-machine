@@ -9,22 +9,20 @@
 using ScAgentBuilderTest = ScMemoryTest;
 
 static std::string const agentInitiationCondition = R"(
-  @contour = [*
+  @contour_1 = [*
     action_initiated _-> _action;;
     test_specified_agent_action _-> _action;;
   *];; 
 
-  @contour => nrel_system_identifier: [test_specified_agent_initiation_condition];;
+  @contour_1 => nrel_system_identifier: [test_specified_agent_initiation_condition];;
 )";
 
 static std::string const agentResultCondition = R"(
-  @contour = [*
-    action_initiated _-> _action;;
-    test_specified_agent_action _-> _action;;
-    _action _=> nrel_result:: _result;;
+  @contour_2 = [*
+    concept_set _-> _...;;
   *];; 
 
-  @contour => nrel_system_identifier: [test_specified_agent_result_condition];;
+  @contour_2 => nrel_system_identifier: [test_specified_agent_result_condition];;
 )";
 
 static std::string const ATestSpecifiedAgentSpecification = R"(
@@ -35,7 +33,7 @@ static std::string const ATestSpecifiedAgentSpecification = R"(
   => nrel_sc_agent_action_class: 
     test_specified_agent_action;
   => nrel_initiation_condition_and_result: 
-    (test_specified_agent_initiation_condition => test_specified_agent_result_condition);
+    (test_specified_agent_initiation_condition_new => test_specified_agent_result_condition_new);
   <= nrel_sc_agent_key_sc_elements: 
     {
       action_initiated;
@@ -61,9 +59,7 @@ static std::string const ATestSpecifiedAgentSpecification = R"(
 
   test_specified_agent_result_condition_new
   = [*
-    action_initiated _-> _action;;
-    test_specified_agent_action _-> _action;;
-    _action _=> nrel_result:: _result;;
+    concept_set _-> _...;;
   *];;
 
   test_specified_agent_action

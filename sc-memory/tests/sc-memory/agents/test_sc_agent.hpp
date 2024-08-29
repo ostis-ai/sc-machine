@@ -226,7 +226,64 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScTemplate GetInitiationConditionTemplate() const override;
+  ScTemplate GetInitiationConditionTemplate(ScActionEvent const & event) const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement : public ScActionInitiatedAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  static inline ScTemplateKeynode const & initiationCondition =
+      ScTemplateKeynode("initiation_condition_without_event_triple")
+          .Triple(
+              ATestGenerateOutgoingArc::generate_outgoing_arc_action,
+              ScType::EdgeAccessVarPosPerm,
+              ScType::NodeVar >> "_action")
+          .Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+
+  ScAddr GetActionClass() const override;
+
+  ScAddr GetInitiationCondition() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple : public ScActionInitiatedAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  static inline ScTemplateKeynode const & initiationCondition =
+      ScTemplateKeynode("initiation_condition_with_invalid_connector_type_in_event_type")
+          .Triple(ScKeynodes::action_initiated, ScType::EdgeDCommonVar, ScType::NodeVar >> "_action")
+          .Triple(ATestGenerateOutgoingArc::generate_outgoing_arc_action, ScType::EdgeAccessVarPosPerm, "_action")
+          .Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+
+  ScAddr GetActionClass() const override;
+
+  ScAddr GetInitiationCondition() const override;
+
+  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+};
+
+class ATestGetInitiationConditionTemplateHasEventTripleTwice : public ScActionInitiatedAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  static inline ScTemplateKeynode const & initiationCondition =
+      ScTemplateKeynode("initiation_condition_has_event_triple_twice")
+          .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
+          .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, "_action")
+          .Triple(ATestGenerateOutgoingArc::generate_outgoing_arc_action, ScType::EdgeAccessVarPosPerm, "_action")
+          .Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+
+  ScAddr GetActionClass() const override;
+
+  ScAddr GetInitiationCondition() const override;
 
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 };

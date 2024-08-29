@@ -1,5 +1,5 @@
 /*
- * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * This source file is part of an OSTIS project. For the laTest info, see http://ostis.net
  * Distributed under the MIT License
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
@@ -177,9 +177,10 @@ public:
 
   /*!
    * @brief Gets initiation condition template represented in program.
+   * @param event A sc-event that triggered the agent.
    * @return A sc-template of initiation condition.
    */
-  _SC_EXTERN virtual ScTemplate GetInitiationConditionTemplate() const;
+  _SC_EXTERN virtual ScTemplate GetInitiationConditionTemplate(TScEvent const & event) const;
 
   /*!
    * @brief Executes the program associated with the agent.
@@ -320,27 +321,27 @@ class _SC_EXTERN ScAgent : public ScAgentBase<TScEvent, TScContext>
     {
     private:
       template <typename U>
-      static auto test(int)
-          -> decltype(std::declval<U>().DoProgram(std::declval<typename TScAgent::TEventType const &>(), std::declval<ScAction &>()), std::true_type());
+      static auto Test(int)
+          -> decltype(std::declval<U>().DoProgram(std::declval<typename U::TEventType const &>(), std::declval<ScAction &>()), std::true_type());
 
       template <typename>
-      static std::false_type test(...);
+      static std::false_type Test(...);
 
     public:
-      static bool const value = decltype(test<TScAgent>(0))::value;
+      static bool const value = decltype(Test<TScAgent>(0))::value;
     };
 
     struct DoProgramWithoutEventArgument
     {
     private:
       template <typename U>
-      static auto test(int) -> decltype(std::declval<U>().DoProgram(std::declval<ScAction &>()), std::true_type());
+      static auto Test(int) -> decltype(std::declval<U>().DoProgram(std::declval<ScAction &>()), std::true_type());
 
       template <typename>
-      static std::false_type test(...);
+      static std::false_type Test(...);
 
     public:
-      static bool const value = decltype(test<TScAgent>(0))::value;
+      static bool const value = decltype(Test<TScAgent>(0))::value;
     };
 
     struct CheckResultCondition
@@ -389,8 +390,8 @@ class _SC_EXTERN ScAgent : public ScAgentBase<TScEvent, TScContext>
     struct ResultConditionMethod
     {
       static constexpr bool value =
-          (HasOverride<TScAgent>::CheckResultCondition::value + HasOverride<TScAgent>::GetInitiationCondition::value
-           + HasOverride<TScAgent>::GetInitiationConditionTemplate::value)
+          (HasOverride<TScAgent>::CheckResultCondition::value + HasOverride<TScAgent>::GetResultCondition::value
+           + HasOverride<TScAgent>::GetResultConditionTemplate::value)
           <= 1;
     };
   };
@@ -530,12 +531,15 @@ private:
   template <class TScAgent>
   bool ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept;
 
-  ScTemplate BuildCheckTemplate(TScEvent const & event, ScAddr const & checkTemplateAddr) noexcept;
+  ScTemplate BuildInitiationConditionTemplate(
+      TScEvent const & event,
+      ScAddr const & initiationConditionTemplateAddr) noexcept;
+
+  ScTemplate BuildResultConditionTemplate(TScEvent const & event, ScAddr const & resultConditionTemplateAddr) noexcept;
 
   bool GenerateCheckTemplateParams(
       ScAddr const & checkTemplateAddr,
-      ScAddr const & eventSubscriptionElementAddr,
-      ScAddr const & otherElementAddr,
+      TScEvent const & event,
       size_t otherElementPosition,
       ScIterator5Ptr const eventTripleIterator,
       ScTemplateParams & checkTemplateParams) noexcept;
@@ -601,7 +605,7 @@ public:
    * performs.
    * @return ScTemplate of initiation condition of this agent class.
    */
-  _SC_EXTERN ScTemplate GetInitiationConditionTemplate() const override;
+  _SC_EXTERN ScTemplate GetInitiationConditionTemplate(ScActionEvent const & event) const override;
 
 protected:
   ScActionInitiatedAgent() noexcept;
