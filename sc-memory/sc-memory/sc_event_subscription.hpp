@@ -13,14 +13,13 @@
 #include "utils/sc_lock.hpp"
 
 /*!
- * Base class for sc-events subscriptions
+ * Base class for sc-events subscriptions.
  */
 class _SC_EXTERN ScEventSubscription : public ScObject
 {
 public:
   _SC_EXTERN ~ScEventSubscription() noexcept override;
 
-  /* Remove delegate function */
   _SC_EXTERN virtual void RemoveDelegate() noexcept = 0;
 };
 
