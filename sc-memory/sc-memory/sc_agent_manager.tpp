@@ -216,10 +216,22 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     }
     catch (utils::ScException const & exception)
     {
-      action.FinishWithError();
-      SC_LOG_ERROR(
-          "Agent `" << agentName << "` was finished because error was occurred.\nError description:\n"
-                    << exception.Description());
+      try
+      {
+        action.FinishWithError();
+        SC_LOG_ERROR(
+            "Agent `" << agentName << "` was finished because error was occurred.\nError description:\n"
+                      << exception.Description());
+      }
+      catch (utils::ScException const & finishingActionException)
+      {
+        SC_LOG_ERROR(
+            "It was tried to finish agent `"
+            << agentName << "` because error was occurred.\nError description:\n"
+            << exception.Description() << "\nBut agent `" << agentName
+            << "` can not be finished because error was occurred during its finishing.\nError description:\n"
+            << finishingActionException.Description());
+      }
       return;
     }
 
