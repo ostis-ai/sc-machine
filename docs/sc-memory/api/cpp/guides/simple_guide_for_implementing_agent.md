@@ -189,7 +189,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
     = m_context.HelperFindBySystemIdtf("nrel_set_power");
   // You have to make sure that this norole relation is in the knowledge base.
   ScAddr const & arcAccessAddr = m_context.CreateEdge(
-    ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcAddr);
+    ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
 
   action.FormResult(
     setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
