@@ -38,7 +38,7 @@ It can be useful if you want logging keynode system identifiers.
 
 ## **ScTemplateKeynode**
 
-It is a base class to create sc-templates as keynodes. This class is useful when you want use programmly represented sc-template in different places in the code or when you don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.
+It is a base class to create sc-templates as keynodes. This class is useful when you want use programably represented sc-template in different places in the code or when you don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.
 
 ```cpp
 #include <sc-memory/sc_keynodes.hpp>

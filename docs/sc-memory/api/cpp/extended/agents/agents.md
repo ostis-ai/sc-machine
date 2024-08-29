@@ -16,7 +16,7 @@ All agents react to the occurrence of events in sc-memory (sc-events). That is, 
 
 ## **What does agent specification represent?**
 
-All knowledge about an agent: *primary initiation condition*, *class of actions* it can perform, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programly, using sc-machine API.
+All knowledge about an agent: *primary initiation condition*, *class of actions* it can perform, *initiation condition*, and *result condition*, are part of **agent's specification**. This specification can be represented either in a knowledge base, using SC-code, or programably, using sc-machine API.
 
 Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code (SCg-code). An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.
 

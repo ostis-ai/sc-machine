@@ -109,8 +109,8 @@ protected:
  * @brief A base class to create sc-templates as keynodes. Use it to create keynodes of sc-templates in the ScKeynodes
  * class for use in agent programs.
  *
- * This class is useful when you want use programmly represented sc-template in different places in the code or when you
- * don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.
+ * This class is useful when you want use programably represented sc-template in different places in the code or when
+ * you don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.
  *
  * @note Objects of this class can be used as ScTemplate and ScAddr.
  * @warning Use this class only for static object declarations.
