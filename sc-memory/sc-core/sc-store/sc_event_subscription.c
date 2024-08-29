@@ -11,6 +11,7 @@
 #include "sc-event/sc_event_private.h"
 #include "sc-event/sc_event_queue.h"
 
+#include "../sc_keynodes.h"
 #include "../sc_memory_context_manager.h"
 #include "../sc_memory_context_private.h"
 
