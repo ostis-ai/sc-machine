@@ -92,7 +92,7 @@ sc_result ScElementaryEventSubscription<TScEvent>::Handle(
   }
   catch (utils::ScException & e)
   {
-    SC_LOG_ERROR("Uncaught exception: " << e.Message());
+    SC_LOG_ERROR("ScElementaryEventSubscription: Uncaught exception in delegate function: " << e.Message());
   }
 
   return SC_RESULT_OK;
