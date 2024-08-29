@@ -8,8 +8,7 @@ This API provides functionality to implement waiters on C++.
 
 ## **ScWaiter** and **ScConditionWaiter**
 
-This type of objects is used to wait until some event emits. It is usually used, when one of an `ScAgent` wants to wait 
-result of another one. There are next kind of `ScWaiter` objects:
+This type of objects is used to wait until some event emits until the maximum waiting time expires. It is usually used, when one of an `ScAgent` wants to wait result of another one. There are next kind of `ScWaiter` objects:
 
 * `ScWaiter` locks run flow until simple event emits. You can see the list of these events in the [**C++ Events API**](events.md).
 * `ScConditionWaiter` locks run flow until simple event emits and specified conditional check returns `true`. In other
