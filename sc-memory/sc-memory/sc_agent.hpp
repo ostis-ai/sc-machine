@@ -351,7 +351,7 @@ protected:
       ScTemplateParams & checkTemplateParams) noexcept;
 };
 
-using ScBaseAgent = ScAgent<ScElementaryEvent>;
+using ScElementaryEventAgent = ScAgent<ScElementaryEvent>;
 
 /*!
  * @class ScActionInitiatedAgent

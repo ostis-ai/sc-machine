@@ -187,7 +187,7 @@ public:
   ScResult DoProgram(ScAction & action) override;
 };
 
-class ATestDoProgram : public ScBaseAgent
+class ATestDoProgram : public ScElementaryEventAgent
 {
 public:
   static inline TestWaiter msWaiter;

@@ -104,6 +104,10 @@ There are two main classes that you can use to implement an agent: `ScAgent` and
 
 ### **ScAgent**
 
+There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
+
+You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgent` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
+
 This class can be used for all types of platform-dependent agents. The example using this class is represented below.
 
 ```cpp
@@ -189,7 +193,7 @@ If you want to change specification of this agent in knowledge base, then write 
 
 #include <sc-memory/sc_agent.hpp>
 
-class MyAgent : public ScBaseAgent
+class MyAgent : public ScElementaryEventAgent
 {
 public:
   ScAddr GetActionClass() const override;
@@ -203,7 +207,7 @@ public:
 This implementation allows to provide any sc-event type to `DoProgram`.
 
 !!! note
-    `ScBaseAgent` is alias for `ScAgent<ScElementaryEvent>`.
+    `ScElementaryEventAgent` is alias for `ScAgent<ScElementaryEvent>`.
 
 !!! note
     If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**](modules.md) to learn how to implement agents with specification in the knowledge base.
@@ -242,16 +246,6 @@ public:
 
 !!! note
     `ScActionInitiatedEvent` is alias for `ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
-
----
-
-### **ScAgentBase**
-
-There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.
-
-This class does not provide methods to subscribe and unsubscribe a specified agent. This functionality is provided by the classes `ScAgent` and `ScActionInitiatedAgent`. You should inherit your agent class from these classes, not from the `ScAgentBase` class (see documentation above).
-
-You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgentBase` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
 
 ---
 
@@ -484,7 +478,7 @@ ScAddr MyAgent::GetEventSubscriptionElement() const
 ```
 
 !!! warning
-    Don't override `GetEventClass` and `GetEventSubscriptionElement` for agent with statically specified sc-event type. Your code can't be compiled. Override them, if your agent class inherit `ScAgent<ScElementaryEvent>` (`ScBaseAgent`).
+    Don't override `GetEventClass` and `GetEventSubscriptionElement` for agent with statically specified sc-event type. Your code can't be compiled. Override them, if your agent class inherit `ScAgent<ScElementaryEvent>` (`ScElementaryEventAgent`).
 
 #### **GetInitiationCondition**
 
