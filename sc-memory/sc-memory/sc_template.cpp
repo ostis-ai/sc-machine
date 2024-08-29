@@ -236,7 +236,7 @@ ScTemplate::Result::operator bool() const
 
 // --------------------------------
 
-ScTemplate::ScTemplate()
+ScTemplate::ScTemplate() noexcept
 {
   m_templateTriples.reserve(16);
 
@@ -244,14 +244,14 @@ ScTemplate::ScTemplate()
   m_priorityOrderedTemplateTriples.resize(tripleTypeCount);
 }
 
-ScTemplate::~ScTemplate()
+ScTemplate::~ScTemplate() noexcept
 {
   for (auto * triple : m_templateTriples)
     delete triple;
   m_templateTriples.clear();
 }
 
-ScTemplate::ScTemplate(ScTemplate && other)
+ScTemplate::ScTemplate(ScTemplate && other) noexcept
   : m_templateItemsNamesToReplacementItemsPositions(std::move(other.m_templateItemsNamesToReplacementItemsPositions))
   , m_templateTriples(std::move(other.m_templateTriples))
   , m_priorityOrderedTemplateTriples(std::move(other.m_priorityOrderedTemplateTriples))
@@ -260,7 +260,7 @@ ScTemplate::ScTemplate(ScTemplate && other)
 {
 }
 
-ScTemplate & ScTemplate::operator=(ScTemplate && other)
+ScTemplate & ScTemplate::operator=(ScTemplate && other) noexcept
 {
   if (this == &other)
     return *this;

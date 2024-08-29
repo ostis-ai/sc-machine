@@ -44,7 +44,7 @@ class ScAgentBuilder;
  *   ->Agent<MyAgent>();
  *
  * \endcode
- * @note Not recommended to use interface API to implement module classes. Use `SC_MODULE_REGISTER` instead of.
+ * @note Not recommended to use interface API to implement module classes. Use `SC_MODULE_REGISTER` instead.
  */
 class _SC_EXTERN ScModule : public ScObject
 {
@@ -54,7 +54,7 @@ public:
   _SC_EXTERN static ScModule * Create(ScModule * module) noexcept;
 
   /*!
-   * @brief Reminds agent and it initiation condition to register it with module after.
+   * @brief Remembers agent and it initiation condition to register it with module after.
    * @tparam TScAgent An agent class to subscribe.
    * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    * @returns A pointer to module instance.
@@ -68,7 +68,6 @@ public:
   /*!
    * @brief Remembers action agent and it initiation condition to register it with module after.
    * @tparam TScAgent An agent class to subscribe.
-   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
    * @returns A pointer to module instance.
    */
   template <class TScAgent, typename = std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>>
@@ -85,11 +84,13 @@ public:
 
   /*!
    * @brief Subscribes all module agents.
+   * @param context A sc-memory context for registering.
    * @returns Result of initializing.
    */
   _SC_EXTERN void Register(ScMemoryContext * context) noexcept(false);
 
   /*! Unsubscribes all module agents.
+   * @param context A sc-memory context for unregistering.
    * @returns Result of shutdown.
    */
   _SC_EXTERN void Unregister(ScMemoryContext * context) noexcept(false);

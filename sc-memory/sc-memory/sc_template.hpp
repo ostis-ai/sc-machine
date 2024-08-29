@@ -331,15 +331,15 @@ public:
 
 public:
   SC_DISALLOW_COPY(ScTemplate);
-  ScTemplate(ScTemplate && other);
-  ScTemplate & operator=(ScTemplate && other);
+  ScTemplate(ScTemplate && other) noexcept;
+  ScTemplate & operator=(ScTemplate && other) noexcept;
 
   using ScTemplateItemsToReplacementsItemsPositions = std::unordered_map<std::string, size_t>;
   using ScTemplateTriplesVector = std::vector<class ScTemplateTriple *>;
 
-  _SC_EXTERN explicit ScTemplate();
+  _SC_EXTERN explicit ScTemplate() noexcept;
 
-  _SC_EXTERN ~ScTemplate();
+  _SC_EXTERN ~ScTemplate() noexcept;
 
   /*!
    * @brief Adds a triple to object of `ScTemplate`.

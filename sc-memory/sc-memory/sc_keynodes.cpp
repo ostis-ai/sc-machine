@@ -210,8 +210,7 @@ ScAddr const & ScKeynodes::GetRrelIndex(size_t idx)
   if (idx == 0 || idx > kKeynodeRrelListNum)
   {
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "You should use index in range[1; " << std::to_string(kKeynodeRrelListNum) << "].");
+        utils::ExceptionInvalidParams, "You should use index in range[1; " << kKeynodeRrelListNum << "].");
   }
 
   return kKeynodeRrelList[idx - 1];
