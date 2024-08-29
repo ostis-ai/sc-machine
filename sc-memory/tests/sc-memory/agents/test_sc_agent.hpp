@@ -174,7 +174,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestDoProgramTwo : public ScActionInitiatedAgent
@@ -216,7 +216,7 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestGetInitiationConditionTemplate : public ScActionInitiatedAgent
@@ -226,9 +226,9 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScTemplate GetInitiationConditionTemplate(ScActionEvent const & event) const override;
+  ScTemplate GetInitiationConditionTemplate(ScActionInitiatedEvent const & event) const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement : public ScActionInitiatedAgent
@@ -248,7 +248,7 @@ public:
 
   ScAddr GetInitiationCondition() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple : public ScActionInitiatedAgent
@@ -266,7 +266,7 @@ public:
 
   ScAddr GetInitiationCondition() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestGetInitiationConditionTemplateHasEventTripleTwice : public ScActionInitiatedAgent
@@ -285,7 +285,7 @@ public:
 
   ScAddr GetInitiationCondition() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestCheckInitiationCondition : public ScActionInitiatedAgent
@@ -295,9 +295,9 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  bool CheckInitiationCondition(ScActionEvent const & event) override;
+  bool CheckInitiationCondition(ScActionInitiatedEvent const & event) override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestGetResultConditionTemplate : public ScActionInitiatedAgent
@@ -307,9 +307,9 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 
-  ScTemplate GetResultConditionTemplate(ScActionEvent const & event, ScAction & action) const override;
+  ScTemplate GetResultConditionTemplate(ScActionInitiatedEvent const & event, ScAction & action) const override;
 };
 
 class ATestCheckResultCondition : public ScActionInitiatedAgent
@@ -319,9 +319,9 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 
-  bool CheckResultCondition(ScActionEvent const & event, ScAction & action) override;
+  bool CheckResultCondition(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
 class ATestActionDeactivated : public ScActionInitiatedAgent
@@ -331,5 +331,5 @@ public:
 
   ScAddr GetActionClass() const override;
 
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };

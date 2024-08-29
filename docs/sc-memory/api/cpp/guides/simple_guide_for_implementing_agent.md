@@ -119,7 +119,7 @@ An agent's class to be implemented must comply with the following requirements:
 
 The base class `ScAgent` contains API to implement agents that react to any sc-events. The base class `ScActionInitiatedAgent` inherits base class `ScAgent` and provides API to implement agents that react to sc-events of initiating sc-action.
 
-* It must override at least methods `ScAddr GetAction() const` and `ScResult DoProgram(ScActionEvent const & event, ScAction & action)`.
+* It must override at least methods `ScAddr GetAction() const` and `ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action)`.
 
 * Override methods must be public. Otherwise, you won't be able to build your code because the sc-machine won't be able to call methods on your agent class.
 

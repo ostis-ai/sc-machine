@@ -229,8 +229,8 @@ public:
   ScAddr GetActionClass() const override;
   // Here you should implement program of the given agent. 
   // This overriding is required.
-  ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
-  // Here `ScActionEvent` is type of event to which 
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
+  // Here `ScActionInitiatedEvent` is type of event to which 
   // the given agent reacts.
 
   // Other user-defined methods.
@@ -241,7 +241,7 @@ public:
     `ScActionInitiatedAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
 
 !!! note
-    `ScActionEvent` is alias for `ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
+    `ScActionInitiatedEvent` is alias for `ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
 
 ---
 
@@ -283,14 +283,14 @@ This method is executed when agent checked initiation condition successfully. Us
 Each agent performs action with the help of its program.
 
 ```cpp
-ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
   // Class `ScAction` encapsulates information about sc-action. The provided 
   // action is action that the given agent performs right now. 
   // It belongs to `MyKeynodes::my_action` class. 
   // Actions are copyable and movable. `ScAction` is inherited from `ScAddr`.
 
-  // `ScActionEvent` class is event type on which the given agent 
+  // `ScActionInitiatedEvent` class is event type on which the given agent 
   // is triggered. It is encapsulate information about sc-event. 
   // The provided event is event on which the agent is triggered right now. 
   // It has methods to get information about initiated sc-event: `GetUser`, 
@@ -314,7 +314,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 There are many ways of methods that get action arguments. Use them, they can help you to simplify code.
 
 ```cpp
-ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
   auto [argAddr1, argAddr] = action.GetArguments<2>();
 
@@ -325,7 +325,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 ```
 
 ```cpp
-ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
   ScAddr const & argAddr1 = action.GetArgument(ScKeynodes::rrel_1);
   // Parameter has ScAddr type.
@@ -337,7 +337,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 ```
 
 ```cpp
-ScResult MyAgent::Program(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::Program(ScActionInitiatedEvent const & event, ScAction & action)
 {
   ScAddr const & argAddr1 = action.GetArgument(1); // size_t
   // It would be the same if we pass ScKeynodes::rrel_1 instead of 1.
@@ -363,7 +363,7 @@ ScResult MyAgent::Program(MyEventType const & event, ScAction & action)
 ```
 
 ```cpp
-ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
   // You can use object of ScAction as object of ScAddr.
   ScIterator3Ptr const it3 = m_context.Iterator3(action, ..., ...);
@@ -377,7 +377,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 ##### Handling action result
 
 ```cpp
-ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
   // Some logic...
  
@@ -390,7 +390,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 To learn more about methods of `ScAction` class, see [**C++ Actions API**](actions.md).
 
 ```cpp
-ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
   // Some logic...
  
@@ -402,7 +402,7 @@ ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
 ##### Handling action finish state
 
 ```cpp
-ScResult MyAgent::DoProgram(ScActionEvent const & event, ScAction & action)
+ScResult MyAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
   // Some logic...
 
@@ -548,7 +548,7 @@ You can specify the initiation condition template in code rather than in the kno
 
 ```cpp
 ScTemplate MyAgent::GetInitiationConditionTemplate(
-  ScActionEvent const & event) const
+  ScActionInitiatedEvent const & event) const
 {
   // In this method, you shouldn't specify triple for sc-event sc-elements.
   // You should specify triples that only apply to your agent.
@@ -566,9 +566,9 @@ ScTemplate MyAgent::GetInitiationConditionTemplate(
 For speed, you can implement the agent initiation condition in the form of checks on iterators.
 
 ```cpp
-bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
+bool MyAgent::CheckInitiationCondition(ScActionInitiatedEvent const & event)
 {
- // ScActionEvent is event type on which the given agent triggered. 
+ // ScActionInitiatedEvent is event type on which the given agent triggered. 
  // It is encapsulate information about sc-event. The provided event is event 
  // on which the agent is triggered right now. It has methods to get 
  // information about initiated sc-event: GetUser, GetArc, 
@@ -627,7 +627,7 @@ You can specify the result condition template in code rather than in the knowled
 
 ```cpp
 ScTemplate MyAgent::GetResultConditionTemplate(
-  ScActionEvent const & event, ScAction & action) const
+  ScActionInitiatedEvent const & event, ScAction & action) const
 {
   // Here you should specify template to check action result content.
   ScTemplate resultCondition;
@@ -648,7 +648,7 @@ ScTemplate MyAgent::GetResultConditionTemplate(
 For speed, you can implement the agent result condition in the form of checks on iterators.
 
 ```cpp
-bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
+bool MyAgent::CheckResult(ScActionInitiatedEvent const & event, ScAction & action)
 {
   ScStructure const & actionResult = action.GetResult();
   ScIterator3Ptr const it3 = m_context.Iterator3(

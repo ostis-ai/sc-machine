@@ -164,7 +164,7 @@ ScAddr ATestDoProgramOne::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-ScResult ATestDoProgramOne::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestDoProgramOne::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -223,7 +223,7 @@ ScAddr ATestCheckResult::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-ScResult ATestCheckResult::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestCheckResult::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
 {
   auto [firstArgument, secondArgument] = action.GetArguments<2>();
 
@@ -250,7 +250,8 @@ ScAddr ATestGetInitiationConditionTemplate::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate(ScActionEvent const & event) const
+ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate(
+    ScActionInitiatedEvent const & event) const
 {
   ScTemplate initiationCondition;
   initiationCondition.Triple(
@@ -260,7 +261,7 @@ ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate(S
   return initiationCondition;
 }
 
-ScResult ATestGetInitiationConditionTemplate::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestGetInitiationConditionTemplate::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -279,7 +280,7 @@ ScAddr ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement::GetIn
 }
 
 ScResult ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement::DoProgram(
-    ScActionEvent const &,
+    ScActionInitiatedEvent const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -299,7 +300,7 @@ ScAddr ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple:
 }
 
 ScResult ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple::DoProgram(
-    ScActionEvent const &,
+    ScActionInitiatedEvent const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -318,7 +319,9 @@ ScAddr ATestGetInitiationConditionTemplateHasEventTripleTwice::GetInitiationCond
   return initiationCondition;
 }
 
-ScResult ATestGetInitiationConditionTemplateHasEventTripleTwice::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestGetInitiationConditionTemplateHasEventTripleTwice::DoProgram(
+    ScActionInitiatedEvent const &,
+    ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -331,7 +334,7 @@ ScAddr ATestCheckInitiationCondition::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionEvent const & event)
+bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionInitiatedEvent const & event)
 {
   return m_context.HelperCheckEdge(
              ATestGenerateOutgoingArc::generate_outgoing_arc_action,
@@ -340,7 +343,7 @@ bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionEvent const
          && m_context.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
 }
 
-ScResult ATestCheckInitiationCondition::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestCheckInitiationCondition::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -353,14 +356,15 @@ ScAddr ATestGetResultConditionTemplate::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-ScResult ATestGetResultConditionTemplate::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestGetResultConditionTemplate::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
 }
 
-ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate(ScActionEvent const & event, ScAction & action)
-    const
+ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate(
+    ScActionInitiatedEvent const & event,
+    ScAction & action) const
 {
   ScTemplate initiationCondition;
   initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, action >> "_action");
@@ -375,13 +379,13 @@ ScAddr ATestCheckResultCondition::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-ScResult ATestCheckResultCondition::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestCheckResultCondition::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
 }
 
-bool ATestCheckResultCondition::CheckResultCondition(ScActionEvent const &, ScAction & action)
+bool ATestCheckResultCondition::CheckResultCondition(ScActionInitiatedEvent const &, ScAction & action)
 {
   return m_context.HelperCheckEdge(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm)
          && m_context.Iterator3(action, ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
@@ -394,7 +398,7 @@ ScAddr ATestActionDeactivated::GetActionClass() const
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
 }
 
-ScResult ATestActionDeactivated::DoProgram(ScActionEvent const &, ScAction & action)
+ScResult ATestActionDeactivated::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();

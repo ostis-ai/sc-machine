@@ -499,4 +499,4 @@ private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_change_link_content;
 };
 
-using ScActionEvent = ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;
+using ScActionInitiatedEvent = ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>;

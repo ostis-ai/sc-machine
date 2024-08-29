@@ -594,7 +594,7 @@ using ScBaseAgent = ScAgent<ScElementaryEvent>;
  * }
  * @endcode
  */
-class _SC_EXTERN ScActionInitiatedAgent : public ScAgent<ScActionEvent>
+class _SC_EXTERN ScActionInitiatedAgent : public ScAgent<ScActionInitiatedEvent>
 {
   friend class ScAgentContext;
 
@@ -607,7 +607,7 @@ public:
    * performs.
    * @return ScTemplate of initiation condition of this agent class.
    */
-  _SC_EXTERN ScTemplate GetInitiationConditionTemplate(ScActionEvent const & event) const override;
+  _SC_EXTERN ScTemplate GetInitiationConditionTemplate(ScActionInitiatedEvent const & event) const override;
 
 protected:
   ScActionInitiatedAgent() noexcept;
