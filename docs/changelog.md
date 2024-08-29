@@ -18,6 +18,8 @@ encapsulated this logic;
 - Constructors for ScMemoryContext with string and int parameters were removed. Use the one without parameters instead.
 - HelperSearchTemplateInStruct was removed from ScMemoryContext API. Use HelperSearchTemplate with callbacks.
 - Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
+- Questions were renamed to actions, answers were renamed to results.
+- `m_memoryCtx` in ScAgent renamed to `m_context`.
 - Now we don't use code generation as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API. We have
   - completely moved from code generation to template programming;
   - improved the API and aligned with our description of how it should be;
