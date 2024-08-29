@@ -8,23 +8,24 @@
 
 #include "sc_object.hpp"
 
-#include "sc_agent_builder.hpp"
+#include "sc_agent_context.hpp"
 
 #include "utils/sc_log.hpp"
 
 //! Log functions to be used in agent class methods.
-#define SC_AGENT_LOG_DEBUG(__msg__) SC_LOG_DEBUG(GetName() << ": " << __msg__)
-#define SC_AGENT_LOG_INFO(__msg__) SC_LOG_INFO(GetName() << ": " << __msg__)
-#define SC_AGENT_LOG_WARNING(__msg__) SC_LOG_WARNING(GetName() << ": " << __msg__)
-#define SC_AGENT_LOG_ERROR(__msg__) SC_LOG_ERROR(GetName() << ": " << __msg__)
+#define SC_AGENT_LOG_DEBUG(__message__) SC_LOG_DEBUG(GetName() << ": " << __message__)
+#define SC_AGENT_LOG_INFO(__message__) SC_LOG_INFO(GetName() << ": " << __message__)
+#define SC_AGENT_LOG_WARNING(__message__) SC_LOG_WARNING(GetName() << ": " << __message__)
+#define SC_AGENT_LOG_ERROR(__message__) SC_LOG_ERROR(GetName() << ": " << __message__)
 
 template <class TScEvent>
 class ScElementaryEventSubscription;
 class ScAction;
 class ScResult;
+class ScEvent;
 
 /*!
- * @class ScAgentBase
+ * @class ScAgent
  * @brief An abstract base class for agents.
  *
  * This class provides a base implementation for agents, offering methods for initialization, shutdown, and handling
@@ -34,21 +35,24 @@ class ScResult;
  * @tparam TScContext The type of sc-memory context that used by agent.
  */
 template <class TScEvent, class TScContext = ScAgentContext>
-class _SC_EXTERN ScAgentBase : public ScObject
+class _SC_EXTERN ScAgent : public ScObject
 {
-  static_assert(std::is_base_of<class ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
+  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
   static_assert(
-      std::is_base_of<class ScAgentContext, TScContext>::value,
+      std::is_base_of<ScAgentContext, TScContext>::value,
       "TScContext type must be derived from ScAgentContext type.");
   static_assert(std::is_move_constructible<TScContext>::value, "TScContext type must be movable constructible.");
 
   template <class TScAgent>
   friend class ScAgentBuilder;
+  template <class TScAgent>
+  friend class ScAgentManager;
+
+  using TEventType = TScEvent;
+  using TContextType = TScContext;
 
 public:
-  using TEventType = TScEvent;
-
-  _SC_EXTERN ~ScAgentBase() noexcept override;
+  _SC_EXTERN ~ScAgent() noexcept override;
 
   /*!
    * @brief Gets abstract agent for agent of this class.
@@ -242,9 +246,7 @@ protected:
   mutable TScContext m_context;
   ScAddr m_agentImplementationAddr;
 
-  static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_events;
-
-  _SC_EXTERN ScAgentBase() noexcept;
+  _SC_EXTERN ScAgent() noexcept;
 
   /*!
    * @brief Sets initiator of the agent.
@@ -258,288 +260,90 @@ protected:
    */
   _SC_EXTERN void SetImplementation(ScAddr const & agentImplementationAddr) noexcept;
 
+  //! Checks that agent action class belongs to `action_deactivated`.
+  _SC_EXTERN bool IsActionClassDeactivated() noexcept;
+
   /*!
    * @brief Checks if the agent may be specified in knowledge base.
    * @return true if the agent has implementation in knowledge base, otherwise true.
    */
   _SC_EXTERN bool MayBeSpecified() const noexcept;
 
-  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr) noexcept;
-};
-
-/*!
- * @class ScAgent
- * @brief A class for agents that can subscribe to any elementary sc-events.
- *
- * This class extends ScAgentBase and provides methods for subscribing and unsubscribing
- * to sc-events.
- *
- * @tparam TScEvent The type of sc-event this agent class handles.
- * @tparam TScContext The type of sc-memory context that used by agent.
- */
-template <class TScEvent, class TScContext = ScAgentContext>
-class _SC_EXTERN ScAgent : public ScAgentBase<TScEvent, TScContext>
-{
-  static_assert(std::is_base_of<ScEvent, TScEvent>::value, "TScEvent type must be derived from ScEvent type.");
-  static_assert(
-      std::is_base_of<class ScAgentContext, TScContext>::value,
-      "TScContext type must be derived from ScAgentContext type.");
-  static_assert(std::is_move_constructible<TScContext>::value, "TScContext type must be movable constructible.");
-
-  template <typename TScAgent>
-  struct HasOverride
-  {
-    struct CheckInitiationCondition
-    {
-      static constexpr bool value =
-          !std::is_same<decltype(&ScAgent::CheckInitiationCondition), decltype(&TScAgent::CheckInitiationCondition)>::
-              value;
-    };
-
-    struct GetInitiationCondition
-    {
-      static constexpr bool value =
-          !std::is_same<decltype(&ScAgent::GetInitiationCondition), decltype(&TScAgent::GetInitiationCondition)>::value;
-    };
-
-    struct GetInitiationConditionTemplate
-    {
-    private:
-      template <typename TBaseScAgent>
-      struct OverrideGetInitiationConditionTemplateFrom
-      {
-        static constexpr bool value = !std::is_same<
-            decltype(&TBaseScAgent::GetInitiationConditionTemplate),
-            decltype(&TScAgent::GetInitiationConditionTemplate)>::value;
-      };
-
-    public:
-      static constexpr bool value = std::is_base_of<ScActionInitiatedAgent, TScAgent>::value
-                                        ? OverrideGetInitiationConditionTemplateFrom<ScActionInitiatedAgent>::value
-                                        : OverrideGetInitiationConditionTemplateFrom<ScAgent>::value;
-    };
-
-    struct DoProgramWithEventArgument
-    {
-    private:
-      template <typename U>
-      static auto Test(int)
-          -> decltype(std::declval<U>().DoProgram(std::declval<typename U::TEventType const &>(), std::declval<ScAction &>()), std::true_type());
-
-      template <typename>
-      static std::false_type Test(...);
-
-    public:
-      static bool const value = decltype(Test<TScAgent>(0))::value;
-    };
-
-    struct DoProgramWithoutEventArgument
-    {
-    private:
-      template <typename U>
-      static auto Test(int) -> decltype(std::declval<U>().DoProgram(std::declval<ScAction &>()), std::true_type());
-
-      template <typename>
-      static std::false_type Test(...);
-
-    public:
-      static bool const value = decltype(Test<TScAgent>(0))::value;
-    };
-
-    struct CheckResultCondition
-    {
-      static constexpr bool value =
-          !std::is_same<decltype(&ScAgent::CheckResultCondition), decltype(&TScAgent::CheckResultCondition)>::value;
-    };
-
-    struct GetResultCondition
-    {
-      static constexpr bool value =
-          !std::is_same<decltype(&ScAgent::GetResultCondition), decltype(&TScAgent::GetResultCondition)>::value;
-    };
-
-    struct GetResultConditionTemplate
-    {
-    private:
-      template <typename TBaseScAgent>
-      struct OverrideGetResultConditionTemplateFrom
-      {
-        static constexpr bool value = !std::is_same<
-            decltype(&TBaseScAgent::GetResultConditionTemplate),
-            decltype(&TScAgent::GetResultConditionTemplate)>::value;
-      };
-
-    public:
-      static constexpr bool value = std::is_base_of<ScActionInitiatedAgent, TScAgent>::value
-                                        ? OverrideGetResultConditionTemplateFrom<ScActionInitiatedAgent>::value
-                                        : OverrideGetResultConditionTemplateFrom<ScAgent>::value;
-    };
-  };
-
-  template <typename TScAgent>
-  struct HasNoMoreThanOneOverride
-  {
-    // Each agent should have no more than one of three methods working with initiation condition.
-    struct InitiationConditionMethod
-    {
-      static constexpr bool value =
-          (HasOverride<TScAgent>::CheckInitiationCondition::value + HasOverride<TScAgent>::GetInitiationCondition::value
-           + HasOverride<TScAgent>::GetInitiationConditionTemplate::value)
-          <= 1;
-    };
-
-    // Each agent should have no more than one of three methods working with result condition.
-    struct ResultConditionMethod
-    {
-      static constexpr bool value =
-          (HasOverride<TScAgent>::CheckResultCondition::value + HasOverride<TScAgent>::GetResultCondition::value
-           + HasOverride<TScAgent>::GetResultConditionTemplate::value)
-          <= 1;
-    };
-  };
-
-  template <typename TScAgent>
-  struct HasOneOverride
-  {
-  public:
-    struct DoProgramMethod
-    {
-      static bool const value = HasOverride<TScAgent>::DoProgramWithEventArgument::value
-                                || HasOverride<TScAgent>::DoProgramWithoutEventArgument::value;
-    };
-  };
-
-  friend class ScModule;
-  friend class ScActionInitiatedAgent;
-  friend class ScAgentContext;
-
-private:
   /*!
-   * @brief Subscribes agent class to specified sc-events.
+   * @brief Validates the initiation condition for a given event.
    *
-   * If provided agent implementation `agentImplementationAddr` is valid then this method searches in knowledge base the
-   * following constructions
+   * This method checks if the initiation condition for the agent can be validated
+   * based on the provided event. It first checks for any overridden initiation
+   * condition checks. If none are found, it builds the initiation condition template
+   * based on the event and checks if it is empty. If the template is not empty,
+   * it performs a search for the template.
    *
-   * @code
-   *             nrel_inclusion
-   *                  |
-   *                  |
-   *                  |
-   *                  \/
-   * abstract_agent ======> agent_implementation
-   *
-   *   nrel_primary_initiation_condition
-   *                  |
-   *                  |
-   *                  |  event_class
-   *                  \/     ||
-   * abstract_agent =======> ||
-   *                         ||
-   *                         \/
-   *               event_subscription_element
-   * @endcode
-   *
-   * and subscribes the agent of this class to sc-event `event_class` with subscription sc-element
-   * `event_subscription_element`, else subscribes the agent of this class to sc-event
-   * `TScEvent` with subscription sc-elements from `subscriptionAddrs`.
-   *
-   * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param context A sc-memory context used to subscribe agent class to specified sc-event.
-   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
-   * class.
-   * @param subscriptionAddrs A list of sc-addresses of sc-elements to subscribe to.
-   * @warning Specified agent class must be derived from class `ScAgent`.
-   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
-   * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
-   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and is not included
-   * in any abstract sc-agent.
-   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and the abstract
-   * sc-agent for this agent class does not have a primary initiation condition.
+   * @param event An event to validate against.
+   * @return true if the initiation condition is valid; false otherwise.
    */
-  template <class TScAgent, class... TScAddr>
-  static _SC_EXTERN void Subscribe(
-      ScMemoryContext * context,
-      ScAddr const & agentImplementationAddr,
-      TScAddr const &... subscriptionAddrs) noexcept(false);
+  template <class TScAgent, typename HasOverride>
+  _SC_EXTERN bool ValidateInitiationCondition(TScEvent const & event) noexcept;
 
   /*!
-   * @brief Unsubscribes agent class from specified sc-events.
+   * @brief Validates the result condition for a given event and action.
    *
-   * If provided agent implementation `agentImplementationAddr` is valid then this method searches in knowledge base the
-   * following constructions
+   * This method checks if the result condition for the agent can be validated
+   * based on the provided event and action. It first checks for any overridden
+   * result condition checks. If none are found, it builds the result condition
+   * template and checks if it is empty. If the template is not empty, it performs
+   * a search for the template against the action's result.
    *
-   * @code
-   *             nrel_inclusion
-   *                  |
-   *                  |
-   *                  |
-   *                  \/
-   * abstract_agent ======> agent_implementation
-   *
-   *   nrel_primary_initiation_condition
-   *                  |
-   *                  |
-   *                  |  event_class
-   *                  \/     ||
-   * abstract_agent =======> ||
-   *                         ||
-   *                         \/
-   *               event_subscription_element
-   * @endcode
-   *
-   * and unsubscribes the agent of this class from sc-event `event_class` with subscription sc-element
-   * `event_subscription_element`, else unsubscribes the agent of this class from sc-event
-   * `TScEvent` with subscription sc-elements from `subscriptionAddrs`.
-   *
-   * @tparam TScAgent An agent class to be unsubscribed from the event.
-   * @param context A sc-memory context used to unsubscribe agent class from specified sc-event.
-   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
-   * class.
-   * @param subscriptionAddrs A list of sc-addresses of sc-elements to unsubscribe from.
-   * @warning Specified agent class must be derived from class `ScAgent`.
-   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
-   * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
-   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and is not included
-   * in any abstract sc-agent.
-   * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and the abstract
-   * sc-agent for this agent class does not have a primary initiation condition.
+   * @param event An event to validate against.
+   * @param action An action associated with the event.
+   * @return true if the result condition is valid; false otherwise.
    */
-  template <class TScAgent, class... TScAddr>
-  static _SC_EXTERN void Unsubscribe(
-      ScMemoryContext * context,
-      ScAddr const & agentImplementationAddr,
-      TScAddr const &... subscriptionAddrs) noexcept(false);
-
-protected:
-  _SC_EXTERN explicit ScAgent() noexcept;
+  template <class TScAgent, typename HasOverride>
+  _SC_EXTERN bool ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept;
 
   /*!
-   * @brief Gets the callback function for agent class.
-   * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
-   * class.
-   * @return A function that takes an sc-event and returns an sc-result.
-   * @warning Specified agent class must be derived from class `ScAgent`.
+   * @brief Builds the initiation condition template based on the event and template address.
+   *
+   * This method constructs the initiation condition template using the provided
+   * event and an address of the initiation condition template. It uses
+   * iterators to find relevant sc-elements and generates necessary template
+   * parameters for validation.
+   *
+   * @param event An event to build the template for.
+   * @param initiationConditionTemplateAddr An address of the initiation condition template.
+   * @return A ScTemplate object representing a initiation condition template.
    */
-  template <class TScAgent>
-  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr) noexcept;
+  _SC_EXTERN ScTemplate
+  BuildInitiationConditionTemplate(TScEvent const & event, ScAddr const & initiationConditionTemplateAddr) noexcept;
 
-private:
-  bool IsActionClassDeactivated() noexcept;
+  /*!
+   * @brief Builds the result condition template based on the event and template address.
+   *
+   * This method constructs the result condition template using the provided
+   * event and the address of the result condition template.
+   *
+   * @param event An event to build the template for.
+   * @param resultConditionTemplateAddr An address of the result condition template.
+   * @return A ScTemplate object representing a result condition template.
+   */
+  _SC_EXTERN ScTemplate
+  BuildResultConditionTemplate(TScEvent const & event, ScAddr const & resultConditionTemplateAddr) noexcept;
 
-  template <class TScAgent>
-  bool ValidateInitiationCondition(TScEvent const & event) noexcept;
-
-  template <class TScAgent>
-  bool ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept;
-
-  ScTemplate BuildInitiationConditionTemplate(
-      TScEvent const & event,
-      ScAddr const & initiationConditionTemplateAddr) noexcept;
-
-  ScTemplate BuildResultConditionTemplate(TScEvent const & event, ScAddr const & resultConditionTemplateAddr) noexcept;
-
-  bool GenerateCheckTemplateParams(
+  /*!
+   * @brief Generates template parameters for checking the initiation condition.
+   *
+   * This method generates parameters for validating the initiation
+   * condition template based on the event and its associated elements. It checks
+   * the types of elements involved and ensures they are substitutable according
+   * to the template's expectations.
+   *
+   * @param initiationConditionTemplateAddr An address of the initiation condition template.
+   * @param event An event to generate parameters for.
+   * @param otherElementPosition A position of the other element in the template.
+   * @param eventTripleIterator An iterator for the event's triples.
+   * @param checkTemplateParams Parameters to fill with found values.
+   * @return true if the parameters were successfully generated; false otherwise.
+   */
+  _SC_EXTERN bool GenerateCheckTemplateParams(
       ScAddr const & checkTemplateAddr,
       TScEvent const & event,
       size_t otherElementPosition,

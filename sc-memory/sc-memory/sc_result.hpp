@@ -13,8 +13,8 @@
  */
 class ScResult : public ScObject
 {
-  template <class TScEvent, class TScContext>
-  friend class ScAgentBase;
+  template <class TScAgent>
+  friend class ScAgentManager;
   template <class TScEvent, class TScContext>
   friend class ScAgent;
   friend class ScAction;

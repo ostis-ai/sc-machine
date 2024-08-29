@@ -9,25 +9,24 @@
 #include "sc_agent.hpp"
 
 #include "sc_action.hpp"
-#include "sc_agent_context.hpp"
 #include "sc_result.hpp"
 #include "sc_event_subscription.hpp"
 #include "sc_keynodes.hpp"
 
 template <class TScEvent, class TScContext>
-ScAgentBase<TScEvent, TScContext>::ScAgentBase() noexcept
+ScAgent<TScEvent, TScContext>::ScAgent() noexcept
   : m_context(nullptr)
 {
 }
 
 template <class TScEvent, class TScContext>
-ScAgentBase<TScEvent, TScContext>::~ScAgentBase() noexcept
+ScAgent<TScEvent, TScContext>::~ScAgent() noexcept
 {
   m_context.Destroy();
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetAbstractAgent() const noexcept(false)
+ScAddr ScAgent<TScEvent, TScContext>::GetAbstractAgent() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.Iterator5(
       ScType::NodeConst,
@@ -46,7 +45,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetAbstractAgent() const noexcept(fals
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const noexcept(false)
+ScAddr ScAgent<TScEvent, TScContext>::GetEventClass() const noexcept(false)
 {
   if constexpr (!std::is_same<TScEvent, ScElementaryEvent>::value)
     return TScEvent::eventClassAddr;
@@ -69,7 +68,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventClass() const noexcept(false)
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const noexcept(false)
+ScAddr ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.Iterator5(
       GetAbstractAgent(),
@@ -89,7 +88,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetEventSubscriptionElement() const no
 }
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetActionClass() const noexcept(false)
+ScAddr ScAgent<TScEvent, TScContext>::GetActionClass() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.Iterator5(
       GetAbstractAgent(),
@@ -109,7 +108,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetActionClass() const noexcept(false)
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-bool ScAgentBase<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & event)
+bool ScAgent<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & event)
 {
   return true;
 }
@@ -117,7 +116,7 @@ bool ScAgentBase<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const 
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetInitiationCondition() const noexcept(false)
+ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.Iterator5(
       GetAbstractAgent(),
@@ -138,7 +137,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetInitiationCondition() const noexcep
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-ScTemplate ScAgentBase<TScEvent, TScContext>::GetInitiationConditionTemplate(TScEvent const &) const
+ScTemplate ScAgent<TScEvent, TScContext>::GetInitiationConditionTemplate(TScEvent const &) const
 {
   return ScTemplate();
 }
@@ -147,13 +146,13 @@ ScTemplate ScAgentBase<TScEvent, TScContext>::GetInitiationConditionTemplate(TSc
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(TScEvent const & event, ScAction & action)
+ScResult ScAgent<TScEvent, TScContext>::DoProgram(TScEvent const & event, ScAction & action)
 {
   return SC_RESULT_OK;
 }
 
 template <class TScEvent, class TScContext>
-ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(ScAction & action)
+ScResult ScAgent<TScEvent, TScContext>::DoProgram(ScAction & action)
 {
   return SC_RESULT_OK;
 }
@@ -162,7 +161,7 @@ ScResult ScAgentBase<TScEvent, TScContext>::DoProgram(ScAction & action)
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-bool ScAgentBase<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
+bool ScAgent<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
 {
   return true;
 }
@@ -170,7 +169,7 @@ bool ScAgentBase<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, S
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-ScAddr ScAgentBase<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
+ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.Iterator5(
       GetAbstractAgent(),
@@ -191,7 +190,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetResultCondition() const noexcept(fa
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-ScTemplate ScAgentBase<TScEvent, TScContext>::GetResultConditionTemplate(TScEvent const &, ScAction &) const
+ScTemplate ScAgent<TScEvent, TScContext>::GetResultConditionTemplate(TScEvent const &, ScAction &) const
 {
   return ScTemplate();
 }
@@ -199,248 +198,15 @@ ScTemplate ScAgentBase<TScEvent, TScContext>::GetResultConditionTemplate(TScEven
 // LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
-void ScAgentBase<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr) noexcept
+void ScAgent<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr) noexcept
 {
   m_context = ScAgentContext(userAddr);
 }
 
 template <class TScEvent, class TScContext>
-void ScAgentBase<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplementationAddr) noexcept
+void ScAgent<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplementationAddr) noexcept
 {
   m_agentImplementationAddr = agentImplementationAddr;
-}
-
-template <class TScEvent, class TScContext>
-bool ScAgentBase<TScEvent, TScContext>::MayBeSpecified() const noexcept
-{
-  return m_context.IsElement(m_agentImplementationAddr);
-}
-
-template <class TScEvent, class TScContext>
-std::function<void(TScEvent const &)> ScAgentBase<TScEvent, TScContext>::GetCallback(ScAddr const &) noexcept
-{
-  return {};
-}
-
-template <class TScEvent, class TScContext>
-ScAgent<TScEvent, TScContext>::ScAgent() noexcept
-  : ScAgentBase<TScEvent>(){};
-
-template <class TScEvent, class TScContext>
-template <class TScAgent, class... TScAddr>
-void ScAgent<TScEvent, TScContext>::Subscribe(
-    ScMemoryContext * context,
-    ScAddr const & agentImplementationAddr,
-    TScAddr const &... subscriptionAddrs) noexcept(false)
-{
-  static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
-  static_assert(
-      (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
-
-  TScAgent agent;
-  agent.SetInitiator(context->GetUser());
-  agent.SetImplementation(agentImplementationAddr);
-
-  std::string const & agentName = agent.GetName();
-  if (!ScAgentBase<TScEvent>::m_events.count(agentName))
-    ScAgentBase<TScEvent>::m_events.insert({agentName, {}});
-
-  ScAddrVector subscriptionVector{subscriptionAddrs...};
-  // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
-  if (agent.MayBeSpecified() || subscriptionVector.empty())
-    subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
-
-  std::string const & eventName = ScEvent::GetName<TScEvent>();
-  auto & subscriptionsMap = ScAgentBase<TScEvent>::m_events.find(agentName)->second;
-  for (ScAddr const & subscriptionElementAddr : subscriptionVector)
-  {
-    if (!context->IsElement(subscriptionElementAddr))
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
-          "Not able to subscribe agent `" << agentName << "` to event `" << eventName
-                                          << "because subscription sc-element with address hash `"
-                                          << subscriptionElementAddr.Hash() << "` is not valid.");
-    if (subscriptionsMap.find(subscriptionElementAddr) != subscriptionsMap.cend())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Agent `" << agentName << "` has already been subscribed to event `" << eventName << "("
-                    << subscriptionElementAddr.Hash() << ")`.");
-
-    SC_LOG_INFO(
-        "Subscribe agent `" << agentName << "` to event `" << eventName << "(" << subscriptionElementAddr.Hash()
-                            << ")`.");
-
-    if constexpr (std::is_same<ScElementaryEvent, TScEvent>::value)
-    {
-      subscriptionsMap.insert(
-          {subscriptionElementAddr,
-           new ScElementaryEventSubscription(
-               *context,
-               agent.GetEventClass(),
-               subscriptionElementAddr,
-               TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
-    }
-    else
-    {
-      subscriptionsMap.insert(
-          {subscriptionElementAddr,
-           new ScElementaryEventSubscription<TScEvent>(
-               *context, subscriptionElementAddr, TScAgent::template GetCallback<TScAgent>(agentImplementationAddr))});
-    }
-  }
-}
-
-template <class TScEvent, class TScContext>
-template <class TScAgent, class... TScAddr>
-void ScAgent<TScEvent, TScContext>::Unsubscribe(
-    ScMemoryContext * context,
-    ScAddr const & agentImplementationAddr,
-    TScAddr const &... subscriptionAddrs) noexcept(false)
-{
-  static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
-  static_assert(
-      (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
-
-  TScAgent agent;
-  agent.SetInitiator(context->GetUser());
-  agent.SetImplementation(agentImplementationAddr);
-
-  std::string const & agentName = agent.GetName();
-  auto const & agentsMapIt = ScAgentBase<TScEvent>::m_events.find(agentName);
-  if (agentsMapIt == ScAgentBase<TScEvent>::m_events.cend())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Agent `" << agentName << "` does not have been subscribed to any events yet.");
-
-  ScAddrVector subscriptionVector{subscriptionAddrs...};
-  // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
-  if (agent.MayBeSpecified() || subscriptionVector.empty())
-    subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
-
-  std::string const & eventClassName = ScEvent::GetName<TScEvent>();
-  auto & subscriptionsMap = agentsMapIt->second;
-  for (ScAddr const & subscriptionElementAddr : subscriptionVector)
-  {
-    if constexpr (!std::is_same<TScEvent, ScEventBeforeEraseElement>::value)
-    {
-      if (!context->IsElement(subscriptionElementAddr))
-        SC_THROW_EXCEPTION(
-            utils::ExceptionInvalidParams,
-            "Not able to unsubscribe agent `" << agentName << "` from event `" << eventClassName
-                                              << "because subscription sc-element with address hash `"
-                                              << subscriptionElementAddr.Hash() << "` is not valid.");
-    }
-
-    auto const & it = subscriptionsMap.find(subscriptionElementAddr);
-    if (it == subscriptionsMap.cend())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Agent `" << agentName << "` does not have been subscribed to event `" << eventClassName << "("
-                    << subscriptionElementAddr.Hash() << ")` yet.");
-
-    SC_LOG_INFO(
-        "Unsubscribe agent `" << agentName << "` from event `" << eventClassName << "("
-                              << subscriptionElementAddr.Hash() << ")`.");
-
-    delete it->second;
-    subscriptionsMap.erase(subscriptionElementAddr);
-  }
-}
-
-template <class TScEvent, class TScContext>
-template <class TScAgent>
-std::function<void(TScEvent const &)> ScAgent<TScEvent, TScContext>::GetCallback(
-    ScAddr const & agentImplementationAddr) noexcept
-{
-  static_assert(std::is_base_of<ScAgent, TScAgent>::value, "TScAgent type must be derived from ScAgent type.");
-
-  static_assert(
-      HasNoMoreThanOneOverride<TScAgent>::InitiationConditionMethod::value,
-      "TScAgent must have no more than one override method from methods: `GetInitiationCondition(void)`, "
-      "`GetInitiationCondition(event)` "
-      "and `CheckInitiationCondition`.");
-
-  static_assert(
-      HasNoMoreThanOneOverride<TScAgent>::ResultConditionMethod::value,
-      "TScAgent must have no more than one override method from methods: `GetResultCondition`, "
-      "`GetResultConditionTemplate` and "
-      "`CheckResultCondition`.");
-
-  static_assert(
-      HasOneOverride<TScAgent>::DoProgramMethod::value, "TScAgent must have one override `DoProgram` method.");
-
-  return [agentImplementationAddr](TScEvent const & event) -> void
-  {
-    auto const & ResolveAction = [](TScEvent const & event, ScAgent & agent) -> ScAction
-    {
-      auto [subscriptionElementAddr, _, otherElementAddr] = event.GetTriple();
-      if (subscriptionElementAddr == ScKeynodes::action_initiated)
-      {
-        ScAddr const & actionAddr = otherElementAddr;
-        return agent.m_context.ConvertToAction(actionAddr);
-      }
-
-      return agent.m_context.CreateAction(agent.GetActionClass()).Initiate();
-    };
-
-    TScAgent agent;
-    std::string const & agentName = agent.GetName();
-    // SC_LOG_INFO("Agent `" << agentName << "` reacted to primary initiation condition.");
-
-    agent.SetInitiator(event.GetUser());
-    agent.SetImplementation(agentImplementationAddr);
-
-    if (agent.IsActionClassDeactivated())
-    {
-      SC_LOG_WARNING(
-          "Agent `" << agentName << "` was finished because actions with class `" << agent.GetActionClass().Hash()
-                    << "` are deactivated.");
-      return;
-    }
-
-    // SC_LOG_INFO("Agent `" << agentName << "` started checking initiation condition.");
-    if (!agent.template ValidateInitiationCondition<TScAgent>(event))
-    {
-      SC_LOG_WARNING(
-          "Agent `" << agentName << "` was finished because its initiation condition was checked unsuccessfully.");
-      return;
-    }
-    // SC_LOG_INFO("Agent `" << agentName << "` finished checking initiation condition.");
-
-    ScAction action = ResolveAction(event, agent);
-    ScResult result;
-
-    try
-    {
-      SC_LOG_INFO("Agent `" << agentName << "` started performing action.");
-      if constexpr (HasOverride<TScAgent>::DoProgramWithEventArgument::value)
-        result = agent.DoProgram(event, action);
-      else
-        result = agent.DoProgram(action);
-    }
-    catch (utils::ScException const & exception)
-    {
-      action.FinishWithError();
-      SC_LOG_ERROR(
-          "Agent `" << agentName << "` was finished because error was occurred.\nError description:\n"
-                    << exception.Description());
-      return;
-    }
-
-    if (result == SC_RESULT_OK)
-      SC_LOG_INFO("Agent `" << agentName << "` finished performing action successfully.");
-    else if (result == SC_RESULT_NO)
-      SC_LOG_INFO("Agent `" << agentName << "` finished performing action unsuccessfully.");
-    else
-      SC_LOG_INFO("Agent `" << agentName << "` finished performing action with error.");
-
-    // SC_LOG_INFO("Agent `" << agentName << "` started checking result condition.");
-    if (!agent.template ValidateResultCondition<TScAgent>(event, action))
-    {
-      SC_LOG_WARNING("Result condition of agent `" << agentName << "` checked unsuccessfully.");
-      return;
-    }
-    // SC_LOG_INFO("Agent `" << agentName << "` finished checking result condition.");
-  };
 }
 
 template <class TScEvent, class TScContext>
@@ -451,18 +217,24 @@ bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated() noexcept
 }
 
 template <class TScEvent, class TScContext>
-template <class TScAgent>
+bool ScAgent<TScEvent, TScContext>::MayBeSpecified() const noexcept
+{
+  return m_context.IsElement(m_agentImplementationAddr);
+}
+
+template <class TScEvent, class TScContext>
+template <class TScAgent, typename HasOverride>
 bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const & event) noexcept
 {
-  if constexpr (HasOverride<TScAgent>::CheckInitiationCondition::value)
+  if constexpr (HasOverride::CheckInitiationCondition::value)
     return this->CheckInitiationCondition(event);
 
   ScTemplate initiationConditionTemplate;
-  if constexpr (HasOverride<TScAgent>::GetInitiationConditionTemplate::value)
+  if constexpr (HasOverride::GetInitiationConditionTemplate::value)
   {
     initiationConditionTemplate = this->GetInitiationConditionTemplate(event);
   }
-  else if constexpr (HasOverride<TScAgent>::GetInitiationCondition::value)
+  else if constexpr (HasOverride::GetInitiationCondition::value)
   {
     ScAddr const & initiationConditionAddr = this->GetInitiationCondition();
     initiationConditionTemplate = BuildInitiationConditionTemplate(event, initiationConditionAddr);
@@ -485,18 +257,18 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
 }
 
 template <class TScEvent, class TScContext>
-template <class TScAgent>
+template <class TScAgent, typename HasOverride>
 bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept
 {
-  if constexpr (HasOverride<TScAgent>::CheckResultCondition::value)
+  if constexpr (HasOverride::CheckResultCondition::value)
     return this->CheckResultCondition(event, action);
 
   ScTemplate resultConditionTemplate;
-  if constexpr (HasOverride<TScAgent>::GetResultConditionTemplate::value)
+  if constexpr (HasOverride::GetResultConditionTemplate::value)
   {
     resultConditionTemplate = this->GetResultConditionTemplate(event, action);
   }
-  else if constexpr (HasOverride<TScAgent>::GetResultCondition::value)
+  else if constexpr (HasOverride::GetResultCondition::value)
   {
     ScAddr const & resultConditionAddr = this->GetResultCondition();
     resultConditionTemplate = BuildResultConditionTemplate(event, resultConditionAddr);

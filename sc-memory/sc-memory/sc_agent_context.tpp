@@ -10,6 +10,8 @@
 
 #include "sc_agent_builder.hpp"
 
+#include "sc_agent_manager.hpp"
+
 template <class TScEvent>
 std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & subscriptionElementAddr,
@@ -108,13 +110,13 @@ typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::valu
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  TScAgent::template Subscribe<TScAgent>(this, ScAddr::Empty, subscriptionAddrs...);
+  ScAgentManager<TScAgent>::Subscribe(this, ScAddr::Empty, subscriptionAddrs...);
 }
 
 template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent()
 {
-  TScAgent::template Subscribe<TScAgent>(this, ScAddr::Empty);
+  ScAgentManager<TScAgent>::Subscribe(this, ScAddr::Empty);
 }
 
 template <class TScAgent, class... TScAddr>
@@ -124,14 +126,14 @@ typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::valu
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  TScAgent::template Unsubscribe<TScAgent>(this, ScAddr::Empty, subscriptionAddrs...);
+  ScAgentManager<TScAgent>::Unsubscribe(this, ScAddr::Empty, subscriptionAddrs...);
 }
 
 template <class TScAgent>
 typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::
     UnsubscribeAgent()
 {
-  TScAgent::template Unsubscribe<TScAgent>(this, ScAddr::Empty);
+  ScAgentManager<TScAgent>::Unsubscribe(this, ScAddr::Empty);
 }
 
 template <class TScAgent>
@@ -140,11 +142,11 @@ void ScAgentContext::LoadAndSubscribeAgent(ScAddr const & agentImplementationAdd
   ScAgentBuilder<TScAgent> builder{agentImplementationAddr};
   builder.ResolveSpecification(this);
 
-  TScAgent::template Subscribe<TScAgent>(this, agentImplementationAddr);
+  ScAgentManager<TScAgent>::Subscribe(this, agentImplementationAddr);
 }
 
 template <class TScAgent>
 void ScAgentContext::DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr)
 {
-  TScAgent::template Unsubscribe<TScAgent>(this, agentImplementationAddr);
+  ScAgentManager<TScAgent>::Unsubscribe(this, agentImplementationAddr);
 }

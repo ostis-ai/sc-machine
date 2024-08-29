@@ -35,8 +35,8 @@ class _SC_EXTERN ScElementaryEventSubscription final : public ScEventSubscriptio
   friend class ScAgentContext;
   template <class TScEventType>
   friend class ScEventWaiter;
-  template <class TScEventType, class TScContext>
-  friend class ScAgent;
+  template <class TScAgent>
+  friend class ScAgentManager;
   friend class ScMemoryJsonEventsHandler;
 
   SC_DISALLOW_COPY_AND_MOVE(ScElementaryEventSubscription);

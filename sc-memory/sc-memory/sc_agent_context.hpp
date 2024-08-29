@@ -30,7 +30,7 @@ class ScActionInitiatedAgent;
 class ScAgentContext : public ScMemoryContext
 {
   template <class TScEvent, class TScContext>
-  friend class ScAgentBase;
+  friend class ScAgent;
   friend class ScAction;
 
   SC_DISALLOW_COPY(ScAgentContext);
