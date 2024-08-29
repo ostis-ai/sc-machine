@@ -191,7 +191,7 @@ ScAddr ScAgentBase<TScEvent, TScContext>::GetResultCondition() const noexcept(fa
 
 // LCOV_EXCL_START
 template <class TScEvent, class TScContext>
-ScTemplate ScAgentBase<TScEvent, TScContext>::GetResultConditionTemplate() const
+ScTemplate ScAgentBase<TScEvent, TScContext>::GetResultConditionTemplate(TScEvent const &, ScAction &) const
 {
   return ScTemplate();
 }
@@ -494,7 +494,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
   ScTemplate resultConditionTemplate;
   if constexpr (HasOverride<TScAgent>::GetResultConditionTemplate::value)
   {
-    resultConditionTemplate = this->GetResultConditionTemplate();
+    resultConditionTemplate = this->GetResultConditionTemplate(event, action);
   }
   else if constexpr (HasOverride<TScAgent>::GetResultCondition::value)
   {

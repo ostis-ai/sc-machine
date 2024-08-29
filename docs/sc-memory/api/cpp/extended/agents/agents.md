@@ -495,42 +495,67 @@ You can redefine this method in your agent class.
 ```cpp
 ScAddr MyAgent::GetInitiationCondition() const
 {
-  // You must specify valid sc-address of initiation condition. 
+  // You must specify valid sc-address or sc-template of initiation condition. 
   // In other case, the given sc-agent can’t be called.
   return ScKeynodes::my_initiation_condition;
 }
 ```
 
+```cpp
+// sc_keynodes.hpp
+...
+// Here you should specify template to check initiation condition before 
+// starting agent.
+static inline ScTemplateKeynode const & my_initiation_condition
+  = ScTemplateKeynode(my_initiation_condition)
+    // You must specify valid sc-address of initiation condition. In other case, 
+    // the given sc-agent can’t be called. For sc-event of generating (erasing) 
+    // sc-connector (sc-arc or sc-edge), you must specify in template of 
+    // initiation condition a triple in place of which agent have to substitute 
+    // sc-elements involved in initiated event. These elements will be the 
+    // sc-connector (sc-arc or sc-edge) and its incident sc-elements. 
+    // For sc-event of changing sc-link content (or erasing sc-element), you 
+    // should use sc-link (sc-element) in template of initiation condition 
+    // explicitly. Otherwise your agent will not be called because its 
+    // initiation condition is fulfilled for the action of another agent.
+    .Triple(
+      ScKeynodes::action_initiated,
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVar >> "_action"
+    )
+    // After you should specify triples that only apply to your agent.
+    .Triple(
+      MyKeynodes::my_action,
+      ScType::EdgeAccessVarPosPerm,
+      "_action"
+    )
+    .Quintuple(
+      "_action",
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVar,
+      ScType::EdgeAccessVarPosPerm,
+      ScKeynodes::rrel_1
+    );
+...
+```
+
+!!! warning
+    Agent must have initiation condition template with only one triple that can be used to substitute sc-elements involved in initiated event, otherwise agent will not started performing sc-action.
+
 #### **GetInitiationConditionTemplate**
 
-You can specify the initiation condition template in code rather than in the knowledge base.
+You can specify the initiation condition template in code rather than in the knowledge base. It can be useful if you want to quickly check agent initiation condition without loading the template into the knowledge base.
 
 ```cpp
-ScTemplate MyAgent::GetInitiationConditionTemplate() const
+ScTemplate MyAgent::GetInitiationConditionTemplate(
+  ScActionEvent const & event) const
 {
-  ScTemplate initiationCondition;
-  // For sc-event of generating (erasing) sc-connector 
-  // (sc-arc or sc-edge), you must specify in template of 
-  // initiation condition a triple in place of which 
-  // agent have to substitute sc-elements involved in 
-  // initiated event. These elements will be the 
-  // sc-connector (sc-arc or sc-edge) and its incident 
-  // sc-elements. For sc-event of changing sc-link content 
-  // (or erasing sc-element), you should use sc-link 
-  // (sc-element) in template of initiation condition 
-  // explicitly. Otherwise your agent will be called even 
-  // when initiation condition is fulfilled for the action 
-  // of another agent.
-  initiationCondition.Triple(
-    ScKeynodes::action_initiated,
-    ScType::EdgeAccessVarPosPerm,
-    ScType::NodeVar >> "_action"
-  );
-  // After specify triples that only apply to your agent.
+  // In this method, you shouldn't specify triple for sc-event sc-elements.
+  // You should specify triples that only apply to your agent.
   initiationCondition.Triple(
     MyKeynodes::my_action,
     ScType::EdgeAccessVarPosPerm,
-    "_action"
+    event.GetOtherElement() // It returns sc-action.
   );
   return initiationCondition;
 }
@@ -544,9 +569,9 @@ For speed, you can implement the agent initiation condition in the form of check
 bool MyAgent::CheckInitiationCondition(ScActionEvent const & event)
 {
  // ScActionEvent is event type on which the given agent triggered. 
- // It is encapsulate information about sc-event. The provided event 
- // is event on which the agent is triggered  right now. It has methods 
- // to get information about initiated sc-event: GetUser, GetArc, 
+ // It is encapsulate information about sc-event. The provided event is event 
+ // on which the agent is triggered right now. It has methods to get 
+ // information about initiated sc-event: GetUser, GetArc, 
  // GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.
  // All events are not copyable and movable.
  return m_context.HelperCheckEdge(
@@ -573,10 +598,27 @@ You can redefine this method in your agent class.
 ```cpp
 ScAddr MyAgent::GetResultCondition() const
 {
-  // You must specify valid sc-address of result condition. 
+  // Here you should specify template to check action result content.
+  // You must specify valid sc-address or sc-template of result condition. 
   // In other case, the given sc-agent can’t be finished successfully.
   return ScKeynodes::my_result_condition;
 }
+```
+
+```cpp
+// sc_keynodes.hpp
+...
+// Here you should specify template to check action result content.
+static inline ScTemplateKeynode const & my_result_condition
+  = ScTemplateKeynode(my_result_condition)
+    .Triple(
+      MyKeynodes::my_class,
+      ScType::EdgeAccessVarPosPerm,
+      ScType::NodeVar
+    );
+    // This template is used to check that agent generated sc-arc
+    // between `MyKeynodes::my_class` and some sc-node.
+...
 ```
 
 #### **GetResultConditionTemplate**
@@ -584,47 +626,22 @@ ScAddr MyAgent::GetResultCondition() const
 You can specify the result condition template in code rather than in the knowledge base.
 
 ```cpp
-ScTemplate MyAgent::GetResultConditionTemplate() const
+ScTemplate MyAgent::GetResultConditionTemplate(
+  ScActionEvent const & event, ScAction & action) const
 {
+  // Here you should specify template to check action result content.
   ScTemplate resultCondition;
-  // For sc-event of generating (erasing) sc-connector 
-  // (sc-arc or sc-edge), you must specify in template of 
-  // result condition a triple in place of which 
-  // agent have to substitute sc-elements involved in 
-  // initiated event. These elements will be the 
-  // sc-connector (sc-arc or sc-edge) and its incident 
-  // sc-elements. For sc-event of changing sc-link content 
-  // (or erasing sc-element), you should use sc-link 
-  // (sc-element) in template of result condition 
-  // explicitly. Otherwise your agent will be finished even 
-  // when result condition is fulfilled for the action of 
-  // another agent.
   resultCondition.Triple(
-    ScKeynodes::action_initiated,
+    MyKeynodes::my_class,
     ScType::EdgeAccessVarPosPerm,
-    ScType::NodeVar >> "_action"
-  );
-  // After specify triples that only apply to your agent.
-  resultCondition.Triple(
-    MyKeynodes::my_action,
-    ScType::EdgeAccessVarPosPerm,
-    "_action"
-  );
-  resultCondition.Quintuple(
-    "_action",
-    ScType::EdgeDCommonVar,
-    ScType::NodeVarStruct >> "_result",
-    ScType::EdgeAccessVarPosPerm,
-    ScKeynodes::nrel_result
-  );
-  resultCondition.Triple(
-    "_result",
-    ScType::EdgeAccessVarPosPerm,
-    MyKeynodes::my_class
+    ScType::NodeVar
   );
   return resultCondition;
 }
 ```
+
+!!! note
+    `GetResultCondition` and `GetResultConditionTemplate` are used to search sc-constructions in action result only.
 
 #### **CheckResultCondition**
 
@@ -633,8 +650,19 @@ For speed, you can implement the agent result condition in the form of checks on
 ```cpp
 bool MyAgent::CheckResult(ScActionEvent const & event, ScAction & action)
 {
-  return m_context.HelperCheckEdge(
-    ScType::EdgeAccessConstPosPerm, action.GetResult(), MyKeynodes::my_class);
+  ScStructure const & actionResult = action.GetResult();
+  ScIterator3Ptr const it3 = m_context.Iterator3(
+    MyKeynodes::my_class,
+    ScType::EdgeAccessConstPosPerm,
+    ScType::NodeConst,
+    ScType::EdgeAccessConstPosPerm,
+    actionResult
+  );
+  return it3->Next() 
+    && actionResult.HasElement(MyKeynodes::my_class) 
+    && actionResult.HasElement(it3->Get(2))
+    && !it3->Next() // Check that action result has no more triples.
+    && m_context.GetOutputArcsCount(actionResult) == 3;
 }
 ```
 

@@ -359,11 +359,12 @@ ScResult ATestGetResultConditionTemplate::DoProgram(ScActionEvent const &, ScAct
   return action.FinishSuccessfully();
 }
 
-ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate() const
+ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate(ScActionEvent const & event, ScAction & action)
+    const
 {
   ScTemplate initiationCondition;
-  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action");
-  initiationCondition.Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, action >> "_action");
+  initiationCondition.Triple(action, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
   return initiationCondition;
 }
 

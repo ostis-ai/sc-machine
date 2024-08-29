@@ -509,6 +509,5 @@ TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
   EXPECT_EQ(agent.GetEventClass(), ScKeynodes::sc_event_after_generate_outgoing_arc);
   EXPECT_EQ(agent.GetEventSubscriptionElement(), ScKeynodes::action_initiated);
   EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionItemNotFound);
-  EXPECT_NO_THROW(agent.GetResultConditionTemplate());
   EXPECT_EQ(agent.GetName(), "ATestCheckResult");
 }

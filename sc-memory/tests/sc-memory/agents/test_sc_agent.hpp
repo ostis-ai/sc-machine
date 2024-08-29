@@ -309,7 +309,7 @@ public:
 
   ScResult DoProgram(ScActionEvent const & event, ScAction & action) override;
 
-  ScTemplate GetResultConditionTemplate() const override;
+  ScTemplate GetResultConditionTemplate(ScActionEvent const & event, ScAction & action) const override;
 };
 
 class ATestCheckResultCondition : public ScActionInitiatedAgent

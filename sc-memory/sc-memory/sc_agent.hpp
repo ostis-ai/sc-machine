@@ -232,9 +232,11 @@ public:
 
   /*!
    * @brief Gets result condition template represented in program.
+   * @param event An initiated sc-event to which the agent reacted.
+   * @param action A sc-action that the agent performs.
    * @return A sc-template of result condition.
    */
-  _SC_EXTERN virtual ScTemplate GetResultConditionTemplate() const;
+  _SC_EXTERN virtual ScTemplate GetResultConditionTemplate(TScEvent const & event, ScAction & action) const;
 
 protected:
   mutable TScContext m_context;
