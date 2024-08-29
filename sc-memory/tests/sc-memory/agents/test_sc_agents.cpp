@@ -93,6 +93,20 @@ TEST_F(ScAgentTest, ATestGenerateEdge)
   m_ctx->UnsubscribeAgent<ATestGenerateEdge>(subscriptionElementAddr);
 }
 
+TEST_F(ScAgentTest, ATestGenerateEdgeAsConnector)
+{
+  m_ctx->SubscribeAgent<ATestGenerateEdgeAsConnector>(ATestGenerateEdgeAsConnector::subscription_element);
+
+  ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
+  EXPECT_TRUE(node.IsValid());
+  ScAddr const e =
+      m_ctx->CreateEdge(ScType::EdgeUCommonConst, ATestGenerateEdgeAsConnector::subscription_element, node);
+  EXPECT_TRUE(e.IsValid());
+  EXPECT_TRUE(ATestGenerateEdgeAsConnector::msWaiter.Wait());
+
+  m_ctx->UnsubscribeAgent<ATestGenerateEdgeAsConnector>(ATestGenerateEdgeAsConnector::subscription_element);
+}
+
 TEST_F(ScAgentTest, ATestEraseIncomingArc)
 {
   ScAddr const & subscriptionElementAddr = m_ctx->CreateNode(ScType::NodeConst);

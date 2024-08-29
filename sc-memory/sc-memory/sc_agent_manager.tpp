@@ -35,8 +35,10 @@ void ScAgentManager<TScAgent>::Subscribe(
   if (!ScAgentManager<TScAgent>::m_agentSubscriptions.count(agentName))
     ScAgentManager<TScAgent>::m_agentSubscriptions.insert({agentName, {}});
 
+  // If agent is specified in knowledge base, then subscriptionAddrs will be empty and subscriptionVector will contain
+  // only subscription sc-element from knowledge base, otherwise (when agent is not specified in knowledge base)
+  // subscriptionAddrs will be not empty and subscriptionVector will equal to subscriptionAddrs.
   ScAddrVector subscriptionVector{subscriptionAddrs...};
-  // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
   if (agent.MayBeSpecified() || subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
@@ -103,8 +105,10 @@ void ScAgentManager<TScAgent>::Unsubscribe(
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState, "Agent `" << agentName << "` does not have been subscribed to any events yet.");
 
+  // If agent is specified in knowledge base, then subscriptionAddrs will be empty and subscriptionVector will contain
+  // only subscription sc-element from knowledge base, otherwise (when agent is not specified in knowledge base)
+  // subscriptionAddrs will be not empty and subscriptionVector will equal to subscriptionAddrs.
   ScAddrVector subscriptionVector{subscriptionAddrs...};
-  // Check that user specify agent implementation only and find subscription sc-element in knowledge base.
   if (agent.MayBeSpecified() || subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 

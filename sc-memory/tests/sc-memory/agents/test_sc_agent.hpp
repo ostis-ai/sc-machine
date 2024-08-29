@@ -87,6 +87,24 @@ public:
   ScResult DoProgram(ScEventAfterGenerateEdge<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
 };
 
+class ATestGenerateEdgeAsConnector : public ScAgent<ScEventAfterGenerateConnector<ScType::EdgeUCommonConst>>
+{
+public:
+  static inline ScKeynode const add_edge_action{"add_edge_as_connector_action", ScType::NodeConstClass};
+  static inline ScKeynode const subscription_element{"subscription_element", ScType::NodeConst};
+  static inline TestWaiter msWaiter;
+
+  static inline ScTemplateKeynode const & initiationCondition =
+      ScTemplateKeynode("initiation_condition_for_edge_as_connector")
+          .Triple(subscription_element, ScType::EdgeUCommonVar, ScType::NodeVar >> "_action");
+
+  ScAddr GetActionClass() const override;
+
+  ScAddr GetInitiationCondition() const override;
+
+  ScResult DoProgram(ScEventAfterGenerateConnector<ScType::EdgeUCommonConst> const & event, ScAction & action) override;
+};
+
 class ATestEraseConnector : public ScAgent<ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm>>
 {
 public:

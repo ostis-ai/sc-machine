@@ -358,7 +358,8 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
     templateParamsIsGenerated = GenerateCheckTemplateParams(
         initiationConditionTemplateAddr, event, otherElementPosition, eventTripleIterator, templateParams);
 
-  if (templateParamsIsGenerated
+  // If params were no generated then tries to find reverse iterator for connectors events.
+  if (!templateParamsIsGenerated
       && (eventClassAddr == ScKeynodes::sc_event_after_generate_connector
           || eventClassAddr == ScKeynodes::sc_event_before_erase_connector))
   {

@@ -60,6 +60,26 @@ ScResult ATestGenerateEdge::DoProgram(ScEventAfterGenerateEdge<ScType::EdgeUComm
 
 /// --------------------------------------
 
+ScAddr ATestGenerateEdgeAsConnector::GetActionClass() const
+{
+  return ATestGenerateEdge::add_edge_action;
+}
+
+ScAddr ATestGenerateEdgeAsConnector::GetInitiationCondition() const
+{
+  return initiationCondition;
+}
+
+ScResult ATestGenerateEdgeAsConnector::DoProgram(
+    ScEventAfterGenerateConnector<ScType::EdgeUCommonConst> const &,
+    ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
 ScAddr ATestEraseConnector::GetActionClass() const
 {
   return ATestEraseConnector::erase_connector_action;
