@@ -51,7 +51,10 @@ context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 ```
 
 !!! note
-    You can provide empty on-event callback `{}` in `CreateElementaryEventSubscription`.
+    You can provide empty on-event callback `{}` in `CreateElementaryEventSubscription` and call `SetDelegate` from object of subscription to set new on-event callback.
+
+!!! note
+    You can call `RemoveDelegate` from object of subscription to remove existing on-event callback.
 
 !!! warning
     You should provide valid subscription sc-element. Otherwise, exception will be thrown.
