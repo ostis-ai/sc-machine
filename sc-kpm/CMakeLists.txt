@@ -1,4 +1,5 @@
 add_subdirectory(sc-common)
+add_subdirectory(sc-agents-common)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY})
 
@@ -12,7 +13,6 @@ endforeach(OUTPUT_CONFIG)
 add_subdirectory(sc-ui)
 add_subdirectory(sc-search)
 add_subdirectory(sc-utils)
-add_subdirectory(sc-agents-common)
 
 add_custom_target(sc-kpm)
 
