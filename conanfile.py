@@ -1,5 +1,5 @@
 from conan import ConanFile, tools
-from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
+from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
 import re
 
 
@@ -21,21 +21,13 @@ class sc_machineRecipe(ConanFile):
     url = "https://github.com/ostis-ai/sc-machine"
     description = "Software implementation of semantic network storage"
     exports = ["LICENSE.md"]
+    exports_sources = "*", "!.venv", "!build", "!.cache", "!kb", "!kb.bin", "!.env", "!ConanPresets.json", "!docs"
     settings = "os", "compiler", "build_type", "arch"
     requires = ()
-    options = {   # remove for a header-only library
-        "shared": [True, False],
-        "fPIC": [True, False]
-    }
+    options = {"shared": [True], "fPIC": [True, False]}
     default_options = {
-        "shared": False,
+        "shared": True,
         "fPIC": True,
-        }
-    scm = {
-        "type": "git",
-        "url": "auto",
-        "revision": "auto",
-        "submodule": "recursive"
     }
 
     @property
@@ -49,7 +41,12 @@ class sc_machineRecipe(ConanFile):
         self.build_requires("antlr4-cppruntime/4.9.3")
 
     def layout(self):
-        cmake_layout(self, build_folder="build")
+        cmake_layout(self)
+
+    def build(self):
+        cmake = CMake(self)
+        cmake.configure()  # equivalent to self.run("cmake . <other args>")
+        cmake.build()
 
     def test_requirements(self):
         if self._run_tests:
@@ -62,10 +59,24 @@ class sc_machineRecipe(ConanFile):
         tc = CMakeToolchain(self)
         tc.generate()
 
-    def build(self):
+    def package(self):
         cmake = CMake(self)
-        cmake.configure()
-        cmake.build()
+        cmake.install()
+
+    def package_id(self):
+        del self.info.settings.os
+        del self.info.settings.compiler
+        del self.info.settings.build_type
+
+    def package_info(self):
+        # Not settings cpp_info.libs since this is already defined in sc-machine-config.cmake
+        self.cpp_info.builddirs = ["lib/cmake/sc-machine"]
+        self.cpp_info.set_property("cmake_find_mode", "none")
+
+    def parse_version(self):
+            content = tools.files.load(self, self.recipe_folder + "/CMakeLists.txt")
+            version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content).group(1)
+            return version.strip()
 
     def package(self):
         cmake = CMake(self)

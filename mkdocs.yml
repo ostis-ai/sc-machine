@@ -57,6 +57,7 @@ theme: material
 markdown_extensions:
   - admonition
   - codehilite
+  - md_in_html
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite

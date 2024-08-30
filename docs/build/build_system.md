@@ -42,7 +42,7 @@ Default installation folder location (used for package consumption) is `build/<R
 
 ## Consuming the package
 
-<details>
+<details markdown>
 
 <summary>find_package() using CPack artifacts on GitHub Actions</summary>
 
@@ -62,12 +62,65 @@ list(APPEND CMAKE_PREFIX_PATH ${<proj_name>_SC_MACHINE_PATH})
 ```
 </details>
 
-<details>
+<details markdown>
 
 <summary>find_package() using Conan</summary>
 
+- You want to use a released version of sc-machine
+  
+  Simply add sc-machine as a dependency to your project and use Conan to install it for you.
+
+  conanfile.txt:
+
+  ```ini
+  [requires]
+  sc-machine/0.10.0
+
+  [generators]
+  CMakeDeps
+  CMakeToolchain
+
+  [layout]
+  cmake_layout
+  ```
+
+  ```sh
+  conan install .
+  ```
+
 - You want to use a package version that is not published in a Conan repo:
-- 
+  
+  Export the version you'd like to use to local conan cache:
+  ```sh
+  git clone https://github.com/ostis-ai/sc-machine
+  git checkout <your-commit>
+  cmake --preset release-conan
+  cmake --build --preset release --target install
+  conan export-pkg .
+  # you should see the package version and revision exported to local conan cache
+  ```
+
+  Then in your project edit conanfile.txt and add the following:
+
+  ```ini
+  [requires]
+  # git commit is also the revision
+  sc-machine/0.10.0#0c1889bc6a34450c7728b4b12af9083910cebb36
+
+  [generators]
+  CMakeDeps
+  CMakeToolchain
+
+  [layout]
+  cmake_layout
+  ```
+
+  Finally, build your project
+
+  ```sh
+  conan install .
+  cmake --build --preset conan-release
+  ```
 
 </details>
 
