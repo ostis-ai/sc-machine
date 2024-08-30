@@ -87,6 +87,19 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Specified action class for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
+
+    ScIterator5Ptr it5 = context->Iterator5(
+        ScKeynodes::action,
+        ScType::EdgeDCommonConst,
+        m_actionClassAddr,
+        ScType::EdgeAccessConstPosPerm,
+        ScKeynodes::nrel_inclusion);
+    if (!it5->Next())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Specified sc-element for agent class `"
+              << TScAgent::template GetName<TScAgent>()
+              << "` is not action class, because it is not included to class `action`.");
   };
 
   m_actionClassAddr = actionClassAddr;
@@ -382,7 +395,7 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
     return;
   }
 
-  ScIterator5Ptr const it5 = context->Iterator5(
+  ScIterator5Ptr it5 = context->Iterator5(
       m_abstractAgentAddr,
       ScType::EdgeDCommonConst,
       ScType::Unknown,
@@ -410,6 +423,18 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
             << abstractAgentName
             << "`, because sc-element does not have sc-type `ScType::NodeConstClass`, it has sc-type `" << type
             << "`.");
+
+  it5 = context->Iterator5(
+      ScKeynodes::action,
+      ScType::EdgeDCommonConst,
+      m_actionClassAddr,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_inclusion);
+  if (!it5->Next())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Found sc-element by relation `nrel_sc_agent_action_class` is not action class for abstract sc-agent `"
+            << abstractAgentName << "`, because it is not included to class `action`.");
 
   SC_LOG_DEBUG("Action class for agent class `" << agentClassName << "` was found.");
 }
