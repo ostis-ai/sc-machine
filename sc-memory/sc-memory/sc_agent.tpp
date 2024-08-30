@@ -229,6 +229,10 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
     ScAddr const & initiationConditionAddr = this->GetInitiationCondition();
     initiationConditionTemplate = BuildInitiationConditionTemplate(event, initiationConditionAddr);
   }
+  else if constexpr (std::is_base_of<ScActionInitiatedAgent, TScAgent>::value)
+  {
+    initiationConditionTemplate = this->GetInitiationConditionTemplate(event);
+  }
   else
   {
     return true;
