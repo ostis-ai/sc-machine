@@ -120,9 +120,12 @@ endif()
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+include(${CMAKE_MODULE_PATH}/FindGLIB.cmake)
+
+set(SC_CORE_SRC "${SC_MACHINE_ROOT}/sc-memory/sc-core/src")
 add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-kpm)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-tools)
 
-include(${SC_MACHINE_ROOT}/cmake/install.cmake)
+include(${CMAKE_MODULE_PATH}/install.cmake)

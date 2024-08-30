@@ -19,8 +19,9 @@ target_compile_definitions(sc-server-lib
     PUBLIC ASIO_STANDALONE
 )
 target_include_directories(sc-server-lib
-    PRIVATE $<BUILD_INTERFACE:${SC_MEMORY_SRC}/sc-core/src>
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    PRIVATE ${SC_CORE_SRC}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PUBLIC $<INSTALL_INTERFACE:include>
 )
 
