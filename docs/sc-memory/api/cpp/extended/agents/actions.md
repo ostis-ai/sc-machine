@@ -10,7 +10,7 @@ This API provides functionality to handle sc-actions.
 
 All actions are processes. Any process is performed by some subject. Each action can be defined as a process of solving some problem, i.e. as a process of achieving the given goal with the given conditions. Each action denotes some transformation carried out in the external environment or in the memory of some system.
 
-Like an agent, an action has a specification. This specification includes: class, arguments, state, result. The specification of an action is called a problem (problem).
+Like an agent, an action has a specification. This specification includes: class, arguments, state, result. The specification of an action is called a problem.
 
 ## **ScAction**
 
@@ -29,6 +29,8 @@ ScAction action = context.CreateAction(actionClassAddr);
 ScAction action = context.ConvertToAction(actionAddr);
 ...
 ```
+
+<scg src="../images/actions/action_class.gwf"></scg>
 
 ### **GetClass**
 
@@ -60,6 +62,8 @@ ScAddr const & argAddr = action.GetArgument(1);
 // If there is no argument with such role, then `argAddr` will be empty.
 ...
 ```
+
+<scg src="../images/actions/action_argument.gwf"></scg>
 
 !!! note
     There is a limit to the number of order role relations. You can get from `rrel_1` up to and including `rrel_20`.
@@ -94,6 +98,8 @@ auto const & [argAddr1, argAddr2, _] = action.GetArguments<3>();
 ...
 ```
 
+<scg src="../images/actions/action_arguments.gwf"></scg>
+
 ### **SetArgument**
 
 You can set arguments for specified action.
@@ -113,6 +119,8 @@ action.SetArgument(1, argAddr);
 ...
 ```
 
+<scg src="../images/actions/action_argument.gwf"></scg>
+
 !!! note
     If action already has an argument with specified role, then connection between action and existing argument will be removed and connection between action and new argument will be created.
 
@@ -124,6 +132,8 @@ action.SetArgument(1, argAddr);
 action.SetArguments(argAddr1, argAddr2);
 ...
 ```
+
+<scg src="../images/actions/action_arguments.gwf"></scg>
 
 ### **Action result**
 
@@ -140,6 +150,8 @@ You get can result of any action. Result may be empty.
 ScStructure const & actionResult = action.GetResult();
 ...
 ```
+
+<scg src="../images/actions/action_result.gwf"></scg>
 
 !!! warning
     If you call this method for not finished action, then this method will throw `utils::ExceptionInvalidState`. It prevents a situation where an agent that performs an action is still forming a result for that action, and you haven't waited for it and already want to get result for that action.
@@ -214,6 +226,8 @@ bool const isActionInitiated = action.IsInitiated();
 ...
 ```
 
+<scg src="../images/actions/is_action_initiated.gwf"></scg>
+
 #### **InitiateAndWait**
 
 You can initiate action and wait for it to finish.
@@ -236,6 +250,8 @@ action.Initiate();
 ...
 ```
 
+<scg src="../images/actions/action_initiated.gwf"></scg>
+
 #### **IsFinished**
 
 Use this method to check that specified action is finished.
@@ -245,6 +261,8 @@ Use this method to check that specified action is finished.
 bool const isActionFinished = action.IsFinished();
 ...
 ```
+
+<scg src="../images/actions/is_action_finished.gwf"></scg>
 
 All finished actions should be finished with one of the following statuses:
 
@@ -262,6 +280,8 @@ bool const isActionFinishedSuccessfully = action.IsFinishedSuccessfully();
 ...
 ```
 
+<scg src="../images/actions/is_action_finished_successfully.gwf"></scg>
+
 #### **FinishSuccessfully**
 
 You can successfully finish action that does not have yet been finished.
@@ -272,6 +292,8 @@ ScResult const & result = action.FinishSuccessfully();
 // Use result to return result from agent program.
 ...
 ```
+
+<scg src="../images/actions/action_finished_successfully.gwf"></scg>
 
 !!! warning
     If you finish action successfully that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
@@ -289,6 +311,8 @@ bool const isActionFinishedUnsuccessfully = action.IsFinishedUnsuccessfully();
 ...
 ```
 
+<scg src="../images/actions/is_action_finished_unsuccessfully.gwf"></scg>
+
 #### **FinishUnsuccessfully**
 
 You can finish unsuccessfully action that not finished yet.
@@ -299,6 +323,8 @@ ScResult const & result = action.FinishUnsuccessfully();
 // Use result to return result from agent program.
 ...
 ```
+
+<scg src="../images/actions/action_finished_unsuccessfully.gwf"></scg>
 
 !!! warning
     If you finish action unsuccessfully that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
@@ -313,6 +339,8 @@ bool const isActionFinishedWithError = action.IsFinishedWithError();
 ...
 ```
 
+<scg src="../images/actions/is_action_finished_with_error.gwf"></scg>
+
 #### **FinishWithError**
 
 You can finish action with error that not finished yet.
@@ -323,6 +351,8 @@ ScResult const & result = action.FinishWithError();
 // Use result to return result from agent program.
 ...
 ```
+
+<scg src="../images/actions/action_finished_with_error.gwf"></scg>
 
 !!! warning
     If you finish action with error that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
@@ -341,7 +371,7 @@ All these methods return object of `ScResult`. You should return it in agent pro
 
 ### **What is difference between `ScAction` and `ScEvent`?**
 
-`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to solve specified problem (problem). `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are performed by agents. Emergence of events in sc-memory leads to generation of new processes.
+`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to solve specified problem. `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are performed by agents. Emergence of events in sc-memory leads to generation of new processes.
 
 ### **What if I want to set some edge as action result and not structure with this edge?**
 
