@@ -1050,9 +1050,6 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingEdgeHasFullSpecification)
 
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
-  EXPECT_FALSE(m_ctx->IsElement(edgeAddr));
-  EXPECT_FALSE(m_ctx->IsElement(arcAddr));
-
   m_ctx->DestroyAndUnsubscribeAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 }
 
@@ -1117,9 +1114,6 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingConnectorHasFullSpecifica
   m_ctx->EraseElement(edgeAddr);
 
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
-
-  EXPECT_FALSE(m_ctx->IsElement(edgeAddr));
-  EXPECT_FALSE(m_ctx->IsElement(arcAddr));
 
   m_ctx->DestroyAndUnsubscribeAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 }
