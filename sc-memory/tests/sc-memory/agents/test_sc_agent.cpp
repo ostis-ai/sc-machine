@@ -2,6 +2,13 @@
 
 /// --------------------------------------
 
+TestScEvent::TestScEvent()
+  : ScElementaryEvent(ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScAddr::Empty, ScType::Unknown, ScAddr::Empty)
+{
+}
+
+/// --------------------------------------
+
 ScAddr ATestGenerateConnector::GetActionClass() const
 {
   return ATestGenerateConnector::generate_connector_action;

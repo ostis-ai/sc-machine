@@ -106,14 +106,11 @@ ScAddr ScAgent<TScEvent, TScContext>::GetActionClass() const noexcept(false)
   return it5->Get(2);
 }
 
-// LCOV_EXCL_START
 template <class TScEvent, class TScContext>
 bool ScAgent<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & event)
 {
   return true;
 }
-
-// LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(false)
@@ -135,16 +132,12 @@ ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(fa
   return m_context.GetEdgeSource(it5->Get(2));
 }
 
-// LCOV_EXCL_START
 template <class TScEvent, class TScContext>
 ScTemplate ScAgent<TScEvent, TScContext>::GetInitiationConditionTemplate(TScEvent const &) const
 {
   return ScTemplate();
 }
 
-// LCOV_EXCL_STOP
-
-// LCOV_EXCL_START
 template <class TScEvent, class TScContext>
 ScResult ScAgent<TScEvent, TScContext>::DoProgram(TScEvent const & event, ScAction & action)
 {
@@ -157,16 +150,11 @@ ScResult ScAgent<TScEvent, TScContext>::DoProgram(ScAction & action)
   return SC_RESULT_OK;
 }
 
-// LCOV_EXCL_STOP
-
-// LCOV_EXCL_START
 template <class TScEvent, class TScContext>
 bool ScAgent<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAction &)
 {
   return true;
 }
-
-// LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
@@ -188,14 +176,11 @@ ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
   return m_context.GetEdgeTarget(it5->Get(2));
 }
 
-// LCOV_EXCL_START
 template <class TScEvent, class TScContext>
 ScTemplate ScAgent<TScEvent, TScContext>::GetResultConditionTemplate(TScEvent const &, ScAction &) const
 {
   return ScTemplate();
 }
-
-// LCOV_EXCL_STOP
 
 template <class TScEvent, class TScContext>
 void ScAgent<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr) noexcept

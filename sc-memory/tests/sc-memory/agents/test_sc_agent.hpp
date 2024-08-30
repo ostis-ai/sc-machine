@@ -40,6 +40,16 @@ private:
   utils::ScLock m_lock;
 };
 
+class TestScAgent : public ScAgent<ScElementaryEvent>
+{
+};
+
+class TestScEvent : public ScElementaryEvent
+{
+public:
+  TestScEvent();
+};
+
 class ATestGenerateConnector : public ScAgent<ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>
 {
 public:

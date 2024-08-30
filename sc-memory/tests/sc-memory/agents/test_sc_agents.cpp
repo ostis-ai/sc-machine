@@ -5,6 +5,24 @@
 #include "test_sc_agent.hpp"
 #include "test_sc_module.hpp"
 
+TEST_F(ScAgentTest, AgentClass)
+{
+  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, testClassAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+
+  ScAction action = m_ctx->CreateAction(testClassAddr);
+
+  TestScAgent agent;
+  EXPECT_TRUE(agent.CheckInitiationCondition(TestScEvent()));
+  EXPECT_NO_THROW(agent.GetInitiationConditionTemplate(TestScEvent()));
+  EXPECT_TRUE(agent.CheckResultCondition(TestScEvent(), action));
+  EXPECT_NO_THROW(agent.GetResultConditionTemplate(TestScEvent(), action));
+
+  EXPECT_NO_THROW(agent.DoProgram(TestScEvent(), action));
+  EXPECT_NO_THROW(agent.DoProgram(action));
+}
+
 TEST_F(ScAgentTest, InvalidSubscription)
 {
   ScAddr const & subscriptionElementAddr{1233241};
