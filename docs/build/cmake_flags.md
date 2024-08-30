@@ -3,7 +3,7 @@ This project uses ccache automatically if it's available in the system. To disab
 
 ## Building tests:
 ```sh
-cmake -B build -DSC_BUILD_TESTS=ON -DSC_AUTO_TEST=ON
+cmake -B build -DSC_BUILD_TESTS=ON
 cmake --build build -j$(nproc)
 ```
 
