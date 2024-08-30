@@ -235,7 +235,7 @@ set-agents-module/
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "*.cpp" "*.hpp"
     "agent/*.cpp" "agent/*.hpp"
-+   "keynodes/*.cpp" "keynodes/*.hpp"
++   "keynodes/*.hpp"
 )
 ```
 
@@ -414,7 +414,7 @@ To make sure how your agent works it is best to create tests and cover in them a
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "*.cpp" "*.hpp"
     "agent/*.cpp" "agent/*.hpp"
-    "keynodes/*.cpp" "keynodes/*.hpp"
+    "keynodes/*.hpp"
 )
 
 add_library(set-agents SHARED ${SOURCES})
