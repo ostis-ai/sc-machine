@@ -307,6 +307,12 @@ ScAction action = context.CreateAction(actionClassAddr);
 ...
 ```
 
+!!! note
+    You should provide action class that is include to the one of types: `receptor_action`, `effector_action`, `behavioral_action` or `information_action`.
+
+!!! note
+    Action class sc-address must be valid.
+
 ### **ConvertToAction**
 
 ```cpp
@@ -315,6 +321,9 @@ ScAction action = context.CreateAction(actionClassAddr);
 ScAction action = context.ConvertToAction(actionAddr);
 ...
 ```
+
+!!! note
+    Action sc-address must be valid.
 
 ### **CreateSet**
 
@@ -336,6 +345,9 @@ ScSet set = context.ConvertToSet(setAddr);
 ...
 ```
 
+!!! note
+    Set sc-address must be valid.
+
 ### **CreateStructure**
 
 ```cpp
@@ -354,6 +366,9 @@ ScStructure structure = context.CreateStructure();
 ScStructure structure = context.ConvertToStructure(structureAddr);
 ...
 ```
+
+!!! note
+    Structure sc-address must be valid.
 
 --- 
 

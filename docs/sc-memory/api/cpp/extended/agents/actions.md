@@ -23,6 +23,9 @@ ScAction action = context.CreateAction(actionClassAddr);
 ...
 ```
 
+!!! note
+    You should provide action class that is include to the one of types: `receptor_action`, `effector_action`, `behavioral_action` or `information_action`.
+
 ```cpp
 // Or find action and convert it to object of `ScAction` class.
 ...

@@ -267,7 +267,10 @@ It gets action class that the agent of specified class performs. If the abstract
 
 ScAddr MyAgent::GetActionClass() const
 {
-  // You must specify valid sc-address of action class. 
+  // You must specify valid sc-address of action class and you should 
+  // provide action class that is include to the one of types: 
+  // `receptor_action`, `effector_action`, `behavioral_action` or 
+  // `information_action`.
   // In other case, the given sc-agent can’t be subscribed to sc-event.
   return MyKeynodes::my_action;
 }

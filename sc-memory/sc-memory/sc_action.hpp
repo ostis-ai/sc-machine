@@ -28,6 +28,14 @@ class _SC_EXTERN ScAction final : public ScAddr
 public:
   /*!
    * @brief Gets class of the action.
+   *
+   * This method searches action class that has a valid type.
+   * Valid action class types include:
+   * - receptor_action,
+   * - effector_action,
+   * - behavioral_action,
+   * - information_action.
+   *
    * @return ScAddr representing class of the action.
    */
   _SC_EXTERN ScAddr GetClass() const noexcept;
@@ -206,6 +214,25 @@ protected:
   void Finish(ScAddr const & actionStateAddr) noexcept(false);
 
 private:
+  /*!
+   * @brief Checks if the given action class address is valid by verifying its type.
+   *
+   * This method determines whether the specified action class has a type
+   * that is recognized as a valid action class. Valid action class types include:
+   * - receptor_action,
+   * - effector_action,
+   * - behavioral_action,
+   * - information_action.
+   *
+   * @param context A pointer to the ScMemoryContext, which provides access to
+   *                the memory structure and allows for querying.
+   * @param actionClassAddr A sc-address of action class whose validity is to be checked.
+   * @return Returns true if the action class address has a valid type;
+   *         otherwise, returns false.
+   * @note This method is crucial for ensuring that only valid action classes
+   *       are processed within the system, helping to maintain data integrity
+   *       and prevent errors during action execution.
+   */
   static bool IsActionClassValid(class ScMemoryContext * context, ScAddr const & actionClassAddr);
 
   /*!

@@ -126,11 +126,16 @@ You can specify initial specification for your agent class in code with help of 
 
 SC_MODULE_REGISTER(MyModule)
   ->AgentBuilder<MyAgent>()
+    // Abstract agent must belong to `abstract_sc_agent`.
     ->SetAbstractAgent(MyKeynodes::my_abstract_agent)
     ->SetPrimaryInitiationCondition({
+        // Event class must belong to `sc_event`.
         ScKeynodes::sc_event_after_generate_outgoing_arc, 
         ScKeynodes::action_initiated
-    })
+    }) 
+    // You should provide action class that is include to the one of types: 
+    // `receptor_action`, `effector_action`, `behavioral_action` or 
+    // `information_action`.
     ->SetActionClass(MyKeynodes::my_action_class)
     ->SetInitiationConditionAndResult({
         MyKeynodes::my_agent_initiation_condition_template,
