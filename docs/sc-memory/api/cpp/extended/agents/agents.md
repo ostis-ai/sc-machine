@@ -6,6 +6,10 @@
 
 This API provides functionality to implement agents on C++.
 
+## **Quick start**
+
+Go to our [**Simple guide**](../../guides/simple_guide_for_implementing_agent.md) on how to quickly develop an agent in C++ from scratch.
+
 ## **What is the agent-driven model?**
 
 The sc-machine implements the **agent-driven model** to manage processing knowledge. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralized and most often independent of each other. 
