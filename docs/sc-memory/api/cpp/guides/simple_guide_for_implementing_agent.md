@@ -86,7 +86,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 
 # Create and link your library with using libraries.
 add_library(set-agents SHARED ${SOURCES})
-target_link_libraries(set-agents LINK_PRIVATE sc-memory)
+target_link_libraries(set-agents LINK_PUBLIC sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 ```
 
@@ -418,7 +418,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 add_library(set-agents SHARED ${SOURCES})
-target_link_libraries(set-agents LINK_PRIVATE sc-memory)
+target_link_libraries(set-agents LINK_PUBLIC sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 +file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
@@ -492,7 +492,7 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
   EXPECT_EQ(setPower, 2u);
 
   // Check the second three element construction.
-  ScIterator3Ptr it3 = m_ctx->Iterator3(
+  it3 = m_ctx->Iterator3(
     structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeAccessConstPosPerm);
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr2 = it3->Get(2);
