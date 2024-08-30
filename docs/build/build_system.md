@@ -29,6 +29,7 @@ cmake --build --preset debug
 ```
 
 This is how you would build sc-machine in release mode using system-provided dependencies:
+
 ```sh
 # release build type with tests (no conan postfix = system-provided deps)
 cmake --preset release-with-tests
