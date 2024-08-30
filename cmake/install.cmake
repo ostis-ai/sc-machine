@@ -11,11 +11,16 @@ install(TARGETS
 )
 
 # a target set for things we don't want to export to the consumers
-install(TARGETS sc-server-lib LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS sc-server-lib EXPORT privateExport LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(EXPORT sc-machineExport
     FILE sc-machineTargets.cmake
     NAMESPACE sc-machine::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sc-machine
+)
+
+install(EXPORT privateExport
+    FILE privateTargets.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sc-machine
 )
 
