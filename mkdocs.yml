@@ -10,8 +10,7 @@ nav:
   - Home: index.md
   - Installation with Docker: docker.md
   - Build:
-      - Build on Linux: build/linux_build.md
-      - Build on OSX: build/osx_build.md
+      - Build system: build/build_system.md
       - CMake flags: build/cmake_flags.md
       - Configuration file: build/config.md
   - API:
