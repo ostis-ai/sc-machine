@@ -64,7 +64,7 @@ static std::string const ATestSpecifiedAgentSpecification = R"(
 
   test_specified_agent_action
   <- sc_node_class;
-  <= nrel_inclusion: action;;
+  <= nrel_inclusion: information_action;;
 )";
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecification)
@@ -75,7 +75,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecification)
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
   ScAddr const & actionClassAddr =
       m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, actionClassAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, actionClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   {
@@ -145,7 +145,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecificationWithTempl
 
   ScAddr const & actionClassAddr =
       m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, actionClassAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, actionClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   TestModule module;
@@ -174,7 +174,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecificationWithTempl
 
   ScAddr const & actionClassAddr =
       m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, actionClassAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, actionClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   TestModule module;
@@ -224,7 +224,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedPrimaryInitiat
 
   ScAddr const & actionClassAddr =
       m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, actionClassAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, actionClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   TestModule module;
@@ -260,7 +260,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedInitiationCond
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
   ScAddr const & actionClassAddr =
       m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::action, actionClassAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, actionClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   TestModule module;

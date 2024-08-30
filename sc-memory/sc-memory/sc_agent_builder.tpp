@@ -7,6 +7,7 @@
 #include "sc_agent_builder.hpp"
 
 #include "sc_agent_context.hpp"
+#include "sc_action.hpp"
 
 #include "sc_keynodes.hpp"
 
@@ -88,18 +89,13 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetActionClass(ScAddr const
           utils::ExceptionInvalidParams,
           "Specified action class for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
 
-    ScIterator5Ptr it5 = context->Iterator5(
-        ScKeynodes::action,
-        ScType::EdgeDCommonConst,
-        m_actionClassAddr,
-        ScType::EdgeAccessConstPosPerm,
-        ScKeynodes::nrel_inclusion);
-    if (!it5->Next())
+    if (!ScAction::IsActionClassValid(context, m_actionClassAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Specified sc-element for agent class `"
               << TScAgent::template GetName<TScAgent>()
-              << "` is not action class, because it is not included to class `action`.");
+              << "` is not action class, because it is not included to the one of classes: `receptor_action`, "
+                 "`effector_action`, `behavioral_action` or `information_action`.");
   };
 
   m_actionClassAddr = actionClassAddr;
@@ -424,17 +420,13 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
             << "`, because sc-element does not have sc-type `ScType::NodeConstClass`, it has sc-type `" << type
             << "`.");
 
-  it5 = context->Iterator5(
-      ScKeynodes::action,
-      ScType::EdgeDCommonConst,
-      m_actionClassAddr,
-      ScType::EdgeAccessConstPosPerm,
-      ScKeynodes::nrel_inclusion);
-  if (!it5->Next())
+  if (!ScAction::IsActionClassValid(context, m_actionClassAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Found sc-element by relation `nrel_sc_agent_action_class` is not action class for abstract sc-agent `"
-            << abstractAgentName << "`, because it is not included to class `action`.");
+            << abstractAgentName
+            << "`, because it is not included to the one of classes: `receptor_action`, `effector_action`, "
+               "`behavioral_action` or `information_action`.");
 
   SC_LOG_DEBUG("Action class for agent class `" << agentClassName << "` was found.");
 }

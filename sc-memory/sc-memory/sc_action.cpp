@@ -29,16 +29,7 @@ ScAddr ScAction::GetClass() const noexcept
   while (it3->Next())
   {
     ScAddr const & actionClassAddr = it3->Get(0);
-    if (m_context->HelperCheckEdge(ScKeynodes::action_state, actionClassAddr, ScType::EdgeAccessConstPosPerm))
-      continue;
-
-    ScIterator5Ptr const it5 = m_context->Iterator5(
-        ScKeynodes::action,
-        ScType::EdgeDCommonConst,
-        actionClassAddr,
-        ScType::EdgeAccessConstPosPerm,
-        ScKeynodes::nrel_inclusion);
-    if (it5->Next())
+    if (IsActionClassValid(m_context, actionClassAddr))
     {
       m_actionClassAddr = actionClassAddr;
       break;
@@ -46,6 +37,34 @@ ScAddr ScAction::GetClass() const noexcept
   }
 
   return m_actionClassAddr;
+}
+
+bool ScAction::IsActionClassValid(ScMemoryContext * context, ScAddr const & actionClassAddr)
+{
+  ScAddrUnorderedSet const & actionClassTypes = {
+      ScKeynodes::receptor_action,
+      ScKeynodes::effector_action,
+      ScKeynodes::behavioral_action,
+      ScKeynodes::information_action,
+  };
+
+  bool isActionClassHasType = false;
+  ScIterator5Ptr const it5 = context->Iterator5(
+      ScType::NodeConstClass,
+      ScType::EdgeDCommonConst,
+      actionClassAddr,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_inclusion);
+  while (it5->Next())
+  {
+    ScAddr const & actionClassType = it5->Get(0);
+    if (actionClassTypes.count(actionClassType))
+    {
+      isActionClassHasType = true;
+      break;
+    }
+  }
+  return isActionClassHasType;
 }
 
 ScAddr ScAction::GetArgument(size_t idx, ScAddr const & defaultArgumentAddr) const noexcept

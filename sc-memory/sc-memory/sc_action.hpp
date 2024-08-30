@@ -22,6 +22,8 @@ class ScKeynode;
 class _SC_EXTERN ScAction final : public ScAddr
 {
   friend class ScAgentContext;
+  template <class TScAgent>
+  friend class ScAgentBuilder;
 
 public:
   /*!
@@ -204,6 +206,8 @@ protected:
   void Finish(ScAddr const & actionStateAddr) noexcept(false);
 
 private:
+  static bool IsActionClassValid(class ScMemoryContext * context, ScAddr const & actionClassAddr);
+
   /*!
    * @brief Retrieves a user-friendly string representation of the action's name.
    *

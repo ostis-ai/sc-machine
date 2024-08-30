@@ -34,6 +34,11 @@ TEST_F(ScAgentContextTest, CreateSet)
   EXPECT_EQ(set, set2);
 }
 
+TEST_F(ScAgentContextTest, ConvertInvalidSet)
+{
+  EXPECT_THROW(m_ctx->ConvertToSet(ScAddr::Empty), utils::ExceptionInvalidParams);
+}
+
 TEST_F(ScAgentContextTest, CreateStruct)
 {
   ScStructure structure = m_ctx->CreateStructure();
@@ -41,4 +46,9 @@ TEST_F(ScAgentContextTest, CreateStruct)
 
   ScSet structure2 = m_ctx->ConvertToStructure(structure);
   EXPECT_EQ(structure, structure2);
+}
+
+TEST_F(ScAgentContextTest, ConvertInvalidStructure)
+{
+  EXPECT_THROW(m_ctx->ConvertToStructure(ScAddr::Empty), utils::ExceptionInvalidParams);
 }

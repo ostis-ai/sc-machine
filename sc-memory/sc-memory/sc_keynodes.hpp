@@ -219,6 +219,10 @@ public:
   _SC_EXTERN static inline ScKeynode const lang_ru{"lang_ru", ScType::NodeConstClass};
 
   _SC_EXTERN static inline ScKeynode const action{"action", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const receptor_action{"receptor_action", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const effector_action{"effector_action", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const behavioral_action{"behavioral_action", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const information_action{"information_action", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_state{"action_state", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_deactivated{"action_deactivated", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const action_initiated{"action_initiated", ScType::NodeConstClass};

@@ -33,6 +33,16 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(ScKeynodes::lang_ru.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::lang_ru) == ScType::NodeConstClass);
 
+  EXPECT_TRUE(ScKeynodes::action.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::receptor_action.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::receptor_action) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::effector_action.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::effector_action) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::behavioral_action.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::behavioral_action) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::information_action.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::information_action) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::action_state.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_state) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::action_deactivated.IsValid());

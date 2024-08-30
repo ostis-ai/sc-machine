@@ -47,7 +47,7 @@ static std::string const ATestSpecifiedAgentSpecification = R"(
 
   test_specified_agent_action
   <- sc_node_class;
-  <= nrel_inclusion: action;;
+  <= nrel_inclusion: information_action;;
 )";
 
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecification)
@@ -113,7 +113,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithNotSpecified
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -164,7 +164,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedImp
 
   test_specified_agent_action
   <- sc_node_class;
-  <= nrel_inclusion: action;;
+  <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -337,7 +337,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithNotSpecified
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -391,7 +391,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidPrima
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -446,7 +446,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidEvent
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -503,7 +503,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedPri
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -555,7 +555,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithNotSpecified
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -663,7 +663,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedAct
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -696,7 +696,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithNotSpecified
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -730,7 +730,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidIniti
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -765,7 +765,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidCondi
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -807,7 +807,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidResul
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -856,7 +856,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedIni
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -910,7 +910,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecificationButInitiatio
 
     test_specified_agent_action
     <- sc_node_class;
-    <= nrel_inclusion: action;;
+    <= nrel_inclusion: information_action;;
   )";
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -1026,7 +1026,7 @@ static std::string const ATestSpecifiedAgentSpecificationErasingEdge = R"(
 
   test_specified_agent_action
   <- sc_node_class;
-  <= nrel_inclusion: action;;
+  <= nrel_inclusion: information_action;;
 )";
 
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingEdgeHasFullSpecification)
@@ -1091,7 +1091,7 @@ static std::string const ATestSpecifiedAgentSpecificationErasingConnector = R"(
 
   test_specified_agent_action
   <- sc_node_class;
-  <= nrel_inclusion: action;;
+  <= nrel_inclusion: information_action;;
 )";
 
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingConnectorHasFullSpecification)
@@ -1156,7 +1156,7 @@ static std::string const ATestSpecifiedAgentSpecificationGeneratingIncomingArc =
 
   test_specified_agent_action
   <- sc_node_class;
-  <= nrel_inclusion: action;;
+  <= nrel_inclusion: information_action;;
 )";
 
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentGeneratingIncomingArcHasFullSpecification)

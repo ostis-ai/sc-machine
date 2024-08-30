@@ -89,6 +89,12 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
 
 ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr) noexcept(false)
 {
+  if (!IsElement(actionClassAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to create sc-action with action class `" << actionClassAddr.Hash()
+                                                           << "`, because action class is not valid.");
+
   ScAddr const & actionAddr = CreateNode(ScType::NodeConst);
   CreateEdge(ScType::EdgeAccessConstPosPerm, actionClassAddr, actionAddr);
   ScAction action{this, actionAddr};
@@ -97,6 +103,12 @@ ScAction ScAgentContext::CreateAction(ScAddr const & actionClassAddr) noexcept(f
 
 ScAction ScAgentContext::ConvertToAction(ScAddr const & actionAddr) noexcept(false)
 {
+  if (!IsElement(actionAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to convert sc-action sc-address `"
+            << actionAddr.Hash() << "` to object of `ScAction` class, because its sc-address is not valid.");
+
   ScAction action{this, actionAddr};
   return action;
 }
@@ -110,6 +122,12 @@ ScSet ScAgentContext::CreateSet()
 
 ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr) noexcept(false)
 {
+  if (!IsElement(setAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to convert sc-set sc-address `"
+            << setAddr.Hash() << "` to object of `ScSet` class, because its sc-address is not valid.");
+
   ScSet set{this, setAddr};
   return set;
 }
@@ -123,6 +141,12 @@ ScStructure ScAgentContext::CreateStructure()
 
 ScStructure ScAgentContext::ConvertToStructure(ScAddr const & structureAddr) noexcept(false)
 {
+  if (!IsElement(structureAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to convert sc-structure sc-address `"
+            << structureAddr.Hash() << "` to object of `ScStructure` class, because its sc-address is not valid.");
+
   ScStructure structure{this, structureAddr};
   return structure;
 }
