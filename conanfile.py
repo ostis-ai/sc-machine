@@ -68,11 +68,6 @@ class sc_machineRecipe(ConanFile):
         del self.info.settings.compiler
         del self.info.settings.build_type
 
-    def package_info(self):
-        # Not settings cpp_info.libs since this is already defined in sc-machine-config.cmake
-        self.cpp_info.builddirs = ["lib/cmake/sc-machine"]
-        self.cpp_info.set_property("cmake_find_mode", "none")
-
     def parse_version(self):
             content = tools.files.load(self, self.recipe_folder + "/CMakeLists.txt")
             version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content).group(1)
