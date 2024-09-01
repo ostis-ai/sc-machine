@@ -166,7 +166,6 @@ Write scs-specification (or scg-specification) of your agent and use it with to 
 
 ```scs
 // Specification of agent in knowledge base.
-// Abstract sc-agent
 my_abstract_agent
 <- abstract_sc_agent;
 => nrel_primary_initiation_condition: 
@@ -179,7 +178,8 @@ my_abstract_agent
 <= nrel_sc_agent_key_sc_elements:
 {
     action_initiated;
-    action
+    my_action_class;
+    my_class
 };
 => nrel_inclusion: 
     my_agent_implementation 
@@ -196,14 +196,12 @@ my_agent_initiation_condition_template
 = [*
     my_action_class _-> .._action;;
     action_initiated _-> .._action;;
+    .._action _-> rrel_1:: .._parameter;;
 *];; 
 
 my_agent_result_condition_template
 = [*
-    my_action_class _-> .._action;;
-    action_initiated _-> .._action;;
-    action_finished_successfully _-> .._action;;
-    .._action _=> nrel_result:: .._result (* <- sc_node_struct;; *);;
+    my_class _-> .._my_node;;
 *];;
 ```
 

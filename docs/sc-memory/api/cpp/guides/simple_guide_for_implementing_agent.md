@@ -40,14 +40,8 @@ The initial construction of agent might look like this:
 The result construction of agent might look like this:
 
 ```scs
-..action
-<- action_calculate_set_power;
-<- action_initiated;
-<- action_finished_successfully;
--> rrel_1: ..some_set;
-=> nrel_result: ..result;;
-
-..result = [*
+..some_action
+=> nrel_result: [*
   ..some_set => nrel_set_power: [3];;
 *];;
 ```
@@ -295,7 +289,9 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 - ScAddr const & arcAccessAddr = m_context.CreateEdge(
 -   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
 + ScAddr const & arcAccessAddr = m_context.CreateEdge(
-+   ScType::EdgeAccessConstPosPerm, ScSetKeynodes::nrel_set_power, arcCommonAddr);
++   ScType::EdgeAccessConstPosPerm, 
++   ScSetKeynodes::nrel_set_power, 
++   arcCommonAddr);
 - action.FormResult(
 -   setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
 + action.FormResult(
