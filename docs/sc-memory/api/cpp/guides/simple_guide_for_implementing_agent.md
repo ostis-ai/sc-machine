@@ -48,7 +48,7 @@ The result construction of agent might look like this:
 
 <image src="../images/agents/agent_calculate_set_power_output_construction.png"></image>
 
-In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base.
+In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base. See [**C++ Actions API**](../extended/agents/actions.md) to learn more about actions.
 
 --- 
 
@@ -118,6 +118,8 @@ The base class `ScAgent` contains API to implement agents that react to any sc-e
 * Override methods must be public. Otherwise, you won't be able to build your code because the sc-machine won't be able to call methods on your agent class.
 
 * You can implement other methods in agent's class.
+
+To learn more about opportunities and restrictions for implementing agents, see [**C++ Agents API**](../extended/agents/agents.md).
 
 ---
 
@@ -263,7 +265,7 @@ public:
 !!! warning
     All keynodes must be static objects. You can define keynodes as static objects everywhere (not only in classes).
 
-`ScKeynodes` class is base class for all classes with keynodes. It contains core keynodes, that can be used in each agent.
+`ScKeynodes` class is base class for all classes with keynodes. It contains core keynodes, that can be used in each agent. See [**C++ Keynodes API**](../extended/agents/keynodes.md) to learn more about keynodes.
 
 **sc_agent_calculate_set_power.cpp**
 
@@ -386,6 +388,8 @@ SC_MODULE_REGISTER(ScSetModule)
 + }
 ```
 
+You can find all modules functionality in the [**C++ Modules API**](../extended/agents/modules.md).
+
 ### **8. Write tests for implemented agent. Check agent logic.**
 
 To make sure how your agent works it is best to create tests and cover in them all possible cases that your agent has to handle. For this, create a separate file with test cases and implement them.
@@ -504,8 +508,10 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 ...
 ```
 
-!!! warning
+!!! note
     A good code is a code covered by tests.
+
+`ScMemoryTest` class includes `m_ctx` that is object of `ScAgentContext` class. You can use it to work with sc-memory. See [**C++ Core API**](../core/api.md) and [**C++ Agent context API**](../extended/agents/agents.md) to learn more about available methods for working with sc-memory.
 
 --- 
 
