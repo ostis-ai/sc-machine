@@ -254,37 +254,37 @@ public:
   _SC_EXTERN static inline ScKeynode const nrel_sc_agent_program{"nrel_sc_agent_program", ScType::NodeConstNoRole};
 
   _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::NodeConstClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_connector{
       "sc_event_after_generate_connector",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_incoming_arc{
       "sc_event_after_generate_incoming_arc",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_outgoing_arc{
       "sc_event_after_generate_outgoing_arc",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_edge{
       "sc_event_after_generate_edge",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_connector{
       "sc_event_before_erase_connector",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_incoming_arc{
       "sc_event_before_erase_incoming_arc",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_outgoing_arc{
       "sc_event_before_erase_outgoing_arc",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_edge{
       "sc_event_before_erase_edge",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_element{
       "sc_event_before_erase_element",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_change_link_content{
       "sc_event_before_change_link_content",
-      ScType::NodeConstClass};
+      ScType::NodeConstNoRole};
 
   _SC_EXTERN static inline ScKeynode const binary_type{"binary_type", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const binary_float{"binary_float", ScType::NodeConstClass};
