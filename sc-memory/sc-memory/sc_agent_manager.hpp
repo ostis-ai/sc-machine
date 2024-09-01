@@ -41,6 +41,22 @@ class _SC_EXTERN ScAgentManager : public ScObject
   template <class TScAgentType>
   struct HasOverride
   {
+    //! Checks if the agent type overrides the GetEventClass method.
+    struct GetEventClass
+    {
+      static constexpr bool value = !std::is_same<
+          decltype(&ScAgent<TScEvent, TScContext>::GetEventClass),
+          decltype(&TScAgentType::GetEventClass)>::value;
+    };
+
+    //! Checks if the agent type overrides the GetEventSubscriptionElement method.
+    struct GetEventSubscriptionElement
+    {
+      static constexpr bool value = !std::is_same<
+          decltype(&ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement),
+          decltype(&TScAgentType::GetEventSubscriptionElement)>::value;
+    };
+
     //! Checks if the agent type overrides the CheckInitiationCondition method.
     struct CheckInitiationCondition
     {

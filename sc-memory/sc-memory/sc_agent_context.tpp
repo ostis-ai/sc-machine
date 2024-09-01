@@ -94,6 +94,14 @@ typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value
 template <class TScAgent>
 void ScAgentContext::LoadAndSubscribeAgent(ScAddr const & agentImplementationAddr)
 {
+  static_assert(
+      !ScAgentManager<TScAgent>::template HasOverride<TScAgent>::GetEventClass::value,
+      "`LoadAndSubscribeAgent` method can be used for agent class that doesn't have override `GetEventClass` method.");
+  static_assert(
+      !ScAgentManager<TScAgent>::template HasOverride<TScAgent>::GetEventSubscriptionElement::value,
+      "`LoadAndSubscribeAgent` method can be used for agent class that doesn't have override "
+      "`GetEventSubscriptionElement` method.");
+
   ScAgentBuilder<TScAgent> builder{agentImplementationAddr};
   builder.ResolveSpecification(this);
 
@@ -103,6 +111,14 @@ void ScAgentContext::LoadAndSubscribeAgent(ScAddr const & agentImplementationAdd
 template <class TScAgent>
 void ScAgentContext::DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr)
 {
+  static_assert(
+      !ScAgentManager<TScAgent>::template HasOverride<TScAgent>::GetEventClass::value,
+      "`LoadAndSubscribeAgent` method can be used for agent class that doesn't have override `GetEventClass` method.");
+  static_assert(
+      !ScAgentManager<TScAgent>::template HasOverride<TScAgent>::GetEventSubscriptionElement::value,
+      "`LoadAndSubscribeAgent` method can be used for agent class that doesn't have override "
+      "`GetEventSubscriptionElement` method.");
+
   ScAgentManager<TScAgent>::Unsubscribe(this, agentImplementationAddr);
 }
 
