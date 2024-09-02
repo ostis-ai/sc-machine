@@ -17,14 +17,15 @@ class ScTemplate;
  * @class ScSet
  * @brief Represents a set of sc-elements in the sc-memory.
  *
- * The `ScSet` class provides an abstraction for working with sets of sc-elements in the sc-memory. It allows appending and
- * removing sc-elements, checking their presence, and performing set operations such as union, intersection, and
+ * The `ScSet` class provides an abstraction for working with sets of sc-elements in the sc-memory. It allows appending
+ * and removing sc-elements, checking their presence, and performing set operations such as union, intersection, and
  * subtraction.
  *
  * @note All methods in this class assume that the set is valid and contains only sc-elements with the same sc-arc type
  * (either all permanent or all temporary).
  *
- * @note If a set contains elements with both permanent and temporary sc-arcs, most operations will fail with an exception.
+ * @note If a set contains sc-elements with both permanent and temporary sc-arcs, most operations will fail with an
+ * exception.
  */
 class _SC_EXTERN ScSet : public ScAddr
 {

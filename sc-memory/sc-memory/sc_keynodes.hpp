@@ -290,6 +290,11 @@ public:
       "sc_event_before_change_link_content",
       ScType::NodeConstNoRole};
 
+  _SC_EXTERN static inline ScKeynode const nrel_sets_intersection{"nrel_sets_intersection", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_sets_union{"nrel_sets_union", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_sets_difference{"nrel_sets_difference", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_sets_equality{"nrel_sets_equality", ScType::NodeConstNoRole};
+
   _SC_EXTERN static inline ScKeynode const binary_type{"binary_type", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const binary_float{"binary_float", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const binary_double{"binary_double", ScType::NodeConstClass};

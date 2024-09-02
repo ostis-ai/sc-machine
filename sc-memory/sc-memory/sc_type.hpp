@@ -226,6 +226,18 @@ public:
 
   static ScType const EdgeAccess;
 
+  static ScType const EdgeAccessPos;
+
+  static ScType const EdgeAccessConst;
+  static ScType const EdgeAccessVar;
+
+  static ScType const EdgeAccessConstPos;
+  static ScType const EdgeAccessConstFuz;
+  static ScType const EdgeAccessConstNeg;
+
+  static ScType const EdgeAccessConstPerm;
+  static ScType const EdgeAccessConstTemp;
+
   static ScType const EdgeAccessConstPosPerm;
   static ScType const EdgeAccessConstNegPerm;
   static ScType const EdgeAccessConstFuzPerm;
