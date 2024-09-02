@@ -23,7 +23,7 @@ bool ScWaiter::Impl::Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelega
   bool actionBeforeWaitPerformed = false;
   while (!m_isResolved)
   {
-    if (actionBeforeWaitPerformed == false)
+    if (!actionBeforeWaitPerformed)
     {
       if (startDelegate)
         startDelegate();
@@ -56,7 +56,7 @@ bool ScWaiter::Wait(
     std::function<void(void)> const & onWaitUnsuccess)
 {
   bool const result = m_impl.Wait(timeout_ms, m_waitStartDelegate);
-  if (result == true)
+  if (result)
   {
     if (onWaitSuccess)
       onWaitSuccess();

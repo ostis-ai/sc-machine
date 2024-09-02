@@ -103,7 +103,7 @@ public:
 
   /*!
    * @brief Shuts down the module with the given memory context.
-   * @param A The sc-memory context for shutdown.
+   * @param context A sc-memory context for shutdown.
    */
   _SC_EXTERN virtual void Shutdown(ScMemoryContext * context);
 
