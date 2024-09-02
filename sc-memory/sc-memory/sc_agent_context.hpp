@@ -218,20 +218,7 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
    */
   template <class TScAgent, class... TScAddr>
-  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type SubscribeAgent(
-      TScAddr const &... subscriptionAddrs) noexcept(false);
-
-  /*!
-   * @brief Subscribes agent class to sc-event of adding outgoing sc-arc from `action_initiated` to some formed
-   * sc-action.
-   * @tparam TScAgent An agent class to be subscribed to the event.
-   * @warning Specified agent class must be derived from class `ScAgentAction`.
-   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
-   * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
-   */
-  template <class TScAgent>
-  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type
-  SubscribeAgent() noexcept(false);
+  _SC_EXTERN void SubscribeAgent(TScAddr const &... subscriptionAddrs) noexcept(false);
 
   /*!
    * @brief Unsubscribes agent class from specified sc-events.
@@ -242,20 +229,7 @@ public:
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
    */
   template <class TScAgent, class... TScAddr>
-  _SC_EXTERN typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type UnsubscribeAgent(
-      TScAddr const &... subscriptionAddrs) noexcept(false);
-
-  /*!
-   * @brief Unsubscribes agent class from sc-event of adding outgoing sc-arc from `action_initiated` to some formed
-   * sc-action.
-   * @tparam TScAgent An agent class to be unsubscribed from the event.
-   * @warning Specified agent class must be derived from class `ScAgentAction`.
-   * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
-   * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
-   */
-  template <class TScAgent>
-  _SC_EXTERN typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type
-  UnsubscribeAgent() noexcept(false);
+  _SC_EXTERN void UnsubscribeAgent(TScAddr const &... subscriptionAddrs) noexcept(false);
 
   /*!
    * @brief Loads specification of agent implementation and subscribes agent class using found specification.

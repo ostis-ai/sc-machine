@@ -59,36 +59,33 @@ std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
 }
 
 template <class TScAgent, class... TScAddr>
-typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent(
-    TScAddr const &... subscriptionAddrs)
+void ScAgentContext::SubscribeAgent(TScAddr const &... subscriptionAddrs)
 {
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
+
+  if constexpr (std::is_base_of<ScActionInitiatedAgent, TScAgent>::value)
+    static_assert(
+        sizeof...(TScAddr) == 0,
+        "Not able to provide subscription sc-elements for TScAgent, because it inherits ScActionInitiatedAgent class "
+        "for which `action_initiated` is used by default.");
 
   ScAgentManager<TScAgent>::Subscribe(this, ScAddr::Empty, subscriptionAddrs...);
 }
 
-template <class TScAgent>
-typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::SubscribeAgent()
-{
-  ScAgentManager<TScAgent>::Subscribe(this, ScAddr::Empty);
-}
-
 template <class TScAgent, class... TScAddr>
-typename std::enable_if<!std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::
-    UnsubscribeAgent(TScAddr const &... subscriptionAddrs)
+void ScAgentContext::UnsubscribeAgent(TScAddr const &... subscriptionAddrs)
 {
   static_assert(
       (std::is_base_of<ScAddr, TScAddr>::value && ...), "Each element of parameter pack must have ScAddr type.");
 
-  ScAgentManager<TScAgent>::Unsubscribe(this, ScAddr::Empty, subscriptionAddrs...);
-}
+  if constexpr (std::is_base_of<ScActionInitiatedAgent, TScAgent>::value)
+    static_assert(
+        sizeof...(TScAddr) == 0,
+        "Not able to provide subscription sc-elements for TScAgent, because it inherits ScActionInitiatedAgent class "
+        "for which `action_initiated` is used by default.");
 
-template <class TScAgent>
-typename std::enable_if<std::is_base_of<ScActionInitiatedAgent, TScAgent>::value>::type ScAgentContext::
-    UnsubscribeAgent()
-{
-  ScAgentManager<TScAgent>::Unsubscribe(this, ScAddr::Empty);
+  ScAgentManager<TScAgent>::Unsubscribe(this, ScAddr::Empty, subscriptionAddrs...);
 }
 
 template <class TScAgent>
