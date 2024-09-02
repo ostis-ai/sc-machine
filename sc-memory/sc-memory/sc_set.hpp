@@ -41,8 +41,8 @@ public:
   /// TODO: implement +, -, == operators
 
 protected:
-  _SC_EXTERN ScSet(class ScMemoryContext * ctx, ScAddr const & setAddr);
+  _SC_EXTERN ScSet(class ScMemoryContext * context, ScAddr const & setAddr);
 
 private:
-  ScMemoryContext * m_ctx;
+  ScMemoryContext * m_context;
 };

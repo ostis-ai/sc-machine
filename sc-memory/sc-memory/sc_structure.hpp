@@ -14,7 +14,7 @@ class ScStructure : public ScSet
   friend class ScTemplateLoader;
 
 protected:
-  _SC_EXTERN ScStructure(ScMemoryContext * ctx, ScAddr const & structureAddr);
+  _SC_EXTERN ScStructure(ScMemoryContext * context, ScAddr const & structureAddr);
 
-  _SC_EXTERN ScStructure(ScMemoryContext & ctx, ScAddr const & structureAddr);
+  _SC_EXTERN ScStructure(ScMemoryContext & context, ScAddr const & structureAddr);
 };

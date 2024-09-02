@@ -7,12 +7,12 @@
 #include "sc_structure.hpp"
 #include "sc_memory.hpp"
 
-ScStructure::ScStructure(ScMemoryContext * ctx, ScAddr const & structureAddr)
-  : ScSet(ctx, structureAddr)
+ScStructure::ScStructure(ScMemoryContext * context, ScAddr const & structureAddr)
+  : ScSet(context, structureAddr)
 {
 }
 
-ScStructure::ScStructure(ScMemoryContext & ctx, ScAddr const & structureAddr)
-  : ScStructure(&ctx, structureAddr)
+ScStructure::ScStructure(ScMemoryContext & context, ScAddr const & structureAddr)
+  : ScStructure(&context, structureAddr)
 {
 }
