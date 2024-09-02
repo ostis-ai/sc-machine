@@ -257,11 +257,11 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedAbs
       m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithTwoSpecifiedAbstractAgents)
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSeveralSpecifiedAbstractAgents)
 {
   std::string const & data = R"(
     test_specified_agent
-    => nrel_inclusion:
+    => nrel_inclusion: nrel_inclusion:
       test_specified_agent_implementation
       (*
         <- platform_dependent_abstract_sc_agent;;
@@ -638,12 +638,12 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedPri
       m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithTwoSpecifiedPrimaryInitiationConditions)
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSeveralSpecifiedPrimaryInitiationConditions)
 {
   std::string const & data = R"(
     test_specified_agent
     <- abstract_sc_agent;
-    => nrel_primary_initiation_condition: 
+    => nrel_primary_initiation_condition: nrel_primary_initiation_condition:
       (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_primary_initiation_condition: 
       (sc_event_after_generate_outgoing_arc => action_initiated);
@@ -798,14 +798,14 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidActio
       utils::ExceptionInvalidState);
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithTwoSpecifiedDifferentActionClasses)
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSeveralSpecifiedDifferentActionClasses)
 {
   std::string const & data = R"(
     test_specified_agent
     <- abstract_sc_agent;
     => nrel_primary_initiation_condition: 
       (sc_event_after_generate_outgoing_arc => action_initiated);
-    => nrel_sc_agent_action_class: 
+    => nrel_sc_agent_action_class: nrel_sc_agent_action_class:
       test_specified_agent_action;
     => nrel_sc_agent_action_class: 
       test_specified_agent_action_invalid;
@@ -1105,7 +1105,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedIni
       m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithTwoSpecifiedInitiationConditionAndResults)
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSeveralSpecifiedInitiationConditionAndResults)
 {
   std::string const & data = R"(
     test_specified_agent
@@ -1114,7 +1114,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithTwoSpecified
       (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
       test_specified_agent_action;
-    => nrel_initiation_condition_and_result: 
+    => nrel_initiation_condition_and_result: nrel_initiation_condition_and_result:
       (..test_specified_agent_condition => ..test_specified_agent_result);
     => nrel_initiation_condition_and_result: 
       (..test_specified_agent_condition => ..test_specified_agent_result);

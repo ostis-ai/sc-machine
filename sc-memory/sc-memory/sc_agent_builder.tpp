@@ -253,16 +253,27 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
 
   m_abstractAgentAddr = it5->Get(0);
 
-  if (it5->Next())
+  bool hasSeveralConnectionsToElement = false;
+  bool hasSeveralElements = false;
+  while (it5->Next())
   {
     if (m_abstractAgentAddr == it5->Get(0))
-      SC_LOG_WARNING(
-          "Agent implementation `" << agentImplementationName << "` is included to the same abstract agent twice.");
+      hasSeveralConnectionsToElement = true;
     else
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Agent implementation `" << agentImplementationName << "` is included to two or more abstract agents.");
+    {
+      hasSeveralElements = true;
+      break;
+    }
   }
+
+  if (hasSeveralConnectionsToElement)
+    SC_LOG_WARNING(
+        "Agent implementation `" << agentImplementationName << "` is included to the same abstract agent twice.");
+
+  if (hasSeveralElements)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Agent implementation `" << agentImplementationName << "` is included to two or more abstract agents.");
 
   ScType const & type = context->GetElementType(m_abstractAgentAddr);
   if (type.BitAnd(ScType::NodeConst) != ScType::NodeConst)
@@ -333,18 +344,29 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
 
   ScAddr const & primaryInitiationConditionAddr = it5->Get(2);
 
-  if (it5->Next())
+  bool hasSeveralConnectionsToElement = false;
+  bool hasSeveralElements = false;
+  while (it5->Next())
   {
     if (primaryInitiationConditionAddr == it5->Get(2))
-      SC_LOG_WARNING(
-          "Abstract sc-agent `" << abstractAgentName
-                                << "` has two or more connections to the same pair of primary initiation condition.");
+      hasSeveralConnectionsToElement = true;
     else
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Abstract sc-agent `" << abstractAgentName
-                                << "` has two or more connections to different pairs of primary initiation condition.");
+    {
+      hasSeveralElements = true;
+      break;
+    }
   }
+
+  if (hasSeveralConnectionsToElement)
+    SC_LOG_WARNING(
+        "Abstract sc-agent `" << abstractAgentName
+                              << "` has two or more connections to the same pair of primary initiation condition.");
+
+  if (hasSeveralElements)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Abstract sc-agent `" << abstractAgentName
+                              << "` has two or more connections to different pairs of primary initiation condition.");
 
   ScType const & type = context->GetElementType(primaryInitiationConditionAddr);
   if (type.BitAnd(ScType::EdgeDCommonConst) != ScType::EdgeDCommonConst)
@@ -416,16 +438,27 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
 
   m_actionClassAddr = it5->Get(2);
 
-  if (it5->Next())
+  bool hasSeveralConnectionsToElement = false;
+  bool hasSeveralElements = false;
+  while (it5->Next())
   {
     if (m_actionClassAddr == it5->Get(2))
-      SC_LOG_WARNING(
-          "Abstract sc-agent `" << abstractAgentName << "` has two or more connections to the same action class.");
+      hasSeveralConnectionsToElement = true;
     else
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Abstract sc-agent `" << abstractAgentName << "` has two or more connections to different action classes.");
+    {
+      hasSeveralElements = true;
+      break;
+    }
   }
+
+  if (hasSeveralConnectionsToElement)
+    SC_LOG_WARNING(
+        "Abstract sc-agent `" << abstractAgentName << "` has two or more connections to the same action class.");
+
+  if (hasSeveralElements)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Abstract sc-agent `" << abstractAgentName << "` has two or more connections to different action classes.");
 
   ScType const & type = context->GetElementType(m_actionClassAddr);
   if (type.BitAnd(ScType::NodeConstClass) != ScType::NodeConstClass)
@@ -493,19 +526,30 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
 
   ScAddr const & initiationConditionAndResultAddr = it5->Get(2);
 
-  if (it5->Next())
+  bool hasSeveralConnectionsToElement = false;
+  bool hasSeveralElements = false;
+  while (it5->Next())
   {
     if (initiationConditionAndResultAddr == it5->Get(2))
-      SC_LOG_WARNING(
-          "Abstract sc-agent `"
-          << abstractAgentName << "` has two or more connections to the same pair of initiation condition and result.");
+      hasSeveralConnectionsToElement = true;
     else
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Abstract sc-agent `"
-              << abstractAgentName
-              << "` has two or more connections to different pairs of initiation condition and result.");
+    {
+      hasSeveralElements = true;
+      break;
+    }
   }
+
+  if (hasSeveralConnectionsToElement)
+    SC_LOG_WARNING(
+        "Abstract sc-agent `" << abstractAgentName
+                              << "` has two or more connections to the same pair of initiation condition and result.");
+
+  if (hasSeveralElements)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Abstract sc-agent `"
+            << abstractAgentName
+            << "` has two or more connections to different pairs of initiation condition and result.");
 
   ScType type = context->GetElementType(initiationConditionAndResultAddr);
   if (type.BitAnd(ScType::EdgeDCommonConst) != ScType::EdgeDCommonConst)
