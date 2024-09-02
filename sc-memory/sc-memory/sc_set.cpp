@@ -152,7 +152,8 @@ ScSet ScSet::Intersect(ScSet const & otherSet)
 
 ScSet ScSet::Subtract(ScSet const & otherSet)
 {
-  return *this - otherSet;;
+  return *this - otherSet;
+  ;
 }
 
 ScSet const operator+(ScSet const & leftSet, ScSet const & rightSet)
