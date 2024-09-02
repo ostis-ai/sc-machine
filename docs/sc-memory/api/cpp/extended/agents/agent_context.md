@@ -263,13 +263,13 @@ context.UnsubscribeAgent<MyActionAgent>();
 !!! warning
     You must provide valid subscription sc-elements.
 
-### **LoadAndSubscribeAgent**
+### **SubscribeSpecifiedAgent**
 
 Also, you can subscribe agent according to specification provided in knowledge base. Instead of subscription sc-elements, you should provide agent implementations.
 
 ```cpp
 ...
-context.LoadAndSubscribeAgent<MyAgent>(agentImplementationAddr);
+context.SubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr);
 ...
 ```
 
@@ -278,11 +278,11 @@ context.LoadAndSubscribeAgent<MyAgent>(agentImplementationAddr);
 
 This method finds specification of abstract agent for specified agent implementation and uses this specification to subscribe specified agent to sc-event.
 
-### **DestroyAndUnsubscribeAgent**
+### **UnsubscribeSpecifiedAgent**
 
 ```cpp
 ...
-context.DestroyAndUnsubscribeAgent<MyAgent>(agentImplementationAddr);
+context.UnsubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr);
 ...
 ```
 

@@ -258,7 +258,7 @@ public:
   UnsubscribeAgent() noexcept(false);
 
   /*!
-   * @brief Loads specification of agent implementation and subscribes agent class.
+   * @brief Loads specification of agent implementation and subscribes agent class using found specification.
    * @tparam TScAgent An agent class to be subscribed to the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
@@ -270,10 +270,10 @@ public:
    * sc-agent for this agent class does not have a primary initiation condition.
    */
   template <class TScAgent>
-  _SC_EXTERN void LoadAndSubscribeAgent(ScAddr const & agentImplementationAddr) noexcept(false);
+  _SC_EXTERN void SubscribeSpecifiedAgent(ScAddr const & agentImplementationAddr) noexcept(false);
 
   /*!
-   * @brief Remove from program specification of agent and unsubscribes agent class.
+   * @brief Remove specification of agent from program and unsubscribes agent class using this specification.
    * @tparam TScAgent An agent class to be unsubscribed from the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
@@ -285,7 +285,7 @@ public:
    * sc-agent for this agent class does not have a primary initiation condition.
    */
   template <class TScAgent>
-  _SC_EXTERN void DestroyAndUnsubscribeAgent(ScAddr const & agentImplementationAddr) noexcept(false);
+  _SC_EXTERN void UnsubscribeSpecifiedAgent(ScAddr const & agentImplementationAddr) noexcept(false);
 
   /*!
    * @brief Creates an action with a given action class.
