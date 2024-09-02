@@ -194,6 +194,36 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecificationWithTempl
   module.Unregister(&*m_ctx);
 }
 
+TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasSpecificationWithSpecifiedAbstractAgentHavingClassTwice)
+{
+  ATestSpecifiedAgent::msWaiter.Reset();
+
+  ScAddr const & abstractAgentAddr = m_ctx->CreateNode(ScType::NodeConst);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::abstract_sc_agent, abstractAgentAddr);
+
+  ScAddr const & actionClassAddr =
+      m_ctx->HelperResolveSystemIdtf("test_specified_agent_action", ScType::NodeConstClass);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, actionClassAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+
+  TestModule module;
+  module.AgentBuilder<ATestSpecifiedAgent>()
+      ->SetAbstractAgent(abstractAgentAddr)
+      ->SetPrimaryInitiationCondition({ScKeynodes::sc_event_after_generate_outgoing_arc, ScKeynodes::action_initiated})
+      ->SetActionClass(ATestSpecifiedAgent::test_specified_agent_action)
+      ->SetInitiationConditionAndResult(
+          {ATestSpecifiedAgent::test_specified_agent_initiation_condition_in_kb,
+           ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
+      ->FinishBuild();
+  module.Register(&*m_ctx);
+
+  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
+
+  module.Unregister(&*m_ctx);
+}
+
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedAbstractAgent)
 {
   TestModule module;
