@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GWF version="2.0">
     <staticSector>
-        <node type="node/const/perm/general" idtf="action_argument_1" shapeColor="0" id="106797237392688" parent="0" left="0" top="0" right="146.844" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="343" y="196" haveBus="false" idtf_pos="0">
+        <node type="node/const/perm/general" idtf="argAddr" shapeColor="0" id="106797237392688" parent="0" left="0" top="0" right="146.844" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="343" y="196" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
-        <node type="node/const/perm/general" idtf="some_action" shapeColor="0" id="106797237376576" parent="0" left="0" top="0" right="98.7969" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="342" y="84" haveBus="false" idtf_pos="0">
+        <node type="node/const/perm/general" idtf="action" shapeColor="0" id="106797237376576" parent="0" left="0" top="0" right="98.7969" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="342" y="84" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/role" idtf="rrel_1" shapeColor="0" id="106797237214976" parent="0" left="0" top="0" right="49.6094" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="418" y="137" haveBus="false" idtf_pos="0">

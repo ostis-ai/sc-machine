@@ -26,6 +26,8 @@ ScAction action = context.CreateAction(actionClassAddr);
 ...
 ```
 
+<scg src="../images/actions/action_class.gwf"></scg>
+
 !!! note
     You should provide action class that is include to the one of types: `receptor_action`, `effector_action`, `behavioral_action` or `information_action`.
 
@@ -35,8 +37,6 @@ ScAction action = context.CreateAction(actionClassAddr);
 ScAction action = context.ConvertToAction(actionAddr);
 ...
 ```
-
-<scg src="../images/actions/action_class.gwf"></scg>
 
 ### **GetClass**
 

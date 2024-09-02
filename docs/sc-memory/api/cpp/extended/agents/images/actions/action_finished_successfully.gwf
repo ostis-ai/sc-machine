@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GWF version="2.0">
     <staticSector>
-        <node type="node/const/perm/general" idtf="some_action" shapeColor="193" id="106797233929152" parent="0" left="0" top="0" right="98.7969" bottom="25" textColor="244" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="344.483" y="178.5" haveBus="false" idtf_pos="0">
+        <node type="node/const/perm/general" idtf="action" shapeColor="193" id="106797233929152" parent="0" left="0" top="0" right="98.7969" bottom="25" textColor="244" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="344.483" y="178.5" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/group" idtf="action_finished_successfully" shapeColor="193" id="106797234099536" parent="0" left="0" top="0" right="202.672" bottom="25" textColor="244" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="349.983" y="96" haveBus="false" idtf_pos="3">
