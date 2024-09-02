@@ -191,7 +191,7 @@ TEST_F(ScActionTest, CreateActionAndSetRemoveGetResult)
       ScKeynodes::nrel_result);
   EXPECT_TRUE(it5->Next());
   m_ctx->EraseElement(it5->Get(1));
-  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
+  EXPECT_THROW(action.GetResult(), utils::ExceptionItemNotFound);
 }
 
 TEST_F(ScActionTest, CreateActionAndSetFormUpdateGetResult)

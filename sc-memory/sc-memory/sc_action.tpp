@@ -43,8 +43,8 @@ ScAction & ScAction::FormResult(TScAddr const &... addrs)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to form result for `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                        << "` because it had already been finished.");
+        "Not able to form result for " << GetActionPrettyString() << GetActionClassPrettyString()
+                                       << " because it had already been finished.");
 
   if (m_context->IsElement(m_resultAddr))
     m_context->EraseElement(m_resultAddr);
@@ -67,8 +67,8 @@ _SC_EXTERN ScAction & ScAction::UpdateResult(TScAddr const &... addrs)
   if (IsFinished())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to update result for `" << this->Hash() << "` with class `" << GetClass().Hash()
-                                          << "` because it had already been finished.");
+        "Not able to update result for " << GetActionPrettyString() << GetActionClassPrettyString()
+                                         << " because it had already been finished.");
 
   if (!m_context->IsElement(m_resultAddr))
     m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);

@@ -174,7 +174,6 @@ auto eventWaiter = context.CreateConditionWaiter<MyEventType>(
   {
     // Here you can specify check for sc-event that will occur.
     // This check should return bool value.
-    // By default, this check is empty `{}`.
   });
 
 eventWaiter->Wait(200); // milliseconds

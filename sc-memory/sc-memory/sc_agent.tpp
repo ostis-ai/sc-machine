@@ -273,11 +273,12 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
 
   ScStructure const & result = action.GetResult();
   bool isFound = false;
-  this->m_context.HelperSearchTemplate(
+  this->m_context.HelperSmartSearchTemplate(
       resultConditionTemplate,
-      [&isFound](ScTemplateResultItem const & item) -> void
+      [&isFound](ScTemplateResultItem const & item) -> ScTemplateSearchRequest
       {
         isFound = true;
+        return ScTemplateSearchRequest::STOP;
       },
       [&](ScAddr const & elementAddr) -> bool
       {
@@ -334,8 +335,8 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   if (iteratorIt == eventToEventTripleIterators.cend())
   {
     SC_LOG_WARNING(
-        "Event class for agent class `" << this->GetName()
-                                        << "` is unknown. It is impossible to check initiation condition template.");
+        "Event class for agent class `"
+        << this->GetName() << "` is unsupported. It is impossible to check initiation condition template.");
     return ScTemplate();
   }
 
@@ -407,15 +408,15 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
       ScType const & connectorVarType = this->m_context.GetElementType(connectorVarAddr);
       ScType const & otherVarType = this->m_context.GetElementType(otherVarAddr);
 
-      ScType const & isOtherElementSubstitutable =
-          otherElementAddr != otherVarAddr
-              ? otherVarType.IsVar() && otherElementType.BitAnd(otherVarType.AsConst()) == otherElementType
-              : false;
+      ScType const & otherVarTypeAsConst = otherVarType.AsConst();
+      bool const isOtherElementSubstitutable = otherElementAddr != otherVarAddr && otherVarType.IsVar()
+                                               && otherElementType.BitAnd(otherVarTypeAsConst) == otherVarTypeAsConst;
       if (isOtherElementSubstitutable)
         checkTemplateParams.Add(otherVarAddr, otherElementAddr);
 
-      ScType const & isConnectorSubstitutable =
-          connectorVarType.IsVar() ? connectorType.BitAnd(connectorVarType.AsConst()) == connectorType : false;
+      ScType const & connectorVarTypeAsConst = connectorVarType.AsConst();
+      bool const isConnectorSubstitutable =
+          connectorVarType.IsVar() && connectorType.BitAnd(connectorVarTypeAsConst) == connectorVarTypeAsConst;
       if (isConnectorSubstitutable)
         checkTemplateParams.Add(connectorVarAddr, connectorAddr);
       else
@@ -446,6 +447,7 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
           << this->GetName()
           << "` checks initiated sc-event incorrectly. Maybe initiation condition template has triple to "
              "substitute sc-elements involved in initiated sc-event twice.");
+      checkTemplateParams = ScTemplateParams();
       return false;
     }
   }

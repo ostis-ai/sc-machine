@@ -171,7 +171,7 @@ public:
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<bool(TScEvent const &)> const & checkCallback = {}) noexcept(false);
+      std::function<bool(TScEvent const &)> const & checkCallback) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.

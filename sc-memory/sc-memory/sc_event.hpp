@@ -315,8 +315,6 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr) noexcept;
 
-  using ScElementaryEvent::GetOtherElement();
-
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_connector;
 };

@@ -169,7 +169,7 @@ See [**C++ Events API**](events.md) and [**C++ Event subscriptions API**](event_
     Define action class as keynode in agent class or keynodes class.
 
 !!! warning
-    You must override methods `GetActionClass` and `DoProgram`.
+    You should override methods `GetActionClass` and `DoProgram`. But if you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**](modules.md) to learn how to implement agents with specification in the knowledge base.
 
 You can specify any existing event types as a template argument to the `ScAgent` class. For example, you can create agent that will be triggered to sc-event of removing sc-element.
 
@@ -213,9 +213,6 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 
 !!! note
     `ScElementaryEventAgent` is alias for `ScAgent<ScElementaryEvent>`.
-
-!!! note
-    If you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**](modules.md) to learn how to implement agents with specification in the knowledge base.
 
 ### **ScActionInitiatedAgent**
 

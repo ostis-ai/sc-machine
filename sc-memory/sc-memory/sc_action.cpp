@@ -108,7 +108,7 @@ ScStructure ScAction::GetResult() noexcept(false)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Not able to get result of action " << GetActionPrettyString() << GetActionClassPrettyString()
-                                            << "` because it had not been initiated yet.");
+                                            << " because it had not been initiated yet.");
 
   if (!IsFinished())
     SC_THROW_EXCEPTION(
@@ -120,7 +120,7 @@ ScStructure ScAction::GetResult() noexcept(false)
       *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
+        utils::ExceptionItemNotFound,
         "Action " << GetActionPrettyString() << GetActionClassPrettyString() << " does not have result structure.");
 
   m_resultAddr = it5->Get(2);
@@ -266,14 +266,9 @@ std::string ScAction::GetActionPrettyString() const
   if (actionName.empty())
     actionName = std::to_string(this->Hash());
 
-  if (!actionName.empty())
-  {
-    std::stringstream stream;
-    stream << "`" << actionName << "`";
-    return stream.str();
-  }
-
-  return actionName;
+  std::stringstream stream;
+  stream << "`" << actionName << "`";
+  return stream.str();
 }
 
 std::string ScAction::GetActionClassPrettyString() const
