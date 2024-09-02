@@ -6,6 +6,9 @@
 
 This API provides functionality to implement modules for subscribe/unsubscribe agents to/from sc-events on C++.
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_module.hpp>` in your hpp source.
+
 ---
 
 ## **ScModule**

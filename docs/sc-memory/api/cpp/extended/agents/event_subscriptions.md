@@ -6,6 +6,9 @@
 
 This API provides functionality to subscribe to sc-events on C++.
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_event_subscription.hpp>` in your hpp source.
+
 ## **ScEventSubscription**
 
 `ScElementaryEventSubscription` is base class for all sc-event subscription, it can be used to catch all sc-events for specified sc-element.

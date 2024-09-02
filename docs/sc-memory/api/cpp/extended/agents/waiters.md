@@ -6,6 +6,9 @@
 
 This API provides functionality to implement waiters on C++.
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_waiter.hpp>` in your hpp source.
+
 ## **ScWaiter** and **ScConditionWaiter**
 
 This type of objects is used to wait until some event emits until the maximum waiting time expires. It is usually used, when one of an `ScAgent` wants to wait result of another one. There are next kind of `ScWaiter` objects:

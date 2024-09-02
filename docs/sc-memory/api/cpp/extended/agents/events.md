@@ -6,6 +6,9 @@
 
 This API describes how to work with sc-events.
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_event.hpp>` in your hpp source.
+
 ## **What is event-driven model?**
 
 The sc-machine uses event-driven model to manage processing sc-constructions. The sc-memory stores SC-code constructions, which are graph structures, then any kind of events, occurring in sc-memory, is related to changes in these graph constructions.
@@ -27,11 +30,11 @@ The sc-machine provides functionality for subscribing to the following elementar
 * `ScElementaryEvent` is base class for all sc-events, it can be used to handle all sc-events for specified sc-element;
 * `ScEventAfterGenerateConnector`, emits each time, when sc-connector from or to specified sc-element is generated;
 * `ScEventAfterGenerateOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is generated;
-* `ScEventAfterGenerateIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is generated;
+* `ScEventAfterGenerateIncomingArc`, emits each time, when incoming sc-arc to specified sc-element is generated;
 * `ScEventAfterGenerateEdge`, emits each time, when sc-edge from or to specified sc-element is generated;
 * `ScEventBeforeEraseConnector`, emits each time, when sc-connector from or to specified sc-element is erasing;
 * `ScEventBeforeEraseOutgoingArc`, emits each time, when outgoing sc-arc from specified sc-element is erasing;
-* `ScEventBeforeEraseIncomingArc`, emits each time, when ingoing sc-arc to specified sc-element is erasing;
+* `ScEventBeforeEraseIncomingArc`, emits each time, when incoming sc-arc to specified sc-element is erasing;
 * `ScEventBeforeEraseEdge`, emits each time, when sc-edge from or to specified sc-element is erasing;
 * `ScEventBeforeEraseElement`, emits, when specified sc-element is erasing;
 * `ScEventBeforeChangeLinkContent`, emits each time, when content of specified sc-link is changing.
@@ -103,7 +106,7 @@ To get information about sc-elements in initiated sc-event, you can use this met
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, edgeAddr, otherAddr] 
+auto const [subscriptionElementAddr, connectorAddr, otherAddr] 
   = event.GetTriple();
 // `subscriptionElementAddr` is sc-address of source or 
 // target sc-element (listen it in sc-event).
@@ -181,7 +184,7 @@ auto const [subscriptionElementAddr, edgeAddr, otherAddr]
     <strong>Example C++ code</strong>:
     <pre><code class="cpp">
 ...
-auto const [subscriptionElementAddr, edgeAddr, otherAddr] 
+auto const [subscriptionElementAddr, connectorAddr, otherAddr] 
   = event.GetTriple();
 // `subscriptionElementAddr` is sc-address of source or
 // target sc-element (listen it in sc-event).
@@ -334,7 +337,7 @@ auto const [elementAddr1, elementAddr2] = event.GetConnectorIncidentElements();
 
 #### **GetArc**
 
-Method `GetArc` returns generated sc-arc from (for `ScEventAfterGenerateOutgoingArc`) or to (for `ScEventAfterGenerateIncomingArc) listen sc-element (subscription sc-element).
+Method `GetArc` returns generated sc-arc from (for `ScEventAfterGenerateOutgoingArc`) or to (for `ScEventAfterGenerateIncomingArc`) listen sc-element (subscription sc-element).
 
 ```cpp
 ...
@@ -510,7 +513,7 @@ To get incident sc-elements of erasable sc-edge you can use `GetEdgeIncidentElem
 
 ```cpp
 ...
-auto const [elementAddr, targetElementAddr] = event.GetEdgeIncidentElements();
+auto const [elementAddr1, elementAddr2] = event.GetEdgeIncidentElements();
 ...
 ```
 

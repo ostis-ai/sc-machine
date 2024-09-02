@@ -59,20 +59,20 @@ public:
   _SC_EXTERN std::tuple<ScAddr, ScAddr, ScAddr> GetTriple() const noexcept;
 
   /*!
-   * @brief Gets a connector element outgoing from or ingoing to a subscription element.
+   * @brief Gets a connector element outgoing from or incoming to a subscription element.
    * @return ScAddr representing a connector element from/to a subscription element.
    */
   _SC_EXTERN virtual ScAddr GetConnector() const noexcept;
 
   /*!
-   * @brief Gets a type of connector element outgoing from or ingoing to a subscription element.
-   * @return ScType representing a type of connector element outgoing from or ingoing to a subscription element.
+   * @brief Gets a type of connector element outgoing from or incoming to a subscription element.
+   * @return ScType representing a type of connector element outgoing from or incoming to a subscription element.
    */
   _SC_EXTERN virtual ScType GetConnectorType() const noexcept;
 
   /*!
-   * @brief Gets other element of connector outgoing from or ingoing to subscription element.
-   * @return ScAddr representing other element of connector outgoing from or ingoing to subscription element.
+   * @brief Gets other element of connector outgoing from or incoming to subscription element.
+   * @return ScAddr representing other element of connector outgoing from or incoming to subscription element.
    */
   _SC_EXTERN virtual ScAddr GetOtherElement() const noexcept;
 
@@ -315,7 +315,7 @@ protected:
       ScType const & connectorType,
       ScAddr const & otherAddr) noexcept;
 
-  // using ScElementaryEvent::GetOtherElement();
+  using ScElementaryEvent::GetOtherElement();
 
 private:
   static inline ScAddr const & eventClassAddr = ScKeynodes::sc_event_before_erase_connector;

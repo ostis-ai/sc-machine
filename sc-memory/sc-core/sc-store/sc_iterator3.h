@@ -15,7 +15,7 @@
 typedef enum
 {
   sc_iterator3_f_a_a = 0,  // outgoing edges
-  sc_iterator3_a_a_f,      // ingoing edges
+  sc_iterator3_a_a_f,      // incoming edges
   sc_iterator3_f_a_f,      // edge between source and target
   sc_iterator3_a_f_a,      // find source/target elements of edge
   // just for clean template search

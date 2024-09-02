@@ -6,6 +6,9 @@
 
 This API provides functionality to handle sc-actions.
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_action.hpp>` in your hpp source.
+
 ## **What is action?**
 
 All actions are processes. Any process is performed by some subject. Each action can be defined as a process of solving some problem, i.e. as a process of achieving the given goal with the given conditions. Each action denotes some transformation carried out in the external environment or in the memory of some system.
@@ -370,7 +373,6 @@ All these methods return object of `ScResult`. You should return it in agent pro
 <!-- no toc -->
 - [What is difference between `ScAction` and `ScEvent`?](#what-is-difference-between-scaction-and-scevent)
 - [What if I want to set some edge as action result and not structure with this edge?](#what-if-i-want-to-set-some-edge-as-action-result-and-not-structure-with-this-edge)
-- [What's the difference between ScSet and ScStructure?](#what-is-difference-between-scaction-and-scevent)
 
 ### **What is difference between `ScAction` and `ScEvent`?**
 

@@ -6,6 +6,9 @@
 
 This API provides functionality to implement agents on C++.
 
+!!! note
+    To include this API provide `#include <sc-memory/sc_agent.hpp>` in your hpp source.
+
 ## **Quick start**
 
 Go to our [**Simple guide**](../../guides/simple_guide_for_implementing_agent.md) on how to quickly develop an agent in C++ from scratch.
@@ -72,7 +75,7 @@ agent_calculate_set_power
 // Full result condition of agent
 ..agent_calculate_set_power_result_condition
 = [*
-    .._set _=> nrel_power_set:: _[];;
+    .._set _=> nrel_set_power:: _[];;
 *];;
 // Agent should check by this template that action result contains 
 // sc-construction generated after performing action.
@@ -216,7 +219,7 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 
 ### **ScActionInitiatedAgent**
 
-In multi-agent systems most of the agents are implemented to execute actions initiated by other agents. While `ScAgent` is useful to create broad event handling logic, using it to handle action initiations requires some boilerplate. We've implemented another agent class to make it easier for our users to implement action-executing agents. These agents are named action agents. Implementing these agents requires passing action class node rather than checking initiation condition manually.
+In multi-agent systems most of the agents are implemented to execute actions initiated by other agents. While `ScAgent` is useful to create broad event handling logic, using it to handle action initiations requires some boilerplate. We've implemented another agent class to make it easier for our users to implement action-executing agents. Implementing these agents requires passing action class node rather than checking initiation condition manually.
 
 This class can be only used for agents that should be triggered by generating an output sc-arc from `action_initiated` class node.
 
@@ -342,7 +345,7 @@ ScResult MyAgent::DoProgram(
 ```
 
 ```cpp
-ScResult MyAgent::Program(
+ScResult MyAgent::DoProgram(
   ScActionInitiatedEvent const & event, ScAction & action)
 {
   ScAddr const & argAddr1 = action.GetArgument(1); // size_t
@@ -355,7 +358,7 @@ ScResult MyAgent::Program(
 ```
 
 ```cpp
-ScResult MyAgent::Program(
+ScResult MyAgent::DoProgram(
   ScActionInitiatedEvent const & event, ScAction & action)
 {
   ScAddr const & argAddr1 
@@ -427,7 +430,7 @@ ScResult MyAgent::DoProgram(
 ```
 
 ```cpp
-ScResult MyAgent::Program(
+ScResult MyAgent::DoProgram(
   ScActionInitiatedEvent const & event, ScAction & action)
 {
   action.IsInitiated(); // result: true
@@ -451,7 +454,7 @@ ScResult MyAgent::Program(
 
 It searches abstract agent for agent of specified class. If the agent implementation for this agent class is not included in any abstract sc-agent, then `GetAbstractAgent` will throw `utils::ExceptionItemNotFound`.
 
-You can redefine this method in your agent class.
+You can override this method in your agent class.
 
 ```cpp
 ScAddr MyAgent::GetAbstractAgent() const
@@ -469,7 +472,7 @@ ScAddr MyAgent::GetAbstractAgent() const
 
 It searches the sc-event class to which the agent class is subscribed. It will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have primary initiation condition.
 
-You can redefine this method in your agent class.
+You can override this method in your agent class.
 
 ```cpp
 ScAddr MyAgent::GetEventClass() const
@@ -484,7 +487,7 @@ ScAddr MyAgent::GetEventClass() const
 
 This method searches sc-event subscription sc-element for which sc-event initiates. It will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have primary initiation condition.
 
-You can redefine this method in your agent class.
+You can override this method in your agent class.
 
 ```cpp
 ScAddr MyAgent::GetEventSubscriptionElement() const
@@ -502,7 +505,7 @@ ScAddr MyAgent::GetEventSubscriptionElement() const
 
 It gets initiation condition for agent of this class. Initiation condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base before the agent performs an action. This method will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have initiation condition.
 
-You can redefine this method in your agent class.
+You can override this method in your agent class.
 
 ```cpp
 ScAddr MyAgent::GetInitiationCondition() const
@@ -605,7 +608,7 @@ bool MyAgent::CheckInitiationCondition(ScActionInitiatedEvent const & event)
 
 It gets result condition for agent of this class. Result condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base after the agent has performed an action. This method will throw `utils::ExceptionItemNotFound` if the abstract sc-agent for this agent class does not have result condition.
 
-You can redefine this method in your agent class.
+You can override this method in your agent class.
 
 ```cpp
 ScAddr MyAgent::GetResultCondition() const

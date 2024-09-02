@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GWF version="2.0">
     <staticSector>
-        <node type="node/const/perm/relation" idtf="nrel_power_set" shapeColor="0" id="99811528945744" parent="99811536614336" left="0" top="0" right="119.109" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="262" y="842" haveBus="false" idtf_pos="0">
+        <node type="node/const/perm/relation" idtf="nrel_set_power" shapeColor="0" id="99811528945744" parent="99811536614336" left="0" top="0" right="119.109" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="262" y="842" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/var/perm/general" idtf="" shapeColor="0" id="99811534242416" parent="99811536614336" x="183" y="921" haveBus="false" idtf_pos="0">

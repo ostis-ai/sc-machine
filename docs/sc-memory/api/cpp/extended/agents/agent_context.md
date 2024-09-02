@@ -361,7 +361,7 @@ ScStructure structure = context.CreateStructure();
 
 
 ```cpp
-// Or find structure and convert it to object of `ScSet` class.
+// Or find structure and convert it to object of `ScStructure` class.
 ...
 ScStructure structure = context.ConvertToStructure(structureAddr);
 ...

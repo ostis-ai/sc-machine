@@ -27,7 +27,7 @@ There are possible 3 types of triple sc-templates:
 
 * `f_a_a` - sc-template to find all outgoing sc-connectors from a specified sc-element;
 * `f_a_f` - sc-template to find all sc-connectors between two specified sc-elements;
-* `a_a_f` - sc-template to find all ingoing sc-connectors to a specified sc-element.
+* `a_a_f` - sc-template to find all incoming sc-connectors to a specified sc-element.
 
 And there are possible 7 types of quintuple sc-templates:
 
@@ -35,8 +35,8 @@ And there are possible 7 types of quintuple sc-templates:
 * `f_a_f_a_a` - sc-template to find all sc-connectors between two specified sc-elements with all attributes of this sc-connectors;
 * `f_a_a_a_f` - sc-template to find all outgoing sc-connectors from a specified sc-element with specified attribute;
 * `f_a_f_a_f` - sc-template to find all sc-connectors between two specified sc-elements with specified attribute;
-* `a_a_f_a_a` - sc-template to find all ingoing sc-connectors to a specified sc-element with all attributes of this sc-connectors;
-* `a_a_f_a_f` - sc-template to find all ingoing sc-connectors to a specified sc-element with specified attribute;
+* `a_a_f_a_a` - sc-template to find all incoming sc-connectors to a specified sc-element with all attributes of this sc-connectors;
+* `a_a_f_a_f` - sc-template to find all incoming sc-connectors to a specified sc-element with specified attribute;
 * `a_a_a_a_f` - sc-template to find all sc-connectors with specified attribute.
 
 Here attribute is sc-element from which the sc-connector is outgoing to the searchable sc-connectors.

@@ -162,7 +162,7 @@ public:
    * @param subscriptionElementAddr An address of subscription sc-element, which must be a valid sc-element.
    * @param initiateCallback A callback function that will be called when the wait starts. It takes no parameters.
    * @param checkCallback A callback function that will be called to check if the condition is met. It takes a const
-   * reference to TScEvent as a parameter and returns an bool.
+   * reference to TScEvent as a parameter and returns an bool. By default, this callback is empty
    * @return A shared pointer to created `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If subscription sc-element is not valid or if TScEvent is not derived from
    * ScElementaryEvent.
@@ -171,7 +171,7 @@ public:
   std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
-      std::function<bool(TScEvent const &)> const & checkCallback) noexcept(false);
+      std::function<bool(TScEvent const &)> const & checkCallback = {}) noexcept(false);
 
   /*!
    * @brief Creates sc-event wait with condition for the specified sc-event class and subscription sc-element.
