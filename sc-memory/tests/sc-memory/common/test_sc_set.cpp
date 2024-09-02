@@ -146,6 +146,12 @@ TEST_F(ScSetTest, UniteSetsWithoutCommonElements)
   ScSet resultSet = set + otherSet;
   EXPECT_TRUE(resultSet.Has(elementAddr1));
   EXPECT_TRUE(resultSet.Has(elementAddr2));
+  EXPECT_EQ(resultSet.GetPower(), 2u);
+
+  resultSet = set.Unite(otherSet);
+  EXPECT_TRUE(resultSet.Has(elementAddr1));
+  EXPECT_TRUE(resultSet.Has(elementAddr2));
+  EXPECT_EQ(resultSet.GetPower(), 2u);
 }
 
 TEST_F(ScSetTest, UniteSetsWithCommonElements)
@@ -162,6 +168,28 @@ TEST_F(ScSetTest, UniteSetsWithCommonElements)
   ScSet resultSet = set1 + set2;
   EXPECT_TRUE(resultSet.Has(elementAddr));
   EXPECT_TRUE(resultSet.Has(elementAddr2));
+  EXPECT_EQ(resultSet.GetPower(), 2u);
+
+  resultSet = set1.Unite(set2);
+  EXPECT_TRUE(resultSet.Has(elementAddr));
+  EXPECT_TRUE(resultSet.Has(elementAddr2));
+  EXPECT_EQ(resultSet.GetPower(), 2u);
+}
+
+TEST_F(ScSetTest, UniteSetWithItself)
+{
+  ScSet set = m_ctx->CreateSet();
+  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  set.Append(elementAddr);
+
+  ScSet resultSet = set + set;
+  EXPECT_FALSE(resultSet.IsEmpty());
+  EXPECT_TRUE(resultSet.Has(elementAddr));
+  EXPECT_EQ(resultSet.GetPower(), 1u);
+
+  EXPECT_TRUE(set.Has(elementAddr));
+  EXPECT_EQ(set.GetPower(), 1u);
+  EXPECT_EQ(resultSet, set);
 }
 
 TEST_F(ScSetTest, IntersectSetsWithoutCommonElements)
@@ -196,6 +224,18 @@ TEST_F(ScSetTest, IntersectSetsWithCommonElements)
   EXPECT_EQ(resultSet.GetPower(), 1u);
   EXPECT_TRUE(resultSet.Has(elementAddr1));
   EXPECT_FALSE(resultSet.Has(elementAddr2));
+}
+
+TEST_F(ScSetTest, IntersectSetWithItself)
+{
+  ScSet set = m_ctx->CreateSet();
+  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  set.Append(elementAddr);
+
+  ScSet resultSet = set * set;
+  EXPECT_FALSE(resultSet.IsEmpty());
+  EXPECT_TRUE(resultSet.Has(elementAddr));
+  EXPECT_EQ(resultSet, set);
 }
 
 TEST_F(ScSetTest, SubtractSetsWithCommonElements)

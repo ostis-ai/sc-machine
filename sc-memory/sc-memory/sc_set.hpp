@@ -96,7 +96,7 @@ public:
    * @return A resulting set after the union operation.
    * @throw utils::ExceptionInvalidParams if either set contains elements with both permanent and temporary arcs.
    */
-  _SC_EXTERN ScSet & Unite(ScSet const & otherSet);
+  _SC_EXTERN ScSet Unite(ScSet const & otherSet);
 
   /*!
    * @brief Performs the intersection operation with another set.
@@ -104,7 +104,7 @@ public:
    * @return A resulting set after the intersection operation.
    * @throw utils::ExceptionInvalidParams if either set contains elements with both permanent and temporary arcs.
    */
-  _SC_EXTERN ScSet & Intersect(ScSet const & otherSet);
+  _SC_EXTERN ScSet Intersect(ScSet const & otherSet);
 
   /*!
    * @brief Performs the difference operation with another set.
@@ -112,19 +112,13 @@ public:
    * @return A resulting set after the difference operation.
    * @throw utils::ExceptionInvalidParams if either set contains elements with both permanent and temporary arcs.
    */
-  _SC_EXTERN ScSet & Subtract(ScSet const & otherSet);
+  _SC_EXTERN ScSet Subtract(ScSet const & otherSet);
 
   _SC_EXTERN friend ScSet const operator+(ScSet const & leftSet, ScSet const & rightSet);
 
-  _SC_EXTERN friend ScSet const operator+=(ScSet const & leftSet, ScSet const & rightSet);
-
   _SC_EXTERN friend ScSet const operator*(ScSet const & leftSet, ScSet const & rightSet);
 
-  _SC_EXTERN friend ScSet const operator*=(ScSet const & leftSet, ScSet const & rightSet);
-
   _SC_EXTERN friend ScSet const operator-(ScSet const & leftSet, ScSet const & rightSet);
-
-  _SC_EXTERN friend ScSet const operator-=(ScSet const & leftSet, ScSet const & rightSet);
 
   _SC_EXTERN friend bool operator==(ScSet const & leftSet, ScSet const & rightSet);
 

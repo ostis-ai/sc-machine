@@ -127,35 +127,32 @@ ScSet & ScSet::operator>>(ScAddr const & elAddr)
 
 bool ScSet::IsEmpty() const
 {
-  ScIterator3Ptr const iterator3 = m_context->CreateIterator3(*this, ScType::EdgeAccessPos, ScType::Unknown);
+  ScIterator3Ptr const iterator3 = m_context->CreateIterator3(*this, ScType::EdgeAccessConstPos, ScType::Unknown);
   return !iterator3->Next();
 }
 
 size_t ScSet::GetPower() const
 {
   size_t power = 0;
-  ScIterator3Ptr const iterator3 = m_context->Iterator3(*this, ScType::EdgeAccessPos, ScType::Unknown);
+  ScIterator3Ptr const iterator3 = m_context->Iterator3(*this, ScType::EdgeAccessConstPos, ScType::Unknown);
   while (iterator3->Next())
     power++;
   return power;
 }
 
-ScSet & ScSet::Unite(ScSet const & otherSet)
+ScSet ScSet::Unite(ScSet const & otherSet)
 {
-  *this += otherSet;
-  return *this;
+  return *this + otherSet;
 }
 
-ScSet & ScSet::Intersect(ScSet const & otherSet)
+ScSet ScSet::Intersect(ScSet const & otherSet)
 {
-  *this *= otherSet;
-  return *this;
+  return *this * otherSet;
 }
 
-ScSet & ScSet::Subtract(ScSet const & otherSet)
+ScSet ScSet::Subtract(ScSet const & otherSet)
 {
-  *this -= otherSet;
-  return *this;
+  return *this - otherSet;;
 }
 
 ScSet const operator+(ScSet const & leftSet, ScSet const & rightSet)
@@ -214,11 +211,6 @@ ScSet const operator+(ScSet const & leftSet, ScSet const & rightSet)
   return resultSet;
 }
 
-ScSet const operator+=(ScSet const & leftSet, ScSet const & rightSet)
-{
-  return leftSet + rightSet;
-}
-
 ScSet const operator*(ScSet const & leftSet, ScSet const & rightSet)
 {
   ScMemoryContext * context = leftSet.m_context;
@@ -275,11 +267,6 @@ ScSet const operator*(ScSet const & leftSet, ScSet const & rightSet)
   return resultSet;
 }
 
-ScSet const operator*=(ScSet const & leftSet, ScSet const & rightSet)
-{
-  return leftSet * rightSet;
-}
-
 ScSet const operator-(ScSet const & leftSet, ScSet const & rightSet)
 {
   ScMemoryContext * context = leftSet.m_context;
@@ -327,11 +314,6 @@ ScSet const operator-(ScSet const & leftSet, ScSet const & rightSet)
   ScSet::GenerateBinaryOperationResult(context, leftSet, rightSet, ScKeynodes::nrel_sets_intersection, resultSet);
 
   return resultSet;
-}
-
-ScSet const operator-=(ScSet const & leftSet, ScSet const & rightSet)
-{
-  return leftSet - rightSet;
 }
 
 bool operator==(ScSet const & leftSet, ScSet const & rightSet)
