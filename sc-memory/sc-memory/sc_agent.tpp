@@ -384,7 +384,7 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
     ScAddr const & initiationConditionTemplateAddr,
     TScEvent const & event,
     size_t otherElementPosition,
-    ScIterator5Ptr const eventTripleIterator,
+    ScIterator5Ptr const & eventTripleIterator,
     ScTemplateParams & checkTemplateParams) noexcept
 {
   auto [_eventSubscriptionElementAddr, _connectorAddr, _otherElementAddr] = event.GetTriple();
@@ -395,7 +395,6 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
   ScType const & connectorType = this->m_context.GetElementType(connectorAddr);
   ScType const & otherElementType = this->m_context.GetElementType(otherElementAddr);
 
-  ScTemplateParams params;
   ScIterator3Ptr const subscriptionElementIterator = this->m_context.Iterator3(
       initiationConditionTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElementAddr);
   if (subscriptionElementIterator->Next())
@@ -413,12 +412,12 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
               ? otherVarType.IsVar() && otherElementType.BitAnd(otherVarType.AsConst()) == otherElementType
               : false;
       if (isOtherElementSubstitutable)
-        params.Add(otherVarAddr, otherElementAddr);
+        checkTemplateParams.Add(otherVarAddr, otherElementAddr);
 
       ScType const & isConnectorSubstitutable =
           connectorVarType.IsVar() ? connectorType.BitAnd(connectorVarType.AsConst()) == connectorType : false;
       if (isConnectorSubstitutable)
-        params.Add(connectorVarAddr, connectorAddr);
+        checkTemplateParams.Add(connectorVarAddr, connectorAddr);
       else
       {
         SC_LOG_WARNING(

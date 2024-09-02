@@ -347,7 +347,7 @@ protected:
       ScAddr const & checkTemplateAddr,
       TScEvent const & event,
       size_t otherElementPosition,
-      ScIterator5Ptr const eventTripleIterator,
+      ScIterator5Ptr const & eventTripleIterator,
       ScTemplateParams & checkTemplateParams) noexcept;
 };
 
