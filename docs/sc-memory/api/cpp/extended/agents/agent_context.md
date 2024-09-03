@@ -405,7 +405,7 @@ You will be able to use context of class, which you specify, in the agent's meth
 
 By default, you can wait up to 5 seconds for an event to appear. You can wait for another time convenient for you. But we recommend waiting as long as you need, no longer. You don't need to create waiters for several minutes or hours when the agent performs much faster, in milliseconds.
 
-You can't wait indefinitely for an event, there is always a maximum waiting time after which you stop waiting.
+You can't wait indefinitely for an event, there is always a maximum waiting time after which you stop waiting. But, in order to wait for some event indefinitely, you can implement and subscribe an agent for that event. It will be triggered when event to be occurred. See [**C++ Agents API**](agents.md) to learn more about agents.
 
 ### **What if I need to initiate agent on events from different nodes?**
 
