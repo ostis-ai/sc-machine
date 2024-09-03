@@ -282,7 +282,7 @@ protected:
    * @return true if the initiation condition is valid; false otherwise.
    */
   template <class TScAgent, typename HasOverride>
-  _SC_EXTERN bool ValidateInitiationCondition(TScEvent const & event) noexcept;
+  _SC_EXTERN bool ValidateInitiationCondition(TScEvent const & event) noexcept(false);
 
   /*!
    * @brief Validates the result condition for a given event and action.
@@ -298,7 +298,7 @@ protected:
    * @return true if the result condition is valid; false otherwise.
    */
   template <class TScAgent, typename HasOverride>
-  _SC_EXTERN bool ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept;
+  _SC_EXTERN bool ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept(false);
 
   /*!
    * @brief Builds the initiation condition template based on the event and template address.

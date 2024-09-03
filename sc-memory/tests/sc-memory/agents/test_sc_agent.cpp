@@ -356,6 +356,27 @@ ScResult ATestGetInitiationConditionTemplateHasEventTripleTwice::DoProgram(
 
 /// --------------------------------------
 
+ScAddr ATestGetInvalidInitiationConditionTemplate::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScTemplate ATestGetInvalidInitiationConditionTemplate::GetInitiationConditionTemplate(
+    ScActionInitiatedEvent const & event) const
+{
+  ScTemplate templ;
+  templ.Triple(ScAddr::Empty, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  return templ;
+}
+
+ScResult ATestGetInvalidInitiationConditionTemplate::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+/// --------------------------------------
+
 ScAddr ATestCheckInitiationCondition::GetActionClass() const
 {
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
@@ -397,6 +418,28 @@ ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate(
   initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, action >> "_action");
   initiationCondition.Triple(action, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
   return initiationCondition;
+}
+
+/// --------------------------------------
+
+ScAddr ATestGetInvalidResultConditionTemplate::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScResult ATestGetInvalidResultConditionTemplate::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  return action.FinishSuccessfully();
+}
+
+ScTemplate ATestGetInvalidResultConditionTemplate::GetResultConditionTemplate(
+    ScActionInitiatedEvent const & event,
+    ScAction & action) const
+{
+  ScTemplate templ;
+  templ.Triple(ScAddr::Empty, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  return templ;
 }
 
 /// --------------------------------------

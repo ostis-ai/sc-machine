@@ -316,6 +316,18 @@ public:
   ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
 
+class ATestGetInvalidInitiationConditionTemplate : public ScActionInitiatedAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScTemplate GetInitiationConditionTemplate(ScActionInitiatedEvent const & event) const override;
+
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
+};
+
 class ATestCheckInitiationCondition : public ScActionInitiatedAgent
 {
 public:
@@ -329,6 +341,18 @@ public:
 };
 
 class ATestGetResultConditionTemplate : public ScActionInitiatedAgent
+{
+public:
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
+
+  ScTemplate GetResultConditionTemplate(ScActionInitiatedEvent const & event, ScAction & action) const override;
+};
+
+class ATestGetInvalidResultConditionTemplate : public ScActionInitiatedAgent
 {
 public:
   static inline TestWaiter msWaiter;

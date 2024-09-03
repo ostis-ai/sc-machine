@@ -209,7 +209,7 @@ bool ScAgent<TScEvent, TScContext>::MayBeSpecified() const noexcept
 
 template <class TScEvent, class TScContext>
 template <class TScAgent, typename HasOverride>
-bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const & event) noexcept
+bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const & event) noexcept(false)
 {
   if constexpr (HasOverride::CheckInitiationCondition::value)
     return this->CheckInitiationCondition(event);
@@ -256,7 +256,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
 
 template <class TScEvent, class TScContext>
 template <class TScAgent, typename HasOverride>
-bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept
+bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & event, ScAction & action) noexcept(false)
 {
   if constexpr (HasOverride::CheckResultCondition::value)
     return this->CheckResultCondition(event, action);

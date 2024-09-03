@@ -358,14 +358,14 @@ ScTemplate & ScTemplate::Triple(
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Specified sc-type for sc-template item "
-              << (item.HasName() ? ("`" + item.m_name + "`") : "")
+              << (item.HasName() ? ("`" + item.m_name + "` ") : "")
               << "is constant sc-type. You can only use variable sc-types for items in sc-template.");
 
     if (item.IsAddr() && !item.m_addrValue.IsValid())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Specified sc-address for sc-template item "
-              << (item.HasName() ? ("`" + item.m_name + "`") : "")
+              << (item.HasName() ? ("`" + item.m_name + "` ") : "")
               << "is invalid. You can't use invalid sc-addresses for items in sc-template.");
 
     if (!item.m_name.empty())

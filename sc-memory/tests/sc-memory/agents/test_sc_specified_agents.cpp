@@ -1593,7 +1593,9 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificati
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificationWithFullVarInitiationConditionTemplate)
+TEST_F(
+    ScSpecifiedAgentTest,
+    ATestSpecifiedAgentErasingElementHasFullSpecificationWithFullVarInitiationConditionTemplate)
 {
   ATestSpecifiedAgent::msWaiter.Reset();
 
@@ -1638,7 +1640,8 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificati
     test_specified_agent_action
     <- sc_node_class;
     <= nrel_inclusion: information_action;;
-  )";;
+  )";
+  ;
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
@@ -1697,7 +1700,8 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificati
     test_specified_agent_action
     <- sc_node_class;
     <= nrel_inclusion: information_action;;
-  )";;
+  )";
+  ;
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));

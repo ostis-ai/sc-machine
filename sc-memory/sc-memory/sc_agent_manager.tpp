@@ -195,7 +195,19 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     }
 
     // SC_LOG_INFO("Agent `" << agentName << "` started checking initiation condition.");
-    if (!agent.template ValidateInitiationCondition<TScAgent, HasOverride<TScAgent>>(event))
+    bool isInitiationConditionCheckedSuccessfully = false;
+    try
+    {
+      isInitiationConditionCheckedSuccessfully =
+          agent.template ValidateInitiationCondition<TScAgent, HasOverride<TScAgent>>(event);
+    }
+    catch (utils::ScException const & exception)
+    {
+      SC_LOG_ERROR(
+          "Not able to check initiation condition template, because error was occurred. " << exception.Message());
+    }
+
+    if (!isInitiationConditionCheckedSuccessfully)
     {
       SC_LOG_WARNING(
           "Agent `" << agentName << "` was finished because its initiation condition was checked unsuccessfully.");
@@ -243,7 +255,18 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
       SC_LOG_INFO("Agent `" << agentName << "` finished performing action with error.");
 
     // SC_LOG_INFO("Agent `" << agentName << "` started checking result condition.");
-    if (!agent.template ValidateResultCondition<TScAgent, HasOverride<TScAgent>>(event, action))
+    bool isResultConditionCheckedSuccessfully = false;
+    try
+    {
+      isResultConditionCheckedSuccessfully =
+          agent.template ValidateResultCondition<TScAgent, HasOverride<TScAgent>>(event, action);
+    }
+    catch (utils::ScException const & exception)
+    {
+      SC_LOG_ERROR("Not able to check result condition template, because error was occurred. " << exception.Message());
+    }
+
+    if (!isResultConditionCheckedSuccessfully)
     {
       SC_LOG_WARNING("Result condition of agent `" << agentName << "` checked unsuccessfully.");
       return;
