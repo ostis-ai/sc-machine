@@ -1592,3 +1592,120 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificati
 
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 }
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificationWithFullVarInitiationConditionTemplate)
+{
+  ATestSpecifiedAgent::msWaiter.Reset();
+
+  std::string const & data = R"(
+    test_element
+    <- my_class;;
+
+    test_specified_agent
+    <- abstract_sc_agent;
+    => nrel_primary_initiation_condition: 
+      (sc_event_before_erase_element => test_element);
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_initiation_condition_and_result: 
+      (..test_specified_agent_condition => ..test_specified_agent_result);
+    <= nrel_sc_agent_key_sc_elements: 
+      {
+        test_element;
+        action;
+        test_specified_agent_action
+      };
+    => nrel_inclusion: 
+      test_specified_agent_implementation
+      (*
+        <- platform_dependent_abstract_sc_agent;;
+        <= nrel_sc_agent_program: 
+        {
+          [] (* => nrel_format: format_github_source_link;; *);
+          [] (* => nrel_format: format_github_source_link;; *)
+        };;
+      *);;
+
+    ..test_specified_agent_condition
+    = [*
+      .._element _<- .._class;;
+    *];;
+
+    ..test_specified_agent_result
+    = [*
+    *];;
+
+    test_specified_agent_action
+    <- sc_node_class;
+    <= nrel_inclusion: information_action;;
+  )";;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+
+  ScAddr const & testElementAddr = m_ctx->HelperFindBySystemIdtf("test_element");
+  m_ctx->EraseElement(testElementAddr);
+
+  EXPECT_FALSE(ATestSpecifiedAgent::msWaiter.Wait(0.2));
+}
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificationWithFullVarResultConditionTemplate)
+{
+  ATestSpecifiedAgent::msWaiter.Reset();
+
+  std::string const & data = R"(
+    test_element
+    <- my_class;;
+
+    test_specified_agent
+    <- abstract_sc_agent;
+    => nrel_primary_initiation_condition: 
+      (sc_event_before_erase_element => test_element);
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_initiation_condition_and_result: 
+      (..test_specified_agent_condition => ..test_specified_agent_result);
+    <= nrel_sc_agent_key_sc_elements: 
+      {
+        test_element;
+        action;
+        test_specified_agent_action
+      };
+    => nrel_inclusion: 
+      test_specified_agent_implementation
+      (*
+        <- platform_dependent_abstract_sc_agent;;
+        <= nrel_sc_agent_program: 
+        {
+          [] (* => nrel_format: format_github_source_link;; *);
+          [] (* => nrel_format: format_github_source_link;; *)
+        };;
+      *);;
+
+    ..test_specified_agent_condition
+    = [*
+      test_element _<- my_class;;
+    *];;
+
+    ..test_specified_agent_result
+    = [*
+      .._element _<- .._class;;
+    *];;
+
+    test_specified_agent_action
+    <- sc_node_class;
+    <= nrel_inclusion: information_action;;
+  )";;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+
+  ScAddr const & testElementAddr = m_ctx->HelperFindBySystemIdtf("test_element");
+  m_ctx->EraseElement(testElementAddr);
+
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
+}

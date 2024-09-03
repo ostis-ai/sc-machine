@@ -241,8 +241,17 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
   if (initiationConditionTemplate.IsEmpty())
     return false;
 
+  bool isFound = false;
   ScTemplateSearchResult searchResult;
-  return this->m_context.HelperSearchTemplate(initiationConditionTemplate, searchResult);
+  try
+  {
+    isFound = this->m_context.HelperSearchTemplate(initiationConditionTemplate, searchResult);
+  }
+  catch (utils::ScException const & exception)
+  {
+    SC_LOG_ERROR("Initiation condition template is not valid. " << exception.Message());
+  }
+  return isFound;
 }
 
 template <class TScEvent, class TScContext>
@@ -273,18 +282,26 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
 
   ScStructure const & result = action.GetResult();
   bool isFound = false;
-  this->m_context.HelperSmartSearchTemplate(
-      resultConditionTemplate,
-      [&isFound](ScTemplateResultItem const & item) -> ScTemplateSearchRequest
-      {
-        isFound = true;
-        return ScTemplateSearchRequest::STOP;
-      },
-      [&](ScAddr const & elementAddr) -> bool
-      {
-        bool isBelong = result.HasElement(elementAddr);
-        return isBelong;
-      });
+  try
+  {
+    this->m_context.HelperSmartSearchTemplate(
+        resultConditionTemplate,
+        [&isFound](ScTemplateResultItem const & item) -> ScTemplateSearchRequest
+        {
+          isFound = true;
+          return ScTemplateSearchRequest::STOP;
+        },
+        [&](ScAddr const & elementAddr) -> bool
+        {
+          bool isBelong = result.HasElement(elementAddr);
+          return isBelong;
+        });
+  }
+  catch (utils::ScException const & exception)
+  {
+    SC_LOG_ERROR("Result condition template is not valid. " << exception.Message());
+    ;
+  }
   return isFound;
 }
 
