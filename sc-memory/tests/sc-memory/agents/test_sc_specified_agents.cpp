@@ -1641,7 +1641,6 @@ TEST_F(
     <- sc_node_class;
     <= nrel_inclusion: information_action;;
   )";
-  ;
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
@@ -1701,7 +1700,6 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecificati
     <- sc_node_class;
     <= nrel_inclusion: information_action;;
   )";
-  ;
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
