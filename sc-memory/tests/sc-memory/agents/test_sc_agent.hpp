@@ -42,6 +42,11 @@ private:
 
 class TestScAgent : public ScAgent<ScElementaryEvent>
 {
+public:
+  void SetImplementation(ScAddr const & implementationAddr)
+  {
+    ScAgent<ScElementaryEvent>::SetImplementation(implementationAddr);
+  }
 };
 
 class TestScEvent : public ScElementaryEvent
@@ -228,6 +233,16 @@ public:
 };
 
 class ATestException : public ScActionInitiatedAgent
+{
+public:
+  ScAddr GetActionClass() const override;
+
+  static inline TestWaiter msWaiter;
+
+  ScResult DoProgram(ScAction & action) override;
+};
+
+class ATestEraseActionWithException : public ScActionInitiatedAgent
 {
 public:
   ScAddr GetActionClass() const override;

@@ -159,6 +159,9 @@ void ScAgentManager<TScAgent>::Unsubscribe(
     delete it->second;
     subscriptionsMap.erase(subscriptionElementAddr);
   }
+
+  if (subscriptionsMap.empty())
+    ScAgentManager<TScAgent>::m_agentSubscriptions.erase(agentName);
 }
 
 template <class TScAgent>
@@ -170,6 +173,12 @@ std::function<void(void)> ScAgentManager<TScAgent>::GetPostEraseEventCallback(
   return [=]() -> void
   {
     auto const & agentsMapIt = ScAgentManager<TScAgent>::m_agentSubscriptions.find(agentName);
+    if (agentsMapIt == ScAgentManager<TScAgent>::m_agentSubscriptions.cend())
+    {
+      // TODO(NikitaZotov): Implement transactions in sc-memory
+      return;
+    }
+
     auto & subscriptionsMap = agentsMapIt->second;
 
     SC_LOG_INFO(

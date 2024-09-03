@@ -638,6 +638,63 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedPri
       m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
 }
 
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedEventClassHavingClassTwice)
+{
+  std::string const & data = R"(
+    test_specified_agent
+    <- abstract_sc_agent;
+    => nrel_primary_initiation_condition: nrel_primary_initiation_condition:
+      (sc_event_after_generate_outgoing_arc => action_initiated);
+    => nrel_inclusion:
+      test_specified_agent_implementation
+      (*
+        <- platform_dependent_abstract_sc_agent;;
+        <= nrel_sc_agent_program: 
+        {
+          [] (* => nrel_format: format_github_source_link;; *);
+          [] (* => nrel_format: format_github_source_link;; *)
+        };;
+      *);;
+
+    test_specified_agent
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_initiation_condition_and_result: 
+      (..test_specified_agent_condition => ..test_specified_agent_result);
+    <= nrel_sc_agent_key_sc_elements: 
+      {
+        action_initiated;
+        action;
+        test_specified_agent_action
+      };;
+
+    ..test_specified_agent_condition
+    = [*
+      test_specified_agent_action _-> .._action;;
+      action_initiated _-> .._action;;
+      .._action _-> rrel_1:: .._parameter;;
+    *];;
+
+    ..test_specified_agent_result
+    = [*
+      concept_set _-> _...;;
+    *];;
+
+    test_specified_agent_action
+    <- sc_node_class;
+    <= nrel_inclusion: information_action;;
+
+    sc_event_after_generate_outgoing_arc <- sc_event;;
+  )";
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+  EXPECT_NO_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+  EXPECT_NO_THROW(
+      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+}
+
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSeveralSpecifiedPrimaryInitiationConditions)
 {
   std::string const & data = R"(
@@ -755,7 +812,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidActio
     => nrel_primary_initiation_condition: 
       (sc_event_after_generate_outgoing_arc => action_initiated);
     => nrel_sc_agent_action_class: 
-      test_specified_agent_action;
+      test_specified_agent_action_invalid;
     => nrel_inclusion:
       test_specified_agent_implementation
       (*
@@ -774,12 +831,12 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithInvalidActio
       {
         action_initiated;
         action;
-        test_specified_agent_action
+        test_specified_agent_action_invalid
       };;
 
     ..test_specified_agent_condition
     = [*
-      test_specified_agent_action _-> .._action;;
+      test_specified_agent_action_invalid _-> .._action;;
       action_initiated _-> .._action;;
       .._action _-> rrel_1:: .._parameter;;
     *];;
@@ -911,6 +968,62 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedAct
       m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
   EXPECT_NO_THROW(
       m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+}
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedActionClassNotHavingSuperClass)
+{
+  std::string const & data = R"(
+    test_specified_agent
+    <- abstract_sc_agent;
+    => nrel_primary_initiation_condition: 
+      (sc_event_after_generate_outgoing_arc => action_initiated);
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_inclusion:
+      test_specified_agent_implementation
+      (*
+        <- platform_dependent_abstract_sc_agent;;
+        <= nrel_sc_agent_program: 
+        {
+          [] (* => nrel_format: format_github_source_link;; *);
+          [] (* => nrel_format: format_github_source_link;; *)
+        };;
+      *);;
+
+    test_specified_agent
+    => nrel_initiation_condition_and_result: 
+      (..test_specified_agent_condition => ..test_specified_agent_result);
+    <= nrel_sc_agent_key_sc_elements: 
+      {
+        action_initiated;
+        action;
+        test_specified_agent_action
+      };;
+
+    ..test_specified_agent_condition
+    = [*
+      test_specified_agent_action _-> .._action;;
+      action_initiated _-> .._action;;
+      .._action _-> rrel_1:: .._parameter;;
+    *];;
+
+    ..test_specified_agent_result
+    = [*
+      concept_set _-> _...;;
+    *];;
+
+    test_specified_agent_action
+    <- sc_node_class;;
+  )";
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  EXPECT_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation),
+      utils::ExceptionInvalidState);
 }
 
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithNotSpecifiedInitiationConditionAndResult)
@@ -1331,7 +1444,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingEdgeHasFullSpecification)
   ScAddr const & testOtherSetAddr = m_ctx->HelperFindBySystemIdtf("test_other_set");
   ScAddr const & testRelation = m_ctx->HelperFindBySystemIdtf("test_relation");
   ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeUCommonConst, testSetAddr, testOtherSetAddr);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
 
   m_ctx->EraseElement(edgeAddr);
 
@@ -1396,7 +1509,137 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingConnectorHasFullSpecifica
   ScAddr const & testOtherSetAddr = m_ctx->HelperFindBySystemIdtf("test_other_set");
   ScAddr const & testRelation = m_ctx->HelperFindBySystemIdtf("test_relation");
   ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeUCommonConst, testOtherSetAddr, testSetAddr);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+
+  m_ctx->EraseElement(edgeAddr);
+
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
+
+  m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+}
+
+static std::string const ATestSpecifiedAgentSpecificationErasingOutgoingArcAsConnector = R"(
+  test_specified_agent
+  <- abstract_sc_agent;
+  => nrel_primary_initiation_condition: 
+    (sc_event_before_erase_connector => test_set);
+  => nrel_sc_agent_action_class: 
+    test_specified_agent_action;
+  => nrel_initiation_condition_and_result: 
+    (..test_specified_agent_condition => ..test_specified_agent_result);
+  <= nrel_sc_agent_key_sc_elements: 
+    {
+      test_set;
+      action;
+      test_specified_agent_action
+    };
+  => nrel_inclusion: 
+    test_specified_agent_implementation
+    (*
+      <- platform_dependent_abstract_sc_agent;;
+      <= nrel_sc_agent_program: 
+      {
+        [] (* => nrel_format: format_github_source_link;; *);
+        [] (* => nrel_format: format_github_source_link;; *)
+      };;
+    *);;
+
+  ..test_specified_agent_condition
+  = [*
+    test_set _=> test_relation:: test_other_set;;
+  *];;
+
+  ..test_specified_agent_result
+  = [*
+    concept_set _-> _...;;
+  *];;
+
+  test_specified_agent_action
+  <- sc_node_class;
+  <= nrel_inclusion: information_action;;
+)";
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingOutgoingArcAsConnectorHasFullSpecification)
+{
+  ATestSpecifiedAgent::msWaiter.Reset();
+
+  std::string const & data = ATestSpecifiedAgentSpecificationErasingOutgoingArcAsConnector;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+
+  ScAddr const & testSetAddr = m_ctx->HelperFindBySystemIdtf("test_set");
+  ScAddr const & testOtherSetAddr = m_ctx->HelperFindBySystemIdtf("test_other_set");
+  ScAddr const & testRelation = m_ctx->HelperFindBySystemIdtf("test_relation");
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, testSetAddr, testOtherSetAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+
+  m_ctx->EraseElement(edgeAddr);
+
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
+
+  m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+}
+
+static std::string const ATestSpecifiedAgentSpecificationErasingIncomingArcAsConnector = R"(
+  test_specified_agent
+  <- abstract_sc_agent;
+  => nrel_primary_initiation_condition: 
+    (sc_event_before_erase_connector => test_set);
+  => nrel_sc_agent_action_class: 
+    test_specified_agent_action;
+  => nrel_initiation_condition_and_result: 
+    (..test_specified_agent_condition => ..test_specified_agent_result);
+  <= nrel_sc_agent_key_sc_elements: 
+    {
+      test_set;
+      action;
+      test_specified_agent_action
+    };
+  => nrel_inclusion: 
+    test_specified_agent_implementation
+    (*
+      <- platform_dependent_abstract_sc_agent;;
+      <= nrel_sc_agent_program: 
+      {
+        [] (* => nrel_format: format_github_source_link;; *);
+        [] (* => nrel_format: format_github_source_link;; *)
+      };;
+    *);;
+
+  ..test_specified_agent_condition
+  = [*
+    test_set _<= test_relation:: test_other_set;;
+  *];;
+
+  ..test_specified_agent_result
+  = [*
+    concept_set _-> _...;;
+  *];;
+
+  test_specified_agent_action
+  <- sc_node_class;
+  <= nrel_inclusion: information_action;;
+)";
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingIncomingArcAsConnectorHasFullSpecification)
+{
+  ATestSpecifiedAgent::msWaiter.Reset();
+
+  std::string const & data = ATestSpecifiedAgentSpecificationErasingIncomingArcAsConnector;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+
+  ScAddr const & testSetAddr = m_ctx->HelperFindBySystemIdtf("test_set");
+  ScAddr const & testOtherSetAddr = m_ctx->HelperFindBySystemIdtf("test_other_set");
+  ScAddr const & testRelation = m_ctx->HelperFindBySystemIdtf("test_relation");
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, testOtherSetAddr, testSetAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
 
   m_ctx->EraseElement(edgeAddr);
 

@@ -131,6 +131,9 @@ TEST_F(ScActionTest, ConvertInvalidAction)
 TEST_F(ScActionTest, CreateActionAndGetResult)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+
   ScAction action = m_ctx->CreateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);

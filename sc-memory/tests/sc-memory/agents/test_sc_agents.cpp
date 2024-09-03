@@ -7,13 +7,20 @@
 
 TEST_F(ScAgentTest, AgentClass)
 {
+  ScAddr const & testImplementationAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr arcAddr =
+      m_ctx->CreateEdge(ScType::EdgeDCommonConst, m_ctx->CreateNode(ScType::NodeConst), testImplementationAddr);
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
+  arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   ScAction action = m_ctx->CreateAction(testClassAddr);
 
   TestScAgent agent;
+  agent.SetImplementation(testImplementationAddr);
+  EXPECT_THROW(agent.GetActionClass(), utils::ExceptionItemNotFound);
   EXPECT_TRUE(agent.CheckInitiationCondition(TestScEvent()));
   EXPECT_NO_THROW(agent.GetInitiationConditionTemplate(TestScEvent()));
   EXPECT_TRUE(agent.CheckResultCondition(TestScEvent(), action));
@@ -25,7 +32,7 @@ TEST_F(ScAgentTest, AgentClass)
 
 TEST_F(ScAgentTest, InvalidSubscription)
 {
-  ScAddr const & subscriptionElementAddr{1233241};
+  ScAddr subscriptionElementAddr;
   EXPECT_THROW(m_ctx->SubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr), utils::ExceptionInvalidParams);
   EXPECT_THROW(
       m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr), utils::ExceptionInvalidParams);
@@ -39,13 +46,15 @@ TEST_F(ScAgentTest, SubscribeAgentTwice)
   EXPECT_NO_THROW(m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr));
 }
 
-TEST_F(ScAgentTest, UnsubscribeAgentTwice)
+TEST_F(ScAgentTest, UnsubscribeAgentFromEventForWhichAgentIsNotSubscribed)
 {
   ScAddr const & subscriptionElementAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_NO_THROW(m_ctx->SubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr));
-  EXPECT_NO_THROW(m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr));
+  ScAddr const & otherSubscriptionElementAddr = m_ctx->CreateNode(ScType::NodeConst);
   EXPECT_THROW(
-      m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr), utils::ExceptionInvalidState);
+      m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(otherSubscriptionElementAddr), utils::ExceptionInvalidState);
+
+  EXPECT_NO_THROW(m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr));
 }
 
 TEST_F(ScAgentTest, UnsubscribeNotSubscribedAgent)
@@ -278,6 +287,21 @@ TEST_F(ScAgentTest, ATestExceptionInDoProgram)
   EXPECT_TRUE(action.IsFinishedWithError());
 
   m_ctx->UnsubscribeAgent<ATestException>();
+}
+
+TEST_F(ScAgentTest, ATestEraseActionWithExceptionInDoProgram)
+{
+  m_ctx->SubscribeAgent<ATestEraseActionWithException>();
+
+  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+                        .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+                        .Initiate();
+
+  EXPECT_FALSE(ATestEraseActionWithException::msWaiter.Wait(0.1));
+  EXPECT_FALSE(action.IsFinishedWithError());
+  EXPECT_FALSE(action.IsFinished());
+
+  m_ctx->UnsubscribeAgent<ATestEraseActionWithException>();
 }
 
 TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentWithWaitingAgentWaiter)
@@ -555,6 +579,22 @@ TEST_F(ScAgentTest, RegisterActionInitiatedAgentWithinModule)
       .Initiate();
 
   EXPECT_TRUE(ATestCheckResult::msWaiter.Wait());
+
+  module.Unregister(&*m_ctx);
+}
+
+TEST_F(ScAgentTest, RegisterActionErasingElementWithinModule)
+{
+  ATestEraseElement::msWaiter.Reset();
+
+  ScAddr const & subscriptionElementAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  TestModule module;
+  module.Agent<ATestEraseElement>(subscriptionElementAddr);
+  module.Register(&*m_ctx);
+
+  EXPECT_TRUE(m_ctx->EraseElement(subscriptionElementAddr));
+  EXPECT_TRUE(ATestEraseElement::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
 }

@@ -245,6 +245,19 @@ ScResult ATestException::DoProgram(ScAction & action)
 
 /// --------------------------------------
 
+ScAddr ATestEraseActionWithException::GetActionClass() const
+{
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScResult ATestEraseActionWithException::DoProgram(ScAction & action)
+{
+  m_context.EraseElement(action);
+  SC_THROW_EXCEPTION(utils::ScException, "Some exception.");
+}
+
+/// --------------------------------------
+
 ScAddr ATestCheckResult::GetActionClass() const
 {
   return ATestGenerateOutgoingArc::generate_outgoing_arc_action;

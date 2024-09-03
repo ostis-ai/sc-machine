@@ -378,7 +378,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
       if (eventTripleIterator->IsValid())
       {
         otherElementPosition = 0u;
-        GenerateCheckTemplateParams(
+        templateParamsIsGenerated = GenerateCheckTemplateParams(
             initiationConditionTemplateAddr, event, otherElementPosition, eventTripleIterator, templateParams);
       }
     }
