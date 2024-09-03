@@ -328,7 +328,10 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
       {ScKeynodes::sc_event_before_erase_edge, {GetIteratorForEventTripleWithEdge, 2u}},
       {ScKeynodes::sc_event_after_generate_connector,
        {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}},
-      {ScKeynodes::sc_event_before_erase_connector, {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}}};
+      {ScKeynodes::sc_event_before_erase_connector, {GetIteratorForEventTripleWithConnectorWithOutgoingDirection, 2u}},
+      {ScKeynodes::sc_event_before_erase_element, {nullptr, 0u}},
+      {ScKeynodes::sc_event_before_change_link_content, {nullptr, 0u}},
+  };
 
   ScAddr const & eventClassAddr = event.GetEventClass();
   auto const & iteratorIt = eventToEventTripleIterators.find(eventClassAddr);
@@ -341,29 +344,32 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   }
 
   auto [getIteratorForEventTriple, otherElementPosition] = iteratorIt->second;
-  ScIterator5Ptr eventTripleIterator = getIteratorForEventTriple();
-  bool templateParamsIsGenerated = false;
   ScTemplateParams templateParams;
-  if (eventTripleIterator->IsValid())
-    templateParamsIsGenerated = GenerateCheckTemplateParams(
-        initiationConditionTemplateAddr, event, otherElementPosition, eventTripleIterator, templateParams);
-
-  // If params were no generated then tries to find reverse iterator for connectors events.
-  if (!templateParamsIsGenerated
-      && (eventClassAddr == ScKeynodes::sc_event_after_generate_connector
-          || eventClassAddr == ScKeynodes::sc_event_before_erase_connector))
+  if (getIteratorForEventTriple != nullptr)
   {
-    eventTripleIterator = GetIteratorForEventTripleWithConnectorWithIncomingDirection();
+    ScIterator5Ptr eventTripleIterator = getIteratorForEventTriple();
+    bool templateParamsIsGenerated = false;
     if (eventTripleIterator->IsValid())
-    {
-      otherElementPosition = 0u;
-      GenerateCheckTemplateParams(
+      templateParamsIsGenerated = GenerateCheckTemplateParams(
           initiationConditionTemplateAddr, event, otherElementPosition, eventTripleIterator, templateParams);
-    }
-  }
 
-  if (!templateParamsIsGenerated)
-    return ScTemplate();
+    // If params were no generated then tries to find reverse iterator for connectors events.
+    if (!templateParamsIsGenerated
+        && (eventClassAddr == ScKeynodes::sc_event_after_generate_connector
+            || eventClassAddr == ScKeynodes::sc_event_before_erase_connector))
+    {
+      eventTripleIterator = GetIteratorForEventTripleWithConnectorWithIncomingDirection();
+      if (eventTripleIterator->IsValid())
+      {
+        otherElementPosition = 0u;
+        GenerateCheckTemplateParams(
+            initiationConditionTemplateAddr, event, otherElementPosition, eventTripleIterator, templateParams);
+      }
+    }
+
+    if (!templateParamsIsGenerated)
+      return ScTemplate();
+  }
 
   ScTemplate initiationConditionTemplate;
   this->m_context.HelperBuildTemplate(initiationConditionTemplate, initiationConditionTemplateAddr, templateParams);

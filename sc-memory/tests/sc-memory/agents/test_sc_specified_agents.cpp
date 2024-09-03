@@ -1467,3 +1467,128 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentGeneratingIncomingArcHasFullSpec
 
   m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 }
+
+static std::string const ATestSpecifiedAgentSpecificationChangingLinkContent = R"(
+  @test_link = [content];;
+
+  @test_link
+  => nrel_system_identifier: [test_link];
+  <- lang_en;;
+
+  test_specified_agent
+  <- abstract_sc_agent;
+  => nrel_primary_initiation_condition: 
+    (sc_event_before_change_link_content => @test_link);
+  => nrel_sc_agent_action_class: 
+    test_specified_agent_action;
+  => nrel_initiation_condition_and_result: 
+    (..test_specified_agent_condition => ..test_specified_agent_result);
+  <= nrel_sc_agent_key_sc_elements: 
+    {
+      @test_link;
+      action;
+      test_specified_agent_action
+    };
+  => nrel_inclusion: 
+    test_specified_agent_implementation
+    (*
+      <- platform_dependent_abstract_sc_agent;;
+      <= nrel_sc_agent_program: 
+      {
+        [] (* => nrel_format: format_github_source_link;; *);
+        [] (* => nrel_format: format_github_source_link;; *)
+      };;
+    *);;
+
+  ..test_specified_agent_condition
+  = [*
+    @test_link _<- lang_en;;
+  *];;
+
+  ..test_specified_agent_result
+  = [*
+  *];;
+
+  test_specified_agent_action
+  <- sc_node_class;
+  <= nrel_inclusion: information_action;;
+)";
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentChangingLinkContentHasFullSpecification)
+{
+  ATestSpecifiedAgent::msWaiter.Reset();
+
+  std::string const & data = ATestSpecifiedAgentSpecificationChangingLinkContent;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+
+  ScAddr const & testLinkAddr = m_ctx->HelperFindBySystemIdtf("test_link");
+  m_ctx->SetLinkContent(testLinkAddr, "new content");
+
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
+
+  m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+}
+
+static std::string const ATestSpecifiedAgentSpecificationErasingElement = R"(
+  test_element
+  <- my_class;;
+
+  test_specified_agent
+  <- abstract_sc_agent;
+  => nrel_primary_initiation_condition: 
+    (sc_event_before_erase_element => test_element);
+  => nrel_sc_agent_action_class: 
+    test_specified_agent_action;
+  => nrel_initiation_condition_and_result: 
+    (..test_specified_agent_condition => ..test_specified_agent_result);
+  <= nrel_sc_agent_key_sc_elements: 
+    {
+      test_element;
+      action;
+      test_specified_agent_action
+    };
+  => nrel_inclusion: 
+    test_specified_agent_implementation
+    (*
+      <- platform_dependent_abstract_sc_agent;;
+      <= nrel_sc_agent_program: 
+      {
+        [] (* => nrel_format: format_github_source_link;; *);
+        [] (* => nrel_format: format_github_source_link;; *)
+      };;
+    *);;
+
+  ..test_specified_agent_condition
+  = [*
+    test_element _<- my_class;;
+  *];;
+
+  ..test_specified_agent_result
+  = [*
+  *];;
+
+  test_specified_agent_action
+  <- sc_node_class;
+  <= nrel_inclusion: information_action;;
+)";
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingElementHasFullSpecification)
+{
+  ATestSpecifiedAgent::msWaiter.Reset();
+
+  std::string const & data = ATestSpecifiedAgentSpecificationErasingElement;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
+
+  ScAddr const & testElementAddr = m_ctx->HelperFindBySystemIdtf("test_element");
+  m_ctx->EraseElement(testElementAddr);
+
+  EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
+}
