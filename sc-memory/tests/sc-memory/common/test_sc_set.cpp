@@ -331,3 +331,108 @@ TEST_F(ScSetTest, CompareSetsWithSameElementsDifferentArcTypes)
 
   EXPECT_NE(set1, set2);
 }
+
+using ScSetElements = std::unordered_map<std::string, ScType>;
+using ScSetElementsVector = std::vector<ScSetElements>;
+
+static ScSetElementsVector const & typicalSetElementsVector = {
+    {{"node1", ScType::EdgeAccessConstPosPerm},
+     {"node2", ScType::EdgeAccessConstPosPerm},
+     {"node3", ScType::EdgeAccessConstPosPerm}},
+    {{"node1", ScType::EdgeAccessConstFuzPerm},
+     {"node2", ScType::EdgeAccessConstFuzPerm},
+     {"node3", ScType::EdgeAccessConstFuzPerm}},
+    {{"node1", ScType::EdgeAccessConstNegPerm},
+     {"node2", ScType::EdgeAccessConstNegPerm},
+     {"node3", ScType::EdgeAccessConstNegPerm}},
+
+    {{"node1", ScType::EdgeAccessConstPosPerm},
+     {"node2", ScType::EdgeAccessConstPosPerm},
+     {"node3", ScType::EdgeAccessConstFuzPerm}},
+    {{"node1", ScType::EdgeAccessConstPosPerm},
+     {"node2", ScType::EdgeAccessConstFuzPerm},
+     {"node3", ScType::EdgeAccessConstFuzPerm}},
+
+    {{"node1", ScType::EdgeAccessConstPosPerm},
+     {"node2", ScType::EdgeAccessConstPosPerm},
+     {"node3", ScType::EdgeAccessConstNegPerm}},
+    {{"node1", ScType::EdgeAccessConstPosPerm},
+     {"node2", ScType::EdgeAccessConstNegPerm},
+     {"node3", ScType::EdgeAccessConstNegPerm}},
+
+    {{"node1", ScType::EdgeAccessConstPosPerm},
+     {"node2", ScType::EdgeAccessConstFuzPerm},
+     {"node3", ScType::EdgeAccessConstNegPerm}},
+};
+
+ScSet FormSet(std::unique_ptr<ScAgentContext> const & context, ScSetElements const & setElements)
+{
+  ScSet set = context->CreateSet();
+  for (auto & [systemIdtf, arcType] : setElements)
+  {
+    ScAddr const & nodeAddr = context->HelperResolveSystemIdtf(systemIdtf, ScType::NodeConst);
+    EXPECT_TRUE(set.Append(nodeAddr, arcType));
+  }
+
+  return set;
+}
+
+void CheckResultSet(
+    std::unique_ptr<ScAgentContext> const & context,
+    ScSet & resultSet,
+    ScSetElements const & resulSetElements)
+{
+  for (auto & [systemIdtf, arcType] : resulSetElements)
+  {
+    ScAddr const & nodeAddr = context->HelperResolveSystemIdtf(systemIdtf, ScType::NodeConst);
+    EXPECT_TRUE(resultSet.Remove(nodeAddr, arcType));
+  }
+
+  EXPECT_TRUE(resultSet.IsEmpty());
+}
+
+TEST_F(ScSetTest, SetUnionCombination)
+{
+  ScSetElementsVector const & leftSetElementsVector = typicalSetElementsVector;
+  ScSetElementsVector const & rightSetElementsVector = leftSetElementsVector;
+
+  for (size_t i = 0; i < leftSetElementsVector.size(); ++i)
+  {
+    auto const & leftSetElements = leftSetElementsVector[i];
+    ScSet leftSet = FormSet(m_ctx, leftSetElements);
+    for (size_t j = 0; j < rightSetElementsVector.size(); ++j)
+    {
+      auto const & rightSetElements = rightSetElementsVector[j];
+      ScSet rightSet = FormSet(m_ctx, rightSetElements);
+
+      ScSet resultSet = leftSet + rightSet;
+      if (j <= i)
+        CheckResultSet(m_ctx, resultSet, rightSetElements);
+      else
+        CheckResultSet(m_ctx, resultSet, leftSetElements);
+    }
+  }
+}
+
+TEST_F(ScSetTest, SetIntersectionCombination)
+{
+  ScSetElementsVector const leftSetElementsVector = typicalSetElementsVector;
+  ScSetElementsVector const rightSetElementsVector = leftSetElementsVector;
+
+  for (size_t i = 0; i < leftSetElementsVector.size(); ++i)
+  {
+    auto const & leftSetElements = leftSetElementsVector[i];
+    ScSet leftSet = FormSet(m_ctx, leftSetElements);
+    for (size_t j = 0; j < rightSetElementsVector.size(); ++j)
+    {
+      auto const & rightSetElements = rightSetElementsVector[j];
+      ScSet rightSet = FormSet(m_ctx, rightSetElements);
+
+      ScSet resultSet = leftSet * rightSet;
+      if (j >= i)
+        CheckResultSet(m_ctx, resultSet, rightSetElements);
+      else
+        CheckResultSet(m_ctx, resultSet, leftSetElements);
+    }
+  }
+}
