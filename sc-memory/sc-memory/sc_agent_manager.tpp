@@ -171,7 +171,6 @@ std::function<void(void)> ScAgentManager<TScAgent>::GetPostEraseEventCallback(
   {
     auto const & agentsMapIt = ScAgentManager<TScAgent>::m_agentSubscriptions.find(agentName);
     auto & subscriptionsMap = agentsMapIt->second;
-    auto const & it = subscriptionsMap.find(subscriptionElementAddr);
 
     SC_LOG_INFO(
         "Unsubscribe agent `" << agentName << "` from event `" << eventClassName << "("

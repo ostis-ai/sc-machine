@@ -312,6 +312,7 @@ protected:
   static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_agentSubscriptions;
   static inline std::unordered_map<std::string, ScAddr> m_agentEventClasses;
 
+  //! Returns callback that remove subscription of agent to sc-event of erasing sc-element from common map.
   static _SC_EXTERN std::function<void(void)> GetPostEraseEventCallback(
       std::string const & agentName,
       std::string const & eventClassName,
@@ -320,8 +321,9 @@ protected:
   /*!
    * @brief Gets the callback function for agent class.
    * @tparam TScAgent An agent class to be subscribed to the event.
-   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
-   * class.
+   * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent.
+   * @param postEraseEventCallback A callback function that remove subscription of agent to sc-event of erasing
+   * sc-element from common map after agent flow of performing action. class.
    * @return A function that takes an sc-event and returns an sc-result.
    * @warning Specified agent class must be derived from class `ScAgent`.
    */

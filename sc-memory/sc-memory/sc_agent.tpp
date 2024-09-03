@@ -354,8 +354,8 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   if (iteratorIt == eventToEventTripleIterators.cend())
   {
     SC_LOG_WARNING(
-        "Event class for agent class `"
-        << this->GetName() << "` is unknown. It is impossible to check initiation condition template.");
+        "Event class for agent class `" << this->GetName()
+                                        << "` is unknown. It is impossible to check initiation condition template.");
     return ScTemplate();
   }
 

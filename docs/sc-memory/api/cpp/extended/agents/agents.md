@@ -113,7 +113,7 @@ There is a base class for agents in C++. This class provides implemented methods
 
 You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgent` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
 
-This class can be used for all types of platform-dependent agents. Agents of this class react for events in the knowledge base, check the full initiation condition and. If the check is successful, create, initiate and execute the action. After that, they check full result condition. The example using this class is represented below.
+This class can be used for all types of platform-dependent agents. Agents of this class react for events in the knowledge base, check the full initiation condition. If the check is successful, create, initiate and execute the action. After that, they check full result condition. The example using this class is represented below.
 
 ```cpp
 // File my_agent.hpp
@@ -289,8 +289,8 @@ ScResult MyAgent::DoProgram(
   // Class `ScAction` encapsulates information about sc-action. The provided 
   // action is action that the given agent performs right now. 
   // It belongs to `MyKeynodes::my_action` class.
-  // If your agent inherits `ScAgent` class then this agent performs action 
-  // initiated externally. If your agent inherits `ScActionInitiatedAgent`
+  // If your agent inherits `ScActionInitiatedAgent` class then this agent
+  // performs action initiated externally. If your agent inherits `ScAgent`
   // then this agent creates action, initiates and performs new action, not
   // provided externally.
   // Actions are copyable and movable. `ScAction` is inherited from `ScAddr`.
