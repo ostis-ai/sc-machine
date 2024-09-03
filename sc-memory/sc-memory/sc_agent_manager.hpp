@@ -310,6 +310,12 @@ private:
 protected:
   //! Agents subscriptions.
   static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_agentSubscriptions;
+  static inline std::unordered_map<std::string, ScAddr> m_agentEventClasses;
+
+  static _SC_EXTERN std::function<void(void)> GetPostEraseEventCallback(
+      std::string const & agentName,
+      std::string const & eventClassName,
+      ScAddr const & subscriptionElementAddr);
 
   /*!
    * @brief Gets the callback function for agent class.
@@ -319,7 +325,9 @@ protected:
    * @return A function that takes an sc-event and returns an sc-result.
    * @warning Specified agent class must be derived from class `ScAgent`.
    */
-  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(ScAddr const & agentImplementationAddr) noexcept;
+  static _SC_EXTERN std::function<void(TScEvent const &)> GetCallback(
+      ScAddr const & agentImplementationAddr,
+      std::function<void(void)> const & postEraseEventCallback) noexcept;
 };
 
 #include "sc_agent_manager.tpp"

@@ -185,7 +185,7 @@ TEST_F(ScAgentTest, ATestEraseElement)
   EXPECT_TRUE(m_ctx->EraseElement(subscriptionElementAddr));
   EXPECT_TRUE(ATestEraseElement::msWaiter.Wait());
 
-  m_ctx->UnsubscribeAgent<ATestEraseElement>(subscriptionElementAddr);
+  EXPECT_THROW(m_ctx->UnsubscribeAgent<ATestEraseElement>(subscriptionElementAddr), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentTest, ATestChangeLinkContent)

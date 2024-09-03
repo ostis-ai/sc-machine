@@ -300,7 +300,6 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
   catch (utils::ScException const & exception)
   {
     SC_LOG_ERROR("Result condition template is not valid. " << exception.Message());
-    ;
   }
   return isFound;
 }
@@ -356,7 +355,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   {
     SC_LOG_WARNING(
         "Event class for agent class `"
-        << this->GetName() << "` is unsupported. It is impossible to check initiation condition template.");
+        << this->GetName() << "` is unknown. It is impossible to check initiation condition template.");
     return ScTemplate();
   }
 
@@ -450,6 +449,7 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
             << "` checks initiated sc-event incorrectly. Maybe initiation condition template has triple with incorrect "
                "sc-element types to "
                "substitute sc-elements involved in initiated sc-event.");
+        checkTemplateParams = ScTemplateParams();
         return false;
       }
     }

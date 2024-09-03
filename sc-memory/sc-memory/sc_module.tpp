@@ -40,7 +40,7 @@ ScModule * ScModule::Agent() noexcept
 template <class TScAgent>
 ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback() noexcept
 {
-  return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
+  return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs) -> void
   {
     if (context->IsElement(agentImplementationAddr))
       ScAgentManager<TScAgent>::Subscribe(context, agentImplementationAddr);
@@ -55,8 +55,13 @@ ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback() noexcep
 template <class TScAgent>
 ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback() noexcept
 {
-  return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs)
+  return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs) -> void
   {
+    auto const & eventClassIt = ScAgentManager<TScAgent>::m_agentEventClasses.find(TScAgent::template GetName<TScAgent>());
+    if (eventClassIt != ScAgentManager<TScAgent>::m_agentEventClasses.cend()
+        && eventClassIt->second == ScKeynodes::sc_event_before_erase_element)
+      return;
+
     if (context->IsElement(agentImplementationAddr))
       ScAgentManager<TScAgent>::Unsubscribe(context, agentImplementationAddr);
     else

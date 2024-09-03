@@ -62,22 +62,34 @@ void ScAgentManager<TScAgent>::Subscribe(
         "Subscribe agent `" << agentName << "` to event `" << eventName << "(" << subscriptionElementAddr.Hash()
                             << ")`.");
 
+    std::function<void(void)> postEraseEventCallback;
     if constexpr (std::is_same<ScElementaryEvent, TScEvent>::value)
     {
+      ScAddr const & eventClassAddr = agent.GetEventClass();
+      if (eventClassAddr == ScKeynodes::sc_event_before_erase_element)
+        postEraseEventCallback = GetPostEraseEventCallback(agentName, eventName, subscriptionElementAddr);
+
       subscriptionsMap.insert(
           {subscriptionElementAddr,
            new ScElementaryEventSubscription(
                *context,
-               agent.GetEventClass(),
+               eventClassAddr,
                subscriptionElementAddr,
-               ScAgentManager<TScAgent>::GetCallback(agentImplementationAddr))});
+               ScAgentManager<TScAgent>::GetCallback(agentImplementationAddr, postEraseEventCallback))});
+      ScAgentManager<TScAgent>::m_agentEventClasses.insert({agentName, eventClassAddr});
     }
     else
     {
+      if constexpr (std::is_same<ScEventBeforeEraseElement, TScEvent>::value)
+        postEraseEventCallback = GetPostEraseEventCallback(agentName, eventName, subscriptionElementAddr);
+
       subscriptionsMap.insert(
           {subscriptionElementAddr,
            new ScElementaryEventSubscription<TScEvent>(
-               *context, subscriptionElementAddr, ScAgentManager<TScAgent>::GetCallback(agentImplementationAddr))});
+               *context,
+               subscriptionElementAddr,
+               ScAgentManager<TScAgent>::GetCallback(agentImplementationAddr, postEraseEventCallback))});
+      ScAgentManager<TScAgent>::m_agentEventClasses.insert({agentName, TScEvent::eventClassAddr});
     }
   }
 }
@@ -100,6 +112,16 @@ void ScAgentManager<TScAgent>::Unsubscribe(
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentName = agent.GetName();
+
+  auto const & eventClassIt = ScAgentManager<TScAgent>::m_agentEventClasses.find(agentName);
+  if (eventClassIt != ScAgentManager<TScAgent>::m_agentEventClasses.cend()
+      && eventClassIt->second == ScKeynodes::sc_event_before_erase_element)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Agent `" << agentName
+                  << "` has been subscribed to event of erasing sc-element. It does not need to be unsubscribed, the "
+                     "sc-machine unsubscribes such an agent on its own.");
+
   auto const & agentsMapIt = ScAgentManager<TScAgent>::m_agentSubscriptions.find(agentName);
   if (agentsMapIt == ScAgentManager<TScAgent>::m_agentSubscriptions.cend())
     SC_THROW_EXCEPTION(
@@ -116,15 +138,12 @@ void ScAgentManager<TScAgent>::Unsubscribe(
   auto & subscriptionsMap = agentsMapIt->second;
   for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
-    if constexpr (!std::is_same<TScEvent, ScEventBeforeEraseElement>::value)
-    {
-      if (!context->IsElement(subscriptionElementAddr))
-        SC_THROW_EXCEPTION(
-            utils::ExceptionInvalidParams,
-            "Not able to unsubscribe agent `" << agentName << "` from event `" << eventClassName
-                                              << "because subscription sc-element with address hash `"
-                                              << subscriptionElementAddr.Hash() << "` is not valid.");
-    }
+    if (!context->IsElement(subscriptionElementAddr))
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidParams,
+          "Not able to unsubscribe agent `" << agentName << "` from event `" << eventClassName
+                                            << "because subscription sc-element with address hash `"
+                                            << subscriptionElementAddr.Hash() << "` is not valid.");
 
     auto const & it = subscriptionsMap.find(subscriptionElementAddr);
     if (it == subscriptionsMap.cend())
@@ -143,8 +162,29 @@ void ScAgentManager<TScAgent>::Unsubscribe(
 }
 
 template <class TScAgent>
+std::function<void(void)> ScAgentManager<TScAgent>::GetPostEraseEventCallback(
+    std::string const & agentName,
+    std::string const & eventClassName,
+    ScAddr const & subscriptionElementAddr)
+{
+  return [=]() -> void
+  {
+    auto const & agentsMapIt = ScAgentManager<TScAgent>::m_agentSubscriptions.find(agentName);
+    auto & subscriptionsMap = agentsMapIt->second;
+    auto const & it = subscriptionsMap.find(subscriptionElementAddr);
+
+    SC_LOG_INFO(
+        "Unsubscribe agent `" << agentName << "` from event `" << eventClassName << "("
+                              << subscriptionElementAddr.Hash() << ")`.");
+
+    subscriptionsMap.erase(subscriptionElementAddr);
+  };
+}
+
+template <class TScAgent>
 std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAgent>::GetCallback(
-    ScAddr const & agentImplementationAddr) noexcept
+    ScAddr const & agentImplementationAddr,
+    std::function<void(void)> const & postEraseEventCallback) noexcept
 {
   static_assert(
       std::is_base_of<ScAgent<TScEvent, TScContext>, TScAgent>::value,
@@ -165,7 +205,7 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
   static_assert(
       HasOneOverride<TScAgent>::DoProgramMethod::value, "TScAgent must have one override `DoProgram` method.");
 
-  return [agentImplementationAddr](TScEvent const & event) -> void
+  return [agentImplementationAddr, postEraseEventCallback](TScEvent const & event) -> void
   {
     auto const & ResolveAction = [](TScEvent const & event, ScAgent<TScEvent, TScContext> & agent) -> ScAction
     {
@@ -177,6 +217,12 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
       }
 
       return agent.m_context.CreateAction(agent.GetActionClass()).Initiate();
+    };
+
+    auto const & PostCallback = [&postEraseEventCallback]() -> void
+    {
+      if (postEraseEventCallback)
+        postEraseEventCallback();
     };
 
     TScAgent agent;
@@ -191,7 +237,7 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
       SC_LOG_WARNING(
           "Agent `" << agentName << "` was finished because actions with class `" << agent.GetActionClass().Hash()
                     << "` are deactivated.");
-      return;
+      return PostCallback();
     }
 
     // SC_LOG_INFO("Agent `" << agentName << "` started checking initiation condition.");
@@ -211,7 +257,7 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     {
       SC_LOG_WARNING(
           "Agent `" << agentName << "` was finished because its initiation condition was checked unsuccessfully.");
-      return;
+      return PostCallback();
     }
     // SC_LOG_INFO("Agent `" << agentName << "` finished checking initiation condition.");
 
@@ -244,7 +290,7 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
             << "` can not be finished because error was occurred during its finishing.\nError description:\n"
             << finishingActionException.Description());
       }
-      return;
+      return PostCallback();
     }
 
     if (result == SC_RESULT_OK)
@@ -269,8 +315,10 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     if (!isResultConditionCheckedSuccessfully)
     {
       SC_LOG_WARNING("Result condition of agent `" << agentName << "` checked unsuccessfully.");
-      return;
+      return PostCallback();
     }
     // SC_LOG_INFO("Agent `" << agentName << "` finished checking result condition.");
+
+    return PostCallback();
   };
 }
