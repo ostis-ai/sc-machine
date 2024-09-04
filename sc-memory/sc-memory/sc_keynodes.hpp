@@ -53,7 +53,8 @@ public:
   static void Unregister(ScMemoryContext * context);
 
 protected:
-  static inline std::list<ScKeynode *> m_keynodes;
+  static inline std::list<ScKeynode *> m_notInitializedKeynodes;
+  static inline std::list<ScKeynode *> m_initializedKeynodes;
 };
 
 }  // namespace internal

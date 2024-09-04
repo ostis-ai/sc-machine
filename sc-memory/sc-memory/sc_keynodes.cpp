@@ -12,21 +12,27 @@
 
 void internal::ScKeynodesRegister::Remember(ScKeynode * keynode)
 {
-  m_keynodes.push_back(keynode);
+  m_notInitializedKeynodes.push_back(keynode);
 }
 
 void internal::ScKeynodesRegister::Forget(ScKeynode * keynode)
 {
-  m_keynodes.remove(keynode);
+  m_notInitializedKeynodes.remove(keynode);
+  m_initializedKeynodes.remove(keynode);
 }
 
 void internal::ScKeynodesRegister::Register(ScMemoryContext * context)
 {
-  for (auto * keynode : m_keynodes)
+  for (auto * keynode : m_notInitializedKeynodes)
     keynode->Initialize(context);
+
+  m_initializedKeynodes.splice(m_initializedKeynodes.cend(), m_notInitializedKeynodes);
 }
 
-void internal::ScKeynodesRegister::Unregister(ScMemoryContext *) {}
+void internal::ScKeynodesRegister::Unregister(ScMemoryContext *)
+{
+  m_notInitializedKeynodes.splice(m_notInitializedKeynodes.cend(), m_initializedKeynodes);
+}
 
 ScKeynode::ScKeynode(std::string_view const & sysIdtf, ScType const & type) noexcept
   : ScAddr(ScAddr::Empty)

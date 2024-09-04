@@ -6,6 +6,8 @@
 
 #include "sc-memory/sc_module.hpp"
 
+#include "sc-memory/sc_keynodes.hpp"
+
 ScModule::~ScModule() noexcept = default;
 
 ScModule * ScModule::Create(ScModule * module) noexcept
@@ -16,6 +18,9 @@ ScModule * ScModule::Create(ScModule * module) noexcept
 void ScModule::Register(ScMemoryContext * context) noexcept(false)
 {
   SC_LOG_INFO("Initialize " << this->GetName());
+
+  internal::ScKeynodesRegister::Register(context);
+
   Initialize(context);
 
   for (auto const & agentInfo : m_agents)
