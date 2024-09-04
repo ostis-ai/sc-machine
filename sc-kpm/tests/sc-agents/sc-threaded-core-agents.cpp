@@ -4,13 +4,14 @@
 
 extern "C"
 {
+#include "sc-core/sc_helper.h"
 #include "sc-search/search.h"
 #include "sc-search/search_keynodes.h"
 #include "sc-search/search_agents.h"
 #include "sc-utils/utils_keynodes.h"
 }
 
-sc_addr test_generate_elements_and_call_agent_search_all_const_pos_input_arc(
+sc_addr test_generate_elements_and_call_agent_search_all_const_pos_incoming_arc(
     sc_memory_context * context,
     sc_addr const addr)
 {
@@ -37,7 +38,7 @@ sc_addr test_generate_elements_and_call_agent_search_all_const_pos_input_arc(
   return action_addr;
 }
 
-sc_addr test_generate_elements_and_call_agent_search_all_const_pos_output_arc(
+sc_addr test_generate_elements_and_call_agent_search_all_const_pos_outgoing_arc(
     sc_memory_context * context,
     sc_addr const addr)
 {
@@ -156,9 +157,9 @@ sc_bool test_agent_has_result(sc_memory_context * context, sc_addr const action_
       context,
       action_addr,
       sc_type_arc_common | sc_type_const,
-      sc_type_node | sc_type_const,  // action_addr -> keynode_nrel_answer {}
+      sc_type_node | sc_type_const,  // action_addr -> keynode_nrel_result {}
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
   sc_bool const result = sc_iterator5_next(action_addr_it5);
   sc_iterator5_free(action_addr_it5);
 
@@ -175,9 +176,9 @@ TEST_F(ScMemoryTest, agents_parallel_work1)
   sc_module_initialize_with_init_memory_generated_structure(init_memory_generated_structure);
 
   sc_addr const addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const action_addr1 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
+  sc_addr const action_addr1 = test_generate_elements_and_call_agent_search_all_const_pos_incoming_arc(context, addr);
   sc_addr const action_addr2 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
-  sc_addr const action_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
+  sc_addr const action_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_outgoing_arc(context, addr);
   sc_addr const action_addr4 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
 
   sleep(2);
@@ -205,11 +206,11 @@ TEST_F(ScMemoryTest, agents_parallel_work2)
 
   sc_addr const addr = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const action_addr1 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
-  sc_addr const action_addr2 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
-  sc_addr const action_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
+  sc_addr const action_addr2 = test_generate_elements_and_call_agent_search_all_const_pos_incoming_arc(context, addr);
+  sc_addr const action_addr3 = test_generate_elements_and_call_agent_search_all_const_pos_outgoing_arc(context, addr);
   sc_addr const action_addr4 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
-  sc_addr const action_addr5 = test_generate_elements_and_call_agent_search_all_const_pos_output_arc(context, addr);
-  sc_addr const action_addr6 = test_generate_elements_and_call_agent_search_all_const_pos_input_arc(context, addr);
+  sc_addr const action_addr5 = test_generate_elements_and_call_agent_search_all_const_pos_outgoing_arc(context, addr);
+  sc_addr const action_addr6 = test_generate_elements_and_call_agent_search_all_const_pos_incoming_arc(context, addr);
   sc_addr const action_addr7 = test_generate_elements_and_call_agent_search_full_semantic_neighborhood(context, addr);
 
   sleep(2);

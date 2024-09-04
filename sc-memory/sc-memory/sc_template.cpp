@@ -105,7 +105,7 @@ void ScTemplateItem::SetReplacement(sc_char const * name)
     m_name = name;
 }
 
-ScTemplateItem operator>>(ScAddr const & value, char const * replName)
+ScTemplateItem operator>>(ScAddr const & value, sc_char const * replName)
 {
   return {value, replName};
 }
@@ -115,7 +115,7 @@ ScTemplateItem operator>>(ScAddr const & value, std::string const & replName)
   return {value, replName.c_str()};
 }
 
-ScTemplateItem operator>>(ScType const & value, char const * replName)
+ScTemplateItem operator>>(ScType const & value, sc_char const * replName)
 {
   return {value, replName};
 }
@@ -236,7 +236,7 @@ ScTemplate::Result::operator bool() const
 
 // --------------------------------
 
-ScTemplate::ScTemplate()
+ScTemplate::ScTemplate() noexcept
 {
   m_templateTriples.reserve(16);
 
@@ -244,11 +244,35 @@ ScTemplate::ScTemplate()
   m_priorityOrderedTemplateTriples.resize(tripleTypeCount);
 }
 
-ScTemplate::~ScTemplate()
+ScTemplate::~ScTemplate() noexcept
 {
   for (auto * triple : m_templateTriples)
     delete triple;
   m_templateTriples.clear();
+}
+
+ScTemplate::ScTemplate(ScTemplate && other) noexcept
+  : m_templateItemsNamesToReplacementItemsPositions(std::move(other.m_templateItemsNamesToReplacementItemsPositions))
+  , m_templateTriples(std::move(other.m_templateTriples))
+  , m_priorityOrderedTemplateTriples(std::move(other.m_priorityOrderedTemplateTriples))
+  , m_templateItemsNamesToReplacementItemsAddrs(std::move(other.m_templateItemsNamesToReplacementItemsAddrs))
+  , m_templateItemsNamesToTypes(std::move(other.m_templateItemsNamesToTypes))
+{
+}
+
+ScTemplate & ScTemplate::operator=(ScTemplate && other) noexcept
+{
+  if (this == &other)
+    return *this;
+
+  m_templateItemsNamesToReplacementItemsPositions = std::move(other.m_templateItemsNamesToReplacementItemsPositions);
+  m_templateTriples = std::move(other.m_templateTriples);
+  m_priorityOrderedTemplateTriples = std::move(other.m_priorityOrderedTemplateTriples);
+  m_templateItemsNamesToReplacementItemsAddrs = std::move(other.m_templateItemsNamesToReplacementItemsAddrs);
+  m_templateItemsNamesToTypes = std::move(other.m_templateItemsNamesToTypes);
+
+  other.Clear();
+  return *this;
 }
 
 ScTemplate & ScTemplate::operator()(
@@ -334,14 +358,14 @@ ScTemplate & ScTemplate::Triple(
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Specified sc-type for sc-template item "
-              << (item.HasName() ? ("`" + item.m_name + "`") : "")
+              << (item.HasName() ? ("`" + item.m_name + "` ") : "")
               << "is constant sc-type. You can only use variable sc-types for items in sc-template.");
 
     if (item.IsAddr() && !item.m_addrValue.IsValid())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
           "Specified sc-address for sc-template item "
-              << (item.HasName() ? ("`" + item.m_name + "`") : "")
+              << (item.HasName() ? ("`" + item.m_name + "` ") : "")
               << "is invalid. You can't use invalid sc-addresses for items in sc-template.");
 
     if (!item.m_name.empty())

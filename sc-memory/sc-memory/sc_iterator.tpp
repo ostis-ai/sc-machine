@@ -68,7 +68,7 @@ ScIterator3<ParamType1, ParamType2, ParamType3>::~ScIterator3()
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
-ScIterator3<ParamType1, ParamType2, ParamType3>::ScIterator3(ScIterator3 const & other)
+ScIterator3<ParamType1, ParamType2, ParamType3>::ScIterator3(ScIterator3 const &)
 {
 }
 
@@ -94,7 +94,7 @@ template <typename ParamType1, typename ParamType2, typename ParamType3>
 bool ScIterator3<ParamType1, ParamType2, ParamType3>::Next() const
 {
   sc_result result;
-  sc_bool status = sc_iterator3_next_ext(m_iterator, &result);
+  bool status = sc_iterator3_next_ext(m_iterator, &result);
 
   switch (result)
   {
@@ -102,12 +102,12 @@ bool ScIterator3<ParamType1, ParamType2, ParamType3>::Next() const
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator3 is empty to iterate next");
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Unable to iterate next triple because sc-memory context is not authorized");
   default:
     break;
   }
 
-  return status == SC_TRUE;
+  return status == true;
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
@@ -124,13 +124,13 @@ ScAddr ScIterator3<ParamType1, ParamType2, ParamType3>::Get(size_t index) const
   case SC_RESULT_ERROR_INVALID_PARAMS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+        "Index=" << std::to_string(index) << " must be < size=" << std::to_string(m_tripleSize));
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " due sc-memory context has not read permissions");
+        "Not able to get sc-element sc-address by index="
+            << std::to_string(index) << " because sc-memory context does not have read permissions");
   default:
     break;
   }
@@ -178,7 +178,7 @@ template <typename ParamType1, typename ParamType2, typename ParamType3, typenam
 bool ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Next() const
 {
   sc_result result;
-  sc_bool status = sc_iterator5_next_ext(m_iterator, &result);
+  bool status = sc_iterator5_next_ext(m_iterator, &result);
 
   switch (result)
   {
@@ -186,12 +186,12 @@ bool ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::Ne
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified iterator5 is empty to iterate next");
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Unable to iterate next triple due sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Unable to iterate next triple because sc-memory context is not authorized");
   default:
     break;
   }
 
-  return status == SC_TRUE;
+  return status == true;
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
@@ -208,13 +208,13 @@ ScAddr ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::
   case SC_RESULT_ERROR_INVALID_PARAMS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Index=" + std::to_string(index) + " must be < size=" + std::to_string(m_tripleSize));
+        "Index=" << std::to_string(index) << " must be < size=" << std::to_string(m_tripleSize));
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get sc-element sc-address by index=" + std::to_string(index)
-            + " due sc-memory context has not read permissions");
+        "Not able to get sc-element sc-address by index="
+            << std::to_string(index) << " because sc-memory context does not have read permissions");
   default:
     break;
   }

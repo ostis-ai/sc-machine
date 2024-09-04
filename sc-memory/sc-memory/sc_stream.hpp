@@ -6,14 +6,14 @@
 
 #pragma once
 
+#include <type_traits>
+
 extern "C"
 {
 #include "sc-core/sc_memory_headers.h"
 }
 
 #include "sc_utils.hpp"
-
-#include <type_traits>
 
 class ScStream
 {
@@ -28,7 +28,7 @@ public:
   _SC_EXTERN explicit ScStream(std::string const & fileName, sc_uint8 flags);
   _SC_EXTERN explicit ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags);
   _SC_EXTERN explicit ScStream(sc_char const * buffer, size_t bufferSize, sc_uint8 flags);
-  _SC_EXTERN explicit ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags, sc_bool dataOwner);
+  _SC_EXTERN explicit ScStream(sc_char * buffer, size_t bufferSize, sc_uint8 flags, bool dataOwner);
 
   _SC_EXTERN ~ScStream();
 

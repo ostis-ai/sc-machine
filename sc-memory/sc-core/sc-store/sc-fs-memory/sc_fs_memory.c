@@ -225,8 +225,8 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage)
       // needed for sc-template search
       if (!is_no_deprecated_segments)
       {
-        seg->elements[j].input_arcs_count = 1;
-        seg->elements[j].output_arcs_count = 1;
+        seg->elements[j].incoming_arcs_count = 1;
+        seg->elements[j].outgoing_arcs_count = 1;
       }
     }
 

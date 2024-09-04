@@ -218,7 +218,7 @@ typedef void (*sc_users_action_class_handler)(sc_memory_context_manager *, sc_ad
       _sc_context_remove_context_local_permissions(ctx, _removing_permissions, _structure_addr); \
   })
 
-sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager)
+sc_addr _sc_memory_context_manager_generate_guest_user(sc_memory_context_manager * manager)
 {
   sc_addr const guest_user_addr = sc_memory_node_new(s_memory_default_ctx, sc_type_node | sc_type_const);
   sc_addr const guest_user_arc_addr =
@@ -229,7 +229,7 @@ sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager *
 }
 
 sc_result _sc_memory_context_manager_on_identified_user(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -247,7 +247,7 @@ sc_result _sc_memory_context_manager_on_identified_user(
       != SC_RESULT_OK)
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   sc_memory_context * ctx = _sc_memory_context_get_impl(manager, quest_user_addr);
 
   sc_monitor_acquire_write(&ctx->monitor);
@@ -266,18 +266,18 @@ sc_result _sc_memory_context_manager_on_identified_user(
   return SC_RESULT_OK;
 }
 
-/*! Function that creates a memory context for an authenticated user with specified parameters.
+/*! Function that generates a memory context for an authenticated user with specified parameters.
  * @param event Pointer to the sc-event triggering the context creation.
  * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector to the user.
- * @param connector_type sc-type of created sc-connector to the user.
- * @param user_addr sc-address representing the authenticated user for whom the context is created.
+ * @param connector_addr sc-address representing generated sc-connector to the user.
+ * @param connector_type sc-type of generated sc-connector to the user.
+ * @param user_addr sc-address representing the authenticated user for whom the context is generated.
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  * @note This function is called in response to a sc-event and is responsible for creating a new memory context
  * for an authenticated user and establishing a connection between user and the context.
  */
 sc_result _sc_memory_context_manager_on_authentication_request_user(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -292,7 +292,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
   _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
   _sc_context_set_permissions_for_element(user_addr, SC_CONTEXT_PERMISSIONS_TO_ERASE_PERMISSIONS);
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_context_add_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
 
   sc_memory_element_free(s_memory_default_ctx, connector_addr);
@@ -315,14 +315,14 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
  * @param event Pointer to the sc-event triggering the context removal.
  * @param initiator_addr sc-address representing user that initiated this request.
  * @param connector_addr sc-address representing removed sc-connector to the authenticated user.
- * @param connector_type sc-type of created sc-connector to the user.
+ * @param connector_type sc-type of generated sc-connector to the user.
  * @param user_addr sc-address representing the user whose authentication is being revoked.
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  * @note This function is called in response to a sc-event and is responsible for removing authentication
  * for user and its associated memory context.
  */
 sc_result _sc_memory_context_manager_on_unauthentication_request_user(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -335,7 +335,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_context_remove_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
 
   sc_addr const auth_arc_addr = sc_memory_arc_new(
@@ -379,7 +379,7 @@ void _sc_memory_context_manager_handle_user_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_new_user_in_users_set(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -428,7 +428,7 @@ end:
 }
 
 sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -495,14 +495,15 @@ void _sc_memory_context_manager_handle_users_set_action_class(
   updater(manager, users_set_addr, action_class_addr, structure_addr);
 
   sc_monitor_acquire_write(&manager->on_new_users_in_sets_events_monitor);
-  sc_event * event =
+  sc_event_subscription * event =
       sc_hash_table_get(manager->on_new_users_in_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)));
   if (event == null_ptr)
   {
-    event = sc_event_with_user_new(
+    event = sc_event_subscription_with_user_new(
         s_memory_default_ctx,
         users_set_addr,
-        SC_EVENT_ADD_OUTPUT_ARC,
+        sc_event_after_generate_outgoing_arc_addr,
+        sc_type_arc_access,
         manager,
         _sc_memory_context_manager_on_new_user_in_users_set,
         null_ptr);
@@ -516,10 +517,11 @@ void _sc_memory_context_manager_handle_users_set_action_class(
       manager->on_remove_users_from_sets_events, GINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(users_set_addr)));
   if (event == null_ptr)
   {
-    event = sc_event_with_user_new(
+    event = sc_event_subscription_with_user_new(
         s_memory_default_ctx,
         users_set_addr,
-        SC_EVENT_REMOVE_OUTPUT_ARC,
+        sc_event_before_erase_outgoing_arc_addr,
+        sc_type_arc_access,
         manager,
         _sc_memory_context_manager_on_remove_user_from_users_set,
         null_ptr);
@@ -563,9 +565,9 @@ void _sc_memory_context_manager_add_user_action_class(
  * and action class.
  * @param event Pointer to the sc-event triggering the addition of the action class.
  * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector to sc-pair with user (or set of users)
+ * @param connector_addr sc-address representing generated sc-connector to sc-pair with user (or set of users)
  * and action class which this use can complete.
- * @param connector_type sc-type of created sc-connector to sc-pair with user (or set of users) and action class.
+ * @param connector_type sc-type of generated sc-connector to sc-pair with user (or set of users) and action class.
  * @param arc_to_action_class_addr sc-address representing sc-pair with user (or set of users) and action class.
  * @param updater callback that update permissions for user (or set of users).
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
@@ -586,7 +588,7 @@ void _sc_memory_context_manager_add_user_action_class(
  * permissions to this sc-arc.
  */
 sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -602,14 +604,14 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
 
   _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_memory_context_manager_add_user_action_class(manager, connector_addr, arc_to_action_class_addr, updater);
 
   return SC_RESULT_OK;
 }
 
 sc_result _sc_memory_context_manager_on_new_user_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -625,7 +627,7 @@ sc_result _sc_memory_context_manager_on_new_user_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_new_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -678,16 +680,16 @@ void _sc_memory_context_manager_remove_user_action_class(
  *
  * @param event Pointer to the sc-event triggering the removal of the action class.
  * @param initiator_addr sc-address representing the user that initiated this removal request.
- * @param connector_addr sc-address representing the created sc-connector to sc-pair with the user (or set of users) and
- * action class which this user can complete (unused).
- * @param connector_type sc-type of the created sc-connector to sc-pair with the user (or set of users) and action
+ * @param connector_addr sc-address representing the generated sc-connector to sc-pair with the user (or set of users)
+ * and action class which this user can complete (unused).
+ * @param connector_type sc-type of the generated sc-connector to sc-pair with the user (or set of users) and action
  * class.
  * @param arc_to_action_class_addr sc-address representing the sc-pair with the user (or set of users) and action class.
  * @param updater callback that update permissions for user (or set of users).
  * @return Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  */
 sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -701,7 +703,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_memory_context_manager_remove_user_action_class(manager, connector_addr, arc_to_action_class_addr, updater);
 
   sc_addr const action_arc_addr = sc_memory_arc_new(
@@ -712,7 +714,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_remove_user_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -728,7 +730,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class(
 }
 
 sc_result _sc_memory_context_manager_on_remove_users_set_action_class(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -755,7 +757,7 @@ void _sc_context_add_user_context_local_permissions(
 
 /*! Function that adds a new user (or set of users) action class within a structure, updating permissions accordingly.
  * @param manager Pointer to the sc-memory context manager.
- * @param connector_addr sc-address representing the created sc-connector connecting user (or set of users) and action
+ * @param connector_addr sc-address representing the generated sc-connector connecting user (or set of users) and action
  * class.
  * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
  * structure.
@@ -847,9 +849,9 @@ void _sc_memory_context_manager_remove_user_action_class_within_structure(
 /*! Callback function triggered when a new user (or set of users) action class is added within a structure.
  * @param event Pointer to the sc-event triggering the addition of the action class within a structure.
  * @param initiator_addr sc-address representing the user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector connecting user (or set of users) and action class
- * within a structure.
- * @param connector_type sc-type of the created sc-connector.
+ * @param connector_addr sc-address representing generated sc-connector connecting user (or set of users) and action
+ * class within a structure.
+ * @param connector_type sc-type of the generated sc-connector.
  * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
  * structure.
  * @param updater callback that update permissions for user (or set of users).
@@ -858,7 +860,7 @@ void _sc_memory_context_manager_remove_user_action_class_within_structure(
  * (or set of users) action class within a structure.
  */
 sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -867,7 +869,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_withi
 {
   sc_unused(&initiator_addr);
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
 
   // Only positive access sc-arcs can be used
   if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_pos_const))
@@ -888,7 +890,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_withi
 }
 
 sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -904,7 +906,7 @@ sc_result _sc_memory_context_manager_on_new_user_action_class_within_structure(
 }
 
 sc_result _sc_memory_context_manager_on_new_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -933,7 +935,7 @@ sc_result _sc_memory_context_manager_on_new_users_set_action_class_within_struct
  * (or set of users) action class within a structure.
  */
 sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -947,7 +949,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
   if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
     return SC_RESULT_NO;
 
-  sc_memory_context_manager * manager = sc_event_get_data(event);
+  sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_memory_context_manager_remove_user_action_class_within_structure(
       manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr, updater);
 
@@ -962,7 +964,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
 }
 
 sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -978,7 +980,7 @@ sc_result _sc_memory_context_manager_on_remove_user_action_class_within_structur
 }
 
 sc_result _sc_memory_context_manager_on_remove_users_set_action_class_within_structure(
-    sc_event const * event,
+    sc_event_subscription const * event,
     sc_addr initiator_addr,
     sc_addr connector_addr,
     sc_type connector_type,
@@ -993,20 +995,20 @@ sc_result _sc_memory_context_manager_on_remove_users_set_action_class_within_str
       _sc_memory_context_manager_handle_users_set_action_class);
 }
 
-/*! Function that iterates through all output arcs from a specified permitted relation with a given arc mask,
+/*! Function that iterates through all outgoing sc-arcs from a specified permitted relation with a given arc mask,
  * invoking a provided handler function for each matching arc.
  * @param manager Pointer to the sc-memory context manager.
- * @param permitted_relation sc-address representing the permitted relation for which output arcs are iterated.
- * @param arc_mask sc-type mask used to filter the output arcs.
+ * @param permitted_relation sc-address representing the permitted relation for which outgoing sc-arcs are iterated.
+ * @param arc_mask sc-type mask used to filter the outgoing sc-arcs.
  * @param updater callback that update permissions for user (or set of users).
  * @param handler Function pointer to the handler function that is invoked for each matching arc.
  *                The handler function must have the signature: void handler(sc_memory_context_manager * manager,
  *                sc_addr arc_addr, sc_addr target_arc_addr).
- * @note This function iterates through all output arcs from the specified permitted relation that match the provided
- * arc mask. For each matching arc, the handler function is called, providing the sc-memory context manager, arc
- * address, and target arc address.
+ * @note This function iterates through all outgoing sc-arcs from the specified permitted relation that match the
+ * provided arc mask. For each matching arc, the handler function is called, providing the sc-memory context manager,
+ * arc address, and target arc address.
  */
-void _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+void _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
     sc_memory_context_manager * manager,
     sc_addr const permitted_relation,
     sc_type const arc_mask,
@@ -1033,42 +1035,42 @@ void _sc_memory_context_handle_all_user_permissions(sc_memory_context_manager * 
   if (manager->user_mode == SC_FALSE)
     return;
 
-  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+  _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_addr,
       sc_type_arc_pos_const,
       _sc_memory_context_manager_handle_user_action_class,
       _sc_memory_context_manager_add_user_action_class);
 
-  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+  _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_users_set_action_class_addr,
       sc_type_arc_pos_const,
       _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_add_user_action_class);
 
-  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+  _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_within_sc_structure_addr,
       sc_type_arc_pos_const,
       _sc_memory_context_manager_handle_user_action_class,
       _sc_memory_context_manager_add_user_action_class_within_structure);
 
-  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+  _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
       sc_type_arc_pos_const,
       _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_add_user_action_class_within_structure);
 
-  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+  _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_within_sc_structure_addr,
       sc_type_arc_neg_const,
       _sc_memory_context_manager_handle_user_action_class,
       _sc_memory_context_manager_remove_user_action_class_within_structure);
 
-  _sc_memory_context_manager_iterate_by_all_output_arcs_from_permitted_relation(
+  _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
       sc_type_arc_neg_const,
@@ -1076,9 +1078,10 @@ void _sc_memory_context_handle_all_user_permissions(sc_memory_context_manager * 
       _sc_memory_context_manager_remove_user_action_class_within_structure);
 }
 
-#define sc_context_manager_register_user_event(...) manager->user_mode ? sc_event_with_user_new(__VA_ARGS__) : null_ptr
+#define sc_context_manager_register_user_event(...) \
+  manager->user_mode ? sc_event_subscription_with_user_new(__VA_ARGS__) : null_ptr
 
-#define sc_context_manager_unregister_user_event(...) sc_event_destroy(__VA_ARGS__)
+#define sc_context_manager_unregister_user_event(...) sc_event_subscription_destroy(__VA_ARGS__)
 
 void _sc_memory_context_manager_register_user_events(sc_memory_context_manager * manager)
 {
@@ -1092,7 +1095,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_new_identified_user_subscription = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_identified_user_addr,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_after_generate_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_identified_user,
       null_ptr);
@@ -1108,14 +1112,16 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_authentication_request_user_subscription = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->concept_authentication_request_user_addr,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_after_generate_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_authentication_request_user,
       null_ptr);
   manager->on_remove_authenticated_user_subscription = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->concept_authenticated_user_addr,
-      SC_EVENT_REMOVE_OUTPUT_ARC,
+      sc_event_before_erase_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_unauthentication_request_user,
       null_ptr);
@@ -1142,7 +1148,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_new_user_action_class = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_addr,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_after_generate_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_new_user_action_class,
       null_ptr);
@@ -1150,7 +1157,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_new_users_set_action_class = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_addr,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_after_generate_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_new_users_set_action_class,
       null_ptr);
@@ -1158,7 +1166,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_remove_user_action_class = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_addr,
-      SC_EVENT_REMOVE_OUTPUT_ARC,
+      sc_event_before_erase_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_remove_user_action_class,
       null_ptr);
@@ -1166,7 +1175,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_remove_users_set_action_class = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_addr,
-      SC_EVENT_REMOVE_OUTPUT_ARC,
+      sc_event_before_erase_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_remove_users_set_action_class,
       null_ptr);
@@ -1182,7 +1192,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_new_user_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_within_sc_structure_addr,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_after_generate_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_new_user_action_class_within_structure,
       null_ptr);
@@ -1190,7 +1201,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_new_users_set_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
-      SC_EVENT_ADD_OUTPUT_ARC,
+      sc_event_after_generate_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_new_users_set_action_class_within_structure,
       null_ptr);
@@ -1198,7 +1210,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_remove_user_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_user_action_class_within_sc_structure_addr,
-      SC_EVENT_REMOVE_OUTPUT_ARC,
+      sc_event_before_erase_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_remove_user_action_class_within_structure,
       null_ptr);
@@ -1206,7 +1219,8 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
   manager->on_remove_users_set_action_class_within_sc_structure = sc_context_manager_register_user_event(
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
-      SC_EVENT_REMOVE_OUTPUT_ARC,
+      sc_event_before_erase_outgoing_arc_addr,
+      sc_type_arc_access,
       manager,
       _sc_memory_context_manager_on_remove_users_set_action_class_within_structure,
       null_ptr);

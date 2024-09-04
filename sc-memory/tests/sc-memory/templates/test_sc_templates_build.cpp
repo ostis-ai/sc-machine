@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "template_test_utils.hpp"
 
@@ -31,7 +31,7 @@ TEST_F(ScTemplateBuildTest, DoubleAttributes)
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
     ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
-    ScStruct st(*m_ctx, structAddr);
+    ScStructure st = m_ctx->ConvertToStructure(structAddr);
 
     for (auto const & a : addrs)
       st << a;
@@ -66,7 +66,7 @@ TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
     ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
-    ScStruct st(*m_ctx, structAddr);
+    ScStructure st = m_ctx->ConvertToStructure(structAddr);
 
     for (auto const & a : addrs)
       st << a;

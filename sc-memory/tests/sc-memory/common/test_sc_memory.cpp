@@ -132,6 +132,9 @@ TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
   EXPECT_EQ(str, "content with spaces");
 }
 
+static inline ScTemplateKeynode const & testTemplate =
+    ScTemplateKeynode("test_template").Triple(ScKeynodes::action_state, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {
   ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
@@ -140,45 +143,35 @@ TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStru
   EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 
-  ScAddrVector const & keynodesAddrs = {
-      ScKeynodes::kCommandStateAddr,
-      ScKeynodes::kCommandInitiatedAddr,
-      ScKeynodes::kCommandProgressedAddr,
-      ScKeynodes::kCommandFinishedAddr,
-      ScKeynodes::kNrelResult,
-      ScKeynodes::kNrelCommonTemplate,
-      ScKeynodes::kNrelIdtf,
-      ScKeynodes::kNrelFormat,
-      ScKeynodes::kScResult,
-      ScKeynodes::kBinaryType};
+  ScAddrVector const & keynodesAddrs = {ScKeynodes::sc_event, ScKeynodes::binary_type, testTemplate};
 
-  ScAddrVector const & resultCodes = {
-      ScKeynodes::kScResultOk,
-      ScKeynodes::kScResultNo,
-      ScKeynodes::kScResultUnknown,
-      ScKeynodes::kScResultError,
-      ScKeynodes::kScResultErrorInvalidParams,
-      ScKeynodes::kScResultErrorInvalidType,
-      ScKeynodes::kScResultInvalidState,
-      ScKeynodes::kScResultErrorNotFound,
-      ScKeynodes::kScResultErrorStreamIO,
+  ScAddrVector const & events = {
+      ScKeynodes::sc_event_after_generate_incoming_arc,
+      ScKeynodes::sc_event_after_generate_outgoing_arc,
+      ScKeynodes::sc_event_after_generate_edge,
+      ScKeynodes::sc_event_before_erase_incoming_arc,
+      ScKeynodes::sc_event_before_erase_outgoing_arc,
+      ScKeynodes::sc_event_before_erase_edge,
+      ScKeynodes::sc_event_before_erase_element,
+      ScKeynodes::sc_event_before_change_link_content,
+      ScKeynodes::sc_event_unknown,
   };
 
   ScAddrVector const & binaryTypes = {
-      ScKeynodes::kBinaryDouble,
-      ScKeynodes::kBinaryFloat,
-      ScKeynodes::kBinaryString,
-      ScKeynodes::kBinaryInt8,
-      ScKeynodes::kBinaryInt16,
-      ScKeynodes::kBinaryInt32,
-      ScKeynodes::kBinaryInt64,
-      ScKeynodes::kBinaryUInt8,
-      ScKeynodes::kBinaryUInt16,
-      ScKeynodes::kBinaryUInt32,
-      ScKeynodes::kBinaryUInt64,
-      ScKeynodes::kBinaryCustom};
+      ScKeynodes::binary_double,
+      ScKeynodes::binary_float,
+      ScKeynodes::binary_string,
+      ScKeynodes::binary_int8,
+      ScKeynodes::binary_int16,
+      ScKeynodes::binary_int32,
+      ScKeynodes::binary_int64,
+      ScKeynodes::binary_uint8,
+      ScKeynodes::binary_uint16,
+      ScKeynodes::binary_uint32,
+      ScKeynodes::binary_uint64,
+      ScKeynodes::binary_custom};
 
-  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, resultCodes, binaryTypes};
+  std::vector<ScAddrVector> const & keynodesVectors = {keynodesAddrs, events, binaryTypes};
 
   ScAddrVector allKeynodes;
   for (ScAddrVector const & keynodes : keynodesVectors)

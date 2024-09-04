@@ -80,7 +80,7 @@ sc_bool sc_storage_is_initialized();
  * in the given sc-memory context.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
- * @param addr The sc-addr to be checked.
+ * @param addr A sc-address to be checked.
  *
  * @return Returns SC_TRUE if the specified sc-addr represents a valid sc-element,
  *         and SC_FALSE otherwise.
@@ -90,13 +90,13 @@ sc_bool sc_storage_is_initialized();
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 
 /*!
- * @brief Frees the memory occupied by a sc-element and all connected elements.
+ * @brief Erases the memory occupied by a sc-element and all connected sc-elements.
  *
- * This function frees the memory occupied by a sc-element identified by the provided
- * sc-addr, along with all the connected elements (input/output sc-connectors) related to it.
+ * This function erases the memory occupied by a sc-element identified by the provided
+ * sc-address, along with all the connected elements (incoming/outgoing sc-connectors) related to it.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
- * @param addr The sc-addr of the sc-element to be freed.
+ * @param addr A sc-address of the sc-element to be freed.
  *
  * @return Returns SC_RESULT_OK if the operation executed successfully.
  *
@@ -108,10 +108,10 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
  * @retval SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR The specified sc-addr does not represent a sc-connector.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
-sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
+sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr);
 
 /*!
- * @brief Creates a new sc-node with the specified type.
+ * @brief Generates a new sc-node with the specified type.
  *
  * This function creates a new sc-node with the specified type and returns
  * its sc-addr. The result of the operation is not explicitly returned.
@@ -130,7 +130,7 @@ sc_result sc_storage_element_free(sc_memory_context const * ctx, sc_addr addr);
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-node with the specified type.
+ * @brief Generates a new sc-node with the specified type.
  *
  * This function creates a new sc-node with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -154,7 +154,7 @@ sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
 /*!
- * @brief Creates a new sc-link with the specified type.
+ * @brief Generates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is not explicitly returned.
@@ -173,7 +173,7 @@ sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-link with the specified type.
+ * @brief Generates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -197,7 +197,7 @@ sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
 /*!
- * @brief Creates a new sc-connector between two sc-elements with the specified type.
+ * @brief Generates a new sc-connector between two sc-elements with the specified type.
  *
  * This function creates a new sc-connector with the specified type between the
  * specified begin and end sc-elements, and returns its sc-addr. The result
@@ -219,7 +219,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 /*!
- * @brief Creates a new sc-connector with the specified type.
+ * @brief Generates a new sc-connector with the specified type.
  *
  * This function creates a new sc-connector with the specified type, connecting the given
  * begin and end sc-elements. The type must be an arc type (e.g., sc_type_arc_common,
@@ -276,7 +276,7 @@ sc_addr sc_storage_arc_new_ext(
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
-sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
+sc_uint32 sc_storage_get_element_outgoing_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
 /*!
  * @brief Retrieves the count of input sc-connectors for the specified sc-element.
@@ -301,7 +301,7 @@ sc_uint32 sc_storage_get_element_output_arcs_count(sc_memory_context const * ctx
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_ADDR_IS_NOT_VALID The specified sc-addr is not valid.
  */
-sc_uint32 sc_storage_get_element_input_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
+sc_uint32 sc_storage_get_element_incoming_arcs_count(sc_memory_context const * ctx, sc_addr addr, sc_result * result);
 
 /*!
  * @brief Retrieves the type of the specified sc-element.

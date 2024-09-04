@@ -7,11 +7,10 @@
 #pragma once
 
 #include <sc-memory/sc_memory.hpp>
+#include <sc-memory/sc_iterator.hpp>
 #include <sc-memory/sc_addr.hpp>
 #include <sc-memory/sc_type.hpp>
-#include <sc-memory/sc_iterator.hpp>
-
-#include "../keynodes/coreKeynodes.hpp"
+#include <sc-memory/sc_keynodes.hpp>
 
 namespace utils
 {
@@ -26,7 +25,7 @@ public:
       ScMemoryContext * ms_context,
       ScAddr const & set,
       ScAddr const & previous,
-      ScAddr const & sequenceRelation = scAgentsCommon::CoreKeynodes::nrel_basic_sequence);
+      ScAddr const & sequenceRelation = ScKeynodes::nrel_basic_sequence);
 
   static ScAddrVector getAllWithType(ScMemoryContext * ms_context, ScAddr const & set, ScType scType);
 

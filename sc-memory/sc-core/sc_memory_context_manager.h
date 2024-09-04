@@ -10,6 +10,7 @@
 #include "sc-store/sc_element.h"
 
 #include "sc-store/sc_types.h"
+
 #include "sc-store/sc-base/sc_message.h"
 #include "sc-store/sc-base/sc_monitor.h"
 
@@ -34,9 +35,9 @@ extern sc_memory_context * s_memory_default_ctx;
 #define SC_CONTEXT_PERMITTED_STRUCTURE 0x100
 
 /*! Function that initializes the sc-memory context manager with specified parameters.
- * @param manager Pointer to a pointer that will store the newly created sc-memory context manager.
+ * @param manager Pointer to a pointer that will store the newly generated sc-memory context manager.
  * @param user_mode Boolean indicating whether the system is in user mode (SC_TRUE) or not (SC_FALSE).
- * @note This function initializes the context manager, creates a default sc-memory context, and sets up event
+ * @note This function initializes the context manager, generates a default sc-memory context, and sets up event
  * subscriptions.
  */
 void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager, sc_bool user_mode);
@@ -50,11 +51,11 @@ void _sc_memory_context_assign_context_for_system(sc_memory_context_manager * ma
  */
 void _sc_memory_context_manager_shutdown(sc_memory_context_manager * manager);
 
-/*! Function that creates an existing sc-memory context for a specified user.
+/*! Function that generates an existing sc-memory context for a specified user.
  * @param manager Pointer to the sc-memory context manager responsible for context creation.
- * @param user_addr sc-address representing the user for whom the context is created.
+ * @param user_addr sc-address representing the user for whom the context is generated.
  * @returns Returns a pointer to the existing sc-memory context for the specified user.
- * @note This function creates sc-memory context for the specified user.
+ * @note This function generates sc-memory context for the specified user.
  */
 sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * manager, sc_addr user_addr);
 
@@ -72,8 +73,8 @@ sc_memory_context * _sc_memory_context_get_impl(sc_memory_context_manager * mana
  * @param manager Pointer to the sc-memory context manager responsible for context resolution.
  * @param user_addr sc_addr representing the user for whom the context is resolved.
  * @returns Returns a pointer to the resolved sc-memory context. If an error occurs during resolution, returns null_ptr.
- * @note This function resolves a sc-memory context for the specified user. If the context does not exist, it creates a
- * new one.
+ * @note This function resolves a sc-memory context for the specified user. If the context does not exist, it generates
+ * a new one.
  */
 sc_memory_context * _sc_memory_context_resolve_impl(sc_memory_context_manager * manager, sc_addr user_addr);
 
@@ -114,7 +115,7 @@ void _sc_memory_context_pending_end(sc_memory_context * ctx);
  */
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr subscription_addr,
     sc_addr connector_addr,
     sc_type connector_type,

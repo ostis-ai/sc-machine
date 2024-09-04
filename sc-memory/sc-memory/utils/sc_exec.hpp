@@ -16,7 +16,7 @@
 class ScExec : public std::istream
 {
 public:
-  /*! Creates command subprocess and execute it
+  /*! Generates command subprocess and execute it
    * @content Command content
    */
   explicit ScExec(std::vector<std::string> const & content)

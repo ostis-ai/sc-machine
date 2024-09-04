@@ -8,6 +8,8 @@
 
 #include <thread>
 
+#include <sc-memory/sc_event_subscription.hpp>
+
 #include "sc-core/sc_keynodes.h"
 
 #include "builder_test.hpp"
@@ -24,7 +26,7 @@
   })
 
 void TestAuthenticationRequestUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -41,22 +43,22 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
-        ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
-        EXPECT_THROW(
-            userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
-            utils::ExceptionInvalidState);
-        ScAddr const & userStructureAddr = userContext.HelperFindBySystemIdtf("user_structure");
-        EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
-        EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr));
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
+            ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
+            EXPECT_THROW(
+                userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
+                utils::ExceptionInvalidState);
+            ScAddr const & userStructureAddr = userContext.HelperFindBySystemIdtf("user_structure");
+            EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
+            EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr));
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
 
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -73,24 +75,24 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
-        ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
-        EXPECT_THROW(
-            userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
-            utils::ExceptionInvalidState);
-        ScAddr const & userStructureAddr = userContext.HelperFindBySystemIdtf("user_structure");
-        EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
-        EXPECT_THROW(
-            userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr),
-            utils::ExceptionInvalidState);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
+            ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
+            EXPECT_THROW(
+                userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
+                utils::ExceptionInvalidState);
+            ScAddr const & userStructureAddr = userContext.HelperFindBySystemIdtf("user_structure");
+            EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
+            EXPECT_THROW(
+                userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr),
+                utils::ExceptionInvalidState);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
 
   TestAuthenticationRequestUser(m_ctx, userAddr);
 

@@ -12,19 +12,14 @@
 #include "../sc-server-impl/sc_server.hpp"
 #include "sc_memory_config.hpp"
 
-#include "sc_server_module.generated.hpp"
-
-class ScServerModule : public ScModule
+class _SC_EXTERN ScServerModule final : public ScModule
 {
-  SC_CLASS(LoadOrder(1))
-  SC_GENERATED_BODY()
-
-  virtual sc_result InitializeImpl() override;
-
-  virtual sc_result ShutdownImpl() override;
-
-  std::shared_ptr<ScServer> m_server;
-
 public:
+  static ScModule * m_instance;
+
+  static std::shared_ptr<ScServer> m_server;
   static ScParams ms_serverParams;
+
+  void Initialize(ScMemoryContext * ctx) override;
+  void Shutdown(ScMemoryContext * ctx) override;
 };

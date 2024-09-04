@@ -1,7 +1,7 @@
 # sc-machine
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.10.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
 Sc-machine is a sc-memory with opportunity to add modules consistent with the general sc-machine interface. All such 

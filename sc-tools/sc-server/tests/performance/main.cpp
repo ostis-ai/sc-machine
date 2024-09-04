@@ -10,7 +10,7 @@
 #include "units/sc_server_create_edge.hpp"
 #include "units/sc_server_create_node.hpp"
 #include "units/sc_server_create_link.hpp"
-#include "units/sc_server_remove_elements.hpp"
+#include "units/sc_server_erase_elements.hpp"
 #include "units/sc_server_search_template.hpp"
 
 #include <atomic>
@@ -36,9 +36,9 @@ void BM_ServerThreaded(benchmark::State & state)
   clientsNum.fetch_add(1);
 
   uint32_t iterations = 0;
-  for (auto t : state)
+  for (auto _ : state)
   {
-    SC_UNUSED(t);
+
     test.Run(client);
     ++iterations;
   }
@@ -152,9 +152,8 @@ void BM_ServerRanged(benchmark::State & state)
   client->Connect(test.m_server->GetUri());
   client->Run();
 
-  for (auto t : state)
+  for (auto _ : state)
   {
-    SC_UNUSED(t);
     test.Run(client);
     ++iterations;
   }
@@ -182,7 +181,7 @@ BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateEdge)->Unit(benchmark::TimeUnit::k
 
 BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateLink)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestRemoveElements)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestEraseElements)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
 BENCHMARK_TEMPLATE(BM_ServerRanged, TestSearchTemplate)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "template_test_utils.hpp"
 
@@ -38,7 +38,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
   ScTemplateLoadContext ctx;
   ctx.HelperLoadTemplate(templ, templAddr);
 
-  ScStruct templateStruct{*m_ctx, templAddr};
+  ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   {
     EXPECT_TRUE(templateStruct.HasElement(testClassAddr));
     EXPECT_TRUE(templateStruct.HasElement(testRelationAddr));
@@ -136,7 +136,7 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
   ctx.HelperLoadTemplate(templ, templAddr, params);
-  ScStruct templateStruct{*m_ctx, templAddr};
+  ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   EXPECT_TRUE(templateStruct.HasElement(testObject));
 
   ScTemplate builtTemplate;

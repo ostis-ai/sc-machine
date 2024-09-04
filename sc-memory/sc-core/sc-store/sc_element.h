@@ -20,7 +20,7 @@ struct _sc_arc_info
   sc_addr next_end_out_arc;
   sc_addr next_end_in_arc;
   sc_addr prev_end_in_arc;
-#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   sc_addr prev_in_arc_from_structure;
   sc_addr next_in_arc_from_structure;
 #endif
@@ -38,12 +38,12 @@ struct _sc_arc_info
  * It stores as a one char for each of types.
  * Each node have a pointer to content assigned with it. If pointer is null,
  * then node haven't any content data.
- * Last part of node information is a pointers to the lists of input and output arcs.
+ * Last part of node information is a pointers to the lists of input and outgoing sc-arcs.
  * Each list of arcs contains pointer to array of arcs pointers.
  * Size of each array is fixed and equivalent to ARC_SEG_SIZE value.
  *
  * All arcs have next_arc and prev_arc addr's. Each element store addr of begin and end arcs.
- * Arc values: next_begin_out_arc and next_end_in_arc store next arcs in output and input arcs list.
+ * Arc values: next_begin_out_arc and next_end_in_arc store next arcs in output and incoming sc-arcs list.
  */
 
 struct _sc_element_flags
@@ -58,14 +58,14 @@ struct _sc_element
 
   sc_addr first_out_arc;
   sc_addr first_in_arc;
-#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   sc_addr first_in_arc_from_structure;
 #endif
 
   sc_arc_info arc;
 
-  sc_uint32 input_arcs_count;
-  sc_uint32 output_arcs_count;
+  sc_uint32 incoming_arcs_count;
+  sc_uint32 outgoing_arcs_count;
 };
 
 #endif

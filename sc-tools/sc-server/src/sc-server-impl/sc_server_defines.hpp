@@ -82,7 +82,7 @@ public:
   {
   }
 
-  ScServerDefaultLogger<concurrency, names>(level channels, channel_type_hint::value hint = channel_type_hint::access)
+  ScServerDefaultLogger<concurrency, names>(level, channel_type_hint::value hint = channel_type_hint::access)
     : basic<concurrency, names>(0xffffffff, hint)
     , m_out(&std::cout)
   {

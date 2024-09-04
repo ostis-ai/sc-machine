@@ -36,7 +36,7 @@ public:
     result = ScTemplateResultItem{&m_context, m_replacements};
     result.m_replacementConstruction.resize(m_triples.size() * 3);
 
-    ScAddrVector createdElements;
+    ScAddrVector generatedElements;
     size_t resultIdx = 0;
 
     for (auto const & triple : m_triples)
@@ -107,9 +107,9 @@ public:
 
   void CleanupCreatedElements()
   {
-    for (auto & m_createdElement : m_createdElements)
-      m_context.EraseElement(m_createdElement);
-    m_createdElements.clear();
+    for (auto & m_generatedElement : m_generatedElements)
+      m_context.EraseElement(m_generatedElement);
+    m_generatedElements.clear();
   }
 
 private:
@@ -121,7 +121,7 @@ private:
     else
       addr = m_context.CreateNode(type);
 
-    m_createdElements.push_back(addr);
+    m_generatedElements.push_back(addr);
 
     return addr;
   }
@@ -129,7 +129,7 @@ private:
   ScAddr CreateConnector(ScType const & type, ScAddr const & sourceAddr, ScAddr const & targetAddr)
   {
     ScAddr const & addr = m_context.CreateEdge(type, sourceAddr, targetAddr);
-    m_createdElements.push_back(addr);
+    m_generatedElements.push_back(addr);
 
     return addr;
   }
@@ -326,7 +326,7 @@ private:
   ScTemplate::ScTemplateTriplesVector const & m_triples;
   ScTemplateParams const & m_params;
   ScMemoryContext & m_context;
-  ScAddrList m_createdElements;
+  ScAddrList m_generatedElements;
 };
 
 ScTemplate::Result ScTemplate::Generate(

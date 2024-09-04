@@ -31,8 +31,7 @@ TEST(ScListTest, sc_list)
   EXPECT_TRUE(sc_list_remove_if(list, (void *)(&v), scalar_compare));
 
   sc_struct_node * last;
-  i = list->size;
-  for (; i >= 0 && i <= list->size; --i)
+  for (i = list->size; i <= list->size; --i)
   {
     last = sc_list_pop_back(list);
     sc_uint8 value = *(sc_uint8 *)last->data;

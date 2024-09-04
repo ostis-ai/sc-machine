@@ -8,7 +8,7 @@
 #define _sc_memory_context_permissions_h_
 
 #include "sc_memory.h"
-#include "sc-store/sc_event.h"
+#include "sc-store/sc_event_subscription.h"
 
 #include "sc-store/sc-base/sc_monitor_table.h"
 
@@ -65,14 +65,14 @@
     permissions; \
   })
 
-sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager);
+sc_addr _sc_memory_context_manager_generate_guest_user(sc_memory_context_manager * manager);
 
 /*! Function that handles all user permissions by iterating through relevant relations and invoking corresponding
  * handlers.
  * @param manager Pointer to the sc-memory context manager.
  * @note This function is responsible for handling all user permissions within the given memory context manager.
  * It achieves this by iterating through specific relations related to user action classes and user action classes
- * within SC structures. For each relevant relation, the corresponding handler function is invoked to manage the
+ * within sc-structures. For each relevant relation, the corresponding handler function is invoked to manage the
  * permissions permissions accordingly. The handlers used are:
  * - _sc_memory_context_manager_add_user_action_class: Adds a new user action class and updates permissions.
  * - _sc_memory_context_manager_add_user_action_class_within_structure: Adds a new user action class within a structure

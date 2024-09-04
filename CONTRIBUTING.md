@@ -58,7 +58,6 @@ Possible tags:
   * `[tools]` - changes in `sc-tools`;
   * `[server]` - changes in `sc-server` module;
   * `[builder]` - changes in `sc-builder` module;
-  * `[codegen]` - changes in `code generator`;
   * `[config]` - commits with changes in configuration;
   * `[review]` - commits with review fixes;
   * `[refactor]` - commits with some code refactoring;

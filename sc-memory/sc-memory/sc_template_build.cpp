@@ -98,7 +98,7 @@ protected:
     for (auto const & item : replacements)
     {
       ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);
-      if (addr.IsValid())
+      if (m_context.IsElement(addr))
       {
         ObjectInfo obj = CollectObjectInfo(item.second, std::to_string(addr.Hash()));
         m_elements.insert({addr.Hash(), obj});

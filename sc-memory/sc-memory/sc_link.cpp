@@ -6,21 +6,21 @@
 
 #include "sc_link.hpp"
 
-ScLink::ScLink(ScMemoryContext & ctx, ScAddr const & addr)
-  : m_ctx(ctx)
-  , m_addr(addr)
+ScLink::ScLink(ScMemoryContext & context, ScAddr const & linkAddr)
+  : ScAddr(linkAddr)
+  , m_context(&context)
 {
 }
 
 bool ScLink::IsValid() const
 {
-  return m_ctx.GetElementType(m_addr).IsLink();
+  return m_context->GetElementType(*this).IsLink();
 }
 
 ScLink::Type ScLink::DetermineType() const
 {
   ScAddr typeEdge, typeAddr;
-  _DetermineTypeEdgeImpl(typeEdge, typeAddr);
+  DetermineTypeEdgeImpl(typeEdge, typeAddr);
 
   if (typeAddr == Type2Addr<std::string>())
     return Type::String;
@@ -111,18 +111,17 @@ std::string ScLink::GetAsString() const
   }
 }
 
-bool ScLink::_DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
+bool ScLink::DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
 {
   // set type
   ScTemplate templ;
-  templ.Triple(ScKeynodes::kBinaryType, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
+  templ.Triple(ScKeynodes::binary_type, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
 
-  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", m_addr);
+  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", *this);
 
   ScTemplateSearchResult res;
-  if (m_ctx.HelperSearchTemplate(templ, res))
+  if (m_context->HelperSearchTemplate(templ, res))
   {
-    SC_ASSERT(res.Size() == 1, ("Invalid state of knowledge base"));
     outType = res[0]["_type"];
     outEdge = res[0]["_edge"];
     return true;

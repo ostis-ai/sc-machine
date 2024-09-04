@@ -241,7 +241,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     goto error;
   it->results[0].is_accessed = SC_TRUE;
 
-  // try to find first output arc
+  // try to find first outgoing sc-arc
   sc_element * el = null_ptr;
   if (sc_storage_get_element_by_addr(it->results[1].addr, &el) != SC_RESULT_OK)
   {
@@ -276,7 +276,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       sc_monitor_release_read(arc_monitor);
   }
 
-  // iterate through output arcs
+  // iterate through outgoing sc-arcs
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_addr);
@@ -388,7 +388,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     goto error;
   it->results[2].is_accessed = SC_TRUE;
 
-  // try to find first input arc
+  // try to find first incoming sc-arc
   sc_element * el = null_ptr;
   if (sc_storage_get_element_by_addr(it->results[1].addr, &el) != SC_RESULT_OK)
   {
@@ -424,7 +424,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
       sc_monitor_release_read(arc_monitor);
   }
 
-  // trying to find input arc, that created before iterator, and wasn't deleted
+  // trying to find incoming sc-arc, that created before iterator, and wasn't deleted
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_addr) && SC_ADDR_IS_NOT_EQUAL(arc_end, arc_addr);
@@ -500,7 +500,7 @@ success:
 sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 {
   sc_addr const arc_end = it->results[2].addr = it->params[2].addr;
-#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   sc_bool const search_structure = sc_type_is_structure_and_arc(it->params[0].type, it->params[1].type);
 #endif
 
@@ -518,7 +518,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     goto error;
   it->results[2].is_accessed = SC_TRUE;
 
-  // try to find first input arc
+  // try to find first incoming sc-arc
   sc_element * el = null_ptr;
   if (sc_storage_get_element_by_addr(it->results[1].addr, &el) != SC_RESULT_OK)
   {
@@ -526,7 +526,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     if (result != SC_RESULT_OK)
       goto error;
 
-#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
     arc_addr = search_structure ? el->first_in_arc_from_structure : el->first_in_arc;
 #else
     arc_addr = el->first_in_arc;
@@ -551,7 +551,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
 
     arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
                    ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
-#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
                    : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 #else
                    : el->arc.next_end_in_arc;
@@ -561,7 +561,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       sc_monitor_release_read(arc_monitor);
   }
 
-  // trying to find input arc, that created before iterator, and wasn't deleted
+  // trying to find incoming sc-arc, that created before iterator, and wasn't deleted
   while (SC_ADDR_IS_NOT_EMPTY(arc_addr))
   {
     sc_bool const is_not_same = SC_ADDR_IS_NOT_EQUAL(arc_end, arc_addr);
@@ -582,7 +582,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     sc_addr next_in_arc =
         sc_type_has_subtype(el->flags.type, sc_type_edge_common)
             ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
-#ifdef SC_OPTIMIZE_SEARCHING_INPUT_CONNECTORS_FROM_STRUCTURES
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
             : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
 #else
             : el->arc.next_end_in_arc;

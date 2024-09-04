@@ -6,13 +6,14 @@
 
 #include "sc_memory_json_events_handler.hpp"
 
-std::map<std::string, ScEvent::Type> ScMemoryJsonEventsHandler::events = {
-    {"add_outgoing_edge", ScEvent::Type::AddOutputEdge},
-    {"add_ingoing_edge", ScEvent::Type::AddInputEdge},
-    {"remove_outgoing_edge", ScEvent::Type::RemoveOutputEdge},
-    {"remove_ingoing_edge", ScEvent::Type::RemoveInputEdge},
-    {"content_change", ScEvent::Type::ContentChanged},
-    {"delete_element", ScEvent::Type::EraseElement},
+std::unordered_map<std::string, std::string> const
+    ScMemoryJsonEventsHandler::m_deprecatedEventsIdtfsToSystemEventsIdtfs = {
+        {"add_ingoing_edge", "sc_event_after_generate_incoming_arc"},
+        {"add_outgoing_edge", "sc_event_after_generate_outgoing_arc"},
+        {"remove_ingoing_edge", "sc_event_before_erase_incoming_arc"},
+        {"remove_outgoing_edge", "sc_event_before_erase_outgoing_arc"},
+        {"delete_element", "sc_event_before_erase_element"},
+        {"content_change", "sc_event_before_change_link_content"},
 };
 
 ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx)
@@ -26,7 +27,7 @@ ScMemoryJsonEventsHandler::~ScMemoryJsonEventsHandler() = default;
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
     ScServerSessionId const & sessionId,
-    std::string const & requestType,
+    std::string const &,
     ScMemoryJsonPayload const & requestPayload,
     ScMemoryJsonPayload & errorsPayload,
     sc_bool & status,
@@ -43,7 +44,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
   else if (requestPayload.find("delete") != requestPayload.cend())
     responsePayload = HandleDelete(sessionId, requestPayload["delete"], errorsPayload);
   else
-    errorsPayload = "Unknown event request";
+    errorsPayload = "Unknown sc-event request.";
 
   status = errorsPayload.empty();
 
@@ -55,56 +56,61 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     ScMemoryJsonPayload const & message,
     ScMemoryJsonPayload & errorsPayload)
 {
-  auto const & onEmitEvent = [](size_t id,
-                                ScServer * server,
-                                ScServerSessionId const & handle,
-                                ScAddr const & addr,
-                                ScAddr const & edgeAddr,
-                                ScAddr const & otherAddr) -> sc_bool
+  auto const & onEmitEvent =
+      [](ScServer * server, size_t id, ScServerSessionId const & handle, ScElementaryEvent const & event)
   {
-    ScMemoryJsonPayload const & responsePayload = {addr.Hash(), edgeAddr.Hash(), otherAddr.Hash()};
+    auto const & [sourceAddr, connectorAddr, targetAddr] = event.GetTriple();
+
+    ScMemoryJsonPayload const & responsePayload{sourceAddr.Hash(), connectorAddr.Hash(), targetAddr.Hash()};
     ScMemoryJsonPayload const & errorsPayload = ScMemoryJsonPayload::object({});
-    sc_bool const event = SC_TRUE;
+    sc_bool const isEvent = SC_TRUE;
     sc_bool const status = SC_TRUE;
 
     ScMemoryJsonPayload const & responseTextJson =
-        FormResponseMessage(id, event, status, errorsPayload, responsePayload);
+        ScMemoryJsonHandler::FormResponseMessage(id, isEvent, status, errorsPayload, responsePayload);
     std::string const responseText = responseTextJson.dump();
 
     if (server != nullptr)
       server->OnEvent(handle, responseText);
-
-    return SC_TRUE;
   };
 
   ScMemoryJsonPayload responsePayload;
   for (auto & atom : message)
   {
-    std::string const & type = atom["type"];
-    ScAddr const & addr = ScAddr(atom["addr"].get<size_t>());
+    std::string eventClass = atom["type"];
+    ScAddr const & subscriptionElementAddr = ScAddr(atom["addr"].get<size_t>());
 
-    auto const & it = events.find(type);
-    if (it != events.end())
+    auto const & it = m_deprecatedEventsIdtfsToSystemEventsIdtfs.find(eventClass);
+    if (it == m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
     {
-      auto * event = new ScEvent(
-          *m_context,
-          addr,
-          it->second,
-          (ScEvent::DelegateFunc)bind(onEmitEvent, m_manager->Next(), m_server, sessionId, ::_1, ::_2, ::_3));
-      responsePayload.push_back(m_manager->Add(event));
+      errorsPayload = "Unknown sc-event type with system identifier `" + eventClass + "`.";
+      return responsePayload;
     }
+    eventClass = it->second;
+
+    ScAddr const & eventClassAddr = m_context->HelperFindBySystemIdtf(eventClass);
+    if (!eventClassAddr.IsValid())
+    {
+      errorsPayload = "Invalid sc-event type with system identifier `" + eventClass + "`.";
+      return responsePayload;
+    }
+
+    ScEventSubscription * subscription = new ScElementaryEventSubscription<>(
+        *m_context,
+        eventClassAddr,
+        subscriptionElementAddr,
+        bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
+    responsePayload.push_back(m_manager->Add(subscription));
   }
 
   return responsePayload;
 }
 
 ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
-    ScServerSessionId const & sessionId,
+    ScServerSessionId const &,
     ScMemoryJsonPayload const & message,
-    ScMemoryJsonPayload & errorsPayload)
+    ScMemoryJsonPayload &)
 {
-  SC_UNUSED(sessionId);
-
   for (auto & atom : message)
     delete m_manager->Remove(atom.get<size_t>());
 

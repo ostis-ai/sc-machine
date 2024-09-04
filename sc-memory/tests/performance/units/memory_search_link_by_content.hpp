@@ -24,7 +24,7 @@ public:
       m_contents.pop_back();
     }
 
-    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(content).empty(), SC_FALSE);
+    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(content).empty(), false);
   }
 
   void Setup(size_t objectsNum) override
@@ -36,7 +36,7 @@ public:
 
       std::random_device rd;
       std::mt19937 gen(rd());
-      std::uniform_int_distribution<char> charDistribution(32, 126);
+      std::uniform_int_distribution<int> charDistribution(32, 126);
 
       for (size_t j = 0; j < stringLength; ++j)
       {
@@ -48,7 +48,7 @@ public:
 
       std::string content = result.str();
       ScLink link(*m_ctx, addr);
-      BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), SC_TRUE);
+      BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), true);
 
       m_contents.push_back(content);
     }

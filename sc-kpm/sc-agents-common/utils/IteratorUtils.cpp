@@ -4,12 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "CommonUtils.hpp"
-
-#include "keynodes/coreKeynodes.hpp"
 #include "IteratorUtils.hpp"
 
-using namespace scAgentsCommon;
+#include "CommonUtils.hpp"
 
 std::map<size_t, ScAddr> orderRelationsMap;
 

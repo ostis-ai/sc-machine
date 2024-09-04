@@ -31,11 +31,11 @@ ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAdd
   return ScAddr::Empty;
 }
 
-ScAddr getTranslation(ScMemoryContext & context, ScAddr const & answerAddr)
+ScAddr getTranslation(ScMemoryContext & context, ScAddr const & resultAddr)
 {
   int const WAIT_TIME = 2;
   int waitTime = 0;
-  ScAddr translation = findTranslation(context, answerAddr);
+  ScAddr translation = findTranslation(context, resultAddr);
   while (!translation.IsValid())
   {
     sleep(1);
@@ -45,7 +45,7 @@ ScAddr getTranslation(ScMemoryContext & context, ScAddr const & answerAddr)
       translation = ScAddr::Empty;
       break;
     }
-    translation = findTranslation(context, answerAddr);
+    translation = findTranslation(context, resultAddr);
   }
   return translation;
 }
@@ -90,10 +90,10 @@ TEST_F(ScMemoryTest, test_successfull_result)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
   std::string result, expected;
@@ -103,7 +103,7 @@ TEST_F(ScMemoryTest, test_successfull_result)
   json expectedJson = json::parse(expected);
   json resultJson = json::parse(result);
   // TODO: implement mocked sc-addrs for json
-  //EXPECT_EQ(expectedJson, resultJson);
+  // EXPECT_EQ(expectedJson, resultJson);
 
   sc_module_shutdown();
 }
@@ -118,15 +118,14 @@ TEST_F(ScMemoryTest, test_command_no_class)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_FALSE(resultLink.IsValid());
 
   sc_module_shutdown();
 }
-
 
 TEST_F(ScMemoryTest, test_command_no_lang)
 {
@@ -138,10 +137,10 @@ TEST_F(ScMemoryTest, test_command_no_lang)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
 
   sc_module_shutdown();
@@ -157,10 +156,10 @@ TEST_F(ScMemoryTest, test_command_no_format)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_FALSE(resultLink.IsValid());
 
   sc_module_shutdown();
@@ -178,10 +177,10 @@ TEST_F(ScMemoryTest, test_struct_with_keynodes)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain_keynodes.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
   std::string result;
@@ -203,10 +202,10 @@ TEST_F(ScMemoryTest, test_with_definition)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "knowledge_definition.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   if (resultLink.IsValid())
   {
     ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -228,10 +227,10 @@ TEST_F(ScMemoryTest, test_with_order_list)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "order_list.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
   std::string result, expected;
@@ -255,14 +254,14 @@ TEST_F(ScMemoryTest, test_with_filter_list)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "filter_list.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
   std::string result, expected;
-  EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "with_filter_list_answer.txt"));
+  EXPECT_TRUE(GetContentFromFile(expected, TEST_STRUCTURES_PATH + "with_order_list_answer.txt"));
 
   EXPECT_TRUE(ScStreamConverter::StreamToString(stream, result));
   json expectedJson = json::parse(expected);
@@ -281,10 +280,10 @@ TEST_F(ScMemoryTest, test_kb_fragment)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "kb_fragment.scs"));
 
   ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr answer_addr = m_ctx->HelperResolveSystemIdtf("answer_addr");
+  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
 
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
-  ScAddr resultLink = getTranslation(*m_ctx, answer_addr);
+  ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
 
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);

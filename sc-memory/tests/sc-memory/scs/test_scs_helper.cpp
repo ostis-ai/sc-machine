@@ -428,14 +428,14 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
 
   result.Clear();
   {
-    sc_bool isFound = false;
+    bool isFound = false;
     m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
         EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
-    }, [this, outputStructureWithRuMainIdtf](ScAddr const & elementAddr) -> sc_bool {
+    }, [this, outputStructureWithRuMainIdtf](ScAddr const & elementAddr) -> bool {
       return m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);
@@ -459,14 +459,14 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
 
   result.Clear();
   {
-    sc_bool isFound = false;
+    bool isFound = false;
     m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
         EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
-    }, [this, outputStructureWithEnMainIdtf](ScAddr const & elementAddr) -> sc_bool {
+    }, [this, outputStructureWithEnMainIdtf](ScAddr const & elementAddr) -> bool {
       return m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);
@@ -490,7 +490,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
 
   result.Clear();
   {
-    sc_bool isFound = false;
+    bool isFound = false;
     m_ctx->HelperSearchTemplate(templ,[this, &isFound, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
@@ -498,7 +498,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
         EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
     }, 
-    [this, outputStructureWithRuIdtf](ScAddr const & elementAddr) -> sc_bool {
+    [this, outputStructureWithRuIdtf](ScAddr const & elementAddr) -> bool {
       return m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);
@@ -522,7 +522,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
 
   result.Clear();
   {
-    sc_bool isFound = false;
+    bool isFound = false;
     m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
@@ -530,7 +530,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
         EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
     }, 
-    [this, outputStructureWithEnIdtf](ScAddr const & elementAddr) -> sc_bool {
+    [this, outputStructureWithEnIdtf](ScAddr const & elementAddr) -> bool {
       return m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);

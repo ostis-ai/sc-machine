@@ -8,6 +8,7 @@
 
 #include "sc_addr.hpp"
 #include "sc_type.hpp"
+
 #include "sc_utils.hpp"
 
 class ScMemoryContext;

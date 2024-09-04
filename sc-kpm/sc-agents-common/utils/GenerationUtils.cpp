@@ -11,8 +11,6 @@
 #include "IteratorUtils.hpp"
 #include "CommonUtils.hpp"
 
-using namespace scAgentsCommon;
-
 namespace utils
 {
 ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
@@ -25,13 +23,13 @@ ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
     return set;
 
   ScAddr prevEdge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(0));
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::rrel_1, prevEdge);
+  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::rrel_1, prevEdge);
 
   for (size_t i = 1; i < addrVector.size(); ++i)
   {
     ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
     ScAddr sequenceEdge = ms_context->CreateEdge(ScType::EdgeDCommonConst, prevEdge, edge);
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, CoreKeynodes::nrel_basic_sequence, sequenceEdge);
+    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_basic_sequence, sequenceEdge);
     prevEdge = edge;
   }
 

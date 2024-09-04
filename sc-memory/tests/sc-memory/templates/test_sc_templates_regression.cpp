@@ -2,7 +2,7 @@
 
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_scs_helper.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "sc_test.hpp"
 #include "template_test_utils.hpp"
@@ -251,7 +251,7 @@ TEST_F(ScTemplateRegressionTest, Issue224)
         ScAddr const structAddr =
             m_ctx->HelperResolveSystemIdtf("test_program" + std::to_string(i), ScType::NodeConstStruct);
         EXPECT_TRUE(structAddr.IsValid());
-        ScStruct contour(*m_ctx, structAddr);
+        ScStructure contour = m_ctx->ConvertToStructure(structAddr);
 
         for (auto const & a : contourItems)
           contour << a;

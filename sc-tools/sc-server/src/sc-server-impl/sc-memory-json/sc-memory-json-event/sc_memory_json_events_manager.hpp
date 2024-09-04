@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "sc-memory/sc_event.hpp"
+#include <algorithm>
 
-#include "algorithm"
+#include "sc-memory/sc_event_subscription.hpp"
 
 class ScMemoryJsonEventsManager
 {
@@ -21,7 +21,7 @@ public:
     return m_instance;
   }
 
-  size_t Add(ScEvent * event)
+  size_t Add(ScEventSubscription * event)
   {
     m_events.insert({counter, event});
     return counter++;
@@ -32,7 +32,7 @@ public:
     return counter;
   }
 
-  ScEvent * Remove(size_t index)
+  ScEventSubscription * Remove(size_t index)
   {
     auto const & it = m_events.find(index);
     if (it != m_events.end())
@@ -57,7 +57,7 @@ public:
 
 private:
   static ScMemoryJsonEventsManager * m_instance;
-  std::unordered_map<size_t, ScEvent *> m_events;
+  std::unordered_map<size_t, ScEventSubscription *> m_events;
   size_t counter = 0;
 
   ScMemoryJsonEventsManager() = default;

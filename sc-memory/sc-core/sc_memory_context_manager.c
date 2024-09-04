@@ -23,11 +23,11 @@
  */
 struct _sc_event_emit_params
 {
-  sc_addr subscription_addr;  ///< sc-address representing the subscription associated with the event.
-  sc_event_type type;         ///< Type of the event to be emitted.
-  sc_addr connector_addr;     ///< sc-address representing the connector associated with the event.
-  sc_type connector_type;     ///< sc-type of the connector associated with the event.
-  sc_addr other_addr;         ///< sc-address representing the other element associated with the event.
+  sc_addr subscription_addr;      ///< sc-address representing the subscription associated with the event.
+  sc_event_type event_type_addr;  ///< Type of the event to be emitted.
+  sc_addr connector_addr;         ///< sc-address representing the connector associated with the event.
+  sc_type connector_type;         ///< sc-type of the connector associated with the event.
+  sc_addr other_addr;             ///< sc-address representing the other element associated with the event.
 };
 
 #define SC_CONTEXT_FLAG_PENDING_EVENTS 0x1
@@ -52,11 +52,11 @@ void _sc_memory_context_manager_initialize(sc_memory_context_manager ** manager,
   sc_monitor_init(&(*manager)->user_local_permissions_monitor);
 
   (*manager)->on_new_users_in_sets_events =
-      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_destroy);
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_subscription_destroy);
   sc_monitor_init(&(*manager)->on_new_users_in_sets_events_monitor);
 
   (*manager)->on_remove_users_from_sets_events =
-      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_destroy);
+      sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, (GDestroyNotify)sc_event_subscription_destroy);
   sc_monitor_init(&(*manager)->on_remove_users_from_sets_events_monitor);
 
   s_memory_default_ctx = sc_memory_context_new_ext(SC_ADDR_EMPTY);
@@ -129,7 +129,7 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
     goto error;
 
   sc_monitor_init(&ctx->monitor);
-  ctx->user_addr = SC_ADDR_IS_EMPTY(user_addr) ? _sc_memory_context_manager_create_guest_user(manager) : user_addr;
+  ctx->user_addr = SC_ADDR_IS_EMPTY(user_addr) ? _sc_memory_context_manager_generate_guest_user(manager) : user_addr;
   ctx->ref_count = 0;
   ctx->global_permissions = _sc_context_get_user_global_permissions(ctx->user_addr);
   ctx->local_permissions = _sc_context_get_user_local_permissions(ctx->user_addr);
@@ -233,14 +233,14 @@ sc_bool _sc_memory_context_are_events_pending(sc_memory_context const * ctx)
 
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
-    sc_event_type type,
+    sc_event_type event_type_addr,
     sc_addr subscription_addr,
     sc_addr connector_addr,
     sc_type connector_type,
     sc_addr other_addr)
 {
   sc_event_emit_params * params = sc_mem_new(sc_event_emit_params, 1);
-  params->type = type;
+  params->event_type_addr = event_type_addr;
   params->subscription_addr = subscription_addr;
   params->connector_addr = connector_addr;
   params->connector_type = connector_type;
@@ -265,10 +265,12 @@ void _sc_memory_context_emit_events(sc_memory_context const * ctx)
     sc_event_emit_impl(
         ctx,
         event_params->subscription_addr,
-        event_params->type,
+        event_params->event_type_addr,
         event_params->connector_addr,
         event_params->connector_type,
-        event_params->other_addr);
+        event_params->other_addr,
+        null_ptr,
+        SC_ADDR_EMPTY);
     sc_mem_free(event_params);
 
     ((sc_memory_context *)ctx)->pend_events = sc_hash_table_list_remove_sublist(ctx->pend_events, ctx->pend_events);

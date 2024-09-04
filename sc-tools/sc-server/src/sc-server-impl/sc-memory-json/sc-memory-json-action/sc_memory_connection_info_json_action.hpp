@@ -11,13 +11,10 @@
 class ScMemoryConnectionInfoJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(
-      ScMemoryContext * context,
-      ScMemoryJsonPayload requestPayload,
-      ScMemoryJsonPayload & errorsPayload) override
+  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload, ScMemoryJsonPayload &) override
   {
     ScMemoryJsonPayload responsePayload{
-        {"connection_id", (sc_uint64)context}, {"user_addr", context->GetUserAddr().Hash()}};
+        {"connection_id", (sc_uint64)context}, {"user_addr", context->GetUser().Hash()}};
 
     return responsePayload;
   }

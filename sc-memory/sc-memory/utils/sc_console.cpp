@@ -209,6 +209,7 @@ ScConsole::KeyCode GetKey()
       case 'D':
         return ScConsole::KeyCode::Left;
       }
+      SC_FALLTHROUGH;
     }
     else
     {

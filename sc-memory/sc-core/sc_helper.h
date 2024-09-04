@@ -11,7 +11,7 @@
 
 #include "sc_memory.h"
 
-//! Enumeration of sc-keynodes
+//! Enumeration of keynodes
 enum _sc_keynode
 {
   SC_KEYNODE_NREL_SYSTEM_IDENTIFIER = 0,  // nrel_system_identifier
@@ -114,6 +114,7 @@ sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * sys
 
 /*! Resolve sc-element by specified string system identifier
  * @param system_idtf String that represents system identifier (it will be converted into utf-8)
+ * @param type A sc-type of sc-element to be resolved
  * @param result Pointer to result sc-addr container
  * @param out_fiver Structure contains the 1th, 2d, 3d, 4th and 5th sc-element address of resolved fiver
  *                          addr1 (`addr`)
@@ -126,6 +127,7 @@ sc_helper_resolve_system_identifier(sc_memory_context * ctx, sc_char const * sys
 _SC_EXTERN sc_bool sc_helper_resolve_system_identifier_ext(
     sc_memory_context * ctx,
     sc_char const * system_idtf,
+    sc_type type,
     sc_addr * result_addr,
     sc_system_identifier_fiver * out_fiver);
 

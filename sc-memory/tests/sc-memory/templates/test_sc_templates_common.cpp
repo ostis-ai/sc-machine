@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "template_test_utils.hpp"
 
@@ -293,7 +293,7 @@ TEST_F(ScTemplateCommonTest, a_a_a)
   // create template
   ScAddr const templStructAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(templStructAddr.IsValid());
-  ScStruct templStruct(*m_ctx, templStructAddr);
+  ScStructure templStruct = m_ctx->ConvertToStructure(templStructAddr);
 
   templStruct << _structAddr << _apiai_locationAddr << _apiai_speechAddr << _langAddr << rrel_locationAddr
               << nrel_translationAddr << _struct_locationEdgeAddr << _rrel_locationEdgeAddr << _struct_speechEdgeAddr

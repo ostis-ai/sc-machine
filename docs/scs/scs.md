@@ -1,5 +1,5 @@
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.9.0.
 ---
 
 ### **Common**
@@ -608,7 +608,7 @@ x -> [^"uint: 781236"];;
 
 * `[* ... *]` this is a short representation of <code>sc-structure</code>. You can use just sc.s-text inside these brackets.
   So these brackets will designate an <code>sc-structure</code> (<code>sc-node</code> with a type <code>sc_node_struct</code>). All elements inside
-  brackets will have ingoing edge (type <code>sc_edge_main</code>) from that <code>sc-node</code>.
+  brackets will have incoming sc-arc (type <code>sc_edge_main</code>) from that <code>sc-node</code>.
   <table>
     <tr>
       <th>SCs-code level 2-5</th>
@@ -840,8 +840,9 @@ nrel_y <- sc_node_norole_relation;;
 
 ## **Frequently Asked Questions**
 
-- [What SCs-code level is recommended to use?](#what-scs-code-level-is-recommended-to-use)
-- [Can I combine different levels in one SCs file?](#can-i-combine-different-levels-in-one-scs-file)
+- [**Frequently Asked Questions**](#frequently-asked-questions)
+  - [**What SCs-code level is recommended to use?**](#what-scs-code-level-is-recommended-to-use)
+  - [**Can I combine different levels in one SCs file?**](#can-i-combine-different-levels-in-one-scs-file)
 
 ### **What SCs-code level is recommended to use?**
 

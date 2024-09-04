@@ -6,38 +6,34 @@
 
 #pragma once
 
-#include "sc_defines.hpp"
-#include "sc_addr.hpp"
-#include "sc_memory.hpp"
+#include <typeinfo>
+#include <string>
 
-/**
+#include "sc_addr.hpp"
+
+/*!
  * Base class for all objects that has meta data.
- * If you override it, then call any constructor of ScObject
- * in your custom constructors
+ * If you override it, then call any constructor of ScObject in your custom constructors.
  */
 class _SC_EXTERN ScObject
 {
-protected:
-  explicit ScObject();
-  virtual ~ScObject();
-
-  ScObject(ScObject const & other) = delete;
-  ScObject & operator=(ScObject const & other);
-
 public:
-  /// TODO: Need mechanism to call that function automatically after object construction
-  bool Init();
+  _SC_EXTERN ScObject();
+
+  _SC_EXTERN ScObject & operator=(ScObject const & other);
+
+  _SC_EXTERN virtual ~ScObject();
+
+  _SC_EXTERN std::string GetName() const;
+
+  template <class Class>
+  static _SC_EXTERN std::string GetName()
+  {
+    return Demangle(typeid(Class).name());
+  }
 
 private:
-  /** This method override generates by code generator, and initialize all
-   *  meta data for this object, insert created object in output structure.
-   *  It calls from ScObject constructors
-   */
-  virtual bool _InitInternal(ScAddr const & outputStructure = ScAddr::Empty) = 0;
+  mutable std::string m_name;
 
-  virtual bool _InitInternal(ScMemoryContext & context, ScAddr const & outputStructure = ScAddr::Empty) = 0;
-
-private:
-  bool m_isInitialized : 1;
-  bool m_initResult : 1;
+  static _SC_EXTERN std::string Demangle(std::string const & mangledName);
 };

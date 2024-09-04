@@ -36,7 +36,7 @@ struct _SC_EXTERN ScTemplateItem
   _SC_EXTERN ScTemplateItem();
 
   /*!
-   * @brief Creates a template item with a specified address.
+   * @brief Generates a template item with a specified address.
    *
    * @param addr A sc-address.
    * @param replName Optional replacement name.
@@ -44,7 +44,7 @@ struct _SC_EXTERN ScTemplateItem
   _SC_EXTERN ScTemplateItem(ScAddr const & addr, sc_char const * replName = nullptr);
 
   /*!
-   * @brief Creates a template item with a specified type.
+   * @brief Generates a template item with a specified type.
    *
    * @param type A sc-type.
    * @param replName Optional replacement name.
@@ -52,14 +52,14 @@ struct _SC_EXTERN ScTemplateItem
   _SC_EXTERN ScTemplateItem(ScType const & type, sc_char const * replName = nullptr);
 
   /*!
-   * @brief Creates a template item with a specified name.
+   * @brief Generates a template item with a specified name.
    *
    * @param name A name of the item.
    */
   _SC_EXTERN ScTemplateItem(sc_char const * name);
 
   /*!
-   * @brief Creates a template item with a specified name.
+   * @brief Generates a template item with a specified name.
    *
    * @param name A name of the item.
    */
@@ -286,7 +286,7 @@ using ScTemplateSearchResultCheckCallback = std::function<bool(ScAddr const & ad
  * ScTemplate allows the creation of templates for sc-elements, which can be used to generate or search for specific
  * patterns in sc-memory.
  */
-class _SC_EXTERN ScTemplate final
+class _SC_EXTERN ScTemplate
 {
   friend class ScMemoryContext;
   friend class ScTemplateSearch;
@@ -303,7 +303,7 @@ public:
   {
   public:
     /*!
-     * @brief Creates a Result object.
+     * @brief Generates a Result object.
      *
      * @param result The result of the operation (true for success, false for failure).
      * @param errorMsg Optional error message.
@@ -329,14 +329,17 @@ public:
     std::string m_msg;      ///< An error message.
   };
 
-  SC_DISALLOW_COPY_AND_MOVE(ScTemplate);
+public:
+  SC_DISALLOW_COPY(ScTemplate);
+  ScTemplate(ScTemplate && other) noexcept;
+  ScTemplate & operator=(ScTemplate && other) noexcept;
 
   using ScTemplateItemsToReplacementsItemsPositions = std::unordered_map<std::string, size_t>;
   using ScTemplateTriplesVector = std::vector<class ScTemplateTriple *>;
 
-  _SC_EXTERN explicit ScTemplate();
+  _SC_EXTERN explicit ScTemplate() noexcept;
 
-  _SC_EXTERN ~ScTemplate();
+  _SC_EXTERN ~ScTemplate() noexcept;
 
   /*!
    * @brief Adds a triple to object of `ScTemplate`.
@@ -458,7 +461,7 @@ protected:
   /*!
    * @brief Generates sc-elements based by object of `ScTemplate`.
    *
-   * @param ctx A sc-memory context.
+   * @param context A sc-memory context.
    * @param result A result item to store generated elements.
    * @param params A template parameters.
    * @param errorCode Optional error code.
@@ -466,7 +469,7 @@ protected:
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
   Result Generate(
-      ScMemoryContext & ctx,
+      ScMemoryContext & context,
       ScTemplateResultItem & result,
       ScTemplateParams const & params,
       ScTemplateResultCode * errorCode = nullptr) const noexcept(false);
@@ -474,24 +477,24 @@ protected:
   /*!
    * @brief Searches for sc-elements by object of `ScTemplate`.
    *
-   * @param ctx A sc-memory context.
+   * @param context A sc-memory context.
    * @param result A result item to store the found elements.
    * @return A result of the search.
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
-  Result Search(ScMemoryContext & ctx, ScTemplateSearchResult & result) const noexcept(false);
+  Result Search(ScMemoryContext & context, ScTemplateSearchResult & result) const noexcept(false);
 
   /*!
    * @brief Searches for sc-elements by object of `ScTemplate` with callbacks.
    *
-   * @param ctx A sc-memory context.
+   * @param context A sc-memory context.
    * @param callback A callback to handle the search results.
    * @param filterCallback Optional filter callback.
    * @param checkCallback Optional check callback.
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
   void Search(
-      ScMemoryContext & ctx,
+      ScMemoryContext & context,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) const noexcept(false);
@@ -499,14 +502,14 @@ protected:
   /*!
    * @brief Searches for sc-elements by object of `ScTemplate` with request callbacks.
    *
-   * @param ctx A sc-memory context.
+   * @param context A sc-memory context.
    * @param callback A callback to handle the search results with requests.
    * @param filterCallback Optional filter callback.
    * @param checkCallback Optional check callback.
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
   void Search(
-      ScMemoryContext & ctx,
+      ScMemoryContext & context,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) const noexcept(false);
@@ -514,36 +517,36 @@ protected:
   /*!
    * @brief Translates a sc-template in sc-memory (sc-structure) into object of `ScTemplate`.
    *
-   * @param ctx A sc-memory context.
+   * @param context A sc-memory context.
    * @param translatableTemplateAddr A sc-address of sc-template in sc-memory to be translated in object of
    * `ScTemplate`.
    * @param params Optional sc-template parameters.
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
   void TranslateFrom(
-      ScMemoryContext & ctx,
+      ScMemoryContext & context,
       ScAddr const & translatableTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 
   /*!
    * @brief Translates a sc-template represented in SCs-code into object of `ScTemplate`.
    *
-   * @param ctx A sc-memory context.
+   * @param context A sc-memory context.
    * @param translatableSCsTemplate A sc.s-template to be translated to object of `ScTemplate`.
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
-  void TranslateFrom(ScMemoryContext & ctx, std::string const & translatableSCsTemplate) noexcept(false);
+  void TranslateFrom(ScMemoryContext & context, std::string const & translatableSCsTemplate) noexcept(false);
 
   /*!
    * @brief Translates an object of `ScTemplate` to a sc-template in sc-memory (sc-structure).
    *
-   * @param ctx A sc-memory context.
+   * @param context A sc-memory context.
    * @param resultTemplateAddr A sc-address of sc-template to be gotten in sc-memory.
    * @param params Optional sc-template parameters.
    * @throws utils::ExceptionInvalidParams if the parameters are invalid.
    */
   void TranslateTo(
-      ScMemoryContext & ctx,
+      ScMemoryContext & context,
       ScAddr & resultTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
 

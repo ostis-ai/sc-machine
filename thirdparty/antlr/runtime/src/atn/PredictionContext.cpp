@@ -336,13 +336,13 @@ Ref<PredictionContext> PredictionContext::mergeArrays(const Ref<ArrayPredictionC
 
   // if we created same array as a or b, return that instead
   // TO_DO: track whether this is possible above during merge sort for speed
-  if (*M == *a) {
+  if (std::equal_to<ArrayPredictionContext>()(*M, *a)) {
     if (mergeCache != nullptr) {
       mergeCache->put(a, b, a);
     }
     return a;
   }
-  if (*M == *b) {
+  if (std::equal_to<ArrayPredictionContext>()(*M, *b)) {
     if (mergeCache != nullptr) {
       mergeCache->put(a, b, b);
     }

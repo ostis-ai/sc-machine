@@ -13,7 +13,7 @@
 #include "sc_template_private.hpp"
 #include "sc_memory.hpp"
 
-#include "sc_struct.hpp"
+#include "sc_structure.hpp"
 
 class ScTemplateLoader
 {
@@ -29,7 +29,7 @@ protected:
   void operator()(ScTemplate * inTemplate, ScAddr & resultTemplateAddr)
   {
     resultTemplateAddr = m_context.CreateNode(ScType::NodeConstStruct);
-    ScStruct templateStruct(m_context, resultTemplateAddr);
+    ScStructure templateStruct(m_context, resultTemplateAddr);
 
     std::unordered_map<std::string, ScAddr> itemNamesToTemplateElements;
     auto const & ResolveAddr = [this, &templateStruct, &inTemplate, &itemNamesToTemplateElements](
@@ -59,13 +59,13 @@ protected:
         }
       }
 
-      if (!itemAddr.IsValid())
+      if (!m_context.IsElement(itemAddr))
       {
         if (item.IsAddr())
           itemAddr = item.m_addrValue;
         else if (item.IsType())
         {
-          if (sourceAddr.IsValid() && targetAddr.IsValid())
+          if (m_context.IsElement(sourceAddr) && m_context.IsElement(targetAddr))
             itemAddr = m_context.CreateEdge(item.m_typeValue, sourceAddr, targetAddr);
           else if (item.m_typeValue.IsLink())
             itemAddr = m_context.CreateLink(item.m_typeValue);

@@ -21,6 +21,12 @@
 class ScMemoryJsonEventsHandler : public ScMemoryJsonHandler
 {
 public:
+  using ScEventSubscriptionCreateCallback = std::function<ScEventSubscription *(
+      ScMemoryContext *,
+      ScAddr const &,
+      ScMemoryJsonEventsManager *,
+      ScServer *,
+      ScServerSessionId const &)>;
   explicit ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx);
 
   ~ScMemoryJsonEventsHandler() override;
@@ -29,7 +35,7 @@ private:
   ScMemoryContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
 
-  static std::map<std::string, ScEvent::Type> events;
+  static std::unordered_map<std::string, std::string> const m_deprecatedEventsIdtfsToSystemEventsIdtfs;
 
   ScMemoryJsonPayload HandleRequestPayload(
       ScServerSessionId const & sessionId,

@@ -25,11 +25,6 @@ ScParams::ScParams(ScOptions const & options, std::vector<std::vector<std::strin
 
 ScParams::ScParams() = default;
 
-ScParams::ScParams(ScParams const & object) noexcept
-{
-  m_params = object.m_params;
-}
-
 void ScParams::Insert(std::pair<std::string, std::string> const & pair)
 {
   m_params.insert(pair);

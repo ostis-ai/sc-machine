@@ -27,7 +27,7 @@ There are possible 3 types of triple sc-templates:
 
 * `f_a_a` - sc-template to find all outgoing sc-connectors from a specified sc-element;
 * `f_a_f` - sc-template to find all sc-connectors between two specified sc-elements;
-* `a_a_f` - sc-template to find all ingoing sc-connectors to a specified sc-element.
+* `a_a_f` - sc-template to find all incoming sc-connectors to a specified sc-element.
 
 And there are possible 7 types of quintuple sc-templates:
 
@@ -35,8 +35,8 @@ And there are possible 7 types of quintuple sc-templates:
 * `f_a_f_a_a` - sc-template to find all sc-connectors between two specified sc-elements with all attributes of this sc-connectors;
 * `f_a_a_a_f` - sc-template to find all outgoing sc-connectors from a specified sc-element with specified attribute;
 * `f_a_f_a_f` - sc-template to find all sc-connectors between two specified sc-elements with specified attribute;
-* `a_a_f_a_a` - sc-template to find all ingoing sc-connectors to a specified sc-element with all attributes of this sc-connectors;
-* `a_a_f_a_f` - sc-template to find all ingoing sc-connectors to a specified sc-element with specified attribute;
+* `a_a_f_a_a` - sc-template to find all incoming sc-connectors to a specified sc-element with all attributes of this sc-connectors;
+* `a_a_f_a_f` - sc-template to find all incoming sc-connectors to a specified sc-element with specified attribute;
 * `a_a_a_a_f` - sc-template to find all sc-connectors with specified attribute.
 
 Here attribute is sc-element from which the sc-connector is outgoing to the searchable sc-connectors.
@@ -70,7 +70,7 @@ templ.Triple(
 );
 </code></pre>
       <br/>This triple sc-template is used to traverse output edges from specified sc-element.
-      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse output edges from <code>param1</code>. Construction will be added into traverse result, where output sc-connector from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target sc-element of this edge will be sutable for a type <code>_param3</code>.
+      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse output edges from <code>param1</code>. Construction will be added into traverse result, where output sc-connector from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target sc-element of this edge will be suitable for a type <code>_param3</code>.
       <br/>You can use any sc-type of <code>_param3</code> (including edges) depending on sc-construction you want to find. But <code>_param2</code> should be any sc-type of variable edge.
     </td>
   </tr>
@@ -342,7 +342,7 @@ templ.Triple(
   ScType::NodeVar >> "_x"
 );
 bool const hasAliasX = templ.HasReplacement("_x");
-// The value of `hasAliasX` be equal to `SC_TRUE`.
+// The value of `hasAliasX` be equal to `true`.
 ...
 ```
 
@@ -372,14 +372,14 @@ size_t const tripleCount = templ.Size();
 ### **IsEmpty**
 
 If you need sc-template to be empty you don't have to add any constructions into it. But you should know
-that result of generation by this sc-template is always `SC_TRUE` and result of searching by this sc-template is always
-`SC_FALSE`. To check that sc-template is empty use the method `IsEmpty`.
+that result of generation by this sc-template is always `true` and result of searching by this sc-template is always
+`false`. To check that sc-template is empty use the method `IsEmpty`.
 
 ```cpp
 ...
 ScTemplate templ;
 bool const isEmpty = templ.IsEmpty();
-// The value of `isEmpty` be equal to `SC_TRUE`.
+// The value of `isEmpty` be equal to `true`.
 ...
 ```
 
@@ -538,7 +538,7 @@ To check that replacements map is empty use the method `IsEmpty`.
 ...
 ScTemplateParams params;
 bool const isEmpty = params.IsEmpty();
-// The value of `isEmpty` be equal to `SC_TRUE`.
+// The value of `isEmpty` be equal to `true`.
 ...
 ```
 
@@ -587,10 +587,10 @@ bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 ScAddr setAddr;
 bool replExist = result.Get("_x", setAddr);
-// The value of `replExist` be equal to `SC_TRUE`.
+// The value of `replExist` be equal to `true`.
 
 bool replExist = result.Get("_y", setAddr);
-// The value of `replExist` be equal to `SC_FALSE`.
+// The value of `replExist` be equal to `false`.
 ...
 ```
 
@@ -637,7 +637,7 @@ ScTemplateResultItem result;
 bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
-// The value of `replExist` be equal to `SC_TRUE`.
+// The value of `replExist` be equal to `true`.
 ...
 ```
 
@@ -740,10 +740,10 @@ bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 ScTemplateResultItem item;
 bool constrExist = result.Get(0, item);
-// The value of `constrExist` be equal to `SC_TRUE`.
+// The value of `constrExist` be equal to `true`.
 
 constrExist = result.Get(1, item);
-// The value of `constrExist` be equal to `SC_FALSE` and item is not valid.
+// The value of `constrExist` be equal to `false` and item is not valid.
 ...
 ```
 
@@ -839,7 +839,7 @@ ScTemplateSearchResult result;
 bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
 
 bool const count = result.IsEmpty();
-// The value of `count` be equal to `SC_FALSE`.
+// The value of `count` be equal to `false`.
 ...
 ```
 

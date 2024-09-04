@@ -9,8 +9,6 @@
 #include "IteratorUtils.hpp"
 #include "GenerationUtils.hpp"
 
-using namespace scAgentsCommon;
-
 namespace utils
 {
 bool CommonUtils::checkType(ScMemoryContext * ms_context, ScAddr const & element, ScType scType)
@@ -61,7 +59,7 @@ std::string CommonUtils::getMainIdtf(
     ScAddr const & node,
     ScAddrVector const & linkClasses)
 {
-  ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
+  ScAddr mainIdtfNode = ScKeynodes::nrel_main_idtf;
   return getIdtf(ms_context, node, mainIdtfNode, linkClasses);
 }
 
@@ -89,7 +87,7 @@ void CommonUtils::setMainIdtf(
     std::string const & identifier,
     ScAddrVector const & linkClasses)
 {
-  ScAddr mainIdtfNode = CoreKeynodes::nrel_main_idtf;
+  ScAddr mainIdtfNode = ScKeynodes::nrel_main_idtf;
   setIdtf(ms_context, node, mainIdtfNode, identifier, linkClasses);
 }
 

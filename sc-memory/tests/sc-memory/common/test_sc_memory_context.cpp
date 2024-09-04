@@ -2,9 +2,13 @@
 
 #include <thread>
 
+#include "sc-memory/sc_event.hpp"
+#include "sc-memory/sc_event_subscription.hpp"
+
 #include "sc-memory/sc_memory.hpp"
+
 #include "sc-core/sc_keynodes.h"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "sc_test.hpp"
 
@@ -20,7 +24,7 @@
   })
 
 void TestAddPermissionsForUserToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -31,7 +35,7 @@ void TestAddPermissionsForUserToInitActions(
 }
 
 void TestAddPermissionsForUserToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -40,7 +44,7 @@ void TestAddPermissionsForUserToInitReadActions(
 }
 
 void TestAddPermissionsForUserToInitWriteActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -49,7 +53,7 @@ void TestAddPermissionsForUserToInitWriteActions(
 }
 
 void TestAddPermissionsForUserToInitEraseActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -58,7 +62,7 @@ void TestAddPermissionsForUserToInitEraseActions(
 }
 
 void TestAddAllPermissionsForUserToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -68,7 +72,7 @@ void TestAddAllPermissionsForUserToInitActions(
 }
 
 void TestRemovePermissionsForUserToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr)
 {
@@ -81,7 +85,7 @@ void TestRemovePermissionsForUserToInitActions(
 }
 
 void TestRemovePermissionsForUserToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & readActionInScMemoryAddr{action_read_from_sc_memory_addr};
@@ -89,7 +93,7 @@ void TestRemovePermissionsForUserToInitReadActions(
 }
 
 void TestAddPermissionsForUsersSetToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScAddr const & actionClassAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -100,7 +104,7 @@ void TestAddPermissionsForUsersSetToInitActions(
 }
 
 void TestAddPermissionsForUsersSetToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -109,7 +113,7 @@ void TestAddPermissionsForUsersSetToInitReadActions(
 }
 
 void TestAddPermissionsForUsersSetToInitWriteActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -118,7 +122,7 @@ void TestAddPermissionsForUsersSetToInitWriteActions(
 }
 
 void TestAddPermissionsForUsersSetToInitEraseActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -127,7 +131,7 @@ void TestAddPermissionsForUsersSetToInitEraseActions(
 }
 
 void TestAddAllPermissionsForUsersSetToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -137,7 +141,7 @@ void TestAddAllPermissionsForUsersSetToInitActions(
 }
 
 void TestRemovePermissionsForUsersSetToInitActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr)
 {
@@ -150,7 +154,7 @@ void TestRemovePermissionsForUsersSetToInitActions(
 }
 
 void TestRemovePermissionsForUsersSetToInitReadActions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & readActionInScMemoryAddr{action_read_from_sc_memory_addr};
@@ -158,7 +162,7 @@ void TestRemovePermissionsForUsersSetToInitReadActions(
 }
 
 ScAddr TestGenerateClassForUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -168,7 +172,7 @@ ScAddr TestGenerateClassForUser(
 }
 
 ScAddr TestAddClassForUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -177,7 +181,7 @@ ScAddr TestAddClassForUser(
 }
 
 void TestAuthenticationRequestUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
@@ -185,7 +189,7 @@ void TestAuthenticationRequestUser(
   context->CreateEdge(arcType, conceptAuthenticationRequestUserAddr, userAddr);
 }
 
-void TestReadActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -212,7 +216,7 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & contex
   EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test"));
 }
 
-void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestReadActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -232,7 +236,7 @@ void TestReadActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & cont
 }
 
 void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     TestScMemoryContext & userContext)
 {
   TestReadActionsUnsuccessfully(context, userContext);
@@ -260,7 +264,7 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
       userContext.HelperCheckEdge(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
 }
 
-void TestIteratorsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestIteratorsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -276,7 +280,7 @@ void TestIteratorsSuccessfully(std::unique_ptr<ScMemoryContext> const & context,
   EXPECT_TRUE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
 }
 
-void TestIteratorsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestIteratorsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -292,7 +296,7 @@ void TestIteratorsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & contex
   EXPECT_FALSE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
 }
 
-void TestWriteActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestWriteActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -301,12 +305,11 @@ void TestWriteActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & conte
   EXPECT_TRUE(userContext.CreateLink(ScType::LinkConst).IsValid());
   EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr).IsValid());
 
-  ScAddr nodeAddr1, nodeAddr2;
   EXPECT_TRUE(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst));
   EXPECT_TRUE(userContext.Save());
 }
 
-void TestWriteActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestWriteActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
@@ -314,40 +317,39 @@ void TestWriteActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & con
   EXPECT_THROW(
       userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr), utils::ExceptionInvalidState);
 
-  ScAddr nodeAddr1, nodeAddr2;
   EXPECT_THROW(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.Save(), utils::ExceptionInvalidState);
 }
 
-void TestEraseActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestEraseActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
 
   EXPECT_TRUE(userContext.EraseElement(nodeAddr));
 }
 
-void TestEraseActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestEraseActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
 
   EXPECT_THROW(userContext.EraseElement(nodeAddr), utils::ExceptionInvalidState);
 }
 
-void TestApplyActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestApplyActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
   EXPECT_NO_THROW(userContext.SetLinkContent(linkAddr, "test"));
 }
 
-void TestApplyActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestApplyActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
   EXPECT_THROW(userContext.SetLinkContent(linkAddr, "test"), utils::ExceptionInvalidState);
 }
 
-void TestChangeActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestChangeActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
@@ -355,9 +357,7 @@ void TestChangeActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & cont
   EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst));
 }
 
-void TestChangeActionsUnsuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
-    TestScMemoryContext & userContext)
+void TestChangeActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
 
@@ -365,7 +365,7 @@ void TestChangeActionsUnsuccessfully(
   EXPECT_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst), utils::ExceptionInvalidState);
 }
 
-void TestActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   TestReadActionsSuccessfully(context, userContext);
   TestWriteActionsSuccessfully(context, userContext);
@@ -374,7 +374,7 @@ void TestActionsSuccessfully(std::unique_ptr<ScMemoryContext> const & context, T
   TestChangeActionsSuccessfully(context, userContext);
 }
 
-void TestActionsUnsuccessfully(std::unique_ptr<ScMemoryContext> const & context, TestScMemoryContext & userContext)
+void TestActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   TestReadActionsUnsuccessfully(context, userContext);
   TestWriteActionsUnsuccessfully(context, userContext);
@@ -388,13 +388,13 @@ TEST_F(ScMemoryTestWithUserMode, GetUserAddrFromContext)
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
-  EXPECT_EQ(userContext.GetUserAddr(), userAddr);
+  EXPECT_EQ(userContext.GetUser(), userAddr);
 }
 
 TEST_F(ScMemoryTestWithUserMode, GetGuestUserAddrFromContext)
 {
   TestScMemoryContext userContext;
-  EXPECT_TRUE(userContext.GetUserAddr().IsValid());
+  EXPECT_TRUE(userContext.GetUser().IsValid());
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByGuestUser)
@@ -404,7 +404,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByGuestUser)
 }
 
 void TestSetIdentifiedUser(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & guestUserAddr,
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -418,24 +418,24 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
 {
   TestScMemoryContext userContext;
 
-  ScAddr const & guestUserAddr = userContext.GetUserAddr();
+  ScAddr const & guestUserAddr = userContext.GetUser();
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   TestSetIdentifiedUser(m_ctx, guestUserAddr, userAddr);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestActionsSuccessfully(m_ctx, userContext);
-        TestIteratorsSuccessfully(m_ctx, userContext);
+            TestActionsSuccessfully(m_ctx, userContext);
+            TestIteratorsSuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
 
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -460,18 +460,18 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestActionsSuccessfully(m_ctx, userContext);
-        TestIteratorsSuccessfully(m_ctx, userContext);
+            TestActionsSuccessfully(m_ctx, userContext);
+            TestIteratorsSuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
 
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -487,18 +487,18 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeA
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestActionsSuccessfully(m_ctx, userContext);
-        TestIteratorsSuccessfully(m_ctx, userContext);
+            TestActionsSuccessfully(m_ctx, userContext);
+            TestIteratorsSuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
 
   ScAddr const & usersSetAddr = TestGenerateClassForUser(m_ctx, userAddr);
   TestAddAllPermissionsForUsersSetToInitActions(m_ctx, usersSetAddr);
@@ -517,17 +517,16 @@ TEST_F(
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestActionsUnsuccessfully(m_ctx, userContext);
-
-        return isAuthenticated = true;
-      });
+            TestActionsUnsuccessfully(m_ctx, userContext);
+            isAuthenticated = true;
+          });
 
   ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
   TestAddAllPermissionsForUsersSetToInitActions(m_ctx, usersSetAddr);
@@ -540,15 +539,14 @@ TEST_F(
   ScAddr edgeAddr;
   std::atomic_bool isChecked = false;
   {
-    ScEventRemoveOutputEdge event2(
-        *m_ctx,
-        usersSetAddr,
-        [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          TestActionsSuccessfully(m_ctx, userContext);
-
-          return isChecked = true;
-        });
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::EdgeAccess>>(
+            usersSetAddr,
+            [this, &userContext, &isChecked](ScEventBeforeEraseOutgoingArc<ScType::EdgeAccess> const &)
+            {
+              TestActionsSuccessfully(m_ctx, userContext);
+              isChecked = true;
+            });
 
     edgeAddr = TestAddClassForUser(m_ctx, userAddr, usersSetAddr);
 
@@ -557,16 +555,14 @@ TEST_F(
   }
 
   isChecked = false;
-  ScEventAddOutputEdge event3(
-      *m_ctx,
+  eventSubscription = m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
       usersSetAddr,
-      [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [this, &userContext, &isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
       {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+        EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstNegTemp);
 
         TestActionsUnsuccessfully(m_ctx, userContext);
-
-        return isChecked = true;
+        isChecked = true;
       });
 
   m_ctx->EraseElement(edgeAddr);
@@ -582,13 +578,13 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isChecked = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        return isChecked = true;
-      });
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            isChecked = true;
+          });
 
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr, ScType::EdgeAccessConstNegTemp);
   TestAuthenticationRequestUser(m_ctx, userAddr, ScType::EdgeAccessConstNegTemp);
@@ -606,12 +602,11 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
   SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
   EXPECT_TRUE(isChecked.load());
 
-  ScEventAddOutputEdge event2(
-      *m_ctx,
+  eventSubscription = m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [&isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
       {
-        return isChecked = false;
+        isChecked = false;
       });
 
   ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeDCommonConst, userAddr);
@@ -631,13 +626,13 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isChecked = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        return isChecked = true;
-      });
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            isChecked = true;
+          });
 
   ScAddr const & usersSetAddr = TestGenerateClassForUser(m_ctx, userAddr, ScType::EdgeAccessConstNegTemp);
   TestAddAllPermissionsForUsersSetToInitActions(m_ctx, usersSetAddr, ScType::EdgeAccessConstNegTemp);
@@ -656,12 +651,11 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
   SC_LOCK_WAIT_WHILE_TRUE(!isChecked.load());
   EXPECT_TRUE(isChecked.load());
 
-  ScEventAddOutputEdge event2(
-      *m_ctx,
+  eventSubscription = m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
       conceptAuthenticatedUserAddr,
-      [&isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [&isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
       {
-        return isChecked = false;
+        isChecked = false;
       });
 
   ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeDCommonConst, userAddr);
@@ -681,15 +675,15 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByUserWithInvalidConnectorsToPe
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isChecked = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &userContext, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        TestActionsUnsuccessfully(m_ctx, userContext);
-        TestIteratorsUnsuccessfully(m_ctx, userContext);
-        return isChecked = true;
-      });
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [this, &userContext, &isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            TestActionsUnsuccessfully(m_ctx, userContext);
+            TestIteratorsUnsuccessfully(m_ctx, userContext);
+            isChecked = true;
+          });
 
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr, ScType::EdgeAccessConstNegTemp);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -703,21 +697,19 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedAfter)
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
 
   std::atomic_bool isChecked = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [this, &isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestScMemoryContext userContext{userAddr};
-        TestActionsSuccessfully(m_ctx, userContext);
-        TestIteratorsSuccessfully(m_ctx, userContext);
+            TestScMemoryContext userContext{event.GetUser()};
+            TestActionsSuccessfully(m_ctx, userContext);
+            TestIteratorsSuccessfully(m_ctx, userContext);
 
-        isChecked = true;
-
-        return true;
-      });
+            isChecked = true;
+          });
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
@@ -732,21 +724,19 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
 
   std::atomic_bool isChecked = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [this, &isChecked](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [this, &isChecked](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestScMemoryContext userContext{userAddr};
-        TestActionsSuccessfully(m_ctx, userContext);
-        TestIteratorsSuccessfully(m_ctx, userContext);
+            TestScMemoryContext userContext{event.GetUser()};
+            TestActionsSuccessfully(m_ctx, userContext);
+            TestIteratorsSuccessfully(m_ctx, userContext);
 
-        isChecked = true;
-
-        return true;
-      });
+            isChecked = true;
+          });
 
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
@@ -778,20 +768,18 @@ TEST_F(
 
   std::atomic_bool isAuthenticated = false;
   {
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+            {
+              EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-          TestActionsSuccessfully(m_ctx, userContext);
-          TestIteratorsSuccessfully(m_ctx, userContext);
+              TestActionsSuccessfully(m_ctx, userContext);
+              TestIteratorsSuccessfully(m_ctx, userContext);
 
-          isAuthenticated = true;
-
-          return true;
-        });
+              isAuthenticated = true;
+            });
 
     TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
     TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -801,20 +789,18 @@ TEST_F(
   }
 
   {
-    ScEventAddOutputEdge event2(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+            {
+              EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstNegTemp);
 
-          TestActionsUnsuccessfully(m_ctx, userContext);
-          TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(m_ctx, userContext);
+              TestActionsUnsuccessfully(m_ctx, userContext);
+              TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(m_ctx, userContext);
 
-          isAuthenticated = false;
-
-          return true;
-        });
+              isAuthenticated = false;
+            });
 
     ScIterator3Ptr const it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
     EXPECT_TRUE(it3->Next());
@@ -827,20 +813,18 @@ TEST_F(
   EXPECT_TRUE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
 
   {
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+            {
+              EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-          TestActionsSuccessfully(m_ctx, userContext);
-          TestIteratorsSuccessfully(m_ctx, userContext);
+              TestActionsSuccessfully(m_ctx, userContext);
+              TestIteratorsSuccessfully(m_ctx, userContext);
 
-          isAuthenticated = true;
-
-          return true;
-        });
+              isAuthenticated = true;
+            });
 
     TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
     TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -860,17 +844,17 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutPermiss
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestActionsUnsuccessfully(m_ctx, userContext);
+            TestActionsUnsuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
   SC_LOCK_WAIT_WHILE_TRUE(!isAuthenticated.load());
@@ -884,21 +868,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWriteAn
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsSuccessfully(m_ctx, userContext);
-        TestWriteActionsUnsuccessfully(m_ctx, userContext);
-        TestEraseActionsUnsuccessfully(m_ctx, userContext);
-        TestApplyActionsUnsuccessfully(m_ctx, userContext);
-        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+            TestReadActionsSuccessfully(m_ctx, userContext);
+            TestWriteActionsUnsuccessfully(m_ctx, userContext);
+            TestEraseActionsUnsuccessfully(m_ctx, userContext);
+            TestApplyActionsUnsuccessfully(m_ctx, userContext);
+            TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -913,21 +897,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutErasePe
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsSuccessfully(m_ctx, userContext);
-        TestWriteActionsSuccessfully(m_ctx, userContext);
-        TestEraseActionsUnsuccessfully(m_ctx, userContext);
-        TestApplyActionsUnsuccessfully(m_ctx, userContext);
-        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+            TestReadActionsSuccessfully(m_ctx, userContext);
+            TestWriteActionsSuccessfully(m_ctx, userContext);
+            TestEraseActionsUnsuccessfully(m_ctx, userContext);
+            TestApplyActionsUnsuccessfully(m_ctx, userContext);
+            TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActions(m_ctx, userAddr);
   TestAddPermissionsForUserToInitWriteActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -943,21 +927,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWritePe
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsSuccessfully(m_ctx, userContext);
-        TestWriteActionsUnsuccessfully(m_ctx, userContext);
-        TestEraseActionsSuccessfully(m_ctx, userContext);
-        TestApplyActionsUnsuccessfully(m_ctx, userContext);
-        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+            TestReadActionsSuccessfully(m_ctx, userContext);
+            TestWriteActionsUnsuccessfully(m_ctx, userContext);
+            TestEraseActionsSuccessfully(m_ctx, userContext);
+            TestApplyActionsUnsuccessfully(m_ctx, userContext);
+            TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActions(m_ctx, userAddr);
   TestAddPermissionsForUserToInitEraseActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -973,21 +957,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsUnsuccessfully(m_ctx, userContext);
-        TestWriteActionsSuccessfully(m_ctx, userContext);
-        TestEraseActionsUnsuccessfully(m_ctx, userContext);
-        TestApplyActionsUnsuccessfully(m_ctx, userContext);
-        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+            TestReadActionsUnsuccessfully(m_ctx, userContext);
+            TestWriteActionsSuccessfully(m_ctx, userContext);
+            TestEraseActionsUnsuccessfully(m_ctx, userContext);
+            TestApplyActionsUnsuccessfully(m_ctx, userContext);
+            TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitWriteActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1002,21 +986,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadPer
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsUnsuccessfully(m_ctx, userContext);
-        TestWriteActionsSuccessfully(m_ctx, userContext);
-        TestEraseActionsSuccessfully(m_ctx, userContext);
-        TestApplyActionsSuccessfully(m_ctx, userContext);
-        TestChangeActionsSuccessfully(m_ctx, userContext);
+            TestReadActionsUnsuccessfully(m_ctx, userContext);
+            TestWriteActionsSuccessfully(m_ctx, userContext);
+            TestEraseActionsSuccessfully(m_ctx, userContext);
+            TestApplyActionsSuccessfully(m_ctx, userContext);
+            TestChangeActionsSuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitWriteActions(m_ctx, userAddr);
   TestAddPermissionsForUserToInitEraseActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -1032,21 +1016,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsUnsuccessfully(m_ctx, userContext);
-        TestWriteActionsUnsuccessfully(m_ctx, userContext);
-        TestEraseActionsSuccessfully(m_ctx, userContext);
-        TestApplyActionsUnsuccessfully(m_ctx, userContext);
-        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+            TestReadActionsUnsuccessfully(m_ctx, userContext);
+            TestWriteActionsUnsuccessfully(m_ctx, userContext);
+            TestEraseActionsSuccessfully(m_ctx, userContext);
+            TestApplyActionsUnsuccessfully(m_ctx, userContext);
+            TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitEraseActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1062,23 +1046,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   {
     std::atomic_bool isAuthenticated = false;
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+            {
+              EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-          TestReadActionsSuccessfully(m_ctx, userContext);
-          TestWriteActionsUnsuccessfully(m_ctx, userContext);
-          TestEraseActionsUnsuccessfully(m_ctx, userContext);
-          TestApplyActionsUnsuccessfully(m_ctx, userContext);
-          TestChangeActionsUnsuccessfully(m_ctx, userContext);
+              TestReadActionsSuccessfully(m_ctx, userContext);
+              TestWriteActionsUnsuccessfully(m_ctx, userContext);
+              TestEraseActionsUnsuccessfully(m_ctx, userContext);
+              TestApplyActionsUnsuccessfully(m_ctx, userContext);
+              TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-          isAuthenticated = true;
-
-          return true;
-        });
+              isAuthenticated = true;
+            });
     TestAddPermissionsForUserToInitReadActions(m_ctx, userAddr);
     TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1088,23 +1070,21 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermis
 
   ScAddr const & nrelUserActionClassAddr{nrel_user_action_class_addr};
   std::atomic_bool isPermissionsUpdated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      nrelUserActionClassAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          nrelUserActionClassAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstNegTemp);
 
-        TestReadActionsUnsuccessfully(m_ctx, userContext);
-        TestWriteActionsUnsuccessfully(m_ctx, userContext);
-        TestEraseActionsUnsuccessfully(m_ctx, userContext);
-        TestApplyActionsUnsuccessfully(m_ctx, userContext);
-        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+            TestReadActionsUnsuccessfully(m_ctx, userContext);
+            TestWriteActionsUnsuccessfully(m_ctx, userContext);
+            TestEraseActionsUnsuccessfully(m_ctx, userContext);
+            TestApplyActionsUnsuccessfully(m_ctx, userContext);
+            TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-        isPermissionsUpdated = true;
-
-        return true;
-      });
+            isPermissionsUpdated = true;
+          });
 
   TestRemovePermissionsForUserToInitReadActions(m_ctx, userAddr);
   SC_LOCK_WAIT_WHILE_TRUE(!isPermissionsUpdated.load());
@@ -1122,23 +1102,21 @@ TEST_F(
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   {
     std::atomic_bool isAuthenticated = false;
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+            {
+              EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-          TestReadActionsSuccessfully(m_ctx, userContext);
-          TestWriteActionsUnsuccessfully(m_ctx, userContext);
-          TestEraseActionsUnsuccessfully(m_ctx, userContext);
-          TestApplyActionsUnsuccessfully(m_ctx, userContext);
-          TestChangeActionsUnsuccessfully(m_ctx, userContext);
+              TestReadActionsSuccessfully(m_ctx, userContext);
+              TestWriteActionsUnsuccessfully(m_ctx, userContext);
+              TestEraseActionsUnsuccessfully(m_ctx, userContext);
+              TestApplyActionsUnsuccessfully(m_ctx, userContext);
+              TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-          isAuthenticated = true;
-
-          return true;
-        });
+              isAuthenticated = true;
+            });
     TestAddPermissionsForUsersSetToInitReadActions(m_ctx, usersSetAddr);
     TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1148,23 +1126,21 @@ TEST_F(
 
   ScAddr const & nrelUsersSetActionClassAddr{nrel_users_set_action_class_addr};
   std::atomic_bool isPermissionsUpdated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      nrelUsersSetActionClassAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          nrelUsersSetActionClassAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstNegTemp);
 
-        TestReadActionsUnsuccessfully(m_ctx, userContext);
-        TestWriteActionsUnsuccessfully(m_ctx, userContext);
-        TestEraseActionsUnsuccessfully(m_ctx, userContext);
-        TestApplyActionsUnsuccessfully(m_ctx, userContext);
-        TestChangeActionsUnsuccessfully(m_ctx, userContext);
+            TestReadActionsUnsuccessfully(m_ctx, userContext);
+            TestWriteActionsUnsuccessfully(m_ctx, userContext);
+            TestEraseActionsUnsuccessfully(m_ctx, userContext);
+            TestApplyActionsUnsuccessfully(m_ctx, userContext);
+            TestChangeActionsUnsuccessfully(m_ctx, userContext);
 
-        isPermissionsUpdated = true;
-
-        return true;
-      });
+            isPermissionsUpdated = true;
+          });
 
   TestRemovePermissionsForUsersSetToInitReadActions(m_ctx, usersSetAddr);
   SC_LOCK_WAIT_WHILE_TRUE(!isPermissionsUpdated.load());
@@ -1172,7 +1148,7 @@ TEST_F(
 }
 
 void TestReadWriteEraseAccessedElementUnsuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const &,
     TestScMemoryContext & userContext,
     sc_addr const & addr)
 {
@@ -1195,7 +1171,7 @@ void TestReadWriteEraseAccessedElementUnsuccessfully(
 }
 
 void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     TestScMemoryContext & userContext)
 {
   TestReadWriteEraseAccessedElementUnsuccessfully(context, userContext, concept_authentication_request_user_addr);
@@ -1210,7 +1186,7 @@ void TestReadWriteEraseAccessedAllElementsUnsuccessfully(
 }
 
 void TestReadWriteAccessedElementSuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const &,
     TestScMemoryContext & userContext,
     sc_addr const addr)
 {
@@ -1231,7 +1207,7 @@ void TestReadWriteAccessedElementSuccessfully(
 }
 
 void TestReadWriteEraseAccessedAllElementsSuccessfully(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     TestScMemoryContext & userContext)
 {
   TestReadWriteAccessedElementSuccessfully(context, userContext, concept_guest_user_addr);
@@ -1250,16 +1226,14 @@ void TestReadWriteEraseAccessedAllElementsSuccessfully(
   TestReadWriteAccessedElementSuccessfully(context, userContext, nrel_users_set_action_class_within_sc_structure_addr);
 }
 
-void TestAddPermissionsToHandleReadPermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
-    ScAddr const & userAddr)
+void TestAddPermissionsToHandleReadPermissions(std::unique_ptr<ScAgentContext> const & context, ScAddr const & userAddr)
 {
   ScAddr const & readActionInScMemoryAddr{action_read_permissions_from_sc_memory_addr};
   TestAddPermissionsForUserToInitActions(context, userAddr, readActionInScMemoryAddr);
 }
 
 void TestAddPermissionsToHandleWritePermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & writeActionInScMemoryAddr{action_generate_permissions_in_sc_memory_addr};
@@ -1267,7 +1241,7 @@ void TestAddPermissionsToHandleWritePermissions(
 }
 
 void TestAddPermissionsToHandleErasePermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   ScAddr const & eraseActionInScMemoryAddr{action_erase_permissions_from_sc_memory_addr};
@@ -1275,7 +1249,7 @@ void TestAddPermissionsToHandleErasePermissions(
 }
 
 void TestAddAllPermissionsToHandleAllPermissions(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr)
 {
   TestAddPermissionsToHandleReadPermissions(context, userAddr);
@@ -1291,19 +1265,17 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithou
   {
     ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
     std::atomic_bool isAuthenticated = false;
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+            {
+              EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-          TestActionsSuccessfully(m_ctx, userContext);
+              TestActionsSuccessfully(m_ctx, userContext);
 
-          isAuthenticated = true;
-
-          return true;
-        });
+              isAuthenticated = true;
+            });
 
     TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
     TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -1323,19 +1295,17 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithPe
   {
     ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
     std::atomic_bool isAuthenticated = false;
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [this, &userContext, &isAuthenticated](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [this, &userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+            {
+              EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-          TestActionsSuccessfully(m_ctx, userContext);
+              TestActionsSuccessfully(m_ctx, userContext);
 
-          isAuthenticated = true;
-
-          return true;
-        });
+              isAuthenticated = true;
+            });
 
     TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
     TestAddAllPermissionsToHandleAllPermissions(m_ctx, userAddr);
@@ -1349,7 +1319,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithPe
 }
 
 void TestAddPermissionsForUserToInitActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & actionClassAddr,
     ScAddr const & structureAddr,
@@ -1363,7 +1333,7 @@ void TestAddPermissionsForUserToInitActionsWithinStructure(
 }
 
 void TestAddPermissionsForUserToInitReadActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1374,7 +1344,7 @@ void TestAddPermissionsForUserToInitReadActionsWithinStructure(
 }
 
 void TestAddPermissionsForUserToInitWriteActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1385,7 +1355,7 @@ void TestAddPermissionsForUserToInitWriteActionsWithinStructure(
 }
 
 void TestAddPermissionsForUserToInitEraseActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1396,7 +1366,7 @@ void TestAddPermissionsForUserToInitEraseActionsWithinStructure(
 }
 
 void TestAddPermissionsForUsersSetToInitActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScAddr const & actionClassAddr,
     ScAddr const & structureAddr,
@@ -1411,7 +1381,7 @@ void TestAddPermissionsForUsersSetToInitActionsWithinStructure(
 }
 
 void TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(
-    std::unique_ptr<ScMemoryContext> const & context,
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & usersSetAddr,
     ScAddr const & structureAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
@@ -1574,8 +1544,8 @@ void TestChangeActionsWithinStructureUnsuccessfully(TestScMemoryContext & userCo
       userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, linkAddr, nodeAddr), utils::ExceptionInvalidState);
 }
 
-ScAddr TestCreateStructureWithConnectorAndIncidentElements(
-    std::unique_ptr<ScMemoryContext> const & context,
+ScAddr TestGenerateStructureWithConnectorAndIncidentElements(
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & nodeAddr1,
     ScAddr & edgeAddr,
     ScAddr & linkAddr,
@@ -1595,7 +1565,7 @@ ScAddr TestCreateStructureWithConnectorAndIncidentElements(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr << linkAddr << relationEdgeAddr << relationAddr;
 
   return structureAddr;
@@ -1606,26 +1576,26 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-      {
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
-            userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
+                userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1638,26 +1608,26 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-      {
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
-            userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
+                userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   ScAddr const & usersSetAddr = TestGenerateClassForUser(m_ctx, userAddr);
   TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(m_ctx, usersSetAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -1673,25 +1643,24 @@ TEST_F(
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-      {
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-
-        return isAuthenticated = true;
-      });
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          {
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            isAuthenticated = true;
+          });
   ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
   TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(m_ctx, usersSetAddr, structureAddr);
   TestAddClassForUser(m_ctx, userAddr, usersSetAddr, ScType::EdgeAccessConstNegTemp);
@@ -1704,18 +1673,17 @@ TEST_F(
   ScAddr usersSetEdgeAddr;
   std::atomic_bool isChecked = false;
   {
-    ScEventRemoveOutputEdge event2(
-        *m_ctx,
-        usersSetAddr,
-        [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-        {
-          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-
-          return isChecked = true;
-        });
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::EdgeAccess>>(
+            usersSetAddr,
+            [&](ScEventBeforeEraseOutgoingArc<ScType::EdgeAccess> const &)
+            {
+              TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+              TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              isChecked = true;
+            });
 
     usersSetEdgeAddr = TestAddClassForUser(m_ctx, userAddr, usersSetAddr);
 
@@ -1724,20 +1692,18 @@ TEST_F(
   }
 
   isChecked = false;
-  ScEventAddOutputEdge event3(
-      *m_ctx,
+  eventSubscription = m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
       usersSetAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
+      [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
       {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstNegTemp);
+        EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstNegTemp);
 
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
         TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
         TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
         TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
         TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-
-        return isChecked = true;
+        isChecked = true;
       });
 
   m_ctx->EraseElement(usersSetEdgeAddr);
@@ -1751,27 +1717,27 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
-        TestWriteActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
+            TestWriteActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitWriteActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1784,27 +1750,27 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalErase
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-        TestEraseActionsWithinStructureSuccessfully(userContext, nodeAddr1);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+            TestEraseActionsWithinStructureSuccessfully(userContext, nodeAddr1);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitEraseActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1817,29 +1783,29 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
-        TestWriteActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestChangeActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestEraseActionsWithinStructureSuccessfully(userContext, nodeAddr1);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr1);
+            TestWriteActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestChangeActionsWithinStructureSuccessfully(userContext, structureAddr, nodeAddr1);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestEraseActionsWithinStructureSuccessfully(userContext, nodeAddr1);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitWriteActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAddPermissionsForUserToInitEraseActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
@@ -1853,7 +1819,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
@@ -1861,20 +1827,20 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
 
   std::atomic_bool isAuthenticated = false;
   {
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-        {
-          TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
-              userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
-          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+            {
+              TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
+                  userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
+              TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+              TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
 
-          return isAuthenticated = true;
-        });
+              isAuthenticated = true;
+            });
     TestAddPermissionsForUserToInitReadActionsWithinStructure(m_ctx, userAddr, structureAddr);
     TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1888,18 +1854,18 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   isAuthenticated = false;
 
   {
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-        {
-          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+            {
+              TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+              TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
 
-          return isAuthenticated = true;
-        });
+              isAuthenticated = true;
+            });
 
     ScAddr const & nrelUserActionClassWithinScStructureAddr{nrel_user_action_class_within_sc_structure_addr};
     it3 = m_ctx->Iterator3(
@@ -1922,7 +1888,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
   ScAddr const & usersSetAddr = TestGenerateClassForUser(m_ctx, userAddr);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndIncidentElements(
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
       m_ctx, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
@@ -1930,20 +1896,20 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
 
   std::atomic_bool isAuthenticated = false;
   {
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-        {
-          TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
-              userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
-          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+            {
+              TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
+                  userContext, nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr);
+              TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+              TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
 
-          return isAuthenticated = true;
-        });
+              isAuthenticated = true;
+            });
     TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(m_ctx, usersSetAddr, structureAddr);
     TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -1957,18 +1923,18 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
   isAuthenticated = false;
 
   {
-    ScEventAddOutputEdge event(
-        *m_ctx,
-        conceptAuthenticatedUserAddr,
-        [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-        {
-          TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
-          TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
-          TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+    auto eventSubscription =
+        m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+            conceptAuthenticatedUserAddr,
+            [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+            {
+              TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfully(userContext, nodeAddr2);
+              TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
+              TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
 
-          return isAuthenticated = true;
-        });
+              isAuthenticated = true;
+            });
 
     ScAddr const & nrelUsersSetActionClassWithinScStructureAddr{nrel_users_set_action_class_within_sc_structure_addr};
     it3 = m_ctx->Iterator3(
@@ -1985,8 +1951,8 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
   }
 }
 
-ScAddr TestCreateStructureWithConnectorAndSource(
-    std::unique_ptr<ScMemoryContext> const & context,
+ScAddr TestGenerateStructureWithConnectorAndSource(
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & nodeAddr1,
     ScAddr & nodeAddr2)
 {
@@ -1997,7 +1963,7 @@ ScAddr TestCreateStructureWithConnectorAndSource(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr1;
 
   return structureAddr;
@@ -2045,26 +2011,26 @@ TEST_F(
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndSource(m_ctx, nodeAddr1, nodeAddr2);
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndSource(m_ctx, nodeAddr1, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsWithinStructureWithConnectorAndSourceSuccessfully(userContext, nodeAddr1);
-        TestReadActionsWithinStructureWithConnectorAndSourceUnsuccessfully(userContext, nodeAddr2);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestReadActionsWithinStructureWithConnectorAndSourceSuccessfully(userContext, nodeAddr1);
+            TestReadActionsWithinStructureWithConnectorAndSourceUnsuccessfully(userContext, nodeAddr2);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -2072,8 +2038,8 @@ TEST_F(
   EXPECT_TRUE(isAuthenticated.load());
 }
 
-ScAddr TestCreateStructureWithConnectorAndTarget(
-    std::unique_ptr<ScMemoryContext> const & context,
+ScAddr TestGenerateStructureWithConnectorAndTarget(
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & linkAddr,
     ScAddr & nodeAddr2)
 {
@@ -2084,7 +2050,7 @@ ScAddr TestCreateStructureWithConnectorAndTarget(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << edgeAddr1 << linkAddr;
 
   return structureAddr;
@@ -2132,26 +2098,26 @@ TEST_F(
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr linkAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnectorAndTarget(m_ctx, linkAddr, nodeAddr2);
+  ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndTarget(m_ctx, linkAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsWithinStructureWithConnectorAndTargetSuccessfully(userContext, linkAddr);
-        TestReadActionsWithinStructureWithConnectorAndTargetUnsuccessfully(userContext, nodeAddr2);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestReadActionsWithinStructureWithConnectorAndTargetSuccessfully(userContext, linkAddr);
+            TestReadActionsWithinStructureWithConnectorAndTargetUnsuccessfully(userContext, nodeAddr2);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -2159,8 +2125,8 @@ TEST_F(
   EXPECT_TRUE(isAuthenticated.load());
 }
 
-ScAddr TestCreateStructureWithConnector(
-    std::unique_ptr<ScMemoryContext> const & context,
+ScAddr TestGenerateStructureWithConnector(
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & edgeAddr,
     ScAddr & nodeAddr2)
 {
@@ -2171,7 +2137,7 @@ ScAddr TestCreateStructureWithConnector(
   context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << edgeAddr;
 
   return structureAddr;
@@ -2207,26 +2173,26 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr edgeAddr, nodeAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithConnector(m_ctx, edgeAddr, nodeAddr2);
+  ScAddr const & structureAddr = TestGenerateStructureWithConnector(m_ctx, edgeAddr, nodeAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const &, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsWithinStructureWithConnectorSuccessfully(userContext, edgeAddr);
-        TestReadActionsWithinStructureWithConnectorUnsuccessfully(userContext, nodeAddr2);
-        TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
-        TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestReadActionsWithinStructureWithConnectorSuccessfully(userContext, edgeAddr);
+            TestReadActionsWithinStructureWithConnectorUnsuccessfully(userContext, nodeAddr2);
+            TestWriteActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
+            TestEraseActionsWithinStructureUnsuccessfully(userContext, nodeAddr2);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -2234,8 +2200,8 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   EXPECT_TRUE(isAuthenticated.load());
 }
 
-ScAddr TestCreateStructureWithLinks(
-    std::unique_ptr<ScMemoryContext> const & context,
+ScAddr TestGenerateStructureWithLinks(
+    std::unique_ptr<ScAgentContext> const & context,
     ScAddr & linkAddr1,
     ScAddr & linkAddr2)
 {
@@ -2245,7 +2211,7 @@ ScAddr TestCreateStructureWithLinks(
   context->SetLinkContent(linkAddr2, "test_content");
 
   ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
-  ScStruct structure{*context, structureAddr};
+  ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << linkAddr1;
 
   return structureAddr;
@@ -2272,23 +2238,23 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
   ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
 
   ScAddr linkAddr1, linkAddr2;
-  ScAddr const & structureAddr = TestCreateStructureWithLinks(m_ctx, linkAddr1, linkAddr2);
+  ScAddr const & structureAddr = TestGenerateStructureWithLinks(m_ctx, linkAddr1, linkAddr2);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
-  ScEventAddOutputEdge event(
-      *m_ctx,
-      conceptAuthenticatedUserAddr,
-      [&](ScAddr const & addr, ScAddr const & edgeAddr, ScAddr const & userAddr)
-      {
-        EXPECT_EQ(m_ctx->GetElementType(edgeAddr), ScType::EdgeAccessConstPosTemp);
+  auto eventSubscription =
+      m_ctx->GenerateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+          conceptAuthenticatedUserAddr,
+          [&](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const & event)
+          {
+            EXPECT_EQ(event.GetArcType(), ScType::EdgeAccessConstPosTemp);
 
-        TestReadActionsWithinStructureWithLinksSuccessfully(userContext, linkAddr1);
-        TestReadActionsWithinStructureWithLinksUnsuccessfully(userContext);
+            TestReadActionsWithinStructureWithLinksSuccessfully(userContext, linkAddr1);
+            TestReadActionsWithinStructureWithLinksUnsuccessfully(userContext);
 
-        return isAuthenticated = true;
-      });
+            isAuthenticated = true;
+          });
   TestAddPermissionsForUserToInitReadActionsWithinStructure(m_ctx, userAddr, structureAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 

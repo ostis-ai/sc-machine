@@ -30,7 +30,7 @@ sc_addr keynode_action_search_full_pattern;
 
 sc_addr keynode_action;
 sc_addr keynode_action_initiated;
-sc_addr keynode_nrel_answer;
+sc_addr keynode_nrel_result;
 sc_addr keynode_action_finished;
 sc_addr keynode_action_finished_successfully;
 sc_addr keynode_action_finished_unsuccessfully;
@@ -78,7 +78,7 @@ char const keynode_action_initiated_str[] = "action_initiated";
 char const keynode_action_str[] = "action";
 char const keynode_rrel_1_str[] = "rrel_1";
 char const keynode_rrel_2_str[] = "rrel_2";
-char const keynode_nrel_answer_str[] = "nrel_answer";
+char const keynode_nrel_result_str[] = "nrel_result";
 char const keynode_action_finished_str[] = "action_finished";
 char const keynode_action_finished_successfully_str[] = "action_finished_successfully";
 char const keynode_action_finished_unsuccessfully_str[] = "action_finished_unsuccessfully";
@@ -109,7 +109,7 @@ sc_result search_keynodes_initialize(sc_memory_context * ctx, sc_addr const init
   RESOLVE_KEYNODE(ctx, keynode_action_all_input_const_pos_arc_with_rel, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_action_full_semantic_neighborhood, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_action_decomposition, init_memory_generated_structure);
-  RESOLVE_KEYNODE(ctx, keynode_nrel_answer, init_memory_generated_structure);
+  RESOLVE_KEYNODE(ctx, keynode_nrel_result, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_action_all_identifiers, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_action_all_identified_elements, init_memory_generated_structure);
   RESOLVE_KEYNODE(ctx, keynode_action_search_all_subclasses_in_quasybinary_relation, init_memory_generated_structure);

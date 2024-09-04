@@ -339,7 +339,7 @@ private:
           priorityTripleIdx = FindTripleWithMostMinimalOutputArcsForFirstItem(connectivityComponentsTriples);
       }
 
-      // save triple in which the first item address has the most minimal count of input/output arcs in vector
+      // save triple in which the first item address has the most minimal count of incoming/outgoing sc-arcs in vector
       // with more priority
       if (priorityTripleIdx != -1)
       {
@@ -358,7 +358,7 @@ private:
           m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplate::ScTemplateTripleType::AAF];
     }
 
-    // find triple in which the third item address has the most minimal count of input arcs
+    // find triple in which the third item address has the most minimal count of incoming sc-arcs
     sc_int32 priorityTripleIdx = -1;
     sc_int32 minInputArcsCount = -1;
     for (size_t const tripleIdx : triplesWithConstEndElement)
@@ -389,7 +389,7 @@ private:
       triplesWithConstBeginElement =
           m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplate::ScTemplateTripleType::FAE];
 
-    // find triple in which the first item address has the most minimal count of output arcs
+    // find triple in which the first item address has the most minimal count of outgoing sc-arcs
     sc_int32 priorityTripleIdx = -1;
     sc_int32 minOutputArcsCount = -1;
     for (size_t const tripleIdx : triplesWithConstBeginElement)
@@ -540,6 +540,7 @@ private:
       {
         return GetItemAddrInReplacements(templateItem);
       }
+      SC_FALLTHROUGH;
     }
 
     default:

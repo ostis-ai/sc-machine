@@ -15,7 +15,7 @@
 typedef enum
 {
   sc_iterator3_f_a_a = 0,  // outgoing edges
-  sc_iterator3_a_a_f,      // ingoing edges
+  sc_iterator3_a_a_f,      // incoming edges
   sc_iterator3_f_a_f,      // edge between source and target
   sc_iterator3_a_f_a,      // find source/target elements of edge
   // just for clean template search
@@ -64,10 +64,10 @@ struct _sc_iterator3
   sc_bool finished;
 };
 
-/*! Create iterator to find output arcs for specified element
- * @param el sc-addr of element to iterate output arcs
- * @param arc_type Type of output arc to iterate (0 - all types)
- * @param end_type Type of end element for output arcs, to iterate
+/*! Create iterator to find outgoing sc-arcs for specified element
+ * @param el sc-addr of element to iterate outgoing sc-arcs
+ * @param arc_type Type of outgoing sc-arc to iterate (0 - all types)
+ * @param end_type Type of end element for outgoing sc-arcs, to iterate
  * @return If iterator created, then return pointer to it; otherwise return null
  */
 _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(
@@ -76,10 +76,10 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(
     sc_type arc_type,
     sc_type end_type);
 
-/*! Create iterator to find input arcs for specified element
- * @param beg_type Type of begin element for input arcs, to iterate
- * @param arc_type Type of input arc to iterate (0 - all types)
- * @param el sc-addr of element to iterate input arcs
+/*! Create iterator to find incoming sc-arcs for specified element
+ * @param beg_type Type of begin element for incoming sc-arcs, to iterate
+ * @param arc_type Type of incoming sc-arc to iterate (0 - all types)
+ * @param el sc-addr of element to iterate incoming sc-arcs
  * @return If iterator created, then return pointer to it; otherwise return null
  */
 _SC_EXTERN sc_iterator3 * sc_iterator3_a_a_f_new(
@@ -160,7 +160,7 @@ _SC_EXTERN sc_bool sc_iterator3_next(sc_iterator3 * it);
  * @return Return SC_TRUE, if iterator moved to new results; otherwise return SC_FALSE.
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context does not have read
  * permissions.
  * @code
  * sc_result result;
@@ -187,7 +187,7 @@ _SC_EXTERN sc_addr sc_iterator3_value(sc_iterator3 * it, sc_uint index);
  * @retval SC_RESULT_OK The function executed successfully.
  * @retval SC_RESULT_NO The specified sc-iterator3 is not valid.
  * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHORIZED The specified sc-memory context is not authorized.
- * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context has not read
+ * @retval SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS The specified sc-memory context does not have read
  * permissions to get sc-element by specified index.
  */
 _SC_EXTERN sc_addr sc_iterator3_value_ext(sc_iterator3 * it, sc_uint index, sc_result * result);

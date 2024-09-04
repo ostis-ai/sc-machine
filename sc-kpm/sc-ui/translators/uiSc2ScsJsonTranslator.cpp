@@ -28,7 +28,7 @@ void uiSc2ScsTranslator::runImpl()
       sc_type_arc_common | sc_type_const,
       mInputConstructionAddr,
       sc_type_arc_pos_const_perm,
-      keynode_action_nrel_answer);
+      keynode_action_nrel_result);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
     sc_iterator3 * it3 =
@@ -143,7 +143,7 @@ bool uiSc2ScsTranslator::getIdentifier(sc_addr const & addr, sc_addr const & lan
 }
 
 // -------------------------------------------------------
-sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event const * event, sc_addr arg)
+sc_result uiSc2ScsTranslator::ui_translate_sc2scs(sc_event_subscription const *, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

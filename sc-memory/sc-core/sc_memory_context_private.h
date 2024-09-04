@@ -19,29 +19,33 @@ struct _sc_memory_context_manager
   sc_uint32 context_count;             ///< Number of currently active memory contexts.
   sc_monitor context_monitor;          ///< Monitor for synchronizing access to the hash table storing memory contexts.
 
-  sc_event * on_new_identified_user_subscription;  /// < Subscription for identified user events.
+  sc_event_subscription * on_new_identified_user_subscription;  /// < Subscription for identified user events.
 
-  sc_event * on_authentication_request_user_subscription;  ///< Subscription for user authentication request events.
-  sc_event * on_remove_authenticated_user_subscription;    ///< Subscription for user unauthentication events.
+  sc_event_subscription *
+      on_authentication_request_user_subscription;  ///< Subscription for user authentication request events.
+  sc_event_subscription *
+      on_remove_authenticated_user_subscription;  ///< Subscription for user unauthentication events.
 
   ///< Hash table storing global permissions (within the knowledge base) for users.
   sc_hash_table * user_global_permissions;
   ///< Monitor for synchronizing access to the hash table storing global permissions within the knowledge base.
   sc_monitor user_global_permissions_monitor;
   sc_hash_table * basic_action_classes;  ///< Hash table storing permissions for action classes in sc-memory.
-  sc_event * on_new_user_action_class;   ///< Event subscription for adding new permitted action classes for users.
-  sc_event * on_new_users_set_action_class;
-  sc_event * on_remove_user_action_class;  ///< Event subscription for removing new permitted action classes for users.
-  sc_event * on_remove_users_set_action_class;
+  sc_event_subscription *
+      on_new_user_action_class;  ///< Event subscription for adding new permitted action classes for users.
+  sc_event_subscription * on_new_users_set_action_class;
+  sc_event_subscription *
+      on_remove_user_action_class;  ///< Event subscription for removing new permitted action classes for users.
+  sc_event_subscription * on_remove_users_set_action_class;
 
   ///< Hash table storing local permissions (within sc-structures) for users.
   sc_hash_table * user_local_permissions;
   ///< Monitor for synchronizing access to the hash table storing local permissions within sc-structures.
   sc_monitor user_local_permissions_monitor;
-  sc_event * on_new_user_action_class_within_sc_structure;
-  sc_event * on_new_users_set_action_class_within_sc_structure;
-  sc_event * on_remove_user_action_class_within_sc_structure;
-  sc_event * on_remove_users_set_action_class_within_sc_structure;
+  sc_event_subscription * on_new_user_action_class_within_sc_structure;
+  sc_event_subscription * on_new_users_set_action_class_within_sc_structure;
+  sc_event_subscription * on_remove_user_action_class_within_sc_structure;
+  sc_event_subscription * on_remove_users_set_action_class_within_sc_structure;
 
   sc_hash_table * on_new_users_in_sets_events;
   sc_monitor on_new_users_in_sets_events_monitor;

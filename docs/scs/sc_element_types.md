@@ -1,5 +1,5 @@
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.9.0.
 ---
 
 <table>

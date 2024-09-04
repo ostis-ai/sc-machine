@@ -20,9 +20,6 @@ packagelist_runtime=(
   file
   curl
   libglib2.0-dev
-  libboost-system-dev
-  libboost-filesystem-dev
-  libboost-program-options-dev
   python3
   python3-pip
   python3-venv
@@ -30,20 +27,15 @@ packagelist_runtime=(
 
 packagelist_dev=(
   libglib2.0-dev
-  libboost-system-dev
-  libboost-filesystem-dev
-  libboost-program-options-dev
   make
   cmake
   ccache
-  llvm
   gcc
   g++
   clang
-  libclang-dev
   default-jre
-  libcurl4-openssl-dev
   clang-format
+  libasio-dev
   libwebsocketpp-dev
   nlohmann-json3-dev
   python3-dev

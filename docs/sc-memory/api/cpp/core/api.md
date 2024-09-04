@@ -1,7 +1,7 @@
 # **C++ Core API**
 
-!!! warning
-    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+!!! note
+    This is correct for only versions of sc-machine that >= 0.9.0.
 ---
 
 The API provides core functionality for creating, retrieving and erasing sc-elements in sc-memory.
@@ -19,6 +19,9 @@ these features using this API.
 
 !!! note
     To include this API provide `#include <sc-memory/sc_memory.hpp>` in your hpp source.
+
+!!! warning
+    Objects of `ScMemoryContext` class are movable, but not copyable.
 
 ## **ScAddr**
 
@@ -40,15 +43,10 @@ during API methods completion.
 
 ```cpp
 ...
-// To create such context use constructor of ScMemoryContext 
-// providing system identifier of subject of action.
-ScMemoryContext context{"my_name"};
+// To create such context use constructor of ScMemoryContext.
+ScMemoryContext context;
 // After you can use this object to call any API methods.
 ```
-
-!!! note
-    Don't use constructor of ScMemoryContext, providing sc_permissions argument. It can be unsafe. It will be 
-    deleted in the further versions of sc-machine. 
 
 ### **CreateNode**
 
@@ -134,7 +132,7 @@ syntactic sc-type for sc-element.
 ScAddr const & nodeAddr = context.CreateNode(ScType::Node);
 bool const isSubtypeElementChanged 
     = context.SetElementSubtype(node, ScType::NodeConst);
-// The value of `isSubtypeElementChanged` must be equal to `SC_TRUE`.
+// The value of `isSubtypeElementChanged` must be equal to `true`.
 ```
 
 !!! note
@@ -183,8 +181,8 @@ ScIterator3Ptr it3 = context.Iterator3(
 while (it3->Next())
 {
   // To get values use `it3->Get(index)`, where index in range [0; 2]. 
-  // It returns `SC_TRUE`, if the next appropriate construction is found, 
-  // otherwise `SC_FALSE`.
+  // It returns `true`, if the next appropriate construction is found, 
+  // otherwise `false`.
   ... // Write your code to handle found sc-construction.
 }
 ```
@@ -203,8 +201,8 @@ ScIterator5Ptr it5 = context.Iterator5(
         ScType::EdgeAccessConstPosPerm,
         nrelDecompositionAddr);
 // Use `it5-Next()` to go to the next appropriate by condition sc-construction. 
-// It returns `SC_TRUE`, if the next appropriate construction is found, 
-// otherwise `SC_FALSE`.
+// It returns `true`, if the next appropriate construction is found, 
+// otherwise `false`.
 while (it5->Next())
 {
   // To get values use `it5->Get(index)`, where index in range [0; 4].
@@ -303,7 +301,7 @@ context.SetLinkContent(linkAddr2, 10f);
 ### **GetLinkContent**
 
 To get existed content from sc-link you can use the method `GetLinkContent`. A content can be represented as numeric or 
-string. If content doesn't exist in sc-link, then the method `GetLinkContent` will return `SC_FALSE` and result content
+string. If content doesn't exist in sc-link, then the method `GetLinkContent` will return `false` and result content
 will be empty.
 
 ```cpp
@@ -322,7 +320,7 @@ bool const numericContentExist
 
 !!! note
     You can set empty content into sc-link, but it means that this sc-link has content and this method for this 
-    sc-link returns `SC_TRUE`.
+    sc-link returns `true`.
 
 ### **FindLinksByContent**
 
@@ -408,7 +406,6 @@ large graph structures.
 
 - [What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?](#what-is-the-difference-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
 - [How I can specify empty ScAddr?](#how-i-can-specify-empty-scaddr)
-- [Why `SC_TRUE` and `SC_FALSE` are used instead of `true` and `false`?](#why-sc_true-and-sc_false-are-used-instead-of-true-and-false)
 
 ### **What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?**
 
@@ -431,8 +428,3 @@ myFunc(addr);
 myFunc(ScAddr::Empty);
 ...
 ```
-
-### **Why `SC_TRUE` and `SC_FALSE` are used instead of `true` and `false`?**
-
-We try to override standard types. In the future, it allows you to replace types. For example, you have `sc_char` that
-override `char` and you want to use more symbols using `wchar_t` instead. To do it you can replace `char` by `wchar_t`.

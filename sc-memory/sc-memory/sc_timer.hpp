@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "sc_defines.hpp"
-
 #include <chrono>
+
+#include "sc_defines.hpp"
 
 class ScTimer
 {

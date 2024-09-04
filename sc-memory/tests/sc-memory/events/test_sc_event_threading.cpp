@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_event.hpp"
+#include "sc-memory/sc_event_subscription.hpp"
+
 #include "sc-memory/sc_timer.hpp"
 
 #include "event_test_utils.hpp"
@@ -10,7 +12,7 @@
 #include <ctime>
 #include <thread>
 
-TEST_F(ScEventTest, threading_smoke)
+TEST_F(ScEventTest, ThreadingSmoke)
 {
   std::srand(unsigned(std::time(0)));
 
@@ -30,16 +32,21 @@ TEST_F(ScEventTest, threading_smoke)
   }
 
   // create random events for each node
-  std::vector<ScEvent *> events;
-  events.resize(eventsNum);
+  std::vector<std::shared_ptr<ScEventSubscription>> eventSubscriptions;
+  eventSubscriptions.resize(eventsNum);
 
-  std::vector<ScEvent::Type> eventTypes = {
-      ScEvent::Type::AddOutputEdge,
-      ScEvent::Type::AddInputEdge,
-      ScEvent::Type::RemoveOutputEdge,
-      ScEvent::Type::RemoveInputEdge,
-      ScEvent::Type::EraseElement,
-      ScEvent::Type::ContentChanged};
+  std::vector<ScAddr> eventTypes = {
+      ScKeynodes::sc_event_after_generate_connector,
+      ScKeynodes::sc_event_after_generate_incoming_arc,
+      ScKeynodes::sc_event_after_generate_outgoing_arc,
+      ScKeynodes::sc_event_after_generate_edge,
+      ScKeynodes::sc_event_before_erase_connector,
+      ScKeynodes::sc_event_before_erase_incoming_arc,
+      ScKeynodes::sc_event_before_erase_outgoing_arc,
+      ScKeynodes::sc_event_before_erase_edge,
+      ScKeynodes::sc_event_before_erase_element,
+      ScKeynodes::sc_event_before_change_link_content,
+  };
 
   auto const randNode = [&nodes]()
   {
@@ -50,14 +57,12 @@ TEST_F(ScEventTest, threading_smoke)
 
   for (size_t i = 0; i < eventsNum; ++i)
   {
-    events[i] = new ScEvent(
-        *m_ctx,
+    eventSubscriptions[i] = m_ctx->GenerateElementaryEventSubscription(
+        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ChangeContent event
         randNode(),
-        eventTypes[std::rand() % (eventTypes.size() - 1)],  // ignore ContentChanged event
-        [&](ScAddr const &, ScAddr const &, ScAddr const &)
+        [&](ScElementaryEvent const &)
         {
           evtCount++;
-          return true;
         });
   }
 
@@ -93,8 +98,5 @@ TEST_F(ScEventTest, threading_smoke)
     }
   }
 
-  for (auto e : events)
-    delete e;
-
-  events.clear();
+  eventSubscriptions.clear();
 }

@@ -37,12 +37,12 @@
 
 #define sc_str_int_to_int(string, number) number = atoi(string)
 
-#define sc_str_find(str, substring) strstr(str, substring) != null_ptr
+#define sc_str_find(str, substring) (strstr(str, substring) != null_ptr)
 
 #define sc_str_find_position(str, substring) (sc_uint64)(strstr(str, substring) - str + 1)
 
 #define sc_str_find_get(str, substring) strstr(str, substring)
 
-#define sc_str_cmp(str, other) strcmp(str, other) == 0
+#define sc_str_cmp(str, other) (strcmp(str, other) == 0)
 
 #endif

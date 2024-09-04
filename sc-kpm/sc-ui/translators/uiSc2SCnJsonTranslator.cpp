@@ -4,16 +4,22 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include "uiSc2SCnJsonTranslator.h"
+
+#include <algorithm>
+#include <string_view>
+
 #include "sc-memory/sc_memory.hpp"
 #include "sc-memory/sc_stream.hpp"
 
-#include "uiSc2SCnJsonTranslator.h"
+extern "C"
+{
+#include "sc-core/sc_helper.h"
+}
 
 #include "uiTranslators.h"
 #include "uiKeynodes.h"
 #include "uiUtils.h"
-#include <algorithm>
-#include <string_view>
 
 namespace ScnTranslatorConstants
 {
@@ -63,7 +69,7 @@ void uiSc2SCnJsonTranslator::runImpl()
       sc_type_arc_common | sc_type_const,
       mInputConstructionAddr,
       sc_type_arc_pos_const_perm,
-      keynode_action_nrel_answer);
+      keynode_action_nrel_result);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
     sc_iterator3 * it3 =
@@ -109,7 +115,7 @@ void uiSc2SCnJsonTranslator::runImpl()
 
 void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
 {
-  // now we need to iterate all arcs and collect output/input arcs info
+  // now we need to iterate all arcs and collect output/incoming sc-arcs info
   // first collect information about elements
   std::set<sc_addr> filtered;
   for (auto const & it : mEdges)
@@ -713,7 +719,7 @@ sc_addr uiSc2SCnJsonTranslator::GetNextElementArc(sc_addr elementArc)
 }
 
 // -------------------------------------
-sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event const * event, sc_addr arg)
+sc_result uiSc2SCnJsonTranslator::ui_translate_sc2scn(sc_event_subscription const *, sc_addr arg)
 {
   sc_addr cmd_addr, input_addr, format_addr, lang_addr;
 

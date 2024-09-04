@@ -2,7 +2,7 @@
 
 #include "sc-memory/sc_link.hpp"
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "template_test_utils.hpp"
 
@@ -22,7 +22,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
   ScAddr const templateAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(templateAddr.IsValid());
 
-  ScStruct templStruct(*m_ctx, templateAddr);
+  ScStructure templStruct = m_ctx->ConvertToStructure(templateAddr);
   ScAddr xAddr;
   {
     ScAddr _yAddr, _zAddr, _sAddr;

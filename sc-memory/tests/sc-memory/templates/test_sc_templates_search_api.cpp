@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_struct.hpp"
+#include "sc-memory/sc_structure.hpp"
 
 #include "template_test_utils.hpp"
 
@@ -145,8 +145,6 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackForLoop)
       templ,
       [&](ScTemplateSearchResultItem const & item)
       {
-        ScAddr foundAddr;
-
         for (ScAddr const & addr : item)
         {
           EXPECT_TRUE(addr.IsValid());
@@ -178,7 +176,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   size_t count = 0;
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       },
@@ -190,7 +188,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       },
@@ -203,7 +201,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       },
@@ -215,7 +213,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       },
@@ -228,7 +226,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       },
@@ -245,7 +243,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       },
@@ -261,7 +259,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
 
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       },
@@ -285,7 +283,7 @@ TEST_F(ScTemplateSearchApiTest, SearchVarTriple)
   EXPECT_THROW(
       m_ctx->HelperSearchTemplate(
           templ,
-          [&](ScTemplateSearchResultItem const & item)
+          [&](ScTemplateSearchResultItem const &)
           {
             ++count;
           }),
@@ -300,7 +298,7 @@ TEST_F(ScTemplateSearchApiTest, SearchEmpty)
   size_t count = 0;
   m_ctx->HelperSearchTemplate(
       templ,
-      [&](ScTemplateSearchResultItem const & item)
+      [&](ScTemplateSearchResultItem const &)
       {
         ++count;
       });

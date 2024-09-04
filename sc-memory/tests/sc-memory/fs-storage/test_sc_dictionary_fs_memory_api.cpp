@@ -969,7 +969,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
   EXPECT_EQ(sc_dictionary_fs_memory_shutdown(memory), SC_FS_MEMORY_OK);
 }
 
-void _test_push_link_content(void * data, sc_addr const link_addr, sc_char const * link_content)
+void _test_push_link_content(void * data, sc_addr const, sc_char const * link_content)
 {
   sc_uint32 const size = sc_str_len(link_content);
   sc_char * copied_string;

@@ -4,13 +4,14 @@
 
 extern "C"
 {
+#include "sc-core/sc_helper.h"
 #include "sc-search/search.h"
 #include "sc-search/search_keynodes.h"
 #include "sc-search/search_agents.h"
 #include "sc-utils/utils_keynodes.h"
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_outgoing_arc)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
   sc_addr init_memory_generated_structure;
@@ -40,7 +41,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -57,7 +58,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc)
   sc_module_shutdown();
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_outgoing_arc_with_rel)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
@@ -90,7 +91,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -112,7 +113,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_output_arc_with_rel)
   sc_module_shutdown();
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_incoming_arc)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
@@ -143,7 +144,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -163,7 +164,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc)
   sc_module_shutdown();
 }
 
-TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc_with_rel)
+TEST_F(ScMemoryTest, agent_search_all_const_pos_incoming_arc_with_rel)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
@@ -196,7 +197,7 @@ TEST_F(ScMemoryTest, agent_search_all_const_pos_input_arc_with_rel)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -254,7 +255,7 @@ TEST_F(ScMemoryTest, agent_search_all_identifiers)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -301,7 +302,7 @@ TEST_F(ScMemoryTest, agent_search_all_identified_elements)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -378,7 +379,7 @@ TEST_F(ScMemoryTest, agent_search_full_semantic_neighborhood)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -472,7 +473,7 @@ TEST_F(ScMemoryTest, agent_search_links_of_relation_connected_with_element)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);
@@ -540,7 +541,7 @@ TEST_F(ScMemoryTest, agent_search_decomposition)
       sc_type_arc_common | sc_type_const,
       sc_type_node | sc_type_const,
       sc_type_arc_pos_const_perm,
-      keynode_nrel_answer);
+      keynode_nrel_result);
 
   EXPECT_TRUE(sc_iterator5_next(it5));
   sc_addr const structure_addr = sc_iterator5_value(it5, 2);

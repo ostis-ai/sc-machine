@@ -6,26 +6,53 @@
 
 #include "sc_object.hpp"
 
-ScObject::ScObject()
-  : m_isInitialized(false)
-  , m_initResult(false)
-{
-}
+ScObject::ScObject() = default;
+
+ScObject & ScObject::operator=(ScObject const & other) = default;
 
 ScObject::~ScObject() = default;
 
-ScObject & ScObject::operator=(ScObject const & other)
+std::string ScObject::GetName() const
 {
-  return *this;
+  if (m_name.empty())
+    m_name = Demangle(typeid(*this).name());
+
+  return m_name;
 }
 
-bool ScObject::Init()
+std::string ScObject::Demangle(std::string const & mangledName)
 {
-  if (!m_isInitialized)
+  std::string demangled;
+  size_t i = 0;
+
+  if (mangledName[0] == 'N')
+    ++i;
+
+  while (i < mangledName.size() && std::isdigit(mangledName[i]))
   {
-    m_isInitialized = true;
-    m_initResult = _InitInternal();
+    // Read the length of the next part
+    size_t len = 0;
+    while (i < mangledName.size() && std::isdigit(mangledName[i]))
+    {
+      len = len * 10 + (mangledName[i] - '0');
+      ++i;
+    }
+
+    // Extract the part of the name
+    if (i + len <= mangledName.size())
+    {
+      if (!demangled.empty())
+        demangled += "::";
+
+      demangled += mangledName.substr(i, len);
+      i += len;
+    }
+    else
+    {
+      // If the length is invalid, return the original mangled name
+      return mangledName;
+    }
   }
 
-  return m_initResult;
+  return demangled;
 }
