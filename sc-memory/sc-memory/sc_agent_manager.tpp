@@ -37,7 +37,8 @@ void ScAgentManager<TScAgent>::Subscribe(
   auto subscriptions =
       GetAgentImplementationSubscriptions(agentImplementationAddr, agentImplementationsToSubscriptions);
   if (!subscriptions)
-    subscriptions = GenerateAgentImplementationSubscriptions(agentImplementationAddr, agentImplementationsToSubscriptions);
+    subscriptions =
+        GenerateAgentImplementationSubscriptions(agentImplementationAddr, agentImplementationsToSubscriptions);
   else if (context->IsElement(agentImplementationAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
@@ -208,9 +209,10 @@ typename ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef ScAg
 }
 
 template <class TScAgent>
-typename ScAgentManager<TScAgent>::ScSubscriptionsRef ScAgentManager<TScAgent>::GenerateAgentImplementationSubscriptions(
-    ScAddr const & agentImplementationAddr,
-    ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions)
+typename ScAgentManager<TScAgent>::ScSubscriptionsRef ScAgentManager<TScAgent>::
+    GenerateAgentImplementationSubscriptions(
+        ScAddr const & agentImplementationAddr,
+        ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions)
 {
   agentImplementationsToSubscriptions->get().insert({agentImplementationAddr, {}});
 
