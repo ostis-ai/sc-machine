@@ -74,7 +74,7 @@ public:
   _SC_EXTERN ScModule * Agent() noexcept;
 
   /*!
-   * @brief Creates an agent builder for the specified agent implementation.
+   * @brief Generates an agent builder for the specified agent implementation.
    * @tparam TScAgent An agent class to subscribe.
    * @param agentImplementationAddr A sc-address of the agent implementation.
    * @return A pointer to the created agent builder.

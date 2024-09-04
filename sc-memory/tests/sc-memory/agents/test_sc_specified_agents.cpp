@@ -64,7 +64,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecification)
   ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_action");
   ScAddr const & argAddr = m_ctx->CreateNode(ScType::NodeConst);
 
-  m_ctx->CreateAction(actionClassAddr).SetArguments(argAddr).Initiate();
+  m_ctx->GenerateAction(actionClassAddr).SetArguments(argAddr).Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
@@ -1321,7 +1321,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecificationButInitiatio
   ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_action");
   ScAddr const & argAddr = m_ctx->CreateNode(ScType::NodeConst);
 
-  m_ctx->CreateAction(actionClassAddr).SetArguments(argAddr).Initiate();
+  m_ctx->GenerateAction(actionClassAddr).SetArguments(argAddr).Initiate();
   EXPECT_FALSE(ATestSpecifiedAgent::msWaiter.Wait(0.2));
 
   m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
@@ -1382,7 +1382,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentUnsuccessfulInitiationConditionP
 
   ScAddr const & actionClassAddr = m_ctx->HelperFindBySystemIdtf("test_specified_agent_action");
 
-  m_ctx->CreateAction(actionClassAddr).Initiate();
+  m_ctx->GenerateAction(actionClassAddr).Initiate();
   EXPECT_FALSE(ATestSpecifiedAgent::msWaiter.Wait(0.2));
 
   m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);

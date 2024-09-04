@@ -6,58 +6,58 @@
 
 using ScActionTest = ScMemoryTest;
 
-TEST_F(ScActionTest, CreateActionAndGetClassWithReceptorActionType)
+TEST_F(ScActionTest, GenerateActionAndGetClassWithReceptorActionType)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 
-TEST_F(ScActionTest, CreateActionAndGetClassWithEffectorActionType)
+TEST_F(ScActionTest, GenerateActionAndGetClassWithEffectorActionType)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::effector_action, testClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 
-TEST_F(ScActionTest, CreateActionAndGetClassWithBehavioralActionType)
+TEST_F(ScActionTest, GenerateActionAndGetClassWithBehavioralActionType)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::behavioral_action, testClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 
-TEST_F(ScActionTest, CreateActionAndGetClassWithInformationActionType)
+TEST_F(ScActionTest, GenerateActionAndGetClassWithInformationActionType)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
 }
 
-TEST_F(ScActionTest, CreateActionAndGetClassWithoutType)
+TEST_F(ScActionTest, GenerateActionAndGetClassWithoutType)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
 
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), ScAddr::Empty);
   EXPECT_EQ(action.GetClass(), ScAddr::Empty);
 }
 
-TEST_F(ScActionTest, CreateActionWithInvalidActionClass)
+TEST_F(ScActionTest, GenerateActionWithInvalidActionClass)
 {
-  EXPECT_THROW(m_ctx->CreateAction(ScAddr::Empty), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateAction(ScAddr::Empty), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScActionTest, ConvertToActionAndGetClassWithReceptorActionType)
@@ -128,13 +128,13 @@ TEST_F(ScActionTest, ConvertInvalidAction)
   EXPECT_THROW(m_ctx->ConvertToAction(ScAddr::Empty), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScActionTest, CreateActionAndGetResult)
+TEST_F(ScActionTest, GenerateActionAndGetResult)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
   ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
@@ -145,10 +145,10 @@ TEST_F(ScActionTest, CreateActionAndGetResult)
   EXPECT_TRUE(action.GetResult().IsEmpty());
 }
 
-TEST_F(ScActionTest, CreateActionAndSetGetResult)
+TEST_F(ScActionTest, GenerateActionAndSetGetResult)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
@@ -172,10 +172,10 @@ TEST_F(ScActionTest, CreateActionAndSetGetResult)
   EXPECT_EQ(result, structureAddr2);
 }
 
-TEST_F(ScActionTest, CreateActionAndSetRemoveGetResult)
+TEST_F(ScActionTest, GenerateActionAndSetRemoveGetResult)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
@@ -197,10 +197,10 @@ TEST_F(ScActionTest, CreateActionAndSetRemoveGetResult)
   EXPECT_THROW(action.GetResult(), utils::ExceptionItemNotFound);
 }
 
-TEST_F(ScActionTest, CreateActionAndSetFormUpdateGetResult)
+TEST_F(ScActionTest, GenerateActionAndSetFormUpdateGetResult)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
@@ -231,10 +231,10 @@ TEST_F(ScActionTest, CreateActionAndSetFormUpdateGetResult)
   EXPECT_TRUE(result.HasElement(elementAddr2));
 }
 
-TEST_F(ScActionTest, CreateActionAndUpdateGetResult)
+TEST_F(ScActionTest, GenerateActionAndUpdateGetResult)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
@@ -253,10 +253,10 @@ TEST_F(ScActionTest, CreateActionAndUpdateGetResult)
   EXPECT_TRUE(result.HasElement(elementAddr1));
 }
 
-TEST_F(ScActionTest, CreateActionAndSetGetArgument)
+TEST_F(ScActionTest, GenerateActionAndSetGetArgument)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_EQ(action.GetArgument(1), ScAddr::Empty);
 
@@ -270,10 +270,10 @@ TEST_F(ScActionTest, CreateActionAndSetGetArgument)
   }
 }
 
-TEST_F(ScActionTest, CreateActionAndSetGetArguments)
+TEST_F(ScActionTest, GenerateActionAndSetGetArguments)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   {
     auto [argAddr1, argAddr2] = action.GetArguments<2>();
@@ -300,10 +300,10 @@ TEST_F(ScActionTest, CreateActionAndSetGetArguments)
   }
 }
 
-TEST_F(ScActionTest, CreateActionSetResetGetArguments)
+TEST_F(ScActionTest, GenerateActionSetResetGetArguments)
 {
   ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   {
     auto [argAddr1, argAddr2] = action.GetArguments<2>();
@@ -342,7 +342,7 @@ TEST_F(ScActionTest, InitiateAndWaitAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                         .SetArguments(
                             ATestGenerateOutgoingArc::generate_outgoing_arc_action,
                             ATestGenerateOutgoingArc::generate_outgoing_arc_action);
@@ -358,7 +358,7 @@ TEST_F(ScActionTest, FinishSuccessfullyNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_THROW(action.FinishSuccessfully(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.IsInitiated());
   EXPECT_FALSE(action.IsFinished());
@@ -373,7 +373,7 @@ TEST_F(ScActionTest, InitiateInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_NO_THROW(action.Initiate());
   EXPECT_THROW(action.Initiate(), utils::ExceptionInvalidState);
   EXPECT_TRUE(action.IsInitiated());
@@ -383,7 +383,7 @@ TEST_F(ScActionTest, InitiateInitiatedAction)
 
 TEST_F(ScActionTest, InitiateFinishedAction)
 {
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_NO_THROW(action.Initiate());
   EXPECT_NO_THROW(action.FinishSuccessfully());
   ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
@@ -396,7 +396,7 @@ TEST_F(ScActionTest, InitiateFinishedAction)
 
 TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
 {
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_NO_THROW(action.InitiateAndWait(1));
   EXPECT_NO_THROW(action.FinishSuccessfully());
   ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
@@ -411,7 +411,7 @@ TEST_F(ScActionTest, FinishUnsuccessfullyNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_THROW(action.FinishUnsuccessfully(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.IsInitiated());
   EXPECT_FALSE(action.IsFinished());
@@ -426,7 +426,7 @@ TEST_F(ScActionTest, FinishWithErrorNotInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_THROW(action.FinishWithError(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.IsInitiated());
   EXPECT_FALSE(action.IsFinished());
@@ -441,7 +441,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishSuccessfullyFinishedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
@@ -459,7 +459,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishUnsuccessfullyFinishedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
@@ -477,7 +477,7 @@ TEST_F(ScActionTest, InitiateWaitAndFinishWithErrorFinishedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
@@ -495,7 +495,7 @@ TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
 {
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());

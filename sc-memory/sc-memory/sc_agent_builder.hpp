@@ -164,8 +164,8 @@ protected:
    *
    * If `agent_implementation` is provided by `AgentBuilder` method, then this method retrieves system identifier for
    * `agent_implementation` and validates that `agent_implementation` belongs to `platform_dependent_abstract_sc_agent`.
-   * If the implementation was not provided by `AgentBuilder` method, this method creates a new node for implementation
-   * and establishes belonging to `platform_dependent_abstract_sc_agent.
+   * If the implementation was not provided by `AgentBuilder` method, this method generates a new node for
+   * implementation and establishes belonging to `platform_dependent_abstract_sc_agent.
    *
    * @code
    *    platform_dependent_abstract_sc_agent
@@ -192,7 +192,7 @@ protected:
    * @brief Resolves an abstract agent associated with a given agent implementation.
    *
    * If `abstract_agent` is provided by `SetAbstractAgent` method, then this method verifies a connection between
-   * `abstract_agent` and `agent_implementation`. It ensures that the connection does not already exist and creates it
+   * `abstract_agent` and `agent_implementation`. It ensures that the connection does not already exist and generates it
    * if necessary. If `abstract_agent` was not provided by `SetAbstractAgent` method, then this method searches this one
    * for specified `agent_implementation`. If the `agent_implementation` does not have abstract agent, then an exception
    * is thrown.
@@ -222,7 +222,7 @@ protected:
    * @brief Resolves primary initiation condition for a given abstract agent.
    *
    * If primary initiation condition is provided by `SetPrimaryInitiationCondition` method then this method checks if
-   * primary initiation condition already exists for `abstract_agent`. If it does not exist, it creates necessary
+   * primary initiation condition already exists for `abstract_agent`. If it does not exist, it generates necessary
    * connectors to establish condition. If primary initiation condition was npt provided by
    * `SetPrimaryInitiationCondition` method then this method searches initiation condition for `abstract_agent`. If the
    * `abstract_agent` does not have primary initiation condition, then an exception is thrown.
@@ -254,7 +254,7 @@ protected:
    * @brief Resolves action class associated with a given abstract agent.
    *
    * If `action_class` is provided by `SetActionClass` method then this method checks if `action_class` is already
-   * associated with `abstract_agent`. If not, it creates necessary connectors to establish the connection. If
+   * associated with `abstract_agent`. If not, it generates necessary connectors to establish the connection. If
    * `action_class` was not provided by `SetActionClass` method then this method searches this one for `abstract_agent`.
    * If the `abstract_agent` does not have action class, then an exception is thrown.
    *
@@ -283,7 +283,7 @@ protected:
    *
    * If initiation and result conditions are provided by `SetInitiationConditionAndResult`, then this method
    * checks if both initiation condition and result condition already exist for `abstract_agent`. If they do not exist,
-   * it creates connectors to establish the conditions. If initiation and result conditions were not provided
+   * it generates connectors to establish the conditions. If initiation and result conditions were not provided
    * by `SetInitiationConditionAndResult`, then this method searches both conditions for `abstract_agent`. If the
    * `abstract_agent` does not have initiation condition and result condition, then an exception is thrown.
    *

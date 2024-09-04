@@ -224,7 +224,7 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
         return agent.m_context.ConvertToAction(actionAddr);
       }
 
-      return agent.m_context.CreateAction(agent.GetActionClass()).Initiate();
+      return agent.m_context.GenerateAction(agent.GetActionClass()).Initiate();
     };
 
     auto const & PostCallback = [&postEraseEventCallback]() -> void

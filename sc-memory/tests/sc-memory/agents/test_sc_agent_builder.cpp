@@ -99,7 +99,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecification)
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(actionClassAddr).SetArguments().Initiate();
+  m_ctx->GenerateAction(actionClassAddr).SetArguments().Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
@@ -130,7 +130,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasAlreadyFullSpecification)
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(actionClassAddr).SetArguments().Initiate();
+  m_ctx->GenerateAction(actionClassAddr).SetArguments().Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
@@ -159,7 +159,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecificationWithTempl
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
@@ -188,7 +188,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasFullSpecificationWithTempl
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
@@ -221,7 +221,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasSpecificationWithExistingA
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
@@ -256,7 +256,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasSpecificationWithExistingA
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);
@@ -312,7 +312,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasSpecificationWithSpecified
       ->FinishBuild();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestSpecifiedAgent::test_specified_agent_action).SetArguments().Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 
   module.Unregister(&*m_ctx);

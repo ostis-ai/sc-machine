@@ -94,7 +94,7 @@ _SC_EXTERN sc_result sc_memory_shutdown(sc_bool save_state);
 _SC_EXTERN void sc_memory_shutdown_ext();
 
 /*!
- * Creates a new sc-memory context for a specified user.
+ * Generates a new sc-memory context for a specified user.
  *
  * @param user_addr sc_addr representing the user for whom the context is created.
  *
@@ -238,7 +238,7 @@ _SC_EXTERN sc_bool sc_memory_is_element_ext(sc_memory_context const * ctx, sc_ad
 _SC_EXTERN sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr addr);
 
 /*!
- * @brief Creates a new sc-node with the specified type.
+ * @brief Generates a new sc-node with the specified type.
  *
  * This function creates a new sc-node with the specified type and returns
  * its sc-addr. The result of the operation is not explicitly returned.
@@ -257,7 +257,7 @@ _SC_EXTERN sc_result sc_memory_element_free(sc_memory_context * ctx, sc_addr add
 _SC_EXTERN sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-node with the specified type.
+ * @brief Generates a new sc-node with the specified type.
  *
  * This function creates a new sc-node with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -284,7 +284,7 @@ _SC_EXTERN sc_addr sc_memory_node_new(sc_memory_context const * ctx, sc_type typ
 _SC_EXTERN sc_addr sc_memory_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
 /*!
- * @brief Creates a new sc-link with the specified type.
+ * @brief Generates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is not explicitly returned.
@@ -302,7 +302,7 @@ _SC_EXTERN sc_addr sc_memory_node_new_ext(sc_memory_context const * ctx, sc_type
 _SC_EXTERN sc_addr sc_memory_link_new(sc_memory_context const * ctx);
 
 /*!
- * @brief Creates a new sc-link with the specified type.
+ * @brief Generates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is not explicitly returned.
@@ -321,7 +321,7 @@ _SC_EXTERN sc_addr sc_memory_link_new(sc_memory_context const * ctx);
 _SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-link with the specified type.
+ * @brief Generates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -348,7 +348,7 @@ _SC_EXTERN sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type ty
 _SC_EXTERN sc_addr sc_memory_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
 /*!
- * @brief Creates a new sc-connector between two sc-elements with the specified type.
+ * @brief Generates a new sc-connector between two sc-elements with the specified type.
  *
  * This function creates a new sc-connector with the specified type between the
  * specified begin and end sc-elements, and returns its sc-addr. The result
@@ -370,7 +370,7 @@ _SC_EXTERN sc_addr sc_memory_link_new_ext(sc_memory_context const * ctx, sc_type
 _SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 /*!
- * @brief Creates a new sc-connector with the specified type.
+ * @brief Generates a new sc-connector with the specified type.
  *
  * This function creates a new sc-connector with the specified type, connecting the given
  * begin and end sc-elements. The type must be an arc type (e.g., sc_type_arc_common,

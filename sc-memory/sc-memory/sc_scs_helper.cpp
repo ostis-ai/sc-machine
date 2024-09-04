@@ -180,7 +180,7 @@ private:
         resultAddr = FindBySCsGlobalIdtf(el.GetIdtf());
       }
 
-      // create new one
+      // generate new one
       if (!resultAddr.IsValid())
       {
         ScType const & type = el.GetType();

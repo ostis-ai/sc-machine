@@ -6,14 +6,14 @@
 
 This API provides functionality to define keynodes on C++.
 
-A keynode is a key sc-element used by some program (agent) during its operation. Typically, keynodes can be classes and relations, which are sc-elements that program (agent) uses to find constructions in sc-memory or create new ones. However, keynodes can be any sc-elements (incl. connectors between sc-elements).
+A keynode is a key sc-element used by some program (agent) during its operation. Typically, keynodes can be classes and relations, which are sc-elements that program (agent) uses to find constructions in sc-memory or generate new ones. However, keynodes can be any sc-elements (incl. connectors between sc-elements).
 
 !!! note
     To include this API provide `#include <sc-memory/sc_keynodes.hpp>` in your hpp source.
 
 ## **ScKeynode**
 
-It is a base class for all keynodes. Use it to create keynodes in the `ScKeynodes` class for use in agent programs.
+It is a base class for all keynodes. Use it to generate keynodes in the `ScKeynodes` class for use in agent programs.
 
 ```cpp
 #include <sc-memory/sc_keynodes.hpp>
@@ -41,7 +41,7 @@ It can be useful if you want logging keynode system identifiers.
 
 ## **ScTemplateKeynode**
 
-It is a base class to create sc-templates as keynodes. This class is useful when you want use programably represented sc-template in different places in the code or when you don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.
+It is a base class to generate sc-templates as keynodes. This class is useful when you want use programably represented sc-template in different places in the code or when you don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.
 
 ```cpp
 #include <sc-memory/sc_keynodes.hpp>
@@ -107,17 +107,17 @@ public:
 ## **Frequently Asked Questions**
 
 <!-- no toc -->
-- [Is it possible to create the same keynodes in different modules but with different types?](#is-it-possible-to-create-the-same-keynodes-in-different-modules-but-with-different-types)
-- [Is it possible to create a keynode inside an agent class?](#is-it-possible-to-create-a-keynode-inside-an-agent-class)
+- [Is it possible to generate the same keynodes in different modules but with different types?](#is-it-possible-to-generate-the-same-keynodes-in-different-modules-but-with-different-types)
+- [Is it possible to generate a keynode inside an agent class?](#is-it-possible-to-generate-a-keynode-inside-an-agent-class)
 - [When are keynodes initialized?](#when-are-keynodes-initialized)
 
-### **Is it possible to create the same keynodes in different modules but with different types?**
+### **Is it possible to generate the same keynodes in different modules but with different types?**
 
-You can create the same keynodes in different modules. The main thing is that there should be no name conflict in the classes in which these keynodes are declared. However, you cannot create identical keynodes in different modules with different types, for example, as structure and as class. All sc-elements with the same system identifiers are automatically glued together.
+You can generate the same keynodes in different modules. The main thing is that there should be no name conflict in the classes in which these keynodes are declared. However, you cannot generate identical keynodes in different modules with different types, for example, as structure and as class. All sc-elements with the same system identifiers are automatically glued together.
 
-### **Is it possible to create a keynode inside an agent class?**
+### **Is it possible to generate a keynode inside an agent class?**
 
-Yes, the algorithm is exactly the same if you were to create this keynode in a separate special class for keynodes.
+Yes, the algorithm is exactly the same if you were to generate this keynode in a separate special class for keynodes.
 
 ### **When are keynodes initialized?**
 

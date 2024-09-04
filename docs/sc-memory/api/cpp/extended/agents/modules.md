@@ -115,7 +115,7 @@ For this `ScModule` class has `AgentBuilder` method. You can call this method wi
 
 ### **ScAgentBuilder**
 
-The `AgentBuilder` method creates object of `ScAgentBuilder` class that is needed to initialize agent specification from code or from knowledge base.
+The `AgentBuilder` method generates object of `ScAgentBuilder` class that is needed to initialize agent specification from code or from knowledge base.
 
 ### **Loading initial agent specification in C++**
 
@@ -230,14 +230,14 @@ SC_MODULE_REGISTER(MyModule)
 
 <!-- no toc -->
 - [Is it possible to subscribe an agent without calling a method to subscribe it?](#is-it-possible-to-subscribe-an-agent-without-calling-a-method-to-subscribe-it)
-- [Is it possible to create one module and subscribe all agents in it?](#is-it-possible-to-create-one-module-and-subscribe-all-agents-in-it)
+- [Is it possible to generate one module and subscribe all agents in it?](#is-it-possible-to-generate-one-module-and-subscribe-all-agents-in-it)
 - [If there is a difference in what order to subscribe agents?](#if-there-is-a-difference-in-what-order-to-subscribe-agents)
 
 ### **Is it possible to subscribe an agent without calling a method to subscribe it?**
 
 You can implement an agent that will traverse all agent specifications in the knowledge base and subscribe agents according its specifications.
 
-### **Is it possible to create one module and subscribe all agents in it?**
+### **Is it possible to generate one module and subscribe all agents in it?**
 
 You can do that, but we advise you to build components from agents, meaning agents should be included in the same module if they make sense to be in the same component. Get used to having every module be a component.
 

@@ -953,7 +953,7 @@ void _sc_storage_make_elements_incident_to_arc(
   if (SC_ADDR_IS_NOT_EMPTY(first_in_connector_addr))
     sc_storage_get_element_by_addr(first_in_connector_addr, &first_in_arc);
 
-  // set next outgoing sc-arc for our created arc
+  // set next outgoing sc-arc for our generated arc
   if (is_reverse)
   {
     arc_el->arc.next_end_out_arc = first_out_connector_addr;

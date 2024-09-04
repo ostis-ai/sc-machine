@@ -113,7 +113,7 @@ There is a base class for agents in C++. This class provides implemented methods
 
 You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and `ScAgent` as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.
 
-This class can be used for all types of platform-dependent agents. Agents of this class react for events in the knowledge base, check the full initiation condition. If the check is successful, create, initiate and execute the action. After that, they check full result condition. The example using this class is represented below.
+This class can be used for all types of platform-dependent agents. Agents of this class react for events in the knowledge base, check the full initiation condition. If the check is successful, generate, initiate and execute the action. After that, they check full result condition. The example using this class is represented below.
 
 ```cpp
 // File my_agent.hpp
@@ -171,7 +171,7 @@ See [**C++ Events API**](events.md) and [**C++ Event subscriptions API**](event_
 !!! warning
     You should override methods `GetActionClass` and `DoProgram`. But if you provide specification of your agent in knowledge base, then you don't need to override `GetActionClass`. See [**C++ Modules API**](modules.md) to learn how to implement agents with specification in the knowledge base.
 
-You can specify any existing event types as a template argument to the `ScAgent` class. For example, you can create agent that will be triggered to sc-event of removing sc-element.
+You can specify any existing event types as a template argument to the `ScAgent` class. For example, you can generate agent that will be triggered to sc-event of removing sc-element.
 
 ```cpp
 // File my_agent.hpp
@@ -216,7 +216,7 @@ This implementation allows to provide any sc-event type to `DoProgram`.
 
 ### **ScActionInitiatedAgent**
 
-In multi-agent systems most of the agents are implemented to execute actions initiated by other agents. While `ScAgent` is useful to create broad event handling logic, using it to handle action initiations requires some boilerplate. We've implemented another agent class to make it easier for our users to implement action-executing agents. Implementing these agents requires passing action class node rather than checking initiation condition manually.
+In multi-agent systems most of the agents are implemented to execute actions initiated by other agents. While `ScAgent` is useful to generate broad event handling logic, using it to handle action initiations requires some boilerplate. We've implemented another agent class to make it easier for our users to implement action-executing agents. Implementing these agents requires passing action class node rather than checking initiation condition manually.
 
 This class can be only used for agents that should be triggered by generating an output sc-arc from `action_initiated` class node.
 
@@ -291,7 +291,7 @@ ScResult MyAgent::DoProgram(
   // It belongs to `MyKeynodes::my_action` class.
   // If your agent inherits `ScActionInitiatedAgent` class then this agent
   // performs action initiated externally. If your agent inherits `ScAgent`
-  // then this agent creates action, initiates and performs new action, not
+  // then this agent generates action, initiates and performs new action, not
   // provided externally.
   // Actions are copyable and movable. `ScAction` is inherited from `ScAddr`.
 
@@ -305,7 +305,7 @@ ScResult MyAgent::DoProgram(
 
   // You must specify action state in all ends of your agent program. 
   // `FinishSuccessfully` sets action as `action_finished_successfully`.
-  // You can’t create object of `ScResult` via constructor, because it is 
+  // You can’t generate object of `ScResult` via constructor, because it is 
   // private.
   return action.FinishSuccessfully(); 
 }
@@ -697,7 +697,7 @@ bool MyAgent::CheckResult(
 - [Is it possible to subscribe an agent for more than one sc-event?](#is-it-possible-to-subscribe-an-agent-for-more-than-one-sc-event)
 - [What happens if I don't specify full initiation condition in agent class?](#what-happens-if-i-dont-specify-full-initiation-condition-in-agent-class)
 - [Can there be an agent without primary initiation condition?](#can-there-be-an-agent-without-primary-initiation-condition)
-- [Is it possible to create object of `ScAgent` class and call any of class methods?](#is-it-possible-to-create-object-of-scagent-class-and-call-any-of-class-methods)
+- [Is it possible to generate object of `ScAgent` class and call any of class methods?](#is-it-possible-to-generate-object-of-scagent-class-and-call-any-of-class-methods)
 - [Is agent's call protocol preserved?](#is-agents-call-protocol-preserved)
 - [What is advisable to do as an agent and what is not?](#what-is-advisable-to-do-as-an-agent-and-what-is-not)
 - [What's the purpose of result condition? What is it used for?](#whats-the-purpose-of-result-condition-what-is-it-used-for)
@@ -718,9 +718,9 @@ We allow not specifying full initiation condition for agents. However, remember,
 
 No, agents can't be without primary initiation condition. Agents react to events in sc-memory. A primary initiation condition indicates which sc-event agent is subscribed to, i.e. when agent will be called.
 
-### **Is it possible to create object of `ScAgent` class and call any of class methods?**
+### **Is it possible to generate object of `ScAgent` class and call any of class methods?**
 
-Yes, you can call a method of agent class through object of that class. But remember that you can't create necessary arguments for all methods.
+Yes, you can call a method of agent class through object of that class. But remember that you can't generate necessary arguments for all methods.
 
 ### **Is agent's call protocol preserved?**
 

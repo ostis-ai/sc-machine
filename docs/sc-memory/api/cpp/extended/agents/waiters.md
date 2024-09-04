@@ -20,13 +20,13 @@ This type of objects is used to wait until some event emits until the maximum wa
 
 ## **ScWaiter**
 
-To create object of this class, you should call `CreateEventWaiter` method from object of `ScAgentContext` class. You can't use constructors of `ScWaiter` class, because they are private.
+To generate object of this class, you should call `GenerateEventWaiter` method from object of `ScAgentContext` class. You can't use constructors of `ScWaiter` class, because they are private.
 
 ```cpp
 ...
-// Create of find some sc-node and create waiter to wait until 
-// a sc-connector of the specified type is created from or to this sc-node.
-auto waiter = context.CreateEventWaiter<
+// Create of find some sc-node and generate waiter to wait until 
+// a sc-connector of the specified type is generated from or to this sc-node.
+auto waiter = context.GenerateEventWaiter<
   ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
     nodeAddr,
     []() -> void
@@ -90,12 +90,12 @@ Then the `Wait` method will stop waiting for the specified event to occur.
 
 ## **ScConditionWaiter**
 
-This class represents waiter for condition to occur. To create object of this class, you should call `CreateConditionWaiter` method from object of `ScAgentContext` class. You can't also use constructors of `ScConditionWaiter` class, because they are private.
+This class represents waiter for condition to occur. To generate object of this class, you should call `GenerateConditionWaiter` method from object of `ScAgentContext` class. You can't also use constructors of `ScConditionWaiter` class, because they are private.
 
 ```cpp
 ...
-// Create of find some sc-node and create waiter to wait until 
-// a sc-connector of the specified type is created from or to this sc-node.
+// Create of find some sc-node and generate waiter to wait until 
+// a sc-connector of the specified type is generated from or to this sc-node.
 auto waiter = context.ScConditionWaiter<
   ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
     nodeAddr,
@@ -122,7 +122,7 @@ There are some examples of usage for specified `ScWaiter` objects:
 * Wait input sc-connector into sc-element with `nodeAddr`:
 
 ```cpp
-auto waiter = context.CreateEventWaiter<
+auto waiter = context.GenerateEventWaiter<
   ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(nodeAddr);
 waiter.Wait();
 ```
@@ -139,7 +139,7 @@ auto const CheckCallback
   return false;
 };
 
-auto waiter = context.CreateConditionWaiter<
+auto waiter = context.GenerateConditionWaiter<
   ScEventAfterGenerateIncomingArc<
     ScType::EdgeAccessConstPosPerm>>(nodeAddr, CheckCallback);
 // Provide wait time value.
@@ -147,7 +147,7 @@ waiter.Wait(10000); // milliseconds.
 ```
 
 !!! warning
-    All constructors of these classes are private. You should [**C++ Agent context API**](agent_context.md) to create waiters.
+    All constructors of these classes are private. You should [**C++ Agent context API**](agent_context.md) to generate waiters.
 
 --- 
 

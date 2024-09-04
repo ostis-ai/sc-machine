@@ -48,7 +48,7 @@ The result construction of agent might look like this:
 
 <image src="../images/agents/agent_calculate_set_power_output_construction.png"></image>
 
-In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to create a initial initiation construction in the knowledge base. See [**C++ Actions API**](../extended/agents/actions.md) to learn more about actions.
+In addition to agents that initiate actions themselves and then perform these actions, there is a need to implement agents that perform actions initiated by other agents. For this class of agents, it is much easier to generate a initial initiation construction in the knowledge base. See [**C++ Actions API**](../extended/agents/actions.md) to learn more about actions.
 
 --- 
 
@@ -204,7 +204,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // with error (sets class `action_finished_with_error`). 
   // It means that some incorrect situation was occurred in knowledge base.
   // All these methods return objects of `ScResult` class. 
-  // You can’t create object of ScResult via constructor, because it is private.
+  // You can’t generate object of ScResult via constructor, because it is private.
   return action.FinishSuccessfully();
 }
 ```
@@ -213,7 +213,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
 ### **6. Define keynodes for implemented agent and integrate their in agent program.**
 
-For each agent, you can specify key sc-elements that this agent uses during the execution of its program. These key sc-elements are sc-elements that agent does not create, but uses in the process of searching for or creating connections between entities in knowledge base. Key sc-elements are named keynodes. You can find these keynodes by its system identifiers (method `HelperFindBySystemIdtf`) if they have such identifiers. Also, you can use class `ScKeynode` to define keynodes as static objects and use them in agents.
+For each agent, you can specify key sc-elements that this agent uses during the execution of its program. These key sc-elements are sc-elements that agent does not generate, but uses in the process of searching for or creating connections between entities in knowledge base. Key sc-elements are named keynodes. You can find these keynodes by its system identifiers (method `HelperFindBySystemIdtf`) if they have such identifiers. Also, you can use class `ScKeynode` to define keynodes as static objects and use them in agents.
 
 ```diff
 set-agents-module/
@@ -392,7 +392,7 @@ You can find all modules functionality in the [**C++ Modules API**](../extended/
 
 ### **8. Write tests for implemented agent. Check agent logic.**
 
-To make sure how your agent works it is best to create tests and cover in them all possible cases that your agent has to handle. For this, create a separate file with test cases and implement them.
+To make sure how your agent works it is best to generate tests and cover in them all possible cases that your agent has to handle. For this, generate a separate file with test cases and implement them.
 
 ```diff
  set-agents-module/
@@ -451,10 +451,10 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 {
   // Create action with class that your agent performs.
   ScAction action 
-    = m_ctx->CreateAction(ScSetKeynodes::action_calculate_set_power);
+    = m_ctx->GenerateAction(ScSetKeynodes::action_calculate_set_power);
 
   // Create set with two sc-elements.
-  ScSet set = m_ctx->CreateSet();
+  ScSet set = m_ctx->GenerateSet();
   ScAddr nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
   ScAddr nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
   set << nodeAddr1 << nodeAddr2;

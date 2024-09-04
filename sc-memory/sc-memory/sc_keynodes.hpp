@@ -60,10 +60,10 @@ protected:
 
 /*!
  * @class ScKeynode
- * @brief A base class for keynodes. Use it to create keynodes in the ScKeynodes class for use in agent programs.
+ * @brief A base class for keynodes. Use it to generate keynodes in the ScKeynodes class for use in agent programs.
  *
  * A keynode is a key element used by some sc-agent during its operation. Typically, keynodes can be classes and
- * relations, which are sc-elements that agents use to find constructions in sc-memory or create new ones. However,
+ * relations, which are sc-elements that agents use to find constructions in sc-memory or generate new ones. However,
  * keynodes can be any sc-elements, even connectors between sc-elements.
  *
  * @note Objects of this class can be used as ScAddr.
@@ -106,8 +106,8 @@ protected:
 
 /*!
  * @class ScTemplateKeynode
- * @brief A base class to create sc-templates as keynodes. Use it to create keynodes of sc-templates in the ScKeynodes
- * class for use in agent programs.
+ * @brief A base class to generate sc-templates as keynodes. Use it to generate keynodes of sc-templates in the
+ * ScKeynodes class for use in agent programs.
  *
  * This class is useful when you want use programably represented sc-template in different places in the code or when
  * you don't want specify sc-template in knowledge base and use it in `ScAgentBuilder`.

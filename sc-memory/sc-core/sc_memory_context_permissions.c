@@ -218,7 +218,7 @@ typedef void (*sc_users_action_class_handler)(sc_memory_context_manager *, sc_ad
       _sc_context_remove_context_local_permissions(ctx, _removing_permissions, _structure_addr); \
   })
 
-sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager)
+sc_addr _sc_memory_context_manager_generate_guest_user(sc_memory_context_manager * manager)
 {
   sc_addr const guest_user_addr = sc_memory_node_new(s_memory_default_ctx, sc_type_node | sc_type_const);
   sc_addr const guest_user_arc_addr =
@@ -266,12 +266,12 @@ sc_result _sc_memory_context_manager_on_identified_user(
   return SC_RESULT_OK;
 }
 
-/*! Function that creates a memory context for an authenticated user with specified parameters.
+/*! Function that generates a memory context for an authenticated user with specified parameters.
  * @param event Pointer to the sc-event triggering the context creation.
  * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector to the user.
- * @param connector_type sc-type of created sc-connector to the user.
- * @param user_addr sc-address representing the authenticated user for whom the context is created.
+ * @param connector_addr sc-address representing generated sc-connector to the user.
+ * @param connector_type sc-type of generated sc-connector to the user.
+ * @param user_addr sc-address representing the authenticated user for whom the context is generated.
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  * @note This function is called in response to a sc-event and is responsible for creating a new memory context
  * for an authenticated user and establishing a connection between user and the context.
@@ -315,7 +315,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
  * @param event Pointer to the sc-event triggering the context removal.
  * @param initiator_addr sc-address representing user that initiated this request.
  * @param connector_addr sc-address representing removed sc-connector to the authenticated user.
- * @param connector_type sc-type of created sc-connector to the user.
+ * @param connector_type sc-type of generated sc-connector to the user.
  * @param user_addr sc-address representing the user whose authentication is being revoked.
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
  * @note This function is called in response to a sc-event and is responsible for removing authentication
@@ -565,9 +565,9 @@ void _sc_memory_context_manager_add_user_action_class(
  * and action class.
  * @param event Pointer to the sc-event triggering the addition of the action class.
  * @param initiator_addr sc-address representing user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector to sc-pair with user (or set of users)
+ * @param connector_addr sc-address representing generated sc-connector to sc-pair with user (or set of users)
  * and action class which this use can complete.
- * @param connector_type sc-type of created sc-connector to sc-pair with user (or set of users) and action class.
+ * @param connector_type sc-type of generated sc-connector to sc-pair with user (or set of users) and action class.
  * @param arc_to_action_class_addr sc-address representing sc-pair with user (or set of users) and action class.
  * @param updater callback that update permissions for user (or set of users).
  * @returns Returns a result code indicating the success or failure of the operation (SC_RESULT_OK on success).
@@ -680,9 +680,9 @@ void _sc_memory_context_manager_remove_user_action_class(
  *
  * @param event Pointer to the sc-event triggering the removal of the action class.
  * @param initiator_addr sc-address representing the user that initiated this removal request.
- * @param connector_addr sc-address representing the created sc-connector to sc-pair with the user (or set of users) and
- * action class which this user can complete (unused).
- * @param connector_type sc-type of the created sc-connector to sc-pair with the user (or set of users) and action
+ * @param connector_addr sc-address representing the generated sc-connector to sc-pair with the user (or set of users)
+ * and action class which this user can complete (unused).
+ * @param connector_type sc-type of the generated sc-connector to sc-pair with the user (or set of users) and action
  * class.
  * @param arc_to_action_class_addr sc-address representing the sc-pair with the user (or set of users) and action class.
  * @param updater callback that update permissions for user (or set of users).
@@ -757,7 +757,7 @@ void _sc_context_add_user_context_local_permissions(
 
 /*! Function that adds a new user (or set of users) action class within a structure, updating permissions accordingly.
  * @param manager Pointer to the sc-memory context manager.
- * @param connector_addr sc-address representing the created sc-connector connecting user (or set of users) and action
+ * @param connector_addr sc-address representing the generated sc-connector connecting user (or set of users) and action
  * class.
  * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
  * structure.
@@ -849,9 +849,9 @@ void _sc_memory_context_manager_remove_user_action_class_within_structure(
 /*! Callback function triggered when a new user (or set of users) action class is added within a structure.
  * @param event Pointer to the sc-event triggering the addition of the action class within a structure.
  * @param initiator_addr sc-address representing the user that initiated this request.
- * @param connector_addr sc-address representing created sc-connector connecting user (or set of users) and action class
- * within a structure.
- * @param connector_type sc-type of the created sc-connector.
+ * @param connector_addr sc-address representing generated sc-connector connecting user (or set of users) and action
+ * class within a structure.
+ * @param connector_type sc-type of the generated sc-connector.
  * @param arc_to_arc_between_action_class_and_structure_addr sc-address representing sc-pair between action class and
  * structure.
  * @param updater callback that update permissions for user (or set of users).

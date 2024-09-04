@@ -111,7 +111,7 @@ sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr);
 
 /*!
- * @brief Creates a new sc-node with the specified type.
+ * @brief Generates a new sc-node with the specified type.
  *
  * This function creates a new sc-node with the specified type and returns
  * its sc-addr. The result of the operation is not explicitly returned.
@@ -130,7 +130,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr);
 sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-node with the specified type.
+ * @brief Generates a new sc-node with the specified type.
  *
  * This function creates a new sc-node with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -154,7 +154,7 @@ sc_addr sc_storage_node_new(sc_memory_context const * ctx, sc_type type);
 sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
 /*!
- * @brief Creates a new sc-link with the specified type.
+ * @brief Generates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is not explicitly returned.
@@ -173,7 +173,7 @@ sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 
 /*!
- * @brief Creates a new sc-link with the specified type.
+ * @brief Generates a new sc-link with the specified type.
  *
  * This function creates a new sc-link with the specified type and returns
  * its sc-addr. The result of the operation is stored in the provided pointer
@@ -197,7 +197,7 @@ sc_addr sc_storage_link_new(sc_memory_context const * ctx, sc_type type);
 sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_result * result);
 
 /*!
- * @brief Creates a new sc-connector between two sc-elements with the specified type.
+ * @brief Generates a new sc-connector between two sc-elements with the specified type.
  *
  * This function creates a new sc-connector with the specified type between the
  * specified begin and end sc-elements, and returns its sc-addr. The result
@@ -219,7 +219,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 sc_addr sc_storage_arc_new(sc_memory_context const * ctx, sc_type type, sc_addr beg, sc_addr end);
 
 /*!
- * @brief Creates a new sc-connector with the specified type.
+ * @brief Generates a new sc-connector with the specified type.
  *
  * This function creates a new sc-connector with the specified type, connecting the given
  * begin and end sc-elements. The type must be an arc type (e.g., sc_type_arc_common,

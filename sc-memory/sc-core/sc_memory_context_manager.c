@@ -129,7 +129,7 @@ sc_memory_context * _sc_memory_context_new_impl(sc_memory_context_manager * mana
     goto error;
 
   sc_monitor_init(&ctx->monitor);
-  ctx->user_addr = SC_ADDR_IS_EMPTY(user_addr) ? _sc_memory_context_manager_create_guest_user(manager) : user_addr;
+  ctx->user_addr = SC_ADDR_IS_EMPTY(user_addr) ? _sc_memory_context_manager_generate_guest_user(manager) : user_addr;
   ctx->ref_count = 0;
   ctx->global_permissions = _sc_context_get_user_global_permissions(ctx->user_addr);
   ctx->local_permissions = _sc_context_get_user_local_permissions(ctx->user_addr);

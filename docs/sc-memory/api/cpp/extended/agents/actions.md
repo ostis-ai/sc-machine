@@ -17,12 +17,12 @@ Like an agent, an action has a specification. This specification includes: class
 
 ## **ScAction**
 
-The sc-machine provides `ScAction` class to handle actions in sc-memory. You can't use constructors of this class, because they are private. Use `ScAgentContext` to create action with provided class or use the existing one. All methods of this class work directly with the knowledge base, there is no local cache.
+The sc-machine provides `ScAction` class to handle actions in sc-memory. You can't use constructors of this class, because they are private. Use `ScAgentContext` to generate action with provided class or use the existing one. All methods of this class work directly with the knowledge base, there is no local cache.
 
 ```cpp
-// Find action class and create action.
+// Find action class and generate action.
 ...
-ScAction action = context.CreateAction(actionClassAddr);
+ScAction action = context.GenerateAction(actionClassAddr);
 ...
 ```
 
@@ -128,7 +128,7 @@ action.SetArgument(1, argAddr);
 <scg src="../images/actions/action_argument.gwf"></scg>
 
 !!! note
-    If action already has an argument with specified role, then connection between action and existing argument will be removed and connection between action and new argument will be created.
+    If action already has an argument with specified role, then connection between action and existing argument will be removed and connection between action and new argument will be generated.
 
 ### **SetArguments**
 
@@ -180,7 +180,7 @@ action.SetResult(resultStructure);
 
 #### **FormResult**
 
-You may not create result structure. You can provide only elements of result for action.
+You may not generate result structure. You can provide only elements of result for action.
 
 ```cpp
 ...
@@ -364,7 +364,7 @@ ScResult const & result = action.FinishWithError();
     If you finish action with error that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
 
 
-All these methods return object of `ScResult`. You should return it in agent program. You can't call constructor of `ScResult` to create new object.
+All these methods return object of `ScResult`. You should return it in agent program. You can't call constructor of `ScResult` to generate new object.
 
 --- 
 
@@ -376,7 +376,7 @@ All these methods return object of `ScResult`. You should return it in agent pro
 
 ### **What is difference between `ScAction` and `ScEvent`?**
 
-`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to solve specified problem. `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are created after the occurrence of some sc-event and actions are performed by agents. Emergence of events in sc-memory leads to generation of new processes.
+`ScAction` is a class that represents sc-action. A sc-action is a process performed by some entity to solve specified problem. `ScEvent` represents a sc-event. A sc-event is a connection between process and its initial and result situation. Actions are generated after the occurrence of some sc-event and actions are performed by agents. Emergence of events in sc-memory leads to generation of new processes.
 
 ### **What if I want to set some edge as action result and not structure with this edge?**
 

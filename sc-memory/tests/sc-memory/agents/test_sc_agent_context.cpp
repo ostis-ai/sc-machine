@@ -25,9 +25,9 @@ TEST_F(ScAgentContextTest, MoveAgentContext)
   EXPECT_FALSE(context3.IsValid());
 }
 
-TEST_F(ScAgentContextTest, CreateSet)
+TEST_F(ScAgentContextTest, GenerateSet)
 {
-  ScSet set = m_ctx->CreateSet();
+  ScSet set = m_ctx->GenerateSet();
   EXPECT_EQ(m_ctx->GetElementType(set), ScType::NodeConst);
 
   ScSet set2 = m_ctx->ConvertToSet(set);
@@ -41,7 +41,7 @@ TEST_F(ScAgentContextTest, ConvertInvalidSet)
 
 TEST_F(ScAgentContextTest, CreateStruct)
 {
-  ScStructure structure = m_ctx->CreateStructure();
+  ScStructure structure = m_ctx->GenerateStructure();
   EXPECT_EQ(m_ctx->GetElementType(structure), ScType::NodeConstStruct);
 
   ScSet structure2 = m_ctx->ConvertToStructure(structure);

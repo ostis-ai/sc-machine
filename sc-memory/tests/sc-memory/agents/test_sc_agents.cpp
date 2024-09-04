@@ -16,7 +16,7 @@ TEST_F(ScAgentTest, AgentClass)
   arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
   m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
-  ScAction action = m_ctx->CreateAction(testClassAddr);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   TestScAgent agent;
   agent.SetImplementation(testImplementationAddr);
@@ -235,7 +235,7 @@ TEST_F(ScAgentTest, ATestDoProgramOne)
 {
   m_ctx->SubscribeAgent<ATestDoProgramOne>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -248,7 +248,7 @@ TEST_F(ScAgentTest, ATestDoProgramTwo)
 {
   m_ctx->SubscribeAgent<ATestDoProgramTwo>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -270,7 +270,7 @@ TEST_F(ScAgentTest, ATestInvalidAbstractAgent)
 TEST_F(ScAgentTest, ATestCallWithoutEventInitiation)
 {
   ATestDoProgram agent;
-  ScAction action = m_ctx->CreateAction(agent.GetActionClass()).Initiate();
+  ScAction action = m_ctx->GenerateAction(agent.GetActionClass()).Initiate();
   agent.DoProgram(action);
   EXPECT_TRUE(ATestDoProgram::msWaiter.Wait());
 }
@@ -279,7 +279,7 @@ TEST_F(ScAgentTest, ATestExceptionInDoProgram)
 {
   m_ctx->SubscribeAgent<ATestException>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                         .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                         .Initiate();
 
@@ -293,7 +293,7 @@ TEST_F(ScAgentTest, ATestEraseActionWithExceptionInDoProgram)
 {
   m_ctx->SubscribeAgent<ATestEraseActionWithException>();
 
-  ScAction action = m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                         .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                         .Initiate();
 
@@ -310,7 +310,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentWithWaitingAgentWaiter)
 
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -325,7 +325,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlyFirstArgumentWithWaitingActionToBeFinish
 
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  EXPECT_TRUE(m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  EXPECT_TRUE(m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                   .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                   .InitiateAndWait(2000));
 
@@ -338,7 +338,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentWithWaitingAgentWaiter)
 
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArgument(2, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -353,7 +353,7 @@ TEST_F(ScAgentTest, ATestCheckResultOnlySecondArgumentWithWaitingActionToBeFinis
 
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  EXPECT_TRUE(m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  EXPECT_TRUE(m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                   .SetArgument(2, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                   .InitiateAndWait(2000));
 
@@ -366,7 +366,7 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsWithWaitingAgentWaiter)
 
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(
           ATestGenerateOutgoingArc::generate_outgoing_arc_action,
           ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -383,7 +383,7 @@ TEST_F(ScAgentTest, ATestCheckResultTwoArgumentsWithWaitingActionToBeFinished)
 
   m_ctx->SubscribeAgent<ATestCheckResult>();
 
-  EXPECT_TRUE(m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  EXPECT_TRUE(m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
                   .SetArguments(
                       ATestGenerateOutgoingArc::generate_outgoing_arc_action,
                       ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -396,11 +396,11 @@ TEST_F(ScAgentTest, ATestGetInitiationConditionTemplate)
 {
   m_ctx->SubscribeAgent<ATestGetInitiationConditionTemplate>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
 
   EXPECT_FALSE(ATestGetInitiationConditionTemplate::msWaiter.Wait(0.2));
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -413,7 +413,7 @@ TEST_F(ScAgentTest, ATestGetInitiationConditionTemplateWithoutEventSubscriptionE
 {
   m_ctx->SubscribeAgent<ATestGetInitiationConditionTemplateWithoutEventSubscriptionElement>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -426,7 +426,7 @@ TEST_F(ScAgentTest, ATestGetInitiationConditionTemplateWithInvalidConnectorTypeI
 {
   m_ctx->SubscribeAgent<ATestGetInitiationConditionTemplateWithInvalidConnectorTypeInEventTriple>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -439,7 +439,7 @@ TEST_F(ScAgentTest, ATestGetInitiationConditionTemplateHasEventTripleTwice)
 {
   m_ctx->SubscribeAgent<ATestGetInitiationConditionTemplateHasEventTripleTwice>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -452,7 +452,7 @@ TEST_F(ScAgentTest, ATestGetInvalidInitiationConditionTemplate)
 {
   m_ctx->SubscribeAgent<ATestGetInvalidInitiationConditionTemplate>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -465,11 +465,11 @@ TEST_F(ScAgentTest, ATestCheckInitiationCondition)
 {
   m_ctx->SubscribeAgent<ATestCheckInitiationCondition>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
 
   EXPECT_FALSE(ATestCheckInitiationCondition::msWaiter.Wait(0.2));
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -482,11 +482,11 @@ TEST_F(ScAgentTest, ATestGetResultConditionTemplate)
 {
   m_ctx->SubscribeAgent<ATestGetResultConditionTemplate>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
 
   EXPECT_TRUE(ATestGetResultConditionTemplate::msWaiter.Wait(1));
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -499,7 +499,7 @@ TEST_F(ScAgentTest, ATestGetInvalidResultConditionTemplate)
 {
   m_ctx->SubscribeAgent<ATestGetInvalidResultConditionTemplate>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -512,11 +512,11 @@ TEST_F(ScAgentTest, ATestCheckResultCondition)
 {
   m_ctx->SubscribeAgent<ATestCheckResultCondition>();
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
 
   EXPECT_TRUE(ATestCheckResultCondition::msWaiter.Wait(1));
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 
@@ -534,13 +534,13 @@ TEST_F(ScAgentTest, ActionDeactivated)
       ScKeynodes::action_deactivated,
       ATestGenerateOutgoingArc::generate_outgoing_arc_action);
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
 
   EXPECT_FALSE(ATestActionDeactivated::msWaiter.Wait(0.2));
 
   m_ctx->EraseElement(arcAddr);
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
 
   EXPECT_TRUE(ATestActionDeactivated::msWaiter.Wait(1));
 
@@ -574,7 +574,7 @@ TEST_F(ScAgentTest, RegisterActionInitiatedAgentWithinModule)
   module.Agent<ATestCheckResult>();
   module.Register(&*m_ctx);
 
-  m_ctx->CreateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArgument(1, ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .Initiate();
 

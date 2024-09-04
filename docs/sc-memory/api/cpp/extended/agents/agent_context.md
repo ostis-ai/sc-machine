@@ -19,9 +19,9 @@ The `ScAgentContext` class is inherited from `ScMemoryContext` class and provide
 !!! warning
     Objects of `ScAgentContext` class are movable, but not copyable.
 
-### **CreateElementaryEventSubscription**
+### **GenerateElementaryEventSubscription**
 
-This method can be useful when you want create sc-event subscription, but don't want to use agents for this. `CreateElementaryEventSubscription` creates sc-event subscription with specified subscription (listen) sc-element and on-event callback. To learn more about sc-event see [**C++ Events API**](events.md), to learn more about sc-event subscriptions see [**C++ Event subscriptions API**](event_subscriptions.md).
+This method can be useful when you want generate sc-event subscription, but don't want to use agents for this. `GenerateElementaryEventSubscription` generates sc-event subscription with specified subscription (listen) sc-element and on-event callback. To learn more about sc-event see [**C++ Events API**](events.md), to learn more about sc-event subscriptions see [**C++ Event subscriptions API**](event_subscriptions.md).
 
 ```cpp
 ...
@@ -35,7 +35,8 @@ using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;
 // Create sc-event subscription for generated sc-node (listen sc-element) 
 // and provide on-event callback.
-auto eventSubscription = context.CreateElementaryEventSubscription<MyEventType>(
+auto eventSubscription 
+  = context.GenerateElementaryEventSubscription<MyEventType>(
   nodeAddr,
   [](MyEventType const & event) -> void
   {
@@ -51,7 +52,7 @@ context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 ```
 
 !!! note
-    You can provide empty on-event callback `{}` in `CreateElementaryEventSubscription` and call `SetDelegate` from object of subscription to set new on-event callback.
+    You can provide empty on-event callback `{}` in `GenerateElementaryEventSubscription` and call `SetDelegate` from object of subscription to set new on-event callback.
 
 !!! note
     You can call `RemoveDelegate` from object of subscription to remove existing on-event callback.
@@ -69,7 +70,7 @@ ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
 ScAddr const & eventClassAddr = GetSomeEventType(); // User-specified method.
 // Create sc-event subscription for generated sc-node (listen sc-element) 
 // and provide on-event callback.
-auto eventSubscription = context.CreateElementaryEventSubscription(
+auto eventSubscription = context.GenerateElementaryEventSubscription(
   eventClassAddr,
   nodeAddr,
   [](ScElementaryEvent const & event) -> void
@@ -91,9 +92,9 @@ context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 !!! note 
     All sc-event classes provided by sc-machine always belongs to `sc_event` class.
 
-### **CreateEventWaiter**
+### **GenerateEventWaiter**
 
-You can create waiter for some sc-event. It is useful when your agent should wait other agent.
+You can generate waiter for some sc-event. It is useful when your agent should wait other agent.
 
 ```cpp
 ...
@@ -103,7 +104,7 @@ ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
 using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;
 // Create sc-event waiter for generated sc-node (listen sc-element).
-auto eventWaiter = context.CreateEventWaiter<MyEventType>(
+auto eventWaiter = context.GenerateEventWaiter<MyEventType>(
   nodeAddr,
   []() -> void
   {
@@ -120,7 +121,7 @@ eventWaiter->Wait(200); // milliseconds
 // You will wait until sc-event occurs or until specified time expires.
 
 ...
-// Some other code should initiate sc-event (create sc-arc from `nodeAddr`).
+// Some other code should initiate sc-event (generate sc-arc from `nodeAddr`).
 ScAddr const & otherNodeAddr = context.CreateNode(ScType:::NodeConst);
 context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 // After that sc-arc will be generated and waiter will be resolved.
@@ -130,7 +131,7 @@ context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 !!! warning
     You should provide valid subscription sc-element. Otherwise, exception will be thrown.
 
-Just like for the method of creating sc-event subscription, if you don't know sc-event class in advance, you can create waiters dynamically.
+Just like for the method of creating sc-event subscription, if you don't know sc-event class in advance, you can generate waiters dynamically.
 
 ```cpp
 ...
@@ -140,7 +141,7 @@ ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
 ScAddr const & eventClassAddr = GetSomeEventType(); // User-specified method.
 // Create sc-event waiter for generated sc-node (listen sc-element)   
 // and provide on-event callback.
-auto eventWaiter = context.CreateEventWaiter(
+auto eventWaiter = context.GenerateEventWaiter(
   eventClassAddr,
   nodeAddr);
 ...
@@ -149,7 +150,7 @@ auto eventWaiter = context.CreateEventWaiter(
 !!! warning
     A sc-event class must be valid and must belong to `sc_event` class.
 
-### **CreateConditionWaiter**
+### **GenerateConditionWaiter**
 
 In addition to the waiting time, you can also specify check that will be called when sc-event to which we have subscribed occurs.
 
@@ -161,7 +162,7 @@ ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
 using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;
 // Create sc-event waiter for generated sc-node (listen sc-element).
-auto eventWaiter = context.CreateConditionWaiter<MyEventType>(
+auto eventWaiter = context.GenerateConditionWaiter<MyEventType>(
   nodeAddr,
   []() -> void
   {
@@ -180,7 +181,7 @@ eventWaiter->Wait(200); // milliseconds
 // You will wait until sc-event occurs or until specified time expires.
 
 ...
-// Some other code should initiate sc-event (create sc-arc from `nodeAddr`).
+// Some other code should initiate sc-event (generate sc-arc from `nodeAddr`).
 ScAddr const & otherNodeAddr = context.CreateNode(ScType:::NodeConst);
 context.CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAddr);
 // After that sc-arc will be generated and waiter will be resolved.
@@ -198,7 +199,7 @@ context.CreateEdge(
 // Create sc-event waiter for generated action (listen sc-element).
 // You should wait while sc-arc in action from `action_finished_successfully`
 // will generated.
-auto eventWaiter = context.CreateConditionWaiter<
+auto eventWaiter = context.GenerateConditionWaiter<
   ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   actionAddr,
   [&]() -> void
@@ -222,7 +223,7 @@ eventWaiter->Wait(200); // milliseconds
 ...
 ```
 
-You can also create waiters with conditions dynamically, providing sc-event class from knowledge base.
+You can also generate waiters with conditions dynamically, providing sc-event class from knowledge base.
 
 ---
 
@@ -295,14 +296,14 @@ This method finds specification of abstract agent for specified agent implementa
 
 ---
 
-### **CreateAction**
+### **GenerateAction**
 
-All agents perform actions. We provide API to work with them. Use `CreateAction` to create object of `ScAction` class. To learn more about actions see [**C++ Action API**](actions.md).
+All agents perform actions. We provide API to work with them. Use `GenerateAction` to generate object of `ScAction` class. To learn more about actions see [**C++ Action API**](actions.md).
 
 ```cpp
-// Find action class and create action.
+// Find action class and generate action.
 ...
-ScAction action = context.CreateAction(actionClassAddr);
+ScAction action = context.GenerateAction(actionClassAddr);
 ...
 ```
 
@@ -324,14 +325,14 @@ ScAction action = context.ConvertToAction(actionAddr);
 !!! note
     Action sc-address must be valid.
 
-### **CreateSet**
+### **GenerateSet**
 
 We provide API to easy work with sets and structures in knowledge base.
 
 ```cpp
 // Create new set.
 ...
-ScSet set = context.CreateSet();
+ScSet set = context.GenerateSet();
 ...
 ```
 
@@ -347,12 +348,12 @@ ScSet set = context.ConvertToSet(setAddr);
 !!! note
     Set sc-address must be valid.
 
-### **CreateStructure**
+### **GenerateStructure**
 
 ```cpp
 // Create new structure.
 ...
-ScStructure structure = context.CreateStructure();
+ScStructure structure = context.GenerateStructure();
 ...
 ```
 
@@ -383,7 +384,7 @@ ScStructure structure = context.ConvertToStructure(structureAddr);
 
 ### **How do I add my method to a `ScAgentContext`?**
 
-You can create a class that will inherit `ScAgentContext` class. If you want to use it in your agent, do this:
+You can generate a class that will inherit `ScAgentContext` class. If you want to use it in your agent, do this:
 
 ```cpp
 class MyContext : public ScAgentContext
@@ -403,7 +404,7 @@ You will be able to use context of class, which you specify, in the agent's meth
 
 ### **How can I wait for an event indefinitely?**
 
-By default, you can wait up to 5 seconds for an event to appear. You can wait for another time convenient for you. But we recommend waiting as long as you need, no longer. You don't need to create waiters for several minutes or hours when the agent performs much faster, in milliseconds.
+By default, you can wait up to 5 seconds for an event to appear. You can wait for another time convenient for you. But we recommend waiting as long as you need, no longer. You don't need to generate waiters for several minutes or hours when the agent performs much faster, in milliseconds.
 
 You can't wait indefinitely for an event, there is always a maximum waiting time after which you stop waiting. But, in order to wait for some event indefinitely, you can implement and subscribe an agent for that event. It will be triggered when event to be occurred. See [**C++ Agents API**](agents.md) to learn more about agents.
 

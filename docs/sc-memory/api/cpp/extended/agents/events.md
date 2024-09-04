@@ -60,7 +60,7 @@ The following classes correspond to them:
     Types of sc-connectors are specified for sc-events of adding (erasing) sc-arc (sc-edge). 
 
 !!! warning
-    You can't create objects of these classes. All constructors of these classes are private.
+    You can't generate objects of these classes. All constructors of these classes are private.
 
 !!! warning
     All objects of sc-event classes are not copyable and not movable.
@@ -323,7 +323,7 @@ ScType const connectorType = event.GetConnectorType();
 
 #### **GetConnectorIncidentElements**
 
-A sc-connector can be a sc-arc or a sc-edge, so method `GetConnectorIncidentElements` returns two incident elements for the created sc-connector at once.
+A sc-connector can be a sc-arc or a sc-edge, so method `GetConnectorIncidentElements` returns two incident elements for the generated sc-connector at once.
 
 ```cpp
 ...

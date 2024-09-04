@@ -36,7 +36,7 @@ struct _SC_EXTERN ScTemplateItem
   _SC_EXTERN ScTemplateItem();
 
   /*!
-   * @brief Creates a template item with a specified address.
+   * @brief Generates a template item with a specified address.
    *
    * @param addr A sc-address.
    * @param replName Optional replacement name.
@@ -44,7 +44,7 @@ struct _SC_EXTERN ScTemplateItem
   _SC_EXTERN ScTemplateItem(ScAddr const & addr, sc_char const * replName = nullptr);
 
   /*!
-   * @brief Creates a template item with a specified type.
+   * @brief Generates a template item with a specified type.
    *
    * @param type A sc-type.
    * @param replName Optional replacement name.
@@ -52,14 +52,14 @@ struct _SC_EXTERN ScTemplateItem
   _SC_EXTERN ScTemplateItem(ScType const & type, sc_char const * replName = nullptr);
 
   /*!
-   * @brief Creates a template item with a specified name.
+   * @brief Generates a template item with a specified name.
    *
    * @param name A name of the item.
    */
   _SC_EXTERN ScTemplateItem(sc_char const * name);
 
   /*!
-   * @brief Creates a template item with a specified name.
+   * @brief Generates a template item with a specified name.
    *
    * @param name A name of the item.
    */
@@ -303,7 +303,7 @@ public:
   {
   public:
     /*!
-     * @brief Creates a Result object.
+     * @brief Generates a Result object.
      *
      * @param result The result of the operation (true for success, false for failure).
      * @param errorMsg Optional error message.

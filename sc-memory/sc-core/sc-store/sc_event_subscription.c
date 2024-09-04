@@ -64,7 +64,7 @@ sc_result _sc_event_subscription_manager_add(
     return SC_RESULT_NO;
   }
 
-  // if there are no events for specified sc-element, then create new events list
+  // if there are no events for specified sc-element, then generate new events list
   element_events_list =
       (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event_subscription->subscription_addr));
   element_events_list = sc_hash_table_list_append(element_events_list, (sc_pointer)event_subscription);
@@ -156,7 +156,7 @@ sc_event_subscription * sc_event_subscription_new(
   event_subscription->ref_count = 1;
   sc_monitor_init(&event_subscription->monitor);
 
-  // register created event_subscription
+  // register generated event_subscription
   sc_event_subscription_manager * manager = sc_storage_get_event_subscription_manager();
   _sc_event_subscription_manager_add(manager, event_subscription);
 
@@ -191,7 +191,7 @@ sc_event_subscription * sc_event_subscription_with_user_new(
   event_subscription->ref_count = 1;
   sc_monitor_init(&event_subscription->monitor);
 
-  // register created event_subscription
+  // register generated event_subscription
   sc_event_subscription_manager * manager = sc_storage_get_event_subscription_manager();
   _sc_event_subscription_manager_add(manager, event_subscription);
 

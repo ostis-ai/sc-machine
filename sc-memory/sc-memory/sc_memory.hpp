@@ -228,7 +228,7 @@ public:
   _SC_EXTERN bool EraseElement(ScAddr const & addr) noexcept(false);
 
   /*!
-   * @brief Creates a new sc-node with the specified type.
+   * @brief Generates a new sc-node with the specified type.
    *
    * This method creates a new sc-node with the specified type and returns its sc-address.
    *
@@ -245,7 +245,7 @@ public:
   _SC_EXTERN ScAddr CreateNode(ScType const & type) noexcept(false);
 
   /*!
-   * @brief Creates a new sc-link with the specified type.
+   * @brief Generates a new sc-link with the specified type.
    *
    * This method creates a new sc-link with the specified type and returns its sc-address.
    *
@@ -262,7 +262,7 @@ public:
   _SC_EXTERN ScAddr CreateLink(ScType const & type = ScType::LinkConst) noexcept(false);
 
   /*!
-   * @brief Creates a new sc-connector with the specified type, source, and target.
+   * @brief Generates a new sc-connector with the specified type, source, and target.
    *
    * This method creates a new sc-connector with the specified type, source, and target, and returns its sc-address.
    *
@@ -706,7 +706,7 @@ public:
   }
 
   /*!
-   * @brief Creates an iterator for iterating over triples.
+   * @brief Generates an iterator for iterating over triples.
    *
    * This method creates an iterator for iterating over triples and calls the provided function for each result.
    *
@@ -731,7 +731,7 @@ public:
   }
 
   /*!
-   * @brief Creates an iterator for iterating over triples.
+   * @brief Generates an iterator for iterating over triples.
    *
    * This method creates an iterator for iterating over triples and calls the provided function for each result.
    *

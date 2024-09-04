@@ -65,7 +65,7 @@
     permissions; \
   })
 
-sc_addr _sc_memory_context_manager_create_guest_user(sc_memory_context_manager * manager);
+sc_addr _sc_memory_context_manager_generate_guest_user(sc_memory_context_manager * manager);
 
 /*! Function that handles all user permissions by iterating through relevant relations and invoking corresponding
  * handlers.
