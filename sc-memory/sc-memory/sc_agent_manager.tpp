@@ -125,10 +125,7 @@ void ScAgentManager<TScAgent>::Unsubscribe(
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentClassName = agent.GetName();
-
-  auto const & eventClassIt = ScAgentManager<TScAgent>::m_agentEventClasses.find(agentClassName);
-  if (eventClassIt != ScAgentManager<TScAgent>::m_agentEventClasses.cend()
-      && eventClassIt->second == ScKeynodes::sc_event_before_erase_element)
+  if (IsAgentSubscribedToEventOfErasingElement(agentClassName))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Agent `" << agentClassName
@@ -183,6 +180,14 @@ void ScAgentManager<TScAgent>::Unsubscribe(
 
   ClearEmptyAgentImplementationSubscriptions(
       agentClassName, agentImplementationAddr, agentImplementationsToSubscriptions, subscriptions);
+}
+
+template <class TScAgent>
+bool ScAgentManager<TScAgent>::IsAgentSubscribedToEventOfErasingElement(std::string const & agentClassName)
+{
+  auto const & eventClassIt = ScAgentManager<TScAgent>::m_agentEventClasses.find(agentClassName);
+  return eventClassIt != ScAgentManager<TScAgent>::m_agentEventClasses.cend()
+         && eventClassIt->second == ScKeynodes::sc_event_before_erase_element;
 }
 
 template <class TScAgent>

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "sc_object.hpp"
 
 #include "utils/sc_log.hpp"
@@ -323,6 +325,20 @@ protected:
   using ScSubscriptionsRef = OptionalRef<ScSubscriptions>;
 
   /*!
+   * @brief Checks if an agent of a specified class is subscribed to the event of an element being erased.
+   *
+   * This method looks up the provided agent class name in the internal map of agent event classes.
+   * It determines if the agent class is associated with the specific event that indicates an element
+   * is about to be erased.
+   *
+   * @param agentClassName The name of the agent class to check for subscription to the erase event.
+   *
+   * @return true if the specified agent class is subscribed to the event of an element being erased;
+   *         false otherwise.
+   */
+  static _SC_EXTERN bool IsAgentSubscribedToEventOfErasingElement(std::string const & agentClassName);
+
+  /*!
    * @brief Resolves the subscriptions for agent implementations associated with a given agent class name.
    *
    * This function checks if there are existing subscriptions for the specified agent class name.
@@ -336,26 +352,28 @@ protected:
   ResolveAgentClassAgentImplementationSubscriptions(std::string const & agentClassName);
 
   /*!
- * @brief Retrieves the subscriptions for agent implementations associated with a given agent class name.
- *
- * This function looks up the subscriptions for the specified agent class name. If found, it returns
- * a reference to the subscriptions; otherwise, it returns an empty optional.
- *
- * @param agentClassName A name of the agent class for which to retrieve subscriptions.
- * @return A reference to the subscriptions associated with the specified agent class, or an empty optional if not
- found. static _SC_EXTERN ScAgentImplementationsToSubscriptionsRef
+   * @brief Retrieves the subscriptions for agent implementations associated with a given agent class name.
+   *
+   * This function looks up the subscriptions for the specified agent class name. If found, it returns
+   * a reference to the subscriptions; otherwise, it returns an empty optional.
+   *
+   * @param agentClassName A name of the agent class for which to retrieve subscriptions.
+   * @return A reference to the subscriptions associated with the specified agent class, or an empty optional if not
+   * found.
+   */
+  static _SC_EXTERN ScAgentImplementationsToSubscriptionsRef
   GetAgentClassAgentImplementationSubscriptions(std::string const & agentClassName);
 
   /*!
- * @brief Generates subscriptions for a specific agent implementation.
- *
- * This function creates a new entry for the specified agent implementation address in the subscriptions map.
- * It initializes an empty subscription list for that implementation and returns a reference to the subscriptions.
- *
- * @param agentImplementationAddr A sc-address of the agent implementation for which to generate subscriptions.
- * @param agentImplementationsToSubscriptions A reference to the map of agent implementations to their subscriptions.
- * @return A reference to the subscriptions associated with the specified agent implementation.
- */
+   * @brief Generates subscriptions for a specific agent implementation.
+   *
+   * This function creates a new entry for the specified agent implementation address in the subscriptions map.
+   * It initializes an empty subscription list for that implementation and returns a reference to the subscriptions.
+   *
+   * @param agentImplementationAddr A sc-address of the agent implementation for which to generate subscriptions.
+   * @param agentImplementationsToSubscriptions A reference to the map of agent implementations to their subscriptions.
+   * @return A reference to the subscriptions associated with the specified agent implementation.
+   */
   static _SC_EXTERN ScSubscriptionsRef GenerateAgentImplementationSubscriptions(
       ScAddr const & agentImplementationAddr,
       ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions);
