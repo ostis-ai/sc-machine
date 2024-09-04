@@ -28,10 +28,6 @@ macro(sc_linux_target_dependencies)
 
     set(GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
-    if(NOT DEFINED LIBCLANG_LIBRARIES OR NOT DEFINED LIBCLANG_CXXFLAGS OR NOT DEFINED LIBCLANG_LIBDIR)
-        find_package(LibClang REQUIRED)
-    endif()
-
     # for std::thread support
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endmacro()

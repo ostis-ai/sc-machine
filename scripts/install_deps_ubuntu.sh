@@ -30,11 +30,9 @@ packagelist_dev=(
   make
   cmake
   ccache
-  llvm
   gcc
   g++
   clang
-  libclang-dev
   default-jre
   clang-format
   libasio-dev
