@@ -309,13 +309,52 @@ private:
 
 protected:
   //! Agents subscriptions.
-  static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_agentSubscriptions;
+  using ScSubscriptions = ScAddrToValueUnorderedMap<ScEventSubscription *>;
+  using ScAgentImplementationsToSubscriptions = ScAddrToValueUnorderedMap<ScSubscriptions>;
+  using ScAgentClassesToAgentImplementationSubscriptions =
+      std::unordered_map<std::string, ScAgentImplementationsToSubscriptions>;
+  static inline ScAgentClassesToAgentImplementationSubscriptions m_agentClassesToAgentImplementationSubscriptions;
   static inline std::unordered_map<std::string, ScAddr> m_agentEventClasses;
+
+  template <typename T>
+  using OptionalRef = std::optional<std::reference_wrapper<T>>;
+  using ScAgentImplementationsToSubscriptionsRef =
+      OptionalRef<ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptions>;
+  using ScSubscriptionsRef = OptionalRef<ScSubscriptions>;
+
+  static _SC_EXTERN ScAgentImplementationsToSubscriptionsRef
+  ResolveAgentClassAgentImplementationSubscriptions(std::string const & agentClassName);
+
+  static _SC_EXTERN ScAgentImplementationsToSubscriptionsRef
+  GetAgentClassAgentImplementationSubscriptions(std::string const & agentClassName);
+
+  static _SC_EXTERN ScSubscriptionsRef GenerateAgentImplementationSubscriptions(
+      ScAddr const & agentImplementationAddr,
+      ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions);
+
+  static _SC_EXTERN ScSubscriptionsRef GetAgentImplementationSubscriptions(
+      ScAddr const & agentImplementationAddr,
+      ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions);
+
+  static _SC_EXTERN ScEventSubscription * GetSubscription(
+      ScAddr const & eventSubscriptionElementAddr,
+      ScSubscriptionsRef const & subscriptions);
+
+  static _SC_EXTERN void EraseSubscription(
+      ScAddr const & eventSubscriptionElementAddr,
+      ScSubscriptionsRef const & subscriptions);
+
+  static _SC_EXTERN void ClearEmptyAgentImplementationSubscriptions(
+      std::string const & agentClassName,
+      ScAddr const & agentImplementationAddr,
+      ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions,
+      ScSubscriptionsRef const & subscriptions);
 
   //! Returns callback that remove subscription of agent to sc-event of erasing sc-element from common map.
   static _SC_EXTERN std::function<void(void)> GetPostEraseEventCallback(
       std::string const & agentName,
       std::string const & eventClassName,
+      ScAddr const & agentImplementationAddr,
       ScAddr const & subscriptionElementAddr);
 
   /*!
