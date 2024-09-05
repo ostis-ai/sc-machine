@@ -152,24 +152,57 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
     std::string & agentImplementationName,
     std::string const & agentClassName) noexcept(false)
 {
+  auto const & ValidateAgentImplementation = [&]()
+  {
+    bool isPlatformIndependentAgent = false;
+    ScIterator3Ptr it3 = context->Iterator3(
+        ScKeynodes::platform_dependent_abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_agentImplementationAddr);
+    if (!it3->Next())
+    {
+      ScIterator3Ptr const it3 = context->Iterator3(
+          ScKeynodes::platform_independent_abstract_sc_agent,
+          ScType::EdgeAccessConstPosPerm,
+          m_agentImplementationAddr);
+      if (!it3->Next())
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidState,
+            "Specified sc-element with system identifier `"
+                << agentImplementationName << "` is not agent implementation for agent class `" << agentClassName
+                << "`, because it does not belong to the one of classes: `platform_dependent_abstract_sc_agent` or "
+                   "`platform_independent_abstract_sc_agent`.");
+
+      isPlatformIndependentAgent = true;
+    }
+
+    if (it3->Next())
+      SC_LOG_WARNING(
+          "Specified agent implementation with system identifier `"
+          << agentImplementationName << "` for agent class `" << agentClassName << "` belongs to class `"
+          << (isPlatformIndependentAgent ? "platform_independent_abstract_sc_agent"
+                                         : "platform_dependent_abstract_sc_agent")
+          << "` twice.");
+
+    if (!isPlatformIndependentAgent)
+    {
+      it3 = context->Iterator3(
+          ScKeynodes::platform_independent_abstract_sc_agent,
+          ScType::EdgeAccessConstPosPerm,
+          m_agentImplementationAddr);
+      if (it3->Next())
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidState,
+            "Specified agent implementation `"
+                << agentImplementationName << "` for agent class `" << agentClassName
+                << "` is invalid, because it belongs to both `platform_dependent_abstract_sc_agent` class and "
+                   "`platform_independent_abstract_sc_agent` class.");
+    }
+  };
+
   if (context->IsElement(m_agentImplementationAddr))
   {
     agentImplementationName = context->HelperGetSystemIdtf(m_agentImplementationAddr);
 
-    ScIterator3Ptr const it3 = context->Iterator3(
-        ScKeynodes::platform_dependent_abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_agentImplementationAddr);
-    if (!it3->Next())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Specified sc-element with system identifier `"
-              << agentImplementationName << "` is not agent implementation for agent class `" << agentClassName
-              << "`, because it does not belong to class `platform_dependent_abstract_sc_agent`.");
-
-    if (it3->Next())
-      SC_LOG_WARNING(
-          "Agent implementation with system identifier `"
-          << agentImplementationName << "` for agent class `" << agentClassName
-          << "` belongs to class `platform_dependent_abstract_sc_agent` twice.");
+    ValidateAgentImplementation();
 
     SC_LOG_DEBUG("Agent implementation for agent class `" << agentClassName << "` was found.");
     return;
@@ -180,20 +213,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
   m_agentImplementationAddr = context->HelperFindBySystemIdtf(agentImplementationName);
   if (context->IsElement(m_agentImplementationAddr))
   {
-    ScIterator3Ptr const it3 = context->Iterator3(
-        ScKeynodes::platform_dependent_abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_agentImplementationAddr);
-    if (!it3->Next())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidState,
-          "Specified sc-element with system identifier `"
-              << agentImplementationName << "` is not agent implementation for agent class `" << agentClassName
-              << "`, because it does not belong to class `platform_dependent_abstract_sc_agent`.");
-
-    if (it3->Next())
-      SC_LOG_WARNING(
-          "Agent implementation with system identifier `"
-          << agentImplementationName << "` for agent class `" << agentClassName
-          << "` belongs to class `platform_dependent_abstract_sc_agent` twice.");
+    ValidateAgentImplementation();
 
     SC_LOG_DEBUG(
         "Agent implementation for class `" << agentClassName << "` was not generated, because it already exists.");
