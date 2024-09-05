@@ -266,6 +266,7 @@ context.UnsubscribeAgent<MyActionAgent>();
 ### **SubscribeSpecifiedAgent**
 
 Also, you can subscribe agent according to specification provided in knowledge base. Instead of subscription sc-elements, you should provide agent implementations.
+`SubscribeSpecifiedAgent` method finds specification of abstract agent for specified agent implementation and uses this specification to subscribe specified agent to sc-event.
 
 ```cpp
 ...
@@ -276,17 +277,37 @@ context.SubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr);
 !!! note
     If some specification elements will be not found, then exceptions will be thrown. Sure, that specification is full, and that it is loaded to knowledge base. This method doesn't load specification to knowledge base for specified agent class.
 
-This method finds specification of abstract agent for specified agent implementation and uses this specification to subscribe specified agent to sc-event.
-
-### **UnsubscribeSpecifiedAgent**
+You can subscribe the same agents to sc-events according to several agent implementations. These agent implementations can be included to the same abstract agent or to different abstract agents.
 
 ```cpp
 ...
+context.SubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr1);
+context.SubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr2);
+...
+```
+
+### **UnsubscribeSpecifiedAgent**
+
+This method finds specification of abstract agent for specified agent implementation and uses this specification to unsubscribe specified agent from sc-event.
+
+```cpp
+...
+// If your agent was subscribed to sc-event according to agent 
+// implementation, you should unsubscribe from sc-event according 
+// to this agent implementation. 
 context.UnsubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr);
 ...
 ```
 
-This method finds specification of abstract agent for specified agent implementation and uses this specification to unsubscribe specified agent from sc-event.
+```cpp
+...
+// If your agent was subscribed to sc-events according to several 
+// agent implementations, you should unsubscribe from sc-events 
+// according to these agent implementations.
+context.UnsubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr1);
+context.UnsubscribeSpecifiedAgent<MyAgent>(agentImplementationAddr2);
+...
+```
 
 !!! note
     If some specification elements will be not found, then exceptions will be thrown. Sure, that specification is full, and that it is loaded to knowledge base. This method doesn't load specification to knowledge base for specified agent class.

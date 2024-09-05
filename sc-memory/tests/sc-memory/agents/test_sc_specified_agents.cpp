@@ -134,13 +134,12 @@ TEST_F(ScSpecifiedAgentTest, SubscribeSpecifiedAgentToSeveralImplementations)
 
   EXPECT_NO_THROW(
       m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
-  EXPECT_NO_THROW(
-      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
-
   ScAddr const & otherTestSpecifiedAgentImplementation =
       m_ctx->HelperFindBySystemIdtf("other_test_specified_agent_implementation");
-
   EXPECT_NO_THROW(m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(otherTestSpecifiedAgentImplementation));
+
+  EXPECT_NO_THROW(
+      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
   EXPECT_NO_THROW(m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(otherTestSpecifiedAgentImplementation));
 }
 

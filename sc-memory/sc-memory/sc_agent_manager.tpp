@@ -62,7 +62,7 @@ void ScAgentManager<TScAgent>::Subscribe(
                                           << "because subscription sc-element with address hash `"
                                           << subscriptionElementAddr.Hash() << "` is not valid.");
 
-    auto const & subscription = GetSubscription(subscriptionElementAddr, subscriptions);
+    auto const & subscription = GetSubscription(subscriptionElementAddr, *subscriptions);
     if (subscription)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
@@ -139,7 +139,7 @@ void ScAgentManager<TScAgent>::Unsubscribe(
         "Agent `" << agentClassName << "` does not have been subscribed to any events yet.");
 
   auto subscriptions =
-      GetAgentImplementationSubscriptions(agentImplementationAddr, agentImplementationsToSubscriptions);
+      GetAgentImplementationSubscriptions(agentImplementationAddr, *agentImplementationsToSubscriptions);
   if (!subscriptions)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
@@ -163,7 +163,7 @@ void ScAgentManager<TScAgent>::Unsubscribe(
                                             << "because subscription sc-element with address hash `"
                                             << subscriptionElementAddr.Hash() << "` is not valid.");
 
-    auto const & subscription = GetSubscription(subscriptionElementAddr, subscriptions);
+    auto const & subscription = GetSubscription(subscriptionElementAddr, *subscriptions);
     if (!subscription)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
@@ -175,7 +175,7 @@ void ScAgentManager<TScAgent>::Unsubscribe(
                               << subscriptionElementAddr.Hash() << ")`.");
 
     delete subscription;
-    EraseSubscription(subscriptionElementAddr, subscriptions);
+    EraseSubscription(subscriptionElementAddr, *subscriptions);
   }
 
   ClearEmptyAgentImplementationSubscriptions(
@@ -197,11 +197,11 @@ typename ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef ScAg
   if (!ScAgentManager<TScAgent>::m_agentClassesToAgentImplementationSubscriptions.count(agentClassName))
     ScAgentManager<TScAgent>::m_agentClassesToAgentImplementationSubscriptions.insert({agentClassName, {}});
 
-  return GetAgentClassAgentImplementationSubscriptions(agentClassName);
+  return *GetAgentClassAgentImplementationSubscriptions(agentClassName);
 }
 
 template <class TScAgent>
-typename ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef ScAgentManager<
+typename ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsOptionalRef ScAgentManager<
     TScAgent>::GetAgentClassAgentImplementationSubscriptions(std::string const & agentClassName)
 {
   auto const & agentImplementationsToSubscriptionsIt =
@@ -217,20 +217,21 @@ template <class TScAgent>
 typename ScAgentManager<TScAgent>::ScSubscriptionsRef ScAgentManager<TScAgent>::
     GenerateAgentImplementationSubscriptions(
         ScAddr const & agentImplementationAddr,
-        ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions)
+        ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptions & agentImplementationsToSubscriptions)
 {
-  agentImplementationsToSubscriptions->get().insert({agentImplementationAddr, {}});
+  agentImplementationsToSubscriptions.insert({agentImplementationAddr, {}});
 
-  return GetAgentImplementationSubscriptions(agentImplementationAddr, agentImplementationsToSubscriptions);
+  return *GetAgentImplementationSubscriptions(agentImplementationAddr, agentImplementationsToSubscriptions);
 }
 
 template <class TScAgent>
-typename ScAgentManager<TScAgent>::ScSubscriptionsRef ScAgentManager<TScAgent>::GetAgentImplementationSubscriptions(
-    ScAddr const & agentImplementationAddr,
-    ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions)
+typename ScAgentManager<TScAgent>::ScSubscriptionsOptionalRef ScAgentManager<TScAgent>::
+    GetAgentImplementationSubscriptions(
+        ScAddr const & agentImplementationAddr,
+        ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptions & agentImplementationsToSubscriptions)
 {
-  auto const & subscriptionsIt = agentImplementationsToSubscriptions->get().find(agentImplementationAddr);
-  if (subscriptionsIt == agentImplementationsToSubscriptions->get().cend())
+  auto const & subscriptionsIt = agentImplementationsToSubscriptions.find(agentImplementationAddr);
+  if (subscriptionsIt == agentImplementationsToSubscriptions.cend())
     return std::nullopt;
 
   return std::ref(subscriptionsIt->second);
@@ -239,10 +240,10 @@ typename ScAgentManager<TScAgent>::ScSubscriptionsRef ScAgentManager<TScAgent>::
 template <class TScAgent>
 ScEventSubscription * ScAgentManager<TScAgent>::GetSubscription(
     ScAddr const & subscriptionElementAddr,
-    ScSubscriptionsRef const & subscriptions)
+    ScSubscriptions const & subscriptions)
 {
-  auto const & it = subscriptions->get().find(subscriptionElementAddr);
-  if (it == subscriptions->get().cend())
+  auto const & it = subscriptions.find(subscriptionElementAddr);
+  if (it == subscriptions.cend())
     return nullptr;
 
   return it->second;
@@ -251,17 +252,17 @@ ScEventSubscription * ScAgentManager<TScAgent>::GetSubscription(
 template <class TScAgent>
 void ScAgentManager<TScAgent>::EraseSubscription(
     ScAddr const & subscriptionElementAddr,
-    ScSubscriptionsRef const & subscriptions)
+    ScSubscriptions & subscriptions)
 {
-  subscriptions->get().erase(subscriptionElementAddr);
+  subscriptions.erase(subscriptionElementAddr);
 }
 
 template <class TScAgent>
 void ScAgentManager<TScAgent>::ClearEmptyAgentImplementationSubscriptions(
     std::string const & agentClassName,
     ScAddr const & agentImplementationAddr,
-    ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsRef & agentImplementationsToSubscriptions,
-    ScSubscriptionsRef const & subscriptions)
+    ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsOptionalRef & agentImplementationsToSubscriptions,
+    ScSubscriptionsOptionalRef const & subscriptions)
 {
   if (subscriptions->get().empty())
     agentImplementationsToSubscriptions->get().erase(agentImplementationAddr);
@@ -287,7 +288,7 @@ std::function<void(void)> ScAgentManager<TScAgent>::GetPostEraseEventCallback(
     }
 
     auto subscriptions =
-        GetAgentImplementationSubscriptions(agentImplementationAddr, agentImplementationsToSubscriptions);
+        GetAgentImplementationSubscriptions(agentImplementationAddr, *agentImplementationsToSubscriptions);
     if (!subscriptions)
     {
       // TODO(NikitaZotov): Implement transactions in sc-memory
@@ -298,7 +299,7 @@ std::function<void(void)> ScAgentManager<TScAgent>::GetPostEraseEventCallback(
         "Unsubscribe agent `" << agentClassName << "` from event `" << eventClassName << "("
                               << subscriptionElementAddr.Hash() << ")`.");
 
-    EraseSubscription(subscriptionElementAddr, subscriptions);
+    EraseSubscription(subscriptionElementAddr, *subscriptions);
     ClearEmptyAgentImplementationSubscriptions(
         agentClassName, agentImplementationAddr, agentImplementationsToSubscriptions, subscriptions);
   };
