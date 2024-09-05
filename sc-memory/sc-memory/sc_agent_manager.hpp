@@ -316,7 +316,7 @@ protected:
       std::unordered_map<std::string, ScAgentImplementationsToSubscriptions>;
   //! Map to store agent classes to their corresponding agent implementation subscriptions.
   static inline ScAgentClassesToAgentImplementationSubscriptions m_agentClassesToAgentImplementationSubscriptions;
-  static inline std::unordered_map<std::string, ScAddr> m_agentEventClasses;
+  static inline std::unordered_map<std::string, std::pair<ScAddr, ScAddr>> m_agentEventClasses;
 
   template <typename T>
   using Ref = std::reference_wrapper<T>;
@@ -333,14 +333,17 @@ protected:
    *
    * This method looks up the provided agent class name in the internal map of agent event classes.
    * It determines if the agent class is associated with the specific event that indicates an element
-   * is about to be erased.
+   * is about to be erased and if subscription sc-element of this event is erased.
    *
+   * @param context A sc-memory context used to check for subscription to the erase event.
    * @param agentClassName The name of the agent class to check for subscription to the erase event.
    *
-   * @return true if the specified agent class is subscribed to the event of an element being erased;
-   *         false otherwise.
+   * @return true if the specified agent class was subscribed to the event of an element being erased and subscription
+   * sc-element of this event is erased; false otherwise.
    */
-  static _SC_EXTERN bool IsAgentSubscribedToEventOfErasingElement(std::string const & agentClassName);
+  static _SC_EXTERN bool WasAgentSubscribedToEventOfErasedElementErasing(
+      ScMemoryContext * context,
+      std::string const & agentClassName);
 
   /*!
    * @brief Resolves the subscriptions for agent implementations associated with a given agent class name.

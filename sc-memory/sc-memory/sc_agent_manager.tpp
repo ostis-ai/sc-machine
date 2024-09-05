@@ -88,7 +88,7 @@ void ScAgentManager<TScAgent>::Subscribe(
                eventClassAddr,
                subscriptionElementAddr,
                ScAgentManager<TScAgent>::GetCallback(agentImplementationAddr, postEraseEventCallback))});
-      ScAgentManager<TScAgent>::m_agentEventClasses.insert({agentClassName, eventClassAddr});
+      ScAgentManager<TScAgent>::m_agentEventClasses.insert({agentClassName, {eventClassAddr, subscriptionElementAddr}});
     }
     else
     {
@@ -102,7 +102,8 @@ void ScAgentManager<TScAgent>::Subscribe(
                *context,
                subscriptionElementAddr,
                ScAgentManager<TScAgent>::GetCallback(agentImplementationAddr, postEraseEventCallback))});
-      ScAgentManager<TScAgent>::m_agentEventClasses.insert({agentClassName, TScEvent::eventClassAddr});
+      ScAgentManager<TScAgent>::m_agentEventClasses.insert(
+          {agentClassName, {TScEvent::eventClassAddr, subscriptionElementAddr}});
     }
   }
 }
@@ -125,7 +126,7 @@ void ScAgentManager<TScAgent>::Unsubscribe(
   agent.SetImplementation(agentImplementationAddr);
 
   std::string const & agentClassName = agent.GetName();
-  if (IsAgentSubscribedToEventOfErasingElement(agentClassName))
+  if (WasAgentSubscribedToEventOfErasedElementErasing(context, agentClassName))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Agent `" << agentClassName
@@ -183,11 +184,14 @@ void ScAgentManager<TScAgent>::Unsubscribe(
 }
 
 template <class TScAgent>
-bool ScAgentManager<TScAgent>::IsAgentSubscribedToEventOfErasingElement(std::string const & agentClassName)
+bool ScAgentManager<TScAgent>::WasAgentSubscribedToEventOfErasedElementErasing(
+    ScMemoryContext * context,
+    std::string const & agentClassName)
 {
   auto const & eventClassIt = ScAgentManager<TScAgent>::m_agentEventClasses.find(agentClassName);
   return eventClassIt != ScAgentManager<TScAgent>::m_agentEventClasses.cend()
-         && eventClassIt->second == ScKeynodes::sc_event_before_erase_element;
+         && eventClassIt->second.first == ScKeynodes::sc_event_before_erase_element
+         && !context->IsElement(eventClassIt->second.second);
 }
 
 template <class TScAgent>

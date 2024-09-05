@@ -197,6 +197,14 @@ TEST_F(ScAgentTest, ATestEraseElement)
   EXPECT_THROW(m_ctx->UnsubscribeAgent<ATestEraseElement>(subscriptionElementAddr), utils::ExceptionInvalidState);
 }
 
+TEST_F(ScAgentTest, ATestEraseElementNotInitiated)
+{
+  ScAddr const & subscriptionElementAddr = m_ctx->CreateNode(ScType::NodeConst);
+
+  m_ctx->SubscribeAgent<ATestEraseElement>(subscriptionElementAddr);
+  EXPECT_NO_THROW(m_ctx->UnsubscribeAgent<ATestEraseElement>(subscriptionElementAddr));
+}
+
 TEST_F(ScAgentTest, ATestChangeLinkContent)
 {
   ScAddr const & subscriptionElementAddr = m_ctx->CreateLink(ScType::LinkConst);

@@ -57,7 +57,8 @@ ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback() noe
 {
   return [](ScMemoryContext * context, ScAddr const & agentImplementationAddr, ScAddrVector const & addrs) -> void
   {
-    if (ScAgentManager<TScAgent>::IsAgentSubscribedToEventOfErasingElement(TScAgent::template GetName<TScAgent>()))
+    if (ScAgentManager<TScAgent>::WasAgentSubscribedToEventOfErasedElementErasing(
+            context, TScAgent::template GetName<TScAgent>()))
       return;
 
     if (context->IsElement(agentImplementationAddr))
