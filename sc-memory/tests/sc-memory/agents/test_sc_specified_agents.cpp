@@ -70,6 +70,16 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecification)
   m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 }
 
+TEST_F(ScSpecifiedAgentTest, SubscribeSpecifiedAgentByInvalidAgentImplementation)
+{
+  EXPECT_THROW(m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ScAddr::Empty), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScSpecifiedAgentTest, UnsubscribeSpecifiedAgentByInvalidAgentImplementation)
+{
+  EXPECT_THROW(m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ScAddr::Empty), utils::ExceptionInvalidParams);
+}
+
 TEST_F(ScSpecifiedAgentTest, SubscribeSpecifiedAgentTwice)
 {
   std::string const & data = ATestSpecifiedAgentSpecification;
