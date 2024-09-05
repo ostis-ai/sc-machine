@@ -30,7 +30,7 @@ TEST_F(ScAgentTest, AgentClass)
   EXPECT_NO_THROW(agent.DoProgram(action));
 }
 
-TEST_F(ScAgentTest, InvalidSubscription)
+TEST_F(ScAgentTest, SubscribeAgentToInvalidSubscriptionElement)
 {
   ScAddr subscriptionElementAddr;
   EXPECT_THROW(m_ctx->SubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr), utils::ExceptionInvalidParams);
