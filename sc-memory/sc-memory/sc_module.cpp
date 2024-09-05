@@ -39,13 +39,22 @@ void ScModule::Unregister(ScMemoryContext * context) noexcept(false)
   {
     auto [builder, _, unsubscribeCallback, addrs] = agentInfo;
     ScAddr const & agentImplementationAddr = builder ? builder->GetAgentImplementation() : ScAddr::Empty;
-    unsubscribeCallback(context, agentImplementationAddr, addrs);
-    if (builder != nullptr)
+
+    bool isBuilderValid = builder != nullptr;
+    if (isBuilderValid)
     {
       builder->Shutdown(context);
       delete builder;
       builder = nullptr;
     }
+
+    if (isBuilderValid && !context->IsElement(agentImplementationAddr))
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Not able to shutdown module `" << this->GetName()
+                                          << "`, because one of specified agents does not have valid specification.");
+
+    unsubscribeCallback(context, agentImplementationAddr, addrs);
   }
   m_agents.clear();
 
