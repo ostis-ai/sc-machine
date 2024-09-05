@@ -252,6 +252,9 @@ public:
   _SC_EXTERN static inline ScKeynode const platform_dependent_abstract_sc_agent{
       "platform_dependent_abstract_sc_agent",
       ScType::NodeConstClass};
+  _SC_EXTERN static inline ScKeynode const platform_independent_abstract_sc_agent{
+      "platform_independent_abstract_sc_agent",
+      ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const nrel_sc_agent_program{"nrel_sc_agent_program", ScType::NodeConstNoRole};
 
   _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::NodeConstClass};

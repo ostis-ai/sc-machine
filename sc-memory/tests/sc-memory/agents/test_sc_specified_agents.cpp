@@ -77,6 +77,61 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasNotSpecification)
       utils::ExceptionInvalidState);
 }
 
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithPlatformIndependentImplementation)
+{
+  std::string const & data = R"(
+    test_specified_agent
+    <- abstract_sc_agent;
+    => nrel_primary_initiation_condition: 
+      (sc_event_after_generate_outgoing_arc => action_initiated);
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_initiation_condition_and_result: 
+      (..test_specified_agent_condition => ..test_specified_agent_result);
+    <= nrel_sc_agent_key_sc_elements: 
+      {
+        action_initiated;
+        action;
+        test_specified_agent_action
+      };
+    => nrel_inclusion: 
+      test_specified_agent_implementation
+      (*
+        <- platform_independent_abstract_sc_agent;;
+        <= nrel_sc_agent_program: 
+        {
+          [] (* => nrel_format: format_github_source_link;; *);
+          [] (* => nrel_format: format_github_source_link;; *)
+        };;
+      *);;
+
+    ..test_specified_agent_condition
+    = [*
+      test_specified_agent_action _-> .._action;;
+      action_initiated _-> .._action;;
+      .._action _-> rrel_1:: .._parameter;;
+    *];;
+
+    ..test_specified_agent_result
+    = [*
+      concept_set _-> _...;;
+    *];;
+
+    test_specified_agent_action
+    <- sc_node_class;
+    <= nrel_inclusion: information_action;;
+  )";
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  EXPECT_NO_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+
+  EXPECT_NO_THROW(
+      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+}
+
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithNotSpecifiedImplementationClass)
 {
   std::string const & data = R"(
@@ -124,7 +179,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithNotSpecified
       utils::ExceptionInvalidState);
 }
 
-TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedImplementationClassTwice)
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedImplementationHavingDependentClassTwice)
 {
   std::string const & data = R"(
     test_specified_agent
@@ -174,6 +229,109 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedImp
       m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
   EXPECT_NO_THROW(
       m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+}
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedImplementationHavingIndependentClassTwice)
+{
+  std::string const & data = R"(
+    test_specified_agent
+    => nrel_inclusion:
+      test_specified_agent_implementation
+      (*
+        <- platform_independent_abstract_sc_agent;;
+        <- platform_independent_abstract_sc_agent;;
+      *);;
+
+    test_specified_agent
+    <- abstract_sc_agent;
+    => nrel_primary_initiation_condition: 
+      (sc_event_after_generate_outgoing_arc => action_initiated);
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_initiation_condition_and_result: 
+      (..test_specified_agent_condition => ..test_specified_agent_result);
+    <= nrel_sc_agent_key_sc_elements: 
+      {
+        action_initiated;
+        action;
+        test_specified_agent_action
+      };;
+
+    ..test_specified_agent_condition
+    = [*
+      test_specified_agent_action _-> .._action;;
+      action_initiated _-> .._action;;
+      .._action _-> rrel_1:: .._parameter;;
+    *];;
+
+    ..test_specified_agent_result
+    = [*
+      concept_set _-> _...;;
+    *];;
+
+    test_specified_agent_action
+    <- sc_node_class;
+    <= nrel_inclusion: information_action;;
+  )";
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  EXPECT_NO_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+  EXPECT_NO_THROW(
+      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+}
+
+TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWithSpecifiedImplementationHavingTwoDifferentClasses)
+{
+  std::string const & data = R"(
+    test_specified_agent
+    => nrel_inclusion:
+      test_specified_agent_implementation
+      (*
+        <- platform_dependent_abstract_sc_agent;;
+        <- platform_independent_abstract_sc_agent;;
+      *);;
+
+    test_specified_agent
+    <- abstract_sc_agent;
+    => nrel_primary_initiation_condition: 
+      (sc_event_after_generate_outgoing_arc => action_initiated);
+    => nrel_sc_agent_action_class: 
+      test_specified_agent_action;
+    => nrel_initiation_condition_and_result: 
+      (..test_specified_agent_condition => ..test_specified_agent_result);
+    <= nrel_sc_agent_key_sc_elements: 
+      {
+        action_initiated;
+        action;
+        test_specified_agent_action
+      };;
+
+    ..test_specified_agent_condition
+    = [*
+      test_specified_agent_action _-> .._action;;
+      action_initiated _-> .._action;;
+      .._action _-> rrel_1:: .._parameter;;
+    *];;
+
+    ..test_specified_agent_result
+    = [*
+      concept_set _-> _...;;
+    *];;
+
+    test_specified_agent_action
+    <- sc_node_class;
+    <= nrel_inclusion: information_action;;
+  )";
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  EXPECT_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation),
+      utils::ExceptionInvalidState);
 }
 
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasSpecificationWitNotSpecifiedAbstractAgent)

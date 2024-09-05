@@ -70,6 +70,8 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_initiation_condition_and_result) == ScType::NodeConstNoRole);
   EXPECT_TRUE(ScKeynodes::platform_dependent_abstract_sc_agent.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::platform_dependent_abstract_sc_agent) == ScType::NodeConstClass);
+  EXPECT_TRUE(ScKeynodes::platform_independent_abstract_sc_agent.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::platform_independent_abstract_sc_agent) == ScType::NodeConstClass);
   EXPECT_TRUE(ScKeynodes::nrel_sc_agent_program.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_sc_agent_program) == ScType::NodeConstNoRole);
 
