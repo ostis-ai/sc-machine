@@ -286,6 +286,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasSpecificationWithExistingA
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasSpecificationWithSpecifiedAbstractAgentHavingClassTwice)
@@ -323,6 +324,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedAbstractAgent)
   TestModule module;
   module.AgentBuilder<ATestSpecifiedAgent>()->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasInvalidAbstractAgent)
@@ -339,6 +341,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasInvalidAbstractAgent)
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedPrimaryInitiationCondition)
@@ -360,6 +363,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedPrimaryInitiat
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedActionClass)
@@ -376,6 +380,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedActionClass)
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedInitiationConditionAndResult)
@@ -394,6 +399,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedInitiationCond
       ->SetActionClass(actionClassAddr)
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidAbstractAgent)
@@ -408,6 +414,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidAbstractAgent)
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventClass)
@@ -425,6 +432,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventClass)
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventSubscriptionElement)
@@ -442,6 +450,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidEventSubscriptionEl
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidActionClass)
@@ -459,6 +468,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidActionClass)
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidActionClassNotHavingSuperClass)
@@ -478,6 +488,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidActionClassNotHavin
            ATestSpecifiedAgent::test_specified_agent_result_condition_in_kb})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidInitiationCondition)
@@ -500,6 +511,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidInitiationCondition
       ->SetInitiationConditionAndResult({ScAddr::Empty, resultConditionAddr})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidConditionResult)
@@ -522,4 +534,5 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentSetInvalidConditionResult)
       ->SetInitiationConditionAndResult({initiationConditionAddr, ScAddr::Empty})
       ->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidParams);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
 }
