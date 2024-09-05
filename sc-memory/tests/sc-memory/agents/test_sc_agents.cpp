@@ -568,7 +568,7 @@ TEST_F(ScAgentTest, RegisterAgentWithinModule)
 
 TEST_F(ScAgentTest, RegisterActionInitiatedAgentWithinModule)
 {
-  ATestGenerateOutgoingArc::msWaiter.Reset();
+  ATestCheckResult::msWaiter.Reset();
 
   TestModule module;
   module.Agent<ATestCheckResult>();

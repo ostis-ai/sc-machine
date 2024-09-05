@@ -44,10 +44,14 @@ ScModule::ScAgentSubscribeCallback ScModule::GetAgentSubscribeCallback() noexcep
   {
     if (context->IsElement(agentImplementationAddr))
       ScAgentManager<TScAgent>::Subscribe(context, agentImplementationAddr);
-    else
+    else if (!addrs.empty())
     {
       for (ScAddr const & addr : addrs)
         ScAgentManager<TScAgent>::Subscribe(context, agentImplementationAddr, addr);
+    }
+    else
+    {
+      ScAgentManager<TScAgent>::Subscribe(context, agentImplementationAddr);
     }
   };
 }
@@ -65,10 +69,14 @@ ScModule::ScAgentUnsubscribeCallback ScModule::GetAgentUnsubscribeCallback() noe
 
     if (context->IsElement(agentImplementationAddr))
       ScAgentManager<TScAgent>::Unsubscribe(context, agentImplementationAddr);
-    else
+    else if (!addrs.empty())
     {
       for (ScAddr const & addr : addrs)
         ScAgentManager<TScAgent>::Unsubscribe(context, agentImplementationAddr, addr);
+    }
+    else
+    {
+      ScAgentManager<TScAgent>::Unsubscribe(context, agentImplementationAddr);
     }
   };
 }
