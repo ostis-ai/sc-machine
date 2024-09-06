@@ -158,7 +158,7 @@ public:
    *
    * This method checks whether an sc-element with the specified sc-address exists in the sc-memory.
    *
-   * @param addr A sc-address to check for existence.
+   * @param elementAddr A sc-address to check for existence.
    * @return Returns true if the sc-element exists; otherwise, returns false.
    *
    * @code
@@ -399,9 +399,9 @@ public:
    *
    * This method creates a new sc-connector with the specified type, source, and target, and returns its sc-address.
    *
-   * @param type A sc-type of the sc-connector to create.
-   * @param addrBeg A sc-address of the source sc-element.
-   * @param addrEnd A sc-address of the target sc-element.
+   * @param connectorType A sc-type of the sc-connector to create.
+   * @param sourceElementAddr A sc-address of the source sc-element.
+   * @param targetElementAddr A sc-address of the target sc-element.
    * @return Returns the sc-address of the newly created sc-connector.
    * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
@@ -429,7 +429,7 @@ public:
    *
    * This method retrieves the type of the sc-element identified by the given sc-address.
    *
-   * @param addr A sc-address of the sc-element to query.
+   * @param elementAddr A sc-address of the sc-element to query.
    * @return Returns the type of the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
@@ -628,7 +628,7 @@ public:
    * This method sets the content of an sc-link identified by the given sc-address using the provided stream.
    *
    * @param linkAddr A sc-address of the sc-link.
-   * @param contentStream The stream containing the content.
+   * @param contentStream A stream containing the content.
    * @param isSearchableString Flag indicating whether the content is searchable as a string (default is true).
    * @return Returns true if the content was successfully set; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
@@ -692,7 +692,7 @@ public:
    *
    * This method retrieves the content of an sc-link identified by the given sc-address as a string.
    *
-   * @param addr A sc-address of the sc-link.
+   * @param elementAddr A sc-address of the sc-link.
    * @param outLinkContent[out] A sc-typed content retrieved from the sc-link.
    * @return Returns true if the content was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
@@ -775,7 +775,7 @@ public:
    *
    * This method finds sc-links by matching the content with the provided stream.
    *
-   * @param stream The stream to use for content matching.
+   * @param linkContentStream A stream to use for content matching.
    * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
@@ -788,7 +788,7 @@ public:
    *
    * This method finds sc-links by matching the content with the provided stream.
    *
-   * @param stream The stream to use for content matching.
+   * @param linkContentStream A stream to use for content matching.
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
@@ -808,7 +808,7 @@ public:
    *
    * This method finds sc-links by matching the content with the provided typed string.
    *
-   * @param stream The stream to use for content matching.
+   * @param linkContent A sc-link content to search.
    * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
@@ -831,7 +831,7 @@ public:
    *
    * This method finds sc-links by matching the content with the provided typed string.
    *
-   * @param stream The stream to use for content matching.
+   * @param linkContent A sc-link content to search.
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
@@ -861,7 +861,7 @@ public:
    *
    * This method finds sc-links by matching the content substring with the provided stream.
    *
-   * @param linkContentSubstring The stream to use for content matching.
+   * @param linkContentSubstring A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -887,7 +887,7 @@ public:
    *
    * This method finds sc-links by matching the content substring with the provided stream.
    *
-   * @param linkContentSubstring The stream to use for content matching.
+   * @param linkContentSubstring A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -920,7 +920,7 @@ public:
    *
    * This method finds sc-links by matching the content substring with the provided typed string.
    *
-   * @param linkContentSubstringStream The stream to use for content matching.
+   * @param linkContentSubstringStream A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -936,7 +936,7 @@ public:
    *
    * This method finds sc-links by matching the content substring with the provided typed string.
    *
-   * @param linkContentSubstringStream The stream to use for content matching.
+   * @param linkContentSubstringStream A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -959,7 +959,7 @@ public:
    *
    * This method finds sc-links contents by matching the content substring with the provided stream.
    *
-   * @param linkContent The stream to use for content matching.
+   * @param linkContent A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a set of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -985,7 +985,7 @@ public:
    *
    * This method finds sc-links contents by matching the content substring with the provided stream.
    *
-   * @param linkContent The stream to use for content matching.
+   * @param linkContent A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a vector of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -1018,7 +1018,7 @@ public:
    *
    * This method finds sc-links contents by matching the content substring with the provided typed string.
    *
-   * @param linkContentStream The stream to use for content matching.
+   * @param linkContentStream A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a set of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -1034,7 +1034,7 @@ public:
    *
    * This method finds sc-links contents by matching the content substring with the provided typed string.
    *
-   * @param linkContentStream The stream to use for content matching.
+   * @param linkContentStream A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    * @return Returns a vector of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
@@ -1196,8 +1196,8 @@ public:
    * This function resolves the sc-address of an sc-element with the specified system identifier.
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
    *
-   * @param sysIdtf The system identifier of the sc-element to resolve.
-   * @param type A sc-type of the sc-node to create if the element is not found.
+   * @param systemIdentifier The system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
    * @return Returns the sc-address of the resolved or created sc-element.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
    * or resolving sc-element type is not ScType::Node subtype
@@ -1220,8 +1220,8 @@ public:
    * This function resolves the sc-address of an sc-element with the specified system identifier.
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
    *
-   * @param sysIdtf The system identifier of the sc-element to resolve.
-   * @param type A sc-type of the sc-node to create if the element is not found.
+   * @param systemIdentifier The system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
    * @return Returns the sc-address of the resolved or created sc-element.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
    * or resolving sc-element type is not ScType::Node subtype
@@ -1330,8 +1330,8 @@ public:
   /*!
    * @brief Tries to set system identifier for sc-element `elementAddr`.
    * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
-   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
-   * @returns false if `sysIdtf` set for other sc-element address.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
@@ -1349,8 +1349,8 @@ public:
   /*!
    * @brief Tries to set system identifier for sc-element `elementAddr`.
    * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
-   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
-   * @returns false if `sysIdtf` set for other sc-element address.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
@@ -1374,7 +1374,7 @@ public:
   /*!
    * @brief Tries to set system identifier for sc-element `elementAddr`.
    * @param systemIdentifier A system sc-identifier to set for sc-element `elementAddr`.
-   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
    * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
    * sc-element `elementAddr` with set `systemIdentifier`.
    *
@@ -1386,7 +1386,7 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @returns false if `sysIdtf` set for other sc-element address.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
@@ -1407,7 +1407,7 @@ public:
   /*!
    * @brief Tries to set system identifier for sc-element `elementAddr`.
    * @param systemIdentifier A system sc-identifier to set for sc-element `elementAddr`.
-   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
    * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
    * sc-element `elementAddr` with set `systemIdentifier`.
    *
@@ -1419,7 +1419,7 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @returns false if `sysIdtf` set for other sc-element address.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
@@ -1650,7 +1650,7 @@ public:
    * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToGenerate;
-   * templ.Triple(
+   * templToGenerate.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
    *  ScType::Unknown >> "_addr2"
@@ -1664,7 +1664,7 @@ public:
    * @endcode
    */
   _SC_EXTERN void GenerateByTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templToGenerate,
       ScTemplateResultItem & result,
       ScTemplateParams const & params = ScTemplateParams::Empty) noexcept(false);
 
@@ -1683,7 +1683,7 @@ public:
    * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToGenerate;
-   * templ.Triple(
+   * templToGenerate.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
    *  ScType::Unknown >> "_addr2"
@@ -1704,7 +1704,7 @@ public:
       "This method is deprecated. Use `HelperGenTemplate` instead for better readability and standards "
       "compliance.")
   _SC_EXTERN ScTemplate::Result HelperGenTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templToGenerate,
       ScTemplateResultItem & result,
       ScTemplateParams const & params = ScTemplateParams::Empty,
       ScTemplateResultCode * resultCode = nullptr) noexcept(false);
@@ -1724,7 +1724,7 @@ public:
    * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToFind;
-   * templ.Triple(
+   * templToFind.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
    *  ScType::Unknown >> "_addr2"
@@ -1761,7 +1761,7 @@ public:
    * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToFind;
-   * templ.Triple(
+   * templToFind.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
    *  ScType::Unknown >> "_addr2"
@@ -1822,9 +1822,9 @@ public:
    * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
    *  // Check that each sc-arc between class and its instance belongs to structure.
    *  return !context->CheckConnector(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
-   * }, [&context](ScAddr const & addr) -> bool {
+   * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
    */
@@ -1866,9 +1866,9 @@ public:
    * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
    *  // Check that each sc-arc between class and its instance belongs to structure.
    *  return !context->CheckConnector(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
-   * }, [&context](ScAddr const & addr) -> bool {
+   * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
    *
@@ -1911,9 +1911,9 @@ public:
    * structure. m_context->SearchByTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
    *  // Add each checked instance of class to set.
    *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
-   * }, [&context](ScAddr const & addr) -> bool {
+   * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
    */
@@ -1949,9 +1949,9 @@ public:
    * m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
    *  // Add each checked instance of class to set.
    *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
-   * }, [&context](ScAddr const & addr) -> bool {
+   * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
    *
@@ -2211,7 +2211,7 @@ protected:
    * ...
    * ...
    * ScTemplate translatableTemplate;
-   * templ.Triple(
+   * translatableTemplate.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
    *  ScType::Unknown >> "_addr2"`
