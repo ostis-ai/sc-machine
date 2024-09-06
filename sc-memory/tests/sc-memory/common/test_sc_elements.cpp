@@ -113,9 +113,9 @@ TEST_F(ScMemoryTest, InvalidElements)
 
   EXPECT_THROW(ctx.ResolveElementSystemIdentifier("****"), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SearchElementBySystemIdentifier("****"), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.FindLinksByContent(ScStreamPtr()), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.FindLinksByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.FindLinksContentsByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SearchLinksByContent(ScStreamPtr()), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SearchLinksByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SearchLinksContentsByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScMemoryTest, NotEdge)

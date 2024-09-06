@@ -88,7 +88,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Aliases)
 
   ScStreamPtr const stream = ScStreamMakeRead(content);
 
-  ScAddrVector const links = m_ctx->FindLinksByContent(stream);
+  ScAddrVector const links = m_ctx->SearchLinksByContent(stream);
   EXPECT_EQ(links.size(), 1u);
 
   ScLink const link(*m_ctx, links[0]);

@@ -737,7 +737,7 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
 
 #define _ERASE_DATA(_data) delete[] _data
 
-ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContentStream)
+ScAddrVector ScMemoryContext::SearchLinksByContent(ScStreamPtr const & linkContentStream)
 {
   CHECK_CONTEXT;
 
@@ -771,7 +771,12 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContent
   return linkAddrList;
 }
 
-ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
+ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContentStream)
+{
+  return SearchLinksByContent(linkContentStream);
+}
+
+ScAddrVector ScMemoryContext::SearchLinksByContentSubstring(
     ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
@@ -809,13 +814,20 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
   return linkAddrList;
 }
 
+ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix)
+{
+  return SearchLinksByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
+}
+
 void _PushLinkContent(void * data, sc_addr const, sc_char const * link_content)
 {
   auto * linkContentList = (std::vector<std::string> *)data;
   linkContentList->emplace_back(link_content);
 }
 
-std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
+std::vector<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
     ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
@@ -854,6 +866,13 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
   }
 
   return linkContentList;
+}
+
+std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix)
+{
+  return SearchLinksContentsByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
 }
 
 bool ScMemoryContext::CheckConnector(
@@ -898,6 +917,13 @@ ScAddr ScMemoryContext::ResolveElementSystemIdentifier(
   return quintuple.addr1;
 }
 
+ScAddr ScMemoryContext::HelperResolveSystemIdtf(
+    std::string const & systemIdentifier,
+    ScType const & elementType /* = ScType()*/)
+{
+  return ResolveElementSystemIdentifier(systemIdentifier, elementType);
+}
+
 bool ScMemoryContext::ResolveElementSystemIdentifier(
     std::string const & systemIdentifier,
     ScType const & elementType,
@@ -924,10 +950,23 @@ bool ScMemoryContext::ResolveElementSystemIdentifier(
   return result;
 }
 
+bool ScMemoryContext::HelperResolveSystemIdtf(
+    std::string const & systemIdentifier,
+    ScType const & elementType,
+    ScSystemIdentifierQuintuple & outQuintuple)
+{
+  return ResolveElementSystemIdentifier(systemIdentifier, elementType, outQuintuple);
+}
+
 bool ScMemoryContext::SetElementSystemIdentifier(std::string const & systemIdentifier, ScAddr const & elementAddr)
 {
   ScSystemIdentifierQuintuple quintuple;
   return SetElementSystemIdentifier(systemIdentifier, elementAddr, quintuple);
+}
+
+bool ScMemoryContext::HelperSetSystemIdtf(std::string const & systemIdentifier, ScAddr const & elementAddr)
+{
+  return SetElementSystemIdentifier(systemIdentifier, elementAddr);
 }
 
 bool ScMemoryContext::SetElementSystemIdentifier(
@@ -981,6 +1020,14 @@ bool ScMemoryContext::SetElementSystemIdentifier(
   return result == SC_RESULT_OK;
 }
 
+bool ScMemoryContext::HelperSetSystemIdtf(
+    std::string const & systemIdentifier,
+    ScAddr const & elementAddr,
+    ScSystemIdentifierQuintuple & outQuintuple)
+{
+  return SetElementSystemIdentifier(systemIdentifier, elementAddr, outQuintuple);
+}
+
 std::string ScMemoryContext::GetElementSystemIdentifier(ScAddr const & elementAddr)
 {
   CHECK_CONTEXT;
@@ -1016,6 +1063,11 @@ std::string ScMemoryContext::GetElementSystemIdentifier(ScAddr const & elementAd
   return systemIdentifier;
 }
 
+std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & elementAddr)
+{
+  return GetElementSystemIdentifier(elementAddr);
+}
+
 bool ScMemoryContext::SearchElementBySystemIdentifier(std::string const & systemIdentifier, ScAddr & outAddr)
 {
   CHECK_CONTEXT;
@@ -1027,6 +1079,11 @@ bool ScMemoryContext::SearchElementBySystemIdentifier(std::string const & system
   return status;
 }
 
+bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & systemIdentifier, ScAddr & outAddr)
+{
+  return SearchElementBySystemIdentifier(systemIdentifier, outAddr);
+}
+
 ScAddr ScMemoryContext::SearchElementBySystemIdentifier(std::string const & systemIdentifier)
 {
   CHECK_CONTEXT;
@@ -1035,6 +1092,11 @@ ScAddr ScMemoryContext::SearchElementBySystemIdentifier(std::string const & syst
   SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
 
   return outQuintuple.addr1;
+}
+
+ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & systemIdentifier)
+{
+  return SearchElementBySystemIdentifier(systemIdentifier);
 }
 
 bool ScMemoryContext::SearchElementBySystemIdentifier(
@@ -1072,6 +1134,13 @@ bool ScMemoryContext::SearchElementBySystemIdentifier(
       ScAddr(quintuple.addr4),
       ScAddr(quintuple.addr5)};
   return result == SC_RESULT_OK;
+}
+
+bool ScMemoryContext::HelperFindBySystemIdtf(
+    std::string const & systemIdentifier,
+    ScSystemIdentifierQuintuple & outQuintuple)
+{
+  return SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
 }
 
 ScTemplate::Result ScMemoryContext::HelperGenTemplate(

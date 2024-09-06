@@ -131,7 +131,7 @@ private:
 
     ScAddr result;
 
-    auto const links = m_ctx.FindLinksByContent(idtf);
+    auto const links = m_ctx.SearchLinksByContent(idtf);
     for (ScAddr const & addr : links)
     {
       ScTemplate templ;

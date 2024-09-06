@@ -628,7 +628,7 @@ public:
    * @endcode
    */
   template <typename TContentType>
-  bool SetLinkContent(
+  _SC_EXTERN bool SetLinkContent(
       ScAddr const & linkAddr,
       TContentType const & linkContent,
       bool isSearchableLinkContent = true) noexcept(false)
@@ -722,7 +722,7 @@ public:
    * @endcode
    */
   template <typename TContentType>
-  bool GetLinkContent(ScAddr const & linkAddr, TContentType & outLinkContent) noexcept(false)
+  _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, TContentType & outLinkContent) noexcept(false)
   {
     std::string linkContent;
     ScStreamPtr const & linkContentStream = GetLinkContent(linkAddr);
@@ -739,7 +739,7 @@ public:
   }
 
   /*!
-   * @brief Finds sc-links by content using a stream.
+   * @brief Searches sc-links by content using a stream.
    *
    * This method finds sc-links by matching the content with the provided stream.
    *
@@ -749,10 +749,56 @@ public:
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
+  _SC_EXTERN ScAddrVector SearchLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links by content using a stream.
+   *
+   * This method finds sc-links by matching the content with the provided stream.
+   *
+   * @param stream The stream to use for content matching.
+   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContent` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContent` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
 
   /*!
-   * @brief Finds sc-links by content using a typed string.
+   * @brief Searches sc-links by content using a typed string.
+   *
+   * This method finds sc-links by matching the content with the provided typed string.
+   *
+   * @param stream The stream to use for content matching.
+   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddrVector const & linkAddrsVector = context.SearchLinksByContent("my node");
+   * for (auto const & linkAddr : linkAddrsVector)
+   * {
+   *   // Process sc-links.
+   * }
+   * @endcode
+   */
+  template <typename TContentType>
+  _SC_EXTERN ScAddrVector SearchLinksByContent(TContentType const & linkContent) noexcept(false)
+  {
+    return SearchLinksByContent(ScStreamMakeRead(linkContent));
+  }
+
+  /*!
+   * @brief Searches sc-links by content using a typed string.
    *
    * This method finds sc-links by matching the content with the provided typed string.
    *
@@ -767,18 +813,54 @@ public:
    * ScAddrVector const & linkAddrsVector = context.FindLinksByContent("my node");
    * for (auto const & linkAddr : linkAddrsVector)
    * {
-   *   // process links
+   *   // Process sc-links.
    * }
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContent` instead for better readability
+   * and standards compliance.
    */
-  _SC_EXTERN template <typename TContentType>
-  ScAddrVector FindLinksByContent(TContentType const & linkContent) noexcept(false)
+  template <typename TContentType>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContent` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN ScAddrVector FindLinksByContent(TContentType const & linkContent) noexcept(false)
   {
-    return FindLinksByContent(ScStreamMakeRead(linkContent));
+    return SearchLinksByContent(linkContent);
   }
 
   /*!
-   * @brief Finds sc-links by content substring using a stream.
+   * @brief Searches sc-links by content substring using a stream.
+   *
+   * This method finds sc-links by matching the content substring with the provided stream.
+   *
+   * @param linkContentSubstring The stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddrVector const & linkAddrsVector = context.SearchLinksByContentSubstring("my");
+   * for (auto const & linkAddr : linkAddrsVector)
+   * {
+   *   // Process sc-links.
+   * }
+   * @endcode
+   */
+  template <typename TContentType>
+  _SC_EXTERN ScAddrVector SearchLinksByContentSubstring(
+      TContentType const & linkContentSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
+  {
+    return SearchLinksByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
+  }
+
+  /*!
+   * @brief Searches sc-links by content substring using a stream.
    *
    * This method finds sc-links by matching the content substring with the provided stream.
    *
@@ -794,20 +876,27 @@ public:
    * ScAddrVector const & linkAddrsVector = context.FindLinksByContentSubstring("my");
    * for (auto const & linkAddr : linkAddrsVector)
    * {
-   *    // process links
+   *   // Process sc-links.
    * }
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
    */
-  _SC_EXTERN template <typename TContentType>
-  ScAddrVector FindLinksByContentSubstring(
+  template <typename TContentType>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
       TContentType const & linkContentSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
   {
-    return FindLinksByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
+    return SearchLinksByContentSubstring(linkContentSubstring, maxLengthToSearchAsPrefix);
   }
 
   /*!
-   * @brief Finds sc-links by content substring using a typed string.
+   * @brief Searches sc-links by content substring using a typed string.
    *
    * This method finds sc-links by matching the content substring with the provided typed string.
    *
@@ -818,12 +907,35 @@ public:
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
+  _SC_EXTERN ScAddrVector SearchLinksByContentSubstring(
+      ScStreamPtr const & linkContentSubstringStream,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links by content substring using a typed string.
+   *
+   * This method finds sc-links by matching the content substring with the provided typed string.
+   *
+   * @param linkContentSubstringStream The stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
       ScStreamPtr const & linkContentSubstringStream,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
-   * @brief Finds sc-links contents by content substring using a stream.
+   * @brief Searches sc-links contents by content substring using a stream.
    *
    * This method finds sc-links contents by matching the content substring with the provided stream.
    *
@@ -836,23 +948,59 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * std::vector<std::string> const & linkContentVector = context.FindLinksByContentSubstring("my");
+   * std::vector<std::string> const & linkContentVector = context.SearchLinksByContentSubstring("my");
    * for (auto const & content : linkContentVector)
    * {
-   *    // process contents
+   *   // Process contents.
    * }
    * @endcode
    */
   _SC_EXTERN template <typename TContentType>
-  std::vector<std::string> FindLinksContentsByContentSubstring(
+  std::vector<std::string> SearchLinksContentsByContentSubstring(
       TContentType const & linkContentSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
   {
-    return FindLinksContentsByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
+    return SearchLinksContentsByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
   }
 
   /*!
-   * @brief Finds sc-links contents by content substring using a typed string.
+   * @brief Searches sc-links contents by content substring using a stream.
+   *
+   * This method finds sc-links contents by matching the content substring with the provided stream.
+   *
+   * @param linkContent The stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of strings representing the found sc-links contents.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * std::vector<std::string> const & linkContentVector = context.SearchLinksByContentSubstring("my");
+   * for (auto const & content : linkContentVector)
+   * {
+   *   // Process contents.
+   * }
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
+   */
+  template <typename TContentType>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
+      TContentType const & linkContentSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
+  {
+    return SearchLinksContentsByContentSubstring(linkContentSubstring, maxLengthToSearchAsPrefix);
+  }
+
+  /*!
+   * @brief Searches sc-links contents by content substring using a typed string.
    *
    * This method finds sc-links contents by matching the content substring with the provided typed string.
    *
@@ -863,6 +1011,29 @@ public:
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    */
+  _SC_EXTERN std::vector<std::string> SearchLinksContentsByContentSubstring(
+      ScStreamPtr const & linkContentStreamSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links contents by content substring using a typed string.
+   *
+   * This method finds sc-links contents by matching the content substring with the provided typed string.
+   *
+   * @param linkContentStream The stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of strings representing the found sc-links contents.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
       ScStreamPtr const & linkContentStreamSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
@@ -1423,7 +1594,7 @@ public:
    * parameter. If the element is found, the function returns true; otherwise, it returns false.
    *
    * @param systemIdentifier The system identifier of the sc-element to find.
-   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).
+   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1447,7 +1618,7 @@ public:
    * parameter. If the element is found, the function returns true; otherwise, it returns false.
    *
    * @param systemIdentifier The system identifier of the sc-element to find.
-   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).
+   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.

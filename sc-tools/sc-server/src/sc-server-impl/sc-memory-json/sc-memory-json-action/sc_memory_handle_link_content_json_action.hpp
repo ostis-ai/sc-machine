@@ -29,11 +29,11 @@ public:
       else if (type == "get")
         responsePayload.push_back(GetContent(context, atom));
       else if (type == "find")
-        responsePayload.push_back(FindLinksByContent(context, atom));
+        responsePayload.push_back(SearchLinksByContent(context, atom));
       else if (type == "find_by_substr" || type == "find_links_by_substr")
-        responsePayload.push_back(FindLinksByContentSubstring(context, atom));
+        responsePayload.push_back(SearchLinksByContentSubstring(context, atom));
       else if (type == "find_strings_by_substr")
-        responsePayload.push_back(FindLinksContentsByContentSubstring(context, atom));
+        responsePayload.push_back(SearchLinksContentsByContentSubstring(context, atom));
     };
 
     if (requestPayload.is_array())
@@ -80,19 +80,19 @@ private:
       return {{"value", link.Get<std::string>()}, {"type", "string"}};
   }
 
-  std::vector<size_t> FindLinksByContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  std::vector<size_t> SearchLinksByContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
     ScAddrVector vector;
     if (data.is_string())
-      vector = context->FindLinksByContent(data.get<std::string>());
+      vector = context->SearchLinksByContent(data.get<std::string>());
     else if (data.is_number_integer())
-      vector = context->FindLinksByContent(std::to_string(data.get<sc_int>()));
+      vector = context->SearchLinksByContent(std::to_string(data.get<sc_int>()));
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->FindLinksByContent(stream.str());
+      vector = context->SearchLinksByContent(stream.str());
     }
 
     std::vector<size_t> hashes;
@@ -102,19 +102,19 @@ private:
     return hashes;
   }
 
-  std::vector<size_t> FindLinksByContentSubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  std::vector<size_t> SearchLinksByContentSubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
     ScAddrVector vector;
     if (data.is_string())
-      vector = context->FindLinksByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
+      vector = context->SearchLinksByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
-      vector = context->FindLinksByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
+      vector = context->SearchLinksByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->FindLinksByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
+      vector = context->SearchLinksByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
     }
 
     std::vector<size_t> hashes;
@@ -124,22 +124,22 @@ private:
     return hashes;
   }
 
-  std::vector<std::string> FindLinksContentsByContentSubstring(
+  std::vector<std::string> SearchLinksContentsByContentSubstring(
       ScMemoryContext * context,
       ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
     std::vector<std::string> vector;
     if (data.is_string())
-      vector = context->FindLinksContentsByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
+      vector = context->SearchLinksContentsByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
       vector =
-          context->FindLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
+          context->SearchLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->FindLinksContentsByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
+      vector = context->SearchLinksContentsByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
     }
 
     return vector;

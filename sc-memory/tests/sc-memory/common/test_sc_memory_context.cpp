@@ -208,9 +208,9 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context
   std::string content;
   EXPECT_FALSE(userContext.GetLinkContent(linkAddr, content));
   EXPECT_TRUE(content.empty());
-  EXPECT_NO_THROW(userContext.FindLinksByContent("test"));
-  EXPECT_NO_THROW(userContext.FindLinksByContentSubstring("test"));
-  EXPECT_NO_THROW(userContext.FindLinksContentsByContentSubstring("test"));
+  EXPECT_NO_THROW(userContext.SearchLinksByContent("test"));
+  EXPECT_NO_THROW(userContext.SearchLinksByContentSubstring("test"));
+  EXPECT_NO_THROW(userContext.SearchLinksContentsByContentSubstring("test"));
   EXPECT_NO_THROW(userContext.SearchElementBySystemIdentifier("test"));
   EXPECT_NO_THROW(userContext.ResolveElementSystemIdentifier("test"));
 }
@@ -242,9 +242,9 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
 
   EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GenerateLink(ScType::LinkConst), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.FindLinksByContent("test"), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.FindLinksByContentSubstring("test"), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.FindLinksContentsByContentSubstring("test"), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.SearchLinksByContent("test"), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.SearchLinksByContentSubstring("test"), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.SearchLinksContentsByContentSubstring("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.SearchElementBySystemIdentifier("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.ResolveElementSystemIdentifier("test"), utils::ExceptionInvalidState);
 
@@ -2217,18 +2217,18 @@ ScAddr TestGenerateStructureWithLinks(
 
 void TestReadActionsWithinStructureWithLinksSuccessfully(TestScMemoryContext & userContext, ScAddr const & linkAddr)
 {
-  ScAddrVector vector = userContext.FindLinksByContent("test_content");
+  ScAddrVector vector = userContext.SearchLinksByContent("test_content");
   EXPECT_EQ(vector.size(), 1u);
   EXPECT_EQ(vector[0], linkAddr);
 
-  vector = userContext.FindLinksByContentSubstring("test");
+  vector = userContext.SearchLinksByContentSubstring("test");
   EXPECT_EQ(vector.size(), 1u);
   EXPECT_EQ(vector[0], linkAddr);
 }
 
 void TestReadActionsWithinStructureWithLinksUnsuccessfully(TestScMemoryContext & userContext)
 {
-  EXPECT_THROW(userContext.FindLinksContentsByContentSubstring("test"), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.SearchLinksContentsByContentSubstring("test"), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadPermissionsAndWithStructureWithLinks)

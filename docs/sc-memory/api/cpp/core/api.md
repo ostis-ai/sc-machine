@@ -322,30 +322,30 @@ bool const numericContentExist
     You can set empty content into sc-link, but it means that this sc-link has content and this method for this 
     sc-link returns `true`.
 
-### **FindLinksByContent**
+### **SearchLinksByContent**
 
-You can find sc-links by its content. For this use the method `FindLinksByContent`.
+You can find sc-links by its content. For this use the method `SearchLinksByContent`.
 
 ```cpp
 ...
 // Find sc-links with specified string content.
-ScAddrVector const & linkAddrs1 = context.FindLinksByContent("my content");
+ScAddrVector const & linkAddrs1 = context.SearchLinksByContent("my content");
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 
 // Find sc-links with specified numeric content.
-ScAddrVector const & linkAddrs2 = context.FindLinksByContent(10f);
+ScAddrVector const & linkAddrs2 = context.SearchLinksByContent(10f);
 // The vector `linkAddrs2` must contain sc-address `linkAddr2`.
 ```
 
-### **FindLinksByContentSubstring**
+### **SearchLinksByContentSubstring**
 
-And you can find sc-links by its content substring. For this use the method `FindLinksByContentSubstring`.
+And you can find sc-links by its content substring. For this use the method `SearchLinksByContentSubstring`.
 
 ```cpp
 ...
 // Find sc-links with specified string content substring.
 ScAddrVector const & linkAddrs1 
-  = context.FindLinksByContentSubstring("my cont");
+  = context.SearchLinksByContentSubstring("my cont");
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 ```
 

@@ -75,7 +75,7 @@ TEST_F(ScServerTest, CreateElements)
   EXPECT_TRUE(trg.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(trg).IsLink());
 
-  auto const & links = m_ctx->FindLinksByContent("edge_end");
+  auto const & links = m_ctx->SearchLinksByContent("edge_end");
   EXPECT_TRUE(std::find(links.begin(), links.end(), trg) != links.end());
 
   ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, sc_type_arc_pos_const_perm, trg);
