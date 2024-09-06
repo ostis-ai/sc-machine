@@ -147,8 +147,7 @@ that specified sc-address of sc-connector is not valid.
 ```cpp
 ...
 // Get sc-arc incident sc-elements.
-ScAddr sourceAddr, targetAddr;
-context.GetConnectorIncidentElements(arcAddr, sourceAddr, targetAddr);
+auto const [sourceAddr, targetAddr] = context.GetConnectorIncidentElements(arcAddr, sourceAddr, targetAddr);
 // The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr` 
 // and the sc-address `targetAddr` must be equal to the sc-address `linkAddr`.
 ...
@@ -329,11 +328,11 @@ You can find sc-links by its content. For this use the method `SearchLinksByCont
 ```cpp
 ...
 // Find sc-links with specified string content.
-ScAddrVector const & linkAddrs1 = context.SearchLinksByContent("my content");
+ScAddrSet const & linkAddrs1 = context.SearchLinksByContent("my content");
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 
 // Find sc-links with specified numeric content.
-ScAddrVector const & linkAddrs2 = context.SearchLinksByContent(10f);
+ScAddrSet const & linkAddrs2 = context.SearchLinksByContent(10f);
 // The vector `linkAddrs2` must contain sc-address `linkAddr2`.
 ```
 
@@ -344,7 +343,7 @@ And you can find sc-links by its content substring. For this use the method `Sea
 ```cpp
 ...
 // Find sc-links with specified string content substring.
-ScAddrVector const & linkAddrs1 
+ScAddrSet const & linkAddrs1 
   = context.SearchLinksByContentSubstring("my cont");
 // The vector `linkAddrs1` must contain sc-address `linkAddr1`.
 ```

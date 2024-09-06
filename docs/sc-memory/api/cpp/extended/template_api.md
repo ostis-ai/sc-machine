@@ -552,7 +552,7 @@ Use sc-template to generate graphs in sc-memory and get replacements from result
 // You can use `ScTemplate` methods or method ScTemplateBuild to translate 
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 // Sc-elements sc-addresses of generated sc-construction may be gotten from 
 // `result`.
 ...
@@ -583,7 +583,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 ScAddr setAddr;
 bool replExist = result.Get("_x", setAddr);
@@ -610,7 +610,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 ScAddr setAddr = result.Get("_x");
 
@@ -657,7 +657,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 ScAddr const & setAddr = result[2];
 // It is equal to `result.Get("_x")`.
@@ -678,7 +678,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 // Iterate by all replacements in result.
 for (size_t i = 0; i < result.Size(); ++i)
