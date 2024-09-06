@@ -191,7 +191,7 @@ sc_memory_context * ScMemoryContext::GetRealContext() const
   return m_context;
 }
 
-void ScMemoryContext::BeingEventsPending()
+void ScMemoryContext::BeginEventsPending()
 {
   CHECK_CONTEXT;
   sc_memory_context_pending_begin(m_context);
@@ -203,7 +203,7 @@ void ScMemoryContext::EndEventsPending()
   sc_memory_context_pending_end(m_context);
 }
 
-void ScMemoryContext::BeingEventsBlocking()
+void ScMemoryContext::BeginEventsBlocking()
 {
   CHECK_CONTEXT;
   sc_memory_context_blocking_begin(m_context);
@@ -1298,7 +1298,7 @@ void ScMemoryContext::LoadTemplate(
   translatableTemplate.TranslateTo(*this, resultTemplateAddr, params);
 }
 
-ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
+ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStatistics() const
 {
   CHECK_CONTEXT;
 
@@ -1321,12 +1321,17 @@ ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
     break;
   }
 
-  ScMemoryStatistics res{};
-  res.m_edgesNum = uint32_t(stat.arc_count);
-  res.m_linksNum = uint32_t(stat.link_count);
-  res.m_nodesNum = uint32_t(stat.node_count);
+  ScMemoryStatistics statistics{};
+  statistics.m_edgesNum = uint32_t(stat.arc_count);
+  statistics.m_linksNum = uint32_t(stat.link_count);
+  statistics.m_nodesNum = uint32_t(stat.node_count);
 
-  return res;
+  return statistics;
+}
+
+ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
+{
+  return CalculateStatistics();
 }
 
 bool ScMemoryContext::Save()

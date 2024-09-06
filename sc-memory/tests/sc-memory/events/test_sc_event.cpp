@@ -1299,7 +1299,7 @@ TEST_F(ScEventTest, BlockEventsAndNotEmitAfter)
             isCalled = true;
           });
 
-  m_ctx->BeingEventsBlocking();
+  m_ctx->BeginEventsBlocking();
 
   ScAddr const nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nodeAddr, nodeAddr2);
@@ -1323,7 +1323,7 @@ TEST_F(ScEventTest, BlockEventsAndEmitAfter)
             isCalled = true;
           });
 
-  m_ctx->BeingEventsBlocking();
+  m_ctx->BeginEventsBlocking();
 
   ScAddr nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nodeAddr, nodeAddr2);

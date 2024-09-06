@@ -204,7 +204,7 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context
   EXPECT_EQ(nodeAddr1, nodeAddr);
   EXPECT_EQ(nodeAddr2, linkAddr);
   EXPECT_EQ(userContext.GetElementType(nodeAddr), ScType::NodeConst);
-  EXPECT_NO_THROW(userContext.CalculateStat());
+  EXPECT_NO_THROW(userContext.CalculateStatistics());
   std::string content;
   EXPECT_FALSE(userContext.GetLinkContent(linkAddr, content));
   EXPECT_TRUE(content.empty());
@@ -229,7 +229,7 @@ void TestReadActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & conte
   ScAddr nodeAddr1, nodeAddr2;
   EXPECT_THROW(userContext.GetConnectorIncidentElements(edgeAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetElementType(nodeAddr), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.CalculateStat(), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.CalculateStatistics(), utils::ExceptionInvalidState);
   std::string content;
   EXPECT_THROW(userContext.GetLinkContent(linkAddr, content), utils::ExceptionInvalidState);
 }

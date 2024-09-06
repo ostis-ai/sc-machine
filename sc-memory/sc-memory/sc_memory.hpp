@@ -119,13 +119,13 @@ public:
   _SC_EXTERN void Destroy() noexcept;
 
   //! Begin events pending mode
-  _SC_EXTERN void BeingEventsPending();
+  _SC_EXTERN void BeginEventsPending();
 
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
 
   //! Begin events blocking mode
-  _SC_EXTERN void BeingEventsBlocking();
+  _SC_EXTERN void BeginEventsBlocking();
 
   //! End events blocking mode
   _SC_EXTERN void EndEventsBlocking();
@@ -2288,6 +2288,19 @@ public:
    * @return Returns sc-nodes, sc-connectors and sc-links counts.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    */
+  _SC_EXTERN ScMemoryStatistics CalculateStatistics() const;
+
+  /*! Calculates sc-element counts.
+   * @return Returns sc-nodes, sc-connectors and sc-links counts.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `CalculateStatistics` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CalculateStatistics` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
 
   /*!
@@ -2314,7 +2327,7 @@ public:
   _SC_EXTERN explicit ScMemoryContextEventsPendingGuard(ScMemoryContext & context)
     : m_context(context)
   {
-    m_context.BeingEventsPending();
+    m_context.BeginEventsPending();
   }
 
   _SC_EXTERN ~ScMemoryContextEventsPendingGuard()
@@ -2332,7 +2345,7 @@ public:
   _SC_EXTERN explicit ScMemoryContextEventsBlockingGuard(ScMemoryContext & context)
     : m_context(context)
   {
-    m_context.BeingEventsBlocking();
+    m_context.BeginEventsBlocking();
   }
 
   _SC_EXTERN ~ScMemoryContextEventsBlockingGuard()
