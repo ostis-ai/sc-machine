@@ -220,9 +220,9 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
   }
   else
   {
-    m_agentImplementationAddr = context->CreateNode(ScType::NodeConst);
+    m_agentImplementationAddr = context->GenerateNode(ScType::NodeConst);
     context->HelperSetSystemIdtf(agentImplementationName, m_agentImplementationAddr);
-    context->CreateEdge(
+    context->GenerateConnector(
         ScType::EdgeAccessConstPosPerm, ScKeynodes::platform_dependent_abstract_sc_agent, m_agentImplementationAddr);
     SC_LOG_DEBUG("Agent implementation for class `" << agentClassName << "` was generated.");
   }
@@ -249,8 +249,8 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
     else
     {
       ScAddr const & arcAddr =
-          context->CreateEdge(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_agentImplementationAddr);
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_agentImplementationAddr);
+      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
       SC_LOG_DEBUG(
           "Connection between specified abstract agent and agent implementation for class `" << agentClassName
                                                                                              << "` was generated.");
@@ -340,9 +340,11 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
     else
     {
       ScAddr const & primaryConditionAddr =
-          context->CreateEdge(ScType::EdgeDCommonConst, m_eventClassAddr, m_eventSubscriptionElementAddr);
-      ScAddr const & arcAddr = context->CreateEdge(ScType::EdgeDCommonConst, m_abstractAgentAddr, primaryConditionAddr);
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_primary_initiation_condition, arcAddr);
+          context->GenerateConnector(ScType::EdgeDCommonConst, m_eventClassAddr, m_eventSubscriptionElementAddr);
+      ScAddr const & arcAddr =
+          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, primaryConditionAddr);
+      context->GenerateConnector(
+          ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_primary_initiation_condition, arcAddr);
       SC_LOG_DEBUG("Primary initiation condition for class  `" << agentClassName << "` was generated.");
     }
     return;
@@ -434,8 +436,9 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
           << agentClassName << "` was not generated, because it already exists.");
     else
     {
-      ScAddr const & arcAddr = context->CreateEdge(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_actionClassAddr);
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_sc_agent_action_class, arcAddr);
+      ScAddr const & arcAddr =
+          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_actionClassAddr);
+      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_sc_agent_action_class, arcAddr);
       SC_LOG_DEBUG(
           "Connection between specified abstract agent and action class for agent class `" << agentClassName
                                                                                            << "` was generated.");
@@ -521,10 +524,11 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
     else
     {
       ScAddr const & conditionAndResultAddr =
-          context->CreateEdge(ScType::EdgeDCommonConst, m_initiationConditionAddr, m_resultConditionAddr);
+          context->GenerateConnector(ScType::EdgeDCommonConst, m_initiationConditionAddr, m_resultConditionAddr);
       ScAddr const & arcAddr =
-          context->CreateEdge(ScType::EdgeDCommonConst, m_abstractAgentAddr, conditionAndResultAddr);
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_initiation_condition_and_result, arcAddr);
+          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, conditionAndResultAddr);
+      context->GenerateConnector(
+          ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_initiation_condition_and_result, arcAddr);
       SC_LOG_DEBUG("Initiation condition and result for class  `" << agentClassName << "` was generated.");
     }
     return;

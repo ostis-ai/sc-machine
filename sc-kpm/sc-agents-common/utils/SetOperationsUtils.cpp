@@ -11,7 +11,7 @@ namespace utils
 {
 ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, ScAddrVector const & sets, ScType const & resultType)
 {
-  ScAddr resultSet = context->CreateNode(resultType);
+  ScAddr resultSet = context->GenerateNode(resultType);
 
   for (auto const & set : sets)
   {
@@ -36,7 +36,7 @@ ScAddr SetOperationsUtils::intersectSets(
     ScAddrVector const & sets,
     ScType const & resultType)
 {
-  ScAddr resultSet = context->CreateNode(resultType);
+  ScAddr resultSet = context->GenerateNode(resultType);
 
   for (auto const & set : sets)
   {
@@ -83,7 +83,7 @@ ScAddr SetOperationsUtils::complementSets(
   SC_CHECK_PARAM(firstSet, "Invalid first set address passed to `compareSets`");
   SC_CHECK_PARAM(secondSet, "Invalid second set address passed to `compareSets`");
 
-  ScAddr resultSet = context->CreateNode(resultType);
+  ScAddr resultSet = context->GenerateNode(resultType);
 
   ScIterator3Ptr secondIter3 = context->Iterator3(secondSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   while (secondIter3->Next())

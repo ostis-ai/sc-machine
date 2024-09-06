@@ -76,64 +76,64 @@ void BM_ServerThreaded(benchmark::State & state)
 
 sc_int constexpr kNodeIters = 100;
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateNode)
     ->Threads(1)
     ->Iterations(kNodeIters)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateNode)
     ->Threads(2)
     ->Iterations(kNodeIters / 2)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateNode)
     ->Threads(4)
     ->Iterations(kNodeIters / 4)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateNode)
     ->Threads(8)
     ->Iterations(kNodeIters / 8)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateNode)
     ->Threads(16)
     ->Iterations(kNodeIters / 16)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateNode)
     ->Threads(32)
     ->Iterations(kNodeIters / 32)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
 sc_int constexpr kLinkIters = 100;
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateLink)
     ->Threads(1)
     ->Iterations(kLinkIters)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateLink)
     ->Threads(2)
     ->Iterations(kLinkIters / 2)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateLink)
     ->Threads(4)
     ->Iterations(kLinkIters / 4)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateLink)
     ->Threads(8)
     ->Iterations(kLinkIters / 8)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateLink)
     ->Threads(16)
     ->Iterations(kLinkIters / 16)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_ServerThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_ServerThreaded, TestGenerateLink)
     ->Threads(32)
     ->Iterations(kLinkIters / 32)
     ->Unit(benchmark::TimeUnit::kMicrosecond);
@@ -175,11 +175,11 @@ void BM_ServerRanged(benchmark::State & state)
 
 BENCHMARK_TEMPLATE(BM_ServerRanged, TestScServerComplex)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateNode)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestGenerateNode)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
 BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateEdge)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateLink)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestGenerateLink)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
 BENCHMARK_TEMPLATE(BM_ServerRanged, TestEraseElements)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 

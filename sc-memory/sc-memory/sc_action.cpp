@@ -96,8 +96,8 @@ ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const 
   while (it->Next())
     m_context->EraseElement(it->Get(1));
 
-  ScAddr const & arcAddr = m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, argumentAddr);
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, orderRelationAddr, arcAddr);
+  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, *this, argumentAddr);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, orderRelationAddr, arcAddr);
 
   return *this;
 }
@@ -174,7 +174,7 @@ bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
   wait->SetOnWaitStartDelegate(
       [this]()
       {
-        m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
+        m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
       });
   return wait->Wait(waitTime_ms);
 };
@@ -193,7 +193,7 @@ ScAction & ScAction::Initiate() noexcept(false)
         "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
                                        << " because it had already been finished.");
 
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
 
   return *this;
 };
@@ -213,13 +213,13 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
                                      << " because it had already been finished.");
 
   if (!m_context->IsElement(m_resultAddr))
-    m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);
+    m_resultAddr = m_context->GenerateNode(ScType::NodeConstStruct);
 
-  ScAddr const & arcAddr = m_context->CreateEdge(ScType::EdgeDCommonConst, *this, m_resultAddr);
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result, arcAddr);
+  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::EdgeDCommonConst, *this, m_resultAddr);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result, arcAddr);
 
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, actionStateAddr, *this);
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, actionStateAddr, *this);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
 }
 
 bool ScAction::IsFinished() const noexcept

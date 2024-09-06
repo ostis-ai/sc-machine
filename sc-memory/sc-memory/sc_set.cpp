@@ -19,7 +19,7 @@ ScSet::~ScSet() = default;
 bool ScSet::Append(ScAddr const & elAddr)
 {
   if (!HasElement(elAddr))
-    return m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, elAddr).IsValid();
+    return m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, *this, elAddr).IsValid();
 
   return false;
 }
@@ -29,8 +29,8 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
   if (HasElement(elAddr))
     return false;
 
-  ScAddr const edge = m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, elAddr);
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
+  ScAddr const edge = m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, *this, elAddr);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, attrAddr, edge);
 
   return true;
 }

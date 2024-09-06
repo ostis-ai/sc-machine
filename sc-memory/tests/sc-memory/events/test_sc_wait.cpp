@@ -29,8 +29,8 @@ void EmitEvent(WaitTestData & data)
 {
   ScMemoryContext ctx;
 
-  ScAddr const node = data.m_addrFrom.IsValid() ? data.m_addrFrom : ctx.CreateNode(ScType::NodeConst);
-  ScAddr const edge = ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, node, data.m_addr);
+  ScAddr const node = data.m_addrFrom.IsValid() ? data.m_addrFrom : ctx.GenerateNode(ScType::NodeConst);
+  ScAddr const edge = ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, node, data.m_addr);
 
   ASSERT_TRUE(node.IsValid());
   ASSERT_TRUE(edge.IsValid());
@@ -46,7 +46,7 @@ class ScWaiterTest : public ScMemoryTest
   {
     ScMemoryTest::SetUp();
 
-    m_addr = m_ctx->CreateNode(ScType::NodeConst);
+    m_addr = m_ctx->GenerateNode(ScType::NodeConst);
     ASSERT_TRUE(m_addr.IsValid());
   }
 
@@ -201,7 +201,7 @@ TEST_F(ScWaiterTest, InvalidWaiters)
   EXPECT_THROW(m_ctx->GenerateEventWaiter<ScEventBeforeEraseElement>(nodeAddr, {}), utils::ExceptionInvalidParams);
   EXPECT_THROW(m_ctx->GenerateEventWaiter<ScEventBeforeChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 
-  nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->GenerateEventWaiter<ScEventBeforeChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
@@ -231,41 +231,41 @@ TEST_F(ScWaiterTest, InvalidWaitersWithCondition)
   EXPECT_THROW(
       m_ctx->GenerateConditionWaiter<ScEventBeforeChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 
-  nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_THROW(
       m_ctx->GenerateConditionWaiter<ScEventBeforeChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScWaiterTest, InvalidEventsFotWaiters)
 {
-  ScAddr nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr eventClassAddr;
   EXPECT_THROW(m_ctx->GenerateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   nodeAddr.Reset();
-  eventClassAddr = m_ctx->CreateNode(ScType::NodeConst);
+  eventClassAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->GenerateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   eventClassAddr = ScKeynodes::sc_event_before_change_link_content;
   EXPECT_THROW(m_ctx->GenerateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
-  nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->GenerateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScWaiterTest, InvalidEventsFotWaitersWithConditions)
 {
-  ScAddr nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr eventClassAddr;
   EXPECT_THROW(m_ctx->GenerateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   nodeAddr.Reset();
-  eventClassAddr = m_ctx->CreateNode(ScType::NodeConst);
+  eventClassAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->GenerateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
   eventClassAddr = ScKeynodes::sc_event_before_change_link_content;
   EXPECT_THROW(m_ctx->GenerateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 
-  nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_THROW(m_ctx->GenerateConditionWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }

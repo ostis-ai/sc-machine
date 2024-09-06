@@ -44,7 +44,7 @@ public:
         result << randomChar;
       }
 
-      ScAddr const addr = m_ctx->CreateLink();
+      ScAddr const addr = m_ctx->GenerateLink();
 
       std::string content = result.str();
       ScLink link(*m_ctx, addr);

@@ -39,7 +39,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
   ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_1");
 
   TestScMemoryContext userContext{userAddr};
-  EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
@@ -49,7 +49,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
           [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
           {
             ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
-            ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
+            ScAddr const & classAddr = userContext.GenerateNode(ScType::NodeConstClass);
             EXPECT_THROW(
                 userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
                 utils::ExceptionInvalidState);
@@ -71,7 +71,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
   ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_2");
 
   TestScMemoryContext userContext{userAddr};
-  EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
@@ -81,7 +81,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
           [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
           {
             ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
-            ScAddr const & classAddr = userContext.CreateNode(ScType::NodeConstClass);
+            ScAddr const & classAddr = userContext.GenerateNode(ScType::NodeConstClass);
             EXPECT_THROW(
                 userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
                 utils::ExceptionInvalidState);

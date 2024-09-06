@@ -103,7 +103,7 @@ public:
 
     // append into set
     if (needAppend)
-      return m_context->CreateEdge(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
+      return m_context->GenerateConnector(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
 
     return true;
   }

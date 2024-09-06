@@ -177,14 +177,14 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   while (it3->Next())
     ++setPower;
 
-  ScAddr const & setPowerAddr = m_context.CreateLink(ScType::LinkConst);
+  ScAddr const & setPowerAddr = m_context.GenerateLink(ScType::LinkConst);
   m_context.SetLinkContent(setPowerAddr, setPower);
   ScAddr const & arcCommonAddr 
-    = m_context.CreateEdge(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
+    = m_context.GenerateConnector(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
     = m_context.HelperFindBySystemIdtf("nrel_set_power");
   // You have to make sure that this norole relation is in the knowledge base.
-  ScAddr const & arcAccessAddr = m_context.CreateEdge(
+  ScAddr const & arcAccessAddr = m_context.GenerateConnector(
     ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
 
   action.FormResult(
@@ -288,9 +288,9 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
 - ScAddr const & nrelSetPowerAddr 
 -   = m_context.HelperFindBySystemIdtf("nrel_set_power");
-- ScAddr const & arcAccessAddr = m_context.CreateEdge(
+- ScAddr const & arcAccessAddr = m_context.GenerateConnector(
 -   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
-+ ScAddr const & arcAccessAddr = m_context.CreateEdge(
++ ScAddr const & arcAccessAddr = m_context.GenerateConnector(
 +   ScType::EdgeAccessConstPosPerm, 
 +   ScSetKeynodes::nrel_set_power, 
 +   arcCommonAddr);
@@ -455,8 +455,8 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 
   // Create set with two sc-elements.
   ScSet set = m_ctx->GenerateSet();
-  ScAddr nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   set << nodeAddr1 << nodeAddr2;
 
   // Set generated set as argument for action.

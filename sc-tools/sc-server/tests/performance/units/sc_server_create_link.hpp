@@ -10,7 +10,7 @@
 
 #include "sc-memory/sc_link.hpp"
 
-class TestCreateLink : public TestScServer
+class TestGenerateLink : public TestScServer
 {
 public:
   void Run(std::unique_ptr<ScClient> const & client)

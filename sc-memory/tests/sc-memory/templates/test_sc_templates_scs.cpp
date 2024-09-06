@@ -9,7 +9,7 @@ using ScTemplateSCsTest = ScTemplateTest;
 
 TEST_F(ScTemplateSCsTest, BuildSuccessfull)
 {
-  ScAddr const addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr.IsValid());
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("d", addr));
 
@@ -54,7 +54,7 @@ TEST_F(ScTemplateSCsTest, GenBuildSearch)
 
 TEST_F(ScTemplateSCsTest, BuildGenerate)
 {
-  ScAddr const cAddr = m_ctx->CreateNode(ScType::Node);
+  ScAddr const cAddr = m_ctx->GenerateNode(ScType::Node);
   EXPECT_TRUE(cAddr.IsValid());
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("c1", cAddr));
 
@@ -79,7 +79,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
 
 TEST_F(ScTemplateSCsTest, GenerateSearch)
 {
-  ScAddr const cAddr = m_ctx->CreateNode(ScType::Node);
+  ScAddr const cAddr = m_ctx->GenerateNode(ScType::Node);
   EXPECT_TRUE(cAddr.IsValid());
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("g1", cAddr));
 

@@ -11,7 +11,7 @@
 #include "sc-memory/sc_link.hpp"
 #include <random>
 
-class TestCreateLink : public TestMemory
+class TestGenerateLink : public TestMemory
 {
 public:
   void Run()
@@ -29,7 +29,7 @@ public:
       result << randomChar;
     }
 
-    ScAddr const addr = m_ctx->CreateLink();
+    ScAddr const addr = m_ctx->GenerateLink();
 
     ScLink link(*m_ctx, addr);
     BENCHMARK_BUILTIN_EXPECT(link.Set(result.str()), true);
@@ -41,7 +41,7 @@ class TestCreateSameLink : public TestMemory
 public:
   void Run()
   {
-    ScAddr const addr = m_ctx->CreateLink();
+    ScAddr const addr = m_ctx->GenerateLink();
 
     ScLink link(*m_ctx, addr);
     std::string const & content = "same content";

@@ -281,7 +281,7 @@ TEST_F(SCsHelperTest, GenerateAppendToStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructure.IsValid());
 
   EXPECT_TRUE(helper.GenerateBySCsText(
@@ -317,7 +317,7 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructure.IsValid());
 
   EXPECT_TRUE(helper.GenerateBySCsText(
@@ -374,28 +374,28 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const & outputStructureWithRuMainIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithRuMainIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithRuMainIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_main_idtf: [] (* <- lang_ru;; *);;",
       outputStructureWithRuMainIdtf
   ));
 
-  ScAddr const & outputStructureWithEnMainIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithEnMainIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithEnMainIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_main_idtf: [] (* <- lang_en;; *);;",
       outputStructureWithEnMainIdtf
   ));
 
-  ScAddr const & outputStructureWithRuIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithRuIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithRuIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_idtf: [] (* <- lang_ru;; *);;",
       outputStructureWithRuIdtf
   ));
 
-  ScAddr const & outputStructureWithEnIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithEnIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithEnIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_idtf: [] (* <- lang_en;; *);;",

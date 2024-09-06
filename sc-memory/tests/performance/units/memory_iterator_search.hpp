@@ -23,11 +23,11 @@ public:
 
   void Setup(size_t edgesNum) override
   {
-    m_node = m_ctx->CreateNode(ScType::NodeConstClass);
+    m_node = m_ctx->GenerateNode(ScType::NodeConstClass);
     for (size_t i = 0; i < edgesNum; ++i)
     {
-      ScAddr target = m_ctx->CreateNode(ScType::NodeConst);
-      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_node, target);
+      ScAddr target = m_ctx->GenerateNode(ScType::NodeConst);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_node, target);
     }
   }
 

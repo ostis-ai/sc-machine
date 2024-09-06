@@ -29,7 +29,7 @@ ScAgentContext::ScAgentContext(ScAddr const & userAddr) noexcept
 }
 
 ScAgentContext::ScAgentContext(ScAgentContext && other) noexcept
-  : ScMemoryContext(std::move(other)){};
+  : ScMemoryContext(std::move(other)) {};
 
 ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
 {
@@ -95,8 +95,8 @@ ScAction ScAgentContext::GenerateAction(ScAddr const & actionClassAddr) noexcept
         "Not able to generate sc-action with action class `" << actionClassAddr.Hash()
                                                              << "`, because action class is not valid.");
 
-  ScAddr const & actionAddr = CreateNode(ScType::NodeConst);
-  CreateEdge(ScType::EdgeAccessConstPosPerm, actionClassAddr, actionAddr);
+  ScAddr const & actionAddr = GenerateNode(ScType::NodeConst);
+  GenerateConnector(ScType::EdgeAccessConstPosPerm, actionClassAddr, actionAddr);
   ScAction action{this, actionAddr};
   return action;
 }
@@ -115,7 +115,7 @@ ScAction ScAgentContext::ConvertToAction(ScAddr const & actionAddr) noexcept(fal
 
 ScSet ScAgentContext::GenerateSet()
 {
-  ScAddr const & setAddr = CreateNode(ScType::NodeConst);
+  ScAddr const & setAddr = GenerateNode(ScType::NodeConst);
   ScSet set{this, setAddr};
   return set;
 }
@@ -134,7 +134,7 @@ ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr) noexcept(false)
 
 ScStructure ScAgentContext::GenerateStructure()
 {
-  ScAddr const & structureAddr = CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = GenerateNode(ScType::NodeConstStruct);
   ScStructure structure{this, structureAddr};
   return structure;
 }

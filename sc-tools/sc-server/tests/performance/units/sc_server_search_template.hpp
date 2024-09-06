@@ -45,7 +45,7 @@ public:
     size_t nodeNum = 10;
     m_nodes.reserve(nodeNum);
     for (size_t i = 0; i < nodeNum; ++i)
-      m_nodes.push_back(m_ctx->CreateNode(ScType::NodeConst));
+      m_nodes.push_back(m_ctx->GenerateNode(ScType::NodeConst));
 
     for (size_t i = 0; i < edgeNum; ++i)
       m_ctx->CreateEdge(

@@ -450,7 +450,7 @@ sc_char const * data =
   "  _<- concept_binary_set;;";
 
 // Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -475,7 +475,7 @@ ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
 ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
 
 // Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -496,7 +496,7 @@ system identifiers and sc-addresses of sc-variables also.
 ```cpp
 ...
 // Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -514,7 +514,7 @@ ScAddr const & replAddr = params.Get("_set");
 ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
 
 // Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -945,7 +945,7 @@ m_context->HelperSmartSearchTemplate(templ, [&context](
       structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))   
     return ScTemplateSearchRequest::CONTINUE;
 
-  if (context.CreateEdge(
+  if (context.GenerateConnector(
       ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
     return ScTemplateSearchRequest::STOP;
 

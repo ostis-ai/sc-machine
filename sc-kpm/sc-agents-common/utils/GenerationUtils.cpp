@@ -18,7 +18,7 @@ ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
     ScAddrVector const & addrVector,
     ScType const & setType)
 {
-  ScAddr set = ms_context->CreateNode(setType);
+  ScAddr set = ms_context->GenerateNode(setType);
   if (addrVector.empty())
     return set;
 
@@ -45,7 +45,7 @@ ScAddr GenerationUtils::wrapInOrientedSet(
   SC_ASSERT(addrVector.size() < maxRrelCountExceeded, ("Not create numerated set with more than 10 elements"));
   SC_UNUSED(maxRrelCountExceeded);
 
-  ScAddr set = ms_context->CreateNode(setType);
+  ScAddr set = ms_context->GenerateNode(setType);
   for (size_t i = 0; i < addrVector.size(); ++i)
   {
     ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
@@ -57,7 +57,7 @@ ScAddr GenerationUtils::wrapInOrientedSet(
 
 ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, ScAddrVector const & addrVector, ScType const & setType)
 {
-  ScAddr set = ms_context->CreateNode(setType);
+  ScAddr set = ms_context->GenerateNode(setType);
   std::for_each(
       addrVector.begin(),
       addrVector.end(),

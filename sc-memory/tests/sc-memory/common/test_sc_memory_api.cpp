@@ -30,38 +30,38 @@ TEST_F(ScMemoryTest, MoveContext)
 
 TEST_F(ScMemoryTest, CreateElements)
 {
-  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(nodeAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr));
 
-  ScAddr const & linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+  ScAddr const & linkAddr = m_ctx->GenerateLink(ScType::LinkConst);
   EXPECT_TRUE(linkAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(linkAddr));
 
-  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccess, nodeAddr, linkAddr);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeAccess, nodeAddr, linkAddr);
   EXPECT_TRUE(edgeAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(edgeAddr));
 }
 
 TEST_F(ScMemoryTest, CreateElementsWithInvalidTypes)
 {
-  EXPECT_THROW(m_ctx->CreateNode(ScType::EdgeAccess), utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->CreateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateNode(ScType::EdgeAccess), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
 
-  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(nodeAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr));
 
-  ScAddr const & linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+  ScAddr const & linkAddr = m_ctx->GenerateLink(ScType::LinkConst);
   EXPECT_TRUE(linkAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(linkAddr));
 
-  EXPECT_THROW(m_ctx->CreateEdge(ScType::NodeConst, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateConnector(ScType::NodeConst, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScMemoryTest, SetGetFindSystemIdentifier)
 {
-  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
 
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr));
   EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
@@ -70,7 +70,7 @@ TEST_F(ScMemoryTest, SetGetFindSystemIdentifier)
 
 TEST_F(ScMemoryTest, SetGetFindSystemIdentifierWithOutFiver)
 {
-  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScSystemIdentifierQuintuple setFiver;
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr, setFiver));
@@ -93,13 +93,13 @@ TEST_F(ScMemoryTest, SetGetFindSystemIdentifierWithOutFiver)
 
 TEST_F(ScMemoryTest, SetGetSystemIdentifierErrorSetTwice)
 {
-  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
 
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr));
   EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
   EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), addr);
 
-  ScAddr const & otherAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & otherAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_FALSE(m_ctx->HelperSetSystemIdtf("test_node", otherAddr));
 }
 

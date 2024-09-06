@@ -73,7 +73,7 @@ protected:
         SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge in triple has incorrect type");
       }
 
-      ScAddr const edgeAddr = m_ctx.CreateEdge(edge.GetType(), srcAddrResult.first, trgAddrResult.first);
+      ScAddr const edgeAddr = m_ctx.GenerateConnector(edge.GetType(), srcAddrResult.first, trgAddrResult.first);
       m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
 
       if (m_outputStructure.IsValid())
@@ -104,7 +104,7 @@ private:
     {
       if (!m_ctx.HelperCheckEdge(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
       {
-        m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
+        m_ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
       }
     }
   }
@@ -115,12 +115,12 @@ private:
 
     // Generate construction manually. To avoid recursive call of ScMemoryContextEventsPendingGuard
 
-    ScAddr const linkAddr = m_ctx.CreateLink();
+    ScAddr const linkAddr = m_ctx.GenerateLink();
     ScLink link(m_ctx, linkAddr);
     link.Set(idtf);
 
-    ScAddr const edgeAddr = m_ctx.CreateEdge(ScType::EdgeDCommonConst, addr, linkAddr);
-    ScAddr const relAddr = m_ctx.CreateEdge(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
+    ScAddr const edgeAddr = m_ctx.GenerateConnector(ScType::EdgeDCommonConst, addr, linkAddr);
+    ScAddr const relAddr = m_ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
 
     return {linkAddr, edgeAddr, relAddr};
   }
@@ -186,11 +186,11 @@ private:
         ScType const & type = el.GetType();
         if (type.IsNode())
         {
-          resultAddr = m_ctx.CreateNode(type);
+          resultAddr = m_ctx.GenerateNode(type);
         }
         else if (type.IsLink())
         {
-          resultAddr = m_ctx.CreateLink(type);
+          resultAddr = m_ctx.GenerateLink(type);
           SetupLinkContent(resultAddr, el);
         }
         else

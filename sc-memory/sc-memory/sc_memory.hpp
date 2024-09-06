@@ -158,7 +158,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * if (context.IsElement(elementAddr)) {
    *     // Element exists
    * } else {
@@ -180,7 +180,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * size_t outputArcsCount = context.GetElementOutputArcsCount(elementAddr);
    * std::cout << "Output Arcs Count: " << outputArcsCount << std::endl;
    * @endcode
@@ -199,7 +199,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * size_t inputArcsCount = context.GetElementInputArcsCount(elementAddr);
    * std::cout << "Input Arcs Count: " << inputArcsCount << std::endl;
    * @endcode
@@ -217,7 +217,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * if (context.EraseElement(elementAddr)) {
    *     // Element successfully erased
    * } else {
@@ -239,10 +239,50 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr nodeAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr nodeAddr = context.GenerateNode(ScType::NodeConst);
    * @endcode
    */
+  _SC_EXTERN ScAddr GenerateNode(ScType const & type) noexcept(false);
+
+  /*!
+   * @brief Generates a new sc-node with the specified type.
+   *
+   * This method creates a new sc-node with the specified type and returns its sc-address.
+   *
+   * @param type The type of the sc-node to create.
+   * @return Returns the sc-address of the newly created sc-node.
+   * @throws ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr nodeAddr = context.CreateNode(ScType::NodeConst);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GenerateNode` instead for better readability and standards
+   * compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GenerateNode` instead for better readability and standards compliance.’")
   _SC_EXTERN ScAddr CreateNode(ScType const & type) noexcept(false);
+
+  /*!
+   * @brief Generates a new sc-link with the specified type.
+   *
+   * This method creates a new sc-link with the specified type and returns its sc-address.
+   *
+   * @param type The type of the sc-link to create (default is ScType::LinkConst).
+   * @return Returns the sc-address of the newly created sc-link.
+   * @throws ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr linkAddr = context.GenerateLink();
+   * @endcode
+   */
+  _SC_EXTERN ScAddr GenerateLink(ScType const & type = ScType::LinkConst) noexcept(false);
 
   /*!
    * @brief Generates a new sc-link with the specified type.
@@ -259,6 +299,9 @@ public:
    * ScAddr linkAddr = context.CreateLink();
    * @endcode
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CreateLink` instead for better readability and standards compliance.’")
   _SC_EXTERN ScAddr CreateLink(ScType const & type = ScType::LinkConst) noexcept(false);
 
   /*!
@@ -274,12 +317,39 @@ public:
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr edgeAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
    * @endcode
    */
-  _SC_EXTERN ScAddr CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd) noexcept(false);
+  _SC_EXTERN ScAddr
+  GenerateConnector(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd) noexcept(false);
+
+  /*!
+   * @brief Generates a new sc-connector with the specified type, source, and target.
+   *
+   * This method creates a new sc-connector with the specified type, source, and target, and returns its sc-address.
+   *
+   * @param type The type of the sc-connector to create.
+   * @param addrBeg The sc-address of the source sc-element.
+   * @param addrEnd The sc-address of the target sc-element.
+   * @return Returns the sc-address of the newly created sc-connector.
+   * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   * @code
+   * ScMemoryContext context;
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr edgeAddr = context.CreateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * @endcode
+   * @warning This method is deprecated since 0.10.0. Use `GenerateConnector` instead for better readability and
+   * standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GenerateConnector` instead for better readability and standards compliance.’")
+  _SC_EXTERN ScAddr
+  CreateConnector(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd) noexcept(false);
 
   /*!
    * @brief Returns the type of the specified sc-element.
@@ -293,7 +363,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * ScType elementType = context.GetElementType(elementAddr);
    * std::cout << "Element Type: " << elementType.GetName() << std::endl;
    * @endcode
@@ -313,7 +383,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * if (context.SetElementSubtype(elementAddr, ScType::NodeConstRole)) {
    *     // Subtype successfully changed
    * } else {
@@ -335,9 +405,9 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr edgeAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
    * ScAddr sourceElement = context.GetEdgeSource(edgeAddr);
    * @endcode
    */
@@ -355,9 +425,9 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr edgeAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
    * ScAddr targetElement = context.GetEdgeTarget(edgeAddr);
    * @endcode
    */
@@ -377,9 +447,9 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr edgeAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
    * ScAddr sourceElement, targetElement;
    * if (context.GetEdgeInfo(edgeAddr, sourceElement, targetElement)) {
    *     // Information retrieved successfully
@@ -426,7 +496,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
    * if (context.SetLinkContent(linkAddr, "my node")) {
    *     // Content set successfully
    * } else {
@@ -436,7 +506,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
    * if (context.SetLinkContent(linkAddr, 105)) {
    *     // Content set successfully
    * } else {
@@ -463,7 +533,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
    * std::string outString;
    * if (context.GetLinkContent(linkAddr, outString)) {
    *     // Content get successfully
@@ -504,7 +574,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
    * std::string outString;
    * if (context.GetLinkContent(linkAddr, outString)) {
    *     // Content get successfully
@@ -515,7 +585,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
    * size_t outNumber;
    * if (context.GetLinkContent(linkAddr, outNumber)) {
    *     // Content get successfully
@@ -787,10 +857,10 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr node1 = context.CreateNode(ScType::NodeConst);
-   * ScAddr node2 = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeType = context.CreateNode(ScType::EdgeDCommonConst);
-   * context.CreateEdge(node1, node2, edgeType);
+   * ScAddr node1 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr node2 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr edgeType = context.GenerateNode(ScType::EdgeDCommonConst);
+   * context.GenerateConnector(node1, node2, edgeType);
    * bool hasEdge = context.HelperCheckEdge(node1, node2, edgeType);
    * @endcode
    */
@@ -863,7 +933,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * bool success = context.HelperSetSystemIdtf("example_identifier", elementAddr);
    * @endcode
    */
@@ -884,7 +954,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * ScSystemIdentifierQuintuple resultQuintuple;
    * bool success = context.HelperSetSystemIdtf("example_identifier", elementAddr, resultQuintuple);
    * @endcode
@@ -903,7 +973,7 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * std::string sysIdtf = context.HelperGetSystemIdtf(elementAddr);
    * @endcode
    */
@@ -1059,10 +1129,10 @@ public:
    * ...
    * ...
    * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
-   * ScAddr const & structureAddr = context.CreateNode(ScType::NodeConstStruct);
-   * ScAddr const & modelAddr = context.CreateNode(ScType::NodeConstStruct);
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
-   * ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
@@ -1072,7 +1142,7 @@ public:
    * // Find all instances of specified class.
    * m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
    *  // Add each checked instance of class to set.
-   *  context.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
    *  // Check that each sc-arc between class and its instance belongs to structure.
    *  return !context->HelperCheckEdge(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
@@ -1101,9 +1171,9 @@ public:
    * ...
    * ...
    * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
-   * ScAddr const & modelAddr = context.CreateNode(ScType::NodeConstStruct);
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
-   * ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
@@ -1113,7 +1183,7 @@ public:
    * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
    * structure. m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
    *  // Add each checked instance of class to set.
-   *  context.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScAddr const & addr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
    *  return context->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
@@ -1147,9 +1217,9 @@ public:
    * ...
    * ...
    * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
-   * ScAddr const & structureAddr = context.CreateNode(ScType::NodeConstStruct);
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
-   * ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,

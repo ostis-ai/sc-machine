@@ -90,12 +90,12 @@ public:
         m_context.GetEdgeInfo(connectorAddr, sourceAddr, targetAddr);
 
       if (!sourceAddr.IsValid())
-        sourceAddr = CreateNodeOrLink(sourceItem.m_typeValue.UpConstType());
+        sourceAddr = GenerateNodeOrLink(sourceItem.m_typeValue.UpConstType());
       if (!targetAddr.IsValid())
-        targetAddr = CreateNodeOrLink(targetItem.m_typeValue.UpConstType());
+        targetAddr = GenerateNodeOrLink(targetItem.m_typeValue.UpConstType());
 
       if (!connectorAddr.IsValid())
-        connectorAddr = CreateConnector(connectorItem.m_typeValue.UpConstType(), sourceAddr, targetAddr);
+        connectorAddr = GenerateConnector(connectorItem.m_typeValue.UpConstType(), sourceAddr, targetAddr);
 
       result.m_replacementConstruction[resultIdx++] = sourceAddr;
       result.m_replacementConstruction[resultIdx++] = connectorAddr;
@@ -113,22 +113,22 @@ public:
   }
 
 private:
-  ScAddr CreateNodeOrLink(ScType const & type)
+  ScAddr GenerateNodeOrLink(ScType const & type)
   {
     ScAddr addr;
     if (type.IsLink())
-      addr = m_context.CreateLink(type);
+      addr = m_context.GenerateLink(type);
     else
-      addr = m_context.CreateNode(type);
+      addr = m_context.GenerateNode(type);
 
     m_generatedElements.push_back(addr);
 
     return addr;
   }
 
-  ScAddr CreateConnector(ScType const & type, ScAddr const & sourceAddr, ScAddr const & targetAddr)
+  ScAddr GenerateConnector(ScType const & type, ScAddr const & sourceAddr, ScAddr const & targetAddr)
   {
-    ScAddr const & addr = m_context.CreateEdge(type, sourceAddr, targetAddr);
+    ScAddr const & addr = m_context.GenerateConnector(type, sourceAddr, targetAddr);
     m_generatedElements.push_back(addr);
 
     return addr;

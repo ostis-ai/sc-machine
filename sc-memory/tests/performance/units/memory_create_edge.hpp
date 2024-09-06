@@ -8,12 +8,12 @@
 
 #include "memory_test.hpp"
 
-class TestCreateEdge : public TestMemory
+class TestGenerateConnector : public TestMemory
 {
 public:
   void Run()
   {
-    m_ctx->CreateEdge(
+    m_ctx->GenerateConnector(
           ScType::EdgeAccessConstPosPerm,
           m_nodes[random() % m_nodes.size()],
           m_nodes[random() % m_nodes.size()]);
@@ -23,11 +23,11 @@ public:
   {
     m_nodes.reserve(elementsNum);
     for (size_t i = 0; i < elementsNum; ++i)
-      m_nodes.push_back(m_ctx->CreateNode(ScType::NodeConst));
+      m_nodes.push_back(m_ctx->GenerateNode(ScType::NodeConst));
   }
 
 private:
   static ScAddrVector m_nodes;
 };
 
-ScAddrVector TestCreateEdge::m_nodes;
+ScAddrVector TestGenerateConnector::m_nodes;

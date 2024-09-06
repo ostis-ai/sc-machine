@@ -11,12 +11,12 @@ protected:
   {
     ScMemoryTest::SetUp();
 
-    m_source = m_ctx->CreateNode(ScType::NodeConst);
-    m_target = m_ctx->CreateNode(ScType::NodeVar);
-    m_edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_source, m_target);
+    m_source = m_ctx->GenerateNode(ScType::NodeConst);
+    m_target = m_ctx->GenerateNode(ScType::NodeVar);
+    m_edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_source, m_target);
 
-    m_attr = m_ctx->CreateNode(ScType::NodeConst);
-    m_attrEdge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_attr, m_edge);
+    m_attr = m_ctx->GenerateNode(ScType::NodeConst);
+    m_attrEdge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_attr, m_edge);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());

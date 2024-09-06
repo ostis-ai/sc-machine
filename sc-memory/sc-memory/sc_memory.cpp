@@ -333,7 +333,7 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
   return result == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::CreateNode(ScType const & type)
+ScAddr ScMemoryContext::GenerateNode(ScType const & type)
 {
   CHECK_CONTEXT;
 
@@ -361,7 +361,12 @@ ScAddr ScMemoryContext::CreateNode(ScType const & type)
   return addr;
 }
 
-ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */)
+ScAddr ScMemoryContext::GenerateNode(ScType const & type)
+{
+  return GenerateNode(type);
+}
+
+ScAddr ScMemoryContext::GenerateLink(ScType const & type /* = ScType::LinkConst */)
 {
   CHECK_CONTEXT;
 
@@ -389,7 +394,7 @@ ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */
   return addr;
 }
 
-ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+ScAddr ScMemoryContext::GenerateConnector(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
 {
   CHECK_CONTEXT;
 
@@ -850,7 +855,7 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
   if (type.IsUnknown())
     return false;
 
-  ScAddr const & resultAddr = CreateNode(type);
+  ScAddr const & resultAddr = GenerateNode(type);
   result = HelperSetSystemIdtf(sysIdtf, resultAddr, outQuintuple);
   if (result)
     return result;

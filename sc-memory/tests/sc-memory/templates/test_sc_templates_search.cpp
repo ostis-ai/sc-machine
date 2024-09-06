@@ -19,7 +19,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
    *
    * scs: x _-> _z:: _y;; _s _-> x;;
    */
-  ScAddr const templateAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const templateAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(templateAddr.IsValid());
 
   ScStructure templStruct = m_ctx->ConvertToStructure(templateAddr);
@@ -27,27 +27,27 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
   {
     ScAddr _yAddr, _zAddr, _sAddr;
 
-    xAddr = m_ctx->CreateNode(ScType::NodeConstMaterial);
+    xAddr = m_ctx->GenerateNode(ScType::NodeConstMaterial);
     EXPECT_TRUE(xAddr.IsValid());
     EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("x", xAddr));
 
-    _yAddr = m_ctx->CreateNode(ScType::Var);
+    _yAddr = m_ctx->GenerateNode(ScType::Var);
     EXPECT_TRUE(_yAddr.IsValid());
     EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_y", _yAddr));
 
-    _zAddr = m_ctx->CreateNode(ScType::NodeVarRole);
+    _zAddr = m_ctx->GenerateNode(ScType::NodeVarRole);
     EXPECT_TRUE(_zAddr.IsValid());
     EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_z", _zAddr));
 
-    _sAddr = m_ctx->CreateNode(ScType::NodeVarClass);
+    _sAddr = m_ctx->GenerateNode(ScType::NodeVarClass);
     EXPECT_TRUE(_sAddr.IsValid());
     EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_s", _sAddr));
 
-    ScAddr const xyAddr = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
+    ScAddr const xyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
     EXPECT_TRUE(xyAddr.IsValid());
-    ScAddr const zxyAddr = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, _zAddr, xyAddr);
+    ScAddr const zxyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, _zAddr, xyAddr);
     EXPECT_TRUE(zxyAddr.IsValid());
-    ScAddr const sxAddr = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, _sAddr, xAddr);
+    ScAddr const sxAddr = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, _sAddr, xAddr);
     EXPECT_TRUE(sxAddr.IsValid());
 
     // append created elements into struct
@@ -59,20 +59,20 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
 
   // create test structure that correspond to template
   {
-    ScAddr const yAddr = m_ctx->CreateNode(ScType::Const);
+    ScAddr const yAddr = m_ctx->GenerateNode(ScType::Const);
     EXPECT_TRUE(yAddr.IsValid());
 
-    ScAddr const zAddr = m_ctx->CreateNode(ScType::NodeConstRole);
+    ScAddr const zAddr = m_ctx->GenerateNode(ScType::NodeConstRole);
     EXPECT_TRUE(zAddr.IsValid());
 
-    ScAddr const sAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+    ScAddr const sAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
     EXPECT_TRUE(sAddr.IsValid());
 
-    ScAddr const xyAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, xAddr, yAddr);
+    ScAddr const xyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, xAddr, yAddr);
     EXPECT_TRUE(xyAddr.IsValid());
-    ScAddr const zxyAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, zAddr, xyAddr);
+    ScAddr const zxyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, zAddr, xyAddr);
     EXPECT_TRUE(zxyAddr.IsValid());
-    ScAddr const sxAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sAddr, xAddr);
+    ScAddr const sxAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, sAddr, xAddr);
     EXPECT_TRUE(sxAddr.IsValid());
 
     // test search by template
@@ -96,20 +96,20 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
   /** SCs:
    * addr => nrel_main_idtf: [] (* <- lang;; *);;
    */
-  ScAddr const addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr.IsValid());
-  ScAddr const nrelMainIdtf = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelMainIdtf = m_ctx->GenerateNode(ScType::NodeConstNoRole);
   EXPECT_TRUE(nrelMainIdtf.IsValid());
-  ScAddr const lang = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const lang = m_ctx->GenerateNode(ScType::NodeConstClass);
   EXPECT_TRUE(lang.IsValid());
-  ScAddr const link = m_ctx->CreateLink();
+  ScAddr const link = m_ctx->GenerateLink();
   EXPECT_TRUE(link.IsValid());
 
-  ScAddr const edgeCommon = m_ctx->CreateEdge(ScType::EdgeDCommonConst, addr, link);
+  ScAddr const edgeCommon = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, addr, link);
   EXPECT_TRUE(edgeCommon.IsValid());
-  ScAddr const edgeAttr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nrelMainIdtf, edgeCommon);
+  ScAddr const edgeAttr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelMainIdtf, edgeCommon);
   EXPECT_TRUE(edgeAttr.IsValid());
-  ScAddr const edgeLang = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, lang, link);
+  ScAddr const edgeLang = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, lang, link);
   EXPECT_TRUE(edgeLang.IsValid());
 
   // now check search
@@ -142,11 +142,11 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
 TEST_F(ScTemplateSearchTest, UnknownType)
 {
   // addr1 -> addr2;;
-  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstAbstract);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
   EXPECT_TRUE(edge.IsValid());
 
   ScTemplate templ;
@@ -169,25 +169,25 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
    *    _app => nrel_image: _image;;
    */
 
-  ScAddr const deviceAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const deviceAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(deviceAddr.IsValid());
 
-  ScAddr const nrelInstalledApp = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelInstalledApp = m_ctx->GenerateNode(ScType::NodeConstNoRole);
   EXPECT_TRUE(nrelInstalledApp.IsValid());
 
-  ScAddr const _tuple = m_ctx->CreateNode(ScType::NodeConstTuple);
+  ScAddr const _tuple = m_ctx->GenerateNode(ScType::NodeConstTuple);
   EXPECT_TRUE(_tuple.IsValid());
 
-  ScAddr const nrelIdtf = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelIdtf = m_ctx->GenerateNode(ScType::NodeConstNoRole);
   EXPECT_TRUE(nrelIdtf.IsValid());
 
-  ScAddr const nrelImage = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelImage = m_ctx->GenerateNode(ScType::NodeConstNoRole);
   EXPECT_TRUE(nrelImage.IsValid());
 
-  ScAddr edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, _tuple, deviceAddr);
+  ScAddr edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, _tuple, deviceAddr);
   EXPECT_TRUE(edge.IsValid());
 
-  edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nrelInstalledApp, edge);
+  edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelInstalledApp, edge);
   EXPECT_TRUE(edge.IsValid());
 
   struct TestData
@@ -201,34 +201,34 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
   std::vector<TestData> data(50);
   for (auto & d : data)
   {
-    d.m_app = m_ctx->CreateNode(ScType::NodeConstAbstract);
+    d.m_app = m_ctx->GenerateNode(ScType::NodeConstAbstract);
     EXPECT_TRUE(d.m_app.IsValid());
 
-    edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
+    edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
     EXPECT_TRUE(edge.IsValid());
 
-    d.m_idtf = m_ctx->CreateLink();
+    d.m_idtf = m_ctx->GenerateLink();
     EXPECT_TRUE(d.m_idtf.IsValid());
 
     ScLink idtfLink(*m_ctx, d.m_idtf);
     EXPECT_TRUE(idtfLink.Set("idtf_" + std::to_string(i)));
 
-    edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, d.m_app, d.m_idtf);
+    edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_idtf);
     EXPECT_TRUE(edge.IsValid());
 
-    edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nrelIdtf, edge);
+    edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelIdtf, edge);
     EXPECT_TRUE(edge.IsValid());
 
-    d.m_image = m_ctx->CreateLink();
+    d.m_image = m_ctx->GenerateLink();
     EXPECT_TRUE(d.m_image.IsValid());
 
     ScLink imageLink(*m_ctx, d.m_image);
     EXPECT_TRUE(imageLink.Set("data_" + std::to_string(i)));
 
-    edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, d.m_app, d.m_image);
+    edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_image);
     EXPECT_TRUE(edge.IsValid());
 
-    edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nrelImage, edge);
+    edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelImage, edge);
     EXPECT_TRUE(edge.IsValid());
 
     ++i;
@@ -287,10 +287,10 @@ TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
    * class2 _-> _element;;
    */
 
-  ScAddr const classAddr1 = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const classAddr1 = m_ctx->GenerateNode(ScType::NodeConstClass);
   EXPECT_TRUE(classAddr1.IsValid());
 
-  ScAddr const classAddr2 = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const classAddr2 = m_ctx->GenerateNode(ScType::NodeConstClass);
   EXPECT_TRUE(classAddr2.IsValid());
 
   struct TestData
@@ -303,13 +303,13 @@ TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
   std::vector<TestData> data(50);
   for (auto & d : data)
   {
-    d.m_addr = m_ctx->CreateNode(ScType::NodeConstAbstract);
+    d.m_addr = m_ctx->GenerateNode(ScType::NodeConstAbstract);
     EXPECT_TRUE(d.m_addr.IsValid());
 
-    d.m_classEdge1 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr1, d.m_addr);
+    d.m_classEdge1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr1, d.m_addr);
     EXPECT_TRUE(d.m_classEdge1.IsValid());
 
-    d.m_classEdge2 = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, classAddr2, d.m_addr);
+    d.m_classEdge2 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr2, d.m_addr);
     EXPECT_TRUE(d.m_classEdge2.IsValid());
   }
 
@@ -357,7 +357,7 @@ TEST_F(ScTemplateSearchTest, ResultDeduplication)
    *
    *  We should get just one search result, edge `a -> c` shouldn't appears twicely
    */
-  ScAddr const a = m_ctx->CreateNode(ScType::Node);
+  ScAddr const a = m_ctx->GenerateNode(ScType::Node);
   EXPECT_TRUE(a.IsValid());
 
   ScTemplate templ;
@@ -425,7 +425,7 @@ TEST_F(ScTemplateSearchTest, StructureElements)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const & structureAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(structureAddr.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => test_relation: [];;"
@@ -445,7 +445,7 @@ TEST_F(ScTemplateSearchTest, StructureElements)
   }
 
   ScAddr const & sourceAddr = m_ctx->HelperResolveSystemIdtf("test_node");
-  ScAddr const & targetAddr = m_ctx->CreateLink(ScType::LinkConst);
+  ScAddr const & targetAddr = m_ctx->GenerateLink(ScType::LinkConst);
   ScAddr const & relationAddr = m_ctx->HelperResolveSystemIdtf("test_relation");
 
   ScTemplate templ;

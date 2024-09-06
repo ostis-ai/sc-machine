@@ -49,7 +49,7 @@ TEST_F(ScMemoryTest, LinkContent)
   std::string str("test content string");
   ScStreamPtr const stream = ScStreamMakeRead(str);
 
-  ScAddr const link = m_ctx->CreateLink();
+  ScAddr const link = m_ctx->GenerateLink();
 
   EXPECT_TRUE(link.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(link));
@@ -82,7 +82,7 @@ TEST_F(ScMemoryTest, LinkContent)
 
 TEST_F(ScMemoryTest, FindByLinkContent)
 {
-  ScAddr const linkAddr1 = m_ctx->CreateLink();
+  ScAddr const linkAddr1 = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr1.IsValid());
 
   std::string const linkContent1 = "ScMemoryContext_FindLinksByContent_content_1";
@@ -95,7 +95,7 @@ TEST_F(ScMemoryTest, FindByLinkContent)
 
 TEST_F(ScMemoryTest, LinkContentStringApi)
 {
-  ScAddr const linkAddr1 = m_ctx->CreateLink();
+  ScAddr const linkAddr1 = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr1.IsValid());
 
   std::string str;
@@ -109,19 +109,19 @@ TEST_F(ScMemoryTest, LinkContentStringApi)
 TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
 {
   std::string russianIdtf = "узел";
-  ScAddr russianNode = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr russianNode = m_ctx->GenerateNode(ScType::NodeConstClass);
   EXPECT_THROW(m_ctx->HelperSetSystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
   EXPECT_THROW(m_ctx->HelperFindBySystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
 
   std::string englishIdtf = "russianNode";
-  ScAddr englishNode = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr englishNode = m_ctx->GenerateNode(ScType::NodeConstClass);
   EXPECT_TRUE(m_ctx->HelperSetSystemIdtf(englishIdtf, englishNode));
   EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
 }
 
 TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
 {
-  ScAddr const linkAddr = m_ctx->CreateLink();
+  ScAddr const linkAddr = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr.IsValid());
 
   std::string str;

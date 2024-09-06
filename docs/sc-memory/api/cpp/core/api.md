@@ -48,39 +48,39 @@ ScMemoryContext context;
 // After you can use this object to call any API methods.
 ```
 
-### **CreateNode**
+### **GenerateNode**
 
-To create sc-nodes you can use the method `CreateNode`, to create sc-links - the method `CreateLink`, to create
-sc-connectors between them - the method `CreateEdge`. All these methods check passed sc-types. If specified sc-type is
+To create sc-nodes you can use the method `GenerateNode`, to create sc-links - the method `GenerateLink`, to create
+sc-connectors between them - the method `GenerateConnector`. All these methods check passed sc-types. If specified sc-type is
 not valid, then a method throws the exception `utils::ExceptionInvalidParams` with description of this error.
 
 ```cpp
 ...
 // Create sc-node and get sc-address in sc-memory of it.
-ScAddr const & nodeAddr = context.CreateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
 // Specified sc-type must be one of ScType::Node... type.
 ```
 
-### **CreateLink**
+### **GenerateLink**
 
 ```cpp
 ...
 // Create sc-link and get sc-address in sc-memory of it.
-ScAddr const & linkAddr = context.CreateLink(ScType::LinkConst);
+ScAddr const & linkAddr = context.GenerateLink(ScType::LinkConst);
 // Specified sc-type must be one of ScType::Link... type.
 ```
 
 !!! note
     Now all sc-links are not sc-nodes. It can be fixed in the further versions of sc-machine. But you can use 
-    the method `CreateNode` to create sc-links.
+    the method `GenerateNode` to create sc-links.
 
-### **CreateEdge**
+### **GenerateConnector**
 
 ```cpp
 ...
 // Create sc-arc between sc-node and sc-link and get sc-address in 
 // sc-memory of it.
-ScAddr const & arcAddr = context.CreateEdge(
+ScAddr const & arcAddr = context.GenerateConnector(
     ScType::EdgeAccessConstPosPerm, nodeAddr, linkAddr);
 // Specified sc-type must be one of ScType::Edge... type.
 ```
@@ -129,7 +129,7 @@ syntactic sc-type for sc-element.
 ```cpp
 ...
 // Create sc-node and get sc-address in sc-memory of it.
-ScAddr const & nodeAddr = context.CreateNode(ScType::Node);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::Node);
 bool const isSubtypeElementChanged 
     = context.SetElementSubtype(node, ScType::NodeConst);
 // The value of `isSubtypeElementChanged` must be equal to `true`.
@@ -285,11 +285,11 @@ the previous content from this sc-link. If specified sc-address is not valid, th
 
 ```cpp
 ...
-ScAddr const & linkAddr1 = context.CreateLink(ScType::LinkConst);
+ScAddr const & linkAddr1 = context.GenerateLink(ScType::LinkConst);
 // Set string content into created sc-link.
 context.SetLinkContent(linkAddr1, "my content");
 
-ScAddr const & linkAddr2 = context.CreateLink(ScType::LinkConst);
+ScAddr const & linkAddr2 = context.GenerateLink(ScType::LinkConst);
 // Set numeric content into created sc-link.
 context.SetLinkContent(linkAddr2, 10f);
 ...

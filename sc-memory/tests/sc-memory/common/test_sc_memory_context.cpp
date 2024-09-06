@@ -30,8 +30,8 @@ void TestAddPermissionsForUserToInitActions(
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
   ScAddr const & nrelUserActionClassAddr{nrel_user_action_class_addr};
-  ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeDCommonConst, userAddr, actionClassAddr);
-  context->CreateEdge(arcType, nrelUserActionClassAddr, edgeAddr);
+  ScAddr const & edgeAddr = context->GenerateConnector(ScType::EdgeDCommonConst, userAddr, actionClassAddr);
+  context->GenerateConnector(arcType, nrelUserActionClassAddr, edgeAddr);
 }
 
 void TestAddPermissionsForUserToInitReadActions(
@@ -99,8 +99,8 @@ void TestAddPermissionsForUsersSetToInitActions(
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
   ScAddr const & nrelUsersSetActionClassAddr{nrel_users_set_action_class_addr};
-  ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeDCommonConst, usersSetAddr, actionClassAddr);
-  context->CreateEdge(arcType, nrelUsersSetActionClassAddr, edgeAddr);
+  ScAddr const & edgeAddr = context->GenerateConnector(ScType::EdgeDCommonConst, usersSetAddr, actionClassAddr);
+  context->GenerateConnector(arcType, nrelUsersSetActionClassAddr, edgeAddr);
 }
 
 void TestAddPermissionsForUsersSetToInitReadActions(
@@ -166,8 +166,8 @@ ScAddr TestGenerateClassForUser(
     ScAddr const & userAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  ScAddr const & setAddr = context->CreateNode(ScType::NodeConst);
-  context->CreateEdge(arcType, setAddr, userAddr);
+  ScAddr const & setAddr = context->GenerateNode(ScType::NodeConst);
+  context->GenerateConnector(arcType, setAddr, userAddr);
   return setAddr;
 }
 
@@ -177,7 +177,7 @@ ScAddr TestAddClassForUser(
     ScAddr const & usersSetAddr,
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
-  return context->CreateEdge(arcType, usersSetAddr, userAddr);
+  return context->GenerateConnector(arcType, usersSetAddr, userAddr);
 }
 
 void TestAuthenticationRequestUser(
@@ -186,14 +186,14 @@ void TestAuthenticationRequestUser(
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
   ScAddr const & conceptAuthenticationRequestUserAddr{concept_authentication_request_user_addr};
-  context->CreateEdge(arcType, conceptAuthenticationRequestUserAddr, userAddr);
+  context->GenerateConnector(arcType, conceptAuthenticationRequestUserAddr, userAddr);
 }
 
 void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
-  ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
+  ScAddr const & edgeAddr = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   EXPECT_TRUE(userContext.IsElement(nodeAddr));
   EXPECT_EQ(userContext.GetElementInputArcsCount(nodeAddr), 0u);
@@ -218,9 +218,9 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context
 
 void TestReadActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
-  ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
+  ScAddr const & edgeAddr = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   EXPECT_THROW(userContext.IsElement(nodeAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetElementInputArcsCount(nodeAddr), utils::ExceptionInvalidState);
@@ -241,17 +241,17 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
 {
   TestReadActionsUnsuccessfully(context, userContext);
 
-  EXPECT_THROW(userContext.CreateNode(ScType::NodeConst), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.CreateLink(ScType::LinkConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GenerateLink(ScType::LinkConst), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.FindLinksByContent("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.FindLinksByContentSubstring("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.FindLinksContentsByContentSubstring("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.HelperFindBySystemIdtf("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.HelperResolveSystemIdtf("test"), utils::ExceptionInvalidState);
 
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_THROW(it3->Next(), utils::ExceptionInvalidState);
@@ -266,9 +266,9 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
 
 void TestIteratorsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_TRUE(it3->Next());
@@ -282,9 +282,9 @@ void TestIteratorsSuccessfully(std::unique_ptr<ScAgentContext> const & context, 
 
 void TestIteratorsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_FALSE(it3->Next());
@@ -298,12 +298,12 @@ void TestIteratorsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context
 
 void TestWriteActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
 
-  EXPECT_TRUE(userContext.CreateNode(ScType::NodeConst).IsValid());
-  EXPECT_TRUE(userContext.CreateLink(ScType::LinkConst).IsValid());
-  EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr).IsValid());
+  EXPECT_TRUE(userContext.GenerateNode(ScType::NodeConst).IsValid());
+  EXPECT_TRUE(userContext.GenerateLink(ScType::LinkConst).IsValid());
+  EXPECT_TRUE(userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr).IsValid());
 
   EXPECT_TRUE(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst));
   EXPECT_TRUE(userContext.Save());
@@ -311,11 +311,11 @@ void TestWriteActionsSuccessfully(std::unique_ptr<ScAgentContext> const & contex
 
 void TestWriteActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
 
   EXPECT_THROW(
-      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr), utils::ExceptionInvalidState);
+      userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr), utils::ExceptionInvalidState);
 
   EXPECT_THROW(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.Save(), utils::ExceptionInvalidState);
@@ -323,35 +323,35 @@ void TestWriteActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & cont
 
 void TestEraseActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
 
   EXPECT_TRUE(userContext.EraseElement(nodeAddr));
 }
 
 void TestEraseActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & nodeAddr = context->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
 
   EXPECT_THROW(userContext.EraseElement(nodeAddr), utils::ExceptionInvalidState);
 }
 
 void TestApplyActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
+  ScAddr const & linkAddr = context->GenerateNode(ScType::LinkConst);
 
   EXPECT_NO_THROW(userContext.SetLinkContent(linkAddr, "test"));
 }
 
 void TestApplyActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
+  ScAddr const & linkAddr = context->GenerateNode(ScType::LinkConst);
 
   EXPECT_THROW(userContext.SetLinkContent(linkAddr, "test"), utils::ExceptionInvalidState);
 }
 
 void TestChangeActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
+  ScAddr const & linkAddr = context->GenerateNode(ScType::LinkConst);
 
   EXPECT_NO_THROW(userContext.HelperSetSystemIdtf("test", linkAddr));
   EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst));
@@ -359,7 +359,7 @@ void TestChangeActionsSuccessfully(std::unique_ptr<ScAgentContext> const & conte
 
 void TestChangeActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
-  ScAddr const & linkAddr = context->CreateNode(ScType::LinkConst);
+  ScAddr const & linkAddr = context->GenerateNode(ScType::LinkConst);
 
   EXPECT_THROW(userContext.HelperSetSystemIdtf("test", linkAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst), utils::ExceptionInvalidState);
@@ -385,7 +385,7 @@ void TestActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, 
 
 TEST_F(ScMemoryTestWithUserMode, GetUserAddrFromContext)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   EXPECT_EQ(userContext.GetUser(), userAddr);
@@ -410,8 +410,8 @@ void TestSetIdentifiedUser(
     ScType const & arcType = ScType::EdgeAccessConstPosTemp)
 {
   ScAddr const & nrelIdentifiedUserAddr{nrel_identified_user_addr};
-  ScAddr const & arcAddr = context->CreateEdge(ScType::EdgeDCommonConst, guestUserAddr, userAddr);
-  context->CreateEdge(arcType, nrelIdentifiedUserAddr, arcAddr);
+  ScAddr const & arcAddr = context->GenerateConnector(ScType::EdgeDCommonConst, guestUserAddr, userAddr);
+  context->GenerateConnector(arcType, nrelIdentifiedUserAddr, arcAddr);
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
@@ -419,7 +419,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
   TestScMemoryContext userContext;
 
   ScAddr const & guestUserAddr = userContext.GetUser();
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestSetIdentifiedUser(m_ctx, guestUserAddr, userAddr);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -446,7 +446,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   TestActionsUnsuccessfully(m_ctx, userContext);
@@ -455,7 +455,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByUnauthenticatedUser)
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -482,7 +482,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBefore)
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedBeforeAndHavingClassWithPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -512,7 +512,7 @@ TEST_F(
     ScMemoryTestWithUserMode,
     HandleElementsByAuthenticatedUserCreatedBeforeAndBoughtClassWithPermissionsAndSoldThisClassAfter)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -528,7 +528,7 @@ TEST_F(
             isAuthenticated = true;
           });
 
-  ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & usersSetAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestAddAllPermissionsForUsersSetToInitActions(m_ctx, usersSetAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
   TestAddClassForUser(m_ctx, userAddr, usersSetAddr, ScType::EdgeAccessConstNegTemp);
@@ -573,7 +573,7 @@ TEST_F(
 
 TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -621,7 +621,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
 
 TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -670,7 +670,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
 
 TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByUserWithInvalidConnectorsToPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -711,7 +711,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserCreatedAfter)
             isChecked = true;
           });
 
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -738,7 +738,7 @@ TEST_F(ScMemoryTestWithUserMode, SeveralHandleElementsByAuthenticatedUserCreated
             isChecked = true;
           });
 
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestAddAllPermissionsForUserToInitActions(m_ctx, userAddr);
   TestAuthenticationRequestUser(m_ctx, userAddr);
 
@@ -761,7 +761,7 @@ TEST_F(
     ScMemoryTestWithUserMode,
     HandleElementsByAuthenticatedUserCreatedBeforeAndUnauthenticatedAfterAndAuthenticatedAfter)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -839,7 +839,7 @@ TEST_F(
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -863,7 +863,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutPermiss
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWriteAndErasePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -892,7 +892,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWriteAn
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutErasePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -922,7 +922,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutErasePe
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWritePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -952,7 +952,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutWritePe
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAndErasePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -981,7 +981,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -1011,7 +1011,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadPer
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAndWritePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -1040,7 +1040,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutReadAnd
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithReadPermissionsAndWithoutReadPermissionsAfter)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   TestScMemoryContext userContext{userAddr};
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
@@ -1095,7 +1095,7 @@ TEST_F(
     ScMemoryTestWithUserMode,
     HandleElementsByAuthenticatedUserHavingClassWithReadPermissionsAndWithoutReadPermissionsAfter)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr const & usersSetAddr = TestGenerateClassForUser(m_ctx, userAddr);
 
   TestScMemoryContext userContext{userAddr};
@@ -1159,12 +1159,13 @@ void TestReadWriteEraseAccessedElementUnsuccessfully(
   ScIterator3Ptr it3 = userContext.Iterator3(elementAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_FALSE(it3->Next());
 
-  ScAddr const & nodeAddr = userContext.CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = userContext.GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(nodeAddr.IsValid());
 
   EXPECT_THROW(
-      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, elementAddr, nodeAddr), utils::ExceptionInvalidState);
-  EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
+      userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, elementAddr, nodeAddr),
+      utils::ExceptionInvalidState);
+  EXPECT_TRUE(userContext.GenerateConnector(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
 
   it3 = userContext.Iterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
   EXPECT_TRUE(it3->Next());
@@ -1192,15 +1193,15 @@ void TestReadWriteAccessedElementSuccessfully(
 {
   ScAddr const & elementAddr{addr};
 
-  ScAddr const & nodeAddr = userContext.CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = userContext.GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(nodeAddr.IsValid());
 
-  EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, elementAddr, nodeAddr).IsValid());
+  EXPECT_TRUE(userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, elementAddr, nodeAddr).IsValid());
 
   ScIterator3Ptr it3 = userContext.Iterator3(elementAddr, ScType::EdgeAccessConstPosTemp, nodeAddr);
   EXPECT_TRUE(it3->Next());
 
-  EXPECT_TRUE(userContext.CreateEdge(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
+  EXPECT_TRUE(userContext.GenerateConnector(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
 
   it3 = userContext.Iterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
   EXPECT_TRUE(it3->Next());
@@ -1259,7 +1260,7 @@ void TestAddAllPermissionsToHandleAllPermissions(
 
 TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithoutPermissionsForPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   {
@@ -1289,7 +1290,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithou
 
 TEST_F(ScMemoryTestWithUserMode, HandleAccessedElementsByAuthenticatedUserWithPermissionsForPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestScMemoryContext userContext{userAddr};
 
   {
@@ -1327,9 +1328,10 @@ void TestAddPermissionsForUserToInitActionsWithinStructure(
 {
   ScAddr const & nrelUserActionClassWithinScStructureAddr{nrel_user_action_class_within_sc_structure_addr};
   ScAddr const & edgeBetweenActionAndStructureAddr =
-      context->CreateEdge(ScType::EdgeDCommonConst, actionClassAddr, structureAddr);
-  ScAddr const & edgeAddr = context->CreateEdge(ScType::EdgeDCommonConst, userAddr, edgeBetweenActionAndStructureAddr);
-  context->CreateEdge(arcType, nrelUserActionClassWithinScStructureAddr, edgeAddr);
+      context->GenerateConnector(ScType::EdgeDCommonConst, actionClassAddr, structureAddr);
+  ScAddr const & edgeAddr =
+      context->GenerateConnector(ScType::EdgeDCommonConst, userAddr, edgeBetweenActionAndStructureAddr);
+  context->GenerateConnector(arcType, nrelUserActionClassWithinScStructureAddr, edgeAddr);
 }
 
 void TestAddPermissionsForUserToInitReadActionsWithinStructure(
@@ -1374,10 +1376,10 @@ void TestAddPermissionsForUsersSetToInitActionsWithinStructure(
 {
   ScAddr const & nrelUsersSetActionClassWithinScStructureAddr{nrel_users_set_action_class_within_sc_structure_addr};
   ScAddr const & edgeBetweenActionAndStructureAddr =
-      context->CreateEdge(ScType::EdgeDCommonConst, actionClassAddr, structureAddr);
+      context->GenerateConnector(ScType::EdgeDCommonConst, actionClassAddr, structureAddr);
   ScAddr const & edgeAddr =
-      context->CreateEdge(ScType::EdgeDCommonConst, usersSetAddr, edgeBetweenActionAndStructureAddr);
-  context->CreateEdge(arcType, nrelUsersSetActionClassWithinScStructureAddr, edgeAddr);
+      context->GenerateConnector(ScType::EdgeDCommonConst, usersSetAddr, edgeBetweenActionAndStructureAddr);
+  context->GenerateConnector(arcType, nrelUsersSetActionClassWithinScStructureAddr, edgeAddr);
 }
 
 void TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(
@@ -1493,22 +1495,22 @@ void TestWriteActionsWithinStructureSuccessfully(
 {
   EXPECT_TRUE(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst));
 
-  ScAddr const & linkAddr1 = userContext.CreateLink(ScType::LinkConst);
-  EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, structureAddr, linkAddr1));
-  EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr1));
+  ScAddr const & linkAddr1 = userContext.GenerateLink(ScType::LinkConst);
+  EXPECT_NO_THROW(userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, structureAddr, linkAddr1));
+  EXPECT_NO_THROW(userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr1));
 
-  ScAddr const & linkAddr2 = userContext.CreateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = userContext.GenerateLink(ScType::LinkConst);
   EXPECT_THROW(
-      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr2), utils::ExceptionInvalidState);
+      userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr2), utils::ExceptionInvalidState);
 }
 
 void TestWriteActionsWithinStructureUnsuccessfully(TestScMemoryContext & userContext, ScAddr const & nodeAddr)
 {
   EXPECT_THROW(userContext.SetElementSubtype(nodeAddr, ScType::NodeConst), utils::ExceptionInvalidState);
 
-  ScAddr const & linkAddr = userContext.CreateLink(ScType::LinkConst);
+  ScAddr const & linkAddr = userContext.GenerateLink(ScType::LinkConst);
   EXPECT_THROW(
-      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, linkAddr, nodeAddr), utils::ExceptionInvalidState);
+      userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, linkAddr, nodeAddr), utils::ExceptionInvalidState);
 }
 
 void TestEraseActionsWithinStructureSuccessfully(TestScMemoryContext & userContext, ScAddr const & nodeAddr)
@@ -1526,22 +1528,22 @@ void TestChangeActionsWithinStructureSuccessfully(
     ScAddr const & structureAddr,
     ScAddr const & nodeAddr)
 {
-  ScAddr const & linkAddr1 = userContext.CreateLink(ScType::LinkConst);
-  EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, structureAddr, linkAddr1));
+  ScAddr const & linkAddr1 = userContext.GenerateLink(ScType::LinkConst);
+  EXPECT_NO_THROW(userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, structureAddr, linkAddr1));
   EXPECT_TRUE(userContext.SetLinkContent(linkAddr1, "test_content"));
-  EXPECT_NO_THROW(userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr1));
+  EXPECT_NO_THROW(userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr1));
 
-  ScAddr const & linkAddr2 = userContext.CreateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = userContext.GenerateLink(ScType::LinkConst);
   EXPECT_THROW(
-      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr2), utils::ExceptionInvalidState);
+      userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr2), utils::ExceptionInvalidState);
 }
 
 void TestChangeActionsWithinStructureUnsuccessfully(TestScMemoryContext & userContext, ScAddr const & nodeAddr)
 {
-  ScAddr const & linkAddr = userContext.CreateLink(ScType::LinkConst);
+  ScAddr const & linkAddr = userContext.GenerateLink(ScType::LinkConst);
   EXPECT_THROW(userContext.SetLinkContent(linkAddr, "test_content"), utils::ExceptionInvalidState);
   EXPECT_THROW(
-      userContext.CreateEdge(ScType::EdgeAccessConstPosTemp, linkAddr, nodeAddr), utils::ExceptionInvalidState);
+      userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, linkAddr, nodeAddr), utils::ExceptionInvalidState);
 }
 
 ScAddr TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1553,18 +1555,18 @@ ScAddr TestGenerateStructureWithConnectorAndIncidentElements(
     ScAddr & relationAddr,
     ScAddr & nodeAddr2)
 {
-  nodeAddr1 = context->CreateNode(ScType::NodeConst);
-  linkAddr = context->CreateLink(ScType::LinkConst);
-  edgeAddr = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
-  relationAddr = context->CreateNode(ScType::NodeConstRole);
-  relationEdgeAddr = context->CreateEdge(ScType::EdgeAccessConstPosTemp, relationAddr, edgeAddr);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, relationAddr, edgeAddr);
+  nodeAddr1 = context->GenerateNode(ScType::NodeConst);
+  linkAddr = context->GenerateLink(ScType::LinkConst);
+  edgeAddr = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
+  relationAddr = context->GenerateNode(ScType::NodeConstRole);
+  relationEdgeAddr = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, relationAddr, edgeAddr);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, relationAddr, edgeAddr);
 
-  nodeAddr2 = context->CreateNode(ScType::NodeConst);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
+  nodeAddr2 = context->GenerateNode(ScType::NodeConst);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
-  ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = context->GenerateNode(ScType::NodeConstStruct);
   ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr << linkAddr << relationEdgeAddr << relationAddr;
 
@@ -1573,7 +1575,7 @@ ScAddr TestGenerateStructureWithConnectorAndIncidentElements(
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1605,7 +1607,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWithLocalReadPermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1640,7 +1642,7 @@ TEST_F(
     ScMemoryTestWithUserMode,
     HandleElementsByAuthenticatedUserBoughtClassWithLocalReadPermissionsAndSoldThisClassAfter)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1661,7 +1663,7 @@ TEST_F(
             TestChangeActionsWithinStructureUnsuccessfully(userContext, nodeAddr1);
             isAuthenticated = true;
           });
-  ScAddr const & usersSetAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & usersSetAddr = m_ctx->GenerateNode(ScType::NodeConst);
   TestAddPermissionsForUsersSetToInitReadActionsWithinStructure(m_ctx, usersSetAddr, structureAddr);
   TestAddClassForUser(m_ctx, userAddr, usersSetAddr, ScType::EdgeAccessConstNegTemp);
 
@@ -1714,7 +1716,7 @@ TEST_F(
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWritePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1747,7 +1749,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalErasePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1780,7 +1782,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalErase
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWriteAndErasePermissions)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1816,7 +1818,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalWrite
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadPermissionsAndWithoutAfter)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndIncidentElements(
@@ -1884,7 +1886,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWithLocalReadPermissionsAndWithoutAfter)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr const & usersSetAddr = TestGenerateClassForUser(m_ctx, userAddr);
 
   ScAddr nodeAddr1, edgeAddr, linkAddr, relationEdgeAddr, relationAddr, nodeAddr2;
@@ -1956,13 +1958,13 @@ ScAddr TestGenerateStructureWithConnectorAndSource(
     ScAddr & nodeAddr1,
     ScAddr & nodeAddr2)
 {
-  nodeAddr1 = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
-  ScAddr const & edgeAddr1 = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
-  nodeAddr2 = context->CreateNode(ScType::NodeConst);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
+  nodeAddr1 = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
+  ScAddr const & edgeAddr1 = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
+  nodeAddr2 = context->GenerateNode(ScType::NodeConst);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
-  ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = context->GenerateNode(ScType::NodeConstStruct);
   ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << nodeAddr1 << edgeAddr1;
 
@@ -2008,7 +2010,7 @@ TEST_F(
     ScMemoryTestWithUserMode,
     HandleElementsByAuthenticatedUserWithLocalReadPermissionsAndWithStructureWithConnectorAndSourceElement)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr nodeAddr1, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndSource(m_ctx, nodeAddr1, nodeAddr2);
@@ -2043,13 +2045,13 @@ ScAddr TestGenerateStructureWithConnectorAndTarget(
     ScAddr & linkAddr,
     ScAddr & nodeAddr2)
 {
-  ScAddr const & nodeAddr1 = context->CreateNode(ScType::NodeConst);
-  linkAddr = context->CreateLink(ScType::LinkConst);
-  ScAddr const & edgeAddr1 = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
-  nodeAddr2 = context->CreateNode(ScType::NodeConst);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = context->GenerateNode(ScType::NodeConst);
+  linkAddr = context->GenerateLink(ScType::LinkConst);
+  ScAddr const & edgeAddr1 = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
+  nodeAddr2 = context->GenerateNode(ScType::NodeConst);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
-  ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = context->GenerateNode(ScType::NodeConstStruct);
   ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << edgeAddr1 << linkAddr;
 
@@ -2095,7 +2097,7 @@ TEST_F(
     ScMemoryTestWithUserMode,
     HandleElementsByAuthenticatedUserWithLocalReadPermissionsAndWithStructureWithConnectorAndTargetElement)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr linkAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnectorAndTarget(m_ctx, linkAddr, nodeAddr2);
@@ -2130,13 +2132,13 @@ ScAddr TestGenerateStructureWithConnector(
     ScAddr & edgeAddr,
     ScAddr & nodeAddr2)
 {
-  ScAddr const & nodeAddr1 = context->CreateNode(ScType::NodeConst);
-  ScAddr const & linkAddr = context->CreateLink(ScType::LinkConst);
-  edgeAddr = context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
-  nodeAddr2 = context->CreateNode(ScType::NodeConst);
-  context->CreateEdge(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = context->GenerateNode(ScType::NodeConst);
+  ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
+  edgeAddr = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, linkAddr);
+  nodeAddr2 = context->GenerateNode(ScType::NodeConst);
+  context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr1, nodeAddr2);
 
-  ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = context->GenerateNode(ScType::NodeConstStruct);
   ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << edgeAddr;
 
@@ -2170,7 +2172,7 @@ void TestReadActionsWithinStructureWithConnectorUnsuccessfully(
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadPermissionsAndWithStructureWithConnector)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr edgeAddr, nodeAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithConnector(m_ctx, edgeAddr, nodeAddr2);
@@ -2205,12 +2207,12 @@ ScAddr TestGenerateStructureWithLinks(
     ScAddr & linkAddr1,
     ScAddr & linkAddr2)
 {
-  linkAddr1 = context->CreateLink(ScType::LinkConst);
+  linkAddr1 = context->GenerateLink(ScType::LinkConst);
   context->SetLinkContent(linkAddr1, "test_content");
-  linkAddr2 = context->CreateLink(ScType::LinkConst);
+  linkAddr2 = context->GenerateLink(ScType::LinkConst);
   context->SetLinkContent(linkAddr2, "test_content");
 
-  ScAddr const & structureAddr = context->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = context->GenerateNode(ScType::NodeConstStruct);
   ScStructure structure = context->ConvertToStructure(structureAddr);
   structure << linkAddr1;
 
@@ -2235,7 +2237,7 @@ void TestReadActionsWithinStructureWithLinksUnsuccessfully(TestScMemoryContext &
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadPermissionsAndWithStructureWithLinks)
 {
-  ScAddr const & userAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & userAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScAddr linkAddr1, linkAddr2;
   ScAddr const & structureAddr = TestGenerateStructureWithLinks(m_ctx, linkAddr1, linkAddr2);

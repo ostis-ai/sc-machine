@@ -34,7 +34,7 @@ public:
 
       ScAddr created;
       if (element == "node")
-        created = context->CreateNode(type);
+        created = context->GenerateNode(type);
       else if (element == "edge")
       {
         ScAddr const & src = resolveAddr(atom["src"]);
@@ -44,7 +44,7 @@ public:
       }
       else if (element == "link")
       {
-        created = context->CreateLink(type);
+        created = context->GenerateLink(type);
         ScLink link{*context, created};
 
         auto const & content = atom["content"];

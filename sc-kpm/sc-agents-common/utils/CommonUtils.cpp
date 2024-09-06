@@ -70,7 +70,7 @@ void CommonUtils::setIdtf(
     std::string const & identifier,
     ScAddrVector const & linkClasses)
 {
-  ScAddr link = ms_context->CreateLink();
+  ScAddr link = ms_context->GenerateLink();
   ScStreamPtr identifierStream = ScStreamConverter::StreamFromString(identifier);
   ms_context->SetLinkContent(link, identifierStream);
   for (ScAddr linkClass : linkClasses)
