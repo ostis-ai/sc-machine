@@ -96,7 +96,7 @@ This class represents waiter for condition to occur. To generate object of this 
 ...
 // Create of find some sc-node and generate waiter to wait until 
 // a sc-connector of the specified type is generated from or to this sc-node.
-auto waiter = context.ScConditionWaiter<
+auto waiter = context.GenerateConditionWaiter<
   ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
     nodeAddr,
     []() -> void
@@ -104,7 +104,7 @@ auto waiter = context.ScConditionWaiter<
       // Provide logic here, that should be called at exactly the same time 
       // when waiter will start to wait for sc-event to occur.
     },
-    [](ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>> 
+    [](ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>
         const & event) -> bool
     {
       // Check here, that occurred sc-event is sc-event that this waiter 
