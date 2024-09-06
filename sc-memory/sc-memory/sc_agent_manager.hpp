@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "sc_object.hpp"
 
 #include "utils/sc_log.hpp"
@@ -308,14 +310,147 @@ private:
       TScAddr const &... subscriptionAddrs) noexcept(false);
 
 protected:
-  //! Agents subscriptions.
-  static inline std::unordered_map<std::string, ScAddrToValueUnorderedMap<ScEventSubscription *>> m_agentSubscriptions;
-  static inline std::unordered_map<std::string, ScAddr> m_agentEventClasses;
+  using ScSubscriptions = ScAddrToValueUnorderedMap<ScEventSubscription *>;
+  using ScAgentImplementationsToSubscriptions = ScAddrToValueUnorderedMap<ScSubscriptions>;
+  using ScAgentClassesToAgentImplementationSubscriptions =
+      std::unordered_map<std::string, ScAgentImplementationsToSubscriptions>;
+  //! Map to store agent classes to their corresponding agent implementation subscriptions.
+  static inline ScAgentClassesToAgentImplementationSubscriptions m_agentClassesToAgentImplementationSubscriptions;
+  static inline std::unordered_map<std::string, std::pair<ScAddr, ScAddr>> m_agentEventClasses;
+
+  template <typename T>
+  using Ref = std::reference_wrapper<T>;
+  using ScAgentImplementationsToSubscriptionsRef = Ref<ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptions>;
+  using ScSubscriptionsRef = Ref<ScSubscriptions>;
+  template <typename T>
+  using OptionalRef = std::optional<std::reference_wrapper<T>>;
+  using ScAgentImplementationsToSubscriptionsOptionalRef =
+      OptionalRef<ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptions>;
+  using ScSubscriptionsOptionalRef = OptionalRef<ScSubscriptions>;
+
+  /*!
+   * @brief Checks if an agent of a specified class is subscribed to the event of an element being erased.
+   *
+   * This method looks up the provided agent class name in the internal map of agent event classes.
+   * It determines if the agent class is associated with the specific event that indicates an element
+   * is about to be erased and if subscription sc-element of this event is erased.
+   *
+   * @param context A sc-memory context used to check for subscription to the erase event.
+   * @param agentClassName The name of the agent class to check for subscription to the erase event.
+   *
+   * @return true if the specified agent class was subscribed to the event of an element being erased and subscription
+   * sc-element of this event is erased; false otherwise.
+   */
+  static _SC_EXTERN bool WasAgentSubscribedToEventOfErasedElementErasing(
+      ScMemoryContext * context,
+      std::string const & agentClassName);
+
+  /*!
+   * @brief Resolves the subscriptions for agent implementations associated with a given agent class name.
+   *
+   * This function checks if there are existing subscriptions for the specified agent class name.
+   * If not, it initializes an empty subscription list for that class name. It returns a reference
+   * to the subscriptions associated with the agent class.
+   *
+   * @param agentClassName A name of the agent class for which to resolve subscriptions.
+   * @return A reference to the subscriptions associated with the specified agent class.
+   */
+  static _SC_EXTERN ScAgentImplementationsToSubscriptionsRef
+  ResolveAgentClassAgentImplementationSubscriptions(std::string const & agentClassName);
+
+  /*!
+   * @brief Retrieves the subscriptions for agent implementations associated with a given agent class name.
+   *
+   * This function looks up the subscriptions for the specified agent class name. If found, it returns
+   * a reference to the subscriptions; otherwise, it returns an empty optional.
+   *
+   * @param agentClassName A name of the agent class for which to retrieve subscriptions.
+   * @return A reference to the subscriptions associated with the specified agent class, or an empty optional if not
+   * found.
+   */
+  static _SC_EXTERN ScAgentImplementationsToSubscriptionsOptionalRef
+  GetAgentClassAgentImplementationSubscriptions(std::string const & agentClassName);
+
+  /*!
+   * @brief Generates subscriptions for a specific agent implementation.
+   *
+   * This function creates a new entry for the specified agent implementation address in the subscriptions map.
+   * It initializes an empty subscription list for that implementation and returns a reference to the subscriptions.
+   *
+   * @param agentImplementationAddr A sc-address of the agent implementation for which to generate subscriptions.
+   * @param agentImplementationsToSubscriptions A reference to the map of agent implementations to their subscriptions.
+   * @return A reference to the subscriptions associated with the specified agent implementation.
+   */
+  static _SC_EXTERN ScSubscriptionsRef GenerateAgentImplementationSubscriptions(
+      ScAddr const & agentImplementationAddr,
+      ScAgentImplementationsToSubscriptions & agentImplementationsToSubscriptions);
+
+  /*!
+   * @brief Retrieves the subscriptions associated with a specific agent implementation.
+   *
+   * This function looks up the subscriptions for the specified agent implementation address. If found,
+   * it returns a reference to the subscriptions; otherwise, it returns an empty optional.
+   *
+   * @param agentImplementationAddr A sc-address of the agent implementation for which to retrieve subscriptions.
+   * @param agentImplementationsToSubscriptions A reference to the map of agent implementations to their subscriptions.
+   * @return A reference to the subscriptions associated with the specified agent implementation, or an empty optional
+   * if not found.
+   */
+  static _SC_EXTERN ScSubscriptionsOptionalRef GetAgentImplementationSubscriptions(
+      ScAddr const & agentImplementationAddr,
+      ScAgentImplementationsToSubscriptions & agentImplementationsToSubscriptions);
+
+  /*!
+   * @brief Retrieves a specific subscription based on its subscription sc-element.
+   *
+   * This function searches for a subscription associated with the provided event subscription sc-element sc-address
+   * within the specified subscriptions. If found, it returns a pointer to the subscription; otherwise, it returns
+   * nullptr.
+   *
+   * @param eventSubscriptionElementAddr A sc-address of the event subscription element to search for.
+   * @param subscriptions A reference to the map of subscriptions to search within.
+   * @return A pointer to the subscription if found, or nullptr if not found.
+   */
+  static _SC_EXTERN ScEventSubscription * GetSubscription(
+      ScAddr const & eventSubscriptionElementAddr,
+      ScSubscriptions const & subscriptions);
+
+  /*!
+   * @brief Erases a specific subscription from the subscriptions map.
+   *
+   * This function removes the subscription associated with the provided event subscription element address
+   * from the specified subscriptions.
+   *
+   * @param eventSubscriptionElementAddr A sc-address of the event subscription element to be erased.
+   * @param subscriptions A reference to the map of subscriptions from which to erase the subscription.
+   */
+  static _SC_EXTERN void EraseSubscription(
+      ScAddr const & eventSubscriptionElementAddr,
+      ScSubscriptions & subscriptions);
+
+  /*!
+   * @brief Clears empty subscriptions for a specific agent implementation and class.
+   *
+   * This function checks if the subscriptions for the specified agent implementation are empty. If they are,
+   * it removes the implementation from the agent implementations map. If the entire agent class has no implementations
+   * left, it removes the class from the agent classes map.
+   *
+   * @param agentClassName A name of the agent class to check for empty implementations.
+   * @param agentImplementationAddr A sc-address of the agent implementation to check for empty subscriptions.
+   * @param agentImplementationsToSubscriptions A reference to the map of agent implementations to their subscriptions.
+   * @param subscriptions A reference to the subscriptions associated with the agent implementation.
+   */
+  static _SC_EXTERN void ClearEmptyAgentImplementationSubscriptions(
+      std::string const & agentClassName,
+      ScAddr const & agentImplementationAddr,
+      ScAgentManager<TScAgent>::ScAgentImplementationsToSubscriptionsOptionalRef & agentImplementationsToSubscriptions,
+      ScSubscriptionsOptionalRef const & subscriptions);
 
   //! Returns callback that remove subscription of agent to sc-event of erasing sc-element from common map.
   static _SC_EXTERN std::function<void(void)> GetPostEraseEventCallback(
       std::string const & agentName,
       std::string const & eventClassName,
+      ScAddr const & agentImplementationAddr,
       ScAddr const & subscriptionElementAddr);
 
   /*!

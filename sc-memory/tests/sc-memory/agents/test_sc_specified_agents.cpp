@@ -70,6 +70,79 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecification)
   m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 }
 
+TEST_F(ScSpecifiedAgentTest, SubscribeSpecifiedAgentByInvalidAgentImplementation)
+{
+  EXPECT_THROW(m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ScAddr::Empty), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScSpecifiedAgentTest, UnsubscribeSpecifiedAgentByInvalidAgentImplementation)
+{
+  EXPECT_THROW(m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ScAddr::Empty), utils::ExceptionInvalidParams);
+}
+
+TEST_F(ScSpecifiedAgentTest, SubscribeSpecifiedAgentTwice)
+{
+  std::string const & data = ATestSpecifiedAgentSpecification;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  EXPECT_NO_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+  EXPECT_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation),
+      utils::ExceptionInvalidState);
+
+  EXPECT_NO_THROW(
+      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+}
+
+TEST_F(ScSpecifiedAgentTest, UnsubscribeNotSubscribedSpecifiedAgent)
+{
+  std::string data = ATestSpecifiedAgentSpecification;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  EXPECT_THROW(
+      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation),
+      utils::ExceptionInvalidState);
+}
+
+TEST_F(ScSpecifiedAgentTest, SubscribeSpecifiedAgentToSeveralImplementations)
+{
+  std::string data = ATestSpecifiedAgentSpecification;
+
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  data = R"(
+    test_specified_agent
+    => nrel_inclusion: 
+      other_test_specified_agent_implementation
+      (*
+        <- platform_dependent_abstract_sc_agent;;
+        <= nrel_sc_agent_program: 
+        {
+          [] (* => nrel_format: format_github_source_link;; *);
+          [] (* => nrel_format: format_github_source_link;; *)
+        };;
+      *);;
+  )";
+
+  EXPECT_TRUE(helper.GenerateBySCsText(data));
+
+  EXPECT_NO_THROW(
+      m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+  ScAddr const & otherTestSpecifiedAgentImplementation =
+      m_ctx->HelperFindBySystemIdtf("other_test_specified_agent_implementation");
+  EXPECT_NO_THROW(m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(otherTestSpecifiedAgentImplementation));
+
+  EXPECT_NO_THROW(
+      m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation));
+  EXPECT_NO_THROW(m_ctx->UnsubscribeSpecifiedAgent<ATestSpecifiedAgent>(otherTestSpecifiedAgentImplementation));
+}
+
 TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasNotSpecification)
 {
   EXPECT_THROW(

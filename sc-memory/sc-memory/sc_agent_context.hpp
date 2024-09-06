@@ -236,6 +236,7 @@ public:
    * @tparam TScAgent An agent class to be subscribed to the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
+   * @throws utils::ExceptionInvalidParams if specified agent implementation is invalid.
    * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
    * @throws utils::ExceptionInvalidState if the agent is already subscribed to the event.
    * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and is not included
@@ -247,10 +248,11 @@ public:
   _SC_EXTERN void SubscribeSpecifiedAgent(ScAddr const & agentImplementationAddr) noexcept(false);
 
   /*!
-   * @brief Remove specification of agent from program and unsubscribes agent class using this specification.
+   * @brief Removes specification of agent from program and unsubscribes agent class using this specification.
    * @tparam TScAgent An agent class to be unsubscribed from the event.
    * @param agentImplementationAddr A sc-address of agent implementation specified in knowledge base for this agent
    * class.
+   * @throws utils::ExceptionInvalidParams if specified agent implementation is invalid.
    * @throws utils::ExceptionInvalidParams if any of the subscription addresses are invalid.
    * @throws utils::ExceptionInvalidState if the agent is not subscribed to the event.
    * @throws utils::ExceptionInvalidState if the agent implementation for this agent class is valid and is not included
@@ -269,7 +271,7 @@ public:
   _SC_EXTERN ScAction GenerateAction(ScAddr const & actionClassAddr) noexcept(false);
 
   /*!
-   * @brief Create ScAction object for provided action.
+   * @brief Generates ScAction object for provided action.
    * @param actionAddr Address of the action.
    * @return ScAction object.
    */

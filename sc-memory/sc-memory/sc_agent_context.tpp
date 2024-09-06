@@ -100,6 +100,13 @@ void ScAgentContext::SubscribeSpecifiedAgent(ScAddr const & agentImplementationA
       "`SubscribeSpecifiedAgent` method can be used for agent class that doesn't have override "
       "`GetEventSubscriptionElement` method.");
 
+  if (!IsElement(agentImplementationAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to subscribe specified agent `"
+            << TScAgent::template GetName<TScAgent>()
+            << "` by agent implementation because specified agent implementation is not valid.");
+
   ScAgentBuilder<TScAgent> builder{agentImplementationAddr};
   builder.ResolveSpecification(this);
 
@@ -117,6 +124,13 @@ void ScAgentContext::UnsubscribeSpecifiedAgent(ScAddr const & agentImplementatio
       !ScAgentManager<TScAgent>::template HasOverride<TScAgent>::GetEventSubscriptionElement::value,
       "`SubscribeSpecifiedAgent` method can be used for agent class that doesn't have override "
       "`GetEventSubscriptionElement` method.");
+
+  if (!IsElement(agentImplementationAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to unsubscribe specified agent `"
+            << TScAgent::template GetName<TScAgent>()
+            << "` by agent implementation because specified agent implementation is not valid.");
 
   ScAgentManager<TScAgent>::Unsubscribe(this, agentImplementationAddr);
 }
