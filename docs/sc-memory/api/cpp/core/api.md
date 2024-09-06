@@ -140,7 +140,7 @@ bool const isSubtypeElementChanged
 
 ### **GetConnectorIncidentElements**
 
-To get incident (source and target) sc-elements you can use methods `GetConnectorIncidentElements`, `GetEdgeSource` and `GetEdgeTarget`.
+To get incident (source and target) sc-elements you can use methods `GetConnectorIncidentElements`, `GetArcSourceElement` and `GetArcTargetElement`.
 If specified sc-address is not valid, then this methods throw exception `utils::ExceptionInvalidParams` with description 
 that specified sc-address of sc-connector is not valid.
 
@@ -153,9 +153,9 @@ context.GetConnectorIncidentElements(arcAddr, sourceAddr, targetAddr);
 // and the sc-address `targetAddr` must be equal to the sc-address `linkAddr`.
 ...
 // Or get sc-arc incident source and target sc-elements separately.
-ScAddr const & sourceAddr = context.GetEdgeSource(arcAddr);
+ScAddr const & sourceAddr = context.GetArcSourceElement(arcAddr);
 // The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr`.
-ScAddr const & targetAddr = context.GetEdgeTarget(arcAddr);
+ScAddr const & targetAddr = context.GetArcTargetElement(arcAddr);
 // The sc-address `targetAddr` must be equal to the sc-address `linkAddr`.
 ```
 

@@ -468,7 +468,27 @@ public:
   _SC_EXTERN bool SetElementSubtype(ScAddr const & elementAddr, ScType newSubtype) noexcept(false);
 
   /*!
-   * @brief Returns the source sc-element of a sc-connector.
+   * @brief Gets the source sc-element of a sc-connector.
+   *
+   * This method retrieves the source sc-element of the sc-connector identified by the given sc-address.
+   *
+   * @param arcAddr A sc-address of the sc-connector.
+   * @return Returns the sc-address of the source sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceElement = context.GetArcSourceElement(arcAddr);
+   * @endcode
+   */
+  _SC_EXTERN ScAddr GetArcSourceElement(ScAddr const & arcAddr) const noexcept(false);
+
+  /*!
+   * @brief Gets the source sc-element of a sc-connector.
    *
    * This method retrieves the source sc-element of the sc-connector identified by the given sc-address.
    *
@@ -484,11 +504,37 @@ public:
    * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
    * ScAddr sourceElement = context.GetEdgeSource(arcAddr);
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetArcSourceElement` instead for better readability and
+   * standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetArcSourceElement` instead for better readability and standards compliance.’")
   _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & arcAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the target sc-element of a sc-connector.
+   * @brief Gets the target sc-element of a sc-connector.
+   *
+   * This method retrieves the target sc-element of the sc-connector identified by the given sc-address.
+   *
+   * @param arcAddr A sc-address of the sc-connector.
+   * @return Returns the sc-address of the target sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr targetElement = context.GetArcTargetElement(arcAddr);
+   * @endcode
+   */
+  _SC_EXTERN ScAddr GetArcTargetElement(ScAddr const & arcAddr) const noexcept(false);
+
+  /*!
+   * @brief Gets the target sc-element of a sc-connector.
    *
    * This method retrieves the target sc-element of the sc-connector identified by the given sc-address.
    *
@@ -504,7 +550,13 @@ public:
    * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
    * ScAddr targetElement = context.GetEdgeTarget(arcAddr);
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetArcTargetElement` instead for better readability and
+   * standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetEdgeTarget` instead for better readability and standards compliance.’")
   _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & arcAddr) const noexcept(false);
 
   /*!

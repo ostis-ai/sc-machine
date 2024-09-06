@@ -517,7 +517,7 @@ bool ScMemoryContext::SetElementSubtype(ScAddr const & elementAddr, ScType newSu
   return result == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & arcAddr) const
+ScAddr ScMemoryContext::GetArcSourceElement(ScAddr const & arcAddr) const
 {
   CHECK_CONTEXT;
 
@@ -552,7 +552,12 @@ ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & arcAddr) const
   return sourceElementAddr;
 }
 
-ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & arcAddr) const
+ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & arcAddr) const
+{
+  return GetArcSourceElement(arcAddr);
+}
+
+ScAddr ScMemoryContext::GetArcTargetElement(ScAddr const & arcAddr) const
 {
   CHECK_CONTEXT;
 
@@ -585,6 +590,11 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & arcAddr) const
   }
 
   return targetElementAddr;
+}
+
+ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & arcAddr) const
+{
+  return GetArcTargetElement(arcAddr);
 }
 
 std::tuple<ScAddr, ScAddr> ScMemoryContext::GetConnectorIncidentElements(ScAddr const & connectorAddr) const

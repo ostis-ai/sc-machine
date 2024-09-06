@@ -66,7 +66,7 @@ ScAddr IteratorUtils::getNextFromSet(
         IteratorUtils::getAnyByOutRelation(ms_context, previousElementEdge, sequenceRelation);
     if (nextElementEdge.IsValid())
     {
-      nextElement = ms_context->GetEdgeTarget(nextElementEdge);
+      nextElement = ms_context->GetArcTargetElement(nextElementEdge);
     }
   }
 

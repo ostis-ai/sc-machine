@@ -64,7 +64,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventClass() const noexcept(false)
             << "` does not have primary initiation condition. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
-  return m_context.GetEdgeSource(it5->Get(2));
+  return m_context.GetArcSourceElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
@@ -84,7 +84,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement() const noexce
             << "` does not have primary initiation condition. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
-  return m_context.GetEdgeTarget(it5->Get(2));
+  return m_context.GetArcTargetElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
@@ -129,7 +129,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(fa
             << "` does not have initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
-  return m_context.GetEdgeSource(it5->Get(2));
+  return m_context.GetArcSourceElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
@@ -173,7 +173,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
             << "` does not have initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
-  return m_context.GetEdgeTarget(it5->Get(2));
+  return m_context.GetArcTargetElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
