@@ -992,10 +992,40 @@ public:
    * ScAddr nodeAddr2 = context.GenerateNode(ScType::NodeConst);
    * ScAddr arcType = ScType::EdgeDCommonConst;
    * context.GenerateConnector(arcType, nodeAddr1, nodeAddr2);
+   * bool doesArcExist = context.CheckConnector(nodeAddr1, nodeAddr2, arcType);
+   * @endcode
+   */
+  _SC_EXTERN bool CheckConnector(
+      ScAddr const & sourceElementAddr,
+      ScAddr const & targetElementAddr,
+      ScType const & connectorType) const noexcept(false);
+
+  /*!
+   * @brief Checks the existence of a sc-connector between two sc-elements with the specified type.
+   *
+   * This function checks if there is a sc-connector between the specified beginning and end sc-elements
+   * with the given type. It returns true if the sc-connector is found; otherwise, it returns false.
+   *
+   * @param begin A sc-address of the beginning sc-element.
+   * @param end A sc-address of the ending sc-element.
+   * @param edgeType A sc-type of the sc-connector to check.
+   * @return Returns true if the specified sc-connector exists; otherwise, returns false.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr nodeAddr1 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr nodeAddr2 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcType = ScType::EdgeDCommonConst;
+   * context.GenerateConnector(arcType, nodeAddr1, nodeAddr2);
    * bool doesArcExist = context.HelperCheckEdge(nodeAddr1, nodeAddr2, arcType);
    * @endcode
    */
-  _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const noexcept(false);
+  _SC_EXTERN bool HelperCheckEdge(
+      ScAddr const & sourceElementAddr,
+      ScAddr const & targetElementAddr,
+      ScType const & connectorType) const noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.
@@ -1242,7 +1272,7 @@ public:
    * @endcode
    */
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResult & result) noexcept(false);
 
   /*!
@@ -1276,15 +1306,15 @@ public:
    *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
    *  // Check that each sc-arc between class and its instance belongs to structure.
-   *  return !context->HelperCheckEdge(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
+   *  return !context->CheckConnector(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
    * }, [&context](ScAddr const & addr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
    */
   _SC_EXTERN void HelperSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
@@ -1317,12 +1347,12 @@ public:
    *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScAddr const & addr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
    */
   _SC_EXTERN void HelperSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
@@ -1362,10 +1392,10 @@ public:
    * const & item) -> ScTemplateSearchRequest
    * {
    *   ScAddr const & edgeAddr = item["_edge"];
-   *   if (context->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *   if (context->CheckConnector(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
    *    return ScTemplateSearchRequest::CONTINUE;
    *
-   *   if (context->HelperCheckEdge(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
+   *   if (context->CheckConnector(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
    *    return ScTemplateSearchRequest::STOP;
    *
    *   return ScTemplateSearchRequest::CONTINUE;

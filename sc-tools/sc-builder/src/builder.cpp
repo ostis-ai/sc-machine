@@ -90,7 +90,7 @@ ScAddr Builder::ResolveOutputStructure()
 
   auto const & AddElementToStructure = [this, &outputStructure](ScAddr const & addr)
   {
-    if (!m_ctx->HelperCheckEdge(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
+    if (!m_ctx->CheckConnector(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
     {
       m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
     }

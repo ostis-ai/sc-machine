@@ -291,10 +291,10 @@ TEST_F(ScMemoryTest, GenerateConnectors)
   ScAddr const edgeAddr = ctx.GenerateConnector(ScType::EdgeUCommonConst, nodeAddr, linkAddr);
   EXPECT_TRUE(edgeAddr.IsValid());
 
-  EXPECT_TRUE(ctx.HelperCheckEdge(classAddr, nodeAddr, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(ctx.HelperCheckEdge(classLinkAddr, linkAddr, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(ctx.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeUCommonConst));
-  EXPECT_TRUE(ctx.HelperCheckEdge(linkAddr, nodeAddr, ScType::EdgeUCommonConst));
+  EXPECT_TRUE(ctx.CheckConnector(classAddr, nodeAddr, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(ctx.CheckConnector(classLinkAddr, linkAddr, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(ctx.CheckConnector(nodeAddr, linkAddr, ScType::EdgeUCommonConst));
+  EXPECT_TRUE(ctx.CheckConnector(linkAddr, nodeAddr, ScType::EdgeUCommonConst));
 }
 
 TEST_F(ScMemoryTest, EraseEdgesBetweenTwoNodesByOneIterator)

@@ -153,7 +153,7 @@ TEST_F(ScKeynodesTest, Events)
   };
 
   for (ScAddr event : keynodes)
-    EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::sc_event, event, ScType::EdgeAccessConstPosPerm));
+    EXPECT_TRUE(m_ctx->CheckConnector(ScKeynodes::sc_event, event, ScType::EdgeAccessConstPosPerm));
 }
 
 TEST_F(ScKeynodesTest, BinaryTypes)
@@ -173,7 +173,7 @@ TEST_F(ScKeynodesTest, BinaryTypes)
   };
 
   for (ScAddr a : keynodes)
-    EXPECT_TRUE(m_ctx->HelperCheckEdge(ScKeynodes::binary_type, a, ScType::EdgeAccessConstPosPerm));
+    EXPECT_TRUE(m_ctx->CheckConnector(ScKeynodes::binary_type, a, ScType::EdgeAccessConstPosPerm));
 }
 
 TEST_F(ScKeynodesTest, CopyKeynode)

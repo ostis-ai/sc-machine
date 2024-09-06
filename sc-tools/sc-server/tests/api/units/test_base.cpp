@@ -146,7 +146,7 @@ TEST_F(ScServerTest, CreateElementsBySCs)
   EXPECT_TRUE(classSet.IsValid());
   ScAddr const & set1 = m_ctx->HelperFindBySystemIdtf("set1");
   EXPECT_TRUE(set1.IsValid());
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(classSet, set1, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(classSet, set1, ScType::EdgeAccessConstPosPerm));
   EXPECT_TRUE(responsePayload[0].get<sc_bool>());
 
   EXPECT_FALSE(responsePayload[1].get<sc_bool>());
@@ -193,18 +193,18 @@ TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
   ScAddr const & edge = it3->Get(1);
   EXPECT_TRUE(edge.IsValid());
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSet, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, edge, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSet, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, edge, ScType::EdgeAccessConstPosPerm));
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr5, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr5, ScType::EdgeAccessConstPosPerm));
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1SysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1SysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1SysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
 
   EXPECT_TRUE(responsePayload[0].get<sc_bool>());
 

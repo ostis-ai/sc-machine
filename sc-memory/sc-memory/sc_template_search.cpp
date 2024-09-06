@@ -492,7 +492,7 @@ private:
 
   inline bool IsInStructure(ScAddr const & addr)
   {
-    return m_context.HelperCheckEdge(m_structure, addr, ScType::EdgeAccessConstPosPerm);
+    return m_context.CheckConnector(m_structure, addr, ScType::EdgeAccessConstPosPerm);
   }
 
   ScAddr const & ResolveAddr(

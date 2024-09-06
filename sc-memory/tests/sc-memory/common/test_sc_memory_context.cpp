@@ -260,7 +260,7 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
   EXPECT_THROW(it5->Next(), utils::ExceptionInvalidState);
 
   EXPECT_THROW(
-      userContext.HelperCheckEdge(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
+      userContext.CheckConnector(nodeAddr, nodeAddr, ScType::EdgeAccessConstPosTemp), utils::ExceptionInvalidState);
 }
 
 void TestIteratorsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
@@ -276,7 +276,7 @@ void TestIteratorsSuccessfully(std::unique_ptr<ScAgentContext> const & context, 
       nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
   EXPECT_FALSE(it5->Next());
 
-  EXPECT_TRUE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
+  EXPECT_TRUE(userContext.CheckConnector(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 void TestIteratorsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
@@ -292,7 +292,7 @@ void TestIteratorsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context
       nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
   EXPECT_FALSE(it5->Next());
 
-  EXPECT_FALSE(userContext.HelperCheckEdge(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
+  EXPECT_FALSE(userContext.CheckConnector(nodeAddr, linkAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 void TestWriteActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
@@ -809,7 +809,7 @@ TEST_F(
     EXPECT_FALSE(isAuthenticated.load());
   }
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
+  EXPECT_TRUE(m_ctx->CheckConnector(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
 
   {
     auto eventSubscription =
@@ -832,8 +832,8 @@ TEST_F(
     EXPECT_TRUE(isAuthenticated.load());
   }
 
-  EXPECT_FALSE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstPosTemp));
+  EXPECT_FALSE(m_ctx->CheckConnector(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstNegTemp));
+  EXPECT_TRUE(m_ctx->CheckConnector(conceptAuthenticatedUserAddr, userAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithoutPermissions)

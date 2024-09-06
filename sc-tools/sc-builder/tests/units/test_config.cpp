@@ -170,7 +170,7 @@ TEST(ScBuilder, BuilderConfig)
 
   auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr)
   {
-    EXPECT_TRUE(context->HelperCheckEdge(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
+    EXPECT_TRUE(context->CheckConnector(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
   };
 
   CheckInStructure(quintuple.addr2);

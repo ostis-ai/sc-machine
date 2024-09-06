@@ -21,7 +21,7 @@ ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, ScAddrVector con
     {
       ScAddr element = firstIter3->Get(2);
 
-      if (!context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
+      if (!context->CheckConnector(resultSet, element, ScType::EdgeAccessConstPosPerm))
       {
         context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
       }
@@ -47,7 +47,7 @@ ScAddr SetOperationsUtils::intersectSets(
 
       bool isCommon = true;
 
-      if (!context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
+      if (!context->CheckConnector(resultSet, element, ScType::EdgeAccessConstPosPerm))
       {
         for (auto const & otherSet : sets)
         {
@@ -56,7 +56,7 @@ ScAddr SetOperationsUtils::intersectSets(
             continue;
           }
 
-          if (context->HelperCheckEdge(otherSet, element, ScType::EdgeAccessConstPosPerm))
+          if (context->CheckConnector(otherSet, element, ScType::EdgeAccessConstPosPerm))
           {
             isCommon = false;
             break;
@@ -90,8 +90,8 @@ ScAddr SetOperationsUtils::complementSets(
   {
     ScAddr element = secondIter3->Get(2);
 
-    if (!context->HelperCheckEdge(firstSet, element, ScType::EdgeAccessConstPosPerm)
-        && !context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
+    if (!context->CheckConnector(firstSet, element, ScType::EdgeAccessConstPosPerm)
+        && !context->CheckConnector(resultSet, element, ScType::EdgeAccessConstPosPerm))
     {
       context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
     }
@@ -116,7 +116,7 @@ bool SetOperationsUtils::compareSets(ScMemoryContext * context, ScAddr const & f
   {
     ScAddr element = firstIter3->Get(2);
 
-    if (!context->HelperCheckEdge(secondSet, element, ScType::EdgeAccessConstPosPerm))
+    if (!context->CheckConnector(secondSet, element, ScType::EdgeAccessConstPosPerm))
     {
       return false;
     }

@@ -182,7 +182,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       },
       [&](ScTemplateSearchResultItem const & item) -> bool
       {
-        return !m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+        return !m_ctx->CheckConnector(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
       });
   EXPECT_EQ(count, 0u);
 
@@ -194,7 +194,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       },
       [&](ScTemplateSearchResultItem const & item) -> bool
       {
-        return m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+        return m_ctx->CheckConnector(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
       });
   EXPECT_EQ(count, 1u);
   count = 0;
@@ -207,7 +207,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       },
       [&](ScAddr const & addr) -> bool
       {
-        return m_ctx->HelperCheckEdge(addr1, addr, ScType::EdgeAccessConstPosPerm);
+        return m_ctx->CheckConnector(addr1, addr, ScType::EdgeAccessConstPosPerm);
       });
   EXPECT_EQ(count, 0u);
 
@@ -219,7 +219,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       },
       [&](ScAddr const & addr) -> bool
       {
-        return m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+        return m_ctx->CheckConnector(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
       });
   EXPECT_EQ(count, 1u);
   count = 0;
@@ -232,11 +232,11 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       },
       [&](ScTemplateSearchResultItem const & item) -> bool
       {
-        return m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+        return m_ctx->CheckConnector(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
       },
       [&](ScAddr const & addr) -> bool
       {
-        return m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+        return m_ctx->CheckConnector(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
       });
   EXPECT_EQ(count, 1u);
   count = 0;
@@ -249,11 +249,11 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       },
       [&](ScTemplateSearchResultItem const & item) -> bool
       {
-        return !m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+        return !m_ctx->CheckConnector(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
       },
       [&](ScAddr const & addr) -> bool
       {
-        return m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+        return m_ctx->CheckConnector(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
       });
   EXPECT_EQ(count, 0u);
 
@@ -265,11 +265,11 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       },
       [&](ScTemplateSearchResultItem const & item) -> bool
       {
-        return m_ctx->HelperCheckEdge(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
+        return m_ctx->CheckConnector(addr1, item["_addr2"], ScType::EdgeAccessConstPosPerm);
       },
       [&](ScAddr const & addr) -> bool
       {
-        return !m_ctx->HelperCheckEdge(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
+        return !m_ctx->CheckConnector(structureAddr, addr, ScType::EdgeAccessConstPosPerm);
       });
   EXPECT_EQ(count, 0u);
 }

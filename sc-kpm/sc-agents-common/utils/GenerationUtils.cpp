@@ -80,7 +80,7 @@ void GenerationUtils::addToSet(ScMemoryContext * ms_context, ScAddr const & set,
 
 bool GenerationUtils::addToSet(ScMemoryContext * ms_context, ScAddr const & set, ScAddr const & element)
 {
-  if (!ms_context->HelperCheckEdge(set, element, ScType::EdgeAccessConstPosPerm))
+  if (!ms_context->CheckConnector(set, element, ScType::EdgeAccessConstPosPerm))
   {
     ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, element);
     return true;

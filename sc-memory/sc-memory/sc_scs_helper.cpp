@@ -102,7 +102,7 @@ private:
     std::vector<ScAddr> const & addrVector{addrs...};
     for (ScAddr const & addr : addrVector)
     {
-      if (!m_ctx.HelperCheckEdge(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
+      if (!m_ctx.CheckConnector(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
       {
         m_ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
       }

@@ -37,7 +37,7 @@ std::string CommonUtils::getIdtf(
       scLink = link;
       for (ScAddr const & classAddr : linkClasses)
       {
-        if (!ms_context->HelperCheckEdge(classAddr, link, ScType::EdgeAccessConstPosPerm))
+        if (!ms_context->CheckConnector(classAddr, link, ScType::EdgeAccessConstPosPerm))
         {
           scLink = {};
           break;

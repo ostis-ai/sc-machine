@@ -50,7 +50,7 @@ bool ScSet::Remove(ScAddr const & elAddr)
 
 bool ScSet::HasElement(ScAddr const & elAddr) const
 {
-  return m_context->HelperCheckEdge(*this, elAddr, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(*this, elAddr, ScType::EdgeAccessConstPosPerm);
 }
 
 ScSet & ScSet::operator<<(ScAddr const & elAddr)

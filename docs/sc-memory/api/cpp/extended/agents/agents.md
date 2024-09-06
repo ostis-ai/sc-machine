@@ -590,7 +590,7 @@ bool MyAgent::CheckInitiationCondition(ScActionInitiatedEvent const & event)
  // information about initiated sc-event: GetUser, GetArc, 
  // GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.
  // All events are not copyable and movable.
- return m_context.HelperCheckEdge(
+ return m_context.CheckConnector(
    ScType::EdgeAccessConstPosPerm, 
    MyKeynodes::my_action, 
    event.GetArcTargetElement());

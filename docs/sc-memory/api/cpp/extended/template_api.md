@@ -941,7 +941,7 @@ m_context->HelperSmartSearchTemplate(templ, [&context](
     ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest 
 {
   ScAddr const & edgeAddr = item["_edge"];
-  if (context->HelperCheckEdge(
+  if (context->CheckConnector(
       structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))   
     return ScTemplateSearchRequest::CONTINUE;
 

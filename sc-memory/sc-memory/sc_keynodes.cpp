@@ -58,7 +58,7 @@ void ScKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (!context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+    if (!context->CheckConnector(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
       context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
   };
 
@@ -100,7 +100,7 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (!context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+    if (!context->CheckConnector(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
       context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
   };
 

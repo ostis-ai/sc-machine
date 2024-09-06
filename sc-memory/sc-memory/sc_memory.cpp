@@ -1005,12 +1005,15 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
   return systemIdtf;
 }
 
-bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const
+bool ScMemoryContext::CheckConnector(
+    ScAddr const & sourcElementAddr,
+    ScAddr const & targetElementAddr,
+    ScType const & connectorType) const
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  bool status = sc_helper_check_arc_ext(m_context, *begin, *end, *edgeType, &result);
+  bool status = sc_helper_check_arc_ext(m_context, *sourcElementAddr, *targetElementAddr, *connectorType, &result);
 
   switch (result)
   {
@@ -1023,6 +1026,14 @@ bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType c
   }
 
   return status;
+}
+
+bool ScMemoryContext::HelperCheckEdge(
+    ScAddr const & sourcElementAddr,
+    ScAddr const & targetElementAddr,
+    ScType const & connectorType) const
+{
+  return CheckConnector(sourcElementAddr, targetElementAddr, connectorType);
 }
 
 bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)

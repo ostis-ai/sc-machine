@@ -197,7 +197,7 @@ void ScAgent<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplem
 template <class TScEvent, class TScContext>
 bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated() noexcept
 {
-  return ScMemory::ms_globalContext->HelperCheckEdge(
+  return ScMemory::ms_globalContext->CheckConnector(
       ScKeynodes::action_deactivated, this->GetActionClass(), ScType::EdgeAccessConstPosPerm);
 }
 

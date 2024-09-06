@@ -161,7 +161,7 @@ void ScAgentContext::ValidateEventElements(
         utils::ExceptionInvalidParams,
         "Not able to generate " << validatorName << " because sc-event class is not valid.");
 
-  if (!HelperCheckEdge(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
+  if (!CheckConnector(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to generate " << validatorName

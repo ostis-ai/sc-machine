@@ -79,7 +79,7 @@ public:
   template <typename Type>
   _SC_EXTERN inline bool IsType() const
   {
-    return m_context->HelperCheckEdge(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
+    return m_context->CheckConnector(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
   }
 
   template <typename Type>

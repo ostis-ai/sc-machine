@@ -15,7 +15,7 @@ void checkConnectionInStruct(
   ScIterator3Ptr const it3 = m_ctx->Iterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
   while (it3->Next())
   {
-    bool checkEdge = m_ctx->HelperCheckEdge(structure, it3->Get(1), ScType::EdgeAccessConstPosPerm);
+    bool checkEdge = m_ctx->CheckConnector(structure, it3->Get(1), ScType::EdgeAccessConstPosPerm);
     EXPECT_TRUE(checkEdge);
     if (checkEdge == SC_FALSE)
       SC_LOG_ERROR(
@@ -37,7 +37,7 @@ bool checkKeynodeInStruct(
   {
     for (size_t i = 0; i < 4; i++)
     {
-      result &= m_ctx->HelperCheckEdge(structure, it5->Get(i), ScType::EdgeAccessConstPosPerm);
+      result &= m_ctx->CheckConnector(structure, it5->Get(i), ScType::EdgeAccessConstPosPerm);
     }
   }
 
