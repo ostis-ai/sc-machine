@@ -1243,8 +1243,7 @@ error:
 sc_result sc_storage_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr))
+    sc_link_filter * link_filter)
 {
   sc_result result = SC_RESULT_OK;
 
@@ -1262,8 +1261,7 @@ sc_result sc_storage_find_links_with_content_string(
     sc_string_empty(string);
   }
 
-  sc_fs_memory_status const fs_memory_status =
-      sc_fs_memory_get_link_hashes_by_string(string, string_size, data, callback);
+  sc_fs_memory_status const fs_memory_status = sc_fs_memory_get_link_hashes_by_string(string, string_size, link_filter);
   if (fs_memory_status != SC_FS_MEMORY_OK && fs_memory_status != SC_FS_MEMORY_NO_STRING)
     result = SC_RESULT_ERROR_FILE_MEMORY_IO;
 
@@ -1277,8 +1275,7 @@ sc_result sc_storage_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr))
+    sc_link_filter * link_filter)
 {
   sc_result result = SC_RESULT_OK;
 
@@ -1294,7 +1291,7 @@ sc_result sc_storage_find_links_by_content_substring(
     sc_string_empty(string);
 
   sc_fs_memory_status const fs_memory_status =
-      sc_fs_memory_get_link_hashes_by_substring(string, string_size, max_length_to_search_as_prefix, data, callback);
+      sc_fs_memory_get_link_hashes_by_substring(string, string_size, max_length_to_search_as_prefix, link_filter);
   if (fs_memory_status != SC_FS_MEMORY_OK && fs_memory_status != SC_FS_MEMORY_NO_STRING)
     result = SC_RESULT_ERROR_FILE_MEMORY_IO;
 
@@ -1308,8 +1305,7 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content))
+    sc_link_filter * link_filter)
 {
   sc_result result = SC_RESULT_OK;
 
@@ -1325,7 +1321,7 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     sc_string_empty(string);
 
   sc_fs_memory_status const fs_memory_status =
-      sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, data, callback);
+      sc_fs_memory_get_strings_by_substring(string, string_size, max_length_to_search_as_prefix, link_filter);
   if (fs_memory_status != SC_FS_MEMORY_OK && fs_memory_status != SC_FS_MEMORY_NO_STRING)
     result = SC_RESULT_ERROR_FILE_MEMORY_IO;
   sc_mem_free(string);

@@ -74,15 +74,11 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_nullptr)
   EXPECT_EQ(sc_dictionary_fs_memory_link_string(memory, 0, nullptr, 0), SC_FS_MEMORY_NO);
   EXPECT_EQ(sc_dictionary_fs_memory_unlink_string(memory, 0), SC_FS_MEMORY_NO);
   EXPECT_EQ(sc_dictionary_fs_memory_get_string_by_link_hash(memory, 0, nullptr, nullptr), SC_FS_MEMORY_NO);
-  EXPECT_EQ(sc_dictionary_fs_memory_get_link_hashes_by_string(memory, nullptr, 0, nullptr, nullptr), SC_FS_MEMORY_NO);
-  EXPECT_EQ(
-      sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, nullptr, 0, nullptr, nullptr), SC_FS_MEMORY_NO);
-  EXPECT_EQ(
-      sc_dictionary_fs_memory_get_link_hashes_by_substring_ext(memory, nullptr, 0, 0, nullptr, nullptr),
-      SC_FS_MEMORY_NO);
-  EXPECT_EQ(sc_dictionary_fs_memory_get_strings_by_substring(memory, nullptr, 0, nullptr, nullptr), SC_FS_MEMORY_NO);
-  EXPECT_EQ(
-      sc_dictionary_fs_memory_get_strings_by_substring_ext(memory, nullptr, 0, 0, nullptr, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_link_hashes_by_string(memory, nullptr, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, nullptr, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_link_hashes_by_substring_ext(memory, nullptr, 0, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_strings_by_substring(memory, nullptr, 0, nullptr), SC_FS_MEMORY_NO);
+  EXPECT_EQ(sc_dictionary_fs_memory_get_strings_by_substring_ext(memory, nullptr, 0, 0, nullptr), SC_FS_MEMORY_NO);
   EXPECT_EQ(sc_dictionary_fs_memory_intersect_link_hashes_by_terms(memory, nullptr, nullptr), SC_FS_MEMORY_NO);
   EXPECT_EQ(sc_dictionary_fs_memory_unite_link_hashes_by_terms(memory, nullptr, nullptr), SC_FS_MEMORY_NO);
   EXPECT_EQ(sc_dictionary_fs_memory_intersect_strings_by_terms(memory, nullptr, nullptr), SC_FS_MEMORY_NO);
@@ -474,9 +470,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -488,8 +494,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string2, sc_str_len(string2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -523,17 +528,26 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_not_se
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_NO_STRING);
     EXPECT_EQ(found_link_hashes->size, 0u);
     sc_list_destroy(found_link_hashes);
 
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string2, sc_str_len(string2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &filter),
         SC_FS_MEMORY_NO_STRING);
     EXPECT_EQ(found_link_hashes->size, 0u);
     sc_list_destroy(found_link_hashes);
@@ -568,9 +582,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -582,8 +606,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string2, sc_str_len(string2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -608,9 +631,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
   {
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_READ_ERROR);
     EXPECT_EQ(found_link_hashes->size, 0u);
 
@@ -621,8 +654,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string2, sc_str_len(string2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &filter),
         SC_FS_MEMORY_READ_ERROR);
     EXPECT_EQ(found_link_hashes->size, 0u);
 
@@ -647,9 +679,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -665,9 +707,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string2, sc_str_len(string2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -682,9 +734,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 0u);
 
@@ -709,9 +771,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -725,9 +797,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
     sc_fs_remove_directory(SC_DICTIONARY_FS_MEMORY_PATH);
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -757,9 +839,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
   {
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -771,8 +863,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string2, sc_str_len(string2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -792,9 +883,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
   {
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -806,8 +907,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_string
 
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string2, sc_str_len(string2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string2, sc_str_len(string2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -838,10 +938,20 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     sc_char substring1[] = "it";
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring1, sc_str_len(substring1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring1, sc_str_len(substring1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 2u);
 
@@ -856,8 +966,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char substring2[] = "it is the first";
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring2, sc_str_len(substring2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring2, sc_str_len(substring2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -870,8 +979,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char substring3[] = "the first";
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring3, sc_str_len(substring3), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring3, sc_str_len(substring3), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -884,8 +992,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char substring4[] = "it is the second";
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring4, sc_str_len(substring4), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring4, sc_str_len(substring4), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -898,8 +1005,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char substring5[] = "the second";
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring5, sc_str_len(substring5), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring5, sc_str_len(substring5), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -932,10 +1038,20 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     sc_char substring1[] = "it";
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring1, sc_str_len(substring1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring1, sc_str_len(substring1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 2u);
 
@@ -950,8 +1066,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char substring2[] = "the first";
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring2, sc_str_len(substring2), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring2, sc_str_len(substring2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 0u);
     sc_list_destroy(found_link_hashes);
@@ -959,8 +1074,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char substring3[] = "the second";
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_substring(
-            memory, substring3, sc_str_len(substring3), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_substring(memory, substring3, sc_str_len(substring3), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 0u);
     sc_list_destroy(found_link_hashes);
@@ -994,10 +1108,20 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_strings_by_substring)
 
     sc_list * found_strings;
     sc_list_init(&found_strings);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = nullptr;
+    filter.push_link_callback_data = nullptr;
+    filter.push_link_content_callback = _test_push_link_content;
+    filter.push_link_content_callback_data = found_strings;
+
     sc_char substring1[] = "it";
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_strings_by_substring(
-            memory, substring1, sc_str_len(substring1), found_strings, _test_push_link_content),
+        sc_dictionary_fs_memory_get_strings_by_substring(memory, substring1, sc_str_len(substring1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_strings->size, 2u);
 
@@ -1013,8 +1137,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_strings_by_substring)
     sc_char substring2[] = "it is the first";
     sc_list_init(&found_strings);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_strings_by_substring(
-            memory, substring2, sc_str_len(substring2), found_strings, _test_push_link_content),
+        sc_dictionary_fs_memory_get_strings_by_substring(memory, substring2, sc_str_len(substring2), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_strings->size, 1u);
 
@@ -1028,8 +1151,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_get_strings_by_substring)
     sc_char substring3[] = "it is the second";
     sc_list_init(&found_strings);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_strings_by_substring(
-            memory, substring3, sc_str_len(substring3), found_strings, _test_push_link_content),
+        sc_dictionary_fs_memory_get_strings_by_substring(memory, substring3, sc_str_len(substring3), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_strings->size, 1u);
 
@@ -1060,9 +1182,19 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_link_unlink_strings)
 
     sc_list * found_link_hashes;
     sc_list_init(&found_link_hashes);
+
+    sc_link_filter filter;
+    filter.check_link_callback = nullptr;
+    filter.check_link_callback_data = nullptr;
+    filter.request_link_callback = nullptr;
+    filter.request_link_callback_data = nullptr;
+    filter.push_link_callback = _test_push_link_hash;
+    filter.push_link_callback_data = found_link_hashes;
+    filter.push_link_content_callback = nullptr;
+    filter.push_link_content_callback_data = nullptr;
+
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 1u);
 
@@ -1076,8 +1208,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_link_unlink_strings)
 
     sc_list_init(&found_link_hashes);
     EXPECT_EQ(
-        sc_dictionary_fs_memory_get_link_hashes_by_string(
-            memory, string1, sc_str_len(string1), found_link_hashes, _test_push_link_hash),
+        sc_dictionary_fs_memory_get_link_hashes_by_string(memory, string1, sc_str_len(string1), &filter),
         SC_FS_MEMORY_OK);
     EXPECT_EQ(found_link_hashes->size, 0u);
 

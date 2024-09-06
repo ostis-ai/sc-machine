@@ -9,8 +9,8 @@ extern "C"
 
 sc_uint8 _test_sc_dictionary_addr_hashes_children_size()
 {
-  const sc_uint8 max_sc_char = 255;
-  const sc_uint8 min_sc_char = 1;
+  sc_uint8 const max_sc_char = 255;
+  sc_uint8 const min_sc_char = 1;
 
   return max_sc_char - min_sc_char + 1;
 }

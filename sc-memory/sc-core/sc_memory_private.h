@@ -25,8 +25,7 @@
 _SC_EXTERN sc_result sc_memory_find_links_with_content_string_ext(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_filter * link_filter);
 
 /*! Finds sc-links in the sc-memory that have content containing a substring from the provided stream.
  * @param ctx Pointer to the sc-memory context.
@@ -39,8 +38,7 @@ _SC_EXTERN sc_result sc_memory_find_links_by_content_substring_ext(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_filter * link_filter);
 
 /*! Finds sc-links in the sc-memory that have content containing a substring from the provided stream.
  * @param ctx Pointer to the sc-memory context.
@@ -55,7 +53,6 @@ _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring_ext(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content));
+    sc_link_filter * link_filter);
 
 #endif

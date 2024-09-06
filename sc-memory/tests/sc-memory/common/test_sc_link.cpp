@@ -317,6 +317,79 @@ TEST_F(ScLinkTest, find_strings_by_substr)
   ctx.Destroy();
 }
 
+class TestScLinkFilter : public ScLinkFilter
+{
+public:
+  ScMemoryContext * m_context;
+  ScAddr m_linkClassAddr;
+
+  bool CheckLink(ScAddr const & linkAddr) override
+  {
+    return m_context->HelperCheckEdge(m_linkClassAddr, linkAddr, ScType::EdgeAccessConstPosPerm);
+  }
+
+  ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+  {
+    return ScLinkFilterRequest::CONTINUE;
+  }
+};
+
+TEST_F(ScLinkTest, FindLinksWithFilter)
+{
+  ScAddr const & linkClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+
+  ScAddr const & linkAddr1 = m_ctx->CreateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr1, "content 1");
+  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, linkClassAddr, linkAddr1);
+
+  ScAddr const & linkAddr2 = m_ctx->CreateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr2, "content 2");
+
+  TestScLinkFilter filter;
+  filter.m_context = &*m_ctx;
+  filter.m_linkClassAddr = linkClassAddr;
+
+  ScAddrVector const & links = m_ctx->FindLinksByContentSubstring("content", filter);
+  EXPECT_EQ(links.size(), 1u);
+  EXPECT_EQ(links.at(0), linkAddr1);
+}
+
+class TestScLinkFilterWithRequestStop : public ScLinkFilter
+{
+public:
+  ScMemoryContext * m_context;
+  ScAddr m_linkClassAddr;
+
+  bool CheckLink(ScAddr const & linkAddr) override
+  {
+    return true;
+  }
+
+  ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+  {
+    return ScLinkFilterRequest::STOP;
+  }
+};
+
+TEST_F(ScLinkTest, FindLinksWithFilterRequestStop)
+{
+  ScAddr const & linkClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+
+  ScAddr const & linkAddr1 = m_ctx->CreateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr1, "content 1");
+
+  ScAddr const & linkAddr2 = m_ctx->CreateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr2, "content 2");
+
+  TestScLinkFilterWithRequestStop filter;
+  filter.m_context = &*m_ctx;
+  filter.m_linkClassAddr = linkClassAddr;
+
+  ScAddrVector const & links = m_ctx->FindLinksByContentSubstring("content", filter);
+  EXPECT_EQ(links.size(), 1u);
+  EXPECT_EQ(links.at(0), linkAddr1);
+}
+
 TEST_F(ScLinkTest, find_strings_by_substr_as_prefix)
 {
   ScMemoryContext ctx;

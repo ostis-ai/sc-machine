@@ -100,7 +100,7 @@ struct _sc_addr
  * and get them back from int
  */
 #  define SC_ADDR_LOCAL_TO_INT(addr) (sc_uint32)(((addr).seg << 16) | ((addr).offset & 0xffff))
-#  define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v)&0x0000ffff)
+#  define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v) & 0x0000ffff)
 #  define SC_ADDR_LOCAL_SEG_FROM_INT(v) SC_ADDR_LOCAL_OFFSET_FROM_INT(v >> 16)
 #  define SC_ADDR_LOCAL_FROM_INT(hash, addr) \
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash); \
@@ -231,6 +231,20 @@ struct _sc_stat
   sc_uint64 arc_count;   // amount of all sc-arcs stored in memory
   sc_uint64 link_count;  // amount of all sc-links stored in memory
 };
+
+typedef struct _sc_addr sc_addr;
+
+typedef struct
+{
+  sc_bool (*check_link_callback)(void * data, sc_addr link_addr);
+  void * check_link_callback_data;
+  sc_uint8 (*request_link_callback)(void * data, sc_addr link_addr);
+  void * request_link_callback_data;
+  void (*push_link_callback)(void * data, sc_addr const link_addr);
+  void * push_link_callback_data;
+  void (*push_link_content_callback)(void * data, sc_addr const link_addr, sc_char const * link_content);
+  void * push_link_content_callback_data;
+} sc_link_filter;
 
 #endif
 

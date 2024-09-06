@@ -39,6 +39,20 @@ typedef struct
 SC_DEPRECATED(0.9.0, "Use ScSystemIdentifierQuintuple instead of. It will be removed in 0.10.0")
 typedef ScSystemIdentifierQuintuple ScSystemIdentifierFiver;
 
+class ScLinkFilter
+{
+public:
+  enum class ScLinkFilterRequest : sc_uint8
+  {
+    CONTINUE,
+    STOP
+  };
+
+  virtual bool CheckLink(ScAddr const & linkAddr) = 0;
+
+  virtual ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) = 0;
+};
+
 class ScMemory
 {
   friend class ScMemoryContext;
@@ -617,6 +631,21 @@ public:
    * @endcode
    */
   _SC_EXTERN template <typename TContentType>
+  ScAddrVector FindLinksByContentSubstring(
+      TContentType const & value,
+      size_t maxLengthToSearchAsPrefix,
+      ScLinkFilter const & linkFilter) noexcept(false)
+  {
+    return FindLinksByContentSubstring(ScStreamMakeRead(value), maxLengthToSearchAsPrefix, linkFilter);
+  }
+
+  _SC_EXTERN template <typename TContentType>
+  ScAddrVector FindLinksByContentSubstring(TContentType const & value, ScLinkFilter const & linkFilter) noexcept(false)
+  {
+    return FindLinksByContentSubstring(ScStreamMakeRead(value), 0, linkFilter);
+  }
+
+  _SC_EXTERN template <typename TContentType>
   ScAddrVector FindLinksByContentSubstring(TContentType const & value, size_t maxLengthToSearchAsPrefix = 0) noexcept(
       false)
   {
@@ -635,6 +664,11 @@ public:
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
+  _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
+      ScStreamPtr const & stream,
+      size_t maxLengthToSearchAsPrefix,
+      ScLinkFilter const & linkFilter) noexcept(false);
+
   _SC_EXTERN ScAddrVector
   FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
