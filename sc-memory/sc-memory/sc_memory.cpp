@@ -244,7 +244,7 @@ bool ScMemoryContext::IsElement(ScAddr const & addr) const
   return status;
 }
 
-size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
+size_t ScMemoryContext::GetElementOutgoingArcsCount(ScAddr const & addr) const
 {
   CHECK_CONTEXT;
 
@@ -274,7 +274,7 @@ size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
   return count;
 }
 
-size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
+size_t ScMemoryContext::GetElementIncomingArcsCount(ScAddr const & addr) const
 {
   CHECK_CONTEXT;
 

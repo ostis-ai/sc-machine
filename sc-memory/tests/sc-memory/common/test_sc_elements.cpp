@@ -78,8 +78,8 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_THROW(ctx.SetLinkContent(node, ""), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(node, ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", node), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.GetElementOutputArcsCount(node), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.GetElementInputArcsCount(node), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementOutgoingArcsCount(node), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementIncomingArcsCount(node), utils::ExceptionInvalidParams);
 
   EXPECT_FALSE(ctx.EraseElement(edge));
   EXPECT_THROW(ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, edge, edge), utils::ExceptionInvalidParams);
@@ -92,8 +92,8 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_THROW(ctx.SetLinkContent(edge, ""), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(edge, ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", edge), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.GetElementOutputArcsCount(edge), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.GetElementInputArcsCount(edge), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementOutgoingArcsCount(edge), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementIncomingArcsCount(edge), utils::ExceptionInvalidParams);
 
   EXPECT_FALSE(ctx.EraseElement(ScAddr::Empty));
   EXPECT_THROW(
@@ -108,8 +108,8 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_THROW(ctx.SetLinkContent(ScAddr::Empty, ""), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(ScAddr::Empty, ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", ScAddr::Empty), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.GetElementOutputArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.GetElementInputArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementOutgoingArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.GetElementIncomingArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
 
   EXPECT_THROW(ctx.HelperResolveSystemIdtf("****"), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.HelperFindBySystemIdtf("****"), utils::ExceptionInvalidParams);
@@ -151,38 +151,38 @@ TEST_F(ScMemoryTest, CreateDeleteCountArcs)
   ScAddr const link = ctx.GenerateLink();
   EXPECT_TRUE(link.IsValid());
 
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 0u);
 
   ScAddr edge = ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, node, link);
   EXPECT_TRUE(edge.IsValid());
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 1u);
 
   edge = ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, node, link);
   EXPECT_TRUE(edge.IsValid());
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 2u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 2u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 2u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 2u);
 
   EXPECT_TRUE(ctx.EraseElement(edge));
   EXPECT_TRUE(edge.IsValid());
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 1u);
 
   edge = ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, node, link);
   EXPECT_TRUE(edge.IsValid());
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 2u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 2u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 2u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 2u);
 }
 
 TEST_F(ScMemoryTest, CreateDeleteCountArcs2)
@@ -195,27 +195,27 @@ TEST_F(ScMemoryTest, CreateDeleteCountArcs2)
   ScAddr const link = ctx.GenerateLink();
   EXPECT_TRUE(link.IsValid());
 
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 0u);
 
   ScAddr edge = ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, node, link);
 
   ScAddr const relation = ctx.GenerateNode(ScType::NodeConstRole);
   ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, relation, edge);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(relation), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(relation), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(edge), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(edge), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(relation), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(relation), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(edge), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(edge), 1u);
 
   EXPECT_TRUE(ctx.EraseElement(edge));
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(relation), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(relation), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(relation), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(relation), 0u);
 }
 
 TEST_F(ScMemoryTest, CreateDeleteCountEdges)
@@ -228,36 +228,36 @@ TEST_F(ScMemoryTest, CreateDeleteCountEdges)
   ScAddr const link = ctx.GenerateLink();
   EXPECT_TRUE(link.IsValid());
 
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 0u);
 
   ScAddr edge1 = ctx.GenerateConnector(ScType::EdgeUCommonConst, node, link);
   EXPECT_TRUE(edge1.IsValid());
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 1u);
 
   ScAddr edge2 = ctx.GenerateConnector(ScType::EdgeUCommonConst, node, link);
   EXPECT_TRUE(edge2.IsValid());
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 2u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 2u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 2u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 2u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 2u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 2u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 2u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 2u);
 
   EXPECT_TRUE(ctx.EraseElement(edge1));
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 1u);
 
   EXPECT_TRUE(ctx.EraseElement(edge2));
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 0u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 0u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 0u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 0u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 0u);
 
   ScIterator3Ptr it3 = ctx.Iterator3(node, ScType::EdgeUCommonConst, link);
   EXPECT_FALSE(it3->Next());
@@ -267,10 +267,10 @@ TEST_F(ScMemoryTest, CreateDeleteCountEdges)
 
   ScAddr edge3 = ctx.GenerateConnector(ScType::EdgeUCommonConst, node, link);
   EXPECT_TRUE(edge3.IsValid());
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(node), 1u);
-  EXPECT_EQ(ctx.GetElementOutputArcsCount(link), 1u);
-  EXPECT_EQ(ctx.GetElementInputArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(node), 1u);
+  EXPECT_EQ(ctx.GetElementOutgoingArcsCount(link), 1u);
+  EXPECT_EQ(ctx.GetElementIncomingArcsCount(link), 1u);
 }
 
 TEST_F(ScMemoryTest, GenerateConnectors)
@@ -318,8 +318,8 @@ TEST_F(ScMemoryTest, EraseEdgesBetweenTwoNodesByOneIterator)
   }
 
   EXPECT_EQ(i, edgesCount);
-  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
-  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementOutgoingArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementIncomingArcsCount(nodeAddr), 0u);
 }
 
 TEST_F(ScMemoryTest, EraseEdgesBetweenTwoNodesByTwoIterators)
@@ -350,8 +350,8 @@ TEST_F(ScMemoryTest, EraseEdgesBetweenTwoNodesByTwoIterators)
   }
 
   EXPECT_EQ(i, edgesCount);
-  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
-  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementOutgoingArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementIncomingArcsCount(nodeAddr), 0u);
 }
 
 TEST_F(ScMemoryTest, EraseEdgesBetweenSomeNodesByOneIterator)
@@ -376,9 +376,9 @@ TEST_F(ScMemoryTest, EraseEdgesBetweenSomeNodesByOneIterator)
   }
 
   EXPECT_EQ(i, edgesCount);
-  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
-  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr1), 0u);
-  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr2), 0u);
+  EXPECT_EQ(m_ctx->GetElementOutgoingArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementIncomingArcsCount(nodeAddr1), 0u);
+  EXPECT_EQ(m_ctx->GetElementIncomingArcsCount(nodeAddr2), 0u);
 }
 
 TEST_F(ScMemoryTest, EraseEdgesFromNodeByOneIterator)
@@ -399,8 +399,8 @@ TEST_F(ScMemoryTest, EraseEdgesFromNodeByOneIterator)
   }
 
   EXPECT_EQ(i, edgesCount);
-  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
-  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementOutgoingArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementIncomingArcsCount(nodeAddr), 0u);
 }
 
 TEST_F(ScMemoryTest, EraseEdgesToNodeByOneIterator)
@@ -421,8 +421,8 @@ TEST_F(ScMemoryTest, EraseEdgesToNodeByOneIterator)
   }
 
   EXPECT_EQ(i, edgesCount);
-  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
-  EXPECT_EQ(m_ctx->GetElementInputArcsCount(nodeAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementOutgoingArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementIncomingArcsCount(nodeAddr), 0u);
 }
 
 TEST_F(ScMemoryTest, EraseEdgeTargetsBetweenSomeNodesByOneIterator)
@@ -447,7 +447,7 @@ TEST_F(ScMemoryTest, EraseEdgeTargetsBetweenSomeNodesByOneIterator)
   }
 
   EXPECT_EQ(i, 2u);
-  EXPECT_EQ(m_ctx->GetElementOutputArcsCount(classAddr), 0u);
+  EXPECT_EQ(m_ctx->GetElementOutgoingArcsCount(classAddr), 0u);
   EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
   EXPECT_FALSE(m_ctx->IsElement(nodeAddr2));
 }

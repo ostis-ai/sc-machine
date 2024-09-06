@@ -181,10 +181,36 @@ public:
    * @code
    * ScMemoryContext context;
    * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
-   * size_t outputArcsCount = context.GetElementOutputArcsCount(elementAddr);
+   * size_t outputArcsCount = context.GetElementOutgoingArcsCount(elementAddr);
    * std::cout << "Output Arcs Count: " << outputArcsCount << std::endl;
    * @endcode
    */
+  _SC_EXTERN size_t GetElementOutgoingArcsCount(ScAddr const & addr) const noexcept(false);
+
+  /*!
+   * @brief Returns the count of outgoing sc-arcs for a specified sc-element.
+   *
+   * This method retrieves the count of outgoing sc-arcs for the sc-element identified by the given sc-address.
+   *
+   * @param addr The sc-address of the sc-element to query.
+   * @return Returns the count of outgoing sc-arcs for the specified sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * size_t outputArcsCount = context.GetElementOutputArcsCount(elementAddr);
+   * std::cout << "Output Arcs Count: " << outputArcsCount << std::endl;
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetElementOutgoingArcsCount` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetElementOutgoingArcsCount` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & addr) const noexcept(false);
 
   /*!
@@ -200,10 +226,36 @@ public:
    * @code
    * ScMemoryContext context;
    * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
-   * size_t inputArcsCount = context.GetElementInputArcsCount(elementAddr);
+   * size_t inputArcsCount = context.GetElementIncomingArcsCount(elementAddr);
    * std::cout << "Input Arcs Count: " << inputArcsCount << std::endl;
    * @endcode
    */
+  _SC_EXTERN size_t GetElementIncomingArcsCount(ScAddr const & addr) const noexcept(false);
+
+  /*!
+   * @brief Returns the count of incoming sc-arcs for a specified sc-element.
+   *
+   * This method retrieves the count of incoming sc-arcs for the sc-element identified by the given sc-address.
+   *
+   * @param addr The sc-address of the sc-element to query.
+   * @return Returns the count of incoming sc-arcs for the specified sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * size_t inputArcsCount = context.GetElementIncomingArcsCount(elementAddr);
+   * std::cout << "Input Arcs Count: " << inputArcsCount << std::endl;
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetElementIncomingArcsCount` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetElementIncomingArcsCount` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & addr) const noexcept(false);
 
   /*!
@@ -298,10 +350,13 @@ public:
    * ScMemoryContext context;
    * ScAddr linkAddr = context.CreateLink();
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GenerateLink` instead for better readability and standards
+   * compliance.
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `CreateLink` instead for better readability and standards compliance.’")
+      "This method is deprecated. Use `GenerateLink` instead for better readability and standards compliance.’")
   _SC_EXTERN ScAddr CreateLink(ScType const & type = ScType::LinkConst) noexcept(false);
 
   /*!
@@ -315,6 +370,7 @@ public:
    * @return Returns the sc-address of the newly created sc-connector.
    * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
    * @code
    * ScMemoryContext context;
    * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
@@ -336,12 +392,14 @@ public:
    * @return Returns the sc-address of the newly created sc-connector.
    * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
    * @code
    * ScMemoryContext context;
    * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
    * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
    * ScAddr edgeAddr = context.CreateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
    * @endcode
+   *
    * @warning This method is deprecated since 0.10.0. Use `GenerateConnector` instead for better readability and
    * standards compliance.
    */
