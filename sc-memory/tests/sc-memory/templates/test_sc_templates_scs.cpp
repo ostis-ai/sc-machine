@@ -7,7 +7,7 @@
 
 using ScTemplateSCsTest = ScTemplateTest;
 
-TEST_F(ScTemplateSCsTest, BuildSuccessfull)
+TEST_F(ScTemplateSCsTest, BuildSuccessful)
 {
   ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr.IsValid());

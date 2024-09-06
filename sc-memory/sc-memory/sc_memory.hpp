@@ -1135,9 +1135,9 @@ public:
    * This function checks if there is a sc-connector between the specified beginning and end sc-elements
    * with the given type. It returns true if the sc-connector is found; otherwise, it returns false.
    *
-   * @param begin A sc-address of the beginning sc-element.
-   * @param end A sc-address of the ending sc-element.
-   * @param edgeType A sc-type of the sc-connector to check.
+   * @param sourceElementAddr A sc-address of the beginning sc-element.
+   * @param targetElementAddr A sc-address of the ending sc-element.
+   * @param connectorType A sc-type of the sc-connector to check.
    * @return Returns true if the specified sc-connector exists; otherwise, returns false.
    * @throws ExceptionInvalidState if the sc-memory context is not valid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
@@ -1162,9 +1162,9 @@ public:
    * This function checks if there is a sc-connector between the specified beginning and end sc-elements
    * with the given type. It returns true if the sc-connector is found; otherwise, it returns false.
    *
-   * @param begin A sc-address of the beginning sc-element.
-   * @param end A sc-address of the ending sc-element.
-   * @param edgeType A sc-type of the sc-connector to check.
+   * @param sourceElementAddr A sc-address of the beginning sc-element.
+   * @param targetElementAddr A sc-address of the ending sc-element.
+   * @param connectorType A sc-type of the sc-connector to check.
    * @return Returns true if the specified sc-connector exists; otherwise, returns false.
    * @throws ExceptionInvalidState if the sc-memory context is not valid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.

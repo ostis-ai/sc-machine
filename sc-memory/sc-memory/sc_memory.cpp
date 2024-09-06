@@ -1221,8 +1221,7 @@ void ScMemoryContext::SearchByTemplate(
     ScTemplateSearchResultCallback const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  CHECK_CONTEXT;
-  templateToFind.Search(*this, callback, {}, checkCallback);
+  SearchByTemplate(templateToFind, callback, {}, checkCallback);
 }
 
 void ScMemoryContext::HelperSearchTemplate(
@@ -1257,8 +1256,7 @@ void ScMemoryContext::SearchByTemplateWithControl(
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  CHECK_CONTEXT;
-  templateToFind.Search(*this, callback, {}, checkCallback);
+  SearchByTemplateWithControl(templateToFind, callback, {}, checkCallback);
 }
 
 void ScMemoryContext::HelperSmartSearchTemplate(
