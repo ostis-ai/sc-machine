@@ -723,6 +723,13 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & linkAddr)
   return std::make_shared<ScStream>(linkContentStream);
 }
 
+bool ScMemoryContext::GetLinkContent(ScAddr const & linkAddr, std::string & outLinkContent) noexcept(false)
+{
+  ScStreamPtr const & linkContentStream = GetLinkContent(linkAddr);
+  return linkContentStream != nullptr && linkContentStream->IsValid()
+         && ScStreamConverter::StreamToString(linkContentStream, outLinkContent);
+}
+
 void _PushLinkAddr(void * _data, sc_addr const link_addr)
 {
   void ** data = ((void **)_data);

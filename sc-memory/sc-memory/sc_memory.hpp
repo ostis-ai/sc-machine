@@ -16,11 +16,13 @@
 #include "sc_type.hpp"
 
 #include "sc_iterator.hpp"
+
 #include "sc_template.hpp"
 
-#include "sc_stream.hpp"
-
 class ScMemoryContext;
+class ScTemplate;
+class ScStream;
+using ScStreamPtr = std::shared_ptr<ScStream>;
 
 typedef struct
 {
@@ -216,7 +218,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `GetElementOutgoingArcsCount` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
@@ -261,7 +263,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `GetElementIncomingArcsCount` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
@@ -325,7 +327,7 @@ public:
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GenerateNode` instead for better readability and standards compliance.’")
+      "This method is deprecated. Use `GenerateNode` instead for better readability and standards compliance.")
   _SC_EXTERN ScAddr CreateNode(ScType const & nodeType) noexcept(false);
 
   /*!
@@ -365,7 +367,7 @@ public:
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GenerateLink` instead for better readability and standards compliance.’")
+      "This method is deprecated. Use `GenerateLink` instead for better readability and standards compliance.")
   _SC_EXTERN ScAddr CreateLink(ScType const & linkType = ScType::LinkConst) noexcept(false);
 
   /*!
@@ -416,7 +418,7 @@ public:
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GenerateConnector` instead for better readability and standards compliance.’")
+      "This method is deprecated. Use `GenerateConnector` instead for better readability and standards compliance.")
   _SC_EXTERN ScAddr CreateEdge(
       ScType const & connectorType,
       ScAddr const & sourceElementAddr,
@@ -510,7 +512,7 @@ public:
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GetArcSourceElement` instead for better readability and standards compliance.’")
+      "This method is deprecated. Use `GetArcSourceElement` instead for better readability and standards compliance.")
   _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & arcAddr) const noexcept(false);
 
   /*!
@@ -556,7 +558,7 @@ public:
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GetEdgeTarget` instead for better readability and standards compliance.’")
+      "This method is deprecated. Use `GetEdgeTarget` instead for better readability and standards compliance.")
   _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & arcAddr) const noexcept(false);
 
   /*!
@@ -614,7 +616,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `GetConnectorIncidentElements` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN bool GetEdgeInfo(
       ScAddr const & connectorAddr,
       ScAddr & outFirstIncidentElementAddr,
@@ -683,10 +685,7 @@ public:
   _SC_EXTERN bool SetLinkContent(
       ScAddr const & linkAddr,
       TContentType const & linkContent,
-      bool isSearchableLinkContent = true) noexcept(false)
-  {
-    return SetLinkContent(linkAddr, ScStreamMakeRead(linkContent), isSearchableLinkContent);
-  }
+      bool isSearchableLinkContent = true) noexcept(false);
 
   /*!
    * @brief Gets the content of an sc-link as a string.
@@ -713,12 +712,7 @@ public:
    * }
    * @endcode
    */
-  _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, std::string & outLinkContent) noexcept(false)
-  {
-    ScStreamPtr const & linkContentStream = GetLinkContent(linkAddr);
-    return linkContentStream != nullptr && linkContentStream->IsValid()
-           && ScStreamConverter::StreamToString(linkContentStream, outLinkContent);
-  }
+  _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, std::string & outLinkContent) noexcept(false);
 
   /*!
    * @brief Gets the content of an sc-link as a stream.
@@ -774,21 +768,7 @@ public:
    * @endcode
    */
   template <typename TContentType>
-  _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, TContentType & outLinkContent) noexcept(false)
-  {
-    std::string linkContent;
-    ScStreamPtr const & linkContentStream = GetLinkContent(linkAddr);
-    if (linkContentStream != nullptr && linkContentStream->IsValid()
-        && ScStreamConverter::StreamToString(linkContentStream, linkContent))
-    {
-      std::istringstream streamString{linkContent};
-      streamString >> outLinkContent;
-
-      return true;
-    }
-
-    return true;
-  }
+  _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, TContentType & outLinkContent) noexcept(false);
 
   /*!
    * @brief Searches sc-links by content using a stream.
@@ -820,7 +800,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchLinksByContent` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
 
   /*!
@@ -844,10 +824,7 @@ public:
    * @endcode
    */
   template <typename TContentType>
-  _SC_EXTERN ScAddrSet SearchLinksByContent(TContentType const & linkContent) noexcept(false)
-  {
-    return SearchLinksByContent(ScStreamMakeRead(linkContent));
-  }
+  _SC_EXTERN ScAddrSet SearchLinksByContent(TContentType const & linkContent) noexcept(false);
 
   /*!
    * @brief Searches sc-links by content using a typed string.
@@ -876,12 +853,8 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchLinksByContent` instead for better readability and standards "
-      "compliance.’")
-  _SC_EXTERN ScAddrVector FindLinksByContent(TContentType const & linkContent) noexcept(false)
-  {
-    ScAddrSet const & linkSet = SearchLinksByContent(linkContent);
-    return {linkSet.cbegin(), linkSet.cend()};
-  }
+      "compliance.")
+  _SC_EXTERN ScAddrVector FindLinksByContent(TContentType const & linkContent) noexcept(false);
 
   /*!
    * @brief Searches sc-links by content substring using a stream.
@@ -907,10 +880,7 @@ public:
   template <typename TContentType>
   _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
       TContentType const & linkContentSubstring,
-      size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
-  {
-    return SearchLinksByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
-  }
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
    * @brief Searches sc-links by content substring using a stream.
@@ -940,14 +910,10 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
       TContentType const & linkContentSubstring,
-      size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
-  {
-    ScAddrSet const & linkSet = SearchLinksByContentSubstring(linkContentSubstring, maxLengthToSearchAsPrefix);
-    return {linkSet.cbegin(), linkSet.cend()};
-  }
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
    * @brief Searches sc-links by content substring using a typed string.
@@ -983,7 +949,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
       ScStreamPtr const & linkContentSubstringStream,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
@@ -1009,13 +975,10 @@ public:
    * }
    * @endcode
    */
-  _SC_EXTERN template <typename TContentType>
-  std::set<std::string> SearchLinksContentsByContentSubstring(
+  template <typename TContentType>
+  _SC_EXTERN std::set<std::string> SearchLinksContentsByContentSubstring(
       TContentType const & linkContentSubstring,
-      size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
-  {
-    return SearchLinksContentsByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
-  }
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
    * @brief Searches sc-links contents by content substring using a stream.
@@ -1045,15 +1008,10 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
       TContentType const & linkContentSubstring,
-      size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
-  {
-    std::set<std::string> const & linkContentSet =
-        SearchLinksContentsByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
-    return {linkContentSet.cbegin(), linkContentSet.cend()};
-  }
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
    * @brief Searches sc-links contents by content substring using a typed string.
@@ -1089,7 +1047,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
       ScStreamPtr const & linkContentStreamSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
@@ -1105,22 +1063,13 @@ public:
       ParamType2 const & param2,
       ParamType3 const & param3,
       ParamType4 const & param4,
-      ParamType5 const & param5)
-  {
-    return std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>>(
-        new ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(
-            *this, param1, param2, param3, param4, param5));
-  }
+      ParamType5 const & param5);
 
   _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3>
   std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(
       ParamType1 const & param1,
       ParamType2 const & param2,
-      ParamType3 const & param3)
-  {
-    return std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>>(
-        new ScIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3));
-  }
+      ParamType3 const & param3);
 
   /*!
    * @brief Generates an iterator for iterating over triples.
@@ -1141,12 +1090,7 @@ public:
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
-  void ForEachIter3(ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3, FnT && fn)
-  {
-    ScIterator3Ptr it = Iterator3(param1, param2, param3);
-    while (it->Next())
-      fn(it->Get(0), it->Get(1), it->Get(2));
-  }
+  void ForEachIter3(ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3, FnT && fn);
 
   /*!
    * @brief Generates an iterator for iterating over triples.
@@ -1183,12 +1127,7 @@ public:
       ParamType3 const & param3,
       ParamType4 const & param4,
       ParamType5 const & param5,
-      FnT && fn)
-  {
-    ScIterator5Ptr it = Iterator5(param1, param2, param3, param4, param5);
-    while (it->Next())
-      fn(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
-  }
+      FnT && fn);
 
   /*!
    * @brief Checks the existence of a sc-connector between two sc-elements with the specified type.
@@ -1245,7 +1184,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `CheckConnector` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN bool HelperCheckEdge(
       ScAddr const & sourceElementAddr,
       ScAddr const & targetElementAddr,
@@ -1301,7 +1240,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `ResolveElementSystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScAddr
   HelperResolveSystemIdtf(std::string const & systemIdentifier, ScType const & elementType = ScType()) noexcept(false);
 
@@ -1382,7 +1321,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `ResolveElementSystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN bool HelperResolveSystemIdtf(
       std::string const & systemIdentifier,
       ScType const & elementType,
@@ -1429,7 +1368,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SetElementSystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN bool HelperSetSystemIdtf(std::string const & systemIdentifier, ScAddr const & elementAddr) noexcept(false);
 
   /*!
@@ -1499,7 +1438,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SetElementSystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN bool HelperSetSystemIdtf(
       std::string const & systemIdentifier,
       ScAddr const & elementAddr,
@@ -1541,7 +1480,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `GetElementSystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & elementAddr) noexcept(false);
 
   /*!
@@ -1594,7 +1533,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & systemIdentifier, ScAddr & outElementAddr) noexcept(false);
 
   /*!
@@ -1639,7 +1578,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & systemIdentifier) noexcept(false);
 
   /*!
@@ -1692,7 +1631,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN bool HelperFindBySystemIdtf(
       std::string const & systemIdentifier,
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
@@ -1763,7 +1702,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `HelperGenTemplate` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperGenTemplate(
       ScTemplate const & templ,
       ScTemplateResultItem & result,
@@ -1846,7 +1785,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResult & result) noexcept(false);
@@ -1939,7 +1878,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
@@ -2022,7 +1961,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
@@ -2134,7 +2073,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchByTemplateWithControl` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
@@ -2149,7 +2088,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `SearchByTemplateWithControl` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
@@ -2204,7 +2143,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `BuildTemplate` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
       ScTemplate & resultTemplate,
       ScAddr const & translatableTemplateAddr,
@@ -2255,7 +2194,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `BuildTemplate` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
       ScTemplate & resultTemplate,
       std::string const & translatableSCsTemplate) noexcept(false);
@@ -2304,7 +2243,7 @@ public:
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `CalculateStatistics` instead for better readability and standards "
-      "compliance.’")
+      "compliance.")
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
 
   /*!
@@ -2360,3 +2299,5 @@ public:
 private:
   ScMemoryContext & m_context;
 };
+
+#include "sc_memory.tpp"
