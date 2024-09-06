@@ -63,7 +63,7 @@ void ScKeynode::Initialize(ScMemoryContext * context)
   };
 
   ScSystemIdentifierQuintuple quintuple;
-  context->HelperResolveSystemIdtf(std::string(m_sysIdtf), m_type, quintuple);
+  context->ResolveElementSystemIdentifier(std::string(m_sysIdtf), m_type, quintuple);
   this->m_realAddr = quintuple.addr1.GetRealAddr();
 
   if (context->IsElement(contextStructureAddr))
@@ -106,13 +106,13 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
 
   ScSystemIdentifierQuintuple quintuple;
   std::string const & sysIdtf = std::string(m_sysIdtf);
-  if (!context->HelperFindBySystemIdtf(sysIdtf, quintuple))
+  if (!context->SearchElementBySystemIdentifier(sysIdtf, quintuple))
   {
     for (auto const & initializer : m_constructionInitializers)
       initializer(*this);
 
     context->HelperLoadTemplate(*this, *this);
-    context->HelperSetSystemIdtf(sysIdtf, *this, quintuple);
+    context->SetElementSystemIdentifier(sysIdtf, *this, quintuple);
   }
   else
   {
@@ -157,7 +157,7 @@ void ScKeynodes::Initialize(ScMemoryContext * context)
   for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
   {
     ScAddr & item = kKeynodeRrelList[i];
-    item = context->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
+    item = context->ResolveElementSystemIdentifier("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
   }
 
   // command states

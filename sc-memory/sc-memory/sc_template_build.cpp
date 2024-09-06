@@ -97,7 +97,7 @@ protected:
     auto const & replacements = params.GetAll();
     for (auto const & item : replacements)
     {
-      ScAddr const & addr = m_context.HelperFindBySystemIdtf(item.first);
+      ScAddr const & addr = m_context.SearchElementBySystemIdentifier(item.first);
       if (m_context.IsElement(addr))
       {
         ObjectInfo obj = CollectObjectInfo(item.second, std::to_string(addr.Hash()));

@@ -20,11 +20,11 @@ TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   ScAddrVector suggestions;
-  ScAddr const firstMessage = m_ctx->HelperFindBySystemIdtf("first_message");
+  ScAddr const firstMessage = m_ctx->SearchElementBySystemIdentifier("first_message");
   EXPECT_TRUE(firstMessage.IsValid());
-  ScAddr const secondMessage = m_ctx->HelperFindBySystemIdtf("second_message");
+  ScAddr const secondMessage = m_ctx->SearchElementBySystemIdentifier("second_message");
   EXPECT_TRUE(secondMessage.IsValid());
-  ScAddr const thirdMessage = m_ctx->HelperFindBySystemIdtf("third_message");
+  ScAddr const thirdMessage = m_ctx->SearchElementBySystemIdentifier("third_message");
   EXPECT_TRUE(thirdMessage.IsValid());
   suggestions.insert(suggestions.end(), {firstMessage, secondMessage, thirdMessage});
 

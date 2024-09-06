@@ -164,7 +164,7 @@ TEST(ScBuilder, BuilderConfig)
   auto * context = new ScMemoryContext();
 
   ScSystemIdentifierQuintuple quintuple;
-  context->HelperFindBySystemIdtf(builderParams.m_resultStructureSystemIdtf, quintuple);
+  context->SearchElementBySystemIdentifier(builderParams.m_resultStructureSystemIdtf, quintuple);
   ScAddr const & resultStructure = quintuple.addr1;
   EXPECT_TRUE(resultStructure.IsValid());
 

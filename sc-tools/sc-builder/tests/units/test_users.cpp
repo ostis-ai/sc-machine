@@ -36,7 +36,7 @@ void TestAuthenticationRequestUser(
 
 TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLocalWritePermissions)
 {
-  ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_1");
+  ScAddr const & userAddr = m_ctx->SearchElementBySystemIdentifier("test_user_1");
 
   TestScMemoryContext userContext{userAddr};
   EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
@@ -48,12 +48,12 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
           conceptAuthenticatedUserAddr,
           [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
           {
-            ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
+            ScAddr const & otherUserAddr = userContext.SearchElementBySystemIdentifier("test_user_2");
             ScAddr const & classAddr = userContext.GenerateNode(ScType::NodeConstClass);
             EXPECT_THROW(
                 userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
                 utils::ExceptionInvalidState);
-            ScAddr const & userStructureAddr = userContext.HelperFindBySystemIdtf("user_structure");
+            ScAddr const & userStructureAddr = userContext.SearchElementBySystemIdentifier("user_structure");
             EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
             EXPECT_NO_THROW(
                 userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr));
@@ -69,7 +69,7 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
 
 TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithoutLocalWritePermissions)
 {
-  ScAddr const & userAddr = m_ctx->HelperFindBySystemIdtf("test_user_2");
+  ScAddr const & userAddr = m_ctx->SearchElementBySystemIdentifier("test_user_2");
 
   TestScMemoryContext userContext{userAddr};
   EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
@@ -81,12 +81,12 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
           conceptAuthenticatedUserAddr,
           [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
           {
-            ScAddr const & otherUserAddr = userContext.HelperFindBySystemIdtf("test_user_2");
+            ScAddr const & otherUserAddr = userContext.SearchElementBySystemIdentifier("test_user_2");
             ScAddr const & classAddr = userContext.GenerateNode(ScType::NodeConstClass);
             EXPECT_THROW(
                 userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
                 utils::ExceptionInvalidState);
-            ScAddr const & userStructureAddr = userContext.HelperFindBySystemIdtf("user_structure");
+            ScAddr const & userStructureAddr = userContext.SearchElementBySystemIdentifier("user_structure");
             EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
             EXPECT_THROW(
                 userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr),

@@ -189,7 +189,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_SingleNode)
 
   EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 
-  ScAddr const node = m_ctx->HelperFindBySystemIdtf("node");
+  ScAddr const node = m_ctx->SearchElementBySystemIdentifier("node");
   EXPECT_TRUE(node.IsValid());
   EXPECT_EQ(m_ctx->GetElementType(node), ScType::NodeConstClass);
 }
@@ -201,13 +201,13 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
   EXPECT_TRUE(helper.GenerateBySCsText("x -> y;;"));
   EXPECT_TRUE(helper.GenerateBySCsText("x ~> z;;"));
 
-  ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x");
+  ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x");
   EXPECT_TRUE(xAddr.IsValid());
 
-  ScAddr const yAddr = m_ctx->HelperResolveSystemIdtf("y");
+  ScAddr const yAddr = m_ctx->ResolveElementSystemIdentifier("y");
   EXPECT_TRUE(yAddr.IsValid());
 
-  ScAddr const zAddr = m_ctx->HelperResolveSystemIdtf("z");
+  ScAddr const zAddr = m_ctx->ResolveElementSystemIdentifier("z");
   EXPECT_TRUE(zAddr.IsValid());
 
   {
@@ -233,14 +233,14 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Global)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
   {
-    ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_global");
+    ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_global");
     EXPECT_FALSE(xAddr.IsValid());
   }
 
   EXPECT_TRUE(helper.GenerateBySCsText("x_global -> .y;;"));
   EXPECT_TRUE(helper.GenerateBySCsText("x_global -> .y;;"));
 
-  ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_global");
+  ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_global");
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
@@ -258,14 +258,14 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Local)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
   {
-    ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_local");
+    ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_local");
     EXPECT_FALSE(xAddr.IsValid());
   }
 
   EXPECT_TRUE(helper.GenerateBySCsText("x_local -> ..y;;"));
   EXPECT_TRUE(helper.GenerateBySCsText("x_local -> ..z;;"));
 
-  ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_local");
+  ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_local");
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
@@ -330,7 +330,7 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
     outputStructure
   ));
 
-  ScAddr const & exampleStructure = m_ctx->HelperFindBySystemIdtf("example_structure");
+  ScAddr const & exampleStructure = m_ctx->SearchElementBySystemIdentifier("example_structure");
   EXPECT_EQ(m_ctx->GetElementType(exampleStructure), ScType::NodeConstStruct);
 
   auto const checkInStruct = [this, outputStructure](std::string const & scsText, size_t const expectedStructNum) {

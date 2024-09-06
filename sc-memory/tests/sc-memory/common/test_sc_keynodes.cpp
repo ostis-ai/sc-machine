@@ -198,7 +198,7 @@ TEST_F(ScKeynodesTest, Cache)
   ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
 
   EXPECT_TRUE(addr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_idtf", addr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("test_idtf", addr));
 
   EXPECT_TRUE(cache.GetKeynode("test_idtf").IsValid());
   EXPECT_TRUE(cache.GetKeynode("test_idtf").IsValid());

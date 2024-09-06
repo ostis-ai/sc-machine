@@ -211,8 +211,8 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context
   EXPECT_NO_THROW(userContext.FindLinksByContent("test"));
   EXPECT_NO_THROW(userContext.FindLinksByContentSubstring("test"));
   EXPECT_NO_THROW(userContext.FindLinksContentsByContentSubstring("test"));
-  EXPECT_NO_THROW(userContext.HelperFindBySystemIdtf("test"));
-  EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test"));
+  EXPECT_NO_THROW(userContext.SearchElementBySystemIdentifier("test"));
+  EXPECT_NO_THROW(userContext.ResolveElementSystemIdentifier("test"));
 }
 
 void TestReadActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
@@ -245,8 +245,8 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
   EXPECT_THROW(userContext.FindLinksByContent("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.FindLinksByContentSubstring("test"), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.FindLinksContentsByContentSubstring("test"), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.HelperFindBySystemIdtf("test"), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.HelperResolveSystemIdtf("test"), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.SearchElementBySystemIdentifier("test"), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.ResolveElementSystemIdentifier("test"), utils::ExceptionInvalidState);
 
   ScAddr const & nodeAddr = context->GenerateNode(ScType::NodeConst);
   ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
@@ -352,16 +352,16 @@ void TestChangeActionsSuccessfully(std::unique_ptr<ScAgentContext> const & conte
 {
   ScAddr const & linkAddr = context->GenerateNode(ScType::LinkConst);
 
-  EXPECT_NO_THROW(userContext.HelperSetSystemIdtf("test", linkAddr));
-  EXPECT_NO_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst));
+  EXPECT_NO_THROW(userContext.SetElementSystemIdentifier("test", linkAddr));
+  EXPECT_NO_THROW(userContext.ResolveElementSystemIdentifier("test", ScType::NodeConst));
 }
 
 void TestChangeActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)
 {
   ScAddr const & linkAddr = context->GenerateNode(ScType::LinkConst);
 
-  EXPECT_THROW(userContext.HelperSetSystemIdtf("test", linkAddr), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.HelperResolveSystemIdtf("test", ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.SetElementSystemIdentifier("test", linkAddr), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.ResolveElementSystemIdentifier("test", ScType::NodeConst), utils::ExceptionInvalidState);
 }
 
 void TestActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context, TestScMemoryContext & userContext)

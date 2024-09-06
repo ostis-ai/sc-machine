@@ -137,7 +137,7 @@ void ScAgentBuilder<TScAgent>::ResolveSpecification(ScMemoryContext * context) n
   ResolveAgentImplementation(context, agentImplementationName, agentClassName);
   ResolveAbstractAgent(context, agentImplementationName, agentClassName);
 
-  std::string abstractAgentName = context->HelperGetSystemIdtf(m_abstractAgentAddr);
+  std::string abstractAgentName = context->GetElementSystemIdentifier(m_abstractAgentAddr);
   if (abstractAgentName.empty())
     abstractAgentName = std::to_string(m_abstractAgentAddr.Hash());
 
@@ -200,7 +200,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
 
   if (context->IsElement(m_agentImplementationAddr))
   {
-    agentImplementationName = context->HelperGetSystemIdtf(m_agentImplementationAddr);
+    agentImplementationName = context->GetElementSystemIdentifier(m_agentImplementationAddr);
 
     ValidateAgentImplementation();
 
@@ -210,7 +210,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
 
   agentImplementationName = agentClassName;
 
-  m_agentImplementationAddr = context->HelperFindBySystemIdtf(agentImplementationName);
+  m_agentImplementationAddr = context->SearchElementBySystemIdentifier(agentImplementationName);
   if (context->IsElement(m_agentImplementationAddr))
   {
     ValidateAgentImplementation();
@@ -221,7 +221,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
   else
   {
     m_agentImplementationAddr = context->GenerateNode(ScType::NodeConst);
-    context->HelperSetSystemIdtf(agentImplementationName, m_agentImplementationAddr);
+    context->SetElementSystemIdentifier(agentImplementationName, m_agentImplementationAddr);
     context->GenerateConnector(
         ScType::EdgeAccessConstPosPerm, ScKeynodes::platform_dependent_abstract_sc_agent, m_agentImplementationAddr);
     SC_LOG_DEBUG("Agent implementation for class `" << agentClassName << "` was generated.");

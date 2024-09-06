@@ -88,7 +88,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     }
     eventClass = it->second;
 
-    ScAddr const & eventClassAddr = m_context->HelperFindBySystemIdtf(eventClass);
+    ScAddr const & eventClassAddr = m_context->SearchElementBySystemIdentifier(eventClass);
     if (!eventClassAddr.IsValid())
     {
       errorsPayload = "Invalid sc-event type with system identifier `" + eventClass + "`.";

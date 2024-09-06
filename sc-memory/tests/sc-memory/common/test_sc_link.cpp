@@ -111,18 +111,18 @@ TEST_F(ScLinkTest, operations)
   ScMemoryContext ctx;
 
   ScAddr formulaAddr = ctx.GenerateNode(ScType::NodeConst);
-  EXPECT_TRUE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
-  EXPECT_TRUE(formulaAddr == ctx.HelperFindBySystemIdtf("atomic_formula"));
-  EXPECT_TRUE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
+  EXPECT_TRUE(ctx.SetElementSystemIdentifier("atomic_formula", formulaAddr));
+  EXPECT_TRUE(formulaAddr == ctx.SearchElementBySystemIdentifier("atomic_formula"));
+  EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
 
   ScAddr node1 = ctx.GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(node1.IsValid());
-  EXPECT_TRUE(ctx.HelperSetSystemIdtf("node1", node1));
-  EXPECT_TRUE("node1" == ctx.HelperGetSystemIdtf(node1));
+  EXPECT_TRUE(ctx.SetElementSystemIdentifier("node1", node1));
+  EXPECT_TRUE("node1" == ctx.GetElementSystemIdentifier(node1));
 
-  ScAddr node2 = ctx.HelperResolveSystemIdtf("_node2", ScType::NodeVarStruct);
+  ScAddr node2 = ctx.ResolveElementSystemIdentifier("_node2", ScType::NodeVarStruct);
   EXPECT_TRUE(node2.IsValid());
-  EXPECT_TRUE("_node2" == ctx.HelperGetSystemIdtf(node2));
+  EXPECT_TRUE("_node2" == ctx.GetElementSystemIdentifier(node2));
 
   ctx.Destroy();
 }
@@ -132,21 +132,21 @@ TEST_F(ScLinkTest, smoke)
   ScMemoryContext ctx;
 
   ScAddr formulaAddr = ctx.GenerateNode(ScType::NodeConst);
-  EXPECT_TRUE(ctx.HelperSetSystemIdtf("atomic_formula", formulaAddr));
-  EXPECT_TRUE(formulaAddr == ctx.HelperFindBySystemIdtf("atomic_formula"));
-  EXPECT_TRUE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
-  EXPECT_TRUE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
+  EXPECT_TRUE(ctx.SetElementSystemIdentifier("atomic_formula", formulaAddr));
+  EXPECT_TRUE(formulaAddr == ctx.SearchElementBySystemIdentifier("atomic_formula"));
+  EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
+  EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
 
   ScAddr node1 = ctx.GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(node1.IsValid());
-  EXPECT_FALSE(ctx.HelperSetSystemIdtf("atomic_formula", node1));
-  EXPECT_TRUE(ctx.HelperGetSystemIdtf(node1).empty());
+  EXPECT_FALSE(ctx.SetElementSystemIdentifier("atomic_formula", node1));
+  EXPECT_TRUE(ctx.GetElementSystemIdentifier(node1).empty());
 
   node1 = ctx.GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(node1.IsValid());
-  EXPECT_FALSE(node1 == ctx.HelperResolveSystemIdtf("atomic_formula", ScType::NodeConst));
-  EXPECT_TRUE(formulaAddr == ctx.HelperResolveSystemIdtf("atomic_formula", ScType::NodeConst));
-  EXPECT_TRUE("atomic_formula" == ctx.HelperGetSystemIdtf(formulaAddr));
+  EXPECT_FALSE(node1 == ctx.ResolveElementSystemIdentifier("atomic_formula", ScType::NodeConst));
+  EXPECT_TRUE(formulaAddr == ctx.ResolveElementSystemIdentifier("atomic_formula", ScType::NodeConst));
+  EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
 
   EXPECT_TRUE(ctx.FindLinksByContent("atomic_formula").size() == 1);
 
@@ -169,9 +169,9 @@ TEST_F(ScLinkTest, smoke)
 
   EXPECT_TRUE(ctx.FindLinksByContent("non_atomic_formula").size() == 1);
 
-  ScAddr node2 = ctx.HelperResolveSystemIdtf("_node2", ScType::NodeVarStruct);
+  ScAddr node2 = ctx.ResolveElementSystemIdentifier("_node2", ScType::NodeVarStruct);
   EXPECT_TRUE(node2.IsValid());
-  EXPECT_TRUE("_node2" == ctx.HelperGetSystemIdtf(node2));
+  EXPECT_TRUE("_node2" == ctx.GetElementSystemIdentifier(node2));
 
   ctx.Destroy();
 }
@@ -210,14 +210,14 @@ TEST_F(ScLinkTest, set_system_idtf)
   ScMemoryContext ctx;
 
   ScAddr timestamp = ctx.GenerateNode(ScType::NodeConstClass);
-  EXPECT_TRUE(ctx.HelperSetSystemIdtf("2022.03.21 16:07:47", timestamp));
-  EXPECT_TRUE("2022.03.21 16:07:47" == ctx.HelperGetSystemIdtf(timestamp));
+  EXPECT_TRUE(ctx.SetElementSystemIdentifier("2022.03.21 16:07:47", timestamp));
+  EXPECT_TRUE("2022.03.21 16:07:47" == ctx.GetElementSystemIdentifier(timestamp));
 
   EXPECT_FALSE(ctx.FindLinksByContent("2022.03.21 16:07:47").empty());
 
   timestamp = ctx.GenerateNode(ScType::NodeConstClass);
-  EXPECT_TRUE(ctx.HelperSetSystemIdtf("2022.03.21 16:07:48", timestamp));
-  EXPECT_TRUE("2022.03.21 16:07:48" == ctx.HelperGetSystemIdtf(timestamp));
+  EXPECT_TRUE(ctx.SetElementSystemIdentifier("2022.03.21 16:07:48", timestamp));
+  EXPECT_TRUE("2022.03.21 16:07:48" == ctx.GetElementSystemIdentifier(timestamp));
 
   EXPECT_FALSE(ctx.FindLinksByContent("2022.03.21 16:07:48").empty());
   EXPECT_FALSE(ctx.FindLinksByContent("2022.03.21 16:07:47").empty());

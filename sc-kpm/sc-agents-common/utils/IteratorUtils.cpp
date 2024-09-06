@@ -25,13 +25,14 @@ ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, size_t const
   auto relationIter = orderRelationsMap.find(index);
   if (relationIter == orderRelationsMap.end())
   {
-    ScAddr relation = ms_context->HelperResolveSystemIdtf("rrel_" + std::to_string(index), ScType::NodeConstRole);
+    ScAddr relation =
+        ms_context->ResolveElementSystemIdentifier("rrel_" + std::to_string(index), ScType::NodeConstRole);
     orderRelationsMap.insert({index, relation});
     return relation;
   }
   // @todo: Implement common memory for tests with caching
   // return relationIter->second;
-  return ms_context->HelperResolveSystemIdtf("rrel_" + std::to_string(index), ScType::NodeConstRole);
+  return ms_context->ResolveElementSystemIdentifier("rrel_" + std::to_string(index), ScType::NodeConstRole);
 }
 
 ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, ScAddr const & set)

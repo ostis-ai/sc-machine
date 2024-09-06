@@ -12,7 +12,7 @@
 
 TEST_F(ScBuilderTest, clean_global_idtfs)
 {
-  ScAddr const nrelSCsIdtf = m_ctx->HelperResolveSystemIdtf("nrel_scs_global_idtf");
+  ScAddr const nrelSCsIdtf = m_ctx->ResolveElementSystemIdentifier("nrel_scs_global_idtf");
   EXPECT_TRUE(nrelSCsIdtf.IsValid());
 
   ScTemplate templ;

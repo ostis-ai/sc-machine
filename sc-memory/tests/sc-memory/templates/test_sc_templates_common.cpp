@@ -250,27 +250,27 @@ TEST_F(ScTemplateCommonTest, a_a_a)
 
   ScAddr const _structAddr = m_ctx->GenerateNode(ScType::NodeVarStruct);
   EXPECT_TRUE(_structAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_struct", _structAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_struct", _structAddr));
 
   ScAddr const _apiai_locationAddr = m_ctx->GenerateNode(ScType::NodeVar);
   EXPECT_TRUE(_apiai_locationAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_apiai_location", _apiai_locationAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_apiai_location", _apiai_locationAddr));
 
   ScAddr const _apiai_speechAddr = m_ctx->GenerateNode(ScType::NodeVar);
   EXPECT_TRUE(_apiai_speechAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_apiai_speech", _apiai_speechAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_apiai_speech", _apiai_speechAddr));
 
   ScAddr const _langAddr = m_ctx->GenerateNode(ScType::NodeVar);
   EXPECT_TRUE(_langAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_lang", _langAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_lang", _langAddr));
 
   ScAddr const rrel_locationAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(rrel_locationAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("rrel_location", rrel_locationAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("rrel_location", rrel_locationAddr));
 
   ScAddr const nrel_translationAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(nrel_translationAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("nrel_translation", nrel_translationAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("nrel_translation", nrel_translationAddr));
 
   ScAddr const _struct_locationEdgeAddr =
       m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, _structAddr, _apiai_locationAddr);
@@ -321,10 +321,10 @@ TEST_F(ScTemplateCommonTest, a_a_a_a_f)
   SCsHelper scs(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(scs.GenerateBySCsText("x => nrel: [];;"));
 
-  ScAddr const nrelAddr = m_ctx->HelperResolveSystemIdtf("nrel");
+  ScAddr const nrelAddr = m_ctx->ResolveElementSystemIdentifier("nrel");
   EXPECT_TRUE(nrelAddr.IsValid());
 
-  ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x");
+  ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x");
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;

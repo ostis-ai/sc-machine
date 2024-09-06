@@ -609,7 +609,7 @@ ScAddr ScTemplateResultItem::GetAddrByName(std::string const & name) const
   if (it != m_templateItemsNamesToReplacementItemPositions.cend())
     return m_replacementConstruction[it->second];
 
-  ScAddr const & addr = m_context->HelperFindBySystemIdtf(name);
+  ScAddr const & addr = m_context->SearchElementBySystemIdentifier(name);
   if (addr.IsValid())
   {
     it = m_templateItemsNamesToReplacementItemPositions.find(std::to_string(addr.Hash()));
@@ -629,7 +629,7 @@ ScAddr ScTemplateResultItem::GetAddrByVarAddr(ScAddr const & varAddr) const
   if (it != m_templateItemsNamesToReplacementItemPositions.cend())
     return m_replacementConstruction[it->second];
 
-  std::string const & varIdtf = m_context->HelperGetSystemIdtf(varAddr);
+  std::string const & varIdtf = m_context->GetElementSystemIdentifier(varAddr);
   it = m_templateItemsNamesToReplacementItemPositions.find(varIdtf);
   if (it != m_templateItemsNamesToReplacementItemPositions.cend())
     return m_replacementConstruction[it->second];
@@ -694,7 +694,7 @@ ScTemplate::ScTemplateItemsToReplacementsItemsPositions ScTemplateSearchResult::
       continue;
 
     ScAddr const & varAddr = ScAddr(hash);
-    std::string const & sysIdtf = m_context->HelperGetSystemIdtf(varAddr);
+    std::string const & sysIdtf = m_context->GetElementSystemIdentifier(varAddr);
     if (sysIdtf.empty())
       continue;
 

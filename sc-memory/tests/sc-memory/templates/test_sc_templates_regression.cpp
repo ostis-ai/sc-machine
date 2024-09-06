@@ -28,7 +28,7 @@ TEST_F(ScTemplateRegressionTest, Issue224)
 
       auto testGenerateNodeIdtf = [this, &contourItems](ScType const & type, std::string const & idtf)
       {
-        ScAddr const addr = m_ctx->HelperResolveSystemIdtf(idtf, type);
+        ScAddr const addr = m_ctx->ResolveElementSystemIdentifier(idtf, type);
         EXPECT_TRUE(addr.IsValid());
         contourItems.push_back(addr);
         return addr;
@@ -249,7 +249,7 @@ TEST_F(ScTemplateRegressionTest, Issue224)
       {
         shuffle(1);
         ScAddr const structAddr =
-            m_ctx->HelperResolveSystemIdtf("test_program" + std::to_string(i), ScType::NodeConstStruct);
+            m_ctx->ResolveElementSystemIdentifier("test_program" + std::to_string(i), ScType::NodeConstStruct);
         EXPECT_TRUE(structAddr.IsValid());
         ScStructure contour = m_ctx->ConvertToStructure(structAddr);
 

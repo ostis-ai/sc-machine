@@ -15,7 +15,7 @@ namespace
 
 std::string GetIdtf(ScMemoryContext & ctx, ScAddr const & addr)
 {
-  ScAddr const nrelIdtf = ctx.HelperResolveSystemIdtf("nrel_idtf", ScType::NodeConstNoRole);
+  ScAddr const nrelIdtf = ctx.ResolveElementSystemIdentifier("nrel_idtf", ScType::NodeConstNoRole);
   EXPECT_TRUE(nrelIdtf.IsValid());
 
   ScTemplate templ;
@@ -38,13 +38,13 @@ std::string GetIdtf(ScMemoryContext & ctx, ScAddr const & addr)
 
 TEST_F(ScBuilderTest, visibility_sys_idtf)
 {
-  ScAddr const visFirst = m_ctx->HelperResolveSystemIdtf("visibility_first");
+  ScAddr const visFirst = m_ctx->ResolveElementSystemIdentifier("visibility_first");
   EXPECT_TRUE(visFirst.IsValid());
 
-  ScAddr const visSecond = m_ctx->HelperResolveSystemIdtf("visibility_second");
+  ScAddr const visSecond = m_ctx->ResolveElementSystemIdentifier("visibility_second");
   EXPECT_TRUE(visSecond.IsValid());
 
-  ScAddr const element = m_ctx->HelperResolveSystemIdtf("visibility_sys_idtf");
+  ScAddr const element = m_ctx->ResolveElementSystemIdentifier("visibility_sys_idtf");
   EXPECT_TRUE(element.IsValid());
 
   ScTemplate templ;
@@ -58,10 +58,10 @@ TEST_F(ScBuilderTest, visibility_sys_idtf)
 
 TEST_F(ScBuilderTest, visibility_global)
 {
-  ScAddr const visFirst = m_ctx->HelperResolveSystemIdtf("visibility_first_global");
+  ScAddr const visFirst = m_ctx->ResolveElementSystemIdentifier("visibility_first_global");
   EXPECT_TRUE(visFirst.IsValid());
 
-  ScAddr const visSecond = m_ctx->HelperResolveSystemIdtf("visibility_second_global");
+  ScAddr const visSecond = m_ctx->ResolveElementSystemIdentifier("visibility_second_global");
   EXPECT_TRUE(visSecond.IsValid());
 
   ScTemplate templ;
@@ -81,13 +81,13 @@ TEST_F(ScBuilderTest, visibility_global)
 
 TEST_F(ScBuilderTest, visibility_local)
 {
-  ScAddr const visFirst = m_ctx->HelperResolveSystemIdtf("visibility_first_local");
+  ScAddr const visFirst = m_ctx->ResolveElementSystemIdentifier("visibility_first_local");
   EXPECT_TRUE(visFirst.IsValid());
 
-  ScAddr const visSecond = m_ctx->HelperResolveSystemIdtf("visibility_second_local");
+  ScAddr const visSecond = m_ctx->ResolveElementSystemIdentifier("visibility_second_local");
   EXPECT_TRUE(visSecond.IsValid());
 
-  ScAddr const visLocal = m_ctx->HelperResolveSystemIdtf("visibility_local");
+  ScAddr const visLocal = m_ctx->ResolveElementSystemIdentifier("visibility_local");
   EXPECT_TRUE(visLocal.IsValid());
 
   ScTemplate templ;

@@ -85,7 +85,7 @@ bool Builder::BuildSources(ScRepoPathCollector::Sources const & buildSources, Sc
 ScAddr Builder::ResolveOutputStructure()
 {
   ScSystemIdentifierQuintuple fiver;
-  m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
+  m_ctx->ResolveElementSystemIdentifier(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
   ScAddr const & outputStructure = fiver.addr1;
 
   auto const & AddElementToStructure = [this, &outputStructure](ScAddr const & addr)

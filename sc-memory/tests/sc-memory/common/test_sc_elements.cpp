@@ -77,7 +77,7 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_THROW(ctx.GetLinkContent(node), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(node, ""), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(node, ScStreamPtr()), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", node), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SetElementSystemIdentifier("identifier", node), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetElementOutgoingArcsCount(node), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetElementIncomingArcsCount(node), utils::ExceptionInvalidParams);
 
@@ -91,7 +91,7 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_THROW(ctx.GetLinkContent(arcAddr), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(arcAddr, ""), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(arcAddr, ScStreamPtr()), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", arcAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SetElementSystemIdentifier("identifier", arcAddr), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetElementOutgoingArcsCount(arcAddr), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetElementIncomingArcsCount(arcAddr), utils::ExceptionInvalidParams);
 
@@ -107,12 +107,12 @@ TEST_F(ScMemoryTest, InvalidElements)
   EXPECT_THROW(ctx.GetLinkContent(ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(ScAddr::Empty, ""), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.SetLinkContent(ScAddr::Empty, ScStreamPtr()), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.HelperSetSystemIdtf("identifier", ScAddr::Empty), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SetElementSystemIdentifier("identifier", ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetElementOutgoingArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.GetElementIncomingArcsCount(ScAddr::Empty), utils::ExceptionInvalidParams);
 
-  EXPECT_THROW(ctx.HelperResolveSystemIdtf("****"), utils::ExceptionInvalidParams);
-  EXPECT_THROW(ctx.HelperFindBySystemIdtf("****"), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.ResolveElementSystemIdentifier("****"), utils::ExceptionInvalidParams);
+  EXPECT_THROW(ctx.SearchElementBySystemIdentifier("****"), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.FindLinksByContent(ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.FindLinksByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);
   EXPECT_THROW(ctx.FindLinksContentsByContentSubstring(ScStreamPtr()), utils::ExceptionInvalidParams);

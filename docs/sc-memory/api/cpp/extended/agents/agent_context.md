@@ -99,7 +99,7 @@ You can generate waiter for some sc-event. It is useful when your agent should w
 ```cpp
 ...
 // Find sc-event subscription (listen) sc-element.
-ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
+ScAddr const & nodeAddr = context.SearchElementBySystemIdentifier("my_node");
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;
@@ -136,7 +136,7 @@ Just like for the method of creating sc-event subscription, if you don't know sc
 ```cpp
 ...
 // Find sc-event subscription (listen) sc-element.
-ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
+ScAddr const & nodeAddr = context.SearchElementBySystemIdentifier("my_node");
 // Choose sc-event type to subscribe or find it.
 ScAddr const & eventClassAddr = GetSomeEventType(); // User-specified method.
 // Create sc-event waiter for generated sc-node (listen sc-element)   
@@ -157,7 +157,7 @@ In addition to the waiting time, you can also specify check that will be called 
 ```cpp
 ...
 // Find sc-event subscription (listen) sc-element.
-ScAddr const & nodeAddr = context.HelperFindBySystemIdtf("my_node");
+ScAddr const & nodeAddr = context.SearchElementBySystemIdentifier("my_node");
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;

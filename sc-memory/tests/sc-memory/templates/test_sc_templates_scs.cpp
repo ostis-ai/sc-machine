@@ -11,7 +11,7 @@ TEST_F(ScTemplateSCsTest, BuildSuccessfull)
 {
   ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("d", addr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("d", addr));
 
   ScTemplate templ;
   sc_char const * data = "_a _-> d;; _a <- sc_node_class;;";
@@ -35,7 +35,7 @@ TEST_F(ScTemplateSCsTest, GenBuildSearch)
 
   ScAddr const bAddr = genResult["b"];
   EXPECT_TRUE(bAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("b", bAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("b", bAddr));
 
   // do search
   ScTemplate templ;
@@ -56,7 +56,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
 {
   ScAddr const cAddr = m_ctx->GenerateNode(ScType::Node);
   EXPECT_TRUE(cAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("c1", cAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("c1", cAddr));
 
   ScTemplate templ;
   sc_char const * data = "c1 _=> _b1;; _b1 <- sc_node_abstract;;";
@@ -81,7 +81,7 @@ TEST_F(ScTemplateSCsTest, GenerateSearch)
 {
   ScAddr const cAddr = m_ctx->GenerateNode(ScType::Node);
   EXPECT_TRUE(cAddr.IsValid());
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("g1", cAddr));
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("g1", cAddr));
 
   ScTemplate templ;
   sc_char const * data = "g1 _-> _l1 (* <- sc_node_material;; *);; g1 _-> _f1;;";

@@ -867,16 +867,6 @@ public:
       ScStreamPtr const & linkContentStreamSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
-  /*!
-   * @brief Saves the memory state.
-   *
-   * This method saves the state of the sc-memory.
-   *
-   * @return Returns true if the memory state was successfully saved; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
-   */
-  _SC_EXTERN bool Save();
-
   _SC_EXTERN template <
       typename ParamType1,
       typename ParamType2,
@@ -1021,7 +1011,14 @@ public:
    * context.GenerateConnector(arcType, nodeAddr1, nodeAddr2);
    * bool doesArcExist = context.HelperCheckEdge(nodeAddr1, nodeAddr2, arcType);
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `CheckConnector` instead for better readability
+   * and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CheckConnector` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN bool HelperCheckEdge(
       ScAddr const & sourceElementAddr,
       ScAddr const & targetElementAddr,
@@ -1044,11 +1041,42 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr resolvedAddr = context.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass);
+   * ScAddr resolvedAddr = context.ResolveElementSystemIdentifier("example_identifier", ScType::NodeConstClass);
    * @endcode
    */
+  _SC_EXTERN ScAddr ResolveElementSystemIdentifier(
+      std::string const & systemIdentifier,
+      ScType const & elementType = ScType()) noexcept(false);
+
+  /*!
+   * @brief Resolves the sc-address of an sc-element by its system identifier.
+   *
+   * This function resolves the sc-address of an sc-element with the specified system identifier.
+   * If the element is not found, it creates a new sc-node with the specified type and system identifier.
+   *
+   * @param sysIdtf The system identifier of the sc-element to resolve.
+   * @param type A sc-type of the sc-node to create if the element is not found.
+   * @return Returns the sc-address of the resolved or created sc-element.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
+   * or resolving sc-element type is not ScType::Node subtype
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr resolvedAddr = context.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ResolveElementSystemIdentifier` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ResolveElementSystemIdentifier` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScAddr
-  HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType()) noexcept(false);
+  HelperResolveSystemIdtf(std::string const & systemIdentifier, ScType const & elementType = ScType()) noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.
@@ -1057,17 +1085,21 @@ public:
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
    * Additionally, it returns the system identifier quintuple of the resolved or created sc-element.
    *
-   * @param sysIdtf The system identifier of the sc-element to resolve.
-   * @param type A sc-type of the sc-node to create if the element is not found.
-   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved
+   * @param systemIdentifier A system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
+   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved.
+   *
+   * @code
    *                              addr1 (resolved sc-element address)
    *                addr4           |
    *        addr5 --------------->  | addr2
    *     (nrel_system_identifier)   |
    *                              addr3 (system identifier sc-link)
+   * @endcode
+   *
    * @return Returns true if the sc-element is successfully resolved or created; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
-              or resolving sc-element type is not ScType::Node subtype.
+   *          or resolving sc-element type is not ScType::Node subtype.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    permissions.
@@ -1075,19 +1107,66 @@ public:
    * @code
    * ScMemoryContext context;
    * ScSystemIdentifierQuintuple resultQuintuple;
-   * bool success = context.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass, resultQuintuple);
+   * bool isResolved = context.ResolveElementSystemIdentifier("example_identifier", ScType::NodeConstClass,
+   resultQuintuple);
    * @endcode
    */
-  _SC_EXTERN bool HelperResolveSystemIdtf(
-      std::string const & sysIdtf,
-      ScType const & type,
+  _SC_EXTERN bool ResolveElementSystemIdentifier(
+      std::string const & systemIdentifier,
+      ScType const & elementType,
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
-  /*! Tries to set system identifier for sc-element ScAddr.
-   * @param sysIdtf System identifier to set for sc-element `addr`
-   * @param addr Sc-element address to set `sysIdtf` for it
+  /*!
+   * @brief Resolves the sc-address of an sc-element by its system identifier.
+   *
+   * This function resolves the sc-address of an sc-element with the specified system identifier.
+   * If the element is not found, it creates a new sc-node with the specified type and system identifier.
+   * Additionally, it returns the system identifier quintuple of the resolved or created sc-element.
+   *
+   * @param systemIdentifier A system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
+   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved.
+   *
+   * @code
+   *                              addr1 (resolved sc-element address)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
+   * @endcode
+   *
+   * @return Returns true if the sc-element is successfully resolved or created; otherwise, returns false.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
+   *            or resolving sc-element type is not ScType::Node subtype.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool isResolved = context.ResolveElementSystemIdentifier("example_identifier", ScType::NodeConstClass,
+   * resultQuintuple);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ResolveElementSystemIdentifier` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ResolveElementSystemIdentifier` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN bool HelperResolveSystemIdtf(
+      std::string const & systemIdentifier,
+      ScType const & elementType,
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
+
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
    * @returns false if `sysIdtf` set for other sc-element address.
-   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
@@ -1095,18 +1174,52 @@ public:
    * @code
    * ScMemoryContext context;
    * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
-   * bool success = context.HelperSetSystemIdtf("example_identifier", elementAddr);
+   * bool isSet = context.SetElementSystemIdentifier("example_identifier", elementAddr);
    * @endcode
    */
-  _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr) noexcept(false);
+  _SC_EXTERN bool SetElementSystemIdentifier(std::string const & systemIdentifier, ScAddr const & elementAddr) noexcept(
+      false);
 
-  /*! Tries to set system identifier for sc-element ScAddr.
-   * @param sysIdtf System identifier to set for sc-element `addr`
-   * @param addr Sc-element address to set `sysIdtf` for it
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
+   * @returns false if `sysIdtf` set for other sc-element address.
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * bool isSet = context.HelperSetSystemIdtf("example_identifier", elementAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SetElementSystemIdentifier` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SetElementSystemIdentifier` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN bool HelperSetSystemIdtf(std::string const & systemIdentifier, ScAddr const & elementAddr) noexcept(false);
+
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system sc-identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
    * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
-   * sc-element `addr` with set `sysIdtf` addr1 (`addr`) addr4           | addr5 --------------->  | addr2
+   * sc-element `elementAddr` with set `systemIdentifier`.
+   *
+   * @code
+   *                              addr1 (`elementAddr`)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
    *     (nrel_system_identifier)   |
    *                              addr3 (system identifier sc-link)
+   * @endcode
+   *
    * @returns false if `sysIdtf` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1117,17 +1230,58 @@ public:
    * ScMemoryContext context;
    * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * ScSystemIdentifierQuintuple resultQuintuple;
-   * bool success = context.HelperSetSystemIdtf("example_identifier", elementAddr, resultQuintuple);
+   * bool isSet = context.SetElementSystemIdentifier("example_identifier", elementAddr, resultQuintuple);
    * @endcode
    */
-  _SC_EXTERN bool HelperSetSystemIdtf(
-      std::string const & sysIdtf,
-      ScAddr const & addr,
+  _SC_EXTERN bool SetElementSystemIdentifier(
+      std::string const & systemIdentifier,
+      ScAddr const & elementAddr,
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
-  /*! Tries to get system identifier for sc-element ScAddr.
-   * @param addr Sc-element address to get it system identifier
-   * @returns "" if system identifier doesn't exist for `addr`.
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system sc-identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `sysIdtf` for it.
+   * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
+   * sc-element `elementAddr` with set `systemIdentifier`.
+   *
+   * @code
+   *                              addr1 (`elementAddr`)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
+   * @endcode
+   *
+   * @returns false if `sysIdtf` set for other sc-element address.
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool isSet = context.HelperSetSystemIdtf("example_identifier", elementAddr, resultQuintuple);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SetElementSystemIdentifier` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SetElementSystemIdentifier` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN bool HelperSetSystemIdtf(
+      std::string const & systemIdentifier,
+      ScAddr const & elementAddr,
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
+
+  /*!
+   * @brief Tries to get system identifier for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to get it system identifier.
+   * @returns "" if system identifier doesn't exist for `elementAddr`.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
@@ -1135,20 +1289,43 @@ public:
    * @code
    * ScMemoryContext context;
    * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
-   * std::string sysIdtf = context.HelperGetSystemIdtf(elementAddr);
+   * std::string systemIdentifier = context.GetElementSystemIdentifier(elementAddr);
    * @endcode
    */
-  _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr) noexcept(false);
+  _SC_EXTERN std::string GetElementSystemIdentifier(ScAddr const & elementAddr) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address.
+   * @brief Tries to get system identifier for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to get it system identifier.
+   * @returns "" if system identifier doesn't exist for `elementAddr`.
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * std::string systemIdentifier = context.HelperGetSystemIdtf(elementAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetElementSystemIdentifier` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetElementSystemIdentifier` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & elementAddr) noexcept(false);
+
+  /*!
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
    * If the element is found, the sc-address is stored in the 'outAddr' parameter, and the function returns true;
    * otherwise, it returns false.
    *
-   * @param sysIdtf The system identifier of the sc-element to find.
-   * @param outAddr A reference to store the sc-address of the found sc-element (if any).
+   * @param systemIdentifier A system identifier of the sc-element to find.
+   * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1157,18 +1334,68 @@ public:
    * @code
    * ScMemoryContext context;
    * ScAddr resultAddr;
-   * bool found = context.HelperFindBySystemIdtf("example_identifier", resultAddr);
+   * bool isFound = context.SearchElementBySystemIdentifier("example_identifier", resultAddr);
    * @endcode
    */
-  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr) noexcept(false);
+  _SC_EXTERN bool SearchElementBySystemIdentifier(
+      std::string const & systemIdentifier,
+      ScAddr & outElementAddr) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address.
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
+   *
+   * This function searches for an sc-element with the specified system identifier and returns its sc-address.
+   * If the element is found, the sc-address is stored in the 'outAddr' parameter, and the function returns true;
+   * otherwise, it returns false.
+   *
+   * @param systemIdentifier A system identifier of the sc-element to find.
+   * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
+   * @return Returns true if the sc-element is found; otherwise, returns false.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr resultAddr;
+   * bool isFound = context.HelperFindBySystemIdtf("example_identifier", resultAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchElementBySystemIdentifier` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & systemIdentifier, ScAddr & outElementAddr) noexcept(false);
+
+  /*!
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
    * If the element is found, the function returns its sc-address; otherwise, it throws an exception.
    *
-   * @param sysIdtf The system identifier of the sc-element to find.
+   * @param systemIdentifier A system identifier of the sc-element to find.
+   * @return Returns the sc-address of the found sc-element.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr resultAddr = context.SearchElementBySystemIdentifier("example_identifier");
+   * @endcode
+   */
+  _SC_EXTERN ScAddr SearchElementBySystemIdentifier(std::string const & systemIdentifier) noexcept(false);
+
+  /*!
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
+   *
+   * This function searches for an sc-element with the specified system identifier and returns its sc-address.
+   * If the element is found, the function returns its sc-address; otherwise, it throws an exception.
+   *
+   * @param systemIdentifier A system identifier of the sc-element to find.
    * @return Returns the sc-address of the found sc-element.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1178,17 +1405,24 @@ public:
    * ScMemoryContext context;
    * ScAddr resultAddr = context.HelperFindBySystemIdtf("example_identifier");
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchElementBySystemIdentifier` instead for better
+   * readability and standards compliance.
    */
-  _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf) noexcept(false);
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & systemIdentifier) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
+   * @brief Searches an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
    * A sc-address is then converted into a system identifier quintuple, which is stored in the 'outQuintuple'
    * parameter. If the element is found, the function returns true; otherwise, it returns false.
    *
-   * @param sysIdtf The system identifier of the sc-element to find.
+   * @param systemIdentifier The system identifier of the sc-element to find.
    * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
@@ -1198,15 +1432,47 @@ public:
    * @code
    * ScMemoryContext context;
    * ScSystemIdentifierQuintuple resultQuintuple;
-   * bool found = context.HelperFindBySystemIdtf("example_identifier", resultQuintuple);
+   * bool isFound = context.SearchElementBySystemIdentifier("example_identifier", resultQuintuple);
    * @endcode
    */
-  _SC_EXTERN bool HelperFindBySystemIdtf(
-      std::string const & sysIdtf,
+  _SC_EXTERN bool SearchElementBySystemIdentifier(
+      std::string const & systemIdentifier,
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*!
-   * Generates sc-constructions by object of `ScTemplate` and accumulates generated sc-construction into `result`.
+   * @brief Searches an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
+   *
+   * This function searches for an sc-element with the specified system identifier and returns its sc-address.
+   * A sc-address is then converted into a system identifier quintuple, which is stored in the 'outQuintuple'
+   * parameter. If the element is found, the function returns true; otherwise, it returns false.
+   *
+   * @param systemIdentifier The system identifier of the sc-element to find.
+   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).
+   * @return Returns true if the sc-element is found; otherwise, returns false.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool isFound = context.HelperFindBySystemIdtf("example_identifier", resultQuintuple);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchElementBySystemIdentifier` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
+      "compliance.’")
+  _SC_EXTERN bool HelperFindBySystemIdtf(
+      std::string const & systemIdentifier,
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
+
+  /*!
+   * @brief Generates sc-constructions by object of `ScTemplate` and accumulates generated sc-construction into
+   * `result`.
    * @param templateToGenerate An object of `ScTemplate` to find constructions by it.
    * @param result A generated sc-construction.
    * @param params A map of specified sc-template sc-variables to user replacements.
@@ -1216,7 +1482,7 @@ public:
    *
    * @code
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToGenerate;
    * templ.Triple(
@@ -1250,7 +1516,7 @@ public:
    *
    * @code
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToFind;
    * templ.Triple(
@@ -1289,7 +1555,7 @@ public:
    * @code
    * ...
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
@@ -1331,7 +1597,7 @@ public:
    * @code
    * ...
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
    * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
@@ -1377,7 +1643,7 @@ public:
    * @code
    * ...
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
    * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
@@ -1428,7 +1694,7 @@ public:
    * ...
    * ...
    * ScTemplate resultTemplate;
-   * ScAddr const & translatableTemplAddr = m_context->HelperFindBySystemIdtf("my_template");
+   * ScAddr const & translatableTemplAddr = m_context->SearchElementBySystemIdentifier("my_template");
    * m_context->HelperBuildTemplate(resultTemplate, translatableTemplAddr);
    * ...
    * @endcode
@@ -1494,6 +1760,16 @@ public:
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    */
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
+
+  /*!
+   * @brief Saves the memory state.
+   *
+   * This method saves the state of the sc-memory.
+   *
+   * @return Returns true if the memory state was successfully saved; otherwise, returns false.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   */
+  _SC_EXTERN bool Save();
 
 protected:
   _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr) noexcept;

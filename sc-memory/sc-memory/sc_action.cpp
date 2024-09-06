@@ -262,7 +262,7 @@ ScResult ScAction::FinishWithError() noexcept(false)
 
 std::string ScAction::GetActionPrettyString() const
 {
-  std::string actionName = m_context->HelperGetSystemIdtf(*this);
+  std::string actionName = m_context->GetElementSystemIdentifier(*this);
   if (actionName.empty())
     actionName = std::to_string(this->Hash());
 
@@ -277,7 +277,7 @@ std::string ScAction::GetActionClassPrettyString() const
   std::string actionClassName;
   if (m_context->IsElement(actionClassAddr))
   {
-    actionClassName = m_context->HelperGetSystemIdtf(actionClassAddr);
+    actionClassName = m_context->GetElementSystemIdentifier(actionClassAddr);
     if (actionClassName.empty())
       actionClassName = std::to_string(actionClassAddr.Hash());
   }

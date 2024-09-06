@@ -77,8 +77,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   ScAddr initMemoryGeneratedStructureAddr;
   if (params.init_memory_generated_upload)
-    initMemoryGeneratedStructureAddr =
-        ms_globalContext->HelperResolveSystemIdtf(params.init_memory_generated_structure, ScType::NodeConstStruct);
+    initMemoryGeneratedStructureAddr = ms_globalContext->ResolveElementSystemIdentifier(
+        params.init_memory_generated_structure, ScType::NodeConstStruct);
   ms_globalContext->m_contextStructureAddr = initMemoryGeneratedStructureAddr;
 
   ScKeynodes::Initialize(ms_globalContext);
@@ -856,53 +856,64 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
   return linkContentList;
 }
 
-bool ScMemoryContext::Save()
+bool ScMemoryContext::CheckConnector(
+    ScAddr const & sourcElementAddr,
+    ScAddr const & targetElementAddr,
+    ScType const & connectorType) const
 {
   CHECK_CONTEXT;
-  sc_result const result = sc_memory_save(m_context);
+
+  sc_result result;
+  bool status = sc_helper_check_arc_ext(m_context, *sourcElementAddr, *targetElementAddr, *connectorType, &result);
+
   switch (result)
   {
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to save sc-memory state because sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to save sc-memory state because sc-memory context hasn't write permissions");
+        utils::ExceptionInvalidState, "Not able to check sc-connector because sc-memory context is not authorized");
 
   default:
     break;
   }
 
-  return result == SC_RESULT_OK;
+  return status;
 }
 
-ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type /* = ScType()*/)
+bool ScMemoryContext::HelperCheckEdge(
+    ScAddr const & sourcElementAddr,
+    ScAddr const & targetElementAddr,
+    ScType const & connectorType) const
+{
+  return CheckConnector(sourcElementAddr, targetElementAddr, connectorType);
+}
+
+ScAddr ScMemoryContext::ResolveElementSystemIdentifier(
+    std::string const & systemIdentifier,
+    ScType const & elementType /* = ScType()*/)
 {
   CHECK_CONTEXT;
 
   ScSystemIdentifierQuintuple quintuple;
-  HelperResolveSystemIdtf(sysIdtf, type, quintuple);
+  ResolveElementSystemIdentifier(systemIdentifier, elementType, quintuple);
   return quintuple.addr1;
 }
 
-bool ScMemoryContext::HelperResolveSystemIdtf(
-    std::string const & sysIdtf,
-    ScType const & type,
+bool ScMemoryContext::ResolveElementSystemIdentifier(
+    std::string const & systemIdentifier,
+    ScType const & elementType,
     ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
-  bool result = HelperFindBySystemIdtf(sysIdtf, outQuintuple);
+  bool result = SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
   if (result)
     return result;
 
-  if (type.IsUnknown())
+  if (elementType.IsUnknown())
     return false;
 
-  ScAddr const & resultAddr = GenerateNode(type);
-  result = HelperSetSystemIdtf(sysIdtf, resultAddr, outQuintuple);
+  ScAddr const & resultAddr = GenerateNode(elementType);
+  result = SetElementSystemIdentifier(systemIdentifier, resultAddr, outQuintuple);
   if (result)
     return result;
 
@@ -913,22 +924,22 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
   return result;
 }
 
-bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
+bool ScMemoryContext::SetElementSystemIdentifier(std::string const & systemIdentifier, ScAddr const & elementAddr)
 {
   ScSystemIdentifierQuintuple quintuple;
-  return HelperSetSystemIdtf(sysIdtf, addr, quintuple);
+  return SetElementSystemIdentifier(systemIdentifier, elementAddr, quintuple);
 }
 
-bool ScMemoryContext::HelperSetSystemIdtf(
-    std::string const & sysIdtf,
-    ScAddr const & addr,
+bool ScMemoryContext::SetElementSystemIdentifier(
+    std::string const & systemIdentifier,
+    ScAddr const & elementAddr,
     ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
   sc_system_identifier_fiver quintuple;
-  sc_result const result =
-      sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &quintuple);
+  sc_result const result = sc_helper_set_system_identifier_ext(
+      m_context, *elementAddr, systemIdentifier.c_str(), (sc_uint32)systemIdentifier.size(), &quintuple);
 
   switch (result)
   {
@@ -970,12 +981,12 @@ bool ScMemoryContext::HelperSetSystemIdtf(
   return result == SC_RESULT_OK;
 }
 
-std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
+std::string ScMemoryContext::GetElementSystemIdentifier(ScAddr const & elementAddr)
 {
   CHECK_CONTEXT;
 
-  ScAddr idtfLink;
-  sc_result result = sc_helper_get_system_identifier_link(m_context, *addr, &idtfLink.m_realAddr);
+  ScAddr identifierLinkAddr;
+  sc_result result = sc_helper_get_system_identifier_link(m_context, *elementAddr, &identifierLinkAddr.m_realAddr);
 
   switch (result)
   {
@@ -991,79 +1002,50 @@ std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
     break;
   }
 
-  std::string systemIdtf;
+  std::string systemIdentifier;
   if (result == SC_RESULT_NO)
-    return systemIdtf;
+    return systemIdentifier;
 
-  ScStreamPtr stream = GetLinkContent(idtfLink);
-  if (stream && stream->IsValid())
+  ScStreamPtr linkContentStream = GetLinkContent(identifierLinkAddr);
+  if (linkContentStream && linkContentStream->IsValid())
   {
-    if (ScStreamConverter::StreamToString(stream, systemIdtf))
-      return systemIdtf;
+    if (ScStreamConverter::StreamToString(linkContentStream, systemIdentifier))
+      return systemIdentifier;
   }
 
-  return systemIdtf;
+  return systemIdentifier;
 }
 
-bool ScMemoryContext::CheckConnector(
-    ScAddr const & sourcElementAddr,
-    ScAddr const & targetElementAddr,
-    ScType const & connectorType) const
-{
-  CHECK_CONTEXT;
-
-  sc_result result;
-  bool status = sc_helper_check_arc_ext(m_context, *sourcElementAddr, *targetElementAddr, *connectorType, &result);
-
-  switch (result)
-  {
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to check sc-connector because sc-memory context is not authorized");
-
-  default:
-    break;
-  }
-
-  return status;
-}
-
-bool ScMemoryContext::HelperCheckEdge(
-    ScAddr const & sourcElementAddr,
-    ScAddr const & targetElementAddr,
-    ScType const & connectorType) const
-{
-  return CheckConnector(sourcElementAddr, targetElementAddr, connectorType);
-}
-
-bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
+bool ScMemoryContext::SearchElementBySystemIdentifier(std::string const & systemIdentifier, ScAddr & outAddr)
 {
   CHECK_CONTEXT;
 
   ScSystemIdentifierQuintuple outQuintuple;
-  bool status = HelperFindBySystemIdtf(sysIdtf, outQuintuple);
+  bool status = SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
   outAddr = outQuintuple.addr1;
 
   return status;
 }
 
-ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
+ScAddr ScMemoryContext::SearchElementBySystemIdentifier(std::string const & systemIdentifier)
 {
   CHECK_CONTEXT;
 
   ScSystemIdentifierQuintuple outQuintuple;
-  HelperFindBySystemIdtf(sysIdtf, outQuintuple);
+  SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
 
   return outQuintuple.addr1;
 }
 
-bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierQuintuple & outQuintuple)
+bool ScMemoryContext::SearchElementBySystemIdentifier(
+    std::string const & systemIdentifier,
+    ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
   sc_system_identifier_fiver quintuple;
   sc_result const result = sc_helper_find_element_by_system_identifier_ext(
-      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &quintuple);
+      m_context, systemIdentifier.c_str(), (sc_uint32)systemIdentifier.size(), &quintuple);
 
   switch (result)
   {
@@ -1093,13 +1075,13 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
 }
 
 ScTemplate::Result ScMemoryContext::HelperGenTemplate(
-    ScTemplate const & templ,
+    ScTemplate const & templateToGenerate,
     ScTemplateResultItem & result,
     ScTemplateParams const & params,
     ScTemplateResultCode * resultCode)
 {
   CHECK_CONTEXT;
-  return templ.Generate(*this, result, params, resultCode);
+  return templateToGenerate.Generate(*this, result, params, resultCode);
 }
 
 ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
@@ -1203,6 +1185,28 @@ ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
   res.m_nodesNum = uint32_t(stat.node_count);
 
   return res;
+}
+
+bool ScMemoryContext::Save()
+{
+  CHECK_CONTEXT;
+  sc_result const result = sc_memory_save(m_context);
+  switch (result)
+  {
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to save sc-memory state because sc-memory context is not authorized");
+
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to save sc-memory state because sc-memory context hasn't write permissions");
+
+  default:
+    break;
+  }
+
+  return result == SC_RESULT_OK;
 }
 
 SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END

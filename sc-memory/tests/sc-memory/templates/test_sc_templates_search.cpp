@@ -29,19 +29,19 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
 
     xAddr = m_ctx->GenerateNode(ScType::NodeConstMaterial);
     EXPECT_TRUE(xAddr.IsValid());
-    EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("x", xAddr));
+    EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("x", xAddr));
 
     _yAddr = m_ctx->GenerateNode(ScType::Var);
     EXPECT_TRUE(_yAddr.IsValid());
-    EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_y", _yAddr));
+    EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_y", _yAddr));
 
     _zAddr = m_ctx->GenerateNode(ScType::NodeVarRole);
     EXPECT_TRUE(_zAddr.IsValid());
-    EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_z", _zAddr));
+    EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_z", _zAddr));
 
     _sAddr = m_ctx->GenerateNode(ScType::NodeVarClass);
     EXPECT_TRUE(_sAddr.IsValid());
-    EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("_s", _sAddr));
+    EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_s", _sAddr));
 
     ScAddr const xyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
     EXPECT_TRUE(xyAddr.IsValid());
@@ -380,10 +380,12 @@ TEST_F(ScTemplateSearchTest, ResultDeduplication)
 
 TEST_F(ScTemplateSearchTest, EqualConstructions)
 {
-  ScAddr const & begin = m_ctx->HelperResolveSystemIdtf("begin", ScType::NodeConstClass);
-  ScAddr const & history = m_ctx->HelperResolveSystemIdtf("history", ScType::NodeConstClass);
-  ScAddr const & nrel_changes_history = m_ctx->HelperResolveSystemIdtf("nrel_changes_history", ScType::NodeConstNoRole);
-  ScAddr const & nrel_model_version = m_ctx->HelperResolveSystemIdtf("nrel_model_version", ScType::NodeConstNoRole);
+  ScAddr const & begin = m_ctx->ResolveElementSystemIdentifier("begin", ScType::NodeConstClass);
+  ScAddr const & history = m_ctx->ResolveElementSystemIdentifier("history", ScType::NodeConstClass);
+  ScAddr const & nrel_changes_history =
+      m_ctx->ResolveElementSystemIdentifier("nrel_changes_history", ScType::NodeConstNoRole);
+  ScAddr const & nrel_model_version =
+      m_ctx->ResolveElementSystemIdentifier("nrel_model_version", ScType::NodeConstNoRole);
 
   ScTemplate initVersionSearchTemplate;
   initVersionSearchTemplate.Triple(
@@ -444,9 +446,9 @@ TEST_F(ScTemplateSearchTest, StructureElements)
                                  "test_node => test_relation: [];;"));
   }
 
-  ScAddr const & sourceAddr = m_ctx->HelperResolveSystemIdtf("test_node");
+  ScAddr const & sourceAddr = m_ctx->ResolveElementSystemIdentifier("test_node");
   ScAddr const & targetAddr = m_ctx->GenerateLink(ScType::LinkConst);
-  ScAddr const & relationAddr = m_ctx->HelperResolveSystemIdtf("test_relation");
+  ScAddr const & relationAddr = m_ctx->ResolveElementSystemIdentifier("test_relation");
 
   ScTemplate templ;
   templ.Quintuple(

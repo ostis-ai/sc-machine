@@ -150,7 +150,7 @@ private:
     if (!varAddr.IsValid() || !m_context.IsElement(varAddr))
       return ScAddr::Empty;
 
-    std::string const & name = m_context.HelperGetSystemIdtf(varAddr);
+    std::string const & name = m_context.GetElementSystemIdentifier(varAddr);
     m_params.Get(name, result);
 
     return result;
@@ -254,7 +254,7 @@ private:
       if (replacementIt != m_replacements.cend())
         goto end;
 
-      varAddr = m_context.HelperFindBySystemIdtf(templateParamReplacementName);
+      varAddr = m_context.SearchElementBySystemIdentifier(templateParamReplacementName);
       if (!varAddr.IsValid())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,

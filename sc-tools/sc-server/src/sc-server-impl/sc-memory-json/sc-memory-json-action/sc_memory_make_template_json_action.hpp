@@ -25,7 +25,7 @@ protected:
         auto const & value = it.value();
         if (value.is_string())
         {
-          ScAddr const & addr = context->HelperFindBySystemIdtf(value.get<std::string>());
+          ScAddr const & addr = context->SearchElementBySystemIdentifier(value.get<std::string>());
           templParams.Add(key, addr);
         }
         else
@@ -50,7 +50,7 @@ protected:
         context->HelperBuildTemplate(*scTemplate, ScAddr(value.get<size_t>()), templParams);
       else if (type == "idtf")
       {
-        ScAddr const & templateStruct = context->HelperFindBySystemIdtf(value.get<std::string>());
+        ScAddr const & templateStruct = context->SearchElementBySystemIdentifier(value.get<std::string>());
         context->HelperBuildTemplate(*scTemplate, templateStruct, templParams);
       }
     }

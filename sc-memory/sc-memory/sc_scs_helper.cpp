@@ -27,12 +27,12 @@ protected:
     , m_fileInterface(std::move(fileInterface))
     , m_outputStructure(outputStructure)
   {
-    m_kNrelSysIdtf = m_ctx.HelperResolveSystemIdtf("nrel_system_identifier", ScType::NodeConstNoRole);
+    m_kNrelSysIdtf = m_ctx.ResolveElementSystemIdentifier("nrel_system_identifier", ScType::NodeConstNoRole);
     if (!m_kNrelSysIdtf.IsValid())
     {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Keynode `nrel_system_identifier` is not valid");
     }
-    m_kNrelSCsGlobalIdtf = m_ctx.HelperResolveSystemIdtf("nrel_scs_global_idtf", ScType::NodeConstNoRole);
+    m_kNrelSCsGlobalIdtf = m_ctx.ResolveElementSystemIdentifier("nrel_scs_global_idtf", ScType::NodeConstNoRole);
     if (!m_kNrelSCsGlobalIdtf.IsValid())
     {
       SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Keynode `nrel_scs_global_idtf` is not valid");
@@ -171,7 +171,7 @@ private:
       if (el.GetVisibility() == scs::Visibility::System)
       {
         ScSystemIdentifierQuintuple quintuple;
-        m_ctx.HelperFindBySystemIdtf(el.GetIdtf(), quintuple);
+        m_ctx.SearchElementBySystemIdentifier(el.GetIdtf(), quintuple);
         resultAddr = quintuple.addr1;
         result = {quintuple.addr2, quintuple.addr3, quintuple.addr4};
       }
@@ -202,7 +202,7 @@ private:
         if (el.GetVisibility() == scs::Visibility::System)
         {
           ScSystemIdentifierQuintuple fiver;
-          m_ctx.HelperSetSystemIdtf(el.GetIdtf(), resultAddr, fiver);
+          m_ctx.SetElementSystemIdentifier(el.GetIdtf(), resultAddr, fiver);
           result = {fiver.addr2, fiver.addr3, fiver.addr4};
         }
         else if (el.GetVisibility() == scs::Visibility::Global)

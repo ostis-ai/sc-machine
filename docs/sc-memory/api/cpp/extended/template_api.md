@@ -277,9 +277,9 @@ There is example code that generates equal sc-template.
 ```cpp
 ...
 // Find key concepts that should be used in sc-template.
-ScAddr const & conceptSetAddr = context.HelperFindBySystemIdtf("concept_set");
+ScAddr const & conceptSetAddr = context.SearchElementBySystemIdentifier("concept_set");
 ScAddr const & conceptBinaryRelationAddr 
-    = context.HelperFindBySystemIdtf("concept_binary_relation");
+    = context.SearchElementBySystemIdentifier("concept_binary_relation");
 
 // Create sc-template and add triples into this sc-template.
 ScTemplate templ;
@@ -414,7 +414,7 @@ Or you can it by specifying valid sc-address of some sc-template in sc-memory.
 ```cpp
 ...
 // Find by system identifier your sc-template in sc-memory.
-ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
+ScAddr const & templAddr = context.SearchElementBySystemIdentifier("my_template");
 
 // Build program object by this sc-template.
 ScTemplate templ;
@@ -469,10 +469,10 @@ sc-address of sc-structure in sc-memory.
 ```cpp
 ...
 // Find by system identifier your sc-template in sc-memory.
-ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
+ScAddr const & templAddr = context.SearchElementBySystemIdentifier("my_template");
 
 // Find by system identifier sc-address of sc-variable in your sc-template.
-ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
+ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
 // Create replacement in sc-memory.
 ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
@@ -511,7 +511,7 @@ ScAddr const & replAddr = params.Get("_set");
 ```cpp
 ...
 // Find by system identifier sc-address of sc-variable in your sc-template.
-ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
+ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
 // Create replacement in sc-memory.
 ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
@@ -927,9 +927,9 @@ passed, then all found sc-constructions triples are filtered by `filterCallback`
 
 ```cpp
 ...
-ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
-ScAddr const & setAddr = context.HelperFindBySystemIdtf("my_set");
-ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+ScAddr const & structureAddr = context.SearchElementBySystemIdentifier("my_structure");
+ScAddr const & setAddr = context.SearchElementBySystemIdentifier("my_set");
+ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
 
 ScTemplate templ;
 templ.Triple(

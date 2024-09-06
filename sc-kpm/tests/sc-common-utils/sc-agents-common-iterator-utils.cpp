@@ -23,11 +23,11 @@ TEST_F(ScMemoryTest, getNextFromSet)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  ScAddr const & set = m_ctx->HelperFindBySystemIdtf("set");
+  ScAddr const & set = m_ctx->SearchElementBySystemIdentifier("set");
   EXPECT_TRUE(set.IsValid());
-  ScAddr const & firstElement = m_ctx->HelperFindBySystemIdtf("element_1");
+  ScAddr const & firstElement = m_ctx->SearchElementBySystemIdentifier("element_1");
   EXPECT_TRUE(firstElement.IsValid());
-  ScAddr const & secondElement = m_ctx->HelperFindBySystemIdtf("element_2");
+  ScAddr const & secondElement = m_ctx->SearchElementBySystemIdentifier("element_2");
   EXPECT_TRUE(secondElement.IsValid());
 
   ScAddr const & expectedSecondElement = utils::IteratorUtils::getNextFromSet(&*m_ctx, set, firstElement);
@@ -51,13 +51,13 @@ TEST_F(ScMemoryTest, getNextFromSetDouble)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  ScAddr const & set = m_ctx->HelperFindBySystemIdtf("set");
+  ScAddr const & set = m_ctx->SearchElementBySystemIdentifier("set");
   EXPECT_TRUE(set.IsValid());
-  ScAddr const & firstElement = m_ctx->HelperFindBySystemIdtf("element_1");
+  ScAddr const & firstElement = m_ctx->SearchElementBySystemIdentifier("element_1");
   EXPECT_TRUE(firstElement.IsValid());
-  ScAddr const & secondElement = m_ctx->HelperFindBySystemIdtf("element_2");
+  ScAddr const & secondElement = m_ctx->SearchElementBySystemIdentifier("element_2");
   EXPECT_TRUE(secondElement.IsValid());
-  ScAddr const & thirdElement = m_ctx->HelperFindBySystemIdtf("element_3");
+  ScAddr const & thirdElement = m_ctx->SearchElementBySystemIdentifier("element_3");
   EXPECT_TRUE(thirdElement.IsValid());
 
   ScAddr const & expectedSecondElement = utils::IteratorUtils::getNextFromSet(&*m_ctx, set, firstElement);
@@ -81,9 +81,9 @@ TEST_F(ScMemoryTest, getNextFromSetNoSequence)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  ScAddr const & set = m_ctx->HelperFindBySystemIdtf("set");
+  ScAddr const & set = m_ctx->SearchElementBySystemIdentifier("set");
   EXPECT_TRUE(set.IsValid());
-  ScAddr const & firstElement = m_ctx->HelperFindBySystemIdtf("element_1");
+  ScAddr const & firstElement = m_ctx->SearchElementBySystemIdentifier("element_1");
   EXPECT_TRUE(firstElement.IsValid());
 
   ScAddr const & emptyElement = utils::IteratorUtils::getNextFromSet(&*m_ctx, set, firstElement);
@@ -101,11 +101,11 @@ TEST_F(ScMemoryTest, getAnyByOutRelation)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
-  ScAddr const dialog = m_ctx->HelperFindBySystemIdtf("dialog");
+  ScAddr const dialog = m_ctx->SearchElementBySystemIdentifier("dialog");
   EXPECT_TRUE(dialog.IsValid());
-  ScAddr const relation = m_ctx->HelperFindBySystemIdtf("rrel_1");
+  ScAddr const relation = m_ctx->SearchElementBySystemIdentifier("rrel_1");
   EXPECT_TRUE(relation.IsValid());
-  ScAddr const relationLast = m_ctx->HelperFindBySystemIdtf("rrel_last");
+  ScAddr const relationLast = m_ctx->SearchElementBySystemIdentifier("rrel_last");
   EXPECT_TRUE(relationLast.IsValid());
 
   ScAddr const message = utils::IteratorUtils::getAnyByOutRelation(&*m_ctx, dialog, relation);

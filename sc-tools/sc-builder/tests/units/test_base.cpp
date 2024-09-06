@@ -28,7 +28,7 @@ TEST_F(ScBuilderTest, Smoke)
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
 {
-  ScAddr checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_big");
+  ScAddr checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_big");
 
   ScTemplate checkTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
@@ -47,7 +47,7 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)
 {
-  ScAddr checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_small");
+  ScAddr checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplate checkTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
@@ -58,13 +58,13 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
 {
-  ScAddr const & checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_small");
+  ScAddr const & checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplateParams params;
-  ScAddr const & messageAddr = m_ctx->HelperFindBySystemIdtf("message");
+  ScAddr const & messageAddr = m_ctx->SearchElementBySystemIdentifier("message");
   params.Add("_message", messageAddr);
 
-  ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_message");
+  ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_message");
 
   ScTemplate checkTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
@@ -77,11 +77,11 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
 
 TEST_F(ScBuilderTest, SearchTemplateWithVarAddrSubstituteInParams)
 {
-  ScAddr const & checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_small");
+  ScAddr const & checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplateParams params;
-  ScAddr const & messageAddr = m_ctx->HelperFindBySystemIdtf("message");
-  ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_message");
+  ScAddr const & messageAddr = m_ctx->SearchElementBySystemIdentifier("message");
+  ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_message");
   params.Add(varAddr, messageAddr);
 
   ScTemplate checkTemplate;
@@ -96,13 +96,13 @@ TEST_F(ScBuilderTest, SearchTemplateWithVarAddrSubstituteInParams)
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall3)
 {
-  ScAddr const & checkTemplateStructure = m_ctx->HelperFindBySystemIdtf("test_template_small");
+  ScAddr const & checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplateParams params;
-  ScAddr const & messageAddr = m_ctx->HelperFindBySystemIdtf("message");
+  ScAddr const & messageAddr = m_ctx->SearchElementBySystemIdentifier("message");
   params.Add("_message", messageAddr);
 
-  ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_message");
+  ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_message");
 
   ScTemplate checkTemplate;
   EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));

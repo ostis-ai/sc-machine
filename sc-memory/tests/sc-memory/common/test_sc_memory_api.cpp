@@ -63,9 +63,9 @@ TEST_F(ScMemoryTest, SetGetFindSystemIdentifier)
 {
   ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
 
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr));
-  EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
-  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), addr);
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("test_node", addr));
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(addr), "test_node");
+  EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier("test_node"), addr);
 }
 
 TEST_F(ScMemoryTest, SetGetFindSystemIdentifierWithOutFiver)
@@ -73,11 +73,11 @@ TEST_F(ScMemoryTest, SetGetFindSystemIdentifierWithOutFiver)
   ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScSystemIdentifierQuintuple setFiver;
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr, setFiver));
-  EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("test_node", addr, setFiver));
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(addr), "test_node");
 
   ScSystemIdentifierQuintuple quintuple;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", quintuple));
+  EXPECT_TRUE(m_ctx->SearchElementBySystemIdentifier("test_node", quintuple));
 
   EXPECT_EQ(setFiver.addr1, quintuple.addr1);
   EXPECT_EQ(setFiver.addr2, quintuple.addr2);
@@ -95,36 +95,36 @@ TEST_F(ScMemoryTest, SetGetSystemIdentifierErrorSetTwice)
 {
   ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
 
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf("test_node", addr));
-  EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
-  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), addr);
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("test_node", addr));
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(addr), "test_node");
+  EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier("test_node"), addr);
 
   ScAddr const & otherAddr = m_ctx->GenerateNode(ScType::NodeConst);
-  EXPECT_FALSE(m_ctx->HelperSetSystemIdtf("test_node", otherAddr));
+  EXPECT_FALSE(m_ctx->SetElementSystemIdentifier("test_node", otherAddr));
 }
 
 TEST_F(ScMemoryTest, ResolveGetSystemIdentifier)
 {
-  ScAddr const & addr = m_ctx->HelperResolveSystemIdtf("test_node", ScType::NodeConst);
+  ScAddr const & addr = m_ctx->ResolveElementSystemIdentifier("test_node", ScType::NodeConst);
 
   EXPECT_TRUE(addr.IsValid());
-  EXPECT_EQ(m_ctx->HelperGetSystemIdtf(addr), "test_node");
-  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), addr);
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(addr), "test_node");
+  EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier("test_node"), addr);
 }
 
 TEST_F(ScMemoryTest, ResolveGetSystemIdentifierWithOutFiver)
 {
   ScSystemIdentifierQuintuple resolveQuintuple;
-  EXPECT_TRUE(m_ctx->HelperResolveSystemIdtf("test_node", ScType::NodeConst, resolveQuintuple));
+  EXPECT_TRUE(m_ctx->ResolveElementSystemIdentifier("test_node", ScType::NodeConst, resolveQuintuple));
 
-  EXPECT_EQ(m_ctx->HelperGetSystemIdtf(resolveQuintuple.addr1), "test_node");
-  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf("test_node"), resolveQuintuple.addr1);
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(resolveQuintuple.addr1), "test_node");
+  EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier("test_node"), resolveQuintuple.addr1);
 
   ScSystemIdentifierQuintuple foundQuintuple;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("test_node", foundQuintuple));
+  EXPECT_TRUE(m_ctx->SearchElementBySystemIdentifier("test_node", foundQuintuple));
 
   ScAddr addr;
-  EXPECT_FALSE(m_ctx->HelperFindBySystemIdtf("test_node1", addr));
+  EXPECT_FALSE(m_ctx->SearchElementBySystemIdentifier("test_node1", addr));
 
   EXPECT_EQ(resolveQuintuple.addr1, foundQuintuple.addr1);
   EXPECT_EQ(resolveQuintuple.addr2, foundQuintuple.addr2);

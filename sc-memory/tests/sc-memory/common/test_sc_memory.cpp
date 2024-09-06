@@ -19,8 +19,8 @@ void checkConnectionInStruct(
     EXPECT_TRUE(checkEdge);
     if (checkEdge == SC_FALSE)
       SC_LOG_ERROR(
-          "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s"
-          + m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to struct");
+          "Edge between %s" + m_ctx->GetElementSystemIdentifier(keynodeAddr) + " and %s"
+          + m_ctx->GetElementSystemIdentifier(otherKeynodeAddr) + " doesn't belong to struct");
   }
 }
 
@@ -110,13 +110,13 @@ TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
 {
   std::string russianIdtf = "узел";
   ScAddr russianNode = m_ctx->GenerateNode(ScType::NodeConstClass);
-  EXPECT_THROW(m_ctx->HelperSetSystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->HelperFindBySystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->SetElementSystemIdentifier(russianIdtf, russianNode), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->SearchElementBySystemIdentifier(russianIdtf, russianNode), utils::ExceptionInvalidParams);
 
   std::string englishIdtf = "russianNode";
   ScAddr englishNode = m_ctx->GenerateNode(ScType::NodeConstClass);
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf(englishIdtf, englishNode));
-  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier(englishIdtf, englishNode));
+  EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier(englishIdtf), englishNode);
 }
 
 TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
@@ -137,9 +137,9 @@ static inline ScTemplateKeynode const & testTemplate =
 
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {
-  ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
+  ScAddr const & initMemoryGeneratedStructure = m_ctx->SearchElementBySystemIdentifier("result_structure");
   EXPECT_TRUE(initMemoryGeneratedStructure.IsValid());
-  ScAddr const & kNrelSystemIdtf = m_ctx->HelperFindBySystemIdtf("nrel_system_identifier");
+  ScAddr const & kNrelSystemIdtf = m_ctx->SearchElementBySystemIdentifier("nrel_system_identifier");
   EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 

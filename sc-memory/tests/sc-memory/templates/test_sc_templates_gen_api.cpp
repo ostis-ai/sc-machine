@@ -396,7 +396,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementNameInParams)
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementVarInParams)
 {
-  m_ctx->HelperResolveSystemIdtf("_var", ScType::NodeVar);
+  m_ctx->ResolveElementSystemIdentifier("_var", ScType::NodeVar);
 
   ScTemplate templ;
   templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_edge", ScType::NodeVar >> "_addr2");

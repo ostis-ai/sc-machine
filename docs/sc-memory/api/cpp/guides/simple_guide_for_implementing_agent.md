@@ -134,7 +134,7 @@ To learn more about opportunities and restrictions for implementing agents, see 
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
-  return m_context.HelperFindBySystemIdtf("action_calculate_set_power");
+  return m_context.SearchElementBySystemIdentifier("action_calculate_set_power");
   // You have to make sure that this class is in the knowledge base.
 }
 // You must specify valid action class. In other case, the agent can’t be 
@@ -182,7 +182,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   ScAddr const & arcCommonAddr 
     = m_context.GenerateConnector(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
-    = m_context.HelperFindBySystemIdtf("nrel_set_power");
+    = m_context.SearchElementBySystemIdentifier("nrel_set_power");
   // You have to make sure that this norole relation is in the knowledge base.
   ScAddr const & arcAccessAddr = m_context.GenerateConnector(
     ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
@@ -213,7 +213,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
 ### **6. Define keynodes for implemented agent and integrate their in agent program.**
 
-For each agent, you can specify key sc-elements that this agent uses during the execution of its program. These key sc-elements are sc-elements that agent does not generate, but uses in the process of searching for or creating connections between entities in knowledge base. Key sc-elements are named keynodes. You can find these keynodes by its system identifiers (method `HelperFindBySystemIdtf`) if they have such identifiers. Also, you can use class `ScKeynode` to define keynodes as static objects and use them in agents.
+For each agent, you can specify key sc-elements that this agent uses during the execution of its program. These key sc-elements are sc-elements that agent does not generate, but uses in the process of searching for or creating connections between entities in knowledge base. Key sc-elements are named keynodes. You can find these keynodes by its system identifiers (method `SearchElementBySystemIdentifier`) if they have such identifiers. Also, you can use class `ScKeynode` to define keynodes as static objects and use them in agents.
 
 ```diff
 set-agents-module/
@@ -278,7 +278,7 @@ public:
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
-- return m_context.HelperFindBySystemIdtf("action_calculate_set_power");
+- return m_context.SearchElementBySystemIdentifier("action_calculate_set_power");
 + return ScSetKeynodes::action_calculate_set_power;
 }
 
@@ -287,7 +287,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   ...
 
 - ScAddr const & nrelSetPowerAddr 
--   = m_context.HelperFindBySystemIdtf("nrel_set_power");
+-   = m_context.SearchElementBySystemIdentifier("nrel_set_power");
 - ScAddr const & arcAccessAddr = m_context.GenerateConnector(
 -   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
 + ScAddr const & arcAccessAddr = m_context.GenerateConnector(

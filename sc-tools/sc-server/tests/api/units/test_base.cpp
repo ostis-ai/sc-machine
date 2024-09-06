@@ -142,9 +142,9 @@ TEST_F(ScServerTest, CreateElementsBySCs)
   EXPECT_FALSE(response["status"].get<sc_bool>());
   EXPECT_FALSE(response["errors"][0]["message"].is_null());
 
-  ScAddr const & classSet = m_ctx->HelperFindBySystemIdtf("concept_set");
+  ScAddr const & classSet = m_ctx->SearchElementBySystemIdentifier("concept_set");
   EXPECT_TRUE(classSet.IsValid());
-  ScAddr const & set1 = m_ctx->HelperFindBySystemIdtf("set1");
+  ScAddr const & set1 = m_ctx->SearchElementBySystemIdentifier("set1");
   EXPECT_TRUE(set1.IsValid());
   EXPECT_TRUE(m_ctx->CheckConnector(classSet, set1, ScType::EdgeAccessConstPosPerm));
   EXPECT_TRUE(responsePayload[0].get<sc_bool>());
@@ -179,12 +179,12 @@ TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
   EXPECT_FALSE(response["errors"][0]["message"].is_null());
 
   ScSystemIdentifierQuintuple classSetSysIdtfFiver;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("concept_set", classSetSysIdtfFiver));
+  EXPECT_TRUE(m_ctx->SearchElementBySystemIdentifier("concept_set", classSetSysIdtfFiver));
   ScAddr const & classSet = classSetSysIdtfFiver.addr1;
   EXPECT_TRUE(classSet.IsValid());
 
   ScSystemIdentifierQuintuple set1SysIdtfFiver;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("set1", set1SysIdtfFiver));
+  EXPECT_TRUE(m_ctx->SearchElementBySystemIdentifier("set1", set1SysIdtfFiver));
   ScAddr const & set1 = set1SysIdtfFiver.addr1;
   EXPECT_TRUE(set1.IsValid());
 
@@ -374,7 +374,7 @@ TEST_F(ScServerTest, HandleKeynodes)
   EXPECT_TRUE(addr2.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(addr2) == ScType::NodeConstClass);
   EXPECT_TRUE(addr1 == addr2);
-  EXPECT_TRUE("any_system_identifier" == m_ctx->HelperGetSystemIdtf(addr1));
+  EXPECT_TRUE("any_system_identifier" == m_ctx->GetElementSystemIdentifier(addr1));
 
   client.Stop();
 }
@@ -885,9 +885,9 @@ TEST_F(ScServerTest, SearchTemplate)
 
 TEST_F(ScServerTest, SearchStringTemplate)
 {
-  ScAddr const & addr1 = m_ctx->HelperResolveSystemIdtf("node1", ScType::NodeConst);
-  ScAddr const & addr2 = m_ctx->HelperResolveSystemIdtf("node2", ScType::NodeConst);
-  ScAddr const & noroleAddr = m_ctx->HelperResolveSystemIdtf("norole1", ScType::NodeConstNoRole);
+  ScAddr const & addr1 = m_ctx->ResolveElementSystemIdentifier("node1", ScType::NodeConst);
+  ScAddr const & addr2 = m_ctx->ResolveElementSystemIdentifier("node2", ScType::NodeConst);
+  ScAddr const & noroleAddr = m_ctx->ResolveElementSystemIdentifier("norole1", ScType::NodeConstNoRole);
 
   ScAddr const & edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, addr1, addr2);
   m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, noroleAddr, edge);
@@ -953,7 +953,7 @@ TEST_F(ScServerTest, SearchTemplateByAddr)
 
   ScMemoryJsonPayload payload;
   payload["templ"]["type"] = "addr";
-  payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
+  payload["templ"]["value"] = m_ctx->SearchElementBySystemIdentifier("test_template_1").Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -1104,7 +1104,7 @@ TEST_F(ScServerTest, GenerateTemplateByAddr)
 
   ScMemoryJsonPayload payload;
   payload["templ"]["type"] = "addr";
-  payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
+  payload["templ"]["value"] = m_ctx->SearchElementBySystemIdentifier("test_template_1").Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
   EXPECT_TRUE(client.Send(payloadString));
 
