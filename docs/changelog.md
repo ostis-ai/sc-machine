@@ -24,9 +24,35 @@ encapsulated this logic;
   - completely moved from code generation to template programming;
   - improved the API and aligned with our description of how it should be;
   - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
+- We redesigned all `ScMemoryContext` methods to a common style. All methods with not correct names were deprecated, and new ones were added. See the table below to see which methods have been replaced.
+  
+  | Deprecated method                   | Substitution method                   |
+  |-------------------------------------|---------------------------------------|
+  | CreateNode                          | GenerateNode                          |
+  | CreateLink                          | GenerateLink                          |
+  | CreateEdge                          | GenerateConnector                     |
+  | GetEdgeSource                       | GetArcSourceElement                   |
+  | GetEdgeTarget                       | GetArcTargetElement                   |
+  | GetEdgeInfo                         | GetConnectorIncidentElements          |
+  | HelperCheckEdge                     | CheckConnector                        |
+  | FindLinksByContent                  | SearchLinksByContent                  |
+  | FindLinksByContentSubstring         | SearchLinksByContentSubstring         |
+  | FindLinksContentsByContentSubstring | SearchLinksContentsByContentSubstring |
+  | HelperSetSystemIdtf                 | SetElementSystemIdentifier            |
+  | HelperGetSystemIdtf                 | GetElementSystemIdentifier            |
+  | HelperResolveSystemIdtf             | ResolveElementSystemIdentifier        |
+  | HelperFindBySystemIdtf              | SearchElementBySystemIdentifier       |
+  | HelperGenTemplate                   | GenerateByTemplate                    |
+  | HelperSearchTemplate                | SearchByTemplate                      |
+  | HelperBuildTemplate                 | BuildByTemplate                       |
+  | CalculateStat                       | CalculateStatistics                   |
+  | BeingEventsPending                  | BeginEventsPending                    |
+
+  See documentation, to learn more about using of new methods.
 
 ### Added
 
+- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, BuildByTemplate, CalculateStatistics, BeginEventsPending
 - Simple guide for implementing agent in C++
 - Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
 - Full tests for C++ Agents API
@@ -120,6 +146,8 @@ encapsulated this logic;
 
 ### Deprecated
 
+- Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperBuildTemplate, CalculateStat, BeingEventsPending
+- Misleading methods of `ScMemoryContext`
 - Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve
 
 ### Removed
@@ -180,7 +208,7 @@ encapsulated this logic;
 - Support recursive curl braces in SCs-code level 2
 - Support semantic sc-types for sc-node in SCs-code level 1
 - Support sc-links for SCs-code level 1
-- BuildTemplate with params that have varAddr replacements
+- HelperBuildTemplate with params that have varAddr replacements
 - Warnings for GNU compilers
 - Warnings in sc-machine about deprecated methods
 - Behavior of the agent_erase_elements on not his action classes
