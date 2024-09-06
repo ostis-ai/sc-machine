@@ -30,12 +30,12 @@ void EmitEvent(WaitTestData & data)
   ScMemoryContext ctx;
 
   ScAddr const node = data.m_addrFrom.IsValid() ? data.m_addrFrom : ctx.GenerateNode(ScType::NodeConst);
-  ScAddr const edge = ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, node, data.m_addr);
+  ScAddr const arcAddr = ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, node, data.m_addr);
 
   ASSERT_TRUE(node.IsValid());
-  ASSERT_TRUE(edge.IsValid());
+  ASSERT_TRUE(arcAddr.IsValid());
 
-  data.m_isDone = edge.IsValid();
+  data.m_isDone = arcAddr.IsValid();
 }
 
 }  // namespace

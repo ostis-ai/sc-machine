@@ -48,7 +48,7 @@ public:
       m_nodes.push_back(m_ctx->GenerateNode(ScType::NodeConst));
 
     for (size_t i = 0; i < edgeNum; ++i)
-      m_ctx->CreateEdge(
+      m_ctx->GenerateConnector(
           ScType::EdgeAccessConstPosPerm, m_nodes[random() % m_nodes.size()], m_nodes[random() % m_nodes.size()]);
   }
 

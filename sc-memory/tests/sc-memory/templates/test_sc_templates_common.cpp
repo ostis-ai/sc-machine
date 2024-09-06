@@ -105,7 +105,7 @@ TEST_F(ScTemplateCommonTest, search)
   }
 
   ScTemplate templ;
-  templ.Triple(addrSrc >> "addrSrc", ScType::EdgeAccessVarPosPerm >> "edge", ScType::NodeVar >> "addrTrg");
+  templ.Triple(addrSrc >> "addrSrc", ScType::EdgeAccessVarPosPerm >> "arcAddr", ScType::NodeVar >> "addrTrg");
 
   ScTemplateSearchResult result;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
@@ -117,7 +117,7 @@ TEST_F(ScTemplateCommonTest, search)
 
     EXPECT_EQ(r["addrSrc"], addrSrc);
 
-    EXPECT_TRUE(HasAddr(edges, r["edge"]));
+    EXPECT_TRUE(HasAddr(edges, r["arcAddr"]));
     EXPECT_TRUE(HasAddr(nodes, r["addrTrg"]));
   }
 }
@@ -206,7 +206,7 @@ TEST_F(ScTemplateCommonTest, params_invalid)
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
 
-  // test edge
+  // test arcAddr
   {
     ScTemplateParams params;
     params.Add("_2", addrEdge2);
@@ -230,7 +230,7 @@ TEST_F(ScTemplateCommonTest, params_invalid)
           TestTemplParams(*m_ctx)(ScType::NodeConst >> "_1", ScType::EdgeAccessVarPosPerm >> "_2", addrConst >> "3"));
     }
 
-    // edge is const
+    // arcAddr is const
     {
       EXPECT_EQ(
           false,

@@ -177,7 +177,7 @@ BENCHMARK_TEMPLATE(BM_ServerRanged, TestScServerComplex)->Unit(benchmark::TimeUn
 
 BENCHMARK_TEMPLATE(BM_ServerRanged, TestGenerateNode)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
-BENCHMARK_TEMPLATE(BM_ServerRanged, TestCreateEdge)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
+BENCHMARK_TEMPLATE(BM_ServerRanged, TestGenerateConnector)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 
 BENCHMARK_TEMPLATE(BM_ServerRanged, TestGenerateLink)->Unit(benchmark::TimeUnit::kMicrosecond)->Iterations(1000);
 

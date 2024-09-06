@@ -13,8 +13,8 @@ TEST_F(ScTemplateSearchApiTest, SearchWithResultNotSafeGet)
   EXPECT_TRUE(addr1.IsValid());
   ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arcAddr.IsValid());
 
   ScTemplate templ;
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
@@ -27,8 +27,8 @@ TEST_F(ScTemplateSearchApiTest, SearchWithResultNotSafeGet)
 
   EXPECT_EQ(item[0], addr1);
   EXPECT_EQ(item["_addr1"], addr1);
-  EXPECT_EQ(item[1], edge);
-  EXPECT_EQ(item["_edge"], edge);
+  EXPECT_EQ(item[1], arcAddr);
+  EXPECT_EQ(item["_edge"], arcAddr);
   EXPECT_EQ(item[2], addr2);
   EXPECT_EQ(item["_addr2"], addr2);
 
@@ -51,8 +51,8 @@ TEST_F(ScTemplateSearchApiTest, SearchWithResultSafeGet)
   EXPECT_TRUE(addr1.IsValid());
   ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arcAddr.IsValid());
 
   ScTemplate templ;
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
@@ -71,9 +71,9 @@ TEST_F(ScTemplateSearchApiTest, SearchWithResultSafeGet)
   EXPECT_EQ(foundAddr, addr1);
 
   EXPECT_TRUE(item.Get(1, foundAddr));
-  EXPECT_EQ(foundAddr, edge);
+  EXPECT_EQ(foundAddr, arcAddr);
   EXPECT_TRUE(item.Get("_edge", foundAddr));
-  EXPECT_EQ(foundAddr, edge);
+  EXPECT_EQ(foundAddr, arcAddr);
 
   EXPECT_TRUE(item.Get(2, foundAddr));
   EXPECT_EQ(foundAddr, addr2);
@@ -94,8 +94,8 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallback)
   EXPECT_TRUE(addr1.IsValid());
   ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arcAddr.IsValid());
 
   ScTemplate templ;
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
@@ -113,9 +113,9 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallback)
         EXPECT_EQ(foundAddr, addr1);
 
         EXPECT_TRUE(item.Get(1, foundAddr));
-        EXPECT_EQ(foundAddr, edge);
+        EXPECT_EQ(foundAddr, arcAddr);
         EXPECT_TRUE(item.Get("_edge", foundAddr));
-        EXPECT_EQ(foundAddr, edge);
+        EXPECT_EQ(foundAddr, arcAddr);
 
         EXPECT_TRUE(item.Get(2, foundAddr));
         EXPECT_EQ(foundAddr, addr2);
@@ -134,8 +134,8 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackForLoop)
   EXPECT_TRUE(addr1.IsValid());
   ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arcAddr.IsValid());
 
   ScTemplate templ;
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
@@ -162,13 +162,13 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   EXPECT_TRUE(addr1.IsValid());
   ScAddr const & addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const & edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arcAddr.IsValid());
 
   ScAddr const & structureAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
   m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, structureAddr, addr1);
   m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, structureAddr, addr2);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, structureAddr, edge);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, structureAddr, arcAddr);
 
   ScTemplate templ;
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");

@@ -220,12 +220,12 @@ bool ScMemoryContext::IsValid() const
   return m_context != nullptr;
 }
 
-bool ScMemoryContext::IsElement(ScAddr const & addr) const
+bool ScMemoryContext::IsElement(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  bool status = sc_memory_is_element_ext(m_context, *addr, &result);
+  bool status = sc_memory_is_element_ext(m_context, *elementAddr, &result);
 
   switch (result)
   {
@@ -244,12 +244,12 @@ bool ScMemoryContext::IsElement(ScAddr const & addr) const
   return status;
 }
 
-size_t ScMemoryContext::GetElementOutgoingArcsCount(ScAddr const & addr) const
+size_t ScMemoryContext::GetElementOutgoingArcsCount(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  size_t const count = sc_memory_get_element_outgoing_arcs_count(m_context, *addr, &result);
+  size_t const count = sc_memory_get_element_outgoing_arcs_count(m_context, *elementAddr, &result);
 
   switch (result)
   {
@@ -274,12 +274,17 @@ size_t ScMemoryContext::GetElementOutgoingArcsCount(ScAddr const & addr) const
   return count;
 }
 
-size_t ScMemoryContext::GetElementIncomingArcsCount(ScAddr const & addr) const
+size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & elementAddr) const
+{
+  return GetElementOutgoingArcsCount(elementAddr);
+}
+
+size_t ScMemoryContext::GetElementIncomingArcsCount(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  size_t const count = sc_memory_get_element_incoming_arcs_count(m_context, *addr, &result);
+  size_t const count = sc_memory_get_element_incoming_arcs_count(m_context, *elementAddr, &result);
 
   switch (result)
   {
@@ -304,11 +309,16 @@ size_t ScMemoryContext::GetElementIncomingArcsCount(ScAddr const & addr) const
   return count;
 }
 
-bool ScMemoryContext::EraseElement(ScAddr const & addr)
+size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & elementAddr) const
+{
+  return GetElementIncomingArcsCount(elementAddr);
+}
+
+bool ScMemoryContext::EraseElement(ScAddr const & elementAddr)
 {
   CHECK_CONTEXT;
 
-  sc_result const result = sc_memory_element_free(m_context, *addr);
+  sc_result const result = sc_memory_element_free(m_context, *elementAddr);
 
   switch (result)
   {
@@ -333,12 +343,12 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
   return result == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::GenerateNode(ScType const & type)
+ScAddr ScMemoryContext::GenerateNode(ScType const & nodeType)
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_addr const addr = sc_memory_node_new_ext(m_context, *type, &result);
+  sc_addr const nodeAddr = sc_memory_node_new_ext(m_context, *nodeType, &result);
 
   switch (result)
   {
@@ -358,20 +368,20 @@ ScAddr ScMemoryContext::GenerateNode(ScType const & type)
     break;
   }
 
-  return addr;
+  return nodeAddr;
 }
 
-ScAddr ScMemoryContext::GenerateNode(ScType const & type)
+ScAddr ScMemoryContext::CreateNode(ScType const & nodeType)
 {
-  return GenerateNode(type);
+  return GenerateNode(nodeType);
 }
 
-ScAddr ScMemoryContext::GenerateLink(ScType const & type /* = ScType::LinkConst */)
+ScAddr ScMemoryContext::GenerateLink(ScType const & linkType /* = ScType::LinkConst */)
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_addr const addr = sc_memory_link_new_ext(m_context, *type, &result);
+  sc_addr const linkAddr = sc_memory_link_new_ext(m_context, *linkType, &result);
 
   switch (result)
   {
@@ -391,15 +401,24 @@ ScAddr ScMemoryContext::GenerateLink(ScType const & type /* = ScType::LinkConst 
     break;
   }
 
-  return addr;
+  return linkAddr;
 }
 
-ScAddr ScMemoryContext::GenerateConnector(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+ScAddr ScMemoryContext::CreateLink(ScType const & linkType)
+{
+  return GenerateLink(linkType);
+}
+
+ScAddr ScMemoryContext::GenerateConnector(
+    ScType const & connectorType,
+    ScAddr const & sourceElementAddr,
+    ScAddr const & targetElementAddr)
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_addr const addr = sc_memory_arc_new_ext(m_context, *type, *addrBeg, *addrEnd, &result);
+  sc_addr const connectorAddr =
+      sc_memory_arc_new_ext(m_context, *connectorType, *sourceElementAddr, *targetElementAddr, &result);
 
   switch (result)
   {
@@ -434,15 +453,23 @@ ScAddr ScMemoryContext::GenerateConnector(ScType const & type, ScAddr const & ad
     break;
   }
 
-  return addr;
+  return connectorAddr;
 }
 
-ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
+ScAddr ScMemoryContext::CreateEdge(
+    ScType const & connectorType,
+    ScAddr const & sourceElementAddr,
+    ScAddr const & targetElementAddr)
+{
+  return GenerateConnector(connectorType, sourceElementAddr, targetElementAddr);
+}
+
+ScType ScMemoryContext::GetElementType(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
-  sc_type type = 0;
-  sc_result const result = sc_memory_get_element_type(m_context, *addr, &type);
+  sc_type elementType = 0;
+  sc_result const result = sc_memory_get_element_type(m_context, *elementAddr, &elementType);
 
   switch (result)
   {
@@ -461,14 +488,14 @@ ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
     break;
   }
 
-  return ScType{type};
+  return ScType{elementType};
 }
 
-bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
+bool ScMemoryContext::SetElementSubtype(ScAddr const & elementAddr, ScType newSubtype)
 {
   CHECK_CONTEXT;
 
-  sc_result const result = sc_memory_change_element_subtype(m_context, *addr, subtype);
+  sc_result const result = sc_memory_change_element_subtype(m_context, *elementAddr, newSubtype);
 
   switch (result)
   {
@@ -490,12 +517,12 @@ bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
   return result == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
+ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & arcAddr) const
 {
   CHECK_CONTEXT;
 
-  ScAddr addr;
-  sc_result const result = sc_memory_get_arc_begin(m_context, *edgeAddr, &addr.m_realAddr);
+  ScAddr sourceElementAddr;
+  sc_result const result = sc_memory_get_arc_begin(m_context, *arcAddr, &sourceElementAddr.m_realAddr);
 
   switch (result)
   {
@@ -522,15 +549,15 @@ ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
     break;
   }
 
-  return addr;
+  return sourceElementAddr;
 }
 
-ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
+ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & arcAddr) const
 {
   CHECK_CONTEXT;
 
-  ScAddr addr;
-  sc_result const result = sc_memory_get_arc_end(m_context, *edgeAddr, &addr.m_realAddr);
+  ScAddr targetElementAddr;
+  sc_result const result = sc_memory_get_arc_end(m_context, *arcAddr, &targetElementAddr.m_realAddr);
 
   switch (result)
   {
@@ -557,15 +584,17 @@ ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
     break;
   }
 
-  return addr;
+  return targetElementAddr;
 }
 
-bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
+std::tuple<ScAddr, ScAddr> ScMemoryContext::GetConnectorIncidentElements(ScAddr const & connectorAddr) const
 {
   CHECK_CONTEXT;
 
-  sc_result const result =
-      sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr);
+  ScAddr firstIncidentElementAddr;
+  ScAddr secondIncidentElementAddr;
+  sc_result const result = sc_memory_get_arc_info(
+      m_context, *connectorAddr, &firstIncidentElementAddr.m_realAddr, &secondIncidentElementAddr.m_realAddr);
 
   switch (result)
   {
@@ -591,17 +620,32 @@ bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAdd
     break;
   }
 
+  return {firstIncidentElementAddr, secondIncidentElementAddr};
+}
+
+bool ScMemoryContext::GetEdgeInfo(
+    ScAddr const & connectorAddr,
+    ScAddr & outFirstIncidentElementAddr,
+    ScAddr & outSecondIncidentElementAddr) const
+{
+  auto const [firstIncidentElementAddr, secondIncidentElementAddr] = GetConnectorIncidentElements(connectorAddr);
+  outFirstIncidentElementAddr = firstIncidentElementAddr;
+  outSecondIncidentElementAddr = secondIncidentElementAddr;
   return true;
 }
 
-bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString)
+bool ScMemoryContext::SetLinkContent(
+    ScAddr const & linkAddr,
+    ScStreamPtr const & linkContentStream,
+    bool isSearchableString)
 {
   CHECK_CONTEXT;
 
-  if (!stream || !stream->IsValid())
+  if (!linkContentStream || !linkContentStream->IsValid())
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to set content");
 
-  sc_result const result = sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString);
+  sc_result const result =
+      sc_memory_set_link_content_ext(m_context, *linkAddr, linkContentStream->m_stream, isSearchableString);
 
   switch (result)
   {
@@ -636,12 +680,12 @@ bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & st
   return result == SC_RESULT_OK;
 }
 
-ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
+ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & linkAddr)
 {
   CHECK_CONTEXT;
 
-  sc_stream * s = nullptr;
-  sc_result const result = sc_memory_get_link_content(m_context, *addr, &s);
+  sc_stream * linkContentStream = nullptr;
+  sc_result const result = sc_memory_get_link_content(m_context, *linkAddr, &linkContentStream);
 
   switch (result)
   {
@@ -666,7 +710,7 @@ ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
     break;
   }
 
-  return std::make_shared<ScStream>(s);
+  return std::make_shared<ScStream>(linkContentStream);
 }
 
 void _PushLinkAddr(void * _data, sc_addr const link_addr)
@@ -693,17 +737,17 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
 
 #define _ERASE_DATA(_data) delete[] _data
 
-ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
+ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContentStream)
 {
   CHECK_CONTEXT;
 
-  if (!stream || !stream->IsValid())
+  if (!linkContentStream || !linkContentStream->IsValid())
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content");
 
   ScAddrVector linkAddrList;
   void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
   sc_result const result =
-      sc_memory_find_links_with_content_string_ext(m_context, stream->m_stream, data, _PushLinkAddr);
+      sc_memory_find_links_with_content_string_ext(m_context, linkContentStream->m_stream, data, _PushLinkAddr);
   _ERASE_DATA(data);
 
   switch (result)
@@ -727,18 +771,20 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
   return linkAddrList;
 }
 
-ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix)
+ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix)
 {
   CHECK_CONTEXT;
 
-  if (!stream || !stream->IsValid())
+  if (!linkContentSubstringStream || !linkContentSubstringStream->IsValid())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring");
 
   ScAddrVector linkAddrList;
   void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
   sc_result const result = sc_memory_find_links_by_content_substring_ext(
-      m_context, stream->m_stream, maxLengthToSearchAsPrefix, data, _PushLinkAddr);
+      m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, data, _PushLinkAddr);
   _ERASE_DATA(data);
 
   switch (result)
@@ -770,18 +816,18 @@ void _PushLinkContent(void * data, sc_addr const, sc_char const * link_content)
 }
 
 std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
-    ScStreamPtr const & stream,
+    ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
   CHECK_CONTEXT;
 
-  if (!stream || !stream->IsValid())
+  if (!linkContentSubstringStream || !linkContentSubstringStream->IsValid())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find contents by content substring");
 
   std::vector<std::string> linkContentList;
   sc_result const result = sc_memory_find_links_contents_by_content_substring_ext(
-      m_context, stream->m_stream, maxLengthToSearchAsPrefix, &linkContentList, _PushLinkContent);
+      m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, &linkContentList, _PushLinkContent);
 
   switch (result)
   {

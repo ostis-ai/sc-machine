@@ -19,8 +19,8 @@ public:
     for (size_t i = 0; i < constrCount; ++i)
     {
       ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConstAbstract);
-      ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, node, trg);
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, attr, edge);
+      ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, node, trg);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, attr, arcAddr);
     }
 
     m_templ.Quintuple(
@@ -57,10 +57,10 @@ public:
       m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, kAbstract, trg);
       m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, kConst, trg);
 
-      ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, node, trg);
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, kConst, edge);
+      ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, node, trg);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, kConst, arcAddr);
 
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, attr, edge);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, attr, arcAddr);
     }
 
     m_templ.Quintuple(

@@ -482,7 +482,7 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 
   ScAddr beginAddr;
   ScAddr linkAddr;
-  m_ctx->GetEdgeInfo(arcAddr, beginAddr, linkAddr);
+  m_ctx->GetConnectorIncidentElements(arcAddr, beginAddr, linkAddr);
   EXPECT_EQ(beginAddr, set);
   EXPECT_TRUE(m_ctx->GetElementType(linkAddr).IsLink());
 
@@ -499,7 +499,7 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 
   ScAddr relationAddr;
   ScAddr targetArcAddr;
-  m_ctx->GetEdgeInfo(arcAddr2, relationAddr, targetArcAddr);
+  m_ctx->GetConnectorIncidentElements(arcAddr2, relationAddr, targetArcAddr);
   EXPECT_EQ(relationAddr, ScSetKeynodes::nrel_set_power);
   EXPECT_EQ(targetArcAddr, arcAddr);
 }

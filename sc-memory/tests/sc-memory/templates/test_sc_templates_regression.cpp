@@ -36,10 +36,10 @@ TEST_F(ScTemplateRegressionTest, Issue224)
 
       auto testGenerateConnector = [this, &contourItems](ScType const & type, ScAddr const & src, ScAddr const & trg)
       {
-        ScAddr const edge = m_ctx->GenerateConnector(type, src, trg);
-        EXPECT_TRUE(edge.IsValid());
-        contourItems.push_back(edge);
-        return edge;
+        ScAddr const arcAddr = m_ctx->GenerateConnector(type, src, trg);
+        EXPECT_TRUE(arcAddr.IsValid());
+        contourItems.push_back(arcAddr);
+        return arcAddr;
       };
 
       auto testGenerateConnectorAttrs = [&testGenerateConnector](
@@ -49,9 +49,9 @@ TEST_F(ScTemplateRegressionTest, Issue224)
                                             ScType const & attrsEdgeType,
                                             std::vector<ScAddr> const & attrNodes)
       {
-        ScAddr const edge = testGenerateConnector(type, src, trg);
+        ScAddr const arcAddr = testGenerateConnector(type, src, trg);
         for (ScAddr const & addr : attrNodes)
-          testGenerateConnector(attrsEdgeType, addr, edge);
+          testGenerateConnector(attrsEdgeType, addr, arcAddr);
       };
 
       // equal scs:

@@ -23,7 +23,7 @@ ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, ScAddrVector con
 
       if (!context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
       {
-        context->CreateEdge(ScType::EdgeAccessConstPosPerm, resultSet, element);
+        context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
       }
     }
   }
@@ -65,7 +65,7 @@ ScAddr SetOperationsUtils::intersectSets(
 
         if (isCommon)
         {
-          context->CreateEdge(ScType::EdgeAccessConstPosPerm, resultSet, element);
+          context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
         }
       }
     }
@@ -93,7 +93,7 @@ ScAddr SetOperationsUtils::complementSets(
     if (!context->HelperCheckEdge(firstSet, element, ScType::EdgeAccessConstPosPerm)
         && !context->HelperCheckEdge(resultSet, element, ScType::EdgeAccessConstPosPerm))
     {
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, resultSet, element);
+      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
     }
   }
 

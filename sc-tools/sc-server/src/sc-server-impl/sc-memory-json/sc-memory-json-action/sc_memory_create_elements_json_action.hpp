@@ -35,12 +35,12 @@ public:
       ScAddr created;
       if (element == "node")
         created = context->GenerateNode(type);
-      else if (element == "edge")
+      else if (element == "arcAddr")
       {
         ScAddr const & src = resolveAddr(atom["src"]);
         ScAddr const & trg = resolveAddr(atom["trg"]);
 
-        created = context->CreateEdge(type, src, trg);
+        created = context->GenerateConnector(type, src, trg);
       }
       else if (element == "link")
       {

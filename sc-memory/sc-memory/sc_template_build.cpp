@@ -129,9 +129,9 @@ protected:
       auto const & it = m_elements.find(objAddr.Hash());
       ObjectInfo obj = it == m_elements.cend() ? CollectObjectInfo(objAddr) : it->second;
 
-      ScAddr objSrc, objTrg;
-      if (obj.IsEdge() && m_context.GetEdgeInfo(objAddr, objSrc, objTrg))
+      if (obj.IsEdge())
       {
+        auto [objSrc, objTrg] = m_context.GetConnectorIncidentElements(objAddr);
         obj.SetSourceHash(objSrc.Hash());
         obj.SetTargetHash(objTrg.Hash());
 

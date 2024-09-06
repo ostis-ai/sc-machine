@@ -87,7 +87,7 @@ public:
         CheckIncidenceBetweenConnectorAndIncidentElements(connectorItem, connectorAddr, sourceItem, targetItem);
 
       if (connectorAddr.IsValid())
-        m_context.GetEdgeInfo(connectorAddr, sourceAddr, targetAddr);
+        auto [sourceAddr, targetAddr] = m_context.GetConnectorIncidentElements(connectorAddr);
 
       if (!sourceAddr.IsValid())
         sourceAddr = GenerateNodeOrLink(sourceItem.m_typeValue.UpConstType());
@@ -185,9 +185,7 @@ private:
       ScTemplateItem const & sourceItem,
       ScTemplateItem const & targetItem) const
   {
-    ScAddr foundSourceAddr;
-    ScAddr foundTargetAddr;
-    m_context.GetEdgeInfo(connectorAddr, foundSourceAddr, foundTargetAddr);
+    auto const [foundSourceAddr, foundTargetAddr] = m_context.GetConnectorIncidentElements(connectorAddr);
 
     if (sourceItem.IsAddr() && sourceItem.m_addrValue != foundSourceAddr)
       SC_THROW_EXCEPTION(

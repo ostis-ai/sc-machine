@@ -9,7 +9,7 @@
 #include "sc_server_test.hpp"
 #include "../../sc_memory_json_converter.hpp"
 
-class TestCreateEdge : public TestScServer
+class TestGenerateConnector : public TestScServer
 {
 public:
   void Run(std::unique_ptr<ScClient> const & client)

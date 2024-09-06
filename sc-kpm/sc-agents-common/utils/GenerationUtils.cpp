@@ -22,14 +22,14 @@ ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
   if (addrVector.empty())
     return set;
 
-  ScAddr prevEdge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(0));
-  ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::rrel_1, prevEdge);
+  ScAddr prevEdge = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, addrVector.at(0));
+  ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::rrel_1, prevEdge);
 
   for (size_t i = 1; i < addrVector.size(); ++i)
   {
-    ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
-    ScAddr sequenceEdge = ms_context->CreateEdge(ScType::EdgeDCommonConst, prevEdge, edge);
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_basic_sequence, sequenceEdge);
+    ScAddr edge = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
+    ScAddr sequenceEdge = ms_context->GenerateConnector(ScType::EdgeDCommonConst, prevEdge, edge);
+    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_basic_sequence, sequenceEdge);
     prevEdge = edge;
   }
 
@@ -48,8 +48,9 @@ ScAddr GenerationUtils::wrapInOrientedSet(
   ScAddr set = ms_context->GenerateNode(setType);
   for (size_t i = 0; i < addrVector.size(); ++i)
   {
-    ScAddr edge = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, IteratorUtils::getRoleRelation(ms_context, i + 1), edge);
+    ScAddr edge = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
+    ms_context->GenerateConnector(
+        ScType::EdgeAccessConstPosPerm, IteratorUtils::getRoleRelation(ms_context, i + 1), edge);
   }
 
   return set;
@@ -63,7 +64,7 @@ ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, ScAddrVector con
       addrVector.end(),
       [&ms_context, &set](auto const & element)
       {
-        ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
+        ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, element);
       });
 
   return set;
@@ -81,7 +82,7 @@ bool GenerationUtils::addToSet(ScMemoryContext * ms_context, ScAddr const & set,
 {
   if (!ms_context->HelperCheckEdge(set, element, ScType::EdgeAccessConstPosPerm))
   {
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, set, element);
+    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, element);
     return true;
   }
 
@@ -96,8 +97,8 @@ bool GenerationUtils::addSetToOutline(ScMemoryContext * ms_context, ScAddr const
   ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   while (iterator3->Next())
   {
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(1));
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(2));
+    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(1));
+    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(2));
   }
   return true;
 }
@@ -115,7 +116,7 @@ bool GenerationUtils::addNodeWithOutRelationToOutline(
   while (iterator5->Next())
   {
     for (int i = 1; i < 5; i++)
-      ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, outline, iterator5->Get(i));
+      ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, outline, iterator5->Get(i));
   }
   return true;
 }
@@ -129,10 +130,10 @@ bool GenerationUtils::generateRelationBetween(
   bool isSuccess = false;
   bool isRole = CommonUtils::checkType(ms_context, relation, ScType::NodeConstRole);
   ScType arcType = isRole ? ScType::EdgeAccessConstPosPerm : ScType::EdgeDCommonConst;
-  ScAddr arc = ms_context->CreateEdge(arcType, start, finish);
+  ScAddr arc = ms_context->GenerateConnector(arcType, start, finish);
   if (arc.IsValid())
   {
-    arc = ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, relation, arc);
+    arc = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, relation, arc);
     isSuccess = arc.IsValid();
   }
   return isSuccess;

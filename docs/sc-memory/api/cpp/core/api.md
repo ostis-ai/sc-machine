@@ -138,9 +138,9 @@ bool const isSubtypeElementChanged
 !!! note
     Don't use this method to change syntactic sc-type for sc-element. It is misleading.
 
-### **GetEdgeInfo**
+### **GetConnectorIncidentElements**
 
-To get incident (source and target) sc-elements you can use methods `GetEdgeInfo`, `GetEdgeSource` and `GetEdgeTarget`.
+To get incident (source and target) sc-elements you can use methods `GetConnectorIncidentElements`, `GetEdgeSource` and `GetEdgeTarget`.
 If specified sc-address is not valid, then this methods throw exception `utils::ExceptionInvalidParams` with description 
 that specified sc-address of sc-connector is not valid.
 
@@ -148,7 +148,7 @@ that specified sc-address of sc-connector is not valid.
 ...
 // Get sc-arc incident sc-elements.
 ScAddr sourceAddr, targetAddr;
-context.GetEdgeInfo(arcAddr, sourceAddr, targetAddr);
+context.GetConnectorIncidentElements(arcAddr, sourceAddr, targetAddr);
 // The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr` 
 // and the sc-address `targetAddr` must be equal to the sc-address `linkAddr`.
 ...

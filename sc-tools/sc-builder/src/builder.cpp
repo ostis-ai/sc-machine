@@ -92,7 +92,7 @@ ScAddr Builder::ResolveOutputStructure()
   {
     if (!m_ctx->HelperCheckEdge(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
     {
-      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
     }
   };
 

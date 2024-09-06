@@ -46,7 +46,7 @@ TEST(scs_common, parser_triple_1)
   SPLIT_TRIPLE(triples[0]);
 
   EXPECT_EQ(src.GetType(), ScType::NodeConst);
-  EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosPerm);
+  EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessConstPosPerm);
   EXPECT_EQ(trg.GetType(), ScType::NodeConst);
 
   EXPECT_EQ(src.GetIdtf(), "a");
@@ -69,7 +69,7 @@ TEST(scs_common, parser_reversed_1)
 
   EXPECT_EQ(src.GetIdtf(), "b");
   EXPECT_EQ(trg.GetIdtf(), "a");
-  EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosPerm);
+  EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessConstPosPerm);
 }
 
 TEST(scs_common, sentences_1)
@@ -95,7 +95,7 @@ TEST(scs_common, sentences_1)
 
     EXPECT_EQ(src.GetIdtf(), "r");
     EXPECT_EQ(trg.GetIdtf(), "x");
-    EXPECT_EQ(edge.GetType(), ScType::EdgeDCommonConst);
+    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeDCommonConst);
   }
 }
 
@@ -121,7 +121,7 @@ TEST(scs_common, scs_comments)
 
     EXPECT_EQ(src.GetType(), ScType::NodeConst);
     EXPECT_EQ(trg.GetType(), ScType::NodeConst);
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosPerm);
+    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessConstPosPerm);
   }
 
   {
@@ -132,7 +132,7 @@ TEST(scs_common, scs_comments)
 
     EXPECT_EQ(src.GetType(), ScType::NodeConst);
     EXPECT_EQ(trg.GetType(), ScType::NodeConst);
-    EXPECT_EQ(edge.GetType(), ScType::EdgeUCommon);
+    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeUCommon);
   }
 }
 
@@ -150,7 +150,7 @@ TEST(scs_common, const_var)
     SPLIT_TRIPLE(triples[0]);
 
     EXPECT_EQ(src.GetType(), ScType::NodeVar);
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessVarPosPerm);
+    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessVarPosPerm);
     EXPECT_EQ(trg.GetType(), ScType::NodeConst);
 
     EXPECT_EQ(src.GetIdtf(), "_a");

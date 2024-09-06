@@ -146,17 +146,17 @@ TEST_F(ScTemplateSearchTest, UnknownType)
   EXPECT_TRUE(addr1.IsValid());
   ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arcAddr.IsValid());
 
   ScTemplate templ;
-  templ.Triple(addr1, ScType::EdgeAccessVarPosPerm >> "edge", ScType::Unknown >> "addr2");
+  templ.Triple(addr1, ScType::EdgeAccessVarPosPerm >> "arcAddr", ScType::Unknown >> "addr2");
 
   ScTemplateSearchResult res;
   EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
   EXPECT_EQ(res.Size(), 1u);
 
-  EXPECT_EQ(res[0]["edge"], edge);
+  EXPECT_EQ(res[0]["arcAddr"], arcAddr);
   EXPECT_EQ(res[0]["addr2"], addr2);
 }
 
@@ -184,11 +184,11 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
   ScAddr const nrelImage = m_ctx->GenerateNode(ScType::NodeConstNoRole);
   EXPECT_TRUE(nrelImage.IsValid());
 
-  ScAddr edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, _tuple, deviceAddr);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, _tuple, deviceAddr);
+  EXPECT_TRUE(arcAddr.IsValid());
 
-  edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelInstalledApp, edge);
-  EXPECT_TRUE(edge.IsValid());
+  arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelInstalledApp, arcAddr);
+  EXPECT_TRUE(arcAddr.IsValid());
 
   struct TestData
   {
@@ -204,8 +204,8 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
     d.m_app = m_ctx->GenerateNode(ScType::NodeConstAbstract);
     EXPECT_TRUE(d.m_app.IsValid());
 
-    edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
-    EXPECT_TRUE(edge.IsValid());
+    arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
+    EXPECT_TRUE(arcAddr.IsValid());
 
     d.m_idtf = m_ctx->GenerateLink();
     EXPECT_TRUE(d.m_idtf.IsValid());
@@ -213,11 +213,11 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
     ScLink idtfLink(*m_ctx, d.m_idtf);
     EXPECT_TRUE(idtfLink.Set("idtf_" + std::to_string(i)));
 
-    edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_idtf);
-    EXPECT_TRUE(edge.IsValid());
+    arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_idtf);
+    EXPECT_TRUE(arcAddr.IsValid());
 
-    edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelIdtf, edge);
-    EXPECT_TRUE(edge.IsValid());
+    arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelIdtf, arcAddr);
+    EXPECT_TRUE(arcAddr.IsValid());
 
     d.m_image = m_ctx->GenerateLink();
     EXPECT_TRUE(d.m_image.IsValid());
@@ -225,11 +225,11 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
     ScLink imageLink(*m_ctx, d.m_image);
     EXPECT_TRUE(imageLink.Set("data_" + std::to_string(i)));
 
-    edge = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_image);
-    EXPECT_TRUE(edge.IsValid());
+    arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_image);
+    EXPECT_TRUE(arcAddr.IsValid());
 
-    edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelImage, edge);
-    EXPECT_TRUE(edge.IsValid());
+    arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelImage, arcAddr);
+    EXPECT_TRUE(arcAddr.IsValid());
 
     ++i;
   }
@@ -355,7 +355,7 @@ TEST_F(ScTemplateSearchTest, ResultDeduplication)
    *   a -> b (* <- sc_node_material;; *);;
    *   a -> c;;
    *
-   *  We should get just one search result, edge `a -> c` shouldn't appears twicely
+   *  We should get just one search result, arcAddr `a -> c` shouldn't appears twicely
    */
   ScAddr const a = m_ctx->GenerateNode(ScType::Node);
   EXPECT_TRUE(a.IsValid());

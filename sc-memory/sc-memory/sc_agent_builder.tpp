@@ -400,7 +400,8 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
             << "`, because found sc-element does not have sc-type `ScType::EdgeDCommonConst`, it has sc-type `" << type
             << "`.");
 
-  context->GetEdgeInfo(primaryInitiationConditionAddr, m_eventClassAddr, m_eventSubscriptionElementAddr);
+  auto [m_eventClassAddr, m_eventSubscriptionElementAddr] =
+      context->GetConnectorIncidentElements(primaryInitiationConditionAddr);
 
   ScIterator3Ptr const it3 = context->Iterator3(ScKeynodes::sc_event, ScType::EdgeAccessConstPosPerm, m_eventClassAddr);
   if (!it3->Next())
@@ -585,7 +586,8 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
             << "`, because sc-element does not have sc-type `ScType::EdgeDCommonConst`, it has sc-type `" << type
             << "`.");
 
-  context->GetEdgeInfo(initiationConditionAndResultAddr, m_initiationConditionAddr, m_resultConditionAddr);
+  auto const [m_initiationConditionAddr, m_resultConditionAddr] =
+      context->GetConnectorIncidentElements(initiationConditionAndResultAddr);
   type = context->GetElementType(m_initiationConditionAddr);
   if (type.BitAnd(ScType::NodeConstStruct) != ScType::NodeConstStruct)
     SC_THROW_EXCEPTION(

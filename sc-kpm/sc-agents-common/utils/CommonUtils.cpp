@@ -75,7 +75,7 @@ void CommonUtils::setIdtf(
   ms_context->SetLinkContent(link, identifierStream);
   for (ScAddr linkClass : linkClasses)
   {
-    ms_context->CreateEdge(ScType::EdgeAccessConstPosPerm, linkClass, link);
+    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, linkClass, link);
   }
 
   utils::GenerationUtils::generateRelationBetween(ms_context, node, link, relation);
