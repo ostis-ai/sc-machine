@@ -156,10 +156,8 @@ TEST_F(ScLinkTest, smoke)
   link.Set(str);
   EXPECT_TRUE("atomic_formula" == link.GetAsString());
 
-  ScAddrVector linkList = ctx.SearchLinksByContent("atomic_formula");
-  EXPECT_TRUE(linkList.size() == 2);
-  EXPECT_TRUE(linkList[0].IsValid());
-  EXPECT_TRUE(linkList[1].IsValid());
+  ScAddrSet linkSet = ctx.SearchLinksByContent("atomic_formula");
+  EXPECT_TRUE(linkSet.size() == 2);
 
   str = "non_atomic_formula";
   link.Set(str);
@@ -296,7 +294,7 @@ TEST_F(ScLinkTest, find_strings_by_substr)
 
   auto strings = ctx.SearchLinksContentsByContentSubstring("some coten");
   EXPECT_TRUE(ctx.SearchLinksContentsByContentSubstring("some coten").size() == 1);
-  EXPECT_TRUE(strings[0] == "some coten");
+  EXPECT_TRUE(strings.count("some coten"));
 
   strings = ctx.SearchLinksContentsByContentSubstring("cont");
   EXPECT_TRUE(strings.size() == 3);

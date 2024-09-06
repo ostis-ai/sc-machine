@@ -88,10 +88,11 @@ TEST_F(SCsHelperTest, GenerateBySCs_Aliases)
 
   ScStreamPtr const stream = ScStreamMakeRead(content);
 
-  ScAddrVector const links = m_ctx->SearchLinksByContent(stream);
+  ScAddrSet const links = m_ctx->SearchLinksByContent(stream);
   EXPECT_EQ(links.size(), 1u);
+  auto it = std::next(links.begin(), 1u);
 
-  ScLink const link(*m_ctx, links[0]);
+  ScLink const link(*m_ctx, *it);
   std::string const content2 = link.GetAsString();
   EXPECT_EQ(content, content2);
 }

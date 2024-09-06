@@ -83,21 +83,22 @@ private:
   std::vector<size_t> SearchLinksByContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
-    ScAddrVector vector;
+    ScAddrSet linkSet;
     if (data.is_string())
-      vector = context->SearchLinksByContent(data.get<std::string>());
+      linkSet = context->SearchLinksByContent(data.get<std::string>());
     else if (data.is_number_integer())
-      vector = context->SearchLinksByContent(std::to_string(data.get<sc_int>()));
+      linkSet = context->SearchLinksByContent(std::to_string(data.get<sc_int>()));
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->SearchLinksByContent(stream.str());
+      linkSet = context->SearchLinksByContent(stream.str());
     }
 
     std::vector<size_t> hashes;
-    for (auto const & addr : vector)
-      hashes.push_back(addr.Hash());
+    hashes.reserve(linkSet.size());
+    for (auto const & linkAddr : linkSet)
+      hashes.push_back(linkAddr.Hash());
 
     return hashes;
   }
@@ -105,21 +106,22 @@ private:
   std::vector<size_t> SearchLinksByContentSubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
-    ScAddrVector vector;
+    ScAddrSet linkSet;
     if (data.is_string())
-      vector = context->SearchLinksByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
+      linkSet = context->SearchLinksByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
-      vector = context->SearchLinksByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
+      linkSet = context->SearchLinksByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->SearchLinksByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
+      linkSet = context->SearchLinksByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
     }
 
     std::vector<size_t> hashes;
-    for (auto const & addr : vector)
-      hashes.push_back(addr.Hash());
+    hashes.reserve(linkSet.size());
+    for (auto const & linkAddr : linkSet)
+      hashes.push_back(linkAddr.Hash());
 
     return hashes;
   }
@@ -129,20 +131,21 @@ private:
       ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
-    std::vector<std::string> vector;
+    std::set<std::string> linkContentSet;
     if (data.is_string())
-      vector = context->SearchLinksContentsByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
+      linkContentSet =
+          context->SearchLinksContentsByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
-      vector =
+      linkContentSet =
           context->SearchLinksContentsByContentSubstring(std::to_string(data.get<sc_int>()), maxLengthToSearchAsPrefix);
     else if (data.is_number_float())
     {
       std::stringstream stream;
       stream << data.get<float>();
-      vector = context->SearchLinksContentsByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
+      linkContentSet = context->SearchLinksContentsByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
     }
 
-    return vector;
+    return {linkContentSet.cbegin(), linkContentSet.cend()};
   }
 
 private:

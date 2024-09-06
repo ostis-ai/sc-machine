@@ -796,12 +796,12 @@ public:
    * This method finds sc-links by matching the content with the provided stream.
    *
    * @param stream The stream to use for content matching.
-   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
-  _SC_EXTERN ScAddrVector SearchLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
+  _SC_EXTERN ScAddrSet SearchLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
 
   /*!
    * @brief Searches sc-links by content using a stream.
@@ -829,22 +829,22 @@ public:
    * This method finds sc-links by matching the content with the provided typed string.
    *
    * @param stream The stream to use for content matching.
-   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddrVector const & linkAddrsVector = context.SearchLinksByContent("my node");
-   * for (auto const & linkAddr : linkAddrsVector)
+   * ScAddrSet const & linkSet = context.SearchLinksByContent("my node");
+   * for (auto const & linkAddr : linkSet)
    * {
    *   // Process sc-links.
    * }
    * @endcode
    */
   template <typename TContentType>
-  _SC_EXTERN ScAddrVector SearchLinksByContent(TContentType const & linkContent) noexcept(false)
+  _SC_EXTERN ScAddrSet SearchLinksByContent(TContentType const & linkContent) noexcept(false)
   {
     return SearchLinksByContent(ScStreamMakeRead(linkContent));
   }
@@ -862,8 +862,8 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddrVector const & linkAddrsVector = context.FindLinksByContent("my node");
-   * for (auto const & linkAddr : linkAddrsVector)
+   * ScAddrVector const & linkVector = context.FindLinksByContent("my node");
+   * for (auto const & linkAddr : linkVector)
    * {
    *   // Process sc-links.
    * }
@@ -879,7 +879,8 @@ public:
       "compliance.’")
   _SC_EXTERN ScAddrVector FindLinksByContent(TContentType const & linkContent) noexcept(false)
   {
-    return SearchLinksByContent(linkContent);
+    ScAddrSet const & linkSet = SearchLinksByContent(linkContent);
+    return {linkSet.cbegin(), linkSet.cend()};
   }
 
   /*!
@@ -889,22 +890,22 @@ public:
    *
    * @param linkContentSubstring The stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddrVector const & linkAddrsVector = context.SearchLinksByContentSubstring("my");
-   * for (auto const & linkAddr : linkAddrsVector)
+   * ScAddrSet const & linkSet = context.SearchLinksByContentSubstring("my");
+   * for (auto const & linkAddr : linkSet)
    * {
    *   // Process sc-links.
    * }
    * @endcode
    */
   template <typename TContentType>
-  _SC_EXTERN ScAddrVector SearchLinksByContentSubstring(
+  _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
       TContentType const & linkContentSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
   {
@@ -925,8 +926,8 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddrVector const & linkAddrsVector = context.FindLinksByContentSubstring("my");
-   * for (auto const & linkAddr : linkAddrsVector)
+   * ScAddrVector const & linkVector = context.FindLinksByContentSubstring("my");
+   * for (auto const & linkAddr : linkVector)
    * {
    *   // Process sc-links.
    * }
@@ -944,7 +945,8 @@ public:
       TContentType const & linkContentSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
   {
-    return SearchLinksByContentSubstring(linkContentSubstring, maxLengthToSearchAsPrefix);
+    ScAddrSet const & linkSet = SearchLinksByContentSubstring(linkContentSubstring, maxLengthToSearchAsPrefix);
+    return {linkSet.cbegin(), linkSet.cend()};
   }
 
   /*!
@@ -954,12 +956,12 @@ public:
    *
    * @param linkContentSubstringStream The stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
-  _SC_EXTERN ScAddrVector SearchLinksByContentSubstring(
+  _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
       ScStreamPtr const & linkContentSubstringStream,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
@@ -993,22 +995,22 @@ public:
    *
    * @param linkContent The stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of strings representing the found sc-links contents.
+   * @return Returns a set of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * std::vector<std::string> const & linkContentVector = context.SearchLinksByContentSubstring("my");
-   * for (auto const & content : linkContentVector)
+   * std::set<std::string> const & linkContentSet = context.SearchLinksByContentSubstring("my");
+   * for (auto const & content : linkContentSet)
    * {
    *   // Process contents.
    * }
    * @endcode
    */
   _SC_EXTERN template <typename TContentType>
-  std::vector<std::string> SearchLinksContentsByContentSubstring(
+  std::set<std::string> SearchLinksContentsByContentSubstring(
       TContentType const & linkContentSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
   {
@@ -1048,7 +1050,9 @@ public:
       TContentType const & linkContentSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
   {
-    return SearchLinksContentsByContentSubstring(linkContentSubstring, maxLengthToSearchAsPrefix);
+    std::set<std::string> const & linkContentSet =
+        SearchLinksContentsByContentSubstring(ScStreamMakeRead(linkContentSubstring), maxLengthToSearchAsPrefix);
+    return {linkContentSet.cbegin(), linkContentSet.cend()};
   }
 
   /*!
@@ -1058,12 +1062,12 @@ public:
    *
    * @param linkContentStream The stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of strings representing the found sc-links contents.
+   * @return Returns a set of strings representing the found sc-links contents.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    */
-  _SC_EXTERN std::vector<std::string> SearchLinksContentsByContentSubstring(
+  _SC_EXTERN std::set<std::string> SearchLinksContentsByContentSubstring(
       ScStreamPtr const & linkContentStreamSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 

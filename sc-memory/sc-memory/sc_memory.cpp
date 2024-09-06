@@ -733,8 +733,8 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
       == SC_FALSE)
     return;
 
-  auto * linkAddrList = (ScAddrVector *)data[1];
-  linkAddrList->emplace_back(link_addr);
+  auto * linkSet = (ScAddrSet *)data[1];
+  linkSet->insert(link_addr);
 }
 
 #define _MAKE_DATA(_context_ptr, _list_ptr) \
@@ -747,15 +747,15 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
 
 #define _ERASE_DATA(_data) delete[] _data
 
-ScAddrVector ScMemoryContext::SearchLinksByContent(ScStreamPtr const & linkContentStream)
+ScAddrSet ScMemoryContext::SearchLinksByContent(ScStreamPtr const & linkContentStream)
 {
   CHECK_CONTEXT;
 
   if (!linkContentStream || !linkContentStream->IsValid())
     SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content");
 
-  ScAddrVector linkAddrList;
-  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
+  ScAddrSet linkSet;
+  void ** data = _MAKE_DATA(&*m_context, &linkSet);
   sc_result const result =
       sc_memory_find_links_with_content_string_ext(m_context, linkContentStream->m_stream, data, _PushLinkAddr);
   _ERASE_DATA(data);
@@ -778,15 +778,16 @@ ScAddrVector ScMemoryContext::SearchLinksByContent(ScStreamPtr const & linkConte
     break;
   }
 
-  return linkAddrList;
+  return linkSet;
 }
 
 ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContentStream)
 {
-  return SearchLinksByContent(linkContentStream);
+  ScAddrSet const & linkSet = SearchLinksByContent(linkContentStream);
+  return {linkSet.cbegin(), linkSet.cend()};
 }
 
-ScAddrVector ScMemoryContext::SearchLinksByContentSubstring(
+ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
     ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
@@ -796,8 +797,8 @@ ScAddrVector ScMemoryContext::SearchLinksByContentSubstring(
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring");
 
-  ScAddrVector linkAddrList;
-  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
+  ScAddrSet linkSet;
+  void ** data = _MAKE_DATA(&*m_context, &linkSet);
   sc_result const result = sc_memory_find_links_by_content_substring_ext(
       m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, data, _PushLinkAddr);
   _ERASE_DATA(data);
@@ -821,23 +822,24 @@ ScAddrVector ScMemoryContext::SearchLinksByContentSubstring(
     break;
   }
 
-  return linkAddrList;
+  return linkSet;
 }
 
 ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
     ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
-  return SearchLinksByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
+  ScAddrSet const & linkSet = SearchLinksByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
+  return {linkSet.cbegin(), linkSet.cend()};
 }
 
 void _PushLinkContent(void * data, sc_addr const, sc_char const * link_content)
 {
-  auto * linkContentList = (std::vector<std::string> *)data;
-  linkContentList->emplace_back(link_content);
+  auto * linkContentList = (std::set<std::string> *)data;
+  linkContentList->insert(link_content);
 }
 
-std::vector<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
+std::set<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
     ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
@@ -847,9 +849,9 @@ std::vector<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams, "Specified stream is invalid to find contents by content substring");
 
-  std::vector<std::string> linkContentList;
+  std::set<std::string> linkContentSet;
   sc_result const result = sc_memory_find_links_contents_by_content_substring_ext(
-      m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, &linkContentList, _PushLinkContent);
+      m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, &linkContentSet, _PushLinkContent);
 
   switch (result)
   {
@@ -875,14 +877,16 @@ std::vector<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
     break;
   }
 
-  return linkContentList;
+  return linkContentSet;
 }
 
 std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
     ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
-  return SearchLinksContentsByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
+  std::set<std::string> const & linkContentSet =
+      SearchLinksContentsByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
+  return {linkContentSet.cbegin(), linkContentSet.cend()};
 }
 
 bool ScMemoryContext::CheckConnector(

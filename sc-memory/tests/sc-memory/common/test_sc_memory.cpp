@@ -75,9 +75,9 @@ TEST_F(ScMemoryTest, LinkContent)
 
   EXPECT_EQ(str, str2);
 
-  ScAddrVector const result = m_ctx->SearchLinksByContent(stream);
+  ScAddrSet const result = m_ctx->SearchLinksByContent(stream);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(result.front(), link);
+  EXPECT_TRUE(result.count(link));
 }
 
 TEST_F(ScMemoryTest, FindByLinkContent)
@@ -89,7 +89,7 @@ TEST_F(ScMemoryTest, FindByLinkContent)
   ScLink link1(*m_ctx, linkAddr1);
   EXPECT_TRUE(link1.Set(linkContent1));
 
-  ScAddrVector const result = m_ctx->SearchLinksByContent(linkContent1);
+  ScAddrSet const result = m_ctx->SearchLinksByContent(linkContent1);
   EXPECT_EQ(result.size(), 1u);
 }
 

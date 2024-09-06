@@ -2217,13 +2217,13 @@ ScAddr TestGenerateStructureWithLinks(
 
 void TestReadActionsWithinStructureWithLinksSuccessfully(TestScMemoryContext & userContext, ScAddr const & linkAddr)
 {
-  ScAddrVector vector = userContext.SearchLinksByContent("test_content");
-  EXPECT_EQ(vector.size(), 1u);
-  EXPECT_EQ(vector[0], linkAddr);
+  ScAddrSet linkSet = userContext.SearchLinksByContent("test_content");
+  EXPECT_EQ(linkSet.size(), 1u);
+  EXPECT_TRUE(linkSet.count(linkAddr));
 
-  vector = userContext.SearchLinksByContentSubstring("test");
-  EXPECT_EQ(vector.size(), 1u);
-  EXPECT_EQ(vector[0], linkAddr);
+  linkSet = userContext.SearchLinksByContentSubstring("test");
+  EXPECT_EQ(linkSet.size(), 1u);
+  EXPECT_TRUE(linkSet.count(linkAddr));
 }
 
 void TestReadActionsWithinStructureWithLinksUnsuccessfully(TestScMemoryContext & userContext)
