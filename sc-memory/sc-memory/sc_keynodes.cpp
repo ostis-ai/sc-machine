@@ -111,13 +111,13 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
     for (auto const & initializer : m_constructionInitializers)
       initializer(*this);
 
-    context->HelperLoadTemplate(*this, *this);
+    context->LoadTemplate(*this, *this);
     context->SetElementSystemIdentifier(sysIdtf, *this, quintuple);
   }
   else
   {
     this->m_realAddr = quintuple.addr1.GetRealAddr();
-    context->HelperBuildTemplate(*this, *this);
+    context->BuildTemplate(*this, *this);
   }
 
   if (context->IsElement(contextStructureAddr))

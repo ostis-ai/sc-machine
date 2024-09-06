@@ -57,6 +57,6 @@ TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
   findTemplate.Triple(orientedSet, THIRD_MESSAGE_EDGE_ALIAS, thirdMessage);
 
   ScTemplateSearchResult searchResult;
-  m_ctx->HelperSearchTemplate(findTemplate, searchResult);
+  m_ctx->SearchByTemplate(findTemplate, searchResult);
   EXPECT_TRUE(searchResult.Size() == 1);
 }

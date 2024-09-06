@@ -10,12 +10,12 @@ using ScTemplateLoadTest = ScTemplateTest;
 class ScTemplateLoadContext : public ScMemoryContext
 {
 public:
-  void HelperLoadTemplate(
+  void LoadTemplate(
       ScTemplate & translatableTemplate,
       ScAddr & resultTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams())
   {
-    ScMemoryContext::HelperLoadTemplate(translatableTemplate, resultTemplateAddr, params);
+    ScMemoryContext::LoadTemplate(translatableTemplate, resultTemplateAddr, params);
   }
 };
 
@@ -36,7 +36,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
-  ctx.HelperLoadTemplate(templ, templAddr);
+  ctx.LoadTemplate(templ, templAddr);
 
   ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   {
@@ -87,22 +87,22 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
   EXPECT_EQ(templ.Size(), 4u);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
-  ctx.HelperLoadTemplate(templ, templAddr);
+  ctx.LoadTemplate(templ, templAddr);
 
   ScTemplate builtTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(builtTemplate, templAddr));
+  m_ctx->BuildTemplate(builtTemplate, templAddr);
 
   EXPECT_EQ(builtTemplate.Size(), 4u);
 
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(builtTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(builtTemplate, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 }
 
@@ -123,10 +123,10 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
   EXPECT_EQ(templ.Size(), 4u);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 
   ScAddr const & testObject = genResult["_test_object"];
@@ -135,15 +135,15 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
 
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
-  ctx.HelperLoadTemplate(templ, templAddr, params);
+  ctx.LoadTemplate(templ, templAddr, params);
   ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   EXPECT_TRUE(templateStruct.HasElement(testObject));
 
   ScTemplate builtTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(builtTemplate, templAddr));
+  m_ctx->BuildTemplate(builtTemplate, templAddr);
 
   EXPECT_EQ(builtTemplate.Size(), 4u);
 
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(builtTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(builtTemplate, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 }

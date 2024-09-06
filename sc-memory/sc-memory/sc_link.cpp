@@ -120,7 +120,7 @@ bool ScLink::DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
   templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", *this);
 
   ScTemplateSearchResult res;
-  if (m_context->HelperSearchTemplate(templ, res))
+  if (m_context->SearchByTemplate(templ, res))
   {
     outType = res[0]["_type"];
     outEdge = res[0]["_edge"];

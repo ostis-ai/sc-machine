@@ -20,10 +20,10 @@ TEST_F(ScBuilderTest, Smoke)
       "    (* _<- lang_en;; *);;";
 
   ScTemplate templ;
-  EXPECT_TRUE(ctx.HelperBuildTemplate(templ, scsData));
+  ctx.BuildTemplate(templ, scsData);
 
   ScTemplateSearchResult res;
-  EXPECT_TRUE(ctx.HelperSearchTemplate(templ, res));
+  EXPECT_TRUE(ctx.SearchByTemplate(templ, res));
 }
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
@@ -31,17 +31,17 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
   ScAddr checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_big");
 
   ScTemplate checkTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
+  m_ctx->BuildTemplate(checkTemplate, checkTemplateStructure);
 
   size_t const constrCount = 50;
   for (size_t i = 0; i < constrCount; ++i)
   {
     ScTemplateGenResult genResult;
-    EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult));
+    m_ctx->GenerateByTemplate(checkTemplate, genResult);
   }
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(checkTemplate, searchResult));
   EXPECT_EQ(searchResult.Size(), constrCount);
 }
 
@@ -50,10 +50,10 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)
   ScAddr checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplate checkTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
+  m_ctx->BuildTemplate(checkTemplate, checkTemplateStructure);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(checkTemplate, searchResult));
 }
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
@@ -67,10 +67,10 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
   ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_message");
 
   ScTemplate checkTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
+  m_ctx->BuildTemplate(checkTemplate, checkTemplateStructure, params);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(checkTemplate, searchResult));
   EXPECT_EQ(searchResult[0]["_message"], messageAddr);
   EXPECT_EQ(searchResult[0][varAddr], messageAddr);
 }
@@ -85,11 +85,11 @@ TEST_F(ScBuilderTest, SearchTemplateWithVarAddrSubstituteInParams)
   params.Add(varAddr, messageAddr);
 
   ScTemplate checkTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure, params));
+  m_ctx->BuildTemplate(checkTemplate, checkTemplateStructure, params);
   EXPECT_FALSE(checkTemplate.HasReplacement(varAddr));
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(checkTemplate, searchResult));
   EXPECT_THROW(searchResult[0]["_message"], utils::ExceptionInvalidParams);
   EXPECT_THROW(searchResult[0][varAddr], utils::ExceptionInvalidParams);
 }
@@ -105,15 +105,15 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall3)
   ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_message");
 
   ScTemplate checkTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(checkTemplate, checkTemplateStructure));
+  m_ctx->BuildTemplate(checkTemplate, checkTemplateStructure);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(checkTemplate, genResult, params));
+  m_ctx->GenerateByTemplate(checkTemplate, genResult, params);
   EXPECT_EQ(genResult["_message"], messageAddr);
   EXPECT_EQ(genResult[varAddr], messageAddr);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(checkTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(checkTemplate, searchResult));
   EXPECT_EQ(searchResult.Size(), 2u);
   EXPECT_EQ(searchResult[0]["_message"], messageAddr);
   EXPECT_EQ(searchResult[1]["_message"], messageAddr);

@@ -13,7 +13,7 @@ TEST_F(ScTemplateGenApiTest, GenWithResultNotSafeGet)
   templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVar >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+  m_ctx->GenerateByTemplate(templ, result);
   EXPECT_EQ(result.Size(), 3u);
 
   EXPECT_TRUE(result[0].IsValid());
@@ -33,7 +33,7 @@ TEST_F(ScTemplateGenApiTest, GenWithResultSafeGet)
   templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::LinkVar >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+  m_ctx->GenerateByTemplate(templ, result);
   EXPECT_EQ(result.Size(), 3u);
 
   ScAddr foundAddr;
@@ -63,7 +63,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithTargetEdge)
       ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::EdgeAccessVarPosTemp >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownTargetElement)
@@ -72,7 +72,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownTargetElement)
   templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownSourceElement)
@@ -81,7 +81,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownSourceElement)
   templ.Triple(ScType::Unknown >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVar >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownSecondElement)
@@ -90,23 +90,21 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownSecondElement)
   templ.Triple(ScType::NodeVar >> "_addr1", ScType::Unknown >> "_edge", ScType::NodeVar >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenEmptyTemplate)
 {
   ScTemplate templ;
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+  m_ctx->GenerateByTemplate(templ, result);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateSuccessfully)
 {
   ScTemplate templ;
   ScTemplateGenResult result;
-  ScTemplateResultCode resultCode;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, ScTemplateParams::Empty, &resultCode));
-  EXPECT_EQ(resultCode, ScTemplateResultCode::Success);
+  m_ctx->GenerateByTemplate(templ, result, ScTemplateParams::Empty);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithFixedSecondEdge)
@@ -119,7 +117,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithFixedSecondEdge)
   templ.Triple(ScType::NodeVar >> "_addr1", edgeAddr, ScType::Unknown >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithTypedFirstEdge)
@@ -128,7 +126,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithTypedFirstEdge)
   templ.Triple(ScType::EdgeAccessVarPosPerm >> "_addr1", ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithTypedThirdEdge)
@@ -137,7 +135,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithTypedThirdEdge)
   templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm, ScType::EdgeAccessVarPosPerm >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithInvalidRefSecondElement)
@@ -146,7 +144,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithInvalidRefSecondElement)
   templ.Triple(ScType::NodeVar >> "_addr1", "_edge", ScType::NodeVar >> "_addr2");
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithFullyReplacedVariableTriple)
@@ -165,7 +163,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithFullyReplacedVariableTriple)
   params.Add("_edge", edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+  m_ctx->GenerateByTemplate(templ, result, params);
 
   EXPECT_EQ(result["_addr1"], nodeAddr1);
   EXPECT_EQ(result["_edge"], edgeAddr);
@@ -188,7 +186,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidSourceElementInFullyReplacedV
   params.Add("_edge", edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetElementInFullyReplacedVariableTriple)
@@ -207,7 +205,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetElementInFullyReplacedV
   params.Add("_edge", edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedVariableThirdEdgeInVariableTriple)
@@ -224,7 +222,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedVariableThirdEdgeInVariableT
   params.Add("_addr2", nodeAddr2);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+  m_ctx->GenerateByTemplate(templ, result, params);
 
   EXPECT_EQ(result["_edge"], edgeAddr);
   EXPECT_EQ(result["_addr2"], nodeAddr2);
@@ -245,7 +243,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSourceAndTargetInVariableTri
   params.Add("_addr2", nodeAddr2);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+  m_ctx->GenerateByTemplate(templ, result, params);
 
   EXPECT_EQ(result["_addr1"], nodeAddr1);
   EXPECT_EQ(result[edgeAddr], edgeAddr);
@@ -263,7 +261,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantEdge)
   templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+  m_ctx->GenerateByTemplate(templ, result);
 
   EXPECT_EQ(result["_addr1"], nodeAddr1);
   EXPECT_EQ(result[edgeAddr], edgeAddr);
@@ -285,7 +283,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacedSourceInVariableTripl
   params.Add("_addr2", nodeAddr2);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacedTargetInVariableTriple)
@@ -303,7 +301,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacedTargetInVariableTripl
   params.Add("_addr2", nodeAddr1);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantTriple)
@@ -317,7 +315,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantTriple)
   templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+  m_ctx->GenerateByTemplate(templ, result);
 
   EXPECT_EQ(result[nodeAddr1], nodeAddr1);
   EXPECT_EQ(result[edgeAddr], edgeAddr);
@@ -338,7 +336,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidSourceInConstantTriple)
   templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetInConstantTriple)
@@ -352,7 +350,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetInConstantTriple)
   templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSecondElementInVariableTriple)
@@ -370,7 +368,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSecondElementInVariableTripl
   params.Add("_addr1", nodeAddr1);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+  m_ctx->GenerateByTemplate(templ, result, params);
 
   EXPECT_EQ(result["_edge"], edgeAddr);
   EXPECT_EQ(result["_addr1"], nodeAddr1);
@@ -391,7 +389,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementNameInParams)
   params.Add("_invalid_edge_name", edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementVarInParams)
@@ -410,7 +408,7 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementVarInParams)
   params.Add("_var", nodeAddr1);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 
   ScAddr resultAddr;
   EXPECT_FALSE(result.Get(0, resultAddr));
@@ -431,5 +429,5 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedTargetHavingUnextendableType
   params.Add("_addr2", nodeAddr2);
 
   ScTemplateGenResult result;
-  EXPECT_THROW(m_ctx->HelperGenTemplate(templ, result, params), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 }

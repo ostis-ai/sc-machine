@@ -25,7 +25,7 @@ ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAdd
       ScType::EdgeAccessVarPosPerm,
       ScAddr(keynode_nrel_translation));
   ScTemplateSearchResult result;
-  context.HelperSearchTemplate(translationTemplate, result);
+  context.SearchByTemplate(translationTemplate, result);
   if (!result.IsEmpty())
     return result[0]["_translation_link"];
   return ScAddr::Empty;

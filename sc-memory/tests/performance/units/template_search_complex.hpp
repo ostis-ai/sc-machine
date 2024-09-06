@@ -34,7 +34,7 @@ public:
     for (size_t i = 0; i < constrCount; ++i)
     {
       ScTemplateGenResult result;
-      m_ctx->HelperGenTemplate(m_templ, result);
+      m_ctx->GenerateByTemplate(m_templ, result);
     }
   }
 };

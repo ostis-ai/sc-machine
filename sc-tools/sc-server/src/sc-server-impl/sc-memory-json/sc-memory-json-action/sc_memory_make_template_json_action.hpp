@@ -38,7 +38,7 @@ protected:
     {
       scTemplate = new ScTemplate();
       std::string templateStr = payload.get<std::string>();
-      context->HelperBuildTemplate(*scTemplate, templateStr);
+      context->BuildTemplate(*scTemplate, templateStr);
     }
     else if (payload.find("type") != payload.end())
     {
@@ -47,11 +47,11 @@ protected:
 
       scTemplate = new ScTemplate();
       if (type == "addr")
-        context->HelperBuildTemplate(*scTemplate, ScAddr(value.get<size_t>()), templParams);
+        context->BuildTemplate(*scTemplate, ScAddr(value.get<size_t>()), templParams);
       else if (type == "idtf")
       {
         ScAddr const & templateStruct = context->SearchElementBySystemIdentifier(value.get<std::string>());
-        context->HelperBuildTemplate(*scTemplate, templateStruct, templParams);
+        context->BuildTemplate(*scTemplate, templateStruct, templParams);
       }
     }
     else

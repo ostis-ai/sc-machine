@@ -1648,6 +1648,38 @@ public:
    * @param result A generated sc-construction.
    * @param params A map of specified sc-template sc-variables to user replacements.
    * @param resultCode A pointer to status of method completion.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ...
+   * ScTemplate templateToGenerate;
+   * templ.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   *
+   * ScTemplateResultItem result;
+   * m_context->GenerateByTemplate(templateToGenerate, result);
+   *
+   * // handle generated sc-construction sc-elements
+   * m_context->IsElement(item["_addr2"])
+   * @endcode
+   */
+  _SC_EXTERN void GenerateByTemplate(
+      ScTemplate const & templ,
+      ScTemplateResultItem & result,
+      ScTemplateParams const & params = ScTemplateParams::Empty) noexcept(false);
+
+  /*!
+   * @brief Generates sc-constructions by object of `ScTemplate` and accumulates generated sc-construction into
+   * `result`.
+   * @param templateToGenerate An object of `ScTemplate` to find constructions by it.
+   * @param result A generated sc-construction.
+   * @param params A map of specified sc-template sc-variables to user replacements.
+   * @param resultCode A pointer to status of method completion.
    * @return Returns true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -1668,7 +1700,14 @@ public:
    * // handle generated sc-construction sc-elements
    * m_context->IsElement(item["_addr2"])
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GenerateByTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `HelperGenTemplate` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScTemplate::Result HelperGenTemplate(
       ScTemplate const & templ,
       ScTemplateResultItem & result,
@@ -1683,7 +1722,44 @@ public:
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use the
-   * one of callback-based HelperSearchTemplate.
+   * one of callback-based SearchByTemplate.
+   *
+   * @code
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ...
+   * ScTemplate templateToFind;
+   * templ.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   *
+   * ScTemplateSearchResult result;
+   * m_context->SearchByTemplate(templateToFind, result);
+   *
+   * // iterate by all result sc-constructions
+   * for (size_t i = 0; i < result.Size(); ++i)
+   * {
+   *   ScTemplateResultItem const & item = result[i];
+   *   // handle each result sc-construction sc-elements
+   *   m_context->IsElement(item["_addr2"])
+   * }
+   * @endcode
+   */
+  _SC_EXTERN ScTemplate::Result SearchByTemplate(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResult & result) noexcept(false);
+
+  /*!
+   * Searches sc-constructions by object of `ScTemplate` and accumulates found sc-constructions into `result`.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param result A result vector of found sc-constructions.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use the
+   * one of callback-based SearchByTemplate.
    *
    * @code
    * ...
@@ -1707,10 +1783,61 @@ public:
    *   m_context->IsElement(item["_addr2"])
    * }
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResult & result) noexcept(false);
+
+  /*!
+   * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
+   * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
+   * condition.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
+   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * // Find all instances of specified class.
+   * m_context->SearchByTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
+   *  // Add each checked instance of class to set.
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
+   *  // Check that each sc-arc between class and its instance belongs to structure.
+   *  return !context->CheckConnector(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
+   * }, [&context](ScAddr const & addr) -> bool {
+   *  // Check that each sc-element of find sc-construction belongs to model.
+   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   * });
+   * @endcode
+   */
+  _SC_EXTERN void SearchByTemplate(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallback const & callback,
+      ScTemplateSearchResultFilterCallback const & filterCallback = {},
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
   /*!
    * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
@@ -1749,7 +1876,14 @@ public:
    *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
@@ -1779,7 +1913,7 @@ public:
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
-   * structure. m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
+   * structure. m_context->SearchByTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
    *  // Add each checked instance of class to set.
    *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScAddr const & addr) -> bool {
@@ -1788,6 +1922,51 @@ public:
    * });
    * @endcode
    */
+  _SC_EXTERN void SearchByTemplate(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallback const & callback,
+      ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
+
+  /*!
+   * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
+   * lambda-function.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
+   * structure.
+   * m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
+   *  // Add each checked instance of class to set.
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&context](ScAddr const & addr) -> bool {
+   *  // Check that each sc-element of find sc-construction belongs to model.
+   *  return context->CheckConnector(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   * });
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplate` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN void HelperSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
@@ -1801,7 +1980,7 @@ public:
    *  - ScTemplateSearchRequest::ERROR.
    * When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If
    * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR returns, then sc-template search stops.
-   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate thrown
+   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateWithControl thrown
    * utils::ExceptionInvalidState.
    * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
@@ -1825,7 +2004,8 @@ public:
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
-   * belong to structure. m_context->HelperSmartSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem
+   * belong to structure.
+   * m_context->SearchByTemplateWithControl(templateToFind, [&context](ScTemplateSearchResultItem
    * const & item) -> ScTemplateSearchRequest
    * {
    *   ScAddr const & edgeAddr = item["_edge"];
@@ -1839,12 +2019,81 @@ public:
    * });
    * @endcode
    */
+  _SC_EXTERN void SearchByTemplateWithControl(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallbackWithRequest const & callback,
+      ScTemplateSearchResultFilterCallback const & filterCallback = {},
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
+
+  /*!
+   * Searches constructions by object of `ScTemplate` and pass found sc-constructions to `callback`
+   * lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
+   *  - ScTemplateSearchRequest::CONTINUE,
+   *  - ScTemplateSearchRequest::STOP,
+   *  - ScTemplateSearchRequest::ERROR.
+   * When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If
+   * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR returns, then sc-template search stops.
+   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateWithControl thrown
+   * utils::ExceptionInvalidState.
+   * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
+   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
+   * belong to structure.
+   * m_context->HelperSmartSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem
+   * const & item) -> ScTemplateSearchRequest
+   * {
+   *   ScAddr const & edgeAddr = item["_edge"];
+   *   if (context->CheckConnector(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *    return ScTemplateSearchRequest::CONTINUE;
+   *
+   *   if (context->CheckConnector(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
+   *    return ScTemplateSearchRequest::STOP;
+   *
+   *   return ScTemplateSearchRequest::CONTINUE;
+   * });
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplateWithControl` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplateWithControl` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
+  _SC_EXTERN void SearchByTemplateWithControl(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallbackWithRequest const & callback,
+      ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
+
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplateWithControl` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
@@ -1853,7 +2102,30 @@ public:
   /*!
    * Translates a sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`. After
    * sc-template translation you can use object of `ScTemplate` to search or generate sc-constructions: in
-   * `HelperSearchTemplate` and `HelperGenTemplate` correspondingly.
+   * `SearchByTemplate` and `GenerateByTemplate` correspondingly.
+   * @param resultTemplate An object of `ScTemplate` to be gotten.
+   * @param translatableTemplateAddr A sc-address of sc-template structure to be translated.
+   * @param params A map of specified sc-template sc-variables to their replacements.
+   * @throws utils::ExceptionInvalidState if sc-template represented in sc-memory is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScTemplate resultTemplate;
+   * ScAddr const & translatableTemplAddr = m_context->SearchElementBySystemIdentifier("my_template");
+   * m_context->BuildTemplate(resultTemplate, translatableTemplAddr);
+   * ...
+   * @endcode
+   */
+  _SC_EXTERN void BuildTemplate(
+      ScTemplate & resultTemplate,
+      ScAddr const & translatableTemplateAddr,
+      ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
+
+  /*!
+   * Translates a sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`. After
+   * sc-template translation you can use object of `ScTemplate` to search or generate sc-constructions: in
+   * `SearchByTemplate` and `GenerateByTemplate` correspondingly.
    * @param resultTemplate An object of `ScTemplate` to be gotten.
    * @param translatableTemplateAddr A sc-address of sc-template structure to be translated.
    * @param params A map of specified sc-template sc-variables to their replacements.
@@ -1866,10 +2138,17 @@ public:
    * ...
    * ScTemplate resultTemplate;
    * ScAddr const & translatableTemplAddr = m_context->SearchElementBySystemIdentifier("my_template");
-   * m_context->HelperBuildTemplate(resultTemplate, translatableTemplAddr);
+   * m_context->BuildTemplate(resultTemplate, translatableTemplAddr);
    * ...
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `BuildTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `BuildTemplate` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
       ScTemplate & resultTemplate,
       ScAddr const & translatableTemplateAddr,
@@ -1877,8 +2156,28 @@ public:
 
   /*!
    * Translates a sc-template represented in SCs-code into object of `ScTemplate`. After sc-template translation you can
-   * use object of `ScTemplate` to search or generate sc-constructions: in `HelperSearchTemplate` and
-   * `HelperGenTemplate` correspondingly.
+   * use object of `ScTemplate` to search or generate sc-constructions: in `SearchByTemplate` and
+   * `GenerateByTemplate` correspondingly.
+   * @param resultTemplate An object of `ScTemplate` to be gotten.
+   * @param translatableSCsTemplate A sc.s-representation of sc-template to be translated.
+   * @throws utils::ExceptionInvalidState if sc-template represented in SCs-code is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScTemplate resultTemplate;
+   * std::string const translatableSCsTemplate = "concept_set _-> _var;;";
+   * m_context->BuildTemplate(resultTemplate, translatableSCsTemplate);
+   * ...
+   * @endcode
+   */
+  _SC_EXTERN void BuildTemplate(ScTemplate & resultTemplate, std::string const & translatableSCsTemplate) noexcept(
+      false);
+
+  /*!
+   * Translates a sc-template represented in SCs-code into object of `ScTemplate`. After sc-template translation you can
+   * use object of `ScTemplate` to search or generate sc-constructions: in `SearchByTemplate` and
+   * `GenerateByTemplate` correspondingly.
    * @param resultTemplate An object of `ScTemplate` to be gotten.
    * @param translatableSCsTemplate A sc.s-representation of sc-template to be translated.
    * @return Returns true if the sc-template represented in SCs-code into object of `ScTemplate`; otherwise, throws
@@ -1893,7 +2192,14 @@ public:
    * m_context->HelperBuildTemplate(resultTemplate, translatableSCsTemplate);
    * ...
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `BuildTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `BuildTemplate` instead for better readability and standards "
+      "compliance.’")
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
       ScTemplate & resultTemplate,
       std::string const & translatableSCsTemplate) noexcept(false);
@@ -1901,7 +2207,7 @@ public:
 protected:
   /*!
    * Translates an object of `ScTemplate` to sc-template in sc-memory (sc-structure).
-   * This method is an inverse of the `HelperBuildTemplate` method.
+   * This method is an inverse of the `BuildTemplate` method.
    * @param translatableTemplate An object of `ScTemplate` to be translated.
    * @param resultTemplateAddr A sc-address of sc-template structure to be gotten in sc-memory.
    * @param params A map of specified sc-template sc-variables to their replacements.
@@ -1913,14 +2219,14 @@ protected:
    * templ.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_edge",
-   *  ScType::Unknown >> "_addr2"
+   *  ScType::Unknown >> "_addr2"`
    * );
    * ScAddr resultTemplateAddr;
-   * m_context->HelperLoadTemplate(translatableTemplate, resultTemplateAddr);
+   * m_context->LoadTemplate(translatableTemplate, resultTemplateAddr);
    * ...
    * @endcode
    */
-  _SC_EXTERN void HelperLoadTemplate(
+  _SC_EXTERN void LoadTemplate(
       ScTemplate & translatableTemplate,
       ScAddr & resultTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);

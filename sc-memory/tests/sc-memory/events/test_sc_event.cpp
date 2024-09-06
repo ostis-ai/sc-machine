@@ -1268,7 +1268,7 @@ TEST_F(ScEventTest, PendEvents)
             EXPECT_TRUE(localCtx.IsValid());
 
             ScTemplateSearchResult res;
-            EXPECT_TRUE(localCtx.HelperSearchTemplate(*checkTempl, res));
+            EXPECT_TRUE(localCtx.SearchByTemplate(*checkTempl, res));
 
             if (res.Size() == 1)
               passedCount.fetch_add(1);
@@ -1277,7 +1277,7 @@ TEST_F(ScEventTest, PendEvents)
           });
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   // wait all events
   while (eventsCount.load() < el_num)

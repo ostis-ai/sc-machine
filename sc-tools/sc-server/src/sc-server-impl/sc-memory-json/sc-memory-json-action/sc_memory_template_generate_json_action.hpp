@@ -16,7 +16,7 @@ public:
   {
     ScTemplateGenResult result;
     auto pair = GetTemplate(context, requestPayload);
-    context->HelperGenTemplate(*pair.first, result, pair.second);
+    context->GenerateByTemplate(*pair.first, result, pair.second);
 
     std::vector<size_t> hashesVectors;
     for (size_t i = 0; i < result.Size(); ++i)

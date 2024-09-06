@@ -20,6 +20,6 @@ TEST_F(ScBuilderTest, clean_global_idtfs)
       ScType::Unknown, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, nrelSCsIdtf);
 
   ScTemplateSearchResult res;
-  EXPECT_FALSE(m_ctx->HelperSearchTemplate(templ, res));
+  EXPECT_FALSE(m_ctx->SearchByTemplate(templ, res));
   EXPECT_EQ(res.Size(), 0u);
 }

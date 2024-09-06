@@ -47,7 +47,7 @@ void Translator::Clean(ScMemoryContext & ctx)
       nrelSCsGlobalIdtf);
 
   ScTemplateSearchResult res;
-  if (ctx.HelperSearchTemplate(templ, res))
+  if (ctx.SearchByTemplate(templ, res))
   {
     res.ForEach(
         [&ctx](ScTemplateSearchResultItem const & item)

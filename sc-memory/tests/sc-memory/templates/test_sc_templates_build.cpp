@@ -37,7 +37,7 @@ TEST_F(ScTemplateBuildTest, DoubleAttributes)
       st << a;
 
     ScTemplate templ;
-    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, structAddr));
+    m_ctx->BuildTemplate(templ, structAddr);
   };
 
   testOrder({addr1, addr2, addr3, addr4, edge1, edge2, edge3});
@@ -72,7 +72,7 @@ TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
       st << a;
 
     ScTemplate templ;
-    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, structAddr));
+    m_ctx->BuildTemplate(templ, structAddr);
   };
 
   testOrder({addr1, addr2, addr3, edge1, edge2});
@@ -85,14 +85,14 @@ TEST_F(ScTemplateBuildTest, BuildGenWithParams)
   m_ctx->ResolveElementSystemIdentifier("_node", ScType::NodeVar);
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, "_node _-> rrel_1:: _var;;"));
+  m_ctx->BuildTemplate(templ, "_node _-> rrel_1:: _var;;");
 
   ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
   ScTemplateParams params;
   params.Add("_node", addr);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult, params));
+  m_ctx->GenerateByTemplate(templ, genResult, params);
   EXPECT_EQ(genResult["_node"], addr);
 
   ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_node");
@@ -117,7 +117,7 @@ TEST_F(ScTemplateBuildTest, GenWithParams)
   EXPECT_THROW(params.Add("_node", addr), utils::ExceptionInvalidParams);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult, params));
+  m_ctx->GenerateByTemplate(templ, genResult, params);
   EXPECT_EQ(genResult["_node"], addr);
   ScAddr outAddr;
   EXPECT_TRUE(genResult.Get("_node", outAddr));
@@ -131,7 +131,7 @@ TEST_F(ScTemplateBuildTest, GenWithParams)
   EXPECT_TRUE(genResult.Has(varAddr));
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult[0]["_node"], addr);
   EXPECT_TRUE(searchResult[0].Get("_node", outAddr));
   EXPECT_EQ(outAddr, addr);

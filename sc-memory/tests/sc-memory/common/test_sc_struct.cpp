@@ -77,7 +77,7 @@ TEST_F(ScStructTest, AppendItSelf)
   ScTemplate templ;
   templ.Triple(setCopy, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 
   result.ForEach(
       [&](ScTemplateSearchResultItem const & item)

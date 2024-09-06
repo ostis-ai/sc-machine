@@ -16,7 +16,7 @@ encapsulated this logic;
 - All questions was renamed to actions.
 - ScAddrHashFunc with template argument was removed. Use non-template ScAddrHashFunc without arguments. It is more safe in use.
 - Constructors for ScMemoryContext with string and int parameters were removed. Use the one without parameters instead.
-- HelperSearchTemplateInStruct was removed from ScMemoryContext API. Use HelperSearchTemplate with callbacks.
+- HelperSearchTemplateInStruct was removed from ScMemoryContext API. Use SearchByTemplate with callbacks.
 - Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
 - Questions were renamed to actions, answers were renamed to results.
 - `m_memoryCtx` in ScAgent renamed to `m_context`.
@@ -180,7 +180,7 @@ encapsulated this logic;
 - Support recursive curl braces in SCs-code level 2
 - Support semantic sc-types for sc-node in SCs-code level 1
 - Support sc-links for SCs-code level 1
-- HelperBuildTemplate with params that have varAddr replacements
+- BuildTemplate with params that have varAddr replacements
 - Warnings for GNU compilers
 - Warnings in sc-machine about deprecated methods
 - Behavior of the agent_erase_elements on not his action classes

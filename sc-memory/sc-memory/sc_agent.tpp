@@ -245,7 +245,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
   ScTemplateSearchResult searchResult;
   try
   {
-    isFound = this->m_context.HelperSearchTemplate(initiationConditionTemplate, searchResult);
+    isFound = this->m_context.SearchByTemplate(initiationConditionTemplate, searchResult);
   }
   catch (utils::ScException const & exception)
   {
@@ -284,7 +284,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
   bool isFound = false;
   try
   {
-    this->m_context.HelperSmartSearchTemplate(
+    this->m_context.SearchByTemplateWithControl(
         resultConditionTemplate,
         [&isFound](ScTemplateResultItem const & item) -> ScTemplateSearchRequest
         {
@@ -388,7 +388,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   }
 
   ScTemplate initiationConditionTemplate;
-  this->m_context.HelperBuildTemplate(initiationConditionTemplate, initiationConditionTemplateAddr, templateParams);
+  this->m_context.BuildTemplate(initiationConditionTemplate, initiationConditionTemplateAddr, templateParams);
   return initiationConditionTemplate;
 }
 
@@ -398,7 +398,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildResultConditionTemplate(
     ScAddr const & resultConditionTemplateAddr) noexcept
 {
   ScTemplate resultConditionTemplate;
-  this->m_context.HelperBuildTemplate(resultConditionTemplate, resultConditionTemplateAddr);
+  this->m_context.BuildTemplate(resultConditionTemplate, resultConditionTemplateAddr);
   return resultConditionTemplate;
 }
 

@@ -22,7 +22,7 @@ std::string GetIdtf(ScMemoryContext & ctx, ScAddr const & addr)
   templ.Quintuple(addr, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, nrelIdtf);
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(ctx.HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(ctx.SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 
   ScAddr const linkAddr = result[0]["_link"];
@@ -53,7 +53,7 @@ TEST_F(ScBuilderTest, visibility_sys_idtf)
   templ.Triple(visSecond, ScType::EdgeAccessVarPosPerm, element);
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 }
 
 TEST_F(ScBuilderTest, visibility_global)
@@ -70,7 +70,7 @@ TEST_F(ScBuilderTest, visibility_global)
   templ.Triple(visSecond, ScType::EdgeAccessVarPosTemp, ".visibility_global");
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 
   ScAddr const element = result[0][".visibility_global"];
@@ -94,7 +94,7 @@ TEST_F(ScBuilderTest, visibility_local)
   templ.Triple(visLocal, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_local");
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 2u);
 
   std::map<std::string, ScAddr> elements;

@@ -257,7 +257,7 @@ TEST_F(ScTemplateRegressionTest, Issue224)
           contour << a;
 
         ScTemplate templ;
-        EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, structAddr));
+        m_ctx->BuildTemplate(templ, structAddr);
       }
     }
   }
@@ -293,7 +293,7 @@ TEST_F(ScTemplateRegressionTest, Issue251)
   templ.Triple(tAddr, ScType::EdgeAccessVarPosPerm, "_link");
 
   ScTemplateSearchResult res;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
 
   // checks
   EXPECT_EQ(res.Size(), 1u);
@@ -327,10 +327,10 @@ TEST_F(ScTemplateRegressionTest, Issue295)
       "  _[] (* _<= _range;; *);;";
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, searchSCs));
+  m_ctx->BuildTemplate(templ, searchSCs);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
 
   EXPECT_EQ(searchResult.Size(), 1u);
   auto const item = searchResult[0];

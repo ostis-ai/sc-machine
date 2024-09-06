@@ -20,7 +20,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithResultNotSafeGet)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 
   ScTemplateSearchResultItem const & item = result[0];
@@ -58,7 +58,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithResultSafeGet)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 
   ScTemplateSearchResultItem item;
@@ -101,7 +101,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallback)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const & item)
       {
@@ -141,7 +141,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackForLoop)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const & item)
       {
@@ -174,7 +174,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -186,7 +186,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       });
   EXPECT_EQ(count, 0u);
 
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -199,7 +199,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   EXPECT_EQ(count, 1u);
   count = 0;
 
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -211,7 +211,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       });
   EXPECT_EQ(count, 0u);
 
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -224,7 +224,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   EXPECT_EQ(count, 1u);
   count = 0;
 
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -241,7 +241,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
   EXPECT_EQ(count, 1u);
   count = 0;
 
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -257,7 +257,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithCallbackAndCheck)
       });
   EXPECT_EQ(count, 0u);
 
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -281,7 +281,7 @@ TEST_F(ScTemplateSearchApiTest, SearchVarTriple)
 
   size_t count = 0;
   EXPECT_THROW(
-      m_ctx->HelperSearchTemplate(
+      m_ctx->SearchByTemplate(
           templ,
           [&](ScTemplateSearchResultItem const &)
           {
@@ -296,7 +296,7 @@ TEST_F(ScTemplateSearchApiTest, SearchEmpty)
 {
   ScTemplate templ;
   size_t count = 0;
-  m_ctx->HelperSearchTemplate(
+  m_ctx->SearchByTemplate(
       templ,
       [&](ScTemplateSearchResultItem const &)
       {
@@ -323,7 +323,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithStopRequest)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->HelperSmartSearchTemplate(
+  m_ctx->SearchByTemplateWithControl(
       templ,
       [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
       {
@@ -365,7 +365,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithErrorRequest)
 
   size_t count = 0;
   EXPECT_THROW(
-      m_ctx->HelperSmartSearchTemplate(
+      m_ctx->SearchByTemplateWithControl(
           templ,
           [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
           {
@@ -407,7 +407,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithContinueRequest)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->HelperSmartSearchTemplate(
+  m_ctx->SearchByTemplateWithControl(
       templ,
       [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
       {
@@ -443,7 +443,7 @@ TEST_F(ScTemplateSearchApiTest, SearchTemplateWithConstantTriple)
   templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, edgeAddr);
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 
   EXPECT_EQ(result[0][nodeAddr1], nodeAddr1);
   EXPECT_EQ(result[0][edgeAddr], edgeAddr);

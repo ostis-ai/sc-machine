@@ -1143,58 +1143,117 @@ bool ScMemoryContext::HelperFindBySystemIdtf(
   return SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
 }
 
+void ScMemoryContext::GenerateByTemplate(
+    ScTemplate const & templateToGenerate,
+    ScTemplateResultItem & result,
+    ScTemplateParams const & params)
+{
+  CHECK_CONTEXT;
+  templateToGenerate.Generate(*this, result, params, nullptr);
+}
+
 ScTemplate::Result ScMemoryContext::HelperGenTemplate(
     ScTemplate const & templateToGenerate,
     ScTemplateResultItem & result,
     ScTemplateParams const & params,
-    ScTemplateResultCode * resultCode)
+    ScTemplateResultCode *)
 {
-  CHECK_CONTEXT;
-  return templateToGenerate.Generate(*this, result, params, resultCode);
+  GenerateByTemplate(templateToGenerate, result, params);
+  return ScTemplate::Result(true);
 }
 
-ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
+ScTemplate::Result ScMemoryContext::SearchByTemplate(ScTemplate const & templateToFind, ScTemplateSearchResult & result)
 {
   CHECK_CONTEXT;
-  return templ.Search(*this, result);
+  return templateToFind.Search(*this, result);
 }
 
-void ScMemoryContext::HelperSearchTemplate(
-    ScTemplate const & templ,
+ScTemplate::Result ScMemoryContext::HelperSearchTemplate(
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResult & result)
+{
+  return SearchByTemplate(templateToFind, result);
+}
+
+void ScMemoryContext::SearchByTemplate(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallback const & callback,
     ScTemplateSearchResultFilterCallback const & filterCallback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
   CHECK_CONTEXT;
-  templ.Search(*this, callback, filterCallback, checkCallback);
+  templateToFind.Search(*this, callback, filterCallback, checkCallback);
 }
 
 void ScMemoryContext::HelperSearchTemplate(
-    ScTemplate const & templ,
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplate(templateToFind, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::SearchByTemplate(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallback const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
   CHECK_CONTEXT;
-  templ.Search(*this, callback, {}, checkCallback);
+  templateToFind.Search(*this, callback, {}, checkCallback);
 }
 
-void ScMemoryContext::HelperSmartSearchTemplate(
-    ScTemplate const & templ,
+void ScMemoryContext::HelperSearchTemplate(
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplate(templateToFind, callback, checkCallback);
+}
+
+void ScMemoryContext::SearchByTemplateWithControl(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultFilterCallback const & filterCallback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
   CHECK_CONTEXT;
-  templ.Search(*this, callback, filterCallback, checkCallback);
+  templateToFind.Search(*this, callback, filterCallback, checkCallback);
 }
 
 void ScMemoryContext::HelperSmartSearchTemplate(
-    ScTemplate const & templ,
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplateWithControl(templateToFind, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::SearchByTemplateWithControl(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
   CHECK_CONTEXT;
-  templ.Search(*this, callback, {}, checkCallback);
+  templateToFind.Search(*this, callback, {}, checkCallback);
+}
+
+void ScMemoryContext::HelperSmartSearchTemplate(
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplateWithControl(templateToFind, callback, checkCallback);
+}
+
+void ScMemoryContext::BuildTemplate(
+    ScTemplate & resultTemplate,
+    ScAddr const & translatableTemplateAddr,
+    ScTemplateParams const & params)
+{
+  CHECK_CONTEXT;
+  resultTemplate.TranslateFrom(*this, translatableTemplateAddr, params);
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
@@ -1202,21 +1261,25 @@ ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
     ScAddr const & translatableTemplateAddr,
     ScTemplateParams const & params)
 {
-  CHECK_CONTEXT;
-  resultTemplate.TranslateFrom(*this, translatableTemplateAddr, params);
+  BuildTemplate(resultTemplate, translatableTemplateAddr, params);
   return ScTemplate::Result(true);
+}
+
+void ScMemoryContext::BuildTemplate(ScTemplate & resultTemplate, std::string const & translatableSCsTemplate)
+{
+  CHECK_CONTEXT;
+  resultTemplate.TranslateFrom(*this, translatableSCsTemplate);
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
     ScTemplate & resultTemplate,
     std::string const & translatableSCsTemplate)
 {
-  CHECK_CONTEXT;
-  resultTemplate.TranslateFrom(*this, translatableSCsTemplate);
+  BuildTemplate(resultTemplate, translatableSCsTemplate);
   return ScTemplate::Result(true);
 }
 
-void ScMemoryContext::HelperLoadTemplate(
+void ScMemoryContext::LoadTemplate(
     ScTemplate & translatableTemplate,
     ScAddr & resultTemplateAddr,
     ScTemplateParams const & params)

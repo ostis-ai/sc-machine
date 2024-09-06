@@ -48,7 +48,7 @@ TEST_F(ScTemplateCommonTest, smoke)
   templ.Triple("addr2", ScType::EdgeDCommonVar >> "_addr2T3", "edge1");
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+  m_ctx->GenerateByTemplate(templ, result);
 
   ScIterator5Ptr const it5 = m_ctx->Iterator5(
       addr1, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, ScType::Node);
@@ -68,7 +68,7 @@ TEST_F(ScTemplateCommonTest, smoke)
   EXPECT_EQ(it3->Get(2), result["edge1"]);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
 
   EXPECT_EQ(searchResult.Size(), 1u);
 
@@ -108,7 +108,7 @@ TEST_F(ScTemplateCommonTest, search)
   templ.Triple(addrSrc >> "addrSrc", ScType::EdgeAccessVarPosPerm >> "arcAddr", ScType::NodeVar >> "addrTrg");
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 
   size_t const count = result.Size();
   for (size_t i = 0; i < count; ++i)
@@ -144,7 +144,7 @@ TEST_F(ScTemplateCommonTest, searchQuintuple)
     templ.Quintuple(addr1, ScType::EdgeAccessVarPosPerm, ScType::NodeVar, ScType::EdgeAccessVarPosPerm, addr3);
 
     ScTemplateSearchResult result;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
     EXPECT_EQ(result.Size(), 1u);
   }
 
@@ -159,7 +159,7 @@ TEST_F(ScTemplateCommonTest, searchQuintuple)
         addr3 >> "5");
 
     ScTemplateSearchResult result;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
     EXPECT_EQ(result.Size(), 1u);
   }
 }
@@ -178,14 +178,14 @@ TEST_F(ScTemplateCommonTest, params_correct)
   params.Add("_3", addrTest3).Add("_6", addrTest6);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+  m_ctx->GenerateByTemplate(templ, result, params);
 
   ScTemplate searchTempl;
   searchTempl.Triple(addrConst >> "1", ScType::EdgeAccessVarPosPerm >> "_2", ScType::NodeVarTuple >> "_3");
   searchTempl.Triple("_3", ScType::EdgeAccessVarPosPerm >> "_5", ScType::NodeVarClass >> "_6");
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(searchResult[0]["_3"], addrTest3);
   EXPECT_EQ(searchResult[0]["_6"], addrTest6);
@@ -204,14 +204,14 @@ TEST_F(ScTemplateCommonTest, params_invalid)
       ScType::NodeVar >> "_3");  // can't be replaced by param in template generation
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+  m_ctx->GenerateByTemplate(templ, result);
 
   // test arcAddr
   {
     ScTemplateParams params;
     params.Add("_2", addrEdge2);
 
-    EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+    m_ctx->GenerateByTemplate(templ, result, params);
   }
 
   // test invalid params
@@ -301,18 +301,18 @@ TEST_F(ScTemplateCommonTest, a_a_a)
               << _nrel_translationEdgeAddr << _langEdgeAddr;
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, templStructAddr));
+  m_ctx->BuildTemplate(templ, templStructAddr);
 
   // check creation by this template
   {
     ScTemplateGenResult result;
-    EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result));
+    m_ctx->GenerateByTemplate(templ, result);
   }
 
   // check search by this template
   {
     ScTemplateSearchResult result;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   }
 }
 
@@ -332,7 +332,7 @@ TEST_F(ScTemplateCommonTest, a_a_a_a_f)
       ScType::Unknown >> "_x", ScType::EdgeDCommonVar, ScType::Link, ScType::EdgeAccessVarPosPerm, nrelAddr);
 
   ScTemplateSearchResult res;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
 
   EXPECT_EQ(res.Size(), 1u);
   EXPECT_EQ(res[0]["_x"], xAddr);
@@ -361,11 +361,11 @@ TEST_F(ScTemplateCommonTest, DISABLED_BigTemplateSmoke)
   }
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   // ensure whole data created correctly
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
 
   for (size_t i = 0; i < searchResult.Size(); ++i)
     EXPECT_TRUE(elements.find(searchResult[i]["_el"]) != elements.end());
@@ -389,7 +389,7 @@ TEST_F(ScTemplateCommonTest, CycledTemplateSmoke)
     for (size_t j = 0; j < tripleCount; ++j)
     {
       ScTemplateGenResult result;
-      EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, result));
+      m_ctx->GenerateByTemplate(genTempl, result);
     }
   }
 
@@ -402,7 +402,7 @@ TEST_F(ScTemplateCommonTest, CycledTemplateSmoke)
   }
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), constrCount);
 }
 
@@ -418,7 +418,7 @@ TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
     ScTemplate genTempl;
     genTempl.Triple(sourceNodeAddr, ScType::EdgeAccessVarPosPerm, targetNodeAddr);
     ScTemplateGenResult result;
-    m_ctx->HelperGenTemplate(genTempl, result);
+    m_ctx->GenerateByTemplate(genTempl, result);
 
     cache.insert({sourceNodeAddr, targetNodeAddr});
   }
@@ -430,7 +430,7 @@ TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
   }
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 }
 
@@ -443,20 +443,20 @@ TEST_F(ScTemplateCommonTest, EdgesTemplateSmoke)
   genTempl.Triple(sourceNodeAddr, ScType::EdgeUCommonVar, targetNodeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, result));
+  m_ctx->GenerateByTemplate(genTempl, result);
 
   ScTemplate searchTempl;
   searchTempl.Triple(sourceNodeAddr, ScType::EdgeUCommonVar, ScType::NodeVar >> "_target");
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(searchResult[0]["_target"], targetNodeAddr);
 
   searchTempl.Clear();
   searchTempl.Triple(targetNodeAddr, ScType::EdgeUCommonVar, ScType::NodeVar >> "_target");
 
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(searchResult[0]["_target"], sourceNodeAddr);
 }
@@ -469,20 +469,20 @@ TEST_F(ScTemplateCommonTest, CycledEdgesTemplateSmoke)
   genTempl.Triple(sourceNodeAddr, ScType::EdgeUCommonVar, sourceNodeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, result));
+  m_ctx->GenerateByTemplate(genTempl, result);
 
   ScTemplate searchTempl;
   searchTempl.Triple(sourceNodeAddr, ScType::EdgeUCommonVar, ScType::NodeVar >> "_target");
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(searchResult[0]["_target"], sourceNodeAddr);
 
   searchTempl.Clear();
   searchTempl.Triple(ScType::NodeVar >> "_source", ScType::EdgeUCommonVar, sourceNodeAddr);
 
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(searchResult[0]["_source"], sourceNodeAddr);
 }

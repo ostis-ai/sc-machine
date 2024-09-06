@@ -55,7 +55,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
   }
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, templateAddr));
+  m_ctx->BuildTemplate(templ, templateAddr);
 
   // create test structure that correspond to template
   {
@@ -78,7 +78,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
     // test search by template
     {
       ScTemplateSearchResult result;
-      EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+      EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 
       EXPECT_EQ(result.Size(), 1u);
       ScTemplateSearchResultItem const item = result[0];
@@ -126,7 +126,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
   // search
   {
     ScTemplateSearchResult res;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
 
     EXPECT_EQ(res.Size(), 1u);
     EXPECT_EQ(res[0]["_addr"], addr);
@@ -153,7 +153,7 @@ TEST_F(ScTemplateSearchTest, UnknownType)
   templ.Triple(addr1, ScType::EdgeAccessVarPosPerm >> "arcAddr", ScType::Unknown >> "addr2");
 
   ScTemplateSearchResult res;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
   EXPECT_EQ(res.Size(), 1u);
 
   EXPECT_EQ(res[0]["arcAddr"], arcAddr);
@@ -249,7 +249,7 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
   templ.Quintuple("_app", ScType::EdgeDCommonVar, ScType::Link >> "_image", ScType::EdgeAccessVarPosPerm, nrelImage);
 
   ScTemplateSearchResult searchRes;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchRes));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchRes));
 
   EXPECT_EQ(searchRes.Size(), data.size());
   std::vector<TestData> foundData(data.size());
@@ -318,7 +318,7 @@ TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
   templ.Triple(classAddr2, ScType::EdgeAccessVarPosPerm >> "_class_edge2", "_node");
 
   ScTemplateSearchResult searchRes;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchRes));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchRes));
 
   EXPECT_EQ(searchRes.Size(), data.size());
   std::vector<TestData> foundData(data.size());
@@ -366,11 +366,11 @@ TEST_F(ScTemplateSearchTest, ResultDeduplication)
   templ.Triple("a", ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "c");
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
   EXPECT_EQ(a, genResult["a"]);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 
   EXPECT_EQ(searchResult[0]["a"], genResult["a"]);
@@ -416,10 +416,10 @@ TEST_F(ScTemplateSearchTest, EqualConstructions)
       ScType::EdgeAccessVarPosPerm >> "_nrel_model_version_access_arc",
       nrel_model_version);
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(initVersionSearchTemplate, genResult));
+  m_ctx->GenerateByTemplate(initVersionSearchTemplate, genResult);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(initVersionSearchTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(initVersionSearchTemplate, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 }
 
@@ -460,7 +460,7 @@ TEST_F(ScTemplateSearchTest, StructureElements)
   templ.Triple(structureAddr, ScType::EdgeAccessVarPosPerm, "_rel_edge");
   templ.Triple(structureAddr, ScType::EdgeAccessVarPosPerm, "_edge");
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   templ.Clear();
   templ.Triple(
@@ -469,7 +469,7 @@ TEST_F(ScTemplateSearchTest, StructureElements)
   templ.Triple(sourceAddr >> "_source", "_edge", targetAddr >> "_target");
   templ.Triple(structureAddr, ScType::EdgeAccessVarPosPerm, "_edge");
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 
   EXPECT_EQ(searchResult[0]["_source"], sourceAddr);

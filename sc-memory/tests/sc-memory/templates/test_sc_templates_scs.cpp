@@ -15,14 +15,14 @@ TEST_F(ScTemplateSCsTest, BuildSuccessfull)
 
   ScTemplate templ;
   sc_char const * data = "_a _-> d;; _a <- sc_node_class;;";
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
+  m_ctx->BuildTemplate(templ, data);
 }
 
 TEST_F(ScTemplateSCsTest, BuildFail)
 {
   ScTemplate templ;
   sc_char const * data = "_a _-> b";
-  EXPECT_THROW(m_ctx->HelperBuildTemplate(templ, data), utils::ExceptionParseError);
+  EXPECT_THROW(m_ctx->BuildTemplate(templ, data), utils::ExceptionParseError);
 }
 
 TEST_F(ScTemplateSCsTest, GenBuildSearch)
@@ -31,7 +31,7 @@ TEST_F(ScTemplateSCsTest, GenBuildSearch)
   genTempl.Triple(ScType::NodeVar >> "_a", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVarTuple >> "b");
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(genTempl, genResult));
+  m_ctx->GenerateByTemplate(genTempl, genResult);
 
   ScAddr const bAddr = genResult["b"];
   EXPECT_TRUE(bAddr.IsValid());
@@ -41,11 +41,11 @@ TEST_F(ScTemplateSCsTest, GenBuildSearch)
   ScTemplate templ;
   sc_char const * data = "_a _-> b (* <- sc_node_tuple;; *);;";
 
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
+  m_ctx->BuildTemplate(templ, data);
   EXPECT_FALSE(templ.IsEmpty());
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
 
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(searchResult[0]["_a"], genResult["_a"]);
@@ -61,16 +61,16 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
   ScTemplate templ;
   sc_char const * data = "c1 _=> _b1;; _b1 <- sc_node_abstract;;";
 
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
+  m_ctx->BuildTemplate(templ, data);
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   // check
   ScTemplate searchTempl;
   searchTempl.Triple(cAddr >> "c1", ScType::EdgeDCommonVar >> "_edge", ScType::NodeVarAbstract >> "_b1");
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(searchTempl, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
 
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(genResult["c1"], searchResult[0]["c1"]);
@@ -86,15 +86,15 @@ TEST_F(ScTemplateSCsTest, GenerateSearch)
   ScTemplate templ;
   sc_char const * data = "g1 _-> _l1 (* <- sc_node_material;; *);; g1 _-> _f1;;";
 
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, data));
+  m_ctx->BuildTemplate(templ, data);
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
   EXPECT_EQ(m_ctx->GetElementType(genResult["_l1"]), ScType::NodeConstMaterial);
   EXPECT_EQ(m_ctx->GetElementType(genResult["_f1"]), ScType::NodeConst);
 
   // check
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
 
   EXPECT_EQ(searchResult.Size(), 1u);
   EXPECT_EQ(genResult["g1"], searchResult[0]["g1"]);
@@ -105,5 +105,5 @@ TEST_F(ScTemplateSCsTest, GenerateSearch)
 TEST_F(ScTemplateSCsTest, IdtfNotExist)
 {
   ScTemplate templ;
-  EXPECT_THROW(m_ctx->HelperBuildTemplate(templ, "non_existing_item _-> _z;;"), utils::ExceptionInvalidState);
+  EXPECT_THROW(m_ctx->BuildTemplate(templ, "non_existing_item _-> _z;;"), utils::ExceptionInvalidState);
 }

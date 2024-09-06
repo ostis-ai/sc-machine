@@ -397,7 +397,7 @@ sc_char const * data =
 
 // Build program object by this sc-template.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, data);
+context.BuildTemplate(templ, data);
 ...
 ```
 
@@ -418,7 +418,7 @@ ScAddr const & templAddr = context.SearchElementBySystemIdentifier("my_template"
 
 // Build program object by this sc-template.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, templAddr);
+context.BuildTemplate(templ, templAddr);
 ...
 ```
 
@@ -459,7 +459,7 @@ params.Add("_set", setAddr);
 
 // Build program object by this sc-template, specifying replacements.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, data, params);
+context.BuildTemplate(templ, data, params);
 ...
 ```
 
@@ -484,7 +484,7 @@ params.Add(setVarAddr, setAddr);
 
 // Build program object by this sc-template, specifying replacements.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, templAddr, params);
+context.BuildTemplate(templ, templAddr, params);
 ...
 ```
 
@@ -542,7 +542,7 @@ bool const isEmpty = params.IsEmpty();
 ...
 ```
 
-## **HelperGenTemplate**
+## **GenerateByTemplate**
 
 Use sc-template to generate graphs in sc-memory and get replacements from result.
 
@@ -552,7 +552,7 @@ Use sc-template to generate graphs in sc-memory and get replacements from result
 // You can use `ScTemplate` methods or method ScTemplateBuild to translate 
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
 // Sc-elements sc-addresses of generated sc-construction may be gotten from 
 // `result`.
 ...
@@ -583,7 +583,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
 
 ScAddr setAddr;
 bool replExist = result.Get("_x", setAddr);
@@ -610,7 +610,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
 
 ScAddr setAddr = result.Get("_x");
 
@@ -634,7 +634,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
 // The value of `replExist` be equal to `true`.
@@ -657,7 +657,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
 
 ScAddr const & setAddr = result[2];
 // It is equal to `result.Get("_x")`.
@@ -678,7 +678,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
 
 // Iterate by all replacements in result.
 for (size_t i = 0; i < result.Size(); ++i)
@@ -693,7 +693,7 @@ for (size_t i = 0; i < result.Size(); ++i)
     The method `Size` returns summary count of indexes of replacements in each triple in sc-template. If there are 
     `2` triples in sc-template, then there are `2 * 3 = 6` different indexes of replacements in sc-template.
 
-## **HelperSearchTemplate**
+## **SearchByTemplate**
 
 You can search sc-construction in sc-memory by sc-templates. This search refers to isomorphic search by graph-template.
 Search algorithm trying to find all possible variants of specified construction. It uses any constants (available
@@ -705,7 +705,7 @@ sc-addresses from parameters to find equal sc-constructions in sc-memory).
 // You can use `ScTemplate` methods or method ScTemplateBuild to translate 
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 // Program representation of sc-constructions in `ScTemplateResultItem` 
 // may be gotten from `result`.
 ...
@@ -736,7 +736,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 ScTemplateResultItem item;
 bool constrExist = result.Get(0, item);
@@ -763,7 +763,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 ScTemplateResultItem item = result.Get(0);
 // It is a valid item.
@@ -789,7 +789,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 ScTemplateResultItem item = result[0];
 // It is a valid item.
@@ -814,7 +814,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 size_t const count = result.Size();
 // The value of `count` be equal to `1`.
@@ -836,7 +836,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 bool const count = result.IsEmpty();
 // The value of `count` be equal to `false`.
@@ -858,7 +858,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 result.Clear();
 // After that `result` does not contain any information about sc-constructions.
@@ -880,7 +880,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 for (size_t i = 0; i < result.Size(); ++i)
 {
@@ -903,7 +903,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 result.ForEach([](ScTemplateResultItem const & item) {
   // Implement logic to handle found sc-constructions.
@@ -911,7 +911,7 @@ result.ForEach([](ScTemplateResultItem const & item) {
 ...
 ```
 
-## **HelperSmartSearchTemplate**
+## **SearchByTemplateWithControl**
 
 This method searches constructions by isomorphic sc-template and pass found sc-constructions to `callback` 
 lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
@@ -922,7 +922,7 @@ lambda-function. Lambda-function `callback` must return a request command value 
 
 When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If ScTemplateSearchRequest::STOP 
 or ScTemplateSearchRequest::ERROR returns, then sc-template search stops. If sc-template search stopped by 
-ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate thrown utils::ExceptionInvalidState. If `filterCallback` 
+ScTemplateSearchRequest::ERROR, then SearchByTemplateWithControl thrown utils::ExceptionInvalidState. If `filterCallback` 
 passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
 
 ```cpp
@@ -937,7 +937,7 @@ templ.Triple(
   ScType::EdgeAccessVarPosPerm >> "_edge",
   ScType::Unknown >> "_addr2"
 );
-m_context->HelperSmartSearchTemplate(templ, [&context](
+m_context->SearchByTemplateWithControl(templ, [&context](
     ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest 
 {
   ScAddr const & edgeAddr = item["_edge"];

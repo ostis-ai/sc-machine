@@ -140,7 +140,7 @@ private:
           ScType::Unknown >> "_el", ScType::EdgeDCommonVar, addr, ScType::EdgeAccessVarPosPerm, m_kNrelSCsGlobalIdtf);
 
       ScTemplateSearchResult searchResult;
-      if (m_ctx.HelperSearchTemplate(templ, searchResult))
+      if (m_ctx.SearchByTemplate(templ, searchResult))
       {
         if (result.IsValid() || searchResult.Size() > 1)
         {

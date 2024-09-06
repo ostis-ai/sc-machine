@@ -30,7 +30,7 @@ struct TestTemplParams
       testTempl(param1, param2, param3);
 
       ScTemplateGenResult res;
-      EXPECT_TRUE(m_ctx.HelperGenTemplate(testTempl, res));
+      m_ctx.GenerateByTemplate(testTempl, res);
     }
     catch (utils::ExceptionInvalidParams & e)
     {
