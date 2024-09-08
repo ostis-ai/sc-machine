@@ -1,0 +1,4 @@
+..el_115552832 = "file://11.png";;
+@format_edge = (..el_115552832 => format_png);;
+@nrel_format_edge = (nrel_format -> @format_edge);;
+
