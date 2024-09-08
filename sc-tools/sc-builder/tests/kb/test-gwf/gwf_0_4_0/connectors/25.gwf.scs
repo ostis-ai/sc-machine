@@ -1,8 +1,9 @@
-..el_2837956767584
-  <- sc_node;;
+@edge_2837983742128 = (..el_2837956767584 => ..el_2837956768624);;
+sc_pair_meta_fuz_perm_orient_membership -> @edge_2837983742128;;
 
 ..el_2837956768624
   <- sc_node;;
 
-@edge_2837983742128 = (..el_2837956767584 => ..el_2837956768624);;
-sc_pair_meta_fuz_perm_orient_membership -> @edge_2837983742128;;
+..el_2837956767584
+  <- sc_node;;
+
