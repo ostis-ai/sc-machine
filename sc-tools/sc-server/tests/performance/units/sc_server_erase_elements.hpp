@@ -28,12 +28,12 @@ public:
     for (size_t i = 0; i < objectsNum; ++i)
     {
       ScAddr const trg = m_ctx->GenerateNode(ScType::NodeClass);
-      ScAddr const edgeTrg = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_addr, trg);
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, trgAttr, edgeTrg);
+      ScAddr const connectorTrg = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_addr, trg);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, trgAttr, connectorTrg);
 
       ScAddr const src = m_ctx->GenerateNode(ScType::NodeClass);
-      ScAddr const edgeSrc = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_addr, src);
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, srcAttr, edgeSrc);
+      ScAddr const connectorSrc = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_addr, src);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, srcAttr, connectorSrc);
     }
   }
 

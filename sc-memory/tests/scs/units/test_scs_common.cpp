@@ -283,7 +283,7 @@ TEST(scs_common, backward_compatibility)
   EXPECT_EQ(parser.GetParsedElement(triples[1].m_target).GetType(), ScType::NodeConstTuple);
 }
 
-TEST(scs_common, edges)
+TEST(scs_common, connectors)
 {
   std::string const data = "x"
                            "> _y; <> y4; ..> y5;"
@@ -329,7 +329,7 @@ TEST(scs_common, edges)
   }
 }
 
-TEST(scs_common, reversed_edges)
+TEST(scs_common, reversed_connectors)
 {
   std::string const data =
       "x"
@@ -360,7 +360,7 @@ TEST(scs_common, reversed_edges)
   }
 }
 
-TEST(scs_common, var_edges_and_nodes)
+TEST(scs_common, var_connectors_and_nodes)
 {
   std::string const data =
       "x"

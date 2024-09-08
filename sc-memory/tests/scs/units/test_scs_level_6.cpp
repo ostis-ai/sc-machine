@@ -263,7 +263,7 @@ TEST(scs_level_6, contour_recursive)
     EXPECT_EQ(trg.GetIdtf(), "z");
   }
 
-  auto const checkStructEdges = [&triples, &parser](size_t idxStart, size_t idxEnd)
+  auto const CheckStructArcs = [&triples, &parser](size_t idxStart, size_t idxEnd)
   {
     for (size_t i = idxStart; i < idxEnd; ++i)
     {
@@ -275,7 +275,7 @@ TEST(scs_level_6, contour_recursive)
     }
   };
 
-  checkStructEdges(1, 4);
+  CheckStructArcs(1, 4);
 
   {
     SPLIT_TRIPLE(triples[4]);
@@ -285,7 +285,7 @@ TEST(scs_level_6, contour_recursive)
     EXPECT_EQ(trg.GetType(), ScType::NodeConstStruct);
   }
 
-  checkStructEdges(5, 14);
+  CheckStructArcs(5, 14);
 
   {
     SPLIT_TRIPLE(triples[14]);

@@ -7,9 +7,9 @@
 #include "benchmark/benchmark.h"
 
 #include "units/sc_server_complex.hpp"
-#include "units/sc_server_create_edge.hpp"
-#include "units/sc_server_create_node.hpp"
-#include "units/sc_server_create_link.hpp"
+#include "units/sc_server_generate_connector.hpp"
+#include "units/sc_server_generate_node.hpp"
+#include "units/sc_server_generate_link.hpp"
 #include "units/sc_server_erase_elements.hpp"
 #include "units/sc_server_search_template.hpp"
 
@@ -38,7 +38,6 @@ void BM_ServerThreaded(benchmark::State & state)
   uint32_t iterations = 0;
   for (auto _ : state)
   {
-
     test.Run(client);
     ++iterations;
   }

@@ -65,7 +65,7 @@ public:
 
     m_templ.Quintuple(
           node >> "_node",
-          ScType::EdgeDCommonVar >> "_edge",
+          ScType::EdgeDCommonVar >> "_arc",
           ScType::NodeVarAbstract >> "_trg",
           ScType::EdgeAccessVarPosPerm,
           attr >> "_attr");
@@ -96,6 +96,6 @@ public:
     m_templ.Triple(
           kConst,
           ScType::EdgeAccessVarPosPerm,
-          "_edge");
+          "_arc");
   }
 };

@@ -71,20 +71,20 @@ TEST_F(ScEventTest, ThreadingSmoke)
   std::atomic_int createEdgeCount = {0};
   std::atomic_int eraseNodeCount = {0};
 
-  std::vector<ScAddr> edges;
-  edges.reserve(testCount);
+  std::vector<ScAddr> connectors;
+  connectors.reserve(testCount);
   for (size_t i = 0; i < testCount; ++i)
   {
     uint32_t const v = rand() % 2;
     if (v == 0)
     {
-      ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeAccess, randNode(), randNode());
-      EXPECT_TRUE(e.IsValid());
-      edges.push_back(e);
+      ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccess, randNode(), randNode());
+      EXPECT_TRUE(arcAddr.IsValid());
+      connectors.push_back(arcAddr);
 
       createEdgeCount++;
     }
-    else if (v == 1)  // will also erase edges
+    else if (v == 1)  // will also erase connectors
     {
       if (nodes.size() > 2)
       {

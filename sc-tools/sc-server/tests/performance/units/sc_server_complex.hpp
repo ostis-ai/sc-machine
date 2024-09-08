@@ -52,7 +52,7 @@ public:
             {
                 {"el", "link"},
                 {"type", sc_type_link | sc_type_const},
-                {"content", "edge_end"},
+                {"content", "connector_end"},
             },
         })};
   }

@@ -10,7 +10,7 @@
 
 #include "sc-memory/sc_link.hpp"
 
-class ScMemoryCreateElementsJsonAction : public ScMemoryJsonAction
+class ScMemoryGenerateElementsJsonAction : public ScMemoryJsonAction
 {
 public:
   ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)

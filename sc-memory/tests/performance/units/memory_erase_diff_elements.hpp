@@ -10,7 +10,7 @@
 
 #include <mutex>
 
-class TestRemoveSetElements : public TestMemory
+class TestEraseDiffElements : public TestMemory
 {
 public:
   void Run()
@@ -18,8 +18,8 @@ public:
     ScAddr addr;
     {
       std::lock_guard<std::mutex> lock(m_mutex);
-      addr = m_edges.back();
-      m_edges.pop_back();
+      addr = m_elements.back();
+      m_elements.pop_back();
     }
 
     m_ctx->EraseElement(addr);
@@ -27,19 +27,14 @@ public:
 
   void Setup(size_t objectsNum) override
   {
-    m_addr = m_ctx->GenerateNode(ScType::NodeConst);
     for (size_t i = 0; i < objectsNum; ++i)
-    {
-      ScAddr target = m_ctx->GenerateNode(ScType::NodeConst);
-      m_edges.push_back(m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_addr, target));
-    }
+      m_elements.push_back(m_ctx->GenerateNode(ScType::NodeConst));
   }
 
 private:
-  ScAddr m_addr;
+  static ScAddrList m_elements;
   static std::mutex m_mutex;
-  static ScAddrList m_edges;
 };
 
-ScAddrList TestRemoveSetElements::m_edges;
-std::mutex TestRemoveSetElements::m_mutex;
+ScAddrList TestEraseDiffElements::m_elements;
+std::mutex TestEraseDiffElements::m_mutex;

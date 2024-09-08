@@ -21,12 +21,12 @@ TEST_F(ScTemplateBuildTest, DoubleAttributes)
   ScAddr const addr4 = m_ctx->GenerateNode(ScType::NodeConstRole);
   EXPECT_TRUE(addr4.IsValid());
 
-  ScAddr const edge1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge1.IsValid());
-  ScAddr const edge2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr3, edge1);
-  EXPECT_TRUE(edge2.IsValid());
-  ScAddr const edge3 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr4, edge1);
-  EXPECT_TRUE(edge3.IsValid());
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+  EXPECT_TRUE(arc1.IsValid());
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr3, arc1);
+  EXPECT_TRUE(arc2.IsValid());
+  ScAddr const arc3 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr4, arc1);
+  EXPECT_TRUE(arc3.IsValid());
 
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
@@ -40,15 +40,15 @@ TEST_F(ScTemplateBuildTest, DoubleAttributes)
     m_ctx->BuildTemplate(templ, structAddr);
   };
 
-  testOrder({addr1, addr2, addr3, addr4, edge1, edge2, edge3});
-  testOrder({edge3, edge2, edge1, addr4, addr3, addr2, addr1});
-  testOrder({addr1, addr2, addr3, addr4, edge2, edge1, edge3});
+  testOrder({addr1, addr2, addr3, addr4, arc1, arc2, arc3});
+  testOrder({arc3, arc2, arc1, addr4, addr3, addr2, addr1});
+  testOrder({addr1, addr2, addr3, addr4, arc2, arc1, arc3});
 }
 
 TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
 {
   /**
-   * @edge1 = addr1 _-> _addr2;;
+   * @arc1 = addr1 _-> _addr2;;
    * @adge1 _-> addr3;;
    */
   ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
@@ -58,10 +58,10 @@ TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
   ScAddr const addr3 = m_ctx->GenerateNode(ScType::NodeConstRole);
   EXPECT_TRUE(addr3.IsValid());
 
-  ScAddr const edge1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge1.IsValid());
-  ScAddr const edge2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, edge1, addr3);
-  EXPECT_TRUE(edge2.IsValid());
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+  EXPECT_TRUE(arc1.IsValid());
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, arc1, addr3);
+  EXPECT_TRUE(arc2.IsValid());
 
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
@@ -75,9 +75,9 @@ TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
     m_ctx->BuildTemplate(templ, structAddr);
   };
 
-  testOrder({addr1, addr2, addr3, edge1, edge2});
-  testOrder({edge2, edge1, addr3, addr2, addr1});
-  testOrder({addr1, addr2, addr3, edge2, edge1});
+  testOrder({addr1, addr2, addr3, arc1, arc2});
+  testOrder({arc2, arc1, addr3, addr2, addr1});
+  testOrder({addr1, addr2, addr3, arc2, arc1});
 }
 
 TEST_F(ScTemplateBuildTest, BuildGenWithParams)

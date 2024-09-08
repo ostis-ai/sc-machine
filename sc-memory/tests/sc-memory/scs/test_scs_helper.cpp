@@ -245,13 +245,13 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Global)
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
-  templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_trg");
+  templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::Unknown >> "_trg");
 
   ScTemplateSearchResult res;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
   EXPECT_EQ(res.Size(), 2u);
   EXPECT_EQ(res[0]["_trg"], res[1]["_trg"]);
-  EXPECT_NE(res[0]["_edge"], res[1]["_edge"]);
+  EXPECT_NE(res[0]["_arc"], res[1]["_arc"]);
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Local)

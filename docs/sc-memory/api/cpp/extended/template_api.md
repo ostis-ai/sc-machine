@@ -69,9 +69,9 @@ templ.Triple(
   ScType::NodeVar
 );
 </code></pre>
-      <br/>This triple sc-template is used to traverse output edges from specified sc-element.
-      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse output edges from <code>param1</code>. Construction will be added into traverse result, where output sc-connector from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target sc-element of this edge will be suitable for a type <code>_param3</code>.
-      <br/>You can use any sc-type of <code>_param3</code> (including edges) depending on sc-construction you want to find. But <code>_param2</code> should be any sc-type of variable edge.
+      <br/>This triple sc-template is used to traverse outgoing sc-connectors from specified sc-element.
+      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse outgoing sc-connectors from <code>param1</code>. Construction will be added into traverse result, where outgoing sc-arc from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target sc-element of this sc-arc will be suitable for a type <code>_param3</code>.
+      <br/>You can use any sc-type of <code>_param3</code> (including sc-connectors) depending on sc-construction you want to find. But <code>_param2</code> should be any sc-type of variable sc-connector.
     </td>
   </tr>
 
@@ -90,8 +90,8 @@ templ.Triple(
   param3
 );
 </code></pre>
-      <br/>This triple sc-template using to find edge between <code>param1</code> and <code>param3</code>.
-      <br/>There are <code>param1</code> and <code>param3</code> a known <code>ScAddr</code> of sc-elements. Edge type <code>_param2</code> should be variable.
+      <br/>This triple sc-template using to find sc-arc between <code>param1</code> and <code>param3</code>.
+      <br/>There are <code>param1</code> and <code>param3</code> a known <code>ScAddr</code> of sc-elements. Arc type <code>_param2</code> should be variable.
     </td>
   </tr>
   <tr>
@@ -109,8 +109,8 @@ templ.Triple(
   param3
 );
 </code></pre>
-      <br/>This triple sc-template using to traverse input edges from specified sc-element.
-      <br/>There <code>param3</code> is a known sc-address of sc-element. You can use any type of <code>_param1</code> (including edges) depending on construction you want to find. But <code>_param2</code> should be any type of variable edge.
+      <br/>This triple sc-template using to traverse incoming sc-connectors to specified sc-element.
+      <br/>There <code>param3</code> is a known sc-address of sc-element. You can use any type of <code>_param1</code> (including sc-connectors) depending on construction you want to find. But <code>_param2</code> should be any type of variable connector.
     </td>
   </tr>
 </table>
@@ -281,7 +281,7 @@ ScAddr const & conceptSetAddr = context.SearchElementBySystemIdentifier("concept
 ScAddr const & conceptBinaryRelationAddr 
     = context.SearchElementBySystemIdentifier("concept_binary_relation");
 
-// Create sc-template and add triples into this sc-template.
+// Generate sc-template and add triples into this sc-template.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,    // sc-address of concept set node
@@ -316,12 +316,12 @@ There is the example code with naming.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar  // type of unknown sc-node
 );
 ...
@@ -355,12 +355,12 @@ manipulating sc-template.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar  // type of unknown sc-node
 );
 
@@ -449,7 +449,7 @@ sc_char const * data =
   "  _<- concept_set;"
   "  _<- concept_binary_set;;";
 
-// Create replacement in sc-memory.
+// Generate replacement in sc-memory.
 ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
@@ -474,7 +474,7 @@ ScAddr const & templAddr = context.SearchElementBySystemIdentifier("my_template"
 // Find by system identifier sc-address of sc-variable in your sc-template.
 ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
-// Create replacement in sc-memory.
+// Generate replacement in sc-memory.
 ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
@@ -495,7 +495,7 @@ system identifiers and sc-addresses of sc-variables also.
 
 ```cpp
 ...
-// Create replacement in sc-memory.
+// Generate replacement in sc-memory.
 ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
@@ -513,7 +513,7 @@ ScAddr const & replAddr = params.Get("_set");
 // Find by system identifier sc-address of sc-variable in your sc-template.
 ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
-// Create replacement in sc-memory.
+// Generate replacement in sc-memory.
 ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
@@ -934,15 +934,15 @@ ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
 ScTemplate templ;
 templ.Triple(
   classAddr,
-  ScType::EdgeAccessVarPosPerm >> "_edge",
+  ScType::EdgeAccessVarPosPerm >> "_arc",
   ScType::Unknown >> "_addr2"
 );
 m_context->SearchByTemplateWithControl(templ, [&context](
     ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest 
 {
-  ScAddr const & edgeAddr = item["_edge"];
+  ScAddr const & arcAddr = item["_arc"];
   if (context->CheckConnector(
-      structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))   
+      structureAddr, arcAddr, ScType::EdgeAccessConstPosPerm))   
     return ScTemplateSearchRequest::CONTINUE;
 
   if (context.GenerateConnector(

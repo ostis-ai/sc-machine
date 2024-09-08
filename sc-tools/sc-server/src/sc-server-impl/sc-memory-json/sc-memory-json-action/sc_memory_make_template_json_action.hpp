@@ -93,10 +93,10 @@ protected:
     for (auto const & triple : triples)
     {
       auto const & srcParam = convertItemToParam(triple[0]);
-      auto const & edgeParam = convertItemToParam(triple[1]);
+      auto const & connectorParam = convertItemToParam(triple[1]);
       auto const & trgParam = convertItemToParam(triple[2]);
 
-      scTemplate->Triple(srcParam, edgeParam, trgParam);
+      scTemplate->Triple(srcParam, connectorParam, trgParam);
     }
 
     return scTemplate;

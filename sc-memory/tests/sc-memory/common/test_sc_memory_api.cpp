@@ -28,7 +28,7 @@ TEST_F(ScMemoryTest, MoveContext)
   EXPECT_FALSE(context2.IsValid());
 }
 
-TEST_F(ScMemoryTest, CreateElements)
+TEST_F(ScMemoryTest, GenerateElements)
 {
   ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(nodeAddr.IsValid());
@@ -38,12 +38,12 @@ TEST_F(ScMemoryTest, CreateElements)
   EXPECT_TRUE(linkAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(linkAddr));
 
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeAccess, nodeAddr, linkAddr);
-  EXPECT_TRUE(edgeAddr.IsValid());
-  EXPECT_TRUE(m_ctx->IsElement(edgeAddr));
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccess, nodeAddr, linkAddr);
+  EXPECT_TRUE(arcAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(arcAddr));
 }
 
-TEST_F(ScMemoryTest, CreateElementsWithInvalidTypes)
+TEST_F(ScMemoryTest, GenerateElementsWithInvalidTypes)
 {
   EXPECT_THROW(m_ctx->GenerateNode(ScType::EdgeAccess), utils::ExceptionInvalidParams);
   EXPECT_THROW(m_ctx->GenerateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
@@ -163,11 +163,11 @@ TEST_F(ScMemoryTest, CreateEdge_Deprecated)
   ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
-  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
-  EXPECT_TRUE(edgeAddr.IsValid());
-  EXPECT_TRUE(m_ctx->IsElement(edgeAddr));
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
+  EXPECT_TRUE(arcAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(arcAddr));
 
-  EXPECT_TRUE(m_ctx->EraseElement(edgeAddr));
+  EXPECT_TRUE(m_ctx->EraseElement(arcAddr));
 }
 
 TEST_F(ScMemoryTest, GetElementOutputArcsCount_Deprecated)
@@ -217,13 +217,13 @@ TEST_F(ScMemoryTest, GetEdgeInfo_Deprecated)
   ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
-  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
-  EXPECT_TRUE(edgeAddr.IsValid());
-  EXPECT_TRUE(m_ctx->IsElement(edgeAddr));
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
+  EXPECT_TRUE(arcAddr.IsValid());
+  EXPECT_TRUE(m_ctx->IsElement(arcAddr));
 
   ScAddr retrievedSourceAddr;
   ScAddr retrievedTargetAddr;
-  m_ctx->GetEdgeInfo(edgeAddr, retrievedSourceAddr, retrievedTargetAddr);
+  m_ctx->GetEdgeInfo(arcAddr, retrievedSourceAddr, retrievedTargetAddr);
   EXPECT_EQ(retrievedSourceAddr, sourceNodeAddr);
   EXPECT_EQ(retrievedTargetAddr, targetNodeAddr);
 }
@@ -331,7 +331,7 @@ TEST_F(ScMemoryTest, HelperGenTemplate_Deprecated)
   ScAddr const & classAddr = m_ctx->ResolveElementSystemIdentifier("my_class", ScType::NodeConst);
 
   ScTemplate templateToGenerate;
-  templateToGenerate.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVar >> "_addr2");
+  templateToGenerate.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
 
   ScTemplateResultItem result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templateToGenerate, result));
@@ -346,7 +346,7 @@ TEST_F(ScMemoryTest, HelperSearchTemplate_Deprecated)
   ScAddr const & setAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScTemplate templateToFind;
-  templateToFind.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVar >> "_addr2");
+  templateToFind.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templateToFind, result));
@@ -375,7 +375,7 @@ TEST_F(ScMemoryTest, HelperSmartSearchTemplate_Deprecated)
   ScAddr const & setAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   ScTemplate templateToFind;
-  templateToFind.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVar >> "_addr2");
+  templateToFind.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templateToFind, result));

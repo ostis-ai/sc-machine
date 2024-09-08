@@ -13,16 +13,16 @@ protected:
 
     m_source = m_ctx->GenerateNode(ScType::NodeConst);
     m_target = m_ctx->GenerateNode(ScType::NodeVar);
-    m_edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_source, m_target);
+    m_connector = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_source, m_target);
 
     m_attr = m_ctx->GenerateNode(ScType::NodeConst);
-    m_attrEdge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_attr, m_edge);
+    m_attrConnector = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_attr, m_connector);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());
-    ASSERT_TRUE(m_edge.IsValid());
+    ASSERT_TRUE(m_connector.IsValid());
     ASSERT_TRUE(m_attr.IsValid());
-    ASSERT_TRUE(m_attrEdge.IsValid());
+    ASSERT_TRUE(m_attrConnector.IsValid());
   }
 
   void TearDown() override
@@ -33,24 +33,24 @@ protected:
 protected:
   ScAddr m_source;
   ScAddr m_target;
-  ScAddr m_edge;
+  ScAddr m_connector;
   ScAddr m_attr;
-  ScAddr m_attrEdge;
+  ScAddr m_attrConnector;
 };
 
 TEST_F(ScIterator5Test, smoke)
 {
   EXPECT_TRUE(m_source.IsValid());
   EXPECT_TRUE(m_target.IsValid());
-  EXPECT_TRUE(m_edge.IsValid());
+  EXPECT_TRUE(m_connector.IsValid());
   EXPECT_TRUE(m_attr.IsValid());
-  EXPECT_TRUE(m_attrEdge.IsValid());
+  EXPECT_TRUE(m_attrConnector.IsValid());
 
   EXPECT_TRUE(m_ctx->IsElement(m_source));
   EXPECT_TRUE(m_ctx->IsElement(m_target));
-  EXPECT_TRUE(m_ctx->IsElement(m_edge));
+  EXPECT_TRUE(m_ctx->IsElement(m_connector));
   EXPECT_TRUE(m_ctx->IsElement(m_attr));
-  EXPECT_TRUE(m_ctx->IsElement(m_attrEdge));
+  EXPECT_TRUE(m_ctx->IsElement(m_attrConnector));
 }
 
 TEST_F(ScIterator5Test, InvalidIndex)
@@ -61,17 +61,17 @@ TEST_F(ScIterator5Test, InvalidIndex)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
   EXPECT_THROW(iter5->Get(5), utils::ExceptionInvalidParams);
 
   ScAddrQuintuple quintuple = iter5->Get();
   EXPECT_EQ(quintuple[0], m_source);
-  EXPECT_EQ(quintuple[1], m_edge);
+  EXPECT_EQ(quintuple[1], m_connector);
   EXPECT_EQ(quintuple[2], m_target);
-  EXPECT_EQ(quintuple[3], m_attrEdge);
+  EXPECT_EQ(quintuple[3], m_attrConnector);
   EXPECT_EQ(quintuple[4], m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -91,9 +91,9 @@ TEST_F(ScIterator5Test, AAFAA)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -113,9 +113,9 @@ TEST_F(ScIterator5Test, AAFAA2)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -135,9 +135,9 @@ TEST_F(ScIterator5Test, AAFAF)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -157,9 +157,9 @@ TEST_F(ScIterator5Test, AAFAF2)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -179,9 +179,9 @@ TEST_F(ScIterator5Test, FAAAA)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -201,9 +201,9 @@ TEST_F(ScIterator5Test, FAAAA2)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -223,9 +223,9 @@ TEST_F(ScIterator5Test, FAAAF)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -245,9 +245,9 @@ TEST_F(ScIterator5Test, FAAAF2)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -267,9 +267,9 @@ TEST_F(ScIterator5Test, FAFAA)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -289,9 +289,9 @@ TEST_F(ScIterator5Test, FAFAA2)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -311,9 +311,9 @@ TEST_F(ScIterator5Test, FAFAF)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -333,9 +333,9 @@ TEST_F(ScIterator5Test, FAFAF2)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -355,9 +355,9 @@ TEST_F(ScIterator5Test, AAAAF)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());
@@ -377,9 +377,9 @@ TEST_F(ScIterator5Test, AAAAF2)
   EXPECT_TRUE(iter5->Next());
 
   EXPECT_EQ(iter5->Get(0), m_source);
-  EXPECT_EQ(iter5->Get(1), m_edge);
+  EXPECT_EQ(iter5->Get(1), m_connector);
   EXPECT_EQ(iter5->Get(2), m_target);
-  EXPECT_EQ(iter5->Get(3), m_attrEdge);
+  EXPECT_EQ(iter5->Get(3), m_attrConnector);
   EXPECT_EQ(iter5->Get(4), m_attr);
 
   EXPECT_FALSE(iter5->Next());

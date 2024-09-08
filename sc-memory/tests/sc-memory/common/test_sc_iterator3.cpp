@@ -13,11 +13,11 @@ protected:
 
     m_source = m_ctx->GenerateNode(ScType::NodeConst);
     m_target = m_ctx->GenerateNode(ScType::NodeVar);
-    m_edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_source, m_target);
+    m_connector = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());
-    ASSERT_TRUE(m_edge.IsValid());
+    ASSERT_TRUE(m_connector.IsValid());
   }
 
   void TearDown() override
@@ -28,18 +28,18 @@ protected:
 protected:
   ScAddr m_source;
   ScAddr m_target;
-  ScAddr m_edge;
+  ScAddr m_connector;
 };
 
 TEST_F(ScIterator3Test, Smoke)
 {
   EXPECT_TRUE(m_source.IsValid());
   EXPECT_TRUE(m_target.IsValid());
-  EXPECT_TRUE(m_edge.IsValid());
+  EXPECT_TRUE(m_connector.IsValid());
 
   EXPECT_TRUE(m_ctx->IsElement(m_source));
   EXPECT_TRUE(m_ctx->IsElement(m_target));
-  EXPECT_TRUE(m_ctx->IsElement(m_edge));
+  EXPECT_TRUE(m_ctx->IsElement(m_connector));
 }
 
 TEST_F(ScIterator3Test, InvalidIndex)
@@ -48,13 +48,13 @@ TEST_F(ScIterator3Test, InvalidIndex)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
   EXPECT_THROW(iter3->Get(3), utils::ExceptionInvalidParams);
 
   ScAddrTriple triple = iter3->Get();
   EXPECT_EQ(triple[0], m_source);
-  EXPECT_EQ(triple[1], m_edge);
+  EXPECT_EQ(triple[1], m_connector);
   EXPECT_EQ(triple[2], m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -70,7 +70,7 @@ TEST_F(ScIterator3Test, FAF)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -86,7 +86,7 @@ TEST_F(ScIterator3Test, FAF2)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -102,7 +102,7 @@ TEST_F(ScIterator3Test, FAA)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -118,7 +118,7 @@ TEST_F(ScIterator3Test, FAA2)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -134,7 +134,7 @@ TEST_F(ScIterator3Test, AAF)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -150,7 +150,7 @@ TEST_F(ScIterator3Test, AAF2)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -162,11 +162,11 @@ TEST_F(ScIterator3Test, AAF2)
 
 TEST_F(ScIterator3Test, AFA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_edge, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_connector, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -178,11 +178,11 @@ TEST_F(ScIterator3Test, AFA)
 
 TEST_F(ScIterator3Test, AFA2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(sc_type_node, m_edge, sc_type_node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(sc_type_node, m_connector, sc_type_node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -194,11 +194,11 @@ TEST_F(ScIterator3Test, AFA2)
 
 TEST_F(ScIterator3Test, FFA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_connector, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -210,11 +210,11 @@ TEST_F(ScIterator3Test, FFA)
 
 TEST_F(ScIterator3Test, FFA2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, sc_type_node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_connector, sc_type_node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -226,11 +226,11 @@ TEST_F(ScIterator3Test, FFA2)
 
 TEST_F(ScIterator3Test, AFF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_edge, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_connector, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -242,11 +242,11 @@ TEST_F(ScIterator3Test, AFF)
 
 TEST_F(ScIterator3Test, AFF2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(sc_type_node, m_edge, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(sc_type_node, m_connector, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -258,11 +258,11 @@ TEST_F(ScIterator3Test, AFF2)
 
 TEST_F(ScIterator3Test, FFF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_connector, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -281,11 +281,11 @@ protected:
 
     m_source = m_ctx->GenerateNode(ScType::NodeConst);
     m_target = m_ctx->GenerateNode(ScType::NodeVar);
-    m_edge = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, m_source, m_target);
+    m_connector = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());
-    ASSERT_TRUE(m_edge.IsValid());
+    ASSERT_TRUE(m_connector.IsValid());
   }
 
   void TearDown() override
@@ -296,7 +296,7 @@ protected:
 protected:
   ScAddr m_source;
   ScAddr m_target;
-  ScAddr m_edge;
+  ScAddr m_connector;
 };
 
 TEST_F(ScEdgeTest, FAF)
@@ -305,7 +305,7 @@ TEST_F(ScEdgeTest, FAF)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -321,7 +321,7 @@ TEST_F(ScEdgeTest, FAA)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -337,7 +337,7 @@ TEST_F(ScEdgeTest, FAAReverse)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_target);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_source);
 
   EXPECT_FALSE(iter3->Next());
@@ -353,7 +353,7 @@ TEST_F(ScEdgeTest, AAF)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -369,7 +369,7 @@ TEST_F(ScEdgeTest, AAFReverse)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_target);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_source);
 
   EXPECT_FALSE(iter3->Next());
@@ -381,11 +381,11 @@ TEST_F(ScEdgeTest, AAFReverse)
 
 TEST_F(ScEdgeTest, FFA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_connector, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -397,11 +397,11 @@ TEST_F(ScEdgeTest, FFA)
 
 TEST_F(ScEdgeTest, FFAReverse)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_target, m_edge, ScType::Const);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_target, m_connector, ScType::Const);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_target);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_source);
 
   EXPECT_FALSE(iter3->Next());
@@ -413,11 +413,11 @@ TEST_F(ScEdgeTest, FFAReverse)
 
 TEST_F(ScEdgeTest, AFF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Const, m_edge, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Const, m_connector, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -429,11 +429,11 @@ TEST_F(ScEdgeTest, AFF)
 
 TEST_F(ScEdgeTest, AFFReverse)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_edge, m_source);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_connector, m_source);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_target);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_source);
 
   EXPECT_FALSE(iter3->Next());
@@ -445,11 +445,11 @@ TEST_F(ScEdgeTest, AFFReverse)
 
 TEST_F(ScEdgeTest, AFA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_edge, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_connector, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_TRUE(iter3->Get(0) == m_source || iter3->Get(0) == m_target);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_TRUE(iter3->Get(2) == m_source || iter3->Get(2) == m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -461,11 +461,11 @@ TEST_F(ScEdgeTest, AFA)
 
 TEST_F(ScEdgeTest, FFF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_connector, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -477,11 +477,11 @@ TEST_F(ScEdgeTest, FFF)
 
 TEST_F(ScEdgeTest, FFFReverse)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_target, m_edge, m_source);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_target, m_connector, m_source);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_target);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_source);
 
   EXPECT_FALSE(iter3->Next());
@@ -500,11 +500,11 @@ protected:
 
     m_source = m_ctx->GenerateNode(ScType::NodeConst);
     m_target = m_source;
-    m_edge = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, m_source, m_target);
+    m_connector = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());
-    ASSERT_TRUE(m_edge.IsValid());
+    ASSERT_TRUE(m_connector.IsValid());
   }
 
   void TearDown() override
@@ -515,7 +515,7 @@ protected:
 protected:
   ScAddr m_source;
   ScAddr m_target;
-  ScAddr m_edge;
+  ScAddr m_connector;
 };
 
 TEST_F(ScLoopTest, FAF)
@@ -524,7 +524,7 @@ TEST_F(ScLoopTest, FAF)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -540,7 +540,7 @@ TEST_F(ScLoopTest, FAA)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -556,7 +556,7 @@ TEST_F(ScLoopTest, AAF)
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -568,11 +568,11 @@ TEST_F(ScLoopTest, AAF)
 
 TEST_F(ScLoopTest, FFA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_connector, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -584,11 +584,11 @@ TEST_F(ScLoopTest, FFA)
 
 TEST_F(ScLoopTest, AFF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Const, m_edge, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Const, m_connector, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -600,11 +600,11 @@ TEST_F(ScLoopTest, AFF)
 
 TEST_F(ScLoopTest, AFA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_edge, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(ScType::Node, m_connector, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_TRUE(iter3->Get(0) == m_source || iter3->Get(0) == m_target);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_TRUE(iter3->Get(2) == m_source || iter3->Get(2) == m_target);
 
   EXPECT_FALSE(iter3->Next());
@@ -616,11 +616,11 @@ TEST_F(ScLoopTest, AFA)
 
 TEST_F(ScLoopTest, FFF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_edge, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->Iterator3(m_source, m_connector, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
-  EXPECT_EQ(iter3->Get(1), m_edge);
+  EXPECT_EQ(iter3->Get(1), m_connector);
   EXPECT_EQ(iter3->Get(2), m_target);
 
   EXPECT_FALSE(iter3->Next());

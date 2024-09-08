@@ -35,17 +35,17 @@ TEST_F(ScTemplateCommonTest, smoke)
   ScAddr const addr3 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr3.IsValid());
 
-  ScAddr const edge1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge1.IsValid());
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arc1.IsValid());
 
-  ScAddr const edge2 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr3, edge1);
-  EXPECT_TRUE(edge2.IsValid());
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr3, arc1);
+  EXPECT_TRUE(arc2.IsValid());
 
   ScTemplate templ;
 
-  templ.Triple(addr1 >> "addr1", ScType::EdgeAccessVarPosPerm >> "edge1", ScType::NodeVar >> "addr2");
-  templ.Triple(ScType::NodeVar >> "_addr1T2", ScType::EdgeAccessVarPosPerm >> "_addr2T2", "edge1");
-  templ.Triple("addr2", ScType::EdgeDCommonVar >> "_addr2T3", "edge1");
+  templ.Triple(addr1 >> "addr1", ScType::EdgeAccessVarPosPerm >> "arc1", ScType::NodeVar >> "addr2");
+  templ.Triple(ScType::NodeVar >> "_addr1T2", ScType::EdgeAccessVarPosPerm >> "_addr2T2", "arc1");
+  templ.Triple("addr2", ScType::EdgeDCommonVar >> "_addr2T3", "arc1");
 
   ScTemplateGenResult result;
   m_ctx->GenerateByTemplate(templ, result);
@@ -55,7 +55,7 @@ TEST_F(ScTemplateCommonTest, smoke)
 
   EXPECT_TRUE(it5->Next());
   EXPECT_EQ(it5->Get(0), result["addr1"]);
-  EXPECT_EQ(it5->Get(1), result["edge1"]);
+  EXPECT_EQ(it5->Get(1), result["arc1"]);
   EXPECT_EQ(it5->Get(2), result["addr2"]);
   EXPECT_EQ(it5->Get(3), result["_addr2T2"]);
   EXPECT_EQ(it5->Get(4), result["_addr1T2"]);
@@ -65,7 +65,7 @@ TEST_F(ScTemplateCommonTest, smoke)
   EXPECT_TRUE(it3->Next());
   EXPECT_EQ(it3->Get(0), result["addr2"]);
   EXPECT_EQ(it3->Get(1), result["_addr2T3"]);
-  EXPECT_EQ(it3->Get(2), result["edge1"]);
+  EXPECT_EQ(it3->Get(2), result["arc1"]);
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
@@ -75,20 +75,20 @@ TEST_F(ScTemplateCommonTest, smoke)
   ScTemplateSearchResultItem res = searchResult[0];
 
   EXPECT_EQ(it5->Get(0), res["addr1"]);
-  EXPECT_EQ(it5->Get(1), res["edge1"]);
+  EXPECT_EQ(it5->Get(1), res["arc1"]);
   EXPECT_EQ(it5->Get(2), res["addr2"]);
   EXPECT_EQ(it5->Get(3), result["_addr2T2"]);
   EXPECT_EQ(it5->Get(4), result["_addr1T2"]);
 
   EXPECT_EQ(it3->Get(0), res["addr2"]);
   EXPECT_EQ(it3->Get(1), result["_addr2T3"]);
-  EXPECT_EQ(it3->Get(2), res["edge1"]);
+  EXPECT_EQ(it3->Get(2), res["arc1"]);
 }
 
 TEST_F(ScTemplateCommonTest, search)
 {
   size_t const testCount = 10;
-  ScAddrVector nodes, edges;
+  ScAddrVector nodes, connectors;
 
   ScAddr const addrSrc = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addrSrc.IsValid());
@@ -101,7 +101,7 @@ TEST_F(ScTemplateCommonTest, search)
     EXPECT_TRUE(addrEdge.IsValid());
 
     nodes.push_back(addrTrg);
-    edges.push_back(addrEdge);
+    connectors.push_back(addrEdge);
   }
 
   ScTemplate templ;
@@ -117,7 +117,7 @@ TEST_F(ScTemplateCommonTest, search)
 
     EXPECT_EQ(r["addrSrc"], addrSrc);
 
-    EXPECT_TRUE(HasAddr(edges, r["arcAddr"]));
+    EXPECT_TRUE(HasAddr(connectors, r["arcAddr"]));
     EXPECT_TRUE(HasAddr(nodes, r["addrTrg"]));
   }
 }
@@ -133,11 +133,11 @@ TEST_F(ScTemplateCommonTest, searchQuintuple)
   ScAddr const addr3 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr3.IsValid());
 
-  ScAddr const edge1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge1.IsValid());
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  EXPECT_TRUE(arc1.IsValid());
 
-  ScAddr const edge2 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr3, edge1);
-  EXPECT_TRUE(edge2.IsValid());
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr3, arc1);
+  EXPECT_TRUE(arc2.IsValid());
 
   {
     ScTemplate templ;
@@ -434,7 +434,7 @@ TEST_F(ScTemplateCommonTest, MultipleConnectivitiesTemplateSmoke)
   EXPECT_EQ(searchResult.Size(), 1u);
 }
 
-TEST_F(ScTemplateCommonTest, EdgesTemplateSmoke)
+TEST_F(ScTemplateCommonTest, ConnectorsTemplateSmoke)
 {
   ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
@@ -461,7 +461,7 @@ TEST_F(ScTemplateCommonTest, EdgesTemplateSmoke)
   EXPECT_EQ(searchResult[0]["_target"], sourceNodeAddr);
 }
 
-TEST_F(ScTemplateCommonTest, CycledEdgesTemplateSmoke)
+TEST_F(ScTemplateCommonTest, CycledConnectorsTemplateSmoke)
 {
   ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
 

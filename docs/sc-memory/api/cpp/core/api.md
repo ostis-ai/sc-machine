@@ -7,12 +7,7 @@
 The API provides core functionality for creating, retrieving and erasing sc-elements in sc-memory.
 This sc-memory is designed to represent knowledge in a structured and graph-based manner.
 
-A sc-memory consists of sc-elements. Sc-elements can be grouped into sc-constructions (semantic graphs or knowledge graphs). 
-Among sc-elements there are sc-nodes, sc-links and sc-connectors between them. All sc-elements have syntactic and 
-semantic sc-types. Sc-connectors are divided into non-oriented sc-connectors (sc-edges) and oriented sc-connectors 
-(sc-arcs). Each sc-connector have source and target sc-elements. These sc-elements can be sc-nodes, sc-links or 
-sc-connectors. All these attributes of sc-elements and sc-element structures are hidden from user, but you can get 
-these features using this API.
+A sc-memory consists of sc-elements. Sc-elements can be grouped into sc-constructions (semantic graphs or knowledge graphs). Among sc-elements there are sc-nodes, sc-links and sc-connectors between them. All sc-elements have syntactic and semantic sc-types. Sc-connectors are divided into non-oriented sc-connectors (sc-edges) and oriented sc-connectors (sc-arcs). Each sc-connector have source and target sc-elements. These sc-elements can be sc-nodes, sc-links or sc-connectors. All these attributes of sc-elements and sc-element structures are hidden from user, but you can get these features using this API.
 
 !!! note
     All API methods are thread-safe.
@@ -56,7 +51,7 @@ not valid, then a method throws the exception `utils::ExceptionInvalidParams` wi
 
 ```cpp
 ...
-// Create sc-node and get sc-address in sc-memory of it.
+// Generate sc-node and get sc-address in sc-memory of it.
 ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
 // Specified sc-type must be one of ScType::Node... type.
 ```
@@ -65,7 +60,7 @@ ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
 
 ```cpp
 ...
-// Create sc-link and get sc-address in sc-memory of it.
+// Generate sc-link and get sc-address in sc-memory of it.
 ScAddr const & linkAddr = context.GenerateLink(ScType::LinkConst);
 // Specified sc-type must be one of ScType::Link... type.
 ```
@@ -78,7 +73,7 @@ ScAddr const & linkAddr = context.GenerateLink(ScType::LinkConst);
 
 ```cpp
 ...
-// Create sc-arc between sc-node and sc-link and get sc-address in 
+// Generate sc-arc between sc-node and sc-link and get sc-address in 
 // sc-memory of it.
 ScAddr const & arcAddr = context.GenerateConnector(
     ScType::EdgeAccessConstPosPerm, nodeAddr, linkAddr);
@@ -101,7 +96,7 @@ sc-address that exists in sc-memory and that corresponds some sc-element in it.
 // Check if all created sc-elements are valid.
 bool const isNodeValid = context.IsElement(nodeAddr);
 bool const isLinkValid = context.IsElement(linkAddr);
-bool const isEdgeValid = context.IsElement(arcAddr);
+bool const isArcValid = context.IsElement(arcAddr);
 ```
 
 !!! note
@@ -128,7 +123,7 @@ syntactic sc-type for sc-element.
 
 ```cpp
 ...
-// Create sc-node and get sc-address in sc-memory of it.
+// Generate sc-node and get sc-address in sc-memory of it.
 ScAddr const & nodeAddr = context.GenerateNode(ScType::Node);
 bool const isSubtypeElementChanged 
     = context.SetElementSubtype(node, ScType::NodeConst);
@@ -170,7 +165,7 @@ First approach is to use simple while loop. It is suitable, when you need to bre
 
 ```cpp
 ...
-// Create sc-iterator for searching all sc-element sc-addresses 
+// Generate sc-iterator for searching all sc-element sc-addresses 
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
 ScIterator3Ptr it3 = context.Iterator3(
             setAddr,
@@ -190,7 +185,7 @@ while (it3->Next())
 
 ```cpp
 ...
-// Create sc-iterator for searching all sc-node sc-addresses, 
+// Generate sc-iterator for searching all sc-node sc-addresses, 
 // which pairs with sc-element with address `setAddr` belong to the relation 
 // with sc-address `nrelDecompositionAddr`.
 ScIterator5Ptr it5 = context.Iterator5(
@@ -219,7 +214,7 @@ you need to iterate all results.
 
 ```cpp
 ...
-// Create callback-based sc-iterator for searching all sc-element sc-addresses 
+// Generate callback-based sc-iterator for searching all sc-element sc-addresses 
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
 context.ForEachIter3(
     setAddr,
@@ -238,7 +233,7 @@ context.ForEachIter3(
 
 ```cpp
 ...
-// Create callback-based sc-iterator for searching all sc-node sc-addresses, 
+// Generate callback-based sc-iterator for searching all sc-node sc-addresses, 
 // which pairs with sc-element with address `setAddr` belong to the relation 
 // with sc-address `nrelDecompositionAddr`.
 context.ForEachIter5(
@@ -248,15 +243,15 @@ context.ForEachIter5(
   ScType::EdgeAccessConstPosPerm,
   nrelDecompositionAddr
   [] (ScAddr const & srcAddr, 
-      ScAddr const & edgeAddr, 
+      ScAddr const & connectorAddr, 
       ScAddr const & trgAddr, 
-      ScAddr const & edgeAttrAddr, 
+      ScAddr const & connectorAttrAddr, 
       ScAddr const & attrAddr)
 {
   // srcAddr equal to the 0th value of sc-iterator
-  // edgeAddr equal to the 1st value of sc-iterator
+  // connectorAddr equal to the 1st value of sc-iterator
   // trgAddr equal to the 2d value of sc-iterator
-  // edgeAttrAddr equal to the 3rd value of sc-iterator
+  // connectorAttrAddr equal to the 3rd value of sc-iterator
   // attrAddr equal to the 4th value of sc-iterator
   ... // Write your code to handle found sc-construction.
 });

@@ -7,11 +7,11 @@
 All agents in C++ represent some classes in C++. To implement an agent in C++, you need to perform the following common steps:
 
 1. Write input (initial) construction and output (result) construction of your future agent in SC-code.
-2. Create folder with source and header files for sc-agent implementation.
+2. Generate folder with source and header files for sc-agent implementation.
 3. Also you need write `CMakeLists.txt` file. We use cmake to build projects in C++.
 4. In header file, define a class in C++ for this agent and specifies in it at least class of actions that this agent performs and its program. In such class you can also specify primary initiation condition, initiation condition, and result condition.
 5. In source file, implement all declared methods of agent's class. You can also implement your own methods and use them in an agent program. You can use all C++ and OOP tools as much as possible. 
-6. Create file and implement class for keynodes used by implemented agent.
+6. Generate file and implement class for keynodes used by implemented agent.
 7. Implement class for module for subscribing implemented agent.
 8. Write tests for implemented agent.
 
@@ -52,7 +52,7 @@ In addition to agents that initiate actions themselves and then perform these ac
 
 --- 
 
-### **2. Create folder with source and header files for agent and `CMakeLists.txt.` file.**
+### **2. Generate folder with source and header files for agent and `CMakeLists.txt.` file.**
 
 You should get something like this structure:
 
@@ -78,7 +78,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "agent/*.cpp" "agent/*.hpp"
 )
 
-# Create and link your library with using libraries.
+# Generate and link your library with using libraries.
 add_library(set-agents SHARED ${SOURCES})
 target_link_libraries(set-agents LINK_PUBLIC sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -425,7 +425,7 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 +    "tests/*.cpp"
 +)
 
-# Create executable for tests.
+# Generate executable for tests.
 +add_executable(set-agents-tests ${TEST_SOURCES})
 +target_link_libraries(set-agents-tests LINK_PRIVATE set-agents)
 +target_include_directories(set-agents-tests 
@@ -449,11 +449,11 @@ using AgentTest = ScMemoryTest;
 
 TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 {
-  // Create action with class that your agent performs.
+  // Generate action with class that your agent performs.
   ScAction action 
     = m_ctx->GenerateAction(ScSetKeynodes::action_calculate_set_power);
 
-  // Create set with two sc-elements.
+  // Generate set with two sc-elements.
   ScSet set = m_ctx->GenerateSet();
   ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);

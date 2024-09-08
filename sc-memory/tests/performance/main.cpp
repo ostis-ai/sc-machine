@@ -6,13 +6,13 @@
 
 #include "benchmark/benchmark.h"
 
-#include "units/memory_create_edge.hpp"
-#include "units/memory_create_node.hpp"
-#include "units/memory_create_link.hpp"
+#include "units/memory_generate_connector.hpp"
+#include "units/memory_generate_node.hpp"
+#include "units/memory_generate_link.hpp"
 #include "units/memory_iterator_search.hpp"
 #include "units/memory_search_link_by_content.hpp"
-#include "units/memory_remove_diff_elements.hpp"
-#include "units/memory_remove_set_elements.hpp"
+#include "units/memory_erase_diff_elements.hpp"
+#include "units/memory_erase_set_elements.hpp"
 
 #include "units/memory_erase_elements.hpp"
 
@@ -403,61 +403,61 @@ BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestSearchLinkByContent)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(1)
 ->Iterations(kSetPower)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(2)
 ->Iterations(kSetPower / 2)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(3)
 ->Iterations(kSetPower / 3)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(4)
 ->Iterations(kSetPower / 4)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(8)
 ->Iterations(kSetPower / 8)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(1)
 ->Iterations(kSetPower)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(2)
 ->Iterations(kSetPower / 2)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(3)
 ->Iterations(kSetPower / 3)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(4)
 ->Iterations(kSetPower / 4)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(8)
 ->Iterations(kSetPower / 8)
 ->Arg(kSetPower)

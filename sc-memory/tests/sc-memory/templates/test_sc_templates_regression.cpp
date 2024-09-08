@@ -279,12 +279,12 @@ TEST_F(ScTemplateRegressionTest, Issue251)
   ScAddr const linkAddr = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr.IsValid());
 
-  ScAddr const edgeK_link = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, kAddr, linkAddr);
-  EXPECT_TRUE(edgeK_link.IsValid());
-  ScAddr const edgeT_link = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, tAddr, linkAddr);
-  EXPECT_TRUE(edgeT_link.IsValid());
-  ScAddr const edgeRel_edge = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, relAddr, edgeK_link);
-  EXPECT_TRUE(edgeRel_edge.IsValid());
+  ScAddr const arcK_link = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, kAddr, linkAddr);
+  EXPECT_TRUE(arcK_link.IsValid());
+  ScAddr const arcT_link = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, tAddr, linkAddr);
+  EXPECT_TRUE(arcT_link.IsValid());
+  ScAddr const arcRel_arc = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, relAddr, arcK_link);
+  EXPECT_TRUE(arcRel_arc.IsValid());
 
   // create template for a search
   ScTemplate templ;

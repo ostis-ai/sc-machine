@@ -23,8 +23,8 @@ void ScMemoryJsonActionsHandler::InitializeActionClasses()
   m_actions = {
       {"connection_info", new ScMemoryConnectionInfoJsonAction()},
       {"keynodes", new ScMemoryHandleKeynodesJsonAction()},
-      {"create_elements", new ScMemoryCreateElementsJsonAction()},
-      {"create_elements_by_scs", new ScMemoryCreateElementsByScsJsonAction()},
+      {"create_elements", new ScMemoryGenerateElementsJsonAction()},
+      {"create_elements_by_scs", new ScMemoryGenerateElementsByScsJsonAction()},
       {"check_elements", new ScMemoryCheckElementsJsonAction()},
       {"delete_elements", new ScMemoryEraseElementsJsonAction()},
       {"search_template", new ScMemoryTemplateSearchJsonAction()},
