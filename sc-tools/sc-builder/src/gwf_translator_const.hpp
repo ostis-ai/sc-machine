@@ -63,7 +63,7 @@ std::string const CONTOUR_END = "*];;";
 
 std::string const ID = "id";
 std::string const PARENT = "parent";
-std::string const IDTF = "idtf";
+std::string const IDENTIFIER = "idtf";
 std::string const TYPE = "type";
 std::string const MIME_TYPE = "mime_type";
 std::string const FILE_NAME = "file_name";
@@ -73,4 +73,10 @@ std::string const ID_E = "id_e";
 
 std::string const NO_CONTENT = "0";
 std::string const NO_PARENT = "0";
+
+std::unordered_map<std::string, std::string> const IMAGE_FORMATS = {{".png", "format_png"}};
 }  // namespace Constants
+
+using SCgElements = std::unordered_map<std::string, std::shared_ptr<class SCgElement>>;
+using SCgConnectors = std::unordered_map<std::shared_ptr<class SCgConnector>, std::pair<std::string, std::string>>;
+using SCgContours = std::unordered_map<std::shared_ptr<class SCgContour>, std::string>;
