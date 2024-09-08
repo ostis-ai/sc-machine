@@ -1,0 +1,8 @@
+..el_2837956766128
+  <- sc_node;;
+
+..el_2837956766960
+  <- sc_node;;
+
+@edge_2837985396160 = (..el_2837956766128 => ..el_2837956766960);;
+sc_pair_meta_fuz_temp_orient_membership -> @edge_2837985396160;;
