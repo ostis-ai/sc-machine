@@ -34,14 +34,7 @@ class SCsContour;
 class SCsElementFactory
 {
 public:
-  static std::shared_ptr<SCsElement> CreateAndConvertElementFromSCgElement(
-      std::shared_ptr<SCgElement> const & scgElement);
-
-  static std::shared_ptr<SCsElement> CreateAndConvertElementFromSCgElement(
-      std::shared_ptr<SCgElement> const & scgElement,
-      std::list<std::shared_ptr<SCgElement>> const & scgElements,
-      std::shared_ptr<SCgContour> const & scgContour,
-      std::shared_ptr<SCsContour> const & scsContour);
+  static std::shared_ptr<SCsElement> ConvertElementFromSCgElement(std::shared_ptr<SCgElement> const & scgElement);
 };
 
 class SCsWriter
