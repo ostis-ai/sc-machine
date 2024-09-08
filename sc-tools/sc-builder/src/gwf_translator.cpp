@@ -40,7 +40,7 @@ std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string cons
 
 std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::string const & filePath)
 {
-  std::string const & scsSource = filePath + SCS_EXTENTION;
+  std::string const & scsSource = filePath + GENERATED_EXTENTION + SCS_EXTENTION;
 
   std::ofstream outputFile(scsSource, std::ios::binary);
 

@@ -48,6 +48,7 @@ std::string const FILE_PREFIX = "file://";
 std::string const EL_PREFIX = "..el";
 std::string const EL_VAR_PREFIX = ".._el";
 std::string const SCS_EXTENTION = ".scs";
+std::string const GENERATED_EXTENTION = ".generated";
 
 std::string const OPEN_PARENTHESIS = "(";
 std::string const CLOSE_PARENTHESIS = ")";

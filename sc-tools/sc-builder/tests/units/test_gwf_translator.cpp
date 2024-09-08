@@ -94,7 +94,7 @@ bool CompareFiles(std::string const & filePath1, std::string const & filePath2)
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR("Exeption in reading file to string " + std::string(e.what()));
+    SC_LOG_ERROR("Exception in reading file to string " + std::string(e.what()));
     return false;
   }
 }
@@ -114,7 +114,7 @@ std::string ReadFileToString(std::string const & filePath)
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR("Exeption in reading file to string " + std::string(e.what()));
+    SC_LOG_ERROR("Exception in reading file to string " + std::string(e.what()));
     return "";
   }
 }
