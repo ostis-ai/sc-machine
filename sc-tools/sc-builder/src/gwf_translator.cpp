@@ -34,8 +34,9 @@ std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string cons
         utils::ExceptionParseError, "GWFTranslator::GWFToScs: There are no elements in this file " + filePath);
 
   SCsWriter writer;
-  std::string const & scsText = writer.Write(elements, filePath);
-  return scsText;
+  Buffer scsBuffer;
+  writer.Write(elements, filePath, scsBuffer);
+  return scsBuffer.GetValue();
 }
 
 std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::string const & filePath)

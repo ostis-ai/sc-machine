@@ -49,17 +49,15 @@ void SCsNode::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEleme
   if (scsNodeType.empty())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        "SCsNode::ConvertFromSCgElement: No matching scs node type for scg node: " + scgNodeType);
+        "SCsNode::ConvertFromSCgElement: No matching scs node type for scg node: " << scgNodeType);
 
   type = scsNodeType;
 }
 
-std::string SCsNode::Dump(std::string const & filepath) const
+void SCsNode::Dump(std::string const & filepath, Buffer & buffer) const
 {
-  Buffer buffer;
-  buffer.Write(
-      m_systemIdentifier + NEWLINE + SPACE + SPACE + SC_EDGE_MAIN_L + SPACE + type + ELEMENT_END + NEWLINE + NEWLINE);
-  return buffer.GetValue();
+  buffer << GetSystemIdentifier() << NEWLINE << SPACE << SPACE << SC_EDGE_MAIN_L << SPACE << type << ELEMENT_END
+         << NEWLINE << NEWLINE;
 }
 
 // SCsLink
@@ -99,25 +97,23 @@ void SCsLink::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEleme
     break;
   default:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidType, "SCsLink::ConvertFromSCgElement: Content type not supported: " + link->GetId());
+        utils::ExceptionInvalidType, "SCsLink::ConvertFromSCgElement: Content type not supported: " << link->GetId());
   }
 }
 
-std::string SCsLink::Dump(std::string const & filePath) const
+void SCsLink::Dump(std::string const & filePath, Buffer & buffer) const
 {
-  Buffer buffer;
-
   if (m_isUrl)
   {
     bool isImage = false;
     std::string imageFormat;
 
-    std::filesystem::path const basePath = std::filesystem::path(filePath).parent_path();
-    std::filesystem::path const fullPath = basePath / m_fileName;
+    std::filesystem::path const & basePath = std::filesystem::path(filePath).parent_path();
+    std::filesystem::path const & fullPath = basePath / m_fileName;
 
-    std::string content = FILE_PREFIX + fullPath.filename().string();
+    std::string const & content = FILE_PREFIX + fullPath.filename().string();
 
-    std::string fileExtension = fullPath.extension().string();
+    std::string const & fileExtension = fullPath.extension().string();
     auto it = IMAGE_FORMATS.find(fileExtension);
 
     if (it != IMAGE_FORMATS.end())
@@ -136,29 +132,24 @@ std::string SCsLink::Dump(std::string const & filePath) const
     file.write(m_urlContent.data(), m_urlContent.size());
     file.close();
 
-    buffer.Write(
-        m_systemIdentifier + SPACE + EQUAL + SPACE + DOUBLE_QUOTE + content + DOUBLE_QUOTE + ELEMENT_END + NEWLINE);
+    buffer << m_systemIdentifier << SPACE << EQUAL << SPACE << DOUBLE_QUOTE << content << DOUBLE_QUOTE << ELEMENT_END
+           << NEWLINE;
     if (isImage)
     {
-      buffer.Write(
-          FORMAT_EDGE + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + m_systemIdentifier + SPACE + SC_EDGE_DCOMMON_R
-          + SPACE + imageFormat + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE);
-      buffer.Write(
-          NREL_FORMAT_EDGE + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + NREL_FORMAT + SPACE + SC_EDGE_MAIN_R + SPACE
-          + FORMAT_EDGE + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE);
+      buffer << FORMAT_EDGE << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_systemIdentifier << SPACE
+             << SC_EDGE_DCOMMON_R << SPACE << imageFormat << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE;
+      buffer << NREL_FORMAT_EDGE << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << NREL_FORMAT << SPACE
+             << SC_EDGE_MAIN_R << SPACE << FORMAT_EDGE << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE;
     }
   }
   else
   {
-    std::string isVar = SCsWriter::IsVariable(m_type) ? UNDERSCORE : "";
-    buffer.Write(
-        m_systemIdentifier + SPACE + EQUAL + SPACE + isVar + OPEN_BRACKET + m_content + CLOSE_BRACKET + ELEMENT_END
-        + NEWLINE);
+    std::string const & isVar = SCsWriter::IsVariable(m_type) ? UNDERSCORE : "";
+    buffer << m_systemIdentifier << SPACE << EQUAL << SPACE << isVar << OPEN_BRACKET << m_content << CLOSE_BRACKET
+           << ELEMENT_END << NEWLINE;
   }
 
-  buffer.Write(NEWLINE);
-
-  return buffer.GetValue();
+  buffer << NEWLINE;
 }
 
 // SCsConnector
@@ -177,7 +168,7 @@ void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scg
   if (m_symbol.empty())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        "SCsConnector::ConvertFromSCgElement: No matching scs node type for scg node: " + edgeType);
+        "SCsConnector::ConvertFromSCgElement: No matching scs node type for scg node: " << edgeType);
 
   m_alias = SCsWriter::MakeAlias(EDGE, id);
 
@@ -193,27 +184,22 @@ std::string SCsConnector::GetSourceTargetIdentifier(std::shared_ptr<SCgElement> 
   return scsElement->GetSystemIdentifier();
 }
 
-std::string SCsConnector::Dump(std::string const & filepath) const
+void SCsConnector::Dump(std::string const & filepath, Buffer & buffer) const
 {
-  Buffer buffer;
   if (m_isUnsupported)
   {
-    buffer.Write(
-        m_alias + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + m_sourceIdentifier + SPACE + SC_EDGE_DCOMMON_R + SPACE
-        + m_targetIdentifier + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE);
+    buffer << m_alias << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_sourceIdentifier << SPACE << SC_EDGE_DCOMMON_R
+           << SPACE << m_targetIdentifier << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE;
 
-    buffer.Write(m_symbol + SPACE + SC_EDGE_MAIN_R + SPACE + m_alias + ELEMENT_END + NEWLINE);
+    buffer << m_symbol << SPACE << SC_EDGE_MAIN_R << SPACE << m_alias << ELEMENT_END << NEWLINE;
   }
   else
   {
-    buffer.Write(
-        m_alias + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + m_sourceIdentifier + SPACE + m_symbol + SPACE
-        + m_targetIdentifier + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE);
+    buffer << m_alias << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_sourceIdentifier << SPACE << m_symbol << SPACE
+           << m_targetIdentifier << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE;
   }
 
-  buffer.Write(NEWLINE);
-
-  return buffer.GetValue();
+  buffer << NEWLINE;
 }
 
 // SCsContour
@@ -250,7 +236,6 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
     {
       // SCs cannot record individual nodes in a contour, so it is necessary to create
       // an explicit connection between the contour and the node
-
       scsElement = std::make_shared<SCsNodeInContour>(
           m_scgElements, scgElement->GetId(), contour->GetId(), this->GetSystemIdentifier());
     }
@@ -261,7 +246,6 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
       // If there is an arc to a node in a contour,
       // then this node is in the contour, but not vice versa,
       // so we count multiple arcs from the NodeInContour
-
       if (connector->GetSource() == contour && connector->GetTarget()->GetTag() == NODE)
         scsElement = std::make_shared<SCsEdgeFromContourToNode>(
             m_scgElements, connector->GetTarget()->GetId(), contour->GetId(), this->GetSystemIdentifier());
@@ -288,26 +272,21 @@ void SCsContour::AddElement(std::shared_ptr<SCsElement> const & element)
   m_scsElements.push_back(element);
 }
 
-std::string SCsContour::Dump(std::string const & filepath) const
+void SCsContour::Dump(std::string const & filepath, Buffer & buffer) const
 {
-  Buffer buffer;
   Buffer contourBuffer;
-
   for (auto const & element : m_scsElements)
   {
     if (auto nodeInContour = std::dynamic_pointer_cast<SCsNodeInContour>(element))
-      buffer.Write(nodeInContour->Dump(filepath));
+      nodeInContour->Dump(filepath, buffer);
     else if (auto edgeFromContourToNode = std::dynamic_pointer_cast<SCsEdgeFromContourToNode>(element))
-      buffer.Write(nodeInContour->Dump(filepath));
+      edgeFromContourToNode->Dump(filepath, buffer);
     else
-      contourBuffer.Write(element->Dump(filepath));
+      element->Dump(filepath, contourBuffer);
   }
 
-  buffer.Write(
-      GetSystemIdentifier() + SPACE + EQUAL + SPACE + OPEN_CONTOUR + NEWLINE + contourBuffer.GetValue() + NEWLINE
-      + CLOSE_CONTOUR + ELEMENT_END + NEWLINE);
-
-  return buffer.GetValue();
+  buffer << GetSystemIdentifier() << SPACE << EQUAL << SPACE << OPEN_CONTOUR << NEWLINE << contourBuffer.GetValue()
+         << NEWLINE << CLOSE_CONTOUR << ELEMENT_END << NEWLINE;
 }
 
 // SCsMultipleElement
@@ -437,18 +416,13 @@ void SCsNodeInContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const &
   AddWrittenPair(GetContourId(), GetNodeId());
 }
 
-std::string SCsNodeInContour::Dump(std::string const & filepath) const
+void SCsNodeInContour::Dump(std::string const & filepath, Buffer & buffer) const
 {
-  Buffer buffer;
+  buffer << EDGE_FROM_CONTOUR << UNDERSCORE << GetContourId() << UNDERSCORE << EDGE_TO_NODE << UNDERSCORE << GetNodeId()
+         << UNDERSCORE << GetMultipleArcCounter();
 
-  auto const edgeName = EDGE_FROM_CONTOUR + UNDERSCORE + GetContourId() + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE
-                        + GetNodeId() + UNDERSCORE + GetMultipleArcCounter();
-
-  buffer.Write(
-      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + GetContourIdentifier() + SPACE + SC_EDGE_MAIN_R + SPACE
-      + m_systemIdentifier + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
-
-  return buffer.GetValue();
+  buffer << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << GetContourIdentifier() << SPACE << SC_EDGE_MAIN_R << SPACE
+         << m_systemIdentifier << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE << NEWLINE;
 }
 
 // SCsEdgeFromContourToNode
@@ -477,16 +451,11 @@ void SCsEdgeFromContourToNode::ConvertFromSCgElement(std::shared_ptr<SCgElement>
   AddWrittenPair(GetContourId(), GetNodeId());
 }
 
-std::string SCsEdgeFromContourToNode::Dump(std::string const & filepath) const
+void SCsEdgeFromContourToNode::Dump(std::string const & filepath, Buffer & buffer) const
 {
-  Buffer buffer;
+  buffer << EDGE_FROM_CONTOUR << UNDERSCORE << GetContourId() << UNDERSCORE << EDGE_TO_NODE << UNDERSCORE << GetNodeId()
+         << UNDERSCORE << GetMultipleArcCounter();
 
-  auto const edgeName = EDGE_FROM_CONTOUR + UNDERSCORE + GetContourId() + UNDERSCORE + EDGE_TO_NODE + UNDERSCORE
-                        + GetNodeId() + UNDERSCORE + GetMultipleArcCounter();
-
-  buffer.Write(
-      edgeName + SPACE + EQUAL + SPACE + OPEN_PARENTHESIS + GetContourIdentifier() + SPACE + SC_EDGE_MAIN_R + SPACE
-      + GetNodeIdentifier() + CLOSE_PARENTHESIS + ELEMENT_END + NEWLINE + NEWLINE);
-
-  return buffer.GetValue();
+  buffer << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << GetContourIdentifier() << SPACE << SC_EDGE_MAIN_R << SPACE
+         << GetNodeIdentifier() << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE << NEWLINE;
 }

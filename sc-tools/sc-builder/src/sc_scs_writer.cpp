@@ -22,27 +22,22 @@ Buffer::Buffer()
 {
 }
 
-void Buffer::Write(std::string const & s)
+Buffer & Buffer::operator<<(std::string const & string)
 {
-  m_value += s;
+  m_value << string;
+  return *this;
 }
 
-void Buffer::AddTabs(std::size_t const & count)
+Buffer & Buffer::AddTabs(std::size_t const & count)
 {
-  std::istringstream iss{m_value};
-  std::ostringstream new_value;
-  std::string line;
   std::string tabs(count * 4, SPACE[0]);
-
-  while (std::getline(iss, line))
-    new_value << tabs << line << NEWLINE;
-
-  m_value = new_value.str();
+  m_value << tabs;
+  return *this;
 }
 
 std::string Buffer::GetValue() const
 {
-  return m_value;
+  return m_value.str();
 }
 
 // UTILS
@@ -137,12 +132,10 @@ void SCsWriter::SCgIdentifierCorrector::CorrectIdentifier(
   }
 }
 
-std::string SCsWriter::Write(SCgElements const & scgElementsMap, std::string const & filePath) const
+void SCsWriter::Write(SCgElements const & scgElementsMap, std::string const & filePath, Buffer & buffer) const
 {
   try
   {
-    Buffer buffer;
-
     auto scgElements = ConvertMapToList(scgElementsMap);
 
     for (auto const & scgElement : scgElements)
@@ -171,22 +164,20 @@ std::string SCsWriter::Write(SCgElements const & scgElementsMap, std::string con
             scsElement = contour;
           }
           scsElement->ConvertFromSCgElement(scgElement);
-          buffer.Write(scsElement->Dump(filePath));
+          scsElement->Dump(filePath, buffer);
         }
         else if (scgTag == NODE || scgTag == BUS)
         {
           // All single nodes need to be written
           scsElement->ConvertFromSCgElement(scgElement);
-          buffer.Write(scsElement->Dump(filePath));
+          scsElement->Dump(filePath, buffer);
         }
       }
     }
-    return buffer.GetValue();
   }
   catch (utils::ScException const & e)
   {
     SC_LOG_ERROR("Exception in process elements: " << e.Message());
-    return "";
   }
 }
 
@@ -205,14 +196,13 @@ void SCsWriter::WriteMainIdentifier(
     std::string const & systemIdentifier,
     std::string const & mainIdentifier)
 {
-  std::string output;
   if (mainIdentifier[0] == OPEN_BRACKET[0])
-    output = NEWLINE + systemIdentifier + NEWLINE + SPACE + SC_EDGE_DCOMMON_R + SPACE + N_REL_MAIN_IDTF + COLON + SPACE
-             + mainIdentifier + ELEMENT_END + NEWLINE;
+    buffer << NEWLINE << systemIdentifier << NEWLINE << SPACE << SC_EDGE_DCOMMON_R << SPACE << N_REL_MAIN_IDTF << COLON
+           << SPACE << mainIdentifier << ELEMENT_END << NEWLINE;
   else
-    output = NEWLINE + systemIdentifier + NEWLINE + SPACE + SC_EDGE_DCOMMON_R + SPACE + N_REL_MAIN_IDTF + COLON + SPACE
-             + OPEN_BRACKET + mainIdentifier + CLOSE_BRACKET + ELEMENT_END + NEWLINE;
-  buffer.Write(output + NEWLINE);
+    buffer << NEWLINE << systemIdentifier << NEWLINE << SPACE << SC_EDGE_DCOMMON_R << SPACE << N_REL_MAIN_IDTF << COLON
+           << SPACE << OPEN_BRACKET << mainIdentifier << CLOSE_BRACKET << ELEMENT_END << NEWLINE;
+  buffer << NEWLINE;
 }
 
 // SCsFactory

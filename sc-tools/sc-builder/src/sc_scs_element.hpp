@@ -12,6 +12,7 @@
 #include <memory>
 
 class SCgElement;
+class Buffer;
 
 class SCsElement
 {
@@ -21,7 +22,7 @@ protected:
 
 public:
   virtual void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) = 0;
-  virtual std::string Dump(std::string const & filepath) const = 0;
+  virtual void Dump(std::string const & filepath, Buffer & buffer) const = 0;
   virtual ~SCsElement() = default;
 
   void SetSystemIdentifier(std::string const & identifier);
@@ -37,7 +38,7 @@ private:
 
 public:
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
-  std::string Dump(std::string const & filepath) const override;
+  void Dump(std::string const & filepath, Buffer & buffer) const override;
 };
 
 class SCsLink : public SCsElement
@@ -51,7 +52,7 @@ private:
 
 public:
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
-  std::string Dump(std::string const & filepath) const override;
+  void Dump(std::string const & filepath, Buffer & buffer) const override;
 };
 
 class SCsConnector : public SCsElement
@@ -65,7 +66,7 @@ private:
 
 public:
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
-  std::string Dump(std::string const & filepath) const override;
+  void Dump(std::string const & filepath, Buffer & buffer) const override;
   std::string GetSourceTargetIdentifier(std::shared_ptr<SCgElement> const & element) const;
 };
 
@@ -81,7 +82,7 @@ public:
   void SetSCgElements(std::list<std::shared_ptr<SCgElement>> elements);
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
   void AddElement(std::shared_ptr<SCsElement> const & element);
-  std::string Dump(std::string const & filepath) const override;
+  void Dump(std::string const & filepath, Buffer & buffer) const override;
 };
 
 class SCsMultipleElement : public SCsElement
@@ -94,7 +95,7 @@ public:
       std::string const & contourIdentifier);
 
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override = 0;
-  std::string Dump(std::string const & filepath) const override = 0;
+  void Dump(std::string const & filepath, Buffer & buffer) const override = 0;
 
   std::list<std::shared_ptr<SCgElement>> GetSCgElements();
   void SetMultipleArcCounter(size_t counter);
@@ -131,7 +132,7 @@ public:
       std::string const & contourIdentifier);
 
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
-  std::string Dump(std::string const & filepath) const override;
+  void Dump(std::string const & filepath, Buffer & buffer) const override;
 };
 
 class SCsEdgeFromContourToNode : public SCsMultipleElement
@@ -144,5 +145,5 @@ public:
       std::string const & contourIdentifier);
 
   void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
-  std::string Dump(std::string const & filepath) const override;
+  void Dump(std::string const & filepath, Buffer & buffer) const override;
 };
