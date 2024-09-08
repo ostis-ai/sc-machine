@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 
 #include "sc_scg_to_scs_types.hpp"
 #include "gwf_parser.hpp"
@@ -16,13 +17,13 @@ class Buffer
 public:
   Buffer();
 
-  void Write(std::string const & s);
-  void AddTabs(std::size_t const & count);
+  Buffer & operator<<(std::string const & string);
+  Buffer & AddTabs(std::size_t const & count);
 
   std::string GetValue() const;
 
 private:
-  std::string m_value;
+  std::stringstream m_value;
 };
 
 class SCgElement;
@@ -46,7 +47,7 @@ public:
 class SCsWriter
 {
 public:
-  std::string Write(SCgElements const & elementsList, std::string const & filePath) const;
+  void Write(SCgElements const & elementsList, std::string const & filePath, Buffer & buffer) const;
 
   class SCgIdentifierCorrector
   {
