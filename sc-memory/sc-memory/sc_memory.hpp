@@ -91,11 +91,11 @@ public:
   {
     sc_uint64 m_nodesNum;
     sc_uint64 m_linksNum;
-    sc_uint64 m_edgesNum;
+    sc_uint64 m_connectorsNum;
 
     sc_uint64 GetAllNum() const
     {
-      return m_nodesNum + m_linksNum + m_edgesNum;
+      return m_nodesNum + m_linksNum + m_connectorsNum;
     }
   };
 
@@ -1652,7 +1652,7 @@ public:
    * ScTemplate templateToGenerate;
    * templToGenerate.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    *
@@ -1685,7 +1685,7 @@ public:
    * ScTemplate templateToGenerate;
    * templToGenerate.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    *
@@ -1726,7 +1726,7 @@ public:
    * ScTemplate templateToFind;
    * templToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    *
@@ -1763,7 +1763,7 @@ public:
    * ScTemplate templateToFind;
    * templToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    *
@@ -1812,7 +1812,7 @@ public:
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find all instances of specified class.
@@ -1821,7 +1821,7 @@ public:
    *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
    *  // Check that each sc-arc between class and its instance belongs to structure.
-   *  return !context->CheckConnector(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
+   *  return !context->CheckConnector(structureAddr, item["_arc"], ScType::EdgeAccessConstPosPerm);
    * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
    *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
@@ -1856,7 +1856,7 @@ public:
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find all instances of specified class.
@@ -1865,7 +1865,7 @@ public:
    *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
    *  // Check that each sc-arc between class and its instance belongs to structure.
-   *  return !context->CheckConnector(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
+   *  return !context->CheckConnector(structureAddr, item["_arc"], ScType::EdgeAccessConstPosPerm);
    * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
    *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
@@ -1904,7 +1904,7 @@ public:
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
@@ -1941,7 +1941,7 @@ public:
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
@@ -1995,7 +1995,7 @@ public:
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
@@ -2003,8 +2003,8 @@ public:
    * m_context->SearchByTemplateWithControl(templateToFind, [&context](ScTemplateSearchResultItem
    * const & item) -> ScTemplateSearchRequest
    * {
-   *   ScAddr const & edgeAddr = item["_edge"];
-   *   if (context->CheckConnector(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *   ScAddr const & arcAddr = item["_arc"];
+   *   if (context->CheckConnector(structureAddr, arcAddr, ScType::EdgeAccessConstPosPerm))
    *    return ScTemplateSearchRequest::CONTINUE;
    *
    *   if (context->CheckConnector(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
@@ -2048,7 +2048,7 @@ public:
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
@@ -2056,8 +2056,8 @@ public:
    * m_context->HelperSmartSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem
    * const & item) -> ScTemplateSearchRequest
    * {
-   *   ScAddr const & edgeAddr = item["_edge"];
-   *   if (context->CheckConnector(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *   ScAddr const & arcAddr = item["_arc"];
+   *   if (context->CheckConnector(structureAddr, arcAddr, ScType::EdgeAccessConstPosPerm))
    *    return ScTemplateSearchRequest::CONTINUE;
    *
    *   if (context->CheckConnector(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
@@ -2213,7 +2213,7 @@ protected:
    * ScTemplate translatableTemplate;
    * translatableTemplate.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"`
    * );
    * ScAddr resultTemplateAddr;

@@ -85,7 +85,7 @@ private:
 class ScTemplateBuilder
 {
   friend class ScTemplate;
-  using EdgeDependenceMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
+  using ConnectorDependenceMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
   using ObjectToIdtfMap = std::unordered_map<ScAddr::HashType, ObjectInfo>;
   using ScAddrHashSet = std::set<ScAddr::HashType>;
 
@@ -118,9 +118,9 @@ protected:
   void operator()(ScTemplate * inTemplate)
   {
     // TODO: Add blocking sc-structure
-    ScAddrHashSet independentEdges;
+    ScAddrHashSet independentConnectors;
 
-    // define edges set and independent edges set
+    // define connectors set and independent connectors set
     ScIterator3Ptr iter = m_context.Iterator3(m_templateAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
     while (iter->Next())
     {
@@ -137,28 +137,28 @@ protected:
 
         ScType const srcType = m_context.GetElementType(objSrc), trgType = m_context.GetElementType(objTrg);
         if (!srcType.IsEdge() && !trgType.IsEdge())
-          independentEdges.insert(obj.GetHash());
+          independentConnectors.insert(obj.GetHash());
         if (srcType.IsEdge())
-          m_edgeDependenceMap.insert({obj.GetHash(), objSrc.Hash()});
+          m_connectorDependenceMap.insert({obj.GetHash(), objSrc.Hash()});
         if (trgType.IsEdge())
-          m_edgeDependenceMap.insert({obj.GetHash(), objTrg.Hash()});
+          m_connectorDependenceMap.insert({obj.GetHash(), objTrg.Hash()});
       }
 
       m_elements.insert({obj.GetHash(), obj});
     }
 
-    // split edges set by their power
-    std::vector<ScAddrHashSet> powerDependentEdges;
-    powerDependentEdges.emplace_back(independentEdges);
-    SplitEdgesByDependencePower(powerDependentEdges);
+    // split connectors set by their power
+    std::vector<ScAddrHashSet> powerDependentConnectors;
+    powerDependentConnectors.emplace_back(independentConnectors);
+    SplitConnectorsByDependencePower(powerDependentConnectors);
 
-    for (auto const & equalDependentEdges : powerDependentEdges)
+    for (auto const & equalDependentConnectors : powerDependentConnectors)
     {
-      for (ScAddr::HashType const & edgeHash : equalDependentEdges)
+      for (ScAddr::HashType const & connectorHash : equalDependentConnectors)
       {
-        ObjectInfo const & edge = m_elements.at(edgeHash);
-        ObjectInfo const & src = m_elements.at(edge.GetSourceHash());
-        ObjectInfo const & trg = m_elements.at(edge.GetTargetHash());
+        ObjectInfo const & connector = m_elements.at(connectorHash);
+        ObjectInfo const & src = m_elements.at(connector.GetSourceHash());
+        ObjectInfo const & trg = m_elements.at(connector.GetTargetHash());
 
         auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItem
         {
@@ -167,7 +167,7 @@ protected:
                      : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
         };
 
-        inTemplate->Triple(param(src), param(edge), param(trg));
+        inTemplate->Triple(param(src), param(connector), param(trg));
       }
     }
   }
@@ -179,7 +179,7 @@ protected:
 
   // all objects in template
   ObjectToIdtfMap m_elements;
-  EdgeDependenceMap m_edgeDependenceMap;
+  ConnectorDependenceMap m_connectorDependenceMap;
 
 private:
   ObjectInfo CollectObjectInfo(ScAddr const & objAddr, std::string objIdtf = "") const
@@ -191,47 +191,49 @@ private:
     return {objAddr, objType, objIdtf};
   }
 
-  void SplitEdgesByDependencePower(std::vector<ScAddrHashSet> & powerDependentEdges)
+  void SplitConnectorsByDependencePower(std::vector<ScAddrHashSet> & powerDependentConnectors)
   {
-    for (auto const & hPair : m_edgeDependenceMap)
+    for (auto const & hPair : m_connectorDependenceMap)
     {
-      size_t const power = GetEdgeDependencePower(hPair.first, hPair.second);
-      size_t size = powerDependentEdges.size();
+      size_t const power = GetConnectorDependencePower(hPair.first, hPair.second);
+      size_t size = powerDependentConnectors.size();
 
       if (power >= size)
       {
         while (size <= power)
         {
-          powerDependentEdges.emplace_back();
+          powerDependentConnectors.emplace_back();
           ++size;
         }
       }
 
-      powerDependentEdges.at(power).insert(hPair.first);
+      powerDependentConnectors.at(power).insert(hPair.first);
     }
   }
 
-  // get edge dependence power from other edge
-  inline size_t GetEdgeDependencePower(ScAddr::HashType const & edge, ScAddr::HashType const & otherEdge) const
+  // get connector dependence power from other connector
+  inline size_t GetConnectorDependencePower(
+      ScAddr::HashType const & connectorHash,
+      ScAddr::HashType const & otherConnectorHash) const
   {
     size_t max = 0;
-    DefineEdgeDependencePower(edge, otherEdge, max, 1);
+    DefineConnectorDependencePower(connectorHash, otherConnectorHash, max, 1);
     return max;
   }
 
-  // count edge dependence power from other edge
-  inline size_t DefineEdgeDependencePower(
-      ScAddr::HashType const & edge,
-      ScAddr::HashType const & otherEdge,
+  // count connector dependence power from other connector
+  inline size_t DefineConnectorDependencePower(
+      ScAddr::HashType const & connectorHash,
+      ScAddr::HashType const & otherConnectorHash,
       size_t & max,
       size_t power) const
   {
-    auto const range = m_edgeDependenceMap.equal_range(edge);
+    auto const range = m_connectorDependenceMap.equal_range(connectorHash);
     for (auto it = range.first; it != range.second; ++it)
     {
       size_t incPower = power + 1;
 
-      if (DefineEdgeDependencePower(it->second, otherEdge, max, incPower) == incPower && power > max)
+      if (DefineConnectorDependencePower(it->second, otherConnectorHash, max, incPower) == incPower && power > max)
         max = power;
     }
     return power;

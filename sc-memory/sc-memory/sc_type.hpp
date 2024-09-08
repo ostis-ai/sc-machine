@@ -155,7 +155,7 @@ public:
 
   /* Check if specified type can be extended by another one to be a valid type/
    * For example this function returns false, if you try to extend node by
-   * edge type, or const by var and etc.
+   * connectors type, or const by var and etc.
    */
   inline bool CanExtendTo(ScType const & extType) const
   {

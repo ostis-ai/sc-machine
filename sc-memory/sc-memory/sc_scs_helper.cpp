@@ -62,23 +62,23 @@ protected:
     for (auto const & t : triples)
     {
       auto const & src = parser.GetParsedElement(t.m_source);
-      auto const & edge = parser.GetParsedElement(t.m_edge);
+      auto const & connector = parser.GetParsedElement(t.m_connector);
       auto const & trg = parser.GetParsedElement(t.m_target);
 
       auto const & srcAddrResult = ResolveElement(src);
       auto const & trgAddrResult = ResolveElement(trg);
 
-      if (!edge.GetType().IsEdge())
+      if (!connector.GetType().IsEdge())
       {
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Edge in triple has incorrect type");
+        SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Connector in triple has incorrect type");
       }
 
-      ScAddr const edgeAddr = m_ctx.GenerateConnector(edge.GetType(), srcAddrResult.first, trgAddrResult.first);
-      m_idtfCache.insert(std::make_pair(edge.GetIdtf(), edgeAddr));
+      ScAddr const arcAddr = m_ctx.GenerateConnector(connector.GetType(), srcAddrResult.first, trgAddrResult.first);
+      m_idtfCache.insert(std::make_pair(connector.GetIdtf(), arcAddr));
 
       if (m_outputStructure.IsValid())
       {
-        AppendToOutputStructure(srcAddrResult.first, edgeAddr, trgAddrResult.first);
+        AppendToOutputStructure(srcAddrResult.first, arcAddr, trgAddrResult.first);
         AppendToOutputStructure(srcAddrResult.second);
         AppendToOutputStructure(trgAddrResult.second);
       }
@@ -119,10 +119,10 @@ private:
     ScLink link(m_ctx, linkAddr);
     link.Set(idtf);
 
-    ScAddr const edgeAddr = m_ctx.GenerateConnector(ScType::EdgeDCommonConst, addr, linkAddr);
-    ScAddr const relAddr = m_ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, edgeAddr);
+    ScAddr const arcAddr = m_ctx.GenerateConnector(ScType::EdgeDCommonConst, addr, linkAddr);
+    ScAddr const relAddr = m_ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, m_kNrelSCsGlobalIdtf, arcAddr);
 
-    return {linkAddr, edgeAddr, relAddr};
+    return {linkAddr, arcAddr, relAddr};
   }
 
   ScAddr FindBySCsGlobalIdtf(std::string const & idtf) const

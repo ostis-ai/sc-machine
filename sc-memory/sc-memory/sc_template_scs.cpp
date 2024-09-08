@@ -76,15 +76,15 @@ protected:
     for (scs::ParsedTriple const & t : m_parser.GetParsedTriples())
     {
       scs::ParsedElement const & src = m_parser.GetParsedElement(t.m_source);
-      scs::ParsedElement const & edge = m_parser.GetParsedElement(t.m_edge);
+      scs::ParsedElement const & connector = m_parser.GetParsedElement(t.m_connector);
       scs::ParsedElement const & trg = m_parser.GetParsedElement(t.m_target);
 
-      ScTemplateItem srcItem, edgeItem, trgItem;
+      ScTemplateItem srcItem, connectorItem, trgItem;
 
-      if (!MakeTemplItem(src, srcItem) || !MakeTemplItem(edge, edgeItem) || !MakeTemplItem(trg, trgItem))
+      if (!MakeTemplItem(src, srcItem) || !MakeTemplItem(connector, connectorItem) || !MakeTemplItem(trg, trgItem))
         break;
 
-      templ->Triple(srcItem, edgeItem, trgItem);
+      templ->Triple(srcItem, connectorItem, trgItem);
     }
   }
 

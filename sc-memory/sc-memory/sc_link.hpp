@@ -92,13 +92,13 @@ public:
 
     ScAddr const newType = Type2Addr<Type>();
     bool needAppend = true;
-    ScAddr typeEdge, typeAddr;
-    if (DetermineTypeEdgeImpl(typeEdge, typeAddr))
+    ScAddr typeArcAddr, typeAddr;
+    if (DetermineTypeArcImpl(typeArcAddr, typeAddr))
     {
       if (typeAddr == newType)
         needAppend = false;
       else
-        m_context->EraseElement(typeEdge);
+        m_context->EraseElement(typeArcAddr);
     }
 
     // append into set
@@ -128,7 +128,7 @@ public:
   _SC_EXTERN std::string GetAsString() const;
 
 protected:
-  _SC_EXTERN bool DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const;
+  _SC_EXTERN bool DetermineTypeArcImpl(ScAddr & outArcAddr, ScAddr & outTypeAddr) const;
 
 private:
   ScMemoryContext * m_context;

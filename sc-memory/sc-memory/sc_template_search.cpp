@@ -138,7 +138,7 @@ private:
 
     auto const & faeTriples =
         m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplate::ScTemplateTripleType::FAE];
-    auto const & CheckIfItemIsFixedAndOtherEdgeItemIsEdge =
+    auto const & CheckIfItemIsFixedAndOtherConnectorItemIsConnector =
         [&faeTriples](size_t const tripleIdx, ScTemplateItem const & item) -> bool
     {
       return item.IsAddr() && faeTriples.find(tripleIdx) != faeTriples.cend();
@@ -168,7 +168,8 @@ private:
 
       bool isFound = false;
       if (m_cycledTemplateTriples.find(triple->m_index) == m_cycledTemplateTriples.cend()
-          && (CheckIfItemIsNodeVarStruct(item1) || CheckIfItemIsFixedAndOtherEdgeItemIsEdge(triple->m_index, item1)))
+          && (CheckIfItemIsNodeVarStruct(item1)
+              || CheckIfItemIsFixedAndOtherConnectorItemIsConnector(triple->m_index, item1)))
       {
         ScTemplateTriples checkedTriples;
         FindCycleWithFAATriple(item1, triple, triple, checkedTriples, isFound);
@@ -384,7 +385,7 @@ private:
   {
     auto triplesWithConstBeginElement =
         m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplate::ScTemplateTripleType::FAN];
-    // if there are no triples with the no edge third item than sort triples with the edge third item
+    // if there are no triples with the no connector third item than sort triples with the connector third item
     if (triplesWithConstBeginElement.empty())
       triplesWithConstBeginElement =
           m_template.m_priorityOrderedTemplateTriples[(size_t)ScTemplate::ScTemplateTripleType::FAE];
@@ -609,7 +610,7 @@ private:
     return {};
   }
 
-  using UsedEdges = std::unordered_set<ScAddr, ScAddrHashFunc>;
+  using UsedConnectors = std::unordered_set<ScAddr, ScAddrHashFunc>;
 
   void DoIterationOnNextEqualTriples(
       ScTemplateTriples const & templateTriples,
@@ -722,7 +723,8 @@ private:
     ScAddrVector nextResultReplacementTriples{result.m_replacementConstructions[replacementConstructionIdx]};
     ScTemplateTriples nextCheckedTemplateTriples{
         m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx]};
-    UsedEdges nextUsedReplacementEdges{m_usedEdgesInReplacementConstructions[replacementConstructionIdx]};
+    UsedConnectors nextUsedReplacementConnectors{
+        m_usedConnectorsInReplacementConstructions[replacementConstructionIdx]};
 
     bool isTemplateTriplesIteratorNext = false;
     ScTemplateTriples::const_iterator templateTriplesIterator;
@@ -746,8 +748,9 @@ private:
         break;
       }
 
-      auto & notUsedEdgesInCurrentTemplateTriple = m_notUsedEdgesInTemplateTriples[templateTriple->m_index];
-      if (notUsedEdgesInCurrentTemplateTriple.find(replacementTriple[1]) != notUsedEdgesInCurrentTemplateTriple.cend())
+      auto & notUsedConnectorsInCurrentTemplateTriple = m_notUsedConnectorsInTemplateTriples[templateTriple->m_index];
+      if (notUsedConnectorsInCurrentTemplateTriple.find(replacementTriple[1])
+          != notUsedConnectorsInCurrentTemplateTriple.cend())
         continue;
 
       bool isFoundInOtherTemplateTriples = false;
@@ -756,8 +759,8 @@ private:
         if (templateTripleIdx == otherTemplateTripleIdx)
           continue;
 
-        if (m_usedEdgesInTemplateTriples[otherTemplateTripleIdx].find(replacementTriple[1])
-            != m_usedEdgesInTemplateTriples[otherTemplateTripleIdx].cend())
+        if (m_usedConnectorsInTemplateTriples[otherTemplateTripleIdx].find(replacementTriple[1])
+            != m_usedConnectorsInTemplateTriples[otherTemplateTripleIdx].cend())
         {
           isFoundInOtherTemplateTriples = true;
           break;
@@ -766,11 +769,11 @@ private:
       if (isFoundInOtherTemplateTriples)
         continue;
 
-      // check if edge is used for other equal triple
-      auto & usedEdgesInCurrentReplacementConstruction =
-          m_usedEdgesInReplacementConstructions[replacementConstructionIdx];
-      if (usedEdgesInCurrentReplacementConstruction.find(replacementTriple[1])
-          != usedEdgesInCurrentReplacementConstruction.cend())
+      // check if connector is used for other equal triple
+      auto & usedConnectorsInCurrentReplacementConstruction =
+          m_usedConnectorsInReplacementConstructions[replacementConstructionIdx];
+      if (usedConnectorsInCurrentReplacementConstruction.find(replacementTriple[1])
+          != usedConnectorsInCurrentReplacementConstruction.cend())
         continue;
 
       // check triple elements by structure belonging or predicate callback
@@ -781,7 +784,7 @@ private:
               && (!m_checkCallback(replacementTriple[0]) || !m_checkCallback(replacementTriple[1])
                   || !m_checkCallback(replacementTriple[2]))))
       {
-        m_usedEdgesInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
+        m_usedConnectorsInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
         continue;
       }
 
@@ -805,7 +808,7 @@ private:
 
           result.m_replacementConstructions.emplace_back(nextResultReplacementTriples);
           m_checkedTemplateTriplesInReplacementConstructions.emplace_back(nextCheckedTemplateTriples);
-          m_usedEdgesInReplacementConstructions.emplace_back(DEFAULT_RESULT_RESERVE_SIZE);
+          m_usedConnectorsInReplacementConstructions.emplace_back(DEFAULT_RESULT_RESERVE_SIZE);
 
           templateTriplesIterator = templateTriples.cbegin();
         }
@@ -817,7 +820,7 @@ private:
           result.m_replacementConstructions[replacementConstructionIdx].assign(
               nextResultReplacementTriples.cbegin(), nextResultReplacementTriples.cend());
           checkedTemplateTriplesInCurrentReplacementConstruction = nextCheckedTemplateTriples;
-          m_usedEdgesInReplacementConstructions[replacementConstructionIdx] = nextUsedReplacementEdges;
+          m_usedConnectorsInReplacementConstructions[replacementConstructionIdx] = nextUsedReplacementConnectors;
         }
 
         if (templateTriplesIterator == templateTriples.cend())
@@ -862,7 +865,7 @@ private:
           isForLastTemplateTripleAllChildrenFinished = true;
           isLastTemplateTripleHasNoChildren = true;
 
-          // first of all check triples by edge, it is more effectively
+          // first of all check triples by connector, it is more effectively
           if (DoDependenceIterationByItem(
                   templateTriple,
                   items[1],
@@ -906,10 +909,10 @@ private:
           {
             ++checkedCurrentResultEqualTemplateTriplesCount;
 
-            // current edge is busy for all equal triples
+            // current connector is busy for all equal triples
             childrenTemplateTriples.insert(templateTripleIdx);
-            m_usedEdgesInTemplateTriples[templateTripleIdx].insert(replacementTriple[1]);
-            m_usedEdgesInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
+            m_usedConnectorsInTemplateTriples[templateTripleIdx].insert(replacementTriple[1]);
+            m_usedConnectorsInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
 
             break;
           }
@@ -951,7 +954,7 @@ private:
     };
 
     m_checkedTemplateTriplesInReplacementConstructions[replacementConstructionIdx].insert(templateTriple->m_index);
-    m_usedEdgesInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
+    m_usedConnectorsInReplacementConstructions[replacementConstructionIdx].insert(replacementTriple[1]);
 
     size_t itemIdx = templateTriple->m_index * 3;
     for (size_t i = replacementConstructionIdx; i < result.Size(); ++i)
@@ -974,8 +977,8 @@ private:
     size_t itemIdx = tripleIdx * 3;
 
     replacementConstruction[itemIdx] = ScAddr::Empty;
-    m_usedEdgesInReplacementConstructions[replacementConstructionIdx].erase(replacementConstruction[++itemIdx]);
-    m_notUsedEdgesInTemplateTriples[tripleIdx].insert(replacementConstruction[itemIdx]);
+    m_usedConnectorsInReplacementConstructions[replacementConstructionIdx].erase(replacementConstruction[++itemIdx]);
+    m_notUsedConnectorsInTemplateTriples[tripleIdx].insert(replacementConstruction[itemIdx]);
     replacementConstruction[itemIdx] = ScAddr::Empty;
     replacementConstruction[++itemIdx] = ScAddr::Empty;
   };
@@ -1022,7 +1025,7 @@ private:
     ++m_resultReserveCount;
     result.m_replacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
     m_checkedTemplateTriplesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
-    m_usedEdgesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
+    m_usedConnectorsInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE * m_resultReserveCount);
   }
 
   void DoIterations(ScTemplateSearchResult & result)
@@ -1035,10 +1038,10 @@ private:
     result.m_replacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE);
     result.m_replacementConstructions.emplace_back(newResult);
 
-    m_notUsedEdgesInTemplateTriples.resize(m_template.Size());
-    m_usedEdgesInTemplateTriples.resize(m_template.Size());
-    m_usedEdgesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE);
-    m_usedEdgesInReplacementConstructions.emplace_back();
+    m_notUsedConnectorsInTemplateTriples.resize(m_template.Size());
+    m_usedConnectorsInTemplateTriples.resize(m_template.Size());
+    m_usedConnectorsInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE);
+    m_usedConnectorsInReplacementConstructions.emplace_back();
     m_checkedTemplateTriplesInReplacementConstructions.reserve(DEFAULT_RESULT_RESERVE_SIZE);
     m_checkedTemplateTriplesInReplacementConstructions.emplace_back();
 
@@ -1092,9 +1095,9 @@ private:
   ScTemplateTriples m_connectivityComponentPriorityTemplateTriples;
 
   // fields search by template
-  std::vector<UsedEdges> m_notUsedEdgesInTemplateTriples;
-  std::vector<UsedEdges> m_usedEdgesInTemplateTriples;
-  std::vector<UsedEdges> m_usedEdgesInReplacementConstructions;
+  std::vector<UsedConnectors> m_notUsedConnectorsInTemplateTriples;
+  std::vector<UsedConnectors> m_usedConnectorsInTemplateTriples;
+  std::vector<UsedConnectors> m_usedConnectorsInReplacementConstructions;
   std::vector<ScTemplateTriples> m_checkedTemplateTriplesInReplacementConstructions;
 
   size_t const DEFAULT_RESULT_RESERVE_SIZE = 512;

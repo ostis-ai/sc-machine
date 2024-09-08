@@ -415,18 +415,18 @@ ScTemplate & ScTemplate::Quintuple(
 {
   size_t const replPos = m_templateTriples.size() * 3;
 
-  ScTemplateItem edgeCommonItem = param2;
+  ScTemplateItem connectorCommonItem = param2;
 
-  // check if relation edge has replacement
-  if (edgeCommonItem.m_name.empty())
+  // check if relation connector has replacement
+  if (connectorCommonItem.m_name.empty())
   {
     std::stringstream ss;
     ss << "_repl_" << replPos + 1;
-    edgeCommonItem.m_name = ss.str();
+    connectorCommonItem.m_name = ss.str();
   }
 
-  Triple(param1, edgeCommonItem, param3);
-  Triple(param5, param4, edgeCommonItem.m_name);
+  Triple(param1, connectorCommonItem, param3);
+  Triple(param5, param4, connectorCommonItem.m_name);
 
   return *this;
 }

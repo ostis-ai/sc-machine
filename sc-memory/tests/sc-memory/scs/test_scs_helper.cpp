@@ -90,7 +90,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Aliases)
 
   ScAddrSet const links = m_ctx->SearchLinksByContent(stream);
   EXPECT_EQ(links.size(), 1u);
-  auto it = std::next(links.begin(), 1u);
+  auto it = std::next(links.begin(), 0u);
 
   ScLink const link(*m_ctx, *it);
   std::string const content2 = link.GetAsString();

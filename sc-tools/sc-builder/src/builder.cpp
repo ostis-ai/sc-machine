@@ -135,7 +135,7 @@ void Builder::DumpStatistics()
 
   ScConsole::PrintLine() << ScConsole::Color::White << "Statistics";
   printLine("Nodes", stats.m_nodesNum, float(stats.m_nodesNum) / float(allCount) * 100);
-  printLine("Edges", stats.m_edgesNum, float(stats.m_edgesNum) / float(allCount) * 100);
+  printLine("Connectors", stats.m_connectorsNum, float(stats.m_connectorsNum) / float(allCount) * 100);
   printLine("Links", stats.m_linksNum, float(stats.m_linksNum) / float(allCount) * 100);
   ScConsole::PrintLine() << ScConsole::Color::LightBlue << "Total: " << ScConsole::Color::White << stats.GetAllNum();
 }

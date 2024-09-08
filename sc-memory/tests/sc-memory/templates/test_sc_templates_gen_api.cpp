@@ -250,21 +250,21 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSourceAndTargetInVariableTri
   EXPECT_EQ(result["_addr2"], nodeAddr2);
 }
 
-TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantEdge)
+TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantArc)
 {
   ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", edgeAddr, ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, edgeAddr);
+  templ.Triple(ScType::NodeVar >> "_addr1", arcAddr, ScType::NodeVar >> "_addr2");
+  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, arcAddr);
 
   ScTemplateGenResult result;
   m_ctx->GenerateByTemplate(templ, result);
 
   EXPECT_EQ(result["_addr1"], nodeAddr1);
-  EXPECT_EQ(result[edgeAddr], edgeAddr);
+  EXPECT_EQ(result[arcAddr], arcAddr);
   EXPECT_EQ(result["_addr2"], nodeAddr2);
 }
 

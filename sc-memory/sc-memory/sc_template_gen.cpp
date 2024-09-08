@@ -87,7 +87,12 @@ public:
         CheckIncidenceBetweenConnectorAndIncidentElements(connectorItem, connectorAddr, sourceItem, targetItem);
 
       if (connectorAddr.IsValid())
-        auto [sourceAddr, targetAddr] = m_context.GetConnectorIncidentElements(connectorAddr);
+      {
+        auto [firstIncidentElementAddr, secondIncidentElementAddr] =
+            m_context.GetConnectorIncidentElements(connectorAddr);
+        sourceAddr = firstIncidentElementAddr;
+        targetAddr = secondIncidentElementAddr;
+      }
 
       if (!sourceAddr.IsValid())
         sourceAddr = GenerateNodeOrLink(sourceItem.m_typeValue.UpConstType());

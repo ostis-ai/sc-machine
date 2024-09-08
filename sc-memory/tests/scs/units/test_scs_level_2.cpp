@@ -31,7 +31,7 @@ TEST(scs_level_2, simple_1)
 
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 2u);
-  EXPECT_EQ(triples[0].m_edge, triples[1].m_target);
+  EXPECT_EQ(triples[0].m_connector, triples[1].m_target);
 }
 
 TEST(scs_level_2, simple_2)
@@ -56,7 +56,7 @@ TEST(scs_level_2, simple_2)
 
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 2u);
-  EXPECT_EQ(triples[0].m_edge, triples[1].m_source);
+  EXPECT_EQ(triples[0].m_connector, triples[1].m_source);
 }
 
 TEST(scs_level_2, simple_3)
@@ -87,8 +87,8 @@ TEST(scs_level_2, simple_3)
 
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 3u);
-  EXPECT_EQ(triples[0].m_edge, triples[1].m_target);
-  EXPECT_EQ(triples[1].m_edge, triples[2].m_target);
+  EXPECT_EQ(triples[0].m_connector, triples[1].m_target);
+  EXPECT_EQ(triples[1].m_connector, triples[2].m_target);
 }
 
 TEST(scs_level_2, complex)
@@ -132,9 +132,9 @@ TEST(scs_level_2, complex)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 5u);
 
-  EXPECT_EQ(triples[0].m_edge, triples[1].m_target);
-  EXPECT_EQ(triples[2].m_edge, triples[4].m_target);
-  EXPECT_EQ(triples[3].m_edge, triples[4].m_source);
+  EXPECT_EQ(triples[0].m_connector, triples[1].m_target);
+  EXPECT_EQ(triples[2].m_connector, triples[4].m_target);
+  EXPECT_EQ(triples[3].m_connector, triples[4].m_source);
 }
 
 TEST(scs_level_2, ordered_set)
@@ -216,17 +216,17 @@ TEST(scs_level_2, ordered_set)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 12u);
 
-  EXPECT_EQ(triples[0].m_edge, triples[1].m_target);
-  EXPECT_EQ(triples[0].m_edge, triples[10].m_source);
-  EXPECT_EQ(triples[2].m_edge, triples[10].m_target);
-  EXPECT_EQ(triples[10].m_edge, triples[11].m_target);
-  EXPECT_EQ(triples[2].m_edge, triples[8].m_source);
-  EXPECT_EQ(triples[3].m_edge, triples[8].m_target);
-  EXPECT_EQ(triples[8].m_edge, triples[9].m_target);
-  EXPECT_EQ(triples[3].m_edge, triples[6].m_source);
-  EXPECT_EQ(triples[4].m_edge, triples[6].m_target);
-  EXPECT_EQ(triples[6].m_edge, triples[7].m_target);
-  EXPECT_EQ(triples[4].m_edge, triples[5].m_target);
+  EXPECT_EQ(triples[0].m_connector, triples[1].m_target);
+  EXPECT_EQ(triples[0].m_connector, triples[10].m_source);
+  EXPECT_EQ(triples[2].m_connector, triples[10].m_target);
+  EXPECT_EQ(triples[10].m_connector, triples[11].m_target);
+  EXPECT_EQ(triples[2].m_connector, triples[8].m_source);
+  EXPECT_EQ(triples[3].m_connector, triples[8].m_target);
+  EXPECT_EQ(triples[8].m_connector, triples[9].m_target);
+  EXPECT_EQ(triples[3].m_connector, triples[6].m_source);
+  EXPECT_EQ(triples[4].m_connector, triples[6].m_target);
+  EXPECT_EQ(triples[6].m_connector, triples[7].m_target);
+  EXPECT_EQ(triples[4].m_connector, triples[5].m_target);
 }
 
 

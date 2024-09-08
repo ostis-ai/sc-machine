@@ -12,7 +12,7 @@
 
 #define SPLIT_TRIPLE(t) \
   auto const & src = parser.GetParsedElement(t.m_source); SC_UNUSED(src); \
-  auto const & arcAddr = parser.GetParsedElement(t.m_edge); SC_UNUSED(arcAddr); \
+  auto const & connector = parser.GetParsedElement(t.m_connector); SC_UNUSED(connector); \
   auto const & trg = parser.GetParsedElement(t.m_target); SC_UNUSED(trg)
 
 struct TripleElement
@@ -67,13 +67,13 @@ struct TripleResult
   void Test(scs::Parser const & parser, scs::ParsedTriple const & triple) const
   {
     auto const & src = parser.GetParsedElement(triple.m_source);
-    auto const & arcAddr = parser.GetParsedElement(triple.m_edge);
+    auto const & connector = parser.GetParsedElement(triple.m_connector);
     auto const & trg = parser.GetParsedElement(triple.m_target);
 
     try
     {
       m_source.Test(src);
-      m_edge.Test(arcAddr);
+      m_connector.Test(connector);
       m_target.Test(trg);
     }
     catch (utils::ScException const & ex)
@@ -81,7 +81,7 @@ struct TripleResult
       SC_LOG_ERROR(
             "\nShould be: " << std::endl
                             << " m_source: " << m_source << ", " << std::endl
-                            << " m_edge: " << m_edge << ", " << std::endl
+                            << " m_connector: " << m_connector << ", " << std::endl
                             << " m_target: " << m_target << std::endl);
 
       auto const elToString = [](scs::ParsedElement const & el) -> std::string
@@ -96,7 +96,7 @@ struct TripleResult
       SC_LOG_ERROR(
             "\nParsed: " << std::endl
                          << " m_source: " << elToString(src) << std::endl
-                         << " m_edge: " << elToString(arcAddr) << std::endl
+                         << " m_connector: " << elToString(connector) << std::endl
                          << " m_target: " << elToString(trg) << std::endl);
 
       throw ex;
@@ -104,7 +104,7 @@ struct TripleResult
   }
 
   TripleElement m_source;
-  TripleElement m_edge;
+  TripleElement m_connector;
   TripleElement m_target;
 };
 
