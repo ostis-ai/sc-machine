@@ -63,6 +63,7 @@ void GWFParser::ProcessStaticSector(xmlNodePtr staticSector, SCgElements & eleme
 {
   try
   {
+    SCgElements allElements;
     SCgConnectors connectors;  // connectors = {connector: (sourceId, targetId)}
     SCgContours contours;      // contours = {contour: contourId}
 
@@ -87,25 +88,35 @@ void GWFParser::ProcessStaticSector(xmlNodePtr staticSector, SCgElements & eleme
         else if (tag == BUS)
           scgElement = CreateBus(id, parent, identifier, type, tag, child);
         else if (tag == CONTOUR)
-          scgElement = CreateContour(id, parent, identifier, type, tag, child, contours);
+          scgElement = CreateContour(id, parent, identifier, type, tag, child);
         else if (tag == PAIR || tag == ARC)
           scgElement = CreateConnector(id, parent, identifier, type, tag, child, connectors);
         else
           SC_THROW_EXCEPTION(
               utils::ExceptionParseError, "GWFParser::ProcessStaticSector: Unknown tag  " << tag << " with id " << id);
 
-        elements[id] = scgElement;
+        if (parent == NO_PARENT)
+          elements[id] = scgElement;
+        else
+        {
+          if (!contours.count(parent))
+            contours.insert({parent, {}});
+
+          contours[parent].insert({id, scgElement});
+        }
+
+        allElements[id] = scgElement;
       }
     }
 
     // To correctly process contours(connectors), all elements are first collected, then the contours(connectors) are
     // assigned elements
-    FillConnectors(connectors, elements);
-    FillContours(contours, elements);
+    FillConnectors(connectors, allElements);
+    FillContours(contours, allElements);
   }
   catch (utils::ScException const & e)
   {
-    SC_LOG_ERROR("GWFParser::ProcessStaticSector: Exception caught in process static sector " + std::string(e.what()));
+    SC_LOG_ERROR("GWFParser::ProcessStaticSector: Exception caught in process static sector " << e.Message());
   }
 }
 
@@ -188,12 +199,10 @@ std::shared_ptr<SCgContour> GWFParser::CreateContour(
     std::string const & identifier,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr el,
-    SCgContours & contours) const
+    xmlNodePtr el) const
 {
-  auto contour = std::make_shared<SCgContour>(id, parent, identifier, type, tag);
-  contours.insert({contour, id});
-  return contour;
+  return std::make_shared<SCgContour>(id, parent, identifier, type, tag);
+  ;
 }
 
 std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
@@ -215,6 +224,17 @@ std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
 
 void GWFParser::FillConnectors(SCgConnectors const & connectors, SCgElements const & elements)
 {
+  auto const & ResolveBus = [&](std::shared_ptr<SCgElement> element) -> std::shared_ptr<SCgElement>
+  {
+    if (element->GetTag() == BUS)
+    {
+      if (auto const & bus = std::dynamic_pointer_cast<SCgBus>(element))
+        element = elements.at(bus->GetNodeId());
+    }
+
+    return element;
+  };
+
   for (auto const & [connector, sourceAndTarget] : connectors)
   {
     std::string const & sourceId = sourceAndTarget.first;
@@ -223,32 +243,30 @@ void GWFParser::FillConnectors(SCgConnectors const & connectors, SCgElements con
     auto sourceIt = elements.find(sourceId);
     auto targetIt = elements.find(targetId);
 
-    std::shared_ptr<SCgElement> sourceEl = (sourceIt != elements.cend()) ? sourceIt->second : nullptr;
-    std::shared_ptr<SCgElement> targetEl = (targetIt != elements.cend()) ? targetIt->second : nullptr;
+    std::shared_ptr<SCgElement> const & sourceEl = sourceIt != elements.cend() ? ResolveBus(sourceIt->second) : nullptr;
+    std::shared_ptr<SCgElement> const & targetEl = targetIt != elements.cend() ? ResolveBus(targetIt->second) : nullptr;
 
     if (sourceEl == nullptr)
       SC_THROW_EXCEPTION(
           utils::ExceptionParseError,
-          "GWFParser::FillConnector: Source element not found for connector " << connector->GetId());
+          "GWFParser::FillConnector: Source element not found for connector `" << connector->GetId() << "`.");
     if (targetEl == nullptr)
       SC_THROW_EXCEPTION(
           utils::ExceptionParseError,
-          "GWFParser::FillConnector: Target element not found for connector " << connector->GetId());
+          "GWFParser::FillConnector: Target element not found for connector `" << connector->GetId() << "`.");
 
     connector->SetSource(sourceEl);
     connector->SetTarget(targetEl);
   }
 }
 
-void GWFParser::FillContours(SCgContours const & contours, SCgElements const & elements)
+void GWFParser::FillContours(SCgContours const & contours, SCgElements const & allElements)
 {
-  for (auto const & [contour, id] : contours)
+  for (auto const & [contourId, elements] : contours)
   {
-    for (auto const & [key, element] : elements)
-    {
-      if (element->GetParent() == id)
-        contour->AddElement(element);
-    }
+    auto const & contour = std::dynamic_pointer_cast<SCgContour>(allElements.at(contourId));
+    for (auto const & [_, element] : elements)
+      contour->AddElement(element);
   }
 }
 

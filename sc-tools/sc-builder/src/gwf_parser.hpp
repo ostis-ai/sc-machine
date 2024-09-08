@@ -75,8 +75,7 @@ private:
       std::string const & identifier,
       std::string const & type,
       std::string const & tag,
-      xmlNodePtr el,
-      SCgContours & contours) const;
+      xmlNodePtr el) const;
 
   std::shared_ptr<SCgConnector> CreateConnector(
       std::string const & tag,

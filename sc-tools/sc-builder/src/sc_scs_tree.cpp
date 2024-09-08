@@ -87,13 +87,13 @@ std::shared_ptr<SCsTree> SCsTree::ParseTree(std::string const & input)
       std::string name = line.substr(0, equalPos);
       utils::StringUtils::Trim(name);
 
-      if (Check(EDGE_BEGIN, line))
+      if (Check(CONNECTOR_BEGIN, line))
       {
-        size_t edgeBeginPos = line.find(EDGE_BEGIN) + EDGE_BEGIN.length();
+        size_t edgeBeginPos = line.find(CONNECTOR_BEGIN) + CONNECTOR_BEGIN.length();
 
-        if (Check(EDGE_END, line))
+        if (Check(CONNECTOR_END, line))
         {
-          size_t edgeEndPos = line.find(EDGE_END);
+          size_t edgeEndPos = line.find(CONNECTOR_END);
 
           std::string content = line.substr(edgeBeginPos, edgeEndPos - edgeBeginPos);
           utils::StringUtils::Trim(content);
