@@ -210,7 +210,7 @@ std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
 
 void GWFParser::FillConnectors(SCgConnectors const & connectors, SCgElements const & elements)
 {
-  for (auto const [connector, sourceAndTarget] : connectors)
+  for (auto const & [connector, sourceAndTarget] : connectors)
   {
     std::string const & sourceId = sourceAndTarget.first;
     std::string const & targetId = sourceAndTarget.second;
