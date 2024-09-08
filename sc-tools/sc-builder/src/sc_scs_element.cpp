@@ -6,6 +6,10 @@
 
 #include "sc_scs_element.hpp"
 
+#include <filesystem>
+
+#include <sc-memory/sc_debug.hpp>
+
 #include "gwf_translator_const.hpp"
 
 #include "sc_scg_element.hpp"
