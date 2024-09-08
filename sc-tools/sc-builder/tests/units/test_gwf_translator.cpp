@@ -123,13 +123,13 @@ std::pair<std::shared_ptr<SCsTree>, std::shared_ptr<SCsTree>> CompareSCsFiles(
     std::string const & fileName,
     GWFTranslator translator)
 {
-  const std::string gwfFilePath = BASE_TEST_PATH + fileName;
-  const std::string scsFilePath = gwfFilePath + ".scs";
+  std::string const gwfFilePath = BASE_TEST_PATH + fileName;
+  std::string const scsFilePath = gwfFilePath + ".scs";
 
-  const std::string gwfStr = translator.XmlFileToString(gwfFilePath);
-  const std::string scsStr = translator.GWFToScs(gwfStr, BASE_TEST_PATH);
+  std::string const gwfStr = translator.XmlFileToString(gwfFilePath);
+  std::string const scsStr = translator.GWFToScs(gwfStr, BASE_TEST_PATH);
 
-  const std::string exampleScs = RemoveEmptyLines(ReadFileToString(scsFilePath));
+  std::string const exampleScs = RemoveEmptyLines(ReadFileToString(scsFilePath));
 
   auto const exampleTree = SCsTree::ParseTree(exampleScs);
   auto const resultTree = SCsTree::ParseTree(scsStr);
@@ -141,7 +141,7 @@ TEST_F(GWFTranslatorTest, EmptyFile)
 {
   GWFTranslator translator(*m_ctx);
 
-  const std::string filePath = BASE_TEST_PATH "empty_file.gwf";
+  std::string const filePath = BASE_TEST_PATH "empty_file.gwf";
 
   EXPECT_THROW(translator.XmlFileToString(filePath), utils::ExceptionParseError);
 }
@@ -150,9 +150,9 @@ TEST_F(GWFTranslatorTest, EmptyStatic)
 {
   GWFTranslator translator(*m_ctx);
 
-  const std::string filePath = BASE_TEST_PATH "empty_static.gwf";
+  std::string const filePath = BASE_TEST_PATH "empty_static.gwf";
 
-  const std::string gwfStr = translator.XmlFileToString(filePath);
+  std::string const gwfStr = translator.XmlFileToString(filePath);
   EXPECT_THROW(translator.GWFToScs(gwfStr, BASE_TEST_PATH), utils::ExceptionParseError);
 }
 

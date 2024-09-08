@@ -21,7 +21,6 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string const & filePath)
 {
   GWFParser parser;
-
   auto const elements = parser.Parse(xmlStr);
 
   if (elements.empty())
@@ -31,9 +30,8 @@ std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string cons
   }
 
   SCsWriter writer;
-  auto const scsStr = writer.Write(elements, filePath);
-
-  return scsStr;
+  std::string const & scsText = writer.Write(elements, filePath);
+  return scsText;
 }
 
 std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::string const & filePath)

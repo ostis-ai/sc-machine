@@ -1,6 +1,18 @@
+/*
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
+
 #include "sc_scs_tree.hpp"
 
 using namespace Constants;
+
+SCsTree::SCsTree(std::string const & name, std::string const & content)
+  : name(name)
+  , content(content)
+{
+}
 
 std::shared_ptr<SCsTree> SCsTree::AddChildNode(
     std::shared_ptr<SCsTree> parent,
@@ -8,10 +20,9 @@ std::shared_ptr<SCsTree> SCsTree::AddChildNode(
     std::string const & content)
 {
   auto node = std::make_shared<SCsTree>(name, content);
-  if (parent)
-  {
+  if (parent != nullptr)
     parent->children.emplace(name, node);
-  }
+
   return node;
 }
 
@@ -170,9 +181,7 @@ void SCsTree::PrintTree(std::shared_ptr<SCsTree> const & node, int level)
     return;
   std::cout << std::string(level, '\t') << node->name << ": " << node->content << std::endl;
   for (auto const & child : node->children)
-  {
     PrintTree(child.second, level + 1);
-  }
 }
 
 void SCsTree::PrintDifferences(std::shared_ptr<std::list<std::pair<std::string, std::string>>> const & differences)
@@ -185,9 +194,7 @@ void SCsTree::PrintDifferences(std::shared_ptr<std::list<std::pair<std::string, 
 
   std::cout << "Trees differ in the following elements:" << std::endl;
   for (auto const & diff : *differences)
-  {
     std::cout << "Difference: " << diff.first << " vs " << diff.second << std::endl;
-  }
 }
 
 std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTree::CompareTrees(
@@ -198,24 +205,20 @@ std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTree::Compare
   auto const & node1 = nodes.first;
   auto const & node2 = nodes.second;
 
-  if (!node1 && !node2)
+  if (node1 == nullptr && node2 == nullptr)
     return differences;
 
-  if (!node1 || !node2)
+  if (node1 == nullptr || node2 == nullptr)
   {
     differences->emplace_back(node1 ? node1->name : "null", node2 ? node2->name : "null");
     return differences;
   }
 
   if (node1->name != node2->name)
-  {
     differences->emplace_back(node1->name, node2->name);
-  }
 
   if (node1->content != node2->content)
-  {
     differences->emplace_back(node1->content, node2->content);
-  }
 
   if (node1->children.size() != node2->children.size())
   {
@@ -228,25 +231,19 @@ std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTree::Compare
   {
     auto it = node2->children.find(child1.first);
     if (it == node2->children.end())
-    {
       differences->emplace_back(child1.first, "missing");
-    }
     else
     {
       auto childDifferences = SCsTree::CompareTrees({child1.second, it->second});
       if (childDifferences)
-      {
         differences->insert(differences->end(), childDifferences->begin(), childDifferences->end());
-      }
     }
   }
 
   for (auto const & child2 : node2->children)
   {
     if (node1->children.find(child2.first) == node1->children.end())
-    {
       differences->emplace_back("missing", child2.first);
-    }
   }
 
   return differences;

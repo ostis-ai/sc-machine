@@ -603,7 +603,7 @@ public:
   _SC_EXTERN ~ScTemplateResultItem();
 
   _SC_EXTERN ScTemplateResultItem(ScTemplateResultItem const & otherItem);
-  
+
   _SC_EXTERN ScTemplateResultItem & operator=(ScTemplateResultItem const & otherItem);
 
   /*! Gets found sc-element address by `varAddr`.
