@@ -1,3 +1,9 @@
+/*
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
+
 #include "scg_to_scs_el.hpp"
 
 std::unordered_map<std::string, std::string> const SCgToSCsElement::m_nodeTypeSets = {
@@ -225,7 +231,7 @@ std::string SCgToSCsElement::FindValue(
     std::string const & key)
 {
   auto it = dictionary.find(key);
-  return (it != dictionary.end()) ? it->second : "";
+  return it != dictionary.cend() ? it->second : "";
 }
 
 bool SCgToSCsElement::ConvertSCgNodeTypeToSCsElementType(std::string const & nodeType, std::string & symbol)
@@ -233,10 +239,8 @@ bool SCgToSCsElement::ConvertSCgNodeTypeToSCsElementType(std::string const & nod
   symbol = GetSCsElementTypeBySCgElementType(nodeType, "NodeTypeSets");
 
   if (symbol.empty())
-  {
     symbol = GetSCsElementTypeBySCgElementType(
         GetSCsElementTypeBySCgElementType(nodeType, "BackwardNodeTypes"), "NodeTypeSets");
-  }
 
   if (symbol.empty())
   {
@@ -252,10 +256,8 @@ bool SCgToSCsElement::ConvertSCgEdgeTypeToSCsElementType(std::string const & edg
   symbol = GetSCsElementTypeBySCgElementType(edgeType, "EdgeTypes");
 
   if (symbol.empty())
-  {
     symbol = GetSCsElementTypeBySCgElementType(
         GetSCsElementTypeBySCgElementType(edgeType, "BackwardEdgeTypes"), "EdgeTypes");
-  }
 
   if (symbol.empty())
   {
@@ -268,7 +270,7 @@ bool SCgToSCsElement::ConvertSCgEdgeTypeToSCsElementType(std::string const & edg
 
 std::string SCgToSCsElement::GetSCsElementTypeBySCgElementType(std::string const & scgElement, std::string const & dict)
 {
-  static const std::unordered_map<std::string, std::unordered_map<std::string, std::string> const *> dictMap = {
+  static std::unordered_map<std::string, std::unordered_map<std::string, std::string> const *> const dictMap = {
       {"NodeTypeSets", &m_nodeTypeSets},
       {"BackwardNodeTypes", &m_backwardNodeTypes},
       {"UnsupportedNodeTypeSets", &m_unsupportedNodeTypeSets},
@@ -277,9 +279,8 @@ std::string SCgToSCsElement::GetSCsElementTypeBySCgElementType(std::string const
       {"UnsupportedEdgeTypes", &m_unsupportedEdgeTypes}};
 
   auto it = dictMap.find(dict);
-  if (it != dictMap.end())
-  {
-    return FindValue(*(it->second), scgElement);
-  }
-  return "";
+  if (it == dictMap.end())
+    return "";
+
+  return FindValue(*(it->second), scgElement);
 }
