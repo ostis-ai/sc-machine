@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <string>
 
-class SCgToSCsElement
+class SCgToSCsTypes
 {
 public:
   static bool ConvertSCgNodeTypeToSCsElementType(std::string const & nodeType, std::string & symbol);
@@ -25,7 +25,7 @@ private:
   static std::unordered_map<std::string, std::string> const m_nodeTypeSets;
   static std::unordered_map<std::string, std::string> const m_backwardNodeTypes;
   static std::unordered_map<std::string, std::string> const m_unsupportedNodeTypeSets;
-  static std::unordered_map<std::string, std::string> const m_edgeTypes;
-  static std::unordered_map<std::string, std::string> const m_backwardEdgeTypes;
-  static std::unordered_map<std::string, std::string> const m_unsupportedEdgeTypes;
+  static std::unordered_map<std::string, std::string> const m_connectorTypes;
+  static std::unordered_map<std::string, std::string> const m_backwardConnectorTypes;
+  static std::unordered_map<std::string, std::string> const m_unsupportedConnectorTypes;
 };

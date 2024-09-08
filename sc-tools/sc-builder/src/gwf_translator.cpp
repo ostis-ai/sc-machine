@@ -10,6 +10,12 @@
 
 #include <sc-memory/utils/sc_exec.hpp>
 
+#include "builder_defines.hpp"
+
+#include "gwf_parser.hpp"
+#include "sc_scs_writer.hpp"
+#include "gwf_translator_const.hpp"
+
 using namespace Constants;
 
 GWFTranslator::GWFTranslator(ScMemoryContext & context)
@@ -24,10 +30,8 @@ std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string cons
   auto const elements = parser.Parse(xmlStr);
 
   if (elements.empty())
-  {
     SC_THROW_EXCEPTION(
         utils::ExceptionParseError, "GWFTranslator::GWFToScs: There are no elements in this file " + filePath);
-  }
 
   SCsWriter writer;
   std::string const & scsText = writer.Write(elements, filePath);
@@ -41,10 +45,8 @@ std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::st
   std::ofstream outputFile(scsSource, std::ios::binary);
 
   if (!outputFile.is_open())
-  {
     SC_THROW_EXCEPTION(
         utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error creating file for writing: " + scsSource);
-  }
 
   outputFile << scsStr;
 
@@ -97,10 +99,8 @@ bool GWFTranslator::TranslateImpl(Params const & params)
   {
     std::string const xmlStr = XmlFileToString(params.m_fileName);
     if (xmlStr.empty())
-    {
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams, "GWFTranslator::TranslateImpl: Gwf file is empty: " + params.m_fileName);
-    }
 
     std::string const scsStr = GWFToScs(xmlStr, params.m_fileName);
 
@@ -112,7 +112,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     newParams.m_outputStructure = params.m_outputStructure;
     bool status = m_scsTranslator.Translate(newParams);
 
-    // std::filesystem::remove(scsSource.c_str());
+    std::filesystem::remove(scsSource.c_str());
 
     return status;
   }

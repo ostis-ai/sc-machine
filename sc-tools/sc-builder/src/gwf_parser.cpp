@@ -6,9 +6,11 @@
 
 #include "gwf_parser.hpp"
 
+#include "sc_scg_element.hpp"
+
 using namespace Constants;
 
-GWFParser::SCgElements GWFParser::Parse(std::string const & xmlStr)
+SCgElements GWFParser::Parse(std::string const & xmlStr)
 {
   try
   {
@@ -52,18 +54,12 @@ GWFParser::SCgElements GWFParser::Parse(std::string const & xmlStr)
   }
 }
 
-void GWFParser::ProcessStaticSector(
-    xmlNodePtr staticSector,
-    std::unordered_map<std::string, std::shared_ptr<SCgElement>> & elements)
+void GWFParser::ProcessStaticSector(xmlNodePtr staticSector, SCgElements & elements)
 {
   try
   {
-    std::vector<std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>>> connectors;
-    // connectorsList = {connectorMap1, connectorMap2, ...}
-    // connectorMap = {connector: (sourceId, targetId)}
-    std::vector<std::unordered_map<std::shared_ptr<SCgContour>, std::string>> contours;
-    // contoursList = {contourMap1, contourMap2, ...}
-    // contourMap = {contour: contourId}
+    SCgConnectors connectors;  // connectors = {connector: (sourceId, targetId)}
+    SCgContours contours;      // contours = {contour: contourId}
 
     for (xmlNodePtr child = staticSector->children; child != nullptr; child = child->next)
     {
@@ -71,25 +67,24 @@ void GWFParser::ProcessStaticSector(
       {
         auto const id = GetXmlPropStr(child, ID);
         auto const parent = GetXmlPropStr(child, PARENT);
-        auto const idtf = GetXmlPropStr(child, IDTF);
+        auto const identifier = GetXmlPropStr(child, IDENTIFIER);
         auto const type = GetXmlPropStr(child, TYPE);
         auto const tag = XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter>(xmlStrdup(child->name)));
 
         std::shared_ptr<SCgElement> scgElement;
-
         if (tag == NODE)
         {
           if (HasContent(child))
-            scgElement = CreateLink(id, parent, idtf, type, tag, child);
+            scgElement = CreateLink(id, parent, identifier, type, tag, child);
           else
-            scgElement = CreateNode(id, parent, idtf, type, tag, child);
+            scgElement = CreateNode(id, parent, identifier, type, tag, child);
         }
         else if (tag == BUS)
-          scgElement = CreateBus(id, parent, idtf, type, tag, child);
+          scgElement = CreateBus(id, parent, identifier, type, tag, child);
         else if (tag == CONTOUR)
-          scgElement = CreateContour(id, parent, idtf, type, tag, child, contours);
+          scgElement = CreateContour(id, parent, identifier, type, tag, child, contours);
         else if (tag == PAIR || tag == ARC)
-          scgElement = CreateConnector(id, parent, idtf, type, tag, child, connectors);
+          scgElement = CreateConnector(id, parent, identifier, type, tag, child, connectors);
         else
           SC_THROW_EXCEPTION(
               utils::ExceptionParseError, "GWFParser::ProcessStaticSector: Unknown tag  " << tag << " with id " << id);
@@ -100,11 +95,8 @@ void GWFParser::ProcessStaticSector(
 
     // To correctly process contours(connectors), all elements are first collected, then the contours(connectors) are
     // assigned elements
-    for (auto & connector : connectors)
-      FillConnector(connector, elements);
-
-    for (auto & contour : contours)
-      FillContour(contour, elements);
+    FillConnectors(connectors, elements);
+    FillContours(contours, elements);
   }
   catch (utils::ScException const & e)
   {
@@ -115,18 +107,18 @@ void GWFParser::ProcessStaticSector(
 std::shared_ptr<SCgNode> GWFParser::CreateNode(
     std::string const & id,
     std::string const & parent,
-    std::string const & idtf,
+    std::string const & identifier,
     std::string const & type,
     std::string const & tag,
     xmlNodePtr el) const
 {
-  return std::make_shared<SCgNode>(id, parent, idtf, type, tag);
+  return std::make_shared<SCgNode>(id, parent, identifier, type, tag);
 }
 
 std::shared_ptr<SCgLink> GWFParser::CreateLink(
     std::string const & id,
     std::string const & parent,
-    std::string const & idtf,
+    std::string const & identifier,
     std::string const & type,
     std::string const & tag,
     xmlNodePtr el) const
@@ -150,12 +142,10 @@ std::shared_ptr<SCgLink> GWFParser::CreateLink(
         contentData = ScBase64::Decode(contentData);
       }
       else
-      {
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError, "GWFParser::CreateLink: Content type is not supported: " << contentType);
-      }
 
-      return std::make_shared<SCgLink>(id, parent, idtf, type, tag, contentType, mimeType, fileName, contentData);
+      return std::make_shared<SCgLink>(id, parent, identifier, type, tag, contentType, mimeType, fileName, contentData);
     }
   }
 
@@ -178,68 +168,50 @@ bool GWFParser::HasContent(xmlNodePtr const node) const
 std::shared_ptr<SCgBus> GWFParser::CreateBus(
     std::string const & id,
     std::string const & parent,
-    std::string const & idtf,
+    std::string const & identifier,
     std::string const & type,
     std::string const & tag,
     xmlNodePtr el) const
 {
   auto const nodeId = GetXmlPropStr(el, OWNER);
-  return std::make_shared<SCgBus>(id, parent, idtf, type, tag, nodeId);
+  return std::make_shared<SCgBus>(id, parent, identifier, type, tag, nodeId);
 }
 
 std::shared_ptr<SCgContour> GWFParser::CreateContour(
     std::string const & id,
     std::string const & parent,
-    std::string const & idtf,
+    std::string const & identifier,
     std::string const & type,
     std::string const & tag,
     xmlNodePtr el,
-    std::vector<std::unordered_map<std::shared_ptr<SCgContour>, std::string>> & contoursList) const
+    SCgContours & contours) const
 {
-  auto contour = std::make_shared<SCgContour>(id, parent, idtf, type, tag);
-
-  std::unordered_map<std::shared_ptr<SCgContour>, std::string> elementMap;
-  elementMap[contour] = id;
-
-  contoursList.push_back(elementMap);
-
+  auto contour = std::make_shared<SCgContour>(id, parent, identifier, type, tag);
+  contours.insert({contour, id});
   return contour;
 }
 
 std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
     std::string const & id,
     std::string const & parent,
-    std::string const & idtf,
+    std::string const & identifier,
     std::string const & type,
     std::string const & tag,
     xmlNodePtr el,
-    std::vector<std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>>> &
-        connectorsList) const
+    SCgConnectors & connectors) const
 {
-  auto const sourceId = GetXmlPropStr(el, ID_B);
-  auto const targetId = GetXmlPropStr(el, ID_E);
+  std::string const & sourceId = GetXmlPropStr(el, ID_B);
+  std::string const & targetId = GetXmlPropStr(el, ID_E);
 
-  auto connector = std::make_shared<SCgConnector>(id, parent, idtf, type, tag, nullptr, nullptr);
-
-  std::pair<std::string, std::string> sourceAndTarget = {sourceId, targetId};
-  std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>> elementMap;
-  elementMap[connector] = sourceAndTarget;
-
-  connectorsList.push_back(elementMap);
-
+  auto connector = std::make_shared<SCgConnector>(id, parent, identifier, type, tag, nullptr, nullptr);
+  connectors.insert({connector, {sourceId, targetId}});
   return connector;
 }
 
-void GWFParser::FillConnector(
-    std::unordered_map<std::shared_ptr<SCgConnector>, std::pair<std::string, std::string>> const &
-        connectorSourceTarget,
-    std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elements)
+void GWFParser::FillConnectors(SCgConnectors const & connectors, SCgElements const & elements)
 {
-  for (auto const & pair : connectorSourceTarget)
+  for (auto const [connector, sourceAndTarget] : connectors)
   {
-    std::shared_ptr<SCgConnector> const & connector = pair.first;
-    std::pair<std::string, std::string> const & sourceAndTarget = pair.second;
-
     std::string const & sourceId = sourceAndTarget.first;
     std::string const & targetId = sourceAndTarget.second;
 
@@ -263,15 +235,10 @@ void GWFParser::FillConnector(
   }
 }
 
-void GWFParser::FillContour(
-    std::unordered_map<std::shared_ptr<SCgContour>, std::string> const & contourAndId,
-    std::unordered_map<std::string, std::shared_ptr<SCgElement>> const & elements)
+void GWFParser::FillContours(SCgContours const & contours, SCgElements const & elements)
 {
-  for (auto const & pair : contourAndId)
+  for (auto const & [contour, id] : contours)
   {
-    std::shared_ptr<SCgContour> const & contour = pair.first;
-    std::string const & id = pair.second;
-
     for (auto const & [key, element] : elements)
     {
       if (element->GetParent() == id)
