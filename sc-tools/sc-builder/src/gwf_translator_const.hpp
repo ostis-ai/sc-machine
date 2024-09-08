@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <unordered_map>
+
 namespace Constants
 {
 std::string const EDGE = "edge";

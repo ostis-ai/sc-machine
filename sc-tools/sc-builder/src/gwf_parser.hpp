@@ -8,17 +8,12 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 #include <cstring>
-#include <algorithm>
 #include <memory>
 #include <list>
 
 #include <libxml2/libxml/parser.h>
 #include <libxml2/libxml/tree.h>
-
-#include <sc-memory/utils/sc_base64.hpp>
-#include <sc-memory/sc_debug.hpp>
 
 #include "gwf_translator_const.hpp"
 

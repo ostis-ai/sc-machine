@@ -6,6 +6,11 @@
 
 #include "gwf_parser.hpp"
 
+#include <iostream>
+
+#include <sc-memory/utils/sc_base64.hpp>
+#include <sc-memory/sc_debug.hpp>
+
 #include "sc_scg_element.hpp"
 
 using namespace Constants;
