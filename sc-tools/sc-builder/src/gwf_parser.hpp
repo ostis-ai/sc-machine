@@ -37,7 +37,7 @@ class SCgConnector;
 class GWFParser
 {
 public:
-  SCgElements Parse(std::string const & xmlStr);
+  void Parse(std::string const & xmlStr, SCgElements & elements);
 
 private:
   xmlChar const * const STATIC_SECTOR = (xmlChar const *)"staticSector";
@@ -90,7 +90,7 @@ private:
 
   void FillContours(SCgContours const & contours, SCgElements const & elements);
 
-  void ProcessStaticSector(xmlNodePtr staticSector, SCgElements & elements);
+  void ProcessStaticSector(xmlNodePtr staticSector, SCgElements & elementsWithParents);
 
   std::string XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr) const;
   std::unique_ptr<xmlChar, XmlCharDeleter> GetXmlProp(xmlNodePtr node, std::string const & propName) const;
