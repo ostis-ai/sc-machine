@@ -27,15 +27,32 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string const & filePath)
 {
   GWFParser parser;
-  auto const elements = parser.Parse(xmlStr);
 
-  if (elements.empty())
+  SCgElements elementWithoutParents;
+  try
+  {
+    parser.Parse(xmlStr, elementWithoutParents);
+  }
+  catch (utils::ScException const & e)
+  {
+    SC_LOG_ERROR("GWFParser::Parse: Error in parse " << e.Message());
+  }
+
+  if (elementWithoutParents.empty())
     SC_THROW_EXCEPTION(
         utils::ExceptionParseError, "GWFTranslator::GWFToScs: There are no elements in file `" << filePath << "`.");
 
   SCsWriter writer;
   Buffer scsBuffer;
-  writer.Write(elements, filePath, scsBuffer);
+  std::unordered_set<std::shared_ptr<SCgElement>> writtenElements;
+  try
+  {
+    writer.Write(elementWithoutParents, filePath, scsBuffer, 0, writtenElements);
+  }
+  catch (utils::ScException const & e)
+  {
+    SC_LOG_ERROR("SCsWriter::Write: Exception in process elements: " << e.Message());
+  }
   return scsBuffer.GetValue();
 }
 

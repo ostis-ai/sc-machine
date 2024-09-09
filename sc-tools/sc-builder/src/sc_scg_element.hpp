@@ -10,6 +10,8 @@
 #include <list>
 #include <memory>
 
+#include "gwf_translator_const.hpp"
+
 class SCgElement
 {
 public:
@@ -102,11 +104,11 @@ public:
       std::string const & type,
       std::string const & tag);
 
-  void AddElement(std::shared_ptr<SCgElement> const & element);
-  std::list<std::shared_ptr<SCgElement>> & GetElements();
+  void SetElements(SCgElements const & elements);
+  SCgElements & GetElements();
 
 private:
-  std::list<std::shared_ptr<SCgElement>> m_elements;
+  SCgElements m_elements;
 };
 
 class SCgConnector : public SCgElement

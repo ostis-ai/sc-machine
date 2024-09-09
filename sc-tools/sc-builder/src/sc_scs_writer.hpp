@@ -8,6 +8,7 @@
 
 #include <string>
 #include <sstream>
+#include <unordered_set>
 
 #include "sc_scg_to_scs_types.hpp"
 #include "gwf_parser.hpp"
@@ -34,18 +35,23 @@ class SCsContour;
 class SCsElementFactory
 {
 public:
-  static std::shared_ptr<SCsElement> ConvertElementFromSCgElement(std::shared_ptr<SCgElement> const & scgElement);
+  static std::shared_ptr<SCsElement> CreateSCsElementForSCgElement(std::shared_ptr<SCgElement> const & scgElement);
 };
 
 class SCsWriter
 {
 public:
-  void Write(SCgElements const & elementsList, std::string const & filePath, Buffer & buffer) const;
+  void Write(
+      SCgElements const & elements,
+      std::string const & filePath,
+      Buffer & buffer,
+      size_t depth,
+      std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const;
 
   class SCgIdentifierCorrector
   {
   public:
-    static void CorrectIdentifier(
+    static void GenerateSCsIdentifier(
         std::shared_ptr<SCgElement> const & scgElement,
         std::shared_ptr<SCsElement> & scsElement);
 
@@ -61,13 +67,13 @@ public:
         std::string & systemIdentifier,
         std::string const & elementId,
         bool isVar);
-    static std::string CorrectIdentifierForVariable(std::string & systemIdentifier);
-    static std::string CorrectIdentifierForNonVariable(std::string & systemIdentifier);
+    static std::string GenerateSCsIdentifierForVariable(std::string & systemIdentifier);
+    static std::string GenerateSCsIdentifierForNonVariable(std::string & systemIdentifier);
   };
 
-  static std::list<std::shared_ptr<SCgElement>> ConvertMapToList(SCgElements const & scgElements);
   static void WriteMainIdentifier(
       Buffer & buffer,
+      size_t depth,
       std::string const & systemIdentifier,
       std::string const & mainIdentifier);
   static std::string MakeAlias(std::string const & prefix, std::string const & elementId);

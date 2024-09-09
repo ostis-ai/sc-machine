@@ -7,6 +7,7 @@
 #include "sc_scs_element.hpp"
 
 #include <filesystem>
+#include <unordered_set>
 
 #include <sc-memory/sc_debug.hpp>
 
@@ -54,12 +55,19 @@ void SCsNode::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEleme
   type = scsNodeType;
 }
 
-void SCsNode::Dump(std::string const & filePath, Buffer & buffer, size_t depth) const
+void SCsNode::Dump(
+    std::string const & filePath,
+    Buffer & buffer,
+    size_t depth,
+    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
 {
   buffer << NEWLINE;
 
   buffer.AddTabs(depth) << GetSystemIdentifier() << NEWLINE;
   buffer.AddTabs(depth) << SPACE << SPACE << SC_CONNECTOR_MAIN_L << SPACE << type << ELEMENT_END << NEWLINE;
+
+  if (!this->GetMainIdentifier().empty())
+    SCsWriter::WriteMainIdentifier(buffer, depth, this->GetSystemIdentifier(), this->GetMainIdentifier());
 }
 
 // SCsLink
@@ -104,7 +112,11 @@ void SCsLink::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEleme
   }
 }
 
-void SCsLink::Dump(std::string const & filePath, Buffer & buffer, size_t depth) const
+void SCsLink::Dump(
+    std::string const & filePath,
+    Buffer & buffer,
+    size_t depth,
+    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
 {
   buffer << NEWLINE;
 
@@ -119,15 +131,12 @@ void SCsLink::Dump(std::string const & filePath, Buffer & buffer, size_t depth) 
     std::string const & content = FILE_PREFIX + fullPath.filename().string();
     std::string const & fileExtension = fullPath.extension().string();
     auto it = IMAGE_FORMATS.find(fileExtension);
-
-    if (it != IMAGE_FORMATS.cend())
-    {
-      imageFormat = it->second;
-      isImage = true;
-    }
-    else
+    if (it == IMAGE_FORMATS.cend())
       SC_THROW_EXCEPTION(
           utils::ExceptionItemNotFound, "SCsLink::Dump: File extension `" << fileExtension << "` is not supported.");
+
+    imageFormat = it->second;
+    isImage = true;
 
     std::ofstream file(fullPath, std::ios::binary);
     if (!file)
@@ -184,13 +193,17 @@ void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scg
 
 std::string SCsConnector::GetIncidentElementIdentifier(std::shared_ptr<SCgElement> const & element) const
 {
-  auto scsElement = SCsElementFactory::ConvertElementFromSCgElement(element);
+  auto scsElement = SCsElementFactory::CreateSCsElementForSCgElement(element);
   scsElement->ConvertFromSCgElement(element);
-  SCsWriter::SCgIdentifierCorrector::CorrectIdentifier(element, scsElement);
+  SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifier(element, scsElement);
   return scsElement->GetSystemIdentifier();
 }
 
-void SCsConnector::Dump(std::string const & filePath, Buffer & buffer, size_t depth) const
+void SCsConnector::Dump(
+    std::string const & filePath,
+    Buffer & buffer,
+    size_t depth,
+    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
 {
   buffer << NEWLINE;
 
@@ -217,47 +230,22 @@ void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgEl
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidType, "SCsContour::ConvertFromSCgElement Invalid SCgElement passed to SCsContour.");
 
-  auto const & contourSCgElements = contour->GetElements();
-  for (auto const & scgElement : contourSCgElements)
-  {
-    std::string const & tag = scgElement->GetTag();
-
-    std::shared_ptr<SCsElement> scsElement;
-    if (tag == NODE || tag == BUS)
-    {
-      scsElement = std::make_shared<SCsNode>();
-      m_scsElementsPlacedInContour.emplace_back(scsElement);
-    }
-    else if (tag == PAIR || tag == ARC)
-    {
-      scsElement = std::make_shared<SCsConnector>();
-      m_scsElementsPlacedInContour.emplace_back(scsElement);
-    }
-    else if (tag == CONTOUR)
-    {
-      scsElement = std::make_shared<SCsContour>();
-      m_scsElementsPlacedInContour.emplace_back(scsElement);
-    }
-    else
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidType,
-          "SCsContour::ConvertFromSCgElement: SCgElement type `" << tag << "` is not supported.");
-
-    SCsWriter::SCgIdentifierCorrector::CorrectIdentifier(scgElement, scsElement);
-    scsElement->ConvertFromSCgElement(scgElement);
-  }
+  m_scgElements = contour->GetElements();
 }
 
-void SCsContour::Dump(std::string const & filePath, Buffer & buffer, size_t depth) const
+void SCsContour::Dump(
+    std::string const & filePath,
+    Buffer & buffer,
+    size_t depth,
+    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
 {
+  buffer << NEWLINE;
+
   Buffer contourBuffer;
-  for (auto const & element : m_scsElementsPlacedInContour)
-    element->Dump(filePath, contourBuffer, depth + 1);
+  SCsWriter writer;
+  writer.Write(m_scgElements, filePath, contourBuffer, depth + 1, writtenElements);
 
   buffer.AddTabs(depth) << GetSystemIdentifier() << SPACE << EQUAL << SPACE << OPEN_CONTOUR << NEWLINE;
   buffer << contourBuffer.GetValue() << NEWLINE;
   buffer.AddTabs(depth) << CLOSE_CONTOUR << ELEMENT_END << NEWLINE;
-
-  for (auto const & element : m_scsElementsPlacedAfterContour)
-    element->Dump(filePath, buffer, depth);
 }

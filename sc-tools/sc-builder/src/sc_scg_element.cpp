@@ -130,12 +130,12 @@ SCgContour::SCgContour(
 {
 }
 
-void SCgContour::AddElement(std::shared_ptr<SCgElement> const & element)
+void SCgContour::SetElements(SCgElements const & elements)
 {
-  m_elements.push_back(element);
+  m_elements = elements;
 }
 
-std::list<std::shared_ptr<SCgElement>> & SCgContour::GetElements()
+SCgElements & SCgContour::GetElements()
 {
   return m_elements;
 }
@@ -147,11 +147,11 @@ SCgConnector::SCgConnector(
     std::string const & identifier,
     std::string const & type,
     std::string const & tag,
-    std::shared_ptr<SCgElement> sourceEl,
-    std::shared_ptr<SCgElement> targetEl)
+    std::shared_ptr<SCgElement> source,
+    std::shared_ptr<SCgElement> target)
   : SCgElement(id, parent, identifier, type, tag)
-  , m_source(sourceEl)
-  , m_target(targetEl)
+  , m_source(source)
+  , m_target(target)
 {
 }
 
