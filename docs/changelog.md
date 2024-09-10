@@ -24,13 +24,15 @@ encapsulated this logic;
   - completely moved from code generation to template programming;
   - improved the API and aligned with our description of how it should be;
   - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
-- We redesigned all `ScMemoryContext` methods to a common style. All methods with not correct names were deprecated, and new ones were added. See the table below to see which methods have been replaced.
+- All `ScMemoryContext` methods were redesigned to a common style. All methods with not correct names were deprecated, and new ones were added. See the table below to see which methods have been replaced.
   
   | Deprecated method                   | Substitution method                   |
   |-------------------------------------|---------------------------------------|
   | CreateNode                          | GenerateNode                          |
   | CreateLink                          | GenerateLink                          |
   | CreateEdge                          | GenerateConnector                     |
+  | GetElementOutputArcsCount           | GetElementOutgoingArcsCount           |
+  | GetElementInputArcsCount            | GetElementIncomingArcsCount           |
   | GetEdgeSource                       | GetArcSourceElement                   |
   | GetEdgeTarget                       | GetArcTargetElement                   |
   | GetEdgeInfo                         | GetConnectorIncidentElements          |
@@ -44,15 +46,19 @@ encapsulated this logic;
   | HelperFindBySystemIdtf              | SearchElementBySystemIdentifier       |
   | HelperGenTemplate                   | GenerateByTemplate                    |
   | HelperSearchTemplate                | SearchByTemplate                      |
+  | HelperSmartSearchTemplate           | SearchByTemplateWithControl           |
   | HelperBuildTemplate                 | BuildByTemplate                       |
   | CalculateStat                       | CalculateStatistics                   |
+
+  | Removed method                      | Substitution method                   |
+  |-------------------------------------|---------------------------------------|
   | BeingEventsPending                  | BeginEventsPending                    |
 
   See documentation, to learn more about using of new methods.
 
 ### Added
 
-- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, BuildByTemplate, CalculateStatistics, BeginEventsPending
+- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetElementOutgoingArcsCount, GetElementIncomingArcsCount, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, SearchByTemplateWithControl, BuildByTemplate, CalculateStatistics, BeginEventsPending
 - Simple guide for implementing agent in C++
 - Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
 - Full tests for C++ Agents API
@@ -146,12 +152,13 @@ encapsulated this logic;
 
 ### Deprecated
 
-- Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperBuildTemplate, CalculateStat, BeingEventsPending
+- Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge,GetElementOutputArcsCount, GetElementInputArcsCount, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperSmartSearchTemplate, HelperBuildTemplate, CalculateStat
 - Misleading methods of `ScMemoryContext`
 - Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve
 
 ### Removed
 
+- Methods of `BeingEventsPending`: BeingEventsPending
 - Codegen and C++ Agents API based on code generation
 - Deprecated sc-utils in 0.9.0
 - Constructors for ScMemoryContext with string and int parameters
