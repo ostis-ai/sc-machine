@@ -82,7 +82,7 @@ encapsulated this logic;
 - Script `healthcheck.sh` for `healthcheck.py`
 - Check build and tests on runner-image `ubuntu-24.04`
 - Support for ubuntu-24.04 and macOS 14.4.1
-- Block events mode for sc-memory context
+- Block events mode for sc-memory context; methods `BeginEventsBlocking` and `EndEventsBlocking` in `ScMemoryContext`
 - Opportunity to set permissions for set of users
 - Guests identification
 - Create guest users during creating sc-memory context
