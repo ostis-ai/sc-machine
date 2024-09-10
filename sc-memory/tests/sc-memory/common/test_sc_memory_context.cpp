@@ -196,8 +196,8 @@ void TestReadActionsSuccessfully(std::unique_ptr<ScAgentContext> const & context
   ScAddr const & arcAddr = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   EXPECT_TRUE(userContext.IsElement(nodeAddr));
-  EXPECT_EQ(userContext.GetElementIncomingArcsCount(nodeAddr), 0u);
-  EXPECT_EQ(userContext.GetElementOutgoingArcsCount(nodeAddr), 1u);
+  EXPECT_EQ(userContext.GetElementEdgesAndIncomingArcsCount(nodeAddr), 0u);
+  EXPECT_EQ(userContext.GetElementEdgesAndOutgoingArcsCount(nodeAddr), 1u);
   EXPECT_EQ(userContext.GetArcSourceElement(arcAddr), nodeAddr);
   EXPECT_EQ(userContext.GetArcTargetElement(arcAddr), linkAddr);
   auto [nodeAddr1, nodeAddr2] = userContext.GetConnectorIncidentElements(arcAddr);
@@ -222,8 +222,8 @@ void TestReadActionsUnsuccessfully(std::unique_ptr<ScAgentContext> const & conte
   ScAddr const & arcAddr = context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
   EXPECT_THROW(userContext.IsElement(nodeAddr), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.GetElementIncomingArcsCount(nodeAddr), utils::ExceptionInvalidState);
-  EXPECT_THROW(userContext.GetElementOutgoingArcsCount(nodeAddr), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GetElementEdgesAndIncomingArcsCount(nodeAddr), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GetElementEdgesAndOutgoingArcsCount(nodeAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetArcSourceElement(arcAddr), utils::ExceptionInvalidState);
   EXPECT_THROW(userContext.GetArcTargetElement(arcAddr), utils::ExceptionInvalidState);
   ScAddr nodeAddr1, nodeAddr2;

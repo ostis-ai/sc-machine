@@ -369,7 +369,7 @@ private:
         continue;
 
       ScTemplateTriple const * triple = m_template.m_templateTriples[tripleIdx];
-      auto const count = (sc_int32)m_context.GetElementIncomingArcsCount(triple->GetValues()[2].m_addrValue);
+      auto const count = (sc_int32)m_context.GetElementEdgesAndIncomingArcsCount(triple->GetValues()[2].m_addrValue);
 
       if (minInputArcsCount == -1 || count < minInputArcsCount)
       {
@@ -400,7 +400,7 @@ private:
         continue;
 
       ScTemplateTriple const * triple = m_template.m_templateTriples[tripleIdx];
-      auto const count = (sc_int32)m_context.GetElementOutgoingArcsCount(triple->GetValues()[0].m_addrValue);
+      auto const count = (sc_int32)m_context.GetElementEdgesAndOutgoingArcsCount(triple->GetValues()[0].m_addrValue);
 
       if (minOutputArcsCount == -1 || count < minOutputArcsCount)
       {

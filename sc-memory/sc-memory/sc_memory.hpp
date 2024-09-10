@@ -177,31 +177,33 @@ public:
   _SC_EXTERN bool IsElement(ScAddr const & elementAddr) const;
 
   /*!
-   * @brief Returns the count of outgoing sc-arcs for a specified sc-element.
+   * @brief Returns the count of sc-edges and outgoing sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of outgoing sc-arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of sc-edges and outgoing sc-arcs for the sc-element identified by the given
+   * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of outgoing sc-arcs for the specified sc-element.
+   * @return Returns the count of sc-edges and outgoing sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
    * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
-   * size_t outgoingArcsCount = context.GetElementOutgoingArcsCount(elementAddr);
+   * size_t outgoingArcsCount = context.GetElementEdgesAndOutgoingArcsCount(elementAddr);
    * std::cout << "Outgoing arcs count: " << outgoingArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN size_t GetElementOutgoingArcsCount(ScAddr const & elementAddr) const noexcept(false);
+  _SC_EXTERN size_t GetElementEdgesAndOutgoingArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of outgoing sc-arcs for a specified sc-element.
+   * @brief Returns the count of sc-edges and outgoing sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of outgoing sc-arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of sc-edges and outgoing sc-arcs for the sc-element identified by the given
+   * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of outgoing sc-arcs for the specified sc-element.
+   * @return Returns the count of sc-edges and outgoing sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
@@ -212,41 +214,44 @@ public:
    * std::cout << "Outgoing arcs count: " << outgoingArcsCount << std::endl;
    * @endcode
    *
-   * @warning This method is deprecated since 0.10.0. Use `GetElementOutgoingArcsCount` instead for better readability
-   * and standards compliance.
+   * @warning This method is deprecated since 0.10.0. Use `GetElementEdgesAndOutgoingArcsCount` instead for better
+   * readability and standards compliance.
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GetElementOutgoingArcsCount` instead for better readability and standards "
+      "This method is deprecated. Use `GetElementEdgesAndOutgoingArcsCount` instead for better readability and "
+      "standards "
       "compliance.")
   _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of incoming sc-arcs for a specified sc-element.
+   * @brief Returns the count of sc-edges and incoming sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of incoming sc-arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of sc-edges and incoming sc-arcs for the sc-element identified by the given
+   * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of incoming sc-arcs for the specified sc-element.
+   * @return Returns the count of sc-edges and incoming sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
    * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
-   * size_t incomingArcsCount = context.GetElementIncomingArcsCount(elementAddr);
+   * size_t incomingArcsCount = context.GetElementEdgesAndIncomingArcsCount(elementAddr);
    * std::cout << "Incoming arcs count: " << incomingArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN size_t GetElementIncomingArcsCount(ScAddr const & elementAddr) const noexcept(false);
+  _SC_EXTERN size_t GetElementEdgesAndIncomingArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of incoming sc-arcs for a specified sc-element.
+   * @brief Returns the count of sc-edges and incoming sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of incoming sc-arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of sc-edges and incoming sc-arcs for the sc-element identified by the given
+   * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of incoming sc-arcs for the specified sc-element.
+   * @return Returns the count of sc-edges and incoming sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
@@ -257,12 +262,13 @@ public:
    * std::cout << "Incoming arcs count: " << incomingArcsCount << std::endl;
    * @endcode
    *
-   * @warning This method is deprecated since 0.10.0. Use `GetElementIncomingArcsCount` instead for better readability
-   * and standards compliance.
+   * @warning This method is deprecated since 0.10.0. Use `GetElementEdgesAndIncomingArcsCount` instead for better
+   * readability and standards compliance.
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GetElementIncomingArcsCount` instead for better readability and standards "
+      "This method is deprecated. Use `GetElementEdgesAndIncomingArcsCount` instead for better readability and "
+      "standards "
       "compliance.")
   _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
@@ -1085,8 +1091,8 @@ public:
    * @param param3 The third parameter for the iterator.
    * @param fn The function to be called for each result.
    *
-   * @note fn function should have 3 parameters (ScAddr/ScType const & source, ScAddr/ScType const & connector,
-   * ScAddr/ScType const & target).
+   * @note fn function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target).
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
@@ -1110,8 +1116,8 @@ public:
    * @param param5 The fifth parameter for the iterator.
    * @param fn The function to be called for each result.
    *
-   * @note fn function should have 5 parameters (ScAddr/ScType const & source, ScAddr/ScType const & connector,
-   * ScAddr/ScType const & target, ScAddr/ScType const & attrConnector, ScAddr/ScType const & attr)
+   * @note fn function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target, ScAddr const & attrConnector, ScAddr const & attr)
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN template <
@@ -1795,9 +1801,9 @@ public:
    * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
    * condition.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -1839,9 +1845,9 @@ public:
    * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
    * condition.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -1889,8 +1895,8 @@ public:
    * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
    * lambda-function.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -1926,8 +1932,8 @@ public:
    * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
    * lambda-function.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -1975,13 +1981,13 @@ public:
    *  - ScTemplateSearchRequest::ERROR.
    * When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If
    * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR returns, then sc-template search stops.
-   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateWithControl thrown
+   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateInterruptibly thrown
    * utils::ExceptionInvalidState.
    * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2000,7 +2006,7 @@ public:
    * );
    * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
    * belong to structure.
-   * m_context->SearchByTemplateWithControl(templateToFind, [&context](ScTemplateSearchResultItem
+   * m_context->SearchByTemplateInterruptibly(templateToFind, [&context](ScTemplateSearchResultItem
    * const & item) -> ScTemplateSearchRequest
    * {
    *   ScAddr const & arcAddr = item["_arc"];
@@ -2014,7 +2020,7 @@ public:
    * });
    * @endcode
    */
-  _SC_EXTERN void SearchByTemplateWithControl(
+  _SC_EXTERN void SearchByTemplateInterruptibly(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
@@ -2028,13 +2034,13 @@ public:
    *  - ScTemplateSearchRequest::ERROR.
    * When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If
    * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR returns, then sc-template search stops.
-   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateWithControl thrown
+   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateInterruptibly thrown
    * utils::ExceptionInvalidState.
    * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2067,12 +2073,12 @@ public:
    * });
    * @endcode
    *
-   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplateWithControl` instead for better
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplateInterruptibly` instead for better
    * readability and standards compliance.
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `SearchByTemplateWithControl` instead for better readability and standards "
+      "This method is deprecated. Use `SearchByTemplateInterruptibly` instead for better readability and standards "
       "compliance.")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
@@ -2080,14 +2086,14 @@ public:
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
-  _SC_EXTERN void SearchByTemplateWithControl(
+  _SC_EXTERN void SearchByTemplateInterruptibly(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `SearchByTemplateWithControl` instead for better readability and standards "
+      "This method is deprecated. Use `SearchByTemplateInterruptibly` instead for better readability and standards "
       "compliance.")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
@@ -2214,7 +2220,7 @@ protected:
    * translatableTemplate.Triple(
    *  classAddr,
    *  ScType::EdgeAccessVarPosPerm >> "_arc",
-   *  ScType::Unknown >> "_addr2"`
+   *  ScType::Unknown >> "_addr2"
    * );
    * ScAddr resultTemplateAddr;
    * m_context->LoadTemplate(translatableTemplate, resultTemplateAddr);

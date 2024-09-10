@@ -31,8 +31,8 @@ encapsulated this logic;
   | CreateNode                          | GenerateNode                          |
   | CreateLink                          | GenerateLink                          |
   | CreateEdge                          | GenerateConnector                     |
-  | GetElementOutputArcsCount           | GetElementOutgoingArcsCount           |
-  | GetElementInputArcsCount            | GetElementIncomingArcsCount           |
+  | GetElementOutputArcsCount           | GetElementEdgesAndOutgoingArcsCount           |
+  | GetElementInputArcsCount            | GetElementEdgesAndIncomingArcsCount           |
   | GetEdgeSource                       | GetArcSourceElement                   |
   | GetEdgeTarget                       | GetArcTargetElement                   |
   | GetEdgeInfo                         | GetConnectorIncidentElements          |
@@ -46,7 +46,7 @@ encapsulated this logic;
   | HelperFindBySystemIdtf              | SearchElementBySystemIdentifier       |
   | HelperGenTemplate                   | GenerateByTemplate                    |
   | HelperSearchTemplate                | SearchByTemplate                      |
-  | HelperSmartSearchTemplate           | SearchByTemplateWithControl           |
+  | HelperSmartSearchTemplate           | SearchByTemplateInterruptibly         |
   | HelperBuildTemplate                 | BuildByTemplate                       |
   | CalculateStat                       | CalculateStatistics                   |
 
@@ -58,7 +58,7 @@ encapsulated this logic;
 
 ### Added
 
-- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetElementOutgoingArcsCount, GetElementIncomingArcsCount, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, SearchByTemplateWithControl, BuildByTemplate, CalculateStatistics, BeginEventsPending
+- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetElementEdgesAndOutgoingArcsCount, GetElementEdgesAndIncomingArcsCount, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, SearchByTemplateInterruptibly, BuildByTemplate, CalculateStatistics, BeginEventsPending
 - Simple guide for implementing agent in C++
 - Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
 - Full tests for C++ Agents API
@@ -153,7 +153,6 @@ encapsulated this logic;
 ### Deprecated
 
 - Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge,GetElementOutputArcsCount, GetElementInputArcsCount, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperSmartSearchTemplate, HelperBuildTemplate, CalculateStat
-- Misleading methods of `ScMemoryContext`
 - Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve
 
 ### Removed

@@ -323,7 +323,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithStopRequest)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_arc", ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->SearchByTemplateWithControl(
+  m_ctx->SearchByTemplateInterruptibly(
       templ,
       [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
       {
@@ -365,7 +365,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithErrorRequest)
 
   size_t count = 0;
   EXPECT_THROW(
-      m_ctx->SearchByTemplateWithControl(
+      m_ctx->SearchByTemplateInterruptibly(
           templ,
           [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
           {
@@ -407,7 +407,7 @@ TEST_F(ScTemplateSearchApiTest, SearchWithContinueRequest)
   templ.Triple(addr1 >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_arc", ScType::Unknown >> "_addr2");
 
   size_t count = 0;
-  m_ctx->SearchByTemplateWithControl(
+  m_ctx->SearchByTemplateInterruptibly(
       templ,
       [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
       {

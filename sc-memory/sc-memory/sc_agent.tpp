@@ -284,7 +284,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
   bool isFound = false;
   try
   {
-    this->m_context.SearchByTemplateWithControl(
+    this->m_context.SearchByTemplateInterruptibly(
         resultConditionTemplate,
         [&isFound](ScTemplateResultItem const & item) -> ScTemplateSearchRequest
         {

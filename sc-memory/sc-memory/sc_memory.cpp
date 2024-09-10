@@ -97,7 +97,7 @@ bool ScMemory::Shutdown(bool saveState /* = true */)
 {
   ScKeynodes::Shutdown(ms_globalContext);
 
-  utils::ScLog::SetUp("Console", "", "Info.");
+  utils::ScLog::SetUp("Console", "", "Info");
 
   bool result = sc_memory_shutdown(saveState);
 
@@ -245,7 +245,7 @@ bool ScMemoryContext::IsElement(ScAddr const & elementAddr) const
   return status;
 }
 
-size_t ScMemoryContext::GetElementOutgoingArcsCount(ScAddr const & elementAddr) const
+size_t ScMemoryContext::GetElementEdgesAndOutgoingArcsCount(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
@@ -277,10 +277,10 @@ size_t ScMemoryContext::GetElementOutgoingArcsCount(ScAddr const & elementAddr) 
 
 size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & elementAddr) const
 {
-  return GetElementOutgoingArcsCount(elementAddr);
+  return GetElementEdgesAndOutgoingArcsCount(elementAddr);
 }
 
-size_t ScMemoryContext::GetElementIncomingArcsCount(ScAddr const & elementAddr) const
+size_t ScMemoryContext::GetElementEdgesAndIncomingArcsCount(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
@@ -312,7 +312,7 @@ size_t ScMemoryContext::GetElementIncomingArcsCount(ScAddr const & elementAddr) 
 
 size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & elementAddr) const
 {
-  return GetElementIncomingArcsCount(elementAddr);
+  return GetElementEdgesAndIncomingArcsCount(elementAddr);
 }
 
 bool ScMemoryContext::EraseElement(ScAddr const & elementAddr)
@@ -1232,7 +1232,7 @@ void ScMemoryContext::HelperSearchTemplate(
   SearchByTemplate(templateToFind, callback, checkCallback);
 }
 
-void ScMemoryContext::SearchByTemplateWithControl(
+void ScMemoryContext::SearchByTemplateInterruptibly(
     ScTemplate const & templateToFind,
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultFilterCallback const & filterCallback,
@@ -1248,15 +1248,15 @@ void ScMemoryContext::HelperSmartSearchTemplate(
     ScTemplateSearchResultFilterCallback const & filterCallback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  SearchByTemplateWithControl(templateToFind, callback, filterCallback, checkCallback);
+  SearchByTemplateInterruptibly(templateToFind, callback, filterCallback, checkCallback);
 }
 
-void ScMemoryContext::SearchByTemplateWithControl(
+void ScMemoryContext::SearchByTemplateInterruptibly(
     ScTemplate const & templateToFind,
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  SearchByTemplateWithControl(templateToFind, callback, {}, checkCallback);
+  SearchByTemplateInterruptibly(templateToFind, callback, {}, checkCallback);
 }
 
 void ScMemoryContext::HelperSmartSearchTemplate(
@@ -1264,7 +1264,7 @@ void ScMemoryContext::HelperSmartSearchTemplate(
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  SearchByTemplateWithControl(templateToFind, callback, checkCallback);
+  SearchByTemplateInterruptibly(templateToFind, callback, checkCallback);
 }
 
 void ScMemoryContext::BuildTemplate(

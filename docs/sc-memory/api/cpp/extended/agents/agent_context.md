@@ -25,7 +25,7 @@ This method can be useful when you want generate sc-event subscription, but don'
 
 ```cpp
 ...
-// Generate or use existing sc-agent context.
+// Create or use existing sc-agent context.
 ScAgentContext context;
 
 // Generate sc-event subscription (listen) sc-element.

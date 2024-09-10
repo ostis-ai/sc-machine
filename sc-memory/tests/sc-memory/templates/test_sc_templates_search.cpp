@@ -438,7 +438,7 @@ TEST_F(ScTemplateSearchTest, StructureElements)
       "test_node => test_relation: [];;"
       "test_node => test_relation: [];;",
       structureAddr));
-  size_t const size = m_ctx->GetElementOutgoingArcsCount(structureAddr);
+  size_t const size = m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr);
   for (size_t i = 0; i < size; ++i)
   {
     EXPECT_TRUE(

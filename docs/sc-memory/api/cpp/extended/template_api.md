@@ -911,7 +911,7 @@ result.ForEach([](ScTemplateResultItem const & item) {
 ...
 ```
 
-## **SearchByTemplateWithControl**
+## **SearchByTemplateInterruptibly**
 
 This method searches constructions by isomorphic sc-template and pass found sc-constructions to `callback` 
 lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
@@ -922,7 +922,7 @@ lambda-function. Lambda-function `callback` must return a request command value 
 
 When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If ScTemplateSearchRequest::STOP 
 or ScTemplateSearchRequest::ERROR returns, then sc-template search stops. If sc-template search stopped by 
-ScTemplateSearchRequest::ERROR, then SearchByTemplateWithControl thrown utils::ExceptionInvalidState. If `filterCallback` 
+ScTemplateSearchRequest::ERROR, then SearchByTemplateInterruptibly thrown utils::ExceptionInvalidState. If `filterCallback` 
 passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
 
 ```cpp
@@ -937,7 +937,7 @@ templ.Triple(
   ScType::EdgeAccessVarPosPerm >> "_arc",
   ScType::Unknown >> "_addr2"
 );
-m_context->SearchByTemplateWithControl(templ, [&context](
+m_context->SearchByTemplateInterruptibly(templ, [&context](
     ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest 
 {
   ScAddr const & arcAddr = item["_arc"];

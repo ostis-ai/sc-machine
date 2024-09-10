@@ -293,7 +293,7 @@ idtf_url[ElementHandle contentHandle = ElementHandle()]
 
 idtf_common returns [ElementHandle handle]
   : a=idtf_atomic { $ctx->handle = $ctx->a->handle; }
-  | ie=idtf_connector { $ctx->handle = $ctx->ie->handle; }
+  | ic=idtf_connector { $ctx->handle = $ctx->ic->handle; }
   | iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
   | ct=contour[] { $ctx->handle = $ctx->ct->handle; }
   | cn=content[] { $ctx->handle = $ctx->cn->handle; }
