@@ -58,7 +58,7 @@ Semantic network storage is a core of any ostis-system, so you can use a referen
   We provide a Docker image for this project. Head to [Installing with Docker](https://ostis-ai.github.io/sc-machine/docker) to learn more. It's the recommended way to deploy the sc-machine.
 - Native:
   If you do not have the option to deploy the system using Docker, please refer to the docs for your OS:
-  [Build on Linux](https://ostis-ai.github.io/sc-machine/build/linux-build/) or [Build on macOS](https://ostis-ai.github.io/sc-machine/build/osx-build/) respectively.
+  [Build on Linux](https://ostis-ai.github.io/sc-machine/build/linux_build/) or [Build on macOS](https://ostis-ai.github.io/sc-machine/build/osx_build/) respectively.
 
   Note: currently, the sc-machine isn't _natively_ supported on Windows.
 
@@ -93,7 +93,7 @@ You can also use `./scripts/build_kb.sh` and `./scripts/run_sc_server.sh` to do 
 
 ## Config
 
-This repository provides a default configuration for the sc-machine. To customize the _sc-machine_ to suit your needs you can [create your own config file](https://ostis-ai.github.io/sc-machine/other/config).
+This repository provides a default configuration for the sc-machine. To customize the _sc-machine_ to suit your needs you can [create your own config file](https://ostis-ai.github.io/sc-machine/build/config).
 
 ## Feedback
 
