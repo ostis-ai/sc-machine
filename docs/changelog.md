@@ -27,6 +27,7 @@ encapsulated this logic;
 
 ### Added
 
+- Documentation for user permissions
 - Simple guide for implementing agent in C++
 - Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
 - Full tests for C++ Agents API
