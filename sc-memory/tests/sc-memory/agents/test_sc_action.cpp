@@ -517,3 +517,87 @@ TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
 
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
+
+TEST_F(ScActionTest, SetExpectedExecutionTimeAndGetExpectedExecutionTime)
+{
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action,
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  sc_uint32 waitTime = 500;
+  action.SetExpectedExecutionTimeInMilliseconds(waitTime);
+  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
+  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
+  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  sc_uint32 actualWaitTime;
+  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTime));
+  EXPECT_EQ(actualWaitTime, waitTime);
+}
+
+TEST_F(ScActionTest, SetExpectedExecutionTimeTwiceAndGetExpectedExecutionTime)
+{
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action,
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  sc_uint32 waitTime = 500;
+  action.SetExpectedExecutionTimeInMilliseconds(waitTime);
+  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
+  EXPECT_THROW(action.SetExpectedExecutionTimeInMilliseconds(waitTime + waitTime), utils::ExceptionInvalidState);
+  EXPECT_EQ(expectedExecutionTimeInMilliseconds, action.GetExpectedExecutionTimeInMilliseconds());
+  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
+  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  sc_uint32 actualWaitTime;
+  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTime));
+  EXPECT_EQ(actualWaitTime, waitTime);
+}
+
+TEST_F(ScActionTest, InitiateAndWaitActionAndCheckStoredExpectedExecutionTime)
+{
+  m_ctx->SubscribeAgent<ATestCheckResult>();
+
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action,
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  sc_uint32 waitTime = 500;
+  EXPECT_TRUE(action.InitiateAndWait(waitTime));
+  EXPECT_TRUE(action.IsInitiated());
+  EXPECT_TRUE(action.IsFinished());
+  EXPECT_TRUE(action.IsFinishedSuccessfully());
+  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
+  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
+  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  std::string actualWaitTimeString;
+  sc_uint32 actualWaitTimeUint32;
+  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTimeString));
+  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTimeUint32));
+  EXPECT_EQ(actualWaitTimeUint32, waitTime);
+  EXPECT_EQ(actualWaitTimeString, std::to_string(waitTime));
+
+  m_ctx->UnsubscribeAgent<ATestCheckResult>();
+}
+
+TEST_F(ScActionTest, SetExpectedExecutionTimeAndInitiateAndWaitActionAndCheckStoredExpectedExecutionTime)
+{
+  m_ctx->SubscribeAgent<ATestCheckResult>();
+
+  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action,
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  sc_uint32 waitTime = 500;
+  action.SetExpectedExecutionTimeInMilliseconds(waitTime);
+  EXPECT_TRUE(action.InitiateAndWait(waitTime + waitTime));
+  EXPECT_TRUE(action.IsInitiated());
+  EXPECT_TRUE(action.IsFinished());
+  EXPECT_TRUE(action.IsFinishedSuccessfully());
+  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
+  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
+  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  sc_uint32 actualWaitTime;
+  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTime));
+  EXPECT_EQ(actualWaitTime, waitTime);
+
+  m_ctx->UnsubscribeAgent<ATestCheckResult>();
+}

@@ -156,7 +156,7 @@ bool ScAction::IsInitiated() const noexcept
   return m_context->CheckConnector(ScKeynodes::action_initiated, *this, ScType::EdgeAccessConstPosPerm);
 }
 
-bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
+bool ScAction::InitiateAndWait(sc_uint32 expectedExecutionTimeInMilliseconds) noexcept(false)
 {
   if (IsInitiated())
     SC_THROW_EXCEPTION(
@@ -172,12 +172,14 @@ bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
 
   auto wait = std::shared_ptr<ScWaiterActionFinished>(new ScWaiterActionFinished(*m_context, *this));
   wait->SetOnWaitStartDelegate(
-      [this]()
+      [this, &expectedExecutionTimeInMilliseconds]()
       {
+        if (!m_context->IsElement(GetExpectedExecutionTimeInMilliseconds()))
+          SetExpectedExecutionTimeInMilliseconds(expectedExecutionTimeInMilliseconds);
         m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
       });
-  return wait->Wait(waitTime_ms);
-};
+  return wait->Wait(expectedExecutionTimeInMilliseconds);
+}
 
 ScAction & ScAction::Initiate() noexcept(false)
 {
@@ -196,7 +198,7 @@ ScAction & ScAction::Initiate() noexcept(false)
   m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
 
   return *this;
-};
+}
 
 void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
 {
@@ -290,4 +292,40 @@ std::string ScAction::GetActionClassPrettyString() const
   }
 
   return actionClassName;
+}
+
+ScAddr ScAction::GetExpectedExecutionTimeInMilliseconds() noexcept
+{
+  ScAddr expectedTime;
+  auto const & expectedTimeIterator = m_context->CreateIterator5(
+      *this,
+      ScType::EdgeDCommonConst,
+      ScType::LinkConst,
+      ScType::EdgeAccessConstPosPerm,
+      ScKeynodes::nrel_expected_execution_time_in_milliseconds);
+  if (expectedTimeIterator->Next())
+    expectedTime = expectedTimeIterator->Get(2);
+  return expectedTime;
+}
+
+void ScAction::SetExpectedExecutionTimeInMilliseconds(sc_uint32 expectedExecutionTimeInMilliseconds) noexcept(false)
+{
+  ScAddr const & expectedTime = GetExpectedExecutionTimeInMilliseconds();
+  if (!m_context->IsElement(expectedTime))
+  {
+    ScAddr const & linkWithTime = m_context->GenerateLink();
+    m_context->SetLinkContent(linkWithTime, std::to_string(expectedExecutionTimeInMilliseconds));
+    ScAddr const & relationArc = m_context->GenerateConnector(ScType::EdgeDCommonConst, *this, linkWithTime);
+    m_context->GenerateConnector(
+        ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_expected_execution_time_in_milliseconds, relationArc);
+  }
+  else
+  {
+    std::string existingExpectedTime;
+    m_context->GetLinkContent(expectedTime, existingExpectedTime);
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Action " << GetActionPrettyString() << " already has nrel_expected_execution_time_in_milliseconds set to "
+                  << existingExpectedTime << " ms");
+  }
 }

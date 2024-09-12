@@ -87,6 +87,8 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_connector) == ScType::NodeConstNoRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_incoming_arc.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_incoming_arc) == ScType::NodeConstNoRole);
+  EXPECT_TRUE(ScKeynodes::nrel_expected_execution_time_in_milliseconds.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_expected_execution_time_in_milliseconds) == ScType::NodeConstNoRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_outgoing_arc.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_outgoing_arc) == ScType::NodeConstNoRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_edge.IsValid());
