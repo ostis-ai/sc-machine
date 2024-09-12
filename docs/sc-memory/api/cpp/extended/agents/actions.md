@@ -236,7 +236,7 @@ bool const isActionInitiated = action.IsInitiated();
 
 #### **InitiateAndWait**
 
-You can initiate action and wait for it to finish.
+You can initiate action and wait for it to finish. This method stores expected execution time of the action in knowledge base.
 
 ```cpp
 ...
@@ -245,6 +245,11 @@ action.InitiateAndWait(100); // milliseconds
 // This argument has default value, that equals to 5000 milliseconds.
 ...
 ```
+
+<scg src="../images/actions/action_initiated_with_waiting.gwf"></scg>
+
+!!! warning
+    If you set expected execution time in milliseconds for an action that already has expected execution time in milliseconds, then this method will throw `utils::ExceptionInvalidState`.
 
 #### **Initiate**
 
