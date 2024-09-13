@@ -131,17 +131,18 @@ protected:
 
       if (obj.IsEdge())
       {
-        auto [objSrc, objTrg] = m_context.GetConnectorIncidentElements(objAddr);
-        obj.SetSourceHash(objSrc.Hash());
-        obj.SetTargetHash(objTrg.Hash());
+        auto [objSrcAddr, objTrgAddr] = m_context.GetConnectorIncidentElements(objAddr);
+        obj.SetSourceHash(objSrcAddr.Hash());
+        obj.SetTargetHash(objTrgAddr.Hash());
 
-        ScType const srcType = m_context.GetElementType(objSrc), trgType = m_context.GetElementType(objTrg);
+        ScType const srcType = m_context.GetElementType(objSrcAddr);
+        ScType const trgType = m_context.GetElementType(objTrgAddr);
         if (!srcType.IsEdge() && !trgType.IsEdge())
           independentConnectors.insert(obj.GetHash());
         if (srcType.IsEdge())
-          m_connectorDependenceMap.insert({obj.GetHash(), objSrc.Hash()});
+          m_connectorDependenceMap.insert({obj.GetHash(), objSrcAddr.Hash()});
         if (trgType.IsEdge())
-          m_connectorDependenceMap.insert({obj.GetHash(), objTrg.Hash()});
+          m_connectorDependenceMap.insert({obj.GetHash(), objTrgAddr.Hash()});
       }
 
       m_elements.insert({obj.GetHash(), obj});

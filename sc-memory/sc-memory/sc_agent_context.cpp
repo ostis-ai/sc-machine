@@ -40,7 +40,7 @@ ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
   return *this;
 }
 
-std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext::GenerateElementaryEventSubscription(
+std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(ScElementaryEvent const &)> const & eventCallback) noexcept(false)
@@ -52,7 +52,7 @@ std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> ScAgentContext
           *this, eventClassAddr, subscriptionElementAddr, eventCallback));
 }
 
-std::shared_ptr<ScWaiter> ScAgentContext::GenerateEventWaiter(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback) noexcept(false)
@@ -65,7 +65,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::GenerateEventWaiter(
   return eventWait;
 }
 
-std::shared_ptr<ScWaiter> ScAgentContext::GenerateConditionWaiter(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
@@ -79,12 +79,12 @@ std::shared_ptr<ScWaiter> ScAgentContext::GenerateConditionWaiter(
   return eventWait;
 }
 
-std::shared_ptr<ScWaiter> ScAgentContext::GenerateConditionWaiter(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & eventClassAddr,
     ScAddr const & subscriptionElementAddr,
     std::function<bool(ScElementaryEvent const &)> const & checkCallback) noexcept(false)
 {
-  return GenerateConditionWaiter(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
+  return CreateConditionWaiter(eventClassAddr, subscriptionElementAddr, {}, checkCallback);
 }
 
 ScAction ScAgentContext::GenerateAction(ScAddr const & actionClassAddr) noexcept(false)
@@ -159,25 +159,25 @@ void ScAgentContext::ValidateEventElements(
   if (!IsElement(eventClassAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to generate " << validatorName << " because sc-event class is not valid.");
+        "Not able to create " << validatorName << " because sc-event class is not valid.");
 
   if (!CheckConnector(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to generate " << validatorName
-                                << " because sc-event class is not belongs to "
-                                   "`sc_event`.");
+        "Not able to create " << validatorName
+                              << " because sc-event class is not belongs to "
+                                 "`sc_event`.");
 
   if (!IsElement(subscriptionElementAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to generate " << validatorName << " because subscription sc-element is not valid.");
+        "Not able to create " << validatorName << " because subscription sc-element is not valid.");
 
   if (eventClassAddr == ScKeynodes::sc_event_before_change_link_content
       && !GetElementType(subscriptionElementAddr).IsLink())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to generate " << validatorName
-                                << " of changing link content because subscription sc-element is "
-                                   "not sc-link.");
+        "Not able to create " << validatorName
+                              << " of changing link content because subscription sc-element is "
+                                 "not sc-link.");
 }

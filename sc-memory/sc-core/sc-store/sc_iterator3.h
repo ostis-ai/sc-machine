@@ -64,7 +64,7 @@ struct _sc_iterator3
   sc_bool finished;
 };
 
-/*! Generate iterator to find outgoing sc-arcs for specified element
+/*! Create iterator to find outgoing sc-arcs for specified element
  * @param el sc-addr of element to iterate outgoing sc-arcs
  * @param arc_type Type of outgoing sc-arc to iterate (0 - all types)
  * @param end_type Type of end element for outgoing sc-arcs, to iterate
@@ -76,7 +76,7 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_a_new(
     sc_type arc_type,
     sc_type end_type);
 
-/*! Generate iterator to find incoming sc-arcs for specified element
+/*! Create iterator to find incoming sc-arcs for specified element
  * @param beg_type Type of begin element for incoming sc-arcs, to iterate
  * @param arc_type Type of incoming sc-arc to iterate (0 - all types)
  * @param el sc-addr of element to iterate incoming sc-arcs
@@ -88,7 +88,7 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_a_a_f_new(
     sc_type arc_type,
     sc_addr el);
 
-/*! Generate iterator to find arcs between two specified elements
+/*! Create iterator to find arcs between two specified elements
  * @param el_beg sc-addr of begin element
  * @param arc_type Type of arcs to iterate (0 - all types)
  * @param el_end sc-addr of end element
@@ -100,7 +100,7 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_f_a_f_new(
     sc_type arc_type,
     sc_addr el_end);
 
-/*! Generate iterator to determine edge source and target
+/*! Create iterator to determine edge source and target
  */
 _SC_EXTERN sc_iterator3 * sc_iterator3_a_f_a_new(
     sc_memory_context const * ctx,
@@ -125,7 +125,7 @@ _SC_EXTERN sc_iterator3 * sc_iterator3_f_f_f_new(
     sc_addr edge_addr,
     sc_addr end_addr);
 
-/*! Generate new sc-iterator-3
+/*! Create new sc-iterator-3
  * @param type Iterator type (search template)
  * @param p1 First iterator parameter
  * @param p2 Second iterator parameter

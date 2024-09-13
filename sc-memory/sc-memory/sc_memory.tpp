@@ -31,7 +31,7 @@ bool ScMemoryContext::GetLinkContent(ScAddr const & linkAddr, TContentType & out
     return true;
   }
 
-  return true;
+  return false;
 }
 
 template <typename TContentType>

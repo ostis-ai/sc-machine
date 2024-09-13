@@ -19,24 +19,24 @@ The `ScAgentContext` class is inherited from `ScMemoryContext` class and provide
 !!! warning
     Objects of `ScAgentContext` class are movable, but not copyable.
 
-### **GenerateElementaryEventSubscription**
+### **CreateElementaryEventSubscription**
 
-This method can be useful when you want generate sc-event subscription, but don't want to use agents for this. `GenerateElementaryEventSubscription` generates sc-event subscription with specified subscription (listen) sc-element and on-event callback. To learn more about sc-event see [**C++ Events API**](events.md), to learn more about sc-event subscriptions see [**C++ Event subscriptions API**](event_subscriptions.md).
+This method can be useful when you want create sc-event subscription, but don't want to use agents for this. `CreateElementaryEventSubscription` generates sc-event subscription with specified subscription (listen) sc-element and on-event callback. To learn more about sc-event see [**C++ Events API**](events.md), to learn more about sc-event subscriptions see [**C++ Event subscriptions API**](event_subscriptions.md).
 
 ```cpp
 ...
 // Create or use existing sc-agent context.
 ScAgentContext context;
 
-// Generate sc-event subscription (listen) sc-element.
+// Create sc-event subscription (listen) sc-element.
 ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;
-// Generate sc-event subscription for generated sc-node (listen sc-element) 
+// Create sc-event subscription for generated sc-node (listen sc-element) 
 // and provide on-event callback.
 auto eventSubscription 
-  = context.GenerateElementaryEventSubscription<MyEventType>(
+  = context.CreateElementaryEventSubscription<MyEventType>(
   nodeAddr,
   [](MyEventType const & event) -> void
   {
@@ -52,7 +52,7 @@ context.GenerateConnector(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAdd
 ```
 
 !!! note
-    You can provide empty on-event callback `{}` in `GenerateElementaryEventSubscription` and call `SetDelegate` from object of subscription to set new on-event callback.
+    You can provide empty on-event callback `{}` in `CreateElementaryEventSubscription` and call `SetDelegate` from object of subscription to set new on-event callback.
 
 !!! note
     You can call `RemoveDelegate` from object of subscription to remove existing on-event callback.
@@ -64,13 +64,13 @@ If you don't know in advance what sc-event you need to subscribe for, you can us
 
 ```cpp
 ...
-// Generate sc-event subscription (listen) sc-element.
+// Create sc-event subscription (listen) sc-element.
 ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
 // Choose sc-event type to subscribe or find it.
 ScAddr const & eventClassAddr = GetSomeEventType(); // User-specified method.
-// Generate sc-event subscription for generated sc-node (listen sc-element) 
+// Create sc-event subscription for generated sc-node (listen sc-element) 
 // and provide on-event callback.
-auto eventSubscription = context.GenerateElementaryEventSubscription(
+auto eventSubscription = context.CreateElementaryEventSubscription(
   eventClassAddr,
   nodeAddr,
   [](ScElementaryEvent const & event) -> void
@@ -92,7 +92,7 @@ context.GenerateConnector(ScType::EdgeAccessConstPosPerm, nodeAddr, otherNodeAdd
 !!! note 
     All sc-event classes provided by sc-machine always belongs to `sc_event` class.
 
-### **GenerateEventWaiter**
+### **CreateEventWaiter**
 
 You can generate waiter for some sc-event. It is useful when your agent should wait other agent.
 
@@ -103,8 +103,8 @@ ScAddr const & nodeAddr = context.SearchElementBySystemIdentifier("my_node");
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;
-// Generate sc-event waiter for generated sc-node (listen sc-element).
-auto eventWaiter = context.GenerateEventWaiter<MyEventType>(
+// Create sc-event waiter for generated sc-node (listen sc-element).
+auto eventWaiter = context.CreateEventWaiter<MyEventType>(
   nodeAddr,
   []() -> void
   {
@@ -139,9 +139,9 @@ Just like for the method of creating sc-event subscription, if you don't know sc
 ScAddr const & nodeAddr = context.SearchElementBySystemIdentifier("my_node");
 // Choose sc-event type to subscribe or find it.
 ScAddr const & eventClassAddr = GetSomeEventType(); // User-specified method.
-// Generate sc-event waiter for generated sc-node (listen sc-element)   
+// Create sc-event waiter for generated sc-node (listen sc-element)   
 // and provide on-event callback.
-auto eventWaiter = context.GenerateEventWaiter(
+auto eventWaiter = context.CreateEventWaiter(
   eventClassAddr,
   nodeAddr);
 ...
@@ -150,7 +150,7 @@ auto eventWaiter = context.GenerateEventWaiter(
 !!! warning
     A sc-event class must be valid and must belong to `sc_event` class.
 
-### **GenerateConditionWaiter**
+### **CreateConditionWaiter**
 
 In addition to the waiting time, you can also specify check that will be called when sc-event to which we have subscribed occurs.
 
@@ -161,8 +161,8 @@ ScAddr const & nodeAddr = context.SearchElementBySystemIdentifier("my_node");
 // Choose sc-event type to subscribe for.
 using MyEventType = ScEventAfterGenerateOutgoingArc<
   ScType::EdgeAccessConstPosPerm>;
-// Generate sc-event waiter for generated sc-node (listen sc-element).
-auto eventWaiter = context.GenerateConditionWaiter<MyEventType>(
+// Create sc-event waiter for generated sc-node (listen sc-element).
+auto eventWaiter = context.CreateConditionWaiter<MyEventType>(
   nodeAddr,
   []() -> void
   {
@@ -196,10 +196,10 @@ Waiters with condition are very useful, when you want to call some agent and wai
 ScAddr const & actionAddr = context.GenerateNode(ScType::NodeConst);
 context.GenerateConnector(
     ScType::EdgeAccessConstPosPerm, MyKeynodes::my_action_class, actionAddr);
-// Generate sc-event waiter for generated action (listen sc-element).
+// Create sc-event waiter for generated action (listen sc-element).
 // You should wait while sc-arc in action from `action_finished_successfully`
 // will generated.
-auto eventWaiter = context.GenerateConditionWaiter<
+auto eventWaiter = context.CreateConditionWaiter<
   ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   actionAddr,
   [&]() -> void

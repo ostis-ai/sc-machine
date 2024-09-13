@@ -13,7 +13,7 @@
 #include "sc_agent_manager.hpp"
 
 template <class TScEvent>
-std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::GenerateElementaryEventSubscription(
+std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::CreateElementaryEventSubscription(
     ScAddr const & subscriptionElementAddr,
     std::function<void(TScEvent const &)> const & eventCallback)
 {
@@ -24,7 +24,7 @@ std::shared_ptr<ScElementaryEventSubscription<TScEvent>> ScAgentContext::Generat
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWaiter> ScAgentContext::GenerateEventWaiter(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateEventWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback)
 {
@@ -37,7 +37,7 @@ std::shared_ptr<ScWaiter> ScAgentContext::GenerateEventWaiter(
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWaiter> ScAgentContext::GenerateConditionWaiter(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<void(void)> const & initiateCallback,
     std::function<bool(TScEvent const &)> const & checkCallback)
@@ -51,11 +51,11 @@ std::shared_ptr<ScWaiter> ScAgentContext::GenerateConditionWaiter(
 }
 
 template <class TScEvent>
-std::shared_ptr<ScWaiter> ScAgentContext::GenerateConditionWaiter(
+std::shared_ptr<ScWaiter> ScAgentContext::CreateConditionWaiter(
     ScAddr const & subscriptionElementAddr,
     std::function<bool(TScEvent const &)> const & checkCallback)
 {
-  return GenerateConditionWaiter(subscriptionElementAddr, {}, checkCallback);
+  return CreateConditionWaiter(subscriptionElementAddr, {}, checkCallback);
 }
 
 template <class TScAgent, class... TScAddr>
@@ -144,15 +144,15 @@ void ScAgentContext::ValidateEventElements(ScAddr const & subscriptionElementAdd
   if (!IsElement(subscriptionElementAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to generate " << validatorName << " because subscription sc-element is not valid.");
+        "Not able to create " << validatorName << " because subscription sc-element is not valid.");
 
   if constexpr (std::is_same<TScEvent, ScEventBeforeChangeLinkContent>::value)
   {
     if (!GetElementType(subscriptionElementAddr).IsLink())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Not able to generate " << validatorName
-                                  << " of changing link content because subscription sc-element is not "
-                                     "sc-link.");
+          "Not able to create " << validatorName
+                                << " of changing link content because subscription sc-element is not "
+                                   "sc-link.");
   }
 }
