@@ -25,13 +25,13 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
     return SC_RESULT_ERROR_INVALID_PARAMS;
 
   // check action type
-  if (sc_helper_check_arc(s_default_ctx, keynode_action_decomposition, action, sc_type_arc_pos_const_perm) == SC_FALSE)
+  if (sc_helper_check_arc(s_default_ctx, keynode_action_decomposition, action, sc_type_const_perm_pos_arc) == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   result = create_result_node();
 
   // get operation argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_const_perm_pos_arc, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -43,15 +43,15 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
     it5 = sc_iterator5_a_a_f_a_a_new(
         s_default_ctx,
         sc_type_node | sc_type_const,
-        sc_type_arc_common | sc_type_const,
+        sc_type_common_arc | sc_type_const,
         sc_iterator3_value(it1, 2),
-        sc_type_arc_pos_const_perm,
+        sc_type_const_perm_pos_arc,
         sc_type_node | sc_type_const);
     while (sc_iterator5_next(it5) == SC_TRUE)
     {
       if (SC_FALSE
           == sc_helper_check_arc(
-              s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
+              s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc))
         continue;
       if (sys_off == SC_TRUE
           && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
@@ -64,7 +64,7 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
       appendIntoResult(result, sc_iterator5_value(it5, 4));
 
       // iterate decomposition set elements
-      it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
+      it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_const_perm_pos_arc, 0);
       while (sc_iterator3_next(it2) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
@@ -75,22 +75,22 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
         it_order = sc_iterator5_f_a_a_a_a_new(
             s_default_ctx,
             sc_iterator3_value(it2, 2),
-            sc_type_arc_common | sc_type_const,
+            sc_type_common_arc | sc_type_const,
             sc_type_node | sc_type_const,
-            sc_type_arc_pos_const_perm,
+            sc_type_const_perm_pos_arc,
             sc_type_node | sc_type_const);
         while (sc_iterator5_next(it_order) == SC_TRUE)
         {
           if (SC_FALSE
               == sc_helper_check_arc(
-                  s_default_ctx, keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
+                  s_default_ctx, keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_const_perm_pos_arc))
             continue;
           if (SC_FALSE
               == sc_helper_check_arc(
                   s_default_ctx,
                   sc_iterator5_value(it5, 0),
                   sc_iterator5_value(it_order, 2),
-                  sc_type_arc_pos_const_perm))
+                  sc_type_const_perm_pos_arc))
             continue;
 
           if (sys_off == SC_TRUE
@@ -109,11 +109,11 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
 
         // iterate roles of element in link
         it3 = sc_iterator3_a_a_f_new(
-            s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
+            s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it2, 1));
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
           sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it3, 0), &el_type);
-          if (!(el_type & sc_type_node_role))
+          if (!(el_type & sc_type_role))
             continue;
 
           if (sys_off == SC_TRUE
@@ -150,15 +150,15 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   it5 = sc_iterator5_f_a_a_a_a_new(
       s_default_ctx,
       elem,
-      sc_type_arc_common | sc_type_const,
+      sc_type_common_arc | sc_type_const,
       sc_type_node | sc_type_const,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
   while (sc_iterator5_next(it5) == SC_TRUE)
   {
     if (SC_FALSE
         == sc_helper_check_arc(
-            s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
+            s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc))
       continue;
     if (SC_TRUE == sys_off
         && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 2))
@@ -178,15 +178,15 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   it5 = sc_iterator5_a_a_f_a_a_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_arc_common | sc_type_const,
+      sc_type_common_arc | sc_type_const,
       elem,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
   while (sc_iterator5_next(it5) == SC_TRUE)
   {
     if (SC_FALSE
         == sc_helper_check_arc(
-            s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
+            s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc))
       continue;
 
     if (sys_off == SC_TRUE
@@ -200,7 +200,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
     appendIntoResult(result, sc_iterator5_value(it5, 4));
 
     // iterate decomposition set elements
-    it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
+    it2 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_const_perm_pos_arc, 0);
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
@@ -211,19 +211,19 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
       it_order = sc_iterator5_f_a_a_a_a_new(
           s_default_ctx,
           sc_iterator3_value(it2, 2),
-          sc_type_arc_common | sc_type_const,
+          sc_type_common_arc | sc_type_const,
           sc_type_node | sc_type_const,
-          sc_type_arc_pos_const_perm,
+          sc_type_const_perm_pos_arc,
           sc_type_node | sc_type_const);
       while (sc_iterator5_next(it_order) == SC_TRUE)
       {
         if (SC_FALSE
             == sc_helper_check_arc(
-                s_default_ctx, keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_arc_pos_const_perm))
+                s_default_ctx, keynode_order_relation, sc_iterator5_value(it_order, 4), sc_type_const_perm_pos_arc))
           continue;
         if (SC_FALSE
             == sc_helper_check_arc(
-                s_default_ctx, sc_iterator5_value(it5, 0), sc_iterator5_value(it_order, 2), sc_type_arc_pos_const_perm))
+                s_default_ctx, sc_iterator5_value(it5, 0), sc_iterator5_value(it_order, 2), sc_type_const_perm_pos_arc))
           continue;
 
         if (sys_off == SC_TRUE
@@ -241,11 +241,11 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
 
       // iterate roles of element in link
       it6 = sc_iterator3_a_a_f_new(
-          s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, sc_iterator3_value(it2, 1));
+          s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it2, 1));
       while (sc_iterator3_next(it6) == SC_TRUE)
       {
         sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it6, 0), &el_type);
-        if (!(el_type & sc_type_node_role))
+        if (!(el_type & sc_type_role))
           continue;
 
         if (sys_off == SC_TRUE
@@ -281,14 +281,14 @@ sc_result agent_search_all_subclasses_in_quasybinary_relation(sc_event_subscript
           s_default_ctx,
           keynode_action_search_all_subclasses_in_quasybinary_relation,
           action,
-          sc_type_arc_pos_const_perm)
+          sc_type_const_perm_pos_arc)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   result = create_result_node();
 
   // get operation argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_const_perm_pos_arc, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))
@@ -315,15 +315,15 @@ void search_superclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   it5 = sc_iterator5_a_a_f_a_a_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_arc_common | sc_type_const,
+      sc_type_common_arc | sc_type_const,
       elem,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
   while (sc_iterator5_next(it5) == SC_TRUE)
   {
     if (SC_FALSE
         == sc_helper_check_arc(
-            s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm))
+            s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc))
       continue;
     if (SC_TRUE == sys_off
         && (IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(sc_iterator5_value(it5, 1))
@@ -340,32 +340,32 @@ void search_superclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   sc_iterator5_free(it5);
 
   // iterate incoming sc-arcs
-  it3 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, elem);
+  it3 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, elem);
   while (sc_iterator3_next(it3) == SC_TRUE)
   {
     // search all parents in quasybinary relation
     it5 = sc_iterator5_f_a_a_a_a_new(
         s_default_ctx,
         sc_iterator3_value(it3, 0),
-        sc_type_arc_common | sc_type_const,
+        sc_type_common_arc | sc_type_const,
         sc_type_node | sc_type_const,
-        sc_type_arc_pos_const_perm,
+        sc_type_const_perm_pos_arc,
         sc_type_node | sc_type_const);
     while (sc_iterator5_next(it5) == SC_TRUE)
     {
       // check if it's a quasybinary relation
       if (sc_helper_check_arc(
-              s_default_ctx, keynode_quasybinary_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm)
+              s_default_ctx, keynode_quasybinary_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc)
           == SC_TRUE)
       {
         if (!(sc_helper_check_arc(
-                  s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_arc_pos_const_perm)
+                  s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc)
                   == SC_TRUE
               || sc_helper_check_arc(
                      s_default_ctx,
                      keynode_decomposition_relation,
                      sc_iterator5_value(it5, 4),
-                     sc_type_arc_pos_const_perm)
+                     sc_type_const_perm_pos_arc)
                      == SC_TRUE))
           continue;
 
@@ -405,14 +405,14 @@ sc_result agent_search_all_superclasses_in_quasybinary_relation(sc_event_subscri
           s_default_ctx,
           keynode_action_search_all_superclasses_in_quasybinary_relation,
           action,
-          sc_type_arc_pos_const_perm)
+          sc_type_const_perm_pos_arc)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   result = create_result_node();
 
   // get operation argument
-  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_arc_pos_const_perm, 0);
+  it1 = sc_iterator3_f_a_a_new(s_default_ctx, action, sc_type_const_perm_pos_arc, 0);
   if (sc_iterator3_next(it1) == SC_TRUE)
   {
     if (IS_SYSTEM_ELEMENT(sc_iterator3_value(it1, 2)))

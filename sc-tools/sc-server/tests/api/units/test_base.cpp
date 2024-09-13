@@ -43,7 +43,7 @@ TEST_F(ScServerTest, GenerateElements)
                    {"type", "ref"},
                    {"value", 1},
                }},
-              {"type", sc_type_arc_pos_const_perm},
+              {"type", sc_type_const_perm_pos_arc},
           },
           {
               {"el", "link"},
@@ -78,7 +78,7 @@ TEST_F(ScServerTest, GenerateElements)
   auto const & links = m_ctx->SearchLinksByContent("connector_end");
   EXPECT_TRUE(std::find(links.begin(), links.end(), trg) != links.end());
 
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, sc_type_arc_pos_const_perm, trg);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, sc_type_const_perm_pos_arc, trg);
   EXPECT_TRUE(iter3->Next());
   EXPECT_TRUE(iter3->Get(1) == connector);
 
@@ -351,7 +351,7 @@ TEST_F(ScServerTest, HandleKeynodes)
           {
               {"command", "resolve"},
               {"idtf", "any_system_identifier"},
-              {"elType", sc_type_node | sc_type_const | sc_type_node_class},
+              {"elType", sc_type_node | sc_type_const | sc_type_class},
           },
           {
               {"command", "find"},
@@ -993,7 +993,7 @@ TEST_F(ScServerTest, GenerateTemplate)
           },
           {
               {"type", "type"},
-              {"value", sc_type_edge_common | sc_type_var},
+              {"value", sc_type_common_edge | sc_type_var},
               {"alias", "_edge1"},
           },
           {
@@ -1010,7 +1010,7 @@ TEST_F(ScServerTest, GenerateTemplate)
           },
           {
               {"type", "type"},
-              {"value", sc_type_arc_pos_var_perm},
+              {"value", sc_type_var_perm_pos_arc},
               {"alias", "_edge2"},
           },
           {

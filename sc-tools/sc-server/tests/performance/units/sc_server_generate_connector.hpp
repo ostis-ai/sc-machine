@@ -30,7 +30,7 @@ public:
                      {"type", "addr"},
                      {"value", m_nodes[random() % m_nodes.size()].Hash()},
                  }},
-                {"type", sc_type_arc_pos_const_perm},
+                {"type", sc_type_const_perm_pos_arc},
             },
         }));
     client->Send(payloadString);

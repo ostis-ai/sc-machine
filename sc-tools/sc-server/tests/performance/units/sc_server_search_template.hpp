@@ -26,7 +26,7 @@ public:
                 },
                 {
                     {"type", "type"},
-                    {"value", sc_type_arc_pos_var_perm | sc_type_var},
+                    {"value", sc_type_var_perm_pos_arc | sc_type_var},
                     {"alias", "_connector1"},
                 },
                 {

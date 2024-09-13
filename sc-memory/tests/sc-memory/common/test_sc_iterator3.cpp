@@ -82,7 +82,7 @@ TEST_F(ScIterator3Test, FAF)
 
 TEST_F(ScIterator3Test, FAF2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_arc_pos_const_perm, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_const_perm_pos_arc, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -114,7 +114,7 @@ TEST_F(ScIterator3Test, FAA)
 
 TEST_F(ScIterator3Test, FAA2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_arc_pos_const_perm, sc_type_node);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_const_perm_pos_arc, sc_type_node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -146,7 +146,7 @@ TEST_F(ScIterator3Test, AAF)
 
 TEST_F(ScIterator3Test, AAF2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(sc_type_node, sc_type_arc_pos_const_perm, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(sc_type_node, sc_type_const_perm_pos_arc, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);

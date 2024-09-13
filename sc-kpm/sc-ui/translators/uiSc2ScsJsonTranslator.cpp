@@ -25,19 +25,19 @@ void uiSc2ScsTranslator::runImpl()
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_arc_common | sc_type_const,
+      sc_type_common_arc | sc_type_const,
       mInputConstructionAddr,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       keynode_action_nrel_result);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
     sc_iterator3 * it3 =
-        sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
+        sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_const_perm_pos_arc, 0);
     while (sc_iterator3_next(it3) == SC_TRUE)
     {
       sc_addr addr = sc_iterator3_value(it3, 2);
 
-      if (sc_helper_check_arc(s_default_ctx, mInputConstructionAddr, addr, sc_type_arc_pos_const_perm) != SC_TRUE)
+      if (sc_helper_check_arc(s_default_ctx, mInputConstructionAddr, addr, sc_type_const_perm_pos_arc) != SC_TRUE)
         continue;
 
       sc_type type;

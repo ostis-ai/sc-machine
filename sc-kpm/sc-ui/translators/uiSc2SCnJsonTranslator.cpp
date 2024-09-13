@@ -66,14 +66,14 @@ void uiSc2SCnJsonTranslator::runImpl()
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_arc_common | sc_type_const,
+      sc_type_common_arc | sc_type_const,
       mInputConstructionAddr,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       keynode_action_nrel_result);
   if (sc_iterator5_next(it5) == SC_TRUE)
   {
     sc_iterator3 * it3 =
-        sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_arc_pos_const_perm, 0);
+        sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator5_value(it5, 0), sc_type_const_perm_pos_arc, 0);
     while (sc_iterator3_next(it3) == SC_TRUE)
     {
       sc_addr const keyword = sc_iterator3_value(it3, 2);
@@ -81,7 +81,7 @@ void uiSc2SCnJsonTranslator::runImpl()
 
       if (SC_ADDR_IS_EQUAL(mInputConstructionAddr, keyword))
       {
-        sc_iterator3 * keywordEdgesIt3 = sc_iterator3_f_a_a_new(s_default_ctx, keyword, sc_type_arc_pos_const_perm, 0);
+        sc_iterator3 * keywordEdgesIt3 = sc_iterator3_f_a_a_new(s_default_ctx, keyword, sc_type_const_perm_pos_arc, 0);
         while (sc_iterator3_next(keywordEdgesIt3))
         {
           sc_addr const edge = sc_iterator3_value(keywordEdgesIt3, 1);
@@ -166,7 +166,7 @@ void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
   for (auto const & keyword : mKeywordsList)
   {
     elInfo = ResolveStructureElementInfo(keyword);
-    if (elInfo->type & sc_type_node_struct)
+    if (elInfo->type & sc_type_structure)
     {
       // get the key elements of the structure
       ScStructureElementInfo::ScStructureElementInfoList keynodes;
@@ -195,7 +195,7 @@ void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
       for (auto const & elInfoOutputArc : elInfo->outputArcs)
       {
         // find structure elements by arc_pos_const_perm without modifiers
-        if (!(elInfoOutputArc->type & sc_type_arc_pos_const_perm && elInfoOutputArc->inputArcs.empty()))
+        if (!(elInfoOutputArc->type & sc_type_const_perm_pos_arc && elInfoOutputArc->inputArcs.empty()))
           continue;
 
         structureElementIt = elInfoOutputArc->targetInfo->inputArcs.find(elInfoOutputArc);
@@ -247,7 +247,7 @@ ScStructureElementInfo * uiSc2SCnJsonTranslator::FindStructureKeyword(
       structureElements.cend(),
       [&structures](ScStructureElementInfo * el)
       {
-        if (el->type & sc_type_node_struct)
+        if (el->type & sc_type_structure)
           structures.insert(el);
       });
   if (!structures.empty())
@@ -294,7 +294,7 @@ void uiSc2SCnJsonTranslator::ParseScnJsonLink(ScStructureElementInfo * elInfo, S
       for (std::string_view const & formatStr : ScnTranslatorConstants::formats)
       {
         sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format);
-        if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_arc_common | sc_type_const) == SC_TRUE)
+        if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_common_arc | sc_type_const) == SC_TRUE)
         {
           contentType = formatStr.data();
           break;
@@ -341,7 +341,7 @@ void uiSc2SCnJsonTranslator::ParseScnJsonSentence(
     ParseScnJsonLink(elInfo, result);
   }
   // if the nesting level is not greater than the maximum or the element is not a tuple, get children
-  if (level < maxLevel || (elInfo->type & sc_type_node & sc_type_node_tuple))
+  if (level < maxLevel || (elInfo->type & sc_type_node & sc_type_tuple))
   {
     auto & resultChildren = result[ScnTranslatorConstants::CHILDREN.data()];
     // first get children from ordered list of modifiers
@@ -442,7 +442,7 @@ void uiSc2SCnJsonTranslator::ParseLinkedNodesScnJson(ScJson & children, int leve
           SC_ADDR_LOCAL_SEG_FROM_INT(addr_hash), SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_hash)};
 
       ScStructureElementInfo * linkedNodeInfo = mStructureElementsInfo[linkedNodeAddr];
-      if (!(linkedNodeInfo->type & sc_type_node_struct))
+      if (!(linkedNodeInfo->type & sc_type_structure))
       {
         ParseScnJsonSentence(linkedNodeInfo, level, isStruct, linkedNode);
       }
@@ -634,15 +634,15 @@ void uiSc2SCnJsonTranslator::ResolveFilterList(sc_addr cmd_addr)
   sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       cmd_addr,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       keynode_rrel_filter_list);
 
   while (sc_iterator5_next(it) == SC_TRUE)
   {
     modifierIt = sc_iterator3_f_a_a_new(
-        s_default_ctx, sc_iterator5_value(it, 2), sc_type_arc_pos_const_perm, sc_type_node | sc_type_const);
+        s_default_ctx, sc_iterator5_value(it, 2), sc_type_const_perm_pos_arc, sc_type_node | sc_type_const);
     while (sc_iterator3_next(modifierIt) == SC_TRUE)
     {
       mFilterList.insert(sc_iterator3_value(modifierIt, 2));
@@ -659,7 +659,7 @@ void uiSc2SCnJsonTranslator::InitFilterList()
   sc_iterator3 * it = sc_iterator3_f_a_a_new(
       s_default_ctx,
       keynode_concept_scn_json_elements_filter_set,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
 
   while (sc_iterator3_next(it) == SC_TRUE)
@@ -677,9 +677,9 @@ void uiSc2SCnJsonTranslator::InitOrderList()
   sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       keynode_concept_scn_json_elements_order_set,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       keynode_rrel_1);
 
   if (sc_iterator5_next(it) == SC_TRUE)
@@ -707,9 +707,9 @@ sc_addr uiSc2SCnJsonTranslator::GetNextElementArc(sc_addr elementArc)
   sc_iterator5 * nextIt = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       elementArc,
-      sc_type_arc_common | sc_type_const,
-      sc_type_arc_pos_const_perm,
-      sc_type_arc_pos_const_perm,
+      sc_type_common_arc | sc_type_const,
+      sc_type_const_perm_pos_arc,
+      sc_type_const_perm_pos_arc,
       keynode_nrel_scn_json_elements_base_order);
   if (sc_iterator5_next(nextIt) == SC_TRUE)
     result = sc_iterator5_value(nextIt, 2);

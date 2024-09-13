@@ -381,20 +381,20 @@ SC_EVENT_TYPE
 
 SC_NODE_TYPE
   : '1'     // sc_type_node
-  | '128'   // sc_type_node_tuple
-  | '256'   // sc_type_node_struct
-  | '512'   // sc_type_node_role
-  | '1024'  // sc_type_node_norole
-  | '2048'  // sc_type_node_class
-  | '4096'  // sc_type_node_abstract
-  | '8192'  // sc_type_node_material
+  | '128'   // sc_type_tuple
+  | '256'   // sc_type_structure
+  | '512'   // sc_type_role
+  | '1024'  // sc_type_norole
+  | '2048'  // sc_type_class
+  | '4096'  // sc_type_superclass
+  | '8192'  // sc_type_material
 
-  | '33'    // sc_type_node_const
+  | '33'    // sc_type_const_node
   | '168'   // sc_type_node_const_tuple
   | '288'   // sc_type_node_const_struct
   | '544'   // sc_type_node_const_role
-  | '1056'  // sc_type_node_const_norole
-  | '2080'  // sc_type_node_const_class
+  | '1056'  // sc_type_const_node_norole
+  | '2080'  // sc_type_const_node_class
   | '4128'  // sc_type_node_const_abstract
   | '8224'  // sc_type_node_const_material
 
@@ -409,9 +409,9 @@ SC_NODE_TYPE
   ;
 
 SC_EDGE_TYPE
-  : '4'     // sc_type_edge_common
-  | '8'     // sc_type_arc_common
-  | '16'    // sc_type_arc_access
+  : '4'     // sc_type_common_edge
+  | '8'     // sc_type_common_arc
+  | '16'    // sc_type_membership_arc
 
   | '2212'  // sc_type_edge_common_const_pos_perm
   | '2216'  // sc_type_arc_common_const_pos_perm

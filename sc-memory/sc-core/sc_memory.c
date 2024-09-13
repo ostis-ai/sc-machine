@@ -347,7 +347,7 @@ sc_addr sc_memory_arc_new_ext(sc_memory_context const * ctx, sc_type type, sc_ad
   if (_sc_memory_context_check_if_has_permitted_structure(
           memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, beg)
           == SC_FALSE
-      || sc_type_has_not_subtype_in_mask(type, sc_type_arc_pos_const))
+      || sc_type_has_not_subtype_in_mask(type, sc_type_const_pos_arc))
   {
     if (_sc_memory_context_check_local_and_global_permissions(
             memory->context_manager, ctx, SC_CONTEXT_PERMISSIONS_WRITE, beg)

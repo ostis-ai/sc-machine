@@ -373,8 +373,8 @@ _SC_EXTERN sc_addr sc_memory_arc_new(sc_memory_context const * ctx, sc_type type
  * @brief Generates a new sc-connector with the specified type.
  *
  * This function creates a new sc-connector with the specified type, connecting the given
- * begin and end sc-elements. The type must be an arc type (e.g., sc_type_arc_common,
- * sc_type_arc_pos_const_perm), and the begin and end sc-elements must be valid sc-addrs.
+ * begin and end sc-elements. The type must be an arc type (e.g., sc_type_common_arc,
+ * sc_type_const_perm_pos_arc), and the begin and end sc-elements must be valid sc-addrs.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param type Type of the new sc-connector.

@@ -85,7 +85,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_contents_by_content_substring)
 TEST_F(ScMemoryTest, sc_event_subscription_invalid)
 {
   sc_memory_context * context = **m_ctx;
-  sc_addr const subscription_addr = sc_memory_node_new(context, sc_type_node_const);
+  sc_addr const subscription_addr = sc_memory_node_new(context, sc_type_const_node);
 
   EXPECT_EQ(sc_event_subscription_new(context, subscription_addr, SC_ADDR_EMPTY, nullptr, nullptr, nullptr), nullptr);
   EXPECT_EQ(sc_event_subscription_new(context, SC_ADDR_EMPTY, subscription_addr, nullptr, nullptr, nullptr), nullptr);

@@ -483,7 +483,7 @@ sc_result _sc_storage_element_erase(sc_addr addr)
     sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
   else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
   {
-    sc_bool const is_edge = sc_type_has_subtype(type, sc_type_edge_common);
+    sc_bool const is_edge = sc_type_has_subtype(type, sc_type_common_edge);
 
     sc_addr begin_addr = element->arc.begin;
     sc_addr end_addr = element->arc.end;
@@ -737,7 +737,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
             element_addr);
       }
 
-      if (sc_type_has_subtype(type, sc_type_edge_common))
+      if (sc_type_has_subtype(type, sc_type_common_edge))
       {
         erase_incoming_arc_result = sc_event_emit(
             ctx,
@@ -758,7 +758,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
             sc_storage_element_erase,
             element_addr);
       }
-      else if (sc_type_has_subtype(type, sc_type_arc_access) || sc_type_has_subtype(type, sc_type_arc_common))
+      else if (sc_type_has_subtype(type, sc_type_membership_arc) || sc_type_has_subtype(type, sc_type_common_arc))
       {
         erase_outgoing_arc_result = sc_event_emit(
             ctx,
@@ -1054,7 +1054,7 @@ sc_addr sc_storage_arc_new_ext(
   arc_el->arc.begin = beg_addr;
   arc_el->arc.end = end_addr;
 
-  sc_bool is_edge = sc_type_has_subtype(type, sc_type_edge_common);
+  sc_bool is_edge = sc_type_has_subtype(type, sc_type_common_edge);
   sc_bool is_not_loop = SC_ADDR_IS_NOT_EQUAL(beg_addr, end_addr);
 
   // try to lock begin and end elements

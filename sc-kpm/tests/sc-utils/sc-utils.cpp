@@ -14,7 +14,7 @@ TEST_F(ScMemoryTest, erase_elements_success)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
 
@@ -24,12 +24,12 @@ TEST_F(ScMemoryTest, erase_elements_success)
 
   sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, testAddr);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_const_perm_pos_arc, action, setAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_rrel_1, edgeAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, setAddr, testAddr);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_initiated, action);
 
   sleep(2);
 
@@ -44,7 +44,7 @@ TEST_F(ScMemoryTest, erase_elements_from_init_struct)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
@@ -53,13 +53,13 @@ TEST_F(ScMemoryTest, erase_elements_from_init_struct)
 
   sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, testAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, structAddr, testAddr);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_const_perm_pos_arc, action, setAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_rrel_1, edgeAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, setAddr, testAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, structAddr, testAddr);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_initiated, action);
 
   sleep(2);
 
@@ -75,19 +75,19 @@ TEST_F(ScMemoryTest, erase_elements_self_erase)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, action);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_const_perm_pos_arc, action, setAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_rrel_1, edgeAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, setAddr, action);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_initiated, action);
 
   sleep(2);
 
@@ -102,7 +102,7 @@ TEST_F(ScMemoryTest, erase_elements_erase_keynode)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_struct | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
@@ -111,12 +111,12 @@ TEST_F(ScMemoryTest, erase_elements_erase_keynode)
 
   sc_addr const action = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
-  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_arc_pos_const_perm, action, setAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_rrel_1, edgeAddr);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, setAddr, testAddr);
+  sc_addr const edgeAddr = sc_memory_arc_new(context, sc_type_const_perm_pos_arc, action, setAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_rrel_1, edgeAddr);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, setAddr, testAddr);
 
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_erase_elements, action);
-  sc_memory_arc_new(context, sc_type_arc_pos_const_perm, keynode_action_initiated, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_erase_elements, action);
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_action_initiated, action);
 
   sleep(2);
 

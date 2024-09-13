@@ -108,7 +108,7 @@ TEST_F(ScIterator5Test, AAFAA)
 TEST_F(ScIterator5Test, AAFAA2)
 {
   ScIterator5Ptr const iter5 = m_ctx->CreateIterator5(
-      sc_type_node, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, sc_type_node);
+      sc_type_node, sc_type_const_perm_pos_arc, m_target, sc_type_const_perm_pos_arc, sc_type_node);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -152,7 +152,7 @@ TEST_F(ScIterator5Test, AAFAF)
 TEST_F(ScIterator5Test, AAFAF2)
 {
   ScIterator5Ptr const iter5 =
-      m_ctx->CreateIterator5(sc_type_node, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, m_attr);
+      m_ctx->CreateIterator5(sc_type_node, sc_type_const_perm_pos_arc, m_target, sc_type_const_perm_pos_arc, m_attr);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -196,7 +196,7 @@ TEST_F(ScIterator5Test, FAAAA)
 TEST_F(ScIterator5Test, FAAAA2)
 {
   ScIterator5Ptr const iter5 = m_ctx->CreateIterator5(
-      m_source, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, sc_type_node);
+      m_source, sc_type_const_perm_pos_arc, sc_type_node, sc_type_const_perm_pos_arc, sc_type_node);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -240,7 +240,7 @@ TEST_F(ScIterator5Test, FAAAF)
 TEST_F(ScIterator5Test, FAAAF2)
 {
   ScIterator5Ptr const iter5 =
-      m_ctx->CreateIterator5(m_source, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, m_attr);
+      m_ctx->CreateIterator5(m_source, sc_type_const_perm_pos_arc, sc_type_node, sc_type_const_perm_pos_arc, m_attr);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -284,7 +284,7 @@ TEST_F(ScIterator5Test, FAFAA)
 TEST_F(ScIterator5Test, FAFAA2)
 {
   ScIterator5Ptr const iter5 =
-      m_ctx->CreateIterator5(m_source, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, sc_type_node);
+      m_ctx->CreateIterator5(m_source, sc_type_const_perm_pos_arc, m_target, sc_type_const_perm_pos_arc, sc_type_node);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -328,7 +328,7 @@ TEST_F(ScIterator5Test, FAFAF)
 TEST_F(ScIterator5Test, FAFAF2)
 {
   ScIterator5Ptr const iter5 =
-      m_ctx->CreateIterator5(m_source, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, m_attr);
+      m_ctx->CreateIterator5(m_source, sc_type_const_perm_pos_arc, m_target, sc_type_const_perm_pos_arc, m_attr);
 
   EXPECT_TRUE(iter5->Next());
 
@@ -372,7 +372,7 @@ TEST_F(ScIterator5Test, AAAAF)
 TEST_F(ScIterator5Test, AAAAF2)
 {
   ScIterator5Ptr const iter5 = m_ctx->CreateIterator5(
-      sc_type_node, sc_type_arc_pos_const_perm, sc_type_node, sc_type_arc_pos_const_perm, m_attr);
+      sc_type_node, sc_type_const_perm_pos_arc, sc_type_node, sc_type_const_perm_pos_arc, m_attr);
 
   EXPECT_TRUE(iter5->Next());
 

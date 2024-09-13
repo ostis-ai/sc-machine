@@ -222,7 +222,7 @@ sc_addr _sc_memory_context_manager_generate_guest_user(sc_memory_context_manager
 {
   sc_addr const guest_user_addr = sc_memory_node_new(s_memory_default_ctx, sc_type_node | sc_type_const);
   sc_addr const guest_user_arc_addr =
-      sc_memory_arc_new(s_memory_default_ctx, sc_type_arc_pos_const_temp, concept_guest_user_addr, guest_user_addr);
+      sc_memory_arc_new(s_memory_default_ctx, sc_type_const_temp_pos_arc, concept_guest_user_addr, guest_user_addr);
   _sc_context_set_permissions_for_element(guest_user_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
   _sc_context_add_user_global_permissions(guest_user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
   return guest_user_addr;
@@ -239,7 +239,7 @@ sc_result _sc_memory_context_manager_on_identified_user(
   sc_unused(&initiator_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   sc_addr quest_user_addr, identified_user_addr;
@@ -286,7 +286,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
   sc_unused(&initiator_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
@@ -299,13 +299,13 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 
   // Remove all negative sc-arcs
   sc_iterator3 * it3 = sc_iterator3_f_a_f_new(
-      s_memory_default_ctx, manager->concept_authenticated_user_addr, sc_type_arc_neg_const_temp, user_addr);
+      s_memory_default_ctx, manager->concept_authenticated_user_addr, sc_type_const_temp_neg_arc, user_addr);
   while (sc_iterator3_next(it3))
     sc_memory_element_free(s_memory_default_ctx, sc_iterator3_value(it3, 1));
   sc_iterator3_free(it3);
 
   sc_addr const auth_arc_addr = sc_memory_arc_new(
-      s_memory_default_ctx, sc_type_arc_pos_const_temp, manager->concept_authenticated_user_addr, user_addr);
+      s_memory_default_ctx, sc_type_const_temp_pos_arc, manager->concept_authenticated_user_addr, user_addr);
   _sc_context_set_permissions_for_element(auth_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
   return SC_RESULT_OK;
@@ -332,14 +332,14 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_context_remove_global_permissions(user_addr, SC_CONTEXT_PERMISSIONS_AUTHENTICATED);
 
   sc_addr const auth_arc_addr = sc_memory_arc_new(
-      s_memory_default_ctx, sc_type_arc_neg_const_temp, manager->concept_authenticated_user_addr, user_addr);
+      s_memory_default_ctx, sc_type_const_temp_neg_arc, manager->concept_authenticated_user_addr, user_addr);
   _sc_context_set_permissions_for_element(auth_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
   return SC_RESULT_OK;
@@ -389,7 +389,7 @@ sc_result _sc_memory_context_manager_on_new_user_in_users_set(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = event->data;
@@ -418,7 +418,7 @@ end:
 {
   // Remove all negative sc-arcs
   sc_iterator3 * it3 =
-      sc_iterator3_f_a_f_new(s_memory_default_ctx, event->subscription_addr, sc_type_arc_neg_const_temp, user_addr);
+      sc_iterator3_f_a_f_new(s_memory_default_ctx, event->subscription_addr, sc_type_const_temp_neg_arc, user_addr);
   while (sc_iterator3_next(it3))
     sc_memory_element_free(s_memory_default_ctx, sc_iterator3_value(it3, 1));
   sc_iterator3_free(it3);
@@ -438,7 +438,7 @@ sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = event->data;
@@ -464,7 +464,7 @@ sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
   }
 
 end:
-  sc_memory_arc_new(s_memory_default_ctx, sc_type_arc_neg_const_temp, users_set_addr, user_addr);
+  sc_memory_arc_new(s_memory_default_ctx, sc_type_const_temp_neg_arc, users_set_addr, user_addr);
 
   return SC_RESULT_OK;
 }
@@ -483,7 +483,7 @@ void _sc_memory_context_manager_handle_users_set_action_class(
 
     sc_type arc_type;
     if (sc_memory_get_element_type(s_memory_default_ctx, arc_addr, &arc_type) != SC_RESULT_OK
-        || sc_type_has_not_subtype(arc_type, sc_type_arc_pos_const))
+        || sc_type_has_not_subtype(arc_type, sc_type_const_pos_arc))
       continue;
     _sc_context_set_permissions_for_element(arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
@@ -503,7 +503,7 @@ void _sc_memory_context_manager_handle_users_set_action_class(
         s_memory_default_ctx,
         users_set_addr,
         sc_event_after_generate_outgoing_arc_addr,
-        sc_type_arc_access,
+        sc_type_membership_arc,
         manager,
         _sc_memory_context_manager_on_new_user_in_users_set,
         null_ptr);
@@ -521,7 +521,7 @@ void _sc_memory_context_manager_handle_users_set_action_class(
         s_memory_default_ctx,
         users_set_addr,
         sc_event_before_erase_outgoing_arc_addr,
-        sc_type_arc_access,
+        sc_type_membership_arc,
         manager,
         _sc_memory_context_manager_on_remove_user_from_users_set,
         null_ptr);
@@ -599,7 +599,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   _sc_context_set_permissions_for_element(connector_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
@@ -700,14 +700,14 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
   _sc_memory_context_manager_remove_user_action_class(manager, connector_addr, arc_to_action_class_addr, updater);
 
   sc_addr const action_arc_addr = sc_memory_arc_new(
-      s_memory_default_ctx, sc_type_arc_neg_const_temp, event->subscription_addr, arc_to_action_class_addr);
+      s_memory_default_ctx, sc_type_const_temp_neg_arc, event->subscription_addr, arc_to_action_class_addr);
   _sc_context_set_permissions_for_element(action_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
 
   return SC_RESULT_OK;
@@ -872,14 +872,14 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_withi
   sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_subtype_in_mask(connector_type, sc_type_const_pos_arc))
   {
     _sc_memory_context_manager_add_user_action_class_within_structure(
         manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr, updater);
     return SC_RESULT_NO;
   }
 
-  if (sc_type_has_subtype_in_mask(connector_type, sc_type_arc_neg_const))
+  if (sc_type_has_subtype_in_mask(connector_type, sc_type_const_neg_arc))
   {
     _sc_memory_context_manager_remove_user_action_class_within_structure(
         manager, connector_addr, arc_to_arc_between_action_class_and_structure_addr, updater);
@@ -946,7 +946,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
   sc_unused(&connector_addr);
 
   // Only positive access sc-arcs can be used
-  if (sc_type_has_not_subtype(connector_type, sc_type_arc_pos_const))
+  if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
   sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
@@ -955,7 +955,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
 
   sc_addr const action_arc_addr = sc_memory_arc_new(
       s_memory_default_ctx,
-      sc_type_arc_neg_const_temp,
+      sc_type_const_temp_neg_arc,
       event->subscription_addr,
       arc_to_arc_between_action_class_and_structure_addr);
   _sc_context_set_permissions_for_element(action_arc_addr, SC_CONTEXT_PERMISSIONS_TO_ALL_PERMISSIONS);
@@ -1015,7 +1015,7 @@ void _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_rela
     sc_users_updater updater,
     sc_users_action_class_handler handler)
 {
-  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(s_memory_default_ctx, permitted_relation, 0, sc_type_arc_common);
+  sc_iterator3 * it3 = sc_iterator3_f_a_a_new(s_memory_default_ctx, permitted_relation, 0, sc_type_common_arc);
   while (sc_iterator3_next(it3))
   {
     sc_addr const arc_addr = sc_iterator3_value(it3, 1);
@@ -1038,42 +1038,42 @@ void _sc_memory_context_handle_all_user_permissions(sc_memory_context_manager * 
   _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_addr,
-      sc_type_arc_pos_const,
+      sc_type_const_pos_arc,
       _sc_memory_context_manager_handle_user_action_class,
       _sc_memory_context_manager_add_user_action_class);
 
   _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_users_set_action_class_addr,
-      sc_type_arc_pos_const,
+      sc_type_const_pos_arc,
       _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_add_user_action_class);
 
   _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_within_sc_structure_addr,
-      sc_type_arc_pos_const,
+      sc_type_const_pos_arc,
       _sc_memory_context_manager_handle_user_action_class,
       _sc_memory_context_manager_add_user_action_class_within_structure);
 
   _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
-      sc_type_arc_pos_const,
+      sc_type_const_pos_arc,
       _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_add_user_action_class_within_structure);
 
   _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_user_action_class_within_sc_structure_addr,
-      sc_type_arc_neg_const,
+      sc_type_const_neg_arc,
       _sc_memory_context_manager_handle_user_action_class,
       _sc_memory_context_manager_remove_user_action_class_within_structure);
 
   _sc_memory_context_manager_iterate_by_all_outgoing_arcs_from_permitted_relation(
       manager,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
-      sc_type_arc_neg_const,
+      sc_type_const_neg_arc,
       _sc_memory_context_manager_handle_users_set_action_class,
       _sc_memory_context_manager_remove_user_action_class_within_structure);
 }
@@ -1096,7 +1096,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_identified_user_addr,
       sc_event_after_generate_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_identified_user,
       null_ptr);
@@ -1113,7 +1113,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->concept_authentication_request_user_addr,
       sc_event_after_generate_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_authentication_request_user,
       null_ptr);
@@ -1121,7 +1121,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->concept_authenticated_user_addr,
       sc_event_before_erase_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_unauthentication_request_user,
       null_ptr);
@@ -1149,7 +1149,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_user_action_class_addr,
       sc_event_after_generate_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_new_user_action_class,
       null_ptr);
@@ -1158,7 +1158,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_addr,
       sc_event_after_generate_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_new_users_set_action_class,
       null_ptr);
@@ -1167,7 +1167,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_user_action_class_addr,
       sc_event_before_erase_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_remove_user_action_class,
       null_ptr);
@@ -1176,7 +1176,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_addr,
       sc_event_before_erase_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_remove_users_set_action_class,
       null_ptr);
@@ -1193,7 +1193,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_user_action_class_within_sc_structure_addr,
       sc_event_after_generate_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_new_user_action_class_within_structure,
       null_ptr);
@@ -1202,7 +1202,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
       sc_event_after_generate_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_new_users_set_action_class_within_structure,
       null_ptr);
@@ -1211,7 +1211,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_user_action_class_within_sc_structure_addr,
       sc_event_before_erase_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_remove_user_action_class_within_structure,
       null_ptr);
@@ -1220,7 +1220,7 @@ void _sc_memory_context_manager_register_user_events(sc_memory_context_manager *
       s_memory_default_ctx,
       manager->nrel_users_set_action_class_within_sc_structure_addr,
       sc_event_before_erase_outgoing_arc_addr,
-      sc_type_arc_access,
+      sc_type_membership_arc,
       manager,
       _sc_memory_context_manager_on_remove_users_set_action_class_within_structure,
       null_ptr);
@@ -1314,7 +1314,7 @@ sc_result _sc_memory_context_check_local_permissions(
     goto result;
 
   sc_iterator3 * it3 = sc_iterator3_a_a_f_new(
-      s_memory_default_ctx, sc_type_node | sc_type_const | sc_type_node_struct, sc_type_arc_pos_const, element_addr);
+      s_memory_default_ctx, sc_type_node | sc_type_const | sc_type_structure, sc_type_const_pos_arc, element_addr);
   while (result != SC_RESULT_OK && sc_iterator3_next(it3))
   {
     sc_addr const structure_addr = sc_iterator3_value(it3, 0);
@@ -1412,7 +1412,7 @@ sc_bool _sc_memory_context_check_global_permissions_to_write_permissions(
   if (_sc_memory_context_check_system(manager, ctx))
     return SC_TRUE;
 
-  if (sc_type_has_not_subtype(connector_from_element_type, sc_type_arc_pos_const_temp))
+  if (sc_type_has_not_subtype(connector_from_element_type, sc_type_const_temp_pos_arc))
     return SC_TRUE;
 
   return _sc_memory_context_check_global_permissions_to_handle_permissions(
