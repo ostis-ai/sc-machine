@@ -4,7 +4,7 @@
         <node type="node/const/perm/general" idtf="" shapeColor="0" id="108603157296560" parent="0" x="486" y="194" haveBus="false" idtf_pos="0">
             <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[100]]></content>
         </node>
-        <node type="node/const/perm/relation" idtf="nrel_expected_execution_time_in_milliseconds" shapeColor="0" id="108603160047808" parent="0" left="0" top="0" right="346.016" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="396" y="119" haveBus="false" idtf_pos="0">
+        <node type="node/const/perm/relation" idtf="nrel_max_customer_waiting_time_for_action_to_finish" shapeColor="0" id="108603160047808" parent="0" left="0" top="0" right="346.016" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="396" y="119" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/group" idtf="action_initiated" shapeColor="0" id="108603161215856" parent="0" left="0" top="0" right="122.688" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="330" y="90" haveBus="false" idtf_pos="0">
