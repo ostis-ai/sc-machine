@@ -156,7 +156,7 @@ bool ScAction::IsInitiated() const noexcept
   return m_context->CheckConnector(ScKeynodes::action_initiated, *this, ScType::EdgeAccessConstPosPerm);
 }
 
-bool ScAction::InitiateAndWait(sc_uint32 expectedExecutionTimeInMilliseconds) noexcept(false)
+bool ScAction::InitiateAndWait(sc_uint32 maxCustomerWaitingTime) noexcept(false)
 {
   if (IsInitiated())
     SC_THROW_EXCEPTION(
@@ -172,13 +172,13 @@ bool ScAction::InitiateAndWait(sc_uint32 expectedExecutionTimeInMilliseconds) no
 
   auto wait = std::shared_ptr<ScWaiterActionFinished>(new ScWaiterActionFinished(*m_context, *this));
   wait->SetOnWaitStartDelegate(
-      [this, &expectedExecutionTimeInMilliseconds]()
+      [this, &maxCustomerWaitingTime]()
       {
-        if (!m_context->IsElement(GetExpectedExecutionTimeInMilliseconds()))
-          SetExpectedExecutionTimeInMilliseconds(expectedExecutionTimeInMilliseconds);
+        if (!m_context->IsElement(GetMaxCustomerWaitingTime()))
+          CreateMaxCustomerWaitingTime(maxCustomerWaitingTime);
         m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
       });
-  return wait->Wait(expectedExecutionTimeInMilliseconds);
+  return wait->Wait(maxCustomerWaitingTime);
 }
 
 ScAction & ScAction::Initiate() noexcept(false)
@@ -294,38 +294,25 @@ std::string ScAction::GetActionClassPrettyString() const
   return actionClassName;
 }
 
-ScAddr ScAction::GetExpectedExecutionTimeInMilliseconds() noexcept
+ScAddr ScAction::GetMaxCustomerWaitingTime() noexcept
 {
-  ScAddr expectedTime;
+  ScAddr expectedTimeAddr;
   auto const & expectedTimeIterator = m_context->CreateIterator5(
       *this,
       ScType::EdgeDCommonConst,
       ScType::LinkConst,
       ScType::EdgeAccessConstPosPerm,
-      ScKeynodes::nrel_expected_execution_time_in_milliseconds);
+      ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish);
   if (expectedTimeIterator->Next())
-    expectedTime = expectedTimeIterator->Get(2);
-  return expectedTime;
+    expectedTimeAddr = expectedTimeIterator->Get(2);
+  return expectedTimeAddr;
 }
 
-void ScAction::SetExpectedExecutionTimeInMilliseconds(sc_uint32 expectedExecutionTimeInMilliseconds) noexcept(false)
+void ScAction::CreateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) const
 {
-  ScAddr const & expectedTime = GetExpectedExecutionTimeInMilliseconds();
-  if (!m_context->IsElement(expectedTime))
-  {
-    ScAddr const & linkWithTime = m_context->GenerateLink();
-    m_context->SetLinkContent(linkWithTime, std::to_string(expectedExecutionTimeInMilliseconds));
-    ScAddr const & relationArc = m_context->GenerateConnector(ScType::EdgeDCommonConst, *this, linkWithTime);
-    m_context->GenerateConnector(
-        ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_expected_execution_time_in_milliseconds, relationArc);
-  }
-  else
-  {
-    std::string existingExpectedTime;
-    m_context->GetLinkContent(expectedTime, existingExpectedTime);
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Action " << GetActionPrettyString() << " already has nrel_expected_execution_time_in_milliseconds set to "
-                  << existingExpectedTime << " ms");
-  }
+  ScAddr const & linkWithTimeAddr = m_context->GenerateLink();
+  m_context->SetLinkContent(linkWithTimeAddr, std::to_string(maxCustomerWaitingTime));
+  ScAddr const & relationArcAddr = m_context->GenerateConnector(ScType::EdgeDCommonConst, *this, linkWithTimeAddr);
+  m_context->GenerateConnector(
+      ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish, relationArcAddr);
 }

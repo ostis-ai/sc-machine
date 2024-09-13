@@ -518,6 +518,16 @@ TEST_F(ScActionTest, InitiateWaitAndInitiateInitiatedAction)
   m_ctx->UnsubscribeAgent<ATestCheckResult>();
 }
 
+ScAddr SetMaxCustomerWaitingTime(ScAgentContext & context, ScAddr const & actionAddr, sc_uint32 maxCustomerWaitingTime) noexcept(false)
+{
+  ScAddr const & linkWithTimeAddr = context.CreateLink();
+  context.SetLinkContent(linkWithTimeAddr, std::to_string(maxCustomerWaitingTime));
+  ScAddr const & relationArcAddr = context.CreateEdge(ScType::EdgeDCommonConst, actionAddr, linkWithTimeAddr);
+  context.CreateEdge(
+      ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish, relationArcAddr);
+  return linkWithTimeAddr;
+}
+
 TEST_F(ScActionTest, SetExpectedExecutionTimeAndGetExpectedExecutionTime)
 {
   ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
@@ -525,12 +535,12 @@ TEST_F(ScActionTest, SetExpectedExecutionTimeAndGetExpectedExecutionTime)
           ATestGenerateOutgoingArc::generate_outgoing_arc_action,
           ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   sc_uint32 waitTime = 500;
-  action.SetExpectedExecutionTimeInMilliseconds(waitTime);
-  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
-  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
-  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  SetMaxCustomerWaitingTime(*m_ctx, action, waitTime);
+  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTime();
+  EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
+  EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
   sc_uint32 actualWaitTime;
-  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTime));
+  EXPECT_TRUE(m_ctx->GetLinkContent(maxCustomerWaitingTime, actualWaitTime));
   EXPECT_EQ(actualWaitTime, waitTime);
 }
 
@@ -541,14 +551,12 @@ TEST_F(ScActionTest, SetExpectedExecutionTimeTwiceAndGetExpectedExecutionTime)
           ATestGenerateOutgoingArc::generate_outgoing_arc_action,
           ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   sc_uint32 waitTime = 500;
-  action.SetExpectedExecutionTimeInMilliseconds(waitTime);
-  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
-  EXPECT_THROW(action.SetExpectedExecutionTimeInMilliseconds(waitTime + waitTime), utils::ExceptionInvalidState);
-  EXPECT_EQ(expectedExecutionTimeInMilliseconds, action.GetExpectedExecutionTimeInMilliseconds());
-  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
-  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  ScAddr const & maxCustomerWaitingTime = SetMaxCustomerWaitingTime(*m_ctx, action, waitTime);
+  EXPECT_EQ(maxCustomerWaitingTime, action.GetMaxCustomerWaitingTime());
+  EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
+  EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
   sc_uint32 actualWaitTime;
-  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTime));
+  EXPECT_TRUE(m_ctx->GetLinkContent(maxCustomerWaitingTime, actualWaitTime));
   EXPECT_EQ(actualWaitTime, waitTime);
 }
 
@@ -565,13 +573,13 @@ TEST_F(ScActionTest, InitiateAndWaitActionAndCheckStoredExpectedExecutionTime)
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
-  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
-  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
-  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTime();
+  EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
+  EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
   std::string actualWaitTimeString;
   sc_uint32 actualWaitTimeUint32;
-  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTimeString));
-  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTimeUint32));
+  EXPECT_TRUE(m_ctx->GetLinkContent(maxCustomerWaitingTime, actualWaitTimeString));
+  EXPECT_TRUE(m_ctx->GetLinkContent(maxCustomerWaitingTime, actualWaitTimeUint32));
   EXPECT_EQ(actualWaitTimeUint32, waitTime);
   EXPECT_EQ(actualWaitTimeString, std::to_string(waitTime));
 
@@ -587,16 +595,16 @@ TEST_F(ScActionTest, SetExpectedExecutionTimeAndInitiateAndWaitActionAndCheckSto
           ATestGenerateOutgoingArc::generate_outgoing_arc_action,
           ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   sc_uint32 waitTime = 500;
-  action.SetExpectedExecutionTimeInMilliseconds(waitTime);
+  SetMaxCustomerWaitingTime(*m_ctx, action, waitTime);
   EXPECT_TRUE(action.InitiateAndWait(waitTime + waitTime));
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
-  ScAddr const & expectedExecutionTimeInMilliseconds = action.GetExpectedExecutionTimeInMilliseconds();
-  EXPECT_TRUE(m_ctx->IsElement(expectedExecutionTimeInMilliseconds));
-  EXPECT_EQ(m_ctx->GetElementType(expectedExecutionTimeInMilliseconds), ScType::LinkConst);
+  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTime();
+  EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
+  EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
   sc_uint32 actualWaitTime;
-  EXPECT_TRUE(m_ctx->GetLinkContent(expectedExecutionTimeInMilliseconds, actualWaitTime));
+  EXPECT_TRUE(m_ctx->GetLinkContent(maxCustomerWaitingTime, actualWaitTime));
   EXPECT_EQ(actualWaitTime, waitTime);
 
   m_ctx->UnsubscribeAgent<ATestCheckResult>();

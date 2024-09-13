@@ -126,35 +126,22 @@ public:
 
   /*!
    * @brief Initiates and waits the action.
-   * @param expectedExecutionTimeInMilliseconds Wait time (in milliseconds) of action being finished. Be default, it
+   * @param maxCustomerWaitingTime Wait time (in milliseconds) of action being finished. By default, it
    * equals to 5000 milliseconds.
    *
-   * This method uses ScAction::SetExpectedExecutionTimeInMilliseconds to add expected execution time in millisecond to
-   * knowledge base if action does not have expected execution time in milliseconds.
+   * This method adds max customer waiting time in millisecond to knowledge base if action does not have max customer
+   * waiting time in milliseconds.
    *
    * @return true if the action has been waited, otherwise true.
    * @throws utils::ExceptionInvalidState if the action is already initiated or finished.
    */
-  _SC_EXTERN bool InitiateAndWait(sc_uint32 expectedExecutionTimeInMilliseconds = 5000u) noexcept(false);
+  _SC_EXTERN bool InitiateAndWait(sc_uint32 maxCustomerWaitingTime = 5000u) noexcept(false);
 
   /*!
-   * @brief Gets expected execution time of an action in milliseconds.
-   * @return ScAddr of link containing expected execution time in milliseconds if found, empty ScAddr otherwise.
+   * @brief Gets max customer waiting time of an action in milliseconds.
+   * @return ScAddr of link containing max customer waiting time in milliseconds if found, empty ScAddr otherwise.
    */
-  _SC_EXTERN ScAddr GetExpectedExecutionTimeInMilliseconds() noexcept;
-
-  /*!
-   * @brief Sets passed time as expected execution time in milliseconds.
-   *
-   * If the action already has expected execution time in milliseconds then this method throws an exception. If there is
-   * no expected execution time in millisecond then new sc-link will be generated and its content will be set to passed
-   * execution time. After that this link will be connected to an action via relation
-   * nrel_expected_execution_time_in_milliseconds.
-   *
-   * @param expectedExecutionTimeInMilliseconds Time in milliseconds that this action is expected to execute for.
-   * @throws utils::ExceptionInvalidState if the action already has expected execution time.
-   */
-  _SC_EXTERN void SetExpectedExecutionTimeInMilliseconds(sc_uint32 expectedExecutionTimeInMilliseconds) noexcept(false);
+  _SC_EXTERN ScAddr GetMaxCustomerWaitingTime() noexcept;
 
   /*!
    * @brief Initiates the action.
@@ -276,6 +263,17 @@ private:
    * class name is available.
    */
   std::string GetActionClassPrettyString() const;
+
+  /*!
+   * @brief Sets passed time as max customer waiting time in milliseconds.
+   *
+   * New sc-link will be generated and its content will be set to passed
+   * waiting time. After that this link will be connected to an action via relation
+   * `nrel_max_customer_waiting_time_for_action_to_finish`.
+   *
+   * @param maxCustomerWaitingTime Time in milliseconds that customer will wait for this action to finish.
+   */
+  void CreateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) const;
 };
 
 #include "sc_action.tpp"
