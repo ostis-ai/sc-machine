@@ -44,10 +44,10 @@ TEST_F(SCsHelperTest, GenerateBySCs)
     EXPECT_TRUE(helper.GenerateBySCsText(t.first));
 
     ScTemplate templ;
-    m_ctx->HelperBuildTemplate(templ, t.second);
+    m_ctx->BuildTemplate(templ, t.second);
 
     ScTemplateSearchResult result;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
     EXPECT_EQ(result.Size(), 1u);
   }
 }
@@ -60,10 +60,10 @@ TEST_F(SCsHelperTest, GenerateBySCs_FileURL)
   EXPECT_TRUE(helper.GenerateBySCsText(data));
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, "x _-> _[];;"));
+  m_ctx->BuildTemplate(templ, "x _-> _[];;");
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 
   EXPECT_EQ(result.Size(), 1u);
 
@@ -88,10 +88,11 @@ TEST_F(SCsHelperTest, GenerateBySCs_Aliases)
 
   ScStreamPtr const stream = ScStreamMakeRead(content);
 
-  ScAddrVector const links = m_ctx->FindLinksByContent(stream);
+  ScAddrSet const links = m_ctx->SearchLinksByContent(stream);
   EXPECT_EQ(links.size(), 1u);
+  auto it = std::next(links.begin(), 0u);
 
-  ScLink const link(*m_ctx, links[0]);
+  ScLink const link(*m_ctx, *it);
   std::string const content2 = link.GetAsString();
   EXPECT_EQ(content, content2);
 }
@@ -114,10 +115,10 @@ TEST_F(SCsHelperTest, GenerateBySCs_Contents)
     EXPECT_TRUE(helper.GenerateBySCsText(data));
 
     ScTemplate templ;
-    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, keynode + " _-> _[];;"));
+    m_ctx->BuildTemplate(templ, keynode + " _-> _[];;");
 
     ScTemplateSearchResult result;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 
     EXPECT_EQ(result.Size(), 1u);
 
@@ -189,7 +190,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_SingleNode)
 
   EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 
-  ScAddr const node = m_ctx->HelperFindBySystemIdtf("node");
+  ScAddr const node = m_ctx->SearchElementBySystemIdentifier("node");
   EXPECT_TRUE(node.IsValid());
   EXPECT_EQ(m_ctx->GetElementType(node), ScType::NodeConstClass);
 }
@@ -201,13 +202,13 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
   EXPECT_TRUE(helper.GenerateBySCsText("x -> y;;"));
   EXPECT_TRUE(helper.GenerateBySCsText("x ~> z;;"));
 
-  ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x");
+  ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x");
   EXPECT_TRUE(xAddr.IsValid());
 
-  ScAddr const yAddr = m_ctx->HelperResolveSystemIdtf("y");
+  ScAddr const yAddr = m_ctx->ResolveElementSystemIdentifier("y");
   EXPECT_TRUE(yAddr.IsValid());
 
-  ScAddr const zAddr = m_ctx->HelperResolveSystemIdtf("z");
+  ScAddr const zAddr = m_ctx->ResolveElementSystemIdentifier("z");
   EXPECT_TRUE(zAddr.IsValid());
 
   {
@@ -215,7 +216,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
     templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm, yAddr);
 
     ScTemplateSearchResult res;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
   }
 
   {
@@ -223,7 +224,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
     templ.Triple(xAddr, ScType::EdgeAccessVarPosTemp, zAddr);
 
     ScTemplateSearchResult res;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
   }
 }
 
@@ -233,24 +234,24 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Global)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
   {
-    ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_global");
+    ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_global");
     EXPECT_FALSE(xAddr.IsValid());
   }
 
   EXPECT_TRUE(helper.GenerateBySCsText("x_global -> .y;;"));
   EXPECT_TRUE(helper.GenerateBySCsText("x_global -> .y;;"));
 
-  ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_global");
+  ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_global");
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
-  templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm >> "_edge", ScType::Unknown >> "_trg");
+  templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::Unknown >> "_trg");
 
   ScTemplateSearchResult res;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
   EXPECT_EQ(res.Size(), 2u);
   EXPECT_EQ(res[0]["_trg"], res[1]["_trg"]);
-  EXPECT_NE(res[0]["_edge"], res[1]["_edge"]);
+  EXPECT_NE(res[0]["_arc"], res[1]["_arc"]);
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Local)
@@ -258,21 +259,21 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Local)
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
   {
-    ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_local");
+    ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_local");
     EXPECT_FALSE(xAddr.IsValid());
   }
 
   EXPECT_TRUE(helper.GenerateBySCsText("x_local -> ..y;;"));
   EXPECT_TRUE(helper.GenerateBySCsText("x_local -> ..z;;"));
 
-  ScAddr const xAddr = m_ctx->HelperResolveSystemIdtf("x_local");
+  ScAddr const xAddr = m_ctx->ResolveElementSystemIdentifier("x_local");
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
   templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm, ScType::Unknown >> "_trg");
 
   ScTemplateSearchResult res;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, res));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
   EXPECT_EQ(res.Size(), 2u);
   EXPECT_NE(res[0]["_trg"], res[1]["_trg"]);
 }
@@ -281,7 +282,7 @@ TEST_F(SCsHelperTest, GenerateAppendToStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructure.IsValid());
 
   EXPECT_TRUE(helper.GenerateBySCsText(
@@ -293,22 +294,22 @@ TEST_F(SCsHelperTest, GenerateAppendToStructure)
   ));
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+  m_ctx->BuildTemplate(
     templ,
     "class_1 _-> _class_1_instance_1;;"
     "class_1 _-> _class_1_instance_2;;"
     "_class_1_instance_1 _=> rel_1:: _class_1_instance_2;;"
     "_class_1_instance_2 _=> rel_2:: _class_1_instance_1;;"
-  ));
+  );
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 
   result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
     }
   });
 }
@@ -317,7 +318,7 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const outputStructure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructure.IsValid());
 
   EXPECT_TRUE(helper.GenerateBySCsText(
@@ -330,21 +331,21 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
     outputStructure
   ));
 
-  ScAddr const & exampleStructure = m_ctx->HelperFindBySystemIdtf("example_structure");
+  ScAddr const & exampleStructure = m_ctx->SearchElementBySystemIdentifier("example_structure");
   EXPECT_EQ(m_ctx->GetElementType(exampleStructure), ScType::NodeConstStruct);
 
   auto const checkInStruct = [this, outputStructure](std::string const & scsText, size_t const expectedStructNum) {
     ScTemplate templ;
-    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, scsText));
+   m_ctx->BuildTemplate(templ, scsText);
 
     ScTemplateSearchResult result;
-    EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+    EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
     EXPECT_EQ(result.Size(), expectedStructNum);
 
     result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
       }
     });
   };
@@ -374,28 +375,28 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const & outputStructureWithRuMainIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithRuMainIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithRuMainIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_main_idtf: [] (* <- lang_ru;; *);;",
       outputStructureWithRuMainIdtf
   ));
 
-  ScAddr const & outputStructureWithEnMainIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithEnMainIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithEnMainIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_main_idtf: [] (* <- lang_en;; *);;",
       outputStructureWithEnMainIdtf
   ));
 
-  ScAddr const & outputStructureWithRuIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithRuIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithRuIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_idtf: [] (* <- lang_ru;; *);;",
       outputStructureWithRuIdtf
   ));
 
-  ScAddr const & outputStructureWithEnIdtf = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithEnIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_TRUE(outputStructureWithEnIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_idtf: [] (* <- lang_en;; *);;",
@@ -410,128 +411,128 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   ));
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+  m_ctx->BuildTemplate(
       templ,
       "test_node _=> nrel_main_idtf:: _[] (* _<- lang_ru;; *);;"
-  ));
+  );
 
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 
   result.ForEach([this, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
     }
   });
 
   result.Clear();
   {
     bool isFound = false;
-    m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
+    m_ctx->SearchByTemplate(templ, [this, &isFound, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
     }, [this, outputStructureWithRuMainIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->HelperCheckEdge(outputStructureWithRuMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithRuMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);
   }
 
   templ.Clear();
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+  m_ctx->BuildTemplate(
       templ,
       "test_node _=> nrel_main_idtf:: _[] (* _<- lang_en;; *);;"
-  ));
+  );
 
   result.Clear();
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
   result.ForEach([this, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
     }
   });
 
   result.Clear();
   {
     bool isFound = false;
-    m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
+    m_ctx->SearchByTemplate(templ, [this, &isFound, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
     }, [this, outputStructureWithEnMainIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->HelperCheckEdge(outputStructureWithEnMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithEnMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);
   }
 
   templ.Clear();
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+  m_ctx->BuildTemplate(
       templ,
       "test_node _=> nrel_idtf:: _[] (* _<- lang_ru;; *);;"
-  ));
+  );
 
   result.Clear();
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
   result.ForEach([this, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
     }
   });
 
   result.Clear();
   {
     bool isFound = false;
-    m_ctx->HelperSearchTemplate(templ,[this, &isFound, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
+    m_ctx->SearchByTemplate(templ,[this, &isFound, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
     }, 
     [this, outputStructureWithRuIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->HelperCheckEdge(outputStructureWithRuIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithRuIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);
   }
 
   templ.Clear();
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(
+  m_ctx->BuildTemplate(
       templ,
       "test_node _=> nrel_idtf:: _[] (* _<- lang_en;; *);;"
-  ));
+  );
 
   result.Clear();
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
   result.ForEach([this, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
     }
   });
 
   result.Clear();
   {
     bool isFound = false;
-    m_ctx->HelperSearchTemplate(templ, [this, &isFound, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
+    m_ctx->SearchByTemplate(templ, [this, &isFound, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
       }
     }, 
     [this, outputStructureWithEnIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->HelperCheckEdge(outputStructureWithEnIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithEnIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
     });
     EXPECT_TRUE(isFound);
   }

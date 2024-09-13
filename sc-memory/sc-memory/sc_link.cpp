@@ -19,8 +19,8 @@ bool ScLink::IsValid() const
 
 ScLink::Type ScLink::DetermineType() const
 {
-  ScAddr typeEdge, typeAddr;
-  DetermineTypeEdgeImpl(typeEdge, typeAddr);
+  ScAddr typeArcAddr, typeAddr;
+  DetermineTypeArcImpl(typeArcAddr, typeAddr);
 
   if (typeAddr == Type2Addr<std::string>())
     return Type::String;
@@ -111,19 +111,19 @@ std::string ScLink::GetAsString() const
   }
 }
 
-bool ScLink::DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const
+bool ScLink::DetermineTypeArcImpl(ScAddr & outArcAddr, ScAddr & outTypeAddr) const
 {
   // set type
   ScTemplate templ;
   templ.Triple(ScKeynodes::binary_type, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
 
-  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_edge", *this);
+  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_arc", *this);
 
   ScTemplateSearchResult res;
-  if (m_context->HelperSearchTemplate(templ, res))
+  if (m_context->SearchByTemplate(templ, res))
   {
-    outType = res[0]["_type"];
-    outEdge = res[0]["_edge"];
+    outTypeAddr = res[0]["_type"];
+    outArcAddr = res[0]["_arc"];
     return true;
   }
 

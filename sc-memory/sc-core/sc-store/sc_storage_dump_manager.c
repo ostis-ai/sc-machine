@@ -78,7 +78,9 @@ void _sc_storage_dump_statistics_timer()
   sc_message(
       "Links: %" PRIu64 "(%f)", statistics.link_count, (sc_float)statistics.link_count / (sc_float)allElements * 100);
   sc_message(
-      "Edges: %" PRIu64 "(%f)", statistics.arc_count, (sc_float)statistics.arc_count / (sc_float)allElements * 100);
+      "Connectors: %" PRIu64 "(%f)",
+      statistics.arc_count,
+      (sc_float)statistics.arc_count / (sc_float)allElements * 100);
   sc_message("Total: %" PRIu64, allElements);
 }
 

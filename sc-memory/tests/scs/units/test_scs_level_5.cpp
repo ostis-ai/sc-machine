@@ -43,5 +43,5 @@ TEST(scs_level_5, simple)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 4u);
 
-  EXPECT_EQ(triples[3].m_target, triples[2].m_edge);
+  EXPECT_EQ(triples[3].m_target, triples[2].m_connector);
 }

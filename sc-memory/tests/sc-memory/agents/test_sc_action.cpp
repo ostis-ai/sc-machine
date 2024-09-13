@@ -8,9 +8,10 @@ using ScActionTest = ScMemoryTest;
 
 TEST_F(ScActionTest, GenerateActionAndGetClassWithReceptorActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -18,9 +19,10 @@ TEST_F(ScActionTest, GenerateActionAndGetClassWithReceptorActionType)
 
 TEST_F(ScActionTest, GenerateActionAndGetClassWithEffectorActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::effector_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::effector_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -28,9 +30,10 @@ TEST_F(ScActionTest, GenerateActionAndGetClassWithEffectorActionType)
 
 TEST_F(ScActionTest, GenerateActionAndGetClassWithBehavioralActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::behavioral_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::behavioral_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -38,9 +41,10 @@ TEST_F(ScActionTest, GenerateActionAndGetClassWithBehavioralActionType)
 
 TEST_F(ScActionTest, GenerateActionAndGetClassWithInformationActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -48,7 +52,7 @@ TEST_F(ScActionTest, GenerateActionAndGetClassWithInformationActionType)
 
 TEST_F(ScActionTest, GenerateActionAndGetClassWithoutType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
 
   ScAction action = m_ctx->GenerateAction(testClassAddr);
   EXPECT_EQ(action.GetClass(), ScAddr::Empty);
@@ -62,11 +66,12 @@ TEST_F(ScActionTest, GenerateActionWithInvalidActionClass)
 
 TEST_F(ScActionTest, ConvertToActionAndGetClassWithReceptorActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
-  ScAddr const & actionAddr = m_ctx->CreateNode(ScType::NodeConst);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & actionAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
 
   ScAction action = m_ctx->ConvertToAction(actionAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -75,11 +80,12 @@ TEST_F(ScActionTest, ConvertToActionAndGetClassWithReceptorActionType)
 
 TEST_F(ScActionTest, ConvertToActionAndGetClassWithEffectorActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::effector_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
-  ScAddr const & actionAddr = m_ctx->CreateNode(ScType::NodeConst);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::effector_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & actionAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
 
   ScAction action = m_ctx->ConvertToAction(actionAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -88,11 +94,12 @@ TEST_F(ScActionTest, ConvertToActionAndGetClassWithEffectorActionType)
 
 TEST_F(ScActionTest, ConvertToActionAndGetClassWithBehavioralActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::behavioral_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
-  ScAddr const & actionAddr = m_ctx->CreateNode(ScType::NodeConst);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::behavioral_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & actionAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
 
   ScAction action = m_ctx->ConvertToAction(actionAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -101,11 +108,12 @@ TEST_F(ScActionTest, ConvertToActionAndGetClassWithBehavioralActionType)
 
 TEST_F(ScActionTest, ConvertToActionAndGetClassWithInformationActionType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
-  ScAddr const & actionAddr = m_ctx->CreateNode(ScType::NodeConst);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & actionAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
 
   ScAction action = m_ctx->ConvertToAction(actionAddr);
   EXPECT_EQ(action.GetClass(), testClassAddr);
@@ -114,9 +122,9 @@ TEST_F(ScActionTest, ConvertToActionAndGetClassWithInformationActionType)
 
 TEST_F(ScActionTest, ConvertToActionAndGetClassWithoutType)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & actionAddr = m_ctx->CreateNode(ScType::NodeConst);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & actionAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testClassAddr, actionAddr);
 
   ScAction action = m_ctx->ConvertToAction(actionAddr);
   EXPECT_EQ(action.GetClass(), ScAddr::Empty);
@@ -130,9 +138,10 @@ TEST_F(ScActionTest, ConvertInvalidAction)
 
 TEST_F(ScActionTest, GenerateActionAndGetResult)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & arcAddr =
+      m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::receptor_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
 
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
@@ -147,18 +156,18 @@ TEST_F(ScActionTest, GenerateActionAndGetResult)
 
 TEST_F(ScActionTest, GenerateActionAndSetGetResult)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
-  ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr1 = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_NO_THROW(action.SetResult(structureAddr1));
   EXPECT_NO_THROW(action.SetResult(structureAddr1));
 
-  ScAddr const & structureAddr2 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr2 = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_NO_THROW(action.SetResult(structureAddr2));
   EXPECT_FALSE(m_ctx->IsElement(structureAddr1));
   EXPECT_THROW(action.SetResult(structureAddr1), utils::ExceptionInvalidParams);
@@ -174,19 +183,19 @@ TEST_F(ScActionTest, GenerateActionAndSetGetResult)
 
 TEST_F(ScActionTest, GenerateActionAndSetRemoveGetResult)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
-  ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr1 = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_NO_THROW(action.SetResult(structureAddr1));
 
   action.FinishSuccessfully();
 
-  ScIterator5Ptr it5 = m_ctx->Iterator5(
+  ScIterator5Ptr it5 = m_ctx->CreateIterator5(
       action,
       ScType::EdgeDCommonConst,
       ScType::NodeConstStruct,
@@ -199,26 +208,26 @@ TEST_F(ScActionTest, GenerateActionAndSetRemoveGetResult)
 
 TEST_F(ScActionTest, GenerateActionAndSetFormUpdateGetResult)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
   EXPECT_FALSE(action.InitiateAndWait(1));
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
-  ScAddr const & structureAddr1 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr1 = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_NO_THROW(action.SetResult(structureAddr1));
 
-  ScAddr const & structureAddr2 = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr2 = m_ctx->GenerateNode(ScType::NodeConstStruct);
   EXPECT_NO_THROW(action.SetResult(structureAddr2));
   EXPECT_FALSE(m_ctx->IsElement(structureAddr1));
 
   EXPECT_NO_THROW(action.FormResult());
   EXPECT_FALSE(m_ctx->IsElement(structureAddr2));
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_NO_THROW(action.FormResult(elementAddr1));
 
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_NO_THROW(action.UpdateResult(elementAddr2));
 
   action.FinishSuccessfully();
@@ -233,7 +242,7 @@ TEST_F(ScActionTest, GenerateActionAndSetFormUpdateGetResult)
 
 TEST_F(ScActionTest, GenerateActionAndUpdateGetResult)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
@@ -241,7 +250,7 @@ TEST_F(ScActionTest, GenerateActionAndUpdateGetResult)
 
   EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
 
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_NO_THROW(action.UpdateResult(elementAddr1));
 
   action.FinishSuccessfully();
@@ -255,12 +264,12 @@ TEST_F(ScActionTest, GenerateActionAndUpdateGetResult)
 
 TEST_F(ScActionTest, GenerateActionAndSetGetArgument)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   EXPECT_EQ(action.GetArgument(1), ScAddr::Empty);
 
-  ScAddr const & testDefaultArgumentAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & testDefaultArgumentAddr = m_ctx->GenerateNode(ScType::NodeConst);
   {
     EXPECT_EQ(action.GetArgument(1, testDefaultArgumentAddr), testDefaultArgumentAddr);
   }
@@ -272,7 +281,7 @@ TEST_F(ScActionTest, GenerateActionAndSetGetArgument)
 
 TEST_F(ScActionTest, GenerateActionAndSetGetArguments)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   {
@@ -289,8 +298,8 @@ TEST_F(ScActionTest, GenerateActionAndSetGetArguments)
     EXPECT_EQ(_, ScAddr::Empty);
   }
 
-  ScAddr const & testDefaultArgumentAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & testDefaultArgumentAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & testDefaultArgumentAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & testDefaultArgumentAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_EQ(&action.SetArguments(testDefaultArgumentAddr1, testDefaultArgumentAddr2), &action);
   {
     auto [argAddr1, _] = action.GetArguments<2>();
@@ -302,7 +311,7 @@ TEST_F(ScActionTest, GenerateActionAndSetGetArguments)
 
 TEST_F(ScActionTest, GenerateActionSetResetGetArguments)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
   {
@@ -319,8 +328,8 @@ TEST_F(ScActionTest, GenerateActionSetResetGetArguments)
     EXPECT_EQ(_, ScAddr::Empty);
   }
 
-  ScAddr const & testDefaultArgumentAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & testDefaultArgumentAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & testDefaultArgumentAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & testDefaultArgumentAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_EQ(&action.SetArguments(testDefaultArgumentAddr1, testDefaultArgumentAddr2), &action);
   {
     auto [argAddr1, _] = action.GetArguments<2>();
@@ -386,7 +395,7 @@ TEST_F(ScActionTest, InitiateFinishedAction)
   ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_NO_THROW(action.Initiate());
   EXPECT_NO_THROW(action.FinishSuccessfully());
-  ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
   EXPECT_TRUE(it3->Next());
   m_ctx->EraseElement(it3->Get(1));
   EXPECT_FALSE(action.IsInitiated());
@@ -399,7 +408,7 @@ TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
   ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_NO_THROW(action.InitiateAndWait(1));
   EXPECT_NO_THROW(action.FinishSuccessfully());
-  ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
   EXPECT_TRUE(it3->Next());
   m_ctx->EraseElement(it3->Get(1));
   EXPECT_FALSE(action.IsInitiated());

@@ -17,7 +17,7 @@ TEST_F(ScBuilderTest, file_relative)
       [test_content_file];;
    */
 
-  ScAddr const linkAddr = m_ctx->HelperResolveSystemIdtf("test_content_file");
+  ScAddr const linkAddr = m_ctx->ResolveElementSystemIdentifier("test_content_file");
   EXPECT_TRUE(linkAddr.IsValid());
 
   ScLink link(*m_ctx, linkAddr);
@@ -27,7 +27,7 @@ TEST_F(ScBuilderTest, file_relative)
 
 TEST_F(ScBuilderTest, file_relative_folder)
 {
-  ScAddr const linkAddr = m_ctx->HelperResolveSystemIdtf("test_content_file_2");
+  ScAddr const linkAddr = m_ctx->ResolveElementSystemIdentifier("test_content_file_2");
   EXPECT_TRUE(linkAddr.IsValid());
 
   ScLink link(*m_ctx, linkAddr);
@@ -37,7 +37,7 @@ TEST_F(ScBuilderTest, file_relative_folder)
 
 TEST_F(ScBuilderTest, file_relative_folder_scs_level_1)
 {
-  ScAddr const linkAddr = m_ctx->HelperResolveSystemIdtf("test_content_file_3");
+  ScAddr const linkAddr = m_ctx->ResolveElementSystemIdentifier("test_content_file_3");
   EXPECT_TRUE(linkAddr.IsValid());
 
   ScLink link(*m_ctx, linkAddr);
@@ -48,7 +48,7 @@ TEST_F(ScBuilderTest, file_relative_folder_scs_level_1)
 template <typename ValueT>
 void CheckBinaryContent(ScMemoryContext & ctx, std::string const & sysIdtf, ValueT value)
 {
-  ScAddr const linkAddr = ctx.HelperResolveSystemIdtf(sysIdtf);
+  ScAddr const linkAddr = ctx.ResolveElementSystemIdentifier(sysIdtf);
   EXPECT_TRUE(linkAddr.IsValid());
 
   ScLink link(ctx, linkAddr);

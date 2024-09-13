@@ -76,7 +76,7 @@ public:
    * @throws utils::ExceptionInvalidParams If the event class address or subscription element address is not valid,
    *         or if the event class does not belong to `sc_event`.
    */
-  std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> GenerateElementaryEventSubscription(
+  std::shared_ptr<ScElementaryEventSubscription<ScElementaryEvent>> CreateElementaryEventSubscription(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(ScElementaryEvent const &)> const & eventCallback) noexcept(false);
@@ -92,7 +92,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<TScEvent>> GenerateElementaryEventSubscription(
+  _SC_EXTERN std::shared_ptr<ScElementaryEventSubscription<TScEvent>> CreateElementaryEventSubscription(
       ScAddr const & subscriptionElementAddr,
       std::function<void(TScEvent const &)> const & eventCallback) noexcept(false);
 
@@ -111,7 +111,7 @@ public:
    * @return A shared pointer to generated `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
-  _SC_EXTERN std::shared_ptr<ScWaiter> GenerateEventWaiter(
+  _SC_EXTERN std::shared_ptr<ScWaiter> CreateEventWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback = {}) noexcept(false);
@@ -127,7 +127,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  _SC_EXTERN std::shared_ptr<ScWaiter> GenerateEventWaiter(
+  _SC_EXTERN std::shared_ptr<ScWaiter> CreateEventWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback = {}) noexcept(false);
 
@@ -149,7 +149,7 @@ public:
    * @return A shared pointer to generated `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class address or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWaiter> GenerateConditionWaiter(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
@@ -168,7 +168,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWaiter> GenerateConditionWaiter(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<void(void)> const & initiateCallback,
       std::function<bool(TScEvent const &)> const & checkCallback) noexcept(false);
@@ -189,7 +189,7 @@ public:
    * @return A shared pointer to generated `ScWaiter`.
    * @throws utils::ExceptionInvalidParams If sc-event class or subscription sc-element is not valid.
    */
-  std::shared_ptr<ScWaiter> GenerateConditionWaiter(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & eventClassAddr,
       ScAddr const & subscriptionElementAddr,
       std::function<bool(ScElementaryEvent const &)> const & checkCallback) noexcept(false);
@@ -205,7 +205,7 @@ public:
    * ScElementaryEvent.
    */
   template <class TScEvent>
-  std::shared_ptr<ScWaiter> GenerateConditionWaiter(
+  std::shared_ptr<ScWaiter> CreateConditionWaiter(
       ScAddr const & subscriptionElementAddr,
       std::function<bool(TScEvent const &)> const & checkCallback) noexcept(false);
 

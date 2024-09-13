@@ -54,7 +54,7 @@ protected:
   std::string m_idtf;
   ScType m_type;
   Visibility m_visibility;  // cached value, to prevent each time check
-  bool m_isReversed : 1;    // flag used just for an edges
+  bool m_isReversed : 1;    // flag used just for an connectors
   std::string m_value;      // string representation of content/link value
   bool m_isURL : 1;         // flag used to determine if ScLink value is an URL
 };
@@ -85,13 +85,13 @@ private:
 struct ParsedTriple
 {
   ElementHandle const m_source;
-  ElementHandle const m_edge;
+  ElementHandle const m_connector;
   ElementHandle const m_target;
 
-  ParsedTriple(ElementHandle const & s, ElementHandle const & e, ElementHandle const & t)
-    : m_source(s)
-    , m_edge(e)
-    , m_target(t)
+  ParsedTriple(ElementHandle const & source, ElementHandle const & connector, ElementHandle const & target)
+    : m_source(source)
+    , m_connector(connector)
+    , m_target(target)
   {
   }
 };
@@ -141,7 +141,7 @@ protected:
   void ProcessContourBegin();
   void ProcessContourEnd(ElementHandle const & contourHandle);
 
-  void ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target);
+  void ProcessTriple(ElementHandle const & source, ElementHandle const & connector, ElementHandle const & target);
   void ProcessAssign(std::string const & alias, ElementHandle const & value);
 
 private:
@@ -153,7 +153,7 @@ private:
       bool isURL = false);
 
   std::string GenerateNodeIdtf();
-  std::string GenerateEdgeIdtf();
+  std::string GenerateConnectorIdtf();
   std::string GenerateLinkIdtf();
   std::string GenerateContourIdtf();
 

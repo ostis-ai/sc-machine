@@ -79,7 +79,7 @@ public:
   template <typename Type>
   _SC_EXTERN inline bool IsType() const
   {
-    return m_context->HelperCheckEdge(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
+    return m_context->CheckConnector(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
   }
 
   template <typename Type>
@@ -92,18 +92,18 @@ public:
 
     ScAddr const newType = Type2Addr<Type>();
     bool needAppend = true;
-    ScAddr typeEdge, typeAddr;
-    if (DetermineTypeEdgeImpl(typeEdge, typeAddr))
+    ScAddr typeArcAddr, typeAddr;
+    if (DetermineTypeArcImpl(typeArcAddr, typeAddr))
     {
       if (typeAddr == newType)
         needAppend = false;
       else
-        m_context->EraseElement(typeEdge);
+        m_context->EraseElement(typeArcAddr);
     }
 
     // append into set
     if (needAppend)
-      return m_context->CreateEdge(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
+      return m_context->GenerateConnector(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
 
     return true;
   }
@@ -128,7 +128,7 @@ public:
   _SC_EXTERN std::string GetAsString() const;
 
 protected:
-  _SC_EXTERN bool DetermineTypeEdgeImpl(ScAddr & outEdge, ScAddr & outType) const;
+  _SC_EXTERN bool DetermineTypeArcImpl(ScAddr & outArcAddr, ScAddr & outTypeAddr) const;
 
 private:
   ScMemoryContext * m_context;

@@ -24,7 +24,7 @@ public:
       m_contents.pop_back();
     }
 
-    BENCHMARK_BUILTIN_EXPECT(m_ctx->FindLinksByContent(content).empty(), false);
+    BENCHMARK_BUILTIN_EXPECT(m_ctx->SearchLinksByContent(content).empty(), false);
   }
 
   void Setup(size_t objectsNum) override
@@ -44,7 +44,7 @@ public:
         result << randomChar;
       }
 
-      ScAddr const addr = m_ctx->CreateLink();
+      ScAddr const addr = m_ctx->GenerateLink();
 
       std::string content = result.str();
       ScLink link(*m_ctx, addr);

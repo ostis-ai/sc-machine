@@ -47,7 +47,7 @@ All sc-event classes are in core keynodes:
 * `ScKeynodes::sc_event_before_erase_element`;
 * `ScKeynodes::sc_event_before_change_link_content`.
 
-Use them as `eventClassAddr` for `GenerateElementaryEventSubscription`.
+Use them as `eventClassAddr` for `CreateElementaryEventSubscription`.
 
 The table of description (parameters of callback function named on pictures, if there are no parameter name on picture,
 then it's would have an empty value):
@@ -67,7 +67,7 @@ then it's would have an empty value):
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription(
+auto subscription = context->CreateElementaryEventSubscription(
   eventClassAddr,
   subscriptionElementAddr, 
   [](ScElementaryEvent const & event) -> void
@@ -86,7 +86,7 @@ auto subscription = context->GenerateElementaryEventSubscription(
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
   [](ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
@@ -105,7 +105,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
   [](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
@@ -124,7 +124,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
   [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
@@ -143,7 +143,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventAfterGenerateEdge<ScType::EdgeUCommonConst>>(
   subscriptionElementAddr, 
   [](ScEventAfterGenerateEdge<ScType::EdgeUCommonConst> const & event) -> void
@@ -162,7 +162,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
   [](ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
@@ -181,7 +181,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
   [](ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
@@ -200,7 +200,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>(
   subscriptionElementAddr, 
   [](ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
@@ -219,7 +219,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventBeforeEraseEdge<ScType::EdgeUCommonConst>>(
   subscriptionElementAddr, 
   [](ScEventBeforeEraseEdge<ScType::EdgeUCommonConst> const & event) -> void
@@ -237,7 +237,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventBeforeEraseElement>(
   subscriptionElementAddr, 
   [](ScEventBeforeEraseElement const & event) -> void
@@ -256,7 +256,7 @@ auto subscription = context->GenerateElementaryEventSubscription<
       <strong>Example C++ code</strong>:
       <pre><code class="cpp">
 ...
-auto subscription = context->GenerateElementaryEventSubscription<
+auto subscription = context->CreateElementaryEventSubscription<
   ScEventBeforeChangeLinkContent>(
   subscriptionElementAddr, 
   [](ScEventBeforeChangeLinkContent const & event) -> void

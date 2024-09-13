@@ -16,7 +16,7 @@ public:
   {
     ScTemplateSearchResult result;
     auto const & pair = GetTemplate(context, requestPayload);
-    context->HelperSearchTemplate(*pair.first, result);
+    context->SearchByTemplate(*pair.first, result);
 
     std::vector<std::vector<size_t>> hashesVectors;
     for (size_t i = 0; i < result.Size(); ++i)

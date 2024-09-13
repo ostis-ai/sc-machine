@@ -14,10 +14,10 @@
 //! sc-iterator types
 typedef enum
 {
-  sc_iterator3_f_a_a = 0,  // outgoing edges
-  sc_iterator3_a_a_f,      // incoming edges
-  sc_iterator3_f_a_f,      // edge between source and target
-  sc_iterator3_a_f_a,      // find source/target elements of edge
+  sc_iterator3_f_a_a = 0,  // outgoing connectors
+  sc_iterator3_a_a_f,      // incoming connectors
+  sc_iterator3_f_a_f,      // connectors between source and target
+  sc_iterator3_a_f_a,      // find source/target elements of connectors
   // just for clean template search
   sc_iterator3_f_f_a,
   sc_iterator3_a_f_f,

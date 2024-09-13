@@ -20,7 +20,7 @@ public:
 
   static bool IsConnectorReversed(std::string const & connectorAlias);
   static bool IsConst(std::string const & idtf);
-  static bool IsEdgeAttrConst(std::string const & attr);
+  static bool IsConnectorAttrConst(std::string const & attr);
   static bool IsKeynodeType(std::string const & alias);
   static bool IsUnnamed(std::string const & alias);
 

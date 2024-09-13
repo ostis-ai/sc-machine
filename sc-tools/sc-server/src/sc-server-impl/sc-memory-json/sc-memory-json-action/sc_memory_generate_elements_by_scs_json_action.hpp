@@ -21,7 +21,7 @@ protected:
   }
 };
 
-class ScMemoryCreateElementsByScsJsonAction : public ScMemoryJsonAction
+class ScMemoryGenerateElementsByScsJsonAction : public ScMemoryJsonAction
 {
 public:
   ScMemoryJsonPayload Complete(

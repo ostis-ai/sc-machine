@@ -22,10 +22,10 @@ ScAction::ScAction(ScAgentContext * context, ScAddr const & actionAddr) noexcept
 ScAddr ScAction::GetClass() const noexcept
 {
   if (m_context->IsElement(m_actionClassAddr)
-      && m_context->HelperCheckEdge(m_actionClassAddr, *this, ScType::EdgeAccessConstPosPerm))
+      && m_context->CheckConnector(m_actionClassAddr, *this, ScType::EdgeAccessConstPosPerm))
     return m_actionClassAddr;
 
-  ScIterator3Ptr const it3 = m_context->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
+  ScIterator3Ptr const it3 = m_context->CreateIterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
   while (it3->Next())
   {
     ScAddr const & actionClassAddr = it3->Get(0);
@@ -49,7 +49,7 @@ bool ScAction::IsActionClassValid(ScMemoryContext * context, ScAddr const & acti
   };
 
   bool isActionClassHasType = false;
-  ScIterator5Ptr const it5 = context->Iterator5(
+  ScIterator5Ptr const it5 = context->CreateIterator5(
       ScType::NodeConstClass,
       ScType::EdgeDCommonConst,
       actionClassAddr,
@@ -74,7 +74,7 @@ ScAddr ScAction::GetArgument(size_t idx, ScAddr const & defaultArgumentAddr) con
 
 ScAddr ScAction::GetArgument(ScAddr const & orderRelationAddr, ScAddr const & defaultArgumentAddr) const noexcept
 {
-  ScIterator5Ptr const it = m_context->Iterator5(
+  ScIterator5Ptr const it = m_context->CreateIterator5(
       *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
 
   if (it->Next())
@@ -90,14 +90,14 @@ ScAction & ScAction::SetArgument(size_t idx, ScAddr const & argumentAddr) noexce
 
 ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const & argumentAddr)
 {
-  ScIterator5Ptr const it = m_context->Iterator5(
+  ScIterator5Ptr const it = m_context->CreateIterator5(
       *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
 
   while (it->Next())
     m_context->EraseElement(it->Get(1));
 
-  ScAddr const & arcAddr = m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, *this, argumentAddr);
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, orderRelationAddr, arcAddr);
+  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, *this, argumentAddr);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, orderRelationAddr, arcAddr);
 
   return *this;
 }
@@ -116,7 +116,7 @@ ScStructure ScAction::GetResult() noexcept(false)
         "Not able to get result of action " << GetActionPrettyString() << GetActionClassPrettyString()
                                             << " because it had not been finished yet.");
 
-  ScIterator5Ptr const & it5 = m_context->Iterator5(
+  ScIterator5Ptr const & it5 = m_context->CreateIterator5(
       *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -153,7 +153,7 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
 
 bool ScAction::IsInitiated() const noexcept
 {
-  return m_context->HelperCheckEdge(ScKeynodes::action_initiated, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_initiated, *this, ScType::EdgeAccessConstPosPerm);
 }
 
 bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
@@ -174,7 +174,7 @@ bool ScAction::InitiateAndWait(sc_uint32 waitTime_ms) noexcept(false)
   wait->SetOnWaitStartDelegate(
       [this]()
       {
-        m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
+        m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
       });
   return wait->Wait(waitTime_ms);
 };
@@ -193,7 +193,7 @@ ScAction & ScAction::Initiate() noexcept(false)
         "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
                                        << " because it had already been finished.");
 
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
 
   return *this;
 };
@@ -213,23 +213,23 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
                                      << " because it had already been finished.");
 
   if (!m_context->IsElement(m_resultAddr))
-    m_resultAddr = m_context->CreateNode(ScType::NodeConstStruct);
+    m_resultAddr = m_context->GenerateNode(ScType::NodeConstStruct);
 
-  ScAddr const & arcAddr = m_context->CreateEdge(ScType::EdgeDCommonConst, *this, m_resultAddr);
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result, arcAddr);
+  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::EdgeDCommonConst, *this, m_resultAddr);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result, arcAddr);
 
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, actionStateAddr, *this);
-  m_context->CreateEdge(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, actionStateAddr, *this);
+  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
 }
 
 bool ScAction::IsFinished() const noexcept
 {
-  return m_context->HelperCheckEdge(ScKeynodes::action_finished, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished, *this, ScType::EdgeAccessConstPosPerm);
 }
 
 bool ScAction::IsFinishedSuccessfully() const noexcept
 {
-  return m_context->HelperCheckEdge(ScKeynodes::action_finished_successfully, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished_successfully, *this, ScType::EdgeAccessConstPosPerm);
 }
 
 ScResult ScAction::FinishSuccessfully() noexcept(false)
@@ -240,7 +240,7 @@ ScResult ScAction::FinishSuccessfully() noexcept(false)
 
 bool ScAction::IsFinishedUnsuccessfully() const noexcept
 {
-  return m_context->HelperCheckEdge(ScKeynodes::action_finished_unsuccessfully, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished_unsuccessfully, *this, ScType::EdgeAccessConstPosPerm);
 }
 
 ScResult ScAction::FinishUnsuccessfully() noexcept(false)
@@ -251,7 +251,7 @@ ScResult ScAction::FinishUnsuccessfully() noexcept(false)
 
 bool ScAction::IsFinishedWithError() const noexcept
 {
-  return m_context->HelperCheckEdge(ScKeynodes::action_finished_with_error, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished_with_error, *this, ScType::EdgeAccessConstPosPerm);
 }
 
 ScResult ScAction::FinishWithError() noexcept(false)
@@ -262,7 +262,7 @@ ScResult ScAction::FinishWithError() noexcept(false)
 
 std::string ScAction::GetActionPrettyString() const
 {
-  std::string actionName = m_context->HelperGetSystemIdtf(*this);
+  std::string actionName = m_context->GetElementSystemIdentifier(*this);
   if (actionName.empty())
     actionName = std::to_string(this->Hash());
 
@@ -277,7 +277,7 @@ std::string ScAction::GetActionClassPrettyString() const
   std::string actionClassName;
   if (m_context->IsElement(actionClassAddr))
   {
-    actionClassName = m_context->HelperGetSystemIdtf(actionClassAddr);
+    actionClassName = m_context->GetElementSystemIdentifier(actionClassAddr);
     if (actionClassName.empty())
       actionClassName = std::to_string(actionClassAddr.Hash());
   }

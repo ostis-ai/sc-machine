@@ -40,7 +40,7 @@ public:
   bool Run()
   {
     ScTemplateSearchResult result;
-    bool status = m_ctx->HelperSearchTemplate(m_templ, result);
+    bool status = m_ctx->SearchByTemplate(m_templ, result);
 
     for (size_t i = 0; i < result.Size(); i++);
 

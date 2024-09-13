@@ -28,7 +28,7 @@ ScAgent<TScEvent, TScContext>::~ScAgent() noexcept
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetAbstractAgent() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       ScType::NodeConst,
       ScType::EdgeDCommonConst,
       m_agentImplementationAddr,
@@ -50,7 +50,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventClass() const noexcept(false)
   if constexpr (!std::is_same<TScEvent, ScElementaryEvent>::value)
     return TScEvent::eventClassAddr;
 
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -64,13 +64,13 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventClass() const noexcept(false)
             << "` does not have primary initiation condition. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
-  return m_context.GetEdgeSource(it5->Get(2));
+  return m_context.GetArcSourceElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -84,13 +84,13 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement() const noexce
             << "` does not have primary initiation condition. Check that abstract sc-agent has specified "
                "relation `nrel_primary_initiation_condition`.");
 
-  return m_context.GetEdgeTarget(it5->Get(2));
+  return m_context.GetArcTargetElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetActionClass() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::NodeConstClass,
@@ -115,7 +115,7 @@ bool ScAgent<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & ev
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -129,7 +129,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(fa
             << "` does not have initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
-  return m_context.GetEdgeSource(it5->Get(2));
+  return m_context.GetArcSourceElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
@@ -159,7 +159,7 @@ bool ScAgent<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAct
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -173,7 +173,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
             << "` does not have initiation condition and result. Check that abstract sc-agent has specified "
                "relation `nrel_initiation_condition_and_result`.");
 
-  return m_context.GetEdgeTarget(it5->Get(2));
+  return m_context.GetArcTargetElement(it5->Get(2));
 }
 
 template <class TScEvent, class TScContext>
@@ -197,7 +197,7 @@ void ScAgent<TScEvent, TScContext>::SetImplementation(ScAddr const & agentImplem
 template <class TScEvent, class TScContext>
 bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated() noexcept
 {
-  return ScMemory::ms_globalContext->HelperCheckEdge(
+  return ScMemory::ms_globalContext->CheckConnector(
       ScKeynodes::action_deactivated, this->GetActionClass(), ScType::EdgeAccessConstPosPerm);
 }
 
@@ -245,7 +245,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
   ScTemplateSearchResult searchResult;
   try
   {
-    isFound = this->m_context.HelperSearchTemplate(initiationConditionTemplate, searchResult);
+    isFound = this->m_context.SearchByTemplate(initiationConditionTemplate, searchResult);
   }
   catch (utils::ScException const & exception)
   {
@@ -284,7 +284,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
   bool isFound = false;
   try
   {
-    this->m_context.HelperSmartSearchTemplate(
+    this->m_context.SearchByTemplateInterruptibly(
         resultConditionTemplate,
         [&isFound](ScTemplateResultItem const & item) -> ScTemplateSearchRequest
         {
@@ -313,7 +313,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
 
   auto const & GetIteratorForEventTripleWithOutgoingArc = [&]() -> ScIterator5Ptr
   {
-    return this->m_context.Iterator5(
+    return this->m_context.CreateIterator5(
         eventSubscriptionElementAddr,
         ScType::Var,
         ScType::Unknown,
@@ -322,7 +322,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   };
   auto const & GetIteratorForEventTripleWithIncomingArc = [&]() -> ScIterator5Ptr
   {
-    return this->m_context.Iterator5(
+    return this->m_context.CreateIterator5(
         ScType::Unknown,
         ScType::Var,
         eventSubscriptionElementAddr,
@@ -388,7 +388,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   }
 
   ScTemplate initiationConditionTemplate;
-  this->m_context.HelperBuildTemplate(initiationConditionTemplate, initiationConditionTemplateAddr, templateParams);
+  this->m_context.BuildTemplate(initiationConditionTemplate, initiationConditionTemplateAddr, templateParams);
   return initiationConditionTemplate;
 }
 
@@ -398,7 +398,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildResultConditionTemplate(
     ScAddr const & resultConditionTemplateAddr) noexcept
 {
   ScTemplate resultConditionTemplate;
-  this->m_context.HelperBuildTemplate(resultConditionTemplate, resultConditionTemplateAddr);
+  this->m_context.BuildTemplate(resultConditionTemplate, resultConditionTemplateAddr);
   return resultConditionTemplate;
 }
 
@@ -418,7 +418,7 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
   ScType const & connectorType = this->m_context.GetElementType(connectorAddr);
   ScType const & otherElementType = this->m_context.GetElementType(otherElementAddr);
 
-  ScIterator3Ptr const subscriptionElementIterator = this->m_context.Iterator3(
+  ScIterator3Ptr const subscriptionElementIterator = this->m_context.CreateIterator3(
       initiationConditionTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElementAddr);
   if (subscriptionElementIterator->Next())
   {

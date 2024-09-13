@@ -10,7 +10,7 @@
 
 #include "sc-memory/sc_link.hpp"
 
-class TestCreateLink : public TestScServer
+class TestGenerateLink : public TestScServer
 {
 public:
   void Run(std::unique_ptr<ScClient> const & client)
@@ -22,7 +22,7 @@ public:
             {
                 {"el", "link"},
                 {"type", sc_type_link | sc_type_const},
-                {"content", "edge_end"},
+                {"content", "connector_end"},
             },
         }));
     client->Send(payloadString);

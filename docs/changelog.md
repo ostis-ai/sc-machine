@@ -16,7 +16,7 @@ encapsulated this logic;
 - All questions was renamed to actions.
 - ScAddrHashFunc with template argument was removed. Use non-template ScAddrHashFunc without arguments. It is more safe in use.
 - Constructors for ScMemoryContext with string and int parameters were removed. Use the one without parameters instead.
-- HelperSearchTemplateInStruct was removed from ScMemoryContext API. Use HelperSearchTemplate with callbacks.
+- HelperSearchTemplateInStruct was removed from ScMemoryContext API. Use SearchByTemplate with callbacks.
 - Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
 - Questions were renamed to actions, answers were renamed to results.
 - `m_memoryCtx` in ScAgent renamed to `m_context`.
@@ -24,9 +24,45 @@ encapsulated this logic;
   - completely moved from code generation to template programming;
   - improved the API and aligned with our description of how it should be;
   - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
+- All `ScMemoryContext` methods were redesigned to a common style. All methods with not correct names were deprecated, and new ones were added. See the table below to see which methods have been replaced.
+  
+  | Deprecated method                   | Substitution method                   |
+  |-------------------------------------|---------------------------------------|
+  | CreateNode                          | GenerateNode                          |
+  | CreateLink                          | GenerateLink                          |
+  | CreateEdge                          | GenerateConnector                     |
+  | GetElementOutputArcsCount           | GetElementEdgesAndOutgoingArcsCount   |
+  | GetElementInputArcsCount            | GetElementEdgesAndIncomingArcsCount   |
+  | GetEdgeSource                       | GetArcSourceElement                   |
+  | GetEdgeTarget                       | GetArcTargetElement                   |
+  | GetEdgeInfo                         | GetConnectorIncidentElements          |
+  | Iterator3                           | CreateIterator3                       |
+  | Iterator5                           | CreateIterator5                       |
+  | ForEachIter3                        | ForEach                               |
+  | ForEachIter5                        | ForEach                               |
+  | HelperCheckEdge                     | CheckConnector                        |
+  | FindLinksByContent                  | SearchLinksByContent                  |
+  | FindLinksByContentSubstring         | SearchLinksByContentSubstring         |
+  | FindLinksContentsByContentSubstring | SearchLinksContentsByContentSubstring |
+  | HelperSetSystemIdtf                 | SetElementSystemIdentifier            |
+  | HelperGetSystemIdtf                 | GetElementSystemIdentifier            |
+  | HelperResolveSystemIdtf             | ResolveElementSystemIdentifier        |
+  | HelperFindBySystemIdtf              | SearchElementBySystemIdentifier       |
+  | HelperGenTemplate                   | GenerateByTemplate                    |
+  | HelperSearchTemplate                | SearchByTemplate                      |
+  | HelperSmartSearchTemplate           | SearchByTemplateInterruptibly         |
+  | HelperBuildTemplate                 | BuildByTemplate                       |
+  | CalculateStat                       | CalculateStatistics                   |
+
+  | Removed method                      | Substitution method                   |
+  |-------------------------------------|---------------------------------------|
+  | BeingEventsPending                  | BeginEventsPending                    |
+
+  See documentation, to learn more about using of new methods.
 
 ### Added
 
+- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetElementEdgesAndOutgoingArcsCount, GetElementEdgesAndIncomingArcsCount, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CreateIterator3, CreateIterator5, ForEach, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, SearchByTemplateInterruptibly, BuildByTemplate, CalculateStatistics, BeginEventsPending
 - Simple guide for implementing agent in C++
 - Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
 - Full tests for C++ Agents API
@@ -56,7 +92,7 @@ encapsulated this logic;
 - Script `healthcheck.sh` for `healthcheck.py`
 - Check build and tests on runner-image `ubuntu-24.04`
 - Support for ubuntu-24.04 and macOS 14.4.1
-- Block events mode for sc-memory context
+- Block events mode for sc-memory context; methods `BeginEventsBlocking` and `EndEventsBlocking` in `ScMemoryContext`
 - Opportunity to set permissions for set of users
 - Guests identification
 - Create guest users during creating sc-memory context
@@ -120,10 +156,12 @@ encapsulated this logic;
 
 ### Deprecated
 
+- Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge,GetElementOutputArcsCount, GetElementInputArcsCount, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, Iterator3, Iterator5, ForEachIter3, ForEachIter5, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperSmartSearchTemplate, HelperBuildTemplate, CalculateStat
 - Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve
 
 ### Removed
 
+- Methods of `BeingEventsPending`: BeingEventsPending
 - Codegen and C++ Agents API based on code generation
 - Deprecated sc-utils in 0.9.0
 - Constructors for ScMemoryContext with string and int parameters
@@ -149,7 +187,7 @@ encapsulated this logic;
 - Config options `dump_memory` and `dump_memory_statistics` in `[sc-memory]` for enabling sc-memory dumps
 - Full md docs for sc-memory API on C++ with examples
 - ScTemplate replacement presence check using varAddr
-- Iterator5 AAAAF
+- CreateIterator5 AAAAF
 - Divide params errors handling and memory state handling
 - Provide errors and exceptions information into C and C++ sc-memory API
 - Support for gwf <0.4.0

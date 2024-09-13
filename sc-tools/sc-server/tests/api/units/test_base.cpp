@@ -12,7 +12,7 @@
 
 #include "../../sc_memory_json_converter.hpp"
 
-TEST_F(ScServerTest, CreateElements)
+TEST_F(ScServerTest, GenerateElements)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -29,7 +29,7 @@ TEST_F(ScServerTest, CreateElements)
           {
               {"el", "link"},
               {"type", sc_type_link | sc_type_const},
-              {"content", "edge_end"},
+              {"content", "connector_end"},
           },
           {
               {"el", "edge"},
@@ -68,19 +68,19 @@ TEST_F(ScServerTest, CreateElements)
   ScAddr const & src = ScAddr(responsePayload[0].get<size_t>());
   EXPECT_TRUE(src.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(src).IsNode());
-  ScAddr const & edge = ScAddr(responsePayload[2].get<size_t>());
-  EXPECT_TRUE(edge.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(edge).IsEdge());
+  ScAddr const & connector = ScAddr(responsePayload[2].get<size_t>());
+  EXPECT_TRUE(connector.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(connector).IsEdge());
   ScAddr const & trg = ScAddr(responsePayload[1].get<size_t>());
   EXPECT_TRUE(trg.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(trg).IsLink());
 
-  auto const & links = m_ctx->FindLinksByContent("edge_end");
+  auto const & links = m_ctx->SearchLinksByContent("connector_end");
   EXPECT_TRUE(std::find(links.begin(), links.end(), trg) != links.end());
 
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, sc_type_arc_pos_const_perm, trg);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, sc_type_arc_pos_const_perm, trg);
   EXPECT_TRUE(iter3->Next());
-  EXPECT_TRUE(iter3->Get(1) == edge);
+  EXPECT_TRUE(iter3->Get(1) == connector);
 
   ScAddr const & linkInt = ScAddr(responsePayload[3].get<size_t>());
   EXPECT_TRUE(linkInt.IsValid());
@@ -97,7 +97,7 @@ TEST_F(ScServerTest, CreateElements)
   client.Stop();
 }
 
-TEST_F(ScServerTest, CreateEmptyElements)
+TEST_F(ScServerTest, GenerateEmptyElements)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -120,7 +120,7 @@ TEST_F(ScServerTest, CreateEmptyElements)
   client.Stop();
 }
 
-TEST_F(ScServerTest, CreateElementsBySCs)
+TEST_F(ScServerTest, GenerateElementsBySCs)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -142,11 +142,11 @@ TEST_F(ScServerTest, CreateElementsBySCs)
   EXPECT_FALSE(response["status"].get<sc_bool>());
   EXPECT_FALSE(response["errors"][0]["message"].is_null());
 
-  ScAddr const & classSet = m_ctx->HelperFindBySystemIdtf("concept_set");
+  ScAddr const & classSet = m_ctx->SearchElementBySystemIdentifier("concept_set");
   EXPECT_TRUE(classSet.IsValid());
-  ScAddr const & set1 = m_ctx->HelperFindBySystemIdtf("set1");
+  ScAddr const & set1 = m_ctx->SearchElementBySystemIdentifier("set1");
   EXPECT_TRUE(set1.IsValid());
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(classSet, set1, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(classSet, set1, ScType::EdgeAccessConstPosPerm));
   EXPECT_TRUE(responsePayload[0].get<sc_bool>());
 
   EXPECT_FALSE(responsePayload[1].get<sc_bool>());
@@ -154,13 +154,13 @@ TEST_F(ScServerTest, CreateElementsBySCs)
   client.Stop();
 }
 
-TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
+TEST_F(ScServerTest, GenerateElementsBySCsUploadToStructure)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const structure = m_ctx->CreateNode(ScType::NodeConstStruct);
+  ScAddr const structure = m_ctx->GenerateNode(ScType::NodeConstStruct);
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -179,32 +179,32 @@ TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
   EXPECT_FALSE(response["errors"][0]["message"].is_null());
 
   ScSystemIdentifierQuintuple classSetSysIdtfFiver;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("concept_set", classSetSysIdtfFiver));
+  EXPECT_TRUE(m_ctx->SearchElementBySystemIdentifier("concept_set", classSetSysIdtfFiver));
   ScAddr const & classSet = classSetSysIdtfFiver.addr1;
   EXPECT_TRUE(classSet.IsValid());
 
   ScSystemIdentifierQuintuple set1SysIdtfFiver;
-  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf("set1", set1SysIdtfFiver));
+  EXPECT_TRUE(m_ctx->SearchElementBySystemIdentifier("set1", set1SysIdtfFiver));
   ScAddr const & set1 = set1SysIdtfFiver.addr1;
   EXPECT_TRUE(set1.IsValid());
 
-  ScIterator3Ptr it3 = m_ctx->Iterator3(classSet, ScType::EdgeAccessConstPosPerm, set1);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(classSet, ScType::EdgeAccessConstPosPerm, set1);
   EXPECT_TRUE(it3->Next());
-  ScAddr const & edge = it3->Get(1);
-  EXPECT_TRUE(edge.IsValid());
+  ScAddr const & connector = it3->Get(1);
+  EXPECT_TRUE(connector.IsValid());
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSet, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, edge, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSet, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, connector, ScType::EdgeAccessConstPosPerm));
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, classSetSysIdtfFiver.addr5, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, classSetSysIdtfFiver.addr5, ScType::EdgeAccessConstPosPerm));
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(structure, set1SysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1SysIdtfFiver.addr2, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1SysIdtfFiver.addr3, ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(structure, set1SysIdtfFiver.addr4, ScType::EdgeAccessConstPosPerm));
 
   EXPECT_TRUE(responsePayload[0].get<sc_bool>());
 
@@ -213,7 +213,7 @@ TEST_F(ScServerTest, CreateElementsBySCsUploadToStructure)
   client.Stop();
 }
 
-TEST_F(ScServerTest, CreateEmptyElementsBySCs)
+TEST_F(ScServerTest, GenerateEmptyElementsBySCs)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -236,7 +236,7 @@ TEST_F(ScServerTest, CreateEmptyElementsBySCs)
   client.Stop();
 }
 
-TEST_F(ScServerTest, CreateElementsByWrongSCs)
+TEST_F(ScServerTest, GenerateElementsByWrongSCs)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -271,16 +271,16 @@ TEST_F(ScServerTest, CheckElements)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & src = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & trg = m_ctx->CreateLink();
-  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, src, trg);
+  ScAddr const & src = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & trg = m_ctx->GenerateLink();
+  ScAddr const & connector = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, src, trg);
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
       "check_elements",
       ScMemoryJsonPayload::array({
           src.Hash(),
-          edge.Hash(),
+          connector.Hash(),
           trg.Hash(),
       }));
   EXPECT_TRUE(client.Send(payloadString));
@@ -294,12 +294,12 @@ TEST_F(ScServerTest, CheckElements)
 
   ScType const & srcType = ScType(responsePayload[0].get<size_t>());
   EXPECT_TRUE(m_ctx->GetElementType(src) == srcType);
-  ScType const & edgeType = ScType(responsePayload[1].get<size_t>());
-  EXPECT_TRUE(m_ctx->GetElementType(edge) == edgeType);
+  ScType const & connectorType = ScType(responsePayload[1].get<size_t>());
+  EXPECT_TRUE(m_ctx->GetElementType(connector) == connectorType);
   ScType const & trgType = ScType(responsePayload[2].get<size_t>());
   EXPECT_TRUE(m_ctx->GetElementType(trg) == trgType);
 
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeDCommonConst, trg);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, ScType::EdgeDCommonConst, trg);
   EXPECT_TRUE(iter3->Next());
 
   client.Stop();
@@ -311,16 +311,16 @@ TEST_F(ScServerTest, EraseElements)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & src = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & trg = m_ctx->CreateLink();
-  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, src, trg);
+  ScAddr const & src = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & trg = m_ctx->GenerateLink();
+  ScAddr const & connector = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, src, trg);
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
       "delete_elements",
       ScMemoryJsonPayload::array({
           src.Hash(),
-          edge.Hash(),
+          connector.Hash(),
           trg.Hash(),
       }));
   EXPECT_TRUE(client.Send(payloadString));
@@ -332,7 +332,7 @@ TEST_F(ScServerTest, EraseElements)
   EXPECT_TRUE(response["status"].get<sc_bool>());
   EXPECT_TRUE(response["errors"].empty());
 
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeAccessConstPosPerm, trg);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, ScType::EdgeAccessConstPosPerm, trg);
   EXPECT_FALSE(iter3->Next());
 
   client.Stop();
@@ -374,7 +374,7 @@ TEST_F(ScServerTest, HandleKeynodes)
   EXPECT_TRUE(addr2.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(addr2) == ScType::NodeConstClass);
   EXPECT_TRUE(addr1 == addr2);
-  EXPECT_TRUE("any_system_identifier" == m_ctx->HelperGetSystemIdtf(addr1));
+  EXPECT_TRUE("any_system_identifier" == m_ctx->GetElementSystemIdentifier(addr1));
 
   client.Stop();
 }
@@ -407,7 +407,7 @@ TEST_F(ScServerTest, HandleContent)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & link = m_ctx->CreateLink();
+  ScAddr const & link = m_ctx->GenerateLink();
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -473,7 +473,7 @@ TEST_F(ScServerTest, SetContentForNode)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -504,9 +504,9 @@ TEST_F(ScServerTest, SetContentForEdge)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr1, nodeAddr2);
+  ScAddr const nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const connectorAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nodeAddr1, nodeAddr2);
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -516,7 +516,7 @@ TEST_F(ScServerTest, SetContentForEdge)
               {"command", "set"},
               {"type", "string"},
               {"data", "some content"},
-              {"addr", edgeAddr.Hash()},
+              {"addr", connectorAddr.Hash()},
           },
       }));
   EXPECT_TRUE(client.Send(payloadString));
@@ -566,7 +566,7 @@ TEST_F(ScServerTest, GetContentForNode)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -595,9 +595,9 @@ TEST_F(ScServerTest, GetContentForEdge)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const edgeAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, nodeAddr1, nodeAddr2);
+  ScAddr const nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const connectorAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nodeAddr1, nodeAddr2);
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -605,7 +605,7 @@ TEST_F(ScServerTest, GetContentForEdge)
       ScMemoryJsonPayload::array({
           {
               {"command", "get"},
-              {"addr", edgeAddr.Hash()},
+              {"addr", connectorAddr.Hash()},
           },
       }));
   EXPECT_TRUE(client.Send(payloadString));
@@ -653,7 +653,7 @@ TEST_F(ScServerTest, HandleContentOld)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & link = m_ctx->CreateLink();
+  ScAddr const & link = m_ctx->GenerateLink();
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -687,7 +687,7 @@ TEST_F(ScServerTest, HandleIntContent)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & link = m_ctx->CreateLink();
+  ScAddr const & link = m_ctx->GenerateLink();
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -753,7 +753,7 @@ TEST_F(ScServerTest, HandleFloatContent)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & link = m_ctx->CreateLink();
+  ScAddr const & link = m_ctx->GenerateLink();
 
   std::string const payloadString = ScMemoryJsonConverter::From(
       0,
@@ -815,12 +815,12 @@ TEST_F(ScServerTest, HandleFloatContent)
 
 TEST_F(ScServerTest, SearchTemplate)
 {
-  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & link = m_ctx->CreateLink();
-  ScAddr const & noroleAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & link = m_ctx->GenerateLink();
+  ScAddr const & noroleAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
 
-  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, addr, link);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, noroleAddr, edge);
+  ScAddr const & connectorAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, addr, link);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, noroleAddr, connectorAddr);
 
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -837,7 +837,7 @@ TEST_F(ScServerTest, SearchTemplate)
           {
               {"type", "type"},
               {"value", *ScType::EdgeDCommonVar},
-              {"alias", "_edge1"},
+              {"alias", "_connector1"},
           },
           {
               {"type", "type"},
@@ -854,11 +854,11 @@ TEST_F(ScServerTest, SearchTemplate)
           {
               {"type", "type"},
               {"value", *ScType::EdgeAccessVarPosPerm},
-              {"alias", "_edge2"},
+              {"alias", "_connector2"},
           },
           {
               {"type", "alias"},
-              {"value", "_edge1"},
+              {"value", "_connector1"},
           },
       },
   });
@@ -885,12 +885,12 @@ TEST_F(ScServerTest, SearchTemplate)
 
 TEST_F(ScServerTest, SearchStringTemplate)
 {
-  ScAddr const & addr1 = m_ctx->HelperResolveSystemIdtf("node1", ScType::NodeConst);
-  ScAddr const & addr2 = m_ctx->HelperResolveSystemIdtf("node2", ScType::NodeConst);
-  ScAddr const & noroleAddr = m_ctx->HelperResolveSystemIdtf("norole1", ScType::NodeConstNoRole);
+  ScAddr const & addr1 = m_ctx->ResolveElementSystemIdentifier("node1", ScType::NodeConst);
+  ScAddr const & addr2 = m_ctx->ResolveElementSystemIdentifier("node2", ScType::NodeConst);
+  ScAddr const & noroleAddr = m_ctx->ResolveElementSystemIdentifier("norole1", ScType::NodeConstNoRole);
 
-  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeDCommonConst, addr1, addr2);
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, noroleAddr, edge);
+  ScAddr const & connectorAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, addr1, addr2);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, noroleAddr, connectorAddr);
 
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -953,7 +953,7 @@ TEST_F(ScServerTest, SearchTemplateByAddr)
 
   ScMemoryJsonPayload payload;
   payload["templ"]["type"] = "addr";
-  payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
+  payload["templ"]["value"] = m_ctx->SearchElementBySystemIdentifier("test_template_1").Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -975,9 +975,9 @@ TEST_F(ScServerTest, SearchTemplateByAddr)
 
 TEST_F(ScServerTest, GenerateTemplate)
 {
-  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & link = m_ctx->CreateLink();
-  ScAddr const & noroleAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & link = m_ctx->GenerateLink();
+  ScAddr const & noroleAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
 
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -1104,7 +1104,7 @@ TEST_F(ScServerTest, GenerateTemplateByAddr)
 
   ScMemoryJsonPayload payload;
   payload["templ"]["type"] = "addr";
-  payload["templ"]["value"] = m_ctx->HelperFindBySystemIdtf("test_template_1").Hash();
+  payload["templ"]["value"] = m_ctx->SearchElementBySystemIdentifier("test_template_1").Hash();
   std::string const payloadString = ScMemoryJsonConverter::From(0, "generate_template", payload);
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -1130,7 +1130,7 @@ TEST_F(ScServerTest, HandleEvents)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr1 = m_ctx->GenerateNode(ScType::NodeConst);
 
   std::string payloadString = ScMemoryJsonConverter::From(
       0,
@@ -1156,8 +1156,8 @@ TEST_F(ScServerTest, HandleEvents)
 
   EXPECT_TRUE(responsePayload[0].get<sc_int>() == 0);
 
-  ScAddr const & addr2 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & edge = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  ScAddr const & addr2 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & connectorAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   response = client.GetResponseMessage();
@@ -1167,7 +1167,7 @@ TEST_F(ScServerTest, HandleEvents)
   responsePayload = response["payload"];
 
   EXPECT_TRUE(responsePayload[0].get<uint64_t>() == addr1.Hash());
-  EXPECT_TRUE(responsePayload[1].get<uint64_t>() == edge.Hash());
+  EXPECT_TRUE(responsePayload[1].get<uint64_t>() == connectorAddr.Hash());
   EXPECT_TRUE(responsePayload[2].get<uint64_t>() == addr2.Hash());
 
   payloadString = ScMemoryJsonConverter::From(
@@ -1218,7 +1218,7 @@ TEST_F(ScServerTest, UnknownEvent)
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
-  ScAddr const & addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr1 = m_ctx->GenerateNode(ScType::NodeConst);
 
   std::string payloadString = ScMemoryJsonConverter::From(
       0,

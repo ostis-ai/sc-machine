@@ -11,10 +11,10 @@ TEST_F(ScStructTest, AppendIterateElements)
 {
   ScStructure structure = m_ctx->GenerateStructure();
 
-  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConstClass);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConstClass);
   EXPECT_TRUE(addr1.IsValid());
 
-  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeConstMaterial);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstMaterial);
   EXPECT_TRUE(addr2.IsValid());
 
   structure << addr1 << addr2;
@@ -34,12 +34,12 @@ TEST_F(ScStructTest, AppendIterateElements)
   EXPECT_TRUE(structure.IsEmpty());
 
   // attributes
-  ScAddr const attrAddr = m_ctx->CreateNode(ScType::NodeConstRole);
+  ScAddr const attrAddr = m_ctx->GenerateNode(ScType::NodeConstRole);
   EXPECT_TRUE(attrAddr.IsValid());
 
   EXPECT_TRUE(structure.Append(addr1, attrAddr));
   EXPECT_FALSE(structure.Append(addr1, attrAddr));
-  ScIterator5Ptr iter5 = m_ctx->Iterator5(
+  ScIterator5Ptr iter5 = m_ctx->CreateIterator5(
       structure, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
 
   bool found = false;
@@ -71,13 +71,13 @@ TEST_F(ScStructTest, AppendItSelf)
   EXPECT_TRUE(setCopy.IsValid());
   EXPECT_TRUE(set.IsValid());
 
-  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   setCopy << nodeAddr;
 
   ScTemplate templ;
   templ.Triple(setCopy, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
   ScTemplateSearchResult result;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, result));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 
   result.ForEach(
       [&](ScTemplateSearchResultItem const & item)

@@ -44,7 +44,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_new(
     sc_iterator_param p4,
     sc_iterator_param p5);
 
-/*! Create new sc-iterator5
+/*! Generate new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 First element type
  * @param p2 Second element type
@@ -62,7 +62,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_f_a_f_new(
     sc_type p4,
     sc_addr p5);
 
-/*! Create new sc-iterator5
+/*! Generate new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 sc-addr of first element in construction
  * @param p2 Second element type
@@ -80,7 +80,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_a_a_f_new(
     sc_type p4,
     sc_addr p5);
 
-/*! Create new sc-iterator5
+/*! Generate new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 sc-addr of first element in construction
  * @param p2 Second element type
@@ -98,7 +98,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_f_a_f_new(
     sc_type p4,
     sc_addr p5);
 
-/*! Create new sc-iterator5
+/*! Generate new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 sc-addr of first element in construction
  * @param p2 Second element type
@@ -116,7 +116,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_f_a_a_new(
     sc_type p4,
     sc_type p5);
 
-/*! Create new sc-iterator5
+/*! Generate new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 sc-addr of first element in construction
  * @param p2 Second element type
@@ -134,7 +134,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_f_a_a_a_a_new(
     sc_type p4,
     sc_type p5);
 
-/*! Create new sc-iterator5
+/*! Generate new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 First element type
  * @param p2 Second element type
@@ -152,7 +152,7 @@ _SC_EXTERN sc_iterator5 * sc_iterator5_a_a_f_a_a_new(
     sc_type p4,
     sc_type p5);
 
-/*! Create new sc-iterator5
+/*! Generate new sc-iterator5
  * @param type Iterator type (search template)
  * @param p1 First element type
  * @param p2 Second element type

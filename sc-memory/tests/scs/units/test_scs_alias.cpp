@@ -24,7 +24,7 @@ TEST(scs_alias, assign)
   EXPECT_TRUE(parser.GetParsedElement(t.m_source).GetType().IsNode());
   EXPECT_TRUE(parser.GetParsedElement(t.m_target).GetType().IsLink());
 
-  EXPECT_EQ(parser.GetParsedElement(t.m_edge).GetType(), ScType::EdgeAccessConstPosTemp);
+  EXPECT_EQ(parser.GetParsedElement(t.m_connector).GetType(), ScType::EdgeAccessConstPosTemp);
 }
 
 TEST(scs_alias, no_assign)
@@ -49,14 +49,14 @@ TEST(scs_alias, recursive_assigns)
 
   auto const t = triples.front();
   auto const & src = parser.GetParsedElement(t.m_source);
-  auto const & edge = parser.GetParsedElement(t.m_edge);
+  auto const & arcAddr = parser.GetParsedElement(t.m_connector);
   auto const & trg = parser.GetParsedElement(t.m_target);
 
   EXPECT_EQ(src.GetIdtf(), "_y");
   EXPECT_TRUE(src.GetType().IsNode());
   EXPECT_TRUE(src.GetType().IsVar());
 
-  EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstNegPerm);
+  EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessConstNegPerm);
 
   EXPECT_EQ(trg.GetIdtf(), "x");
   EXPECT_EQ(trg.GetType(), ScType::NodeConstTuple);
@@ -77,13 +77,13 @@ TEST(scs_alias, reassign)
     auto const & t = triples[0];
 
     auto const & src = parser.GetParsedElement(t.m_source);
-    auto const & edge = parser.GetParsedElement(t.m_edge);
+    auto const & arcAddr = parser.GetParsedElement(t.m_connector);
     auto const & trg = parser.GetParsedElement(t.m_target);
 
     EXPECT_EQ(src.GetIdtf(), "y");
     EXPECT_EQ(src.GetType(), ScType::NodeConst);
 
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessVarFuzTemp);
+    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessVarFuzTemp);
 
     EXPECT_EQ(trg.GetIdtf(), "_x");
     EXPECT_EQ(trg.GetType(), ScType::NodeVarStruct);
@@ -93,13 +93,13 @@ TEST(scs_alias, reassign)
     auto const & t = triples[1];
 
     auto const & src = parser.GetParsedElement(t.m_source);
-    auto const & edge = parser.GetParsedElement(t.m_edge);
+    auto const & arcAddr = parser.GetParsedElement(t.m_connector);
     auto const & trg = parser.GetParsedElement(t.m_target);
 
     EXPECT_EQ(src.GetIdtf(), "z");
     EXPECT_EQ(src.GetType(), ScType::NodeConst);
 
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessVarPosTemp);
+    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessVarPosTemp);
 
     EXPECT_EQ(trg.GetType(), ScType::LinkVar);
   }
@@ -120,7 +120,7 @@ TEST(scs_alias, contour)
     SPLIT_TRIPLE(triples[0]);
 
     EXPECT_EQ(src.GetType(), ScType::LinkVar);
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessVarPosTemp);
+    EXPECT_EQ(connector.GetType(), ScType::EdgeAccessVarPosTemp);
     EXPECT_EQ(trg.GetIdtf(), "y");
   }
 }

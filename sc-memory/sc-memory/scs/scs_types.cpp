@@ -120,7 +120,7 @@ bool TypeResolver::IsConst(std::string const & idtf)
   return idtf[i] != '_';
 }
 
-bool TypeResolver::IsEdgeAttrConst(std::string const & attr)
+bool TypeResolver::IsConnectorAttrConst(std::string const & attr)
 {
   return attr == ":";
 }

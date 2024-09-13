@@ -15,19 +15,19 @@ public:
   {
     if (!it)
     {
-      it = m_ctx->Iterator3(m_node, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+      it = m_ctx->CreateIterator3(m_node, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
     }
 
     BENCHMARK_BUILTIN_EXPECT(it->Next(), true);
   }
 
-  void Setup(size_t edgesNum) override
+  void Setup(size_t connectorsNum) override
   {
-    m_node = m_ctx->CreateNode(ScType::NodeConstClass);
-    for (size_t i = 0; i < edgesNum; ++i)
+    m_node = m_ctx->GenerateNode(ScType::NodeConstClass);
+    for (size_t i = 0; i < connectorsNum; ++i)
     {
-      ScAddr target = m_ctx->CreateNode(ScType::NodeConst);
-      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, m_node, target);
+      ScAddr target = m_ctx->GenerateNode(ScType::NodeConst);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_node, target);
     }
   }
 

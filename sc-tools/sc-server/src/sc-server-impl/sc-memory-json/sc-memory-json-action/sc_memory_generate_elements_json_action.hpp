@@ -10,7 +10,7 @@
 
 #include "sc-memory/sc_link.hpp"
 
-class ScMemoryCreateElementsJsonAction : public ScMemoryJsonAction
+class ScMemoryGenerateElementsJsonAction : public ScMemoryJsonAction
 {
 public:
   ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
@@ -32,20 +32,20 @@ public:
       std::string const & element = atom["el"].get<std::string>();
       ScType const & type = ScType(atom["type"].get<size_t>());
 
-      ScAddr created;
+      ScAddr generatedElementAddr;
       if (element == "node")
-        created = context->CreateNode(type);
+        generatedElementAddr = context->GenerateNode(type);
       else if (element == "edge")
       {
-        ScAddr const & src = resolveAddr(atom["src"]);
-        ScAddr const & trg = resolveAddr(atom["trg"]);
+        ScAddr const & sourceAddr = resolveAddr(atom["src"]);
+        ScAddr const & targetAddr = resolveAddr(atom["trg"]);
 
-        created = context->CreateEdge(type, src, trg);
+        generatedElementAddr = context->GenerateConnector(type, sourceAddr, targetAddr);
       }
       else if (element == "link")
       {
-        created = context->CreateLink(type);
-        ScLink link{*context, created};
+        generatedElementAddr = context->GenerateLink(type);
+        ScLink link{*context, generatedElementAddr};
 
         auto const & content = atom["content"];
         if (content.is_string())
@@ -56,7 +56,7 @@ public:
           link.Set(content.get<float>());
       }
 
-      responsePayload.push_back(created.Hash());
+      responsePayload.push_back(generatedElementAddr.Hash());
     }
 
     if (responsePayload.is_null())

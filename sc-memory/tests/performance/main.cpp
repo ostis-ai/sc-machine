@@ -6,13 +6,13 @@
 
 #include "benchmark/benchmark.h"
 
-#include "units/memory_create_edge.hpp"
-#include "units/memory_create_node.hpp"
-#include "units/memory_create_link.hpp"
+#include "units/memory_generate_connector.hpp"
+#include "units/memory_generate_node.hpp"
+#include "units/memory_generate_link.hpp"
 #include "units/memory_iterator_search.hpp"
 #include "units/memory_search_link_by_content.hpp"
-#include "units/memory_remove_diff_elements.hpp"
-#include "units/memory_remove_set_elements.hpp"
+#include "units/memory_erase_diff_elements.hpp"
+#include "units/memory_erase_set_elements.hpp"
 
 #include "units/memory_erase_elements.hpp"
 
@@ -68,37 +68,37 @@ void BM_MemoryThreaded(benchmark::State & state)
 
 int constexpr kNodeIters = 1000000;
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateNode)
 ->Threads(1)
 ->Iterations(kNodeIters)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateNode)
 ->Threads(2)
 ->Iterations(kNodeIters / 2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateNode)
 ->Threads(3)
 ->Iterations(kNodeIters / 3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateNode)
 ->Threads(4)
 ->Iterations(kNodeIters / 4)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateNode)
 ->Threads(8)
 ->Iterations(kNodeIters / 8)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateNode)
 ->Threads(16)
 ->Iterations(kNodeIters / 16)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateNode)
 ->Threads(32)
 ->Iterations(kNodeIters / 32)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
@@ -149,43 +149,43 @@ int constexpr kEdgeIters = 1000000;
 
 int constexpr kEdgeNodesIters1 = 100;
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(1)
 ->Iterations(kEdgeIters)
 ->Arg(kEdgeNodesIters1)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(2)
 ->Iterations(kEdgeIters / 2)
 ->Arg(kEdgeNodesIters1)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(3)
 ->Iterations(kEdgeIters / 3)
 ->Arg(kEdgeNodesIters1)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(4)
 ->Iterations(kNodeIters / 4)
 ->Arg(kEdgeNodesIters1)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(8)
 ->Iterations(kEdgeIters / 8)
 ->Arg(kEdgeNodesIters1)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(16)
 ->Iterations(kEdgeIters / 16)
 ->Arg(kEdgeNodesIters1)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(32)
 ->Iterations(kEdgeIters / 32)
 ->Arg(kEdgeNodesIters1)
@@ -193,43 +193,43 @@ BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
 
 int constexpr kEdgeNodesIters2 = 10000;
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(1)
 ->Iterations(kEdgeIters)
 ->Arg(kEdgeNodesIters2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(2)
 ->Iterations(kEdgeIters / 2)
 ->Arg(kEdgeNodesIters2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(3)
 ->Iterations(kEdgeIters / 3)
 ->Arg(kEdgeNodesIters2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(4)
 ->Iterations(kNodeIters / 4)
 ->Arg(kEdgeNodesIters2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(8)
 ->Iterations(kEdgeIters / 8)
 ->Arg(kEdgeNodesIters2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(16)
 ->Iterations(kEdgeIters / 16)
 ->Arg(kEdgeNodesIters2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(32)
 ->Iterations(kEdgeIters / 32)
 ->Arg(kEdgeNodesIters2)
@@ -237,43 +237,43 @@ BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
 
 int constexpr kEdgeNodesIters3 = 1000000;
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(1)
 ->Iterations(kEdgeIters)
 ->Arg(kEdgeNodesIters3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(2)
 ->Iterations(kEdgeIters / 2)
 ->Arg(kEdgeNodesIters3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(3)
 ->Iterations(kEdgeIters / 3)
 ->Arg(kEdgeNodesIters3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(4)
 ->Iterations(kNodeIters / 4)
 ->Arg(kEdgeNodesIters3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(8)
 ->Iterations(kEdgeIters / 8)
 ->Arg(kEdgeNodesIters3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(16)
 ->Iterations(kEdgeIters / 16)
 ->Arg(kEdgeNodesIters3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestGenerateConnector)
 ->Threads(32)
 ->Iterations(kEdgeIters / 32)
 ->Arg(kEdgeNodesIters3)
@@ -281,37 +281,37 @@ BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestCreateEdge)
 
 int constexpr kLinkIters = 1000000;
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateLink)
 ->Threads(1)
 ->Iterations(kLinkIters)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateLink)
 ->Threads(2)
 ->Iterations(kLinkIters / 2)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateLink)
 ->Threads(3)
 ->Iterations(kLinkIters / 3)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateLink)
 ->Threads(4)
 ->Iterations(kLinkIters / 4)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateLink)
 ->Threads(8)
 ->Iterations(kLinkIters / 8)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateLink)
 ->Threads(16)
 ->Iterations(kLinkIters / 64)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, TestGenerateLink)
 ->Threads(32)
 ->Iterations(kLinkIters / 128)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
@@ -403,61 +403,61 @@ BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestSearchLinkByContent)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(1)
 ->Iterations(kSetPower)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(2)
 ->Iterations(kSetPower / 2)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(3)
 ->Iterations(kSetPower / 3)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(4)
 ->Iterations(kSetPower / 4)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveDiffElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseDiffElements)
 ->Threads(8)
 ->Iterations(kSetPower / 8)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(1)
 ->Iterations(kSetPower)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(2)
 ->Iterations(kSetPower / 2)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(3)
 ->Iterations(kSetPower / 3)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(4)
 ->Iterations(kSetPower / 4)
 ->Arg(kSetPower)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestRemoveSetElements)
+BENCHMARK_TEMPLATE(BM_MemoryThreaded2, TestEraseSetElements)
 ->Threads(8)
 ->Iterations(kSetPower / 8)
 ->Arg(kSetPower)
@@ -479,10 +479,10 @@ void BM_Memory(benchmark::State & state)
   test.Shutdown();
 }
 
-BENCHMARK_TEMPLATE(BM_Memory, TestCreateNode)
+BENCHMARK_TEMPLATE(BM_Memory, TestGenerateNode)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
-BENCHMARK_TEMPLATE(BM_Memory, TestCreateLink)
+BENCHMARK_TEMPLATE(BM_Memory, TestGenerateLink)
 ->Unit(benchmark::TimeUnit::kMicrosecond);
 
 template <class BMType>
@@ -500,7 +500,7 @@ void BM_MemoryRanged(benchmark::State & state)
   test.Shutdown();
 }
 
-BENCHMARK_TEMPLATE(BM_MemoryRanged, TestCreateEdge)
+BENCHMARK_TEMPLATE(BM_MemoryRanged, TestGenerateConnector)
 ->Unit(benchmark::TimeUnit::kMicrosecond)
 ->Arg(1000)
 ->Iterations(5000000);

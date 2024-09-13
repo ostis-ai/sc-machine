@@ -30,7 +30,7 @@ struct TestTemplParams
       testTempl(param1, param2, param3);
 
       ScTemplateGenResult res;
-      EXPECT_TRUE(m_ctx.HelperGenTemplate(testTempl, res));
+      m_ctx.GenerateByTemplate(testTempl, res);
     }
     catch (utils::ExceptionInvalidParams & e)
     {
@@ -52,7 +52,7 @@ inline bool HasAddr(ScAddrVector const & v, ScAddr const & addr)
 
 inline ScAddr ResolveKeynode(ScMemoryContext & ctx, std::string const & idtf)
 {
-  ScAddr const addr = ctx.HelperResolveSystemIdtf(idtf, ScType::NodeConst);
+  ScAddr const addr = ctx.ResolveElementSystemIdentifier(idtf, ScType::NodeConst);
   EXPECT_TRUE(addr.IsValid());
   return addr;
 }

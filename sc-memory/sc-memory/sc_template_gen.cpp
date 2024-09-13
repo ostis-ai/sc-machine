@@ -87,15 +87,20 @@ public:
         CheckIncidenceBetweenConnectorAndIncidentElements(connectorItem, connectorAddr, sourceItem, targetItem);
 
       if (connectorAddr.IsValid())
-        m_context.GetEdgeInfo(connectorAddr, sourceAddr, targetAddr);
+      {
+        auto [firstIncidentElementAddr, secondIncidentElementAddr] =
+            m_context.GetConnectorIncidentElements(connectorAddr);
+        sourceAddr = firstIncidentElementAddr;
+        targetAddr = secondIncidentElementAddr;
+      }
 
       if (!sourceAddr.IsValid())
-        sourceAddr = CreateNodeOrLink(sourceItem.m_typeValue.UpConstType());
+        sourceAddr = GenerateNodeOrLink(sourceItem.m_typeValue.UpConstType());
       if (!targetAddr.IsValid())
-        targetAddr = CreateNodeOrLink(targetItem.m_typeValue.UpConstType());
+        targetAddr = GenerateNodeOrLink(targetItem.m_typeValue.UpConstType());
 
       if (!connectorAddr.IsValid())
-        connectorAddr = CreateConnector(connectorItem.m_typeValue.UpConstType(), sourceAddr, targetAddr);
+        connectorAddr = GenerateConnector(connectorItem.m_typeValue.UpConstType(), sourceAddr, targetAddr);
 
       result.m_replacementConstruction[resultIdx++] = sourceAddr;
       result.m_replacementConstruction[resultIdx++] = connectorAddr;
@@ -113,22 +118,22 @@ public:
   }
 
 private:
-  ScAddr CreateNodeOrLink(ScType const & type)
+  ScAddr GenerateNodeOrLink(ScType const & type)
   {
     ScAddr addr;
     if (type.IsLink())
-      addr = m_context.CreateLink(type);
+      addr = m_context.GenerateLink(type);
     else
-      addr = m_context.CreateNode(type);
+      addr = m_context.GenerateNode(type);
 
     m_generatedElements.push_back(addr);
 
     return addr;
   }
 
-  ScAddr CreateConnector(ScType const & type, ScAddr const & sourceAddr, ScAddr const & targetAddr)
+  ScAddr GenerateConnector(ScType const & type, ScAddr const & sourceAddr, ScAddr const & targetAddr)
   {
-    ScAddr const & addr = m_context.CreateEdge(type, sourceAddr, targetAddr);
+    ScAddr const & addr = m_context.GenerateConnector(type, sourceAddr, targetAddr);
     m_generatedElements.push_back(addr);
 
     return addr;
@@ -150,7 +155,7 @@ private:
     if (!varAddr.IsValid() || !m_context.IsElement(varAddr))
       return ScAddr::Empty;
 
-    std::string const & name = m_context.HelperGetSystemIdtf(varAddr);
+    std::string const & name = m_context.GetElementSystemIdentifier(varAddr);
     m_params.Get(name, result);
 
     return result;
@@ -185,9 +190,7 @@ private:
       ScTemplateItem const & sourceItem,
       ScTemplateItem const & targetItem) const
   {
-    ScAddr foundSourceAddr;
-    ScAddr foundTargetAddr;
-    m_context.GetEdgeInfo(connectorAddr, foundSourceAddr, foundTargetAddr);
+    auto const [foundSourceAddr, foundTargetAddr] = m_context.GetConnectorIncidentElements(connectorAddr);
 
     if (sourceItem.IsAddr() && sourceItem.m_addrValue != foundSourceAddr)
       SC_THROW_EXCEPTION(
@@ -256,7 +259,7 @@ private:
       if (replacementIt != m_replacements.cend())
         goto end;
 
-      varAddr = m_context.HelperFindBySystemIdtf(templateParamReplacementName);
+      varAddr = m_context.SearchElementBySystemIdentifier(templateParamReplacementName);
       if (!varAddr.IsValid())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,

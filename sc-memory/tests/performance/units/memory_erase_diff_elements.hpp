@@ -10,7 +10,7 @@
 
 #include <mutex>
 
-class TestRemoveDiffElements : public TestMemory
+class TestEraseDiffElements : public TestMemory
 {
 public:
   void Run()
@@ -28,7 +28,7 @@ public:
   void Setup(size_t objectsNum) override
   {
     for (size_t i = 0; i < objectsNum; ++i)
-      m_elements.push_back(m_ctx->CreateNode(ScType::NodeConst));
+      m_elements.push_back(m_ctx->GenerateNode(ScType::NodeConst));
   }
 
 private:
@@ -36,5 +36,5 @@ private:
   static std::mutex m_mutex;
 };
 
-ScAddrList TestRemoveDiffElements::m_elements;
-std::mutex TestRemoveDiffElements::m_mutex;
+ScAddrList TestEraseDiffElements::m_elements;
+std::mutex TestEraseDiffElements::m_mutex;

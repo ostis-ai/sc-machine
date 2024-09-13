@@ -12,96 +12,96 @@ TEST_F(ScTemplateBuildTest, DoubleAttributes)
   /**
    * addr1 _-> addr3:: addr4:: _addr2;;
    */
-  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeVar);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeVar);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const addr3 = m_ctx->CreateNode(ScType::NodeConstRole);
+  ScAddr const addr3 = m_ctx->GenerateNode(ScType::NodeConstRole);
   EXPECT_TRUE(addr3.IsValid());
-  ScAddr const addr4 = m_ctx->CreateNode(ScType::NodeConstRole);
+  ScAddr const addr4 = m_ctx->GenerateNode(ScType::NodeConstRole);
   EXPECT_TRUE(addr4.IsValid());
 
-  ScAddr const edge1 = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge1.IsValid());
-  ScAddr const edge2 = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, addr3, edge1);
-  EXPECT_TRUE(edge2.IsValid());
-  ScAddr const edge3 = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, addr4, edge1);
-  EXPECT_TRUE(edge3.IsValid());
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+  EXPECT_TRUE(arc1.IsValid());
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr3, arc1);
+  EXPECT_TRUE(arc2.IsValid());
+  ScAddr const arc3 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr4, arc1);
+  EXPECT_TRUE(arc3.IsValid());
 
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
-    ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+    ScAddr const structAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
     ScStructure st = m_ctx->ConvertToStructure(structAddr);
 
     for (auto const & a : addrs)
       st << a;
 
     ScTemplate templ;
-    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, structAddr));
+    m_ctx->BuildTemplate(templ, structAddr);
   };
 
-  testOrder({addr1, addr2, addr3, addr4, edge1, edge2, edge3});
-  testOrder({edge3, edge2, edge1, addr4, addr3, addr2, addr1});
-  testOrder({addr1, addr2, addr3, addr4, edge2, edge1, edge3});
+  testOrder({addr1, addr2, addr3, addr4, arc1, arc2, arc3});
+  testOrder({arc3, arc2, arc1, addr4, addr3, addr2, addr1});
+  testOrder({addr1, addr2, addr3, addr4, arc2, arc1, arc3});
 }
 
 TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
 {
   /**
-   * @edge1 = addr1 _-> _addr2;;
+   * @arc1 = addr1 _-> _addr2;;
    * @adge1 _-> addr3;;
    */
-  ScAddr const addr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->CreateNode(ScType::NodeVar);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeVar);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const addr3 = m_ctx->CreateNode(ScType::NodeConstRole);
+  ScAddr const addr3 = m_ctx->GenerateNode(ScType::NodeConstRole);
   EXPECT_TRUE(addr3.IsValid());
 
-  ScAddr const edge1 = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, addr1, addr2);
-  EXPECT_TRUE(edge1.IsValid());
-  ScAddr const edge2 = m_ctx->CreateEdge(ScType::EdgeAccessVarPosPerm, edge1, addr3);
-  EXPECT_TRUE(edge2.IsValid());
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+  EXPECT_TRUE(arc1.IsValid());
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, arc1, addr3);
+  EXPECT_TRUE(arc2.IsValid());
 
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
-    ScAddr const structAddr = m_ctx->CreateNode(ScType::NodeConstStruct);
+    ScAddr const structAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
     ScStructure st = m_ctx->ConvertToStructure(structAddr);
 
     for (auto const & a : addrs)
       st << a;
 
     ScTemplate templ;
-    EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, structAddr));
+    m_ctx->BuildTemplate(templ, structAddr);
   };
 
-  testOrder({addr1, addr2, addr3, edge1, edge2});
-  testOrder({edge2, edge1, addr3, addr2, addr1});
-  testOrder({addr1, addr2, addr3, edge2, edge1});
+  testOrder({addr1, addr2, addr3, arc1, arc2});
+  testOrder({arc2, arc1, addr3, addr2, addr1});
+  testOrder({addr1, addr2, addr3, arc2, arc1});
 }
 
 TEST_F(ScTemplateBuildTest, BuildGenWithParams)
 {
-  m_ctx->HelperResolveSystemIdtf("_node", ScType::NodeVar);
+  m_ctx->ResolveElementSystemIdentifier("_node", ScType::NodeVar);
 
   ScTemplate templ;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(templ, "_node _-> rrel_1:: _var;;"));
+  m_ctx->BuildTemplate(templ, "_node _-> rrel_1:: _var;;");
 
-  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
   ScTemplateParams params;
   params.Add("_node", addr);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult, params));
+  m_ctx->GenerateByTemplate(templ, genResult, params);
   EXPECT_EQ(genResult["_node"], addr);
 
-  ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_node");
+  ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_node");
   EXPECT_EQ(genResult[varAddr], addr);
 }
 
 TEST_F(ScTemplateBuildTest, GenWithParams)
 {
-  m_ctx->HelperResolveSystemIdtf("_node", ScType::NodeVar);
+  m_ctx->ResolveElementSystemIdentifier("_node", ScType::NodeVar);
 
   ScTemplate templ;
   templ(
@@ -109,29 +109,29 @@ TEST_F(ScTemplateBuildTest, GenWithParams)
       ScType::EdgeDCommonVar,
       ScType::NodeVar,
       ScType::EdgeAccessVarPosPerm,
-      m_ctx->HelperFindBySystemIdtf("rrel_1"));
+      m_ctx->SearchElementBySystemIdentifier("rrel_1"));
 
-  ScAddr const & addr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
   ScTemplateParams params;
   params.Add("_node", addr);
   EXPECT_THROW(params.Add("_node", addr), utils::ExceptionInvalidParams);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult, params));
+  m_ctx->GenerateByTemplate(templ, genResult, params);
   EXPECT_EQ(genResult["_node"], addr);
   ScAddr outAddr;
   EXPECT_TRUE(genResult.Get("_node", outAddr));
   EXPECT_EQ(outAddr, addr);
   EXPECT_TRUE(genResult.Has("_node"));
 
-  ScAddr const & varAddr = m_ctx->HelperFindBySystemIdtf("_node");
+  ScAddr const & varAddr = m_ctx->SearchElementBySystemIdentifier("_node");
   EXPECT_EQ(genResult[varAddr], addr);
   EXPECT_TRUE(genResult.Get(varAddr, outAddr));
   EXPECT_EQ(outAddr, addr);
   EXPECT_TRUE(genResult.Has(varAddr));
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult[0]["_node"], addr);
   EXPECT_TRUE(searchResult[0].Get("_node", outAddr));
   EXPECT_EQ(outAddr, addr);

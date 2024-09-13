@@ -16,11 +16,13 @@
 #include "sc_type.hpp"
 
 #include "sc_iterator.hpp"
+
 #include "sc_template.hpp"
 
-#include "sc_stream.hpp"
-
 class ScMemoryContext;
+class ScTemplate;
+class ScStream;
+using ScStreamPtr = std::shared_ptr<ScStream>;
 
 typedef struct
 {
@@ -89,11 +91,11 @@ public:
   {
     sc_uint64 m_nodesNum;
     sc_uint64 m_linksNum;
-    sc_uint64 m_edgesNum;
+    sc_uint64 m_connectorsNum;
 
     sc_uint64 GetAllNum() const
     {
-      return m_nodesNum + m_linksNum + m_edgesNum;
+      return m_nodesNum + m_linksNum + m_connectorsNum;
     }
   };
 
@@ -119,13 +121,13 @@ public:
   _SC_EXTERN void Destroy() noexcept;
 
   //! Begin events pending mode
-  _SC_EXTERN void BeingEventsPending();
+  _SC_EXTERN void BeginEventsPending();
 
   //! End events pending mode
   _SC_EXTERN void EndEventsPending();
 
   //! Begin events blocking mode
-  _SC_EXTERN void BeingEventsBlocking();
+  _SC_EXTERN void BeginEventsBlocking();
 
   //! End events blocking mode
   _SC_EXTERN void EndEventsBlocking();
@@ -139,10 +141,13 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * if (context.IsValid()) {
-   *     // Perform operations using the valid context
-   * } else {
-   *     // Handle invalid context
+   * if (context.IsValid())
+   * {
+   *   // Perform operations using the valid context.
+   * }
+   * else
+   * {
+   *   // Handle invalid context.
    * }
    * @endcode
    */
@@ -153,86 +158,167 @@ public:
    *
    * This method checks whether an sc-element with the specified sc-address exists in the sc-memory.
    *
-   * @param addr The sc-address to check for existence.
+   * @param elementAddr A sc-address to check for existence.
    * @return Returns true if the sc-element exists; otherwise, returns false.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
-   * if (context.IsElement(elementAddr)) {
-   *     // Element exists
-   * } else {
-   *     // Element does not exist
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * if (context.IsElement(elementAddr))
+   * {
+   *   // Element exists.
+   * }
+   * else
+   * {
+   *   // Element does not exist.
    * }
    * @endcode
    */
-  _SC_EXTERN bool IsElement(ScAddr const & addr) const;
+  _SC_EXTERN bool IsElement(ScAddr const & elementAddr) const;
 
   /*!
-   * @brief Returns the count of outgoing sc-arcs for a specified sc-element.
+   * @brief Returns the count of sc-edges and outgoing sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of outgoing sc-arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of sc-edges and outgoing sc-arcs for the sc-element identified by the given
+   * sc-address.
    *
-   * @param addr The sc-address of the sc-element to query.
-   * @return Returns the count of outgoing sc-arcs for the specified sc-element.
+   * @param elementAddr A sc-address of the sc-element to query.
+   * @return Returns the count of sc-edges and outgoing sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
-   * size_t outputArcsCount = context.GetElementOutputArcsCount(elementAddr);
-   * std::cout << "Output Arcs Count: " << outputArcsCount << std::endl;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * size_t outgoingArcsCount = context.GetElementEdgesAndOutgoingArcsCount(elementAddr);
+   * std::cout << "Outgoing arcs count: " << outgoingArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN size_t GetElementEdgesAndOutgoingArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of incoming sc-arcs for a specified sc-element.
+   * @brief Returns the count of sc-edges and outgoing sc-arcs for a specified sc-element.
    *
-   * This method retrieves the count of incoming sc-arcs for the sc-element identified by the given sc-address.
+   * This method retrieves the count of sc-edges and outgoing sc-arcs for the sc-element identified by the given
+   * sc-address.
    *
-   * @param addr The sc-address of the sc-element to query.
-   * @return Returns the count of incoming sc-arcs for the specified sc-element.
+   * @param elementAddr A sc-address of the sc-element to query.
+   * @return Returns the count of sc-edges and outgoing sc-arcs for the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
-   * size_t inputArcsCount = context.GetElementInputArcsCount(elementAddr);
-   * std::cout << "Input Arcs Count: " << inputArcsCount << std::endl;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * size_t outgoingArcsCount = context.GetElementOutputArcsCount(elementAddr);
+   * std::cout << "Outgoing arcs count: " << outgoingArcsCount << std::endl;
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetElementEdgesAndOutgoingArcsCount` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetElementEdgesAndOutgoingArcsCount` instead for better readability and "
+      "standards "
+      "compliance.")
+  _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & elementAddr) const noexcept(false);
+
+  /*!
+   * @brief Returns the count of sc-edges and incoming sc-arcs for a specified sc-element.
+   *
+   * This method retrieves the count of sc-edges and incoming sc-arcs for the sc-element identified by the given
+   * sc-address.
+   *
+   * @param elementAddr A sc-address of the sc-element to query.
+   * @return Returns the count of sc-edges and incoming sc-arcs for the specified sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * size_t incomingArcsCount = context.GetElementEdgesAndIncomingArcsCount(elementAddr);
+   * std::cout << "Incoming arcs count: " << incomingArcsCount << std::endl;
    * @endcode
    */
-  _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN size_t GetElementEdgesAndIncomingArcsCount(ScAddr const & elementAddr) const noexcept(false);
+
+  /*!
+   * @brief Returns the count of sc-edges and incoming sc-arcs for a specified sc-element.
+   *
+   * This method retrieves the count of sc-edges and incoming sc-arcs for the sc-element identified by the given
+   * sc-address.
+   *
+   * @param elementAddr A sc-address of the sc-element to query.
+   * @return Returns the count of sc-edges and incoming sc-arcs for the specified sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * size_t incomingArcsCount = context.GetElementInputArcsCount(elementAddr);
+   * std::cout << "Incoming arcs count: " << incomingArcsCount << std::endl;
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetElementEdgesAndIncomingArcsCount` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetElementEdgesAndIncomingArcsCount` instead for better readability and "
+      "standards "
+      "compliance.")
+  _SC_EXTERN size_t GetElementInputArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
    * @brief Erases an sc-element from the sc-memory.
    *
    * This method erases the sc-element identified by the given sc-address from the sc-memory.
    *
-   * @param addr The sc-address of the sc-element to erase.
+   * @param elementAddr A sc-address of the sc-element to erase.
    * @return Returns true if the sc-element was successfully erased; otherwise, returns false.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
-   * if (context.EraseElement(elementAddr)) {
-   *     // Element successfully erased
-   * } else {
-   *     // Erase operation failed
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * if (context.EraseElement(elementAddr))
+   * {
+   *   // Element successfully erased.
+   * }
+   * else
+   * {
+   *   // Erase operation failed.
    * }
    * @endcode
    */
-  _SC_EXTERN bool EraseElement(ScAddr const & addr) noexcept(false);
+  _SC_EXTERN bool EraseElement(ScAddr const & elementAddr) noexcept(false);
 
   /*!
    * @brief Generates a new sc-node with the specified type.
    *
    * This method creates a new sc-node with the specified type and returns its sc-address.
    *
-   * @param type The type of the sc-node to create.
+   * @param nodeType A sc-type of the sc-node to create.
+   * @return Returns the sc-address of the newly created sc-node.
+   * @throws ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr nodeAddr = context.GenerateNode(ScType::NodeConst);
+   * @endcode
+   */
+  _SC_EXTERN ScAddr GenerateNode(ScType const & nodeType) noexcept(false);
+
+  /*!
+   * @brief Generates a new sc-node with the specified type.
+   *
+   * This method creates a new sc-node with the specified type and returns its sc-address.
+   *
+   * @param nodeType A sc-type of the sc-node to create.
    * @return Returns the sc-address of the newly created sc-node.
    * @throws ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
@@ -241,15 +327,38 @@ public:
    * ScMemoryContext context;
    * ScAddr nodeAddr = context.CreateNode(ScType::NodeConst);
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GenerateNode` instead for better readability and standards
+   * compliance.
    */
-  _SC_EXTERN ScAddr CreateNode(ScType const & type) noexcept(false);
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GenerateNode` instead for better readability and standards compliance.")
+  _SC_EXTERN ScAddr CreateNode(ScType const & nodeType) noexcept(false);
 
   /*!
    * @brief Generates a new sc-link with the specified type.
    *
    * This method creates a new sc-link with the specified type and returns its sc-address.
    *
-   * @param type The type of the sc-link to create (default is ScType::LinkConst).
+   * @param linkType A sc-type of the sc-link to create (default is ScType::LinkConst).
+   * @return Returns the sc-address of the newly created sc-link.
+   * @throws ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr linkAddr = context.GenerateLink();
+   * @endcode
+   */
+  _SC_EXTERN ScAddr GenerateLink(ScType const & linkType = ScType::LinkConst) noexcept(false);
+
+  /*!
+   * @brief Generates a new sc-link with the specified type.
+   *
+   * This method creates a new sc-link with the specified type and returns its sc-address.
+   *
+   * @param linkType A sc-type of the sc-link to create (default is ScType::LinkConst).
    * @return Returns the sc-address of the newly created sc-link.
    * @throws ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
@@ -258,146 +367,274 @@ public:
    * ScMemoryContext context;
    * ScAddr linkAddr = context.CreateLink();
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GenerateLink` instead for better readability and standards
+   * compliance.
    */
-  _SC_EXTERN ScAddr CreateLink(ScType const & type = ScType::LinkConst) noexcept(false);
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GenerateLink` instead for better readability and standards compliance.")
+  _SC_EXTERN ScAddr CreateLink(ScType const & linkType = ScType::LinkConst) noexcept(false);
 
   /*!
    * @brief Generates a new sc-connector with the specified type, source, and target.
    *
    * This method creates a new sc-connector with the specified type, source, and target, and returns its sc-address.
    *
-   * @param type The type of the sc-connector to create.
-   * @param addrBeg The sc-address of the source sc-element.
-   * @param addrEnd The sc-address of the target sc-element.
+   * @param connectorType A sc-type of the sc-connector to create.
+   * @param sourceElementAddr A sc-address of the source sc-element.
+   * @param targetElementAddr A sc-address of the target sc-element.
    * @return Returns the sc-address of the newly created sc-connector.
    * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNodeAddr, targetNodeAddr);
    * @endcode
    */
-  _SC_EXTERN ScAddr CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd) noexcept(false);
+  _SC_EXTERN ScAddr GenerateConnector(
+      ScType const & connectorType,
+      ScAddr const & sourceElementAddr,
+      ScAddr const & targetElementAddr) noexcept(false);
+
+  /*!
+   * @brief Generates a new sc-connector with the specified type, source, and target.
+   *
+   * This method creates a new sc-connector with the specified type, source, and target, and returns its sc-address.
+   *
+   * @param connectorType A sc-type of the sc-connector to create.
+   * @param sourceElementAddr A sc-address of the source sc-element.
+   * @param targetElementAddr A sc-address of the target sc-element.
+   * @return Returns the sc-address of the newly created sc-connector.
+   * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr sourceNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GenerateConnector` instead for better readability and
+   * standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GenerateConnector` instead for better readability and standards compliance.")
+  _SC_EXTERN ScAddr CreateEdge(
+      ScType const & connectorType,
+      ScAddr const & sourceElementAddr,
+      ScAddr const & targetElementAddr) noexcept(false);
 
   /*!
    * @brief Returns the type of the specified sc-element.
    *
    * This method retrieves the type of the sc-element identified by the given sc-address.
    *
-   * @param addr The sc-address of the sc-element to query.
+   * @param elementAddr A sc-address of the sc-element to query.
    * @return Returns the type of the specified sc-element.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * ScType elementType = context.GetElementType(elementAddr);
    * std::cout << "Element Type: " << elementType.GetName() << std::endl;
    * @endcode
    */
-  _SC_EXTERN ScType GetElementType(ScAddr const & addr) const noexcept(false);
+  _SC_EXTERN ScType GetElementType(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
    * @brief Changes the subtype of an sc-element.
    *
    * This method changes the subtype of the sc-element identified by the given sc-address.
    *
-   * @param addr The sc-address of the sc-element to modify.
-   * @param subtype The new subtype to set.
+   * @param elementAddr A sc-address of the sc-element to modify.
+   * @param newSubtype A new subtype to set.
    * @return Returns true if the subtype was successfully changed; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
-   * if (context.SetElementSubtype(elementAddr, ScType::NodeConstRole)) {
-   *     // Subtype successfully changed
-   * } else {
-   *     // Subtype change failed
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * if (context.SetElementSubtype(elementAddr, ScType::NodeConstRole))
+   * {
+   *   // Subtype successfully changed.
+   * }
+   * else
+   * {
+   *   // Subtype change failed.
    * }
    * @endcode
    */
-  _SC_EXTERN bool SetElementSubtype(ScAddr const & addr, sc_type subtype) noexcept(false);
+  _SC_EXTERN bool SetElementSubtype(ScAddr const & elementAddr, ScType newSubtype) noexcept(false);
 
   /*!
-   * @brief Returns the source sc-element of an sc-connector.
+   * @brief Gets the source sc-element of a sc-connector.
    *
    * This method retrieves the source sc-element of the sc-connector identified by the given sc-address.
    *
-   * @param edgeAddr The sc-address of the sc-connector.
+   * @param arcAddr A sc-address of the sc-connector.
    * @return Returns the sc-address of the source sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
-   * ScAddr sourceElement = context.GetEdgeSource(edgeAddr);
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceElement = context.GetArcSourceElement(arcAddr);
    * @endcode
    */
-  _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & edgeAddr) const noexcept(false);
+  _SC_EXTERN ScAddr GetArcSourceElement(ScAddr const & arcAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the target sc-element of an sc-connector.
+   * @brief Gets the source sc-element of a sc-connector.
+   *
+   * This method retrieves the source sc-element of the sc-connector identified by the given sc-address.
+   *
+   * @param arcAddr A sc-address of the sc-connector.
+   * @return Returns the sc-address of the source sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr sourceElement = context.GetEdgeSource(arcAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetArcSourceElement` instead for better readability and
+   * standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetArcSourceElement` instead for better readability and standards compliance.")
+  _SC_EXTERN ScAddr GetEdgeSource(ScAddr const & arcAddr) const noexcept(false);
+
+  /*!
+   * @brief Gets the target sc-element of a sc-connector.
    *
    * This method retrieves the target sc-element of the sc-connector identified by the given sc-address.
    *
-   * @param edgeAddr The sc-address of the sc-connector.
+   * @param arcAddr A sc-address of the sc-connector.
    * @return Returns the sc-address of the target sc-element.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
-   * ScAddr targetElement = context.GetEdgeTarget(edgeAddr);
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr targetElement = context.GetArcTargetElement(arcAddr);
    * @endcode
    */
-  _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & edgeAddr) const noexcept(false);
+  _SC_EXTERN ScAddr GetArcTargetElement(ScAddr const & arcAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the source and target sc-elements of an sc-connector.
+   * @brief Gets the target sc-element of a sc-connector.
+   *
+   * This method retrieves the target sc-element of the sc-connector identified by the given sc-address.
+   *
+   * @param arcAddr A sc-address of the sc-connector.
+   * @return Returns the sc-address of the target sc-element.
+   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr sourceNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNode = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNode, targetNode);
+   * ScAddr targetElement = context.GetEdgeTarget(arcAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetArcTargetElement` instead for better readability and
+   * standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetEdgeTarget` instead for better readability and standards compliance.")
+  _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & arcAddr) const noexcept(false);
+
+  /*!
+   * @brief Returns the source and target sc-elements of a sc-connector.
    *
    * This method retrieves the source and target sc-elements of the sc-connector identified by the given sc-address.
    *
-   * @param edgeAddr The sc-address of the sc-connector.
-   * @param outSourceAddr Reference to store the sc-address of the source sc-element.
-   * @param outTargetAddr Reference to store the sc-address of the target sc-element.
+   * @param connectorAddr A sc-address of the sc-connector.
+   * @return Returns a tuple of sc-connector incident sc-elements sc-addresses.
+   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr sourceNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNodeAddr, targetNodeAddr);
+   * auto const [firstIncidentElementAddr, secondIncidentElementAddr] = context.GetConnectorIncidentElements(arcAddr);
+   * @endcode
+   */
+  _SC_EXTERN std::tuple<ScAddr, ScAddr> GetConnectorIncidentElements(ScAddr const & connectorAddr) const
+      noexcept(false);
+
+  /*!
+   * @brief Returns the source and target sc-elements of a sc-connector.
+   *
+   * This method retrieves the source and target sc-elements of the sc-connector identified by the given sc-address.
+   *
+   * @param connectorAddr A sc-address of the sc-connector.
+   * @param outFirstIncidentElementAddr Reference to store the sc-address of the source sc-element.
+   * @param outSecondIncidentElementAddr Reference to store the sc-address of the target sc-element.
    * @return Returns true if the information was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr sourceNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr targetNode = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeAddr = context.CreateEdge(ScType::EdgeDCommonConst, sourceNode, targetNode);
-   * ScAddr sourceElement, targetElement;
-   * if (context.GetEdgeInfo(edgeAddr, sourceElement, targetElement)) {
-   *     // Information retrieved successfully
-   * } else {
-   *     // Information retrieval failed
+   * ScAddr sourceNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr targetNodeAddr = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcAddr = context.GenerateConnector(ScType::EdgeDCommonConst, sourceNodeAddr, targetNodeAddr);
+   * ScAddr firstIncidentElementAddr, secondIncidentElementAddr;
+   * if (context.GetEdgeInfo(arcAddr, firstIncidentElementAddr, secondIncidentElementAddr))
+   * {
+   *   // Information retrieved successfully.
+   * }
+   * else
+   * {
+   *   // Information retrieval failed.
    * }
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetConnectorIncidentElements` instead for better readability
+   * and standards compliance.
    */
-  _SC_EXTERN bool GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
-      noexcept(false);
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetConnectorIncidentElements` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN bool GetEdgeInfo(
+      ScAddr const & connectorAddr,
+      ScAddr & outFirstIncidentElementAddr,
+      ScAddr & outSecondIncidentElementAddr) const noexcept(false);
 
   /*!
    * @brief Sets the content of an sc-link with a stream.
    *
    * This method sets the content of an sc-link identified by the given sc-address using the provided stream.
    *
-   * @param addr The sc-address of the sc-link.
-   * @param stream The stream containing the content.
+   * @param linkAddr A sc-address of the sc-link.
+   * @param contentStream A stream containing the content.
    * @param isSearchableString Flag indicating whether the content is searchable as a string (default is true).
    * @return Returns true if the content was successfully set; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
@@ -406,8 +643,8 @@ public:
    * permissions.
    */
   _SC_EXTERN bool SetLinkContent(
-      ScAddr const & addr,
-      ScStreamPtr const & stream,
+      ScAddr const & linkAddr,
+      ScStreamPtr const & contentStream,
       bool isSearchableString = true) noexcept(false);
 
   /*!
@@ -415,9 +652,9 @@ public:
    *
    * This method sets the content of an sc-link identified by the given sc-address using the provided typed string.
    *
-   * @param addr The sc-address of the sc-link.
-   * @param stream The stream containing the content.
-   * @param isSearchableString Flag indicating whether the content is searchable as a string (default is true).
+   * @param linkAddr A sc-address of the sc-link.
+   * @param linkContent The content of the sc-link.
+   * @param isSearchableLinkContent Flag indicating whether the content is searchable as a string (default is true).
    * @return Returns true if the content was successfully set; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
@@ -426,139 +663,181 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
-   * if (context.SetLinkContent(linkAddr, "my node")) {
-   *     // Content set successfully
-   * } else {
-   *     // Content set failed
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
+   * if (context.SetLinkContent(linkAddr, "my node"))
+   * {
+   *   // Content set successfully.
+   * }
+   * else
+   * {
+   *   // Content set failed.
    * }
    * @endcode
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
-   * if (context.SetLinkContent(linkAddr, 105)) {
-   *     // Content set successfully
-   * } else {
-   *     // Content set failed
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
+   * if (context.SetLinkContent(linkAddr, 105))
+   * {
+   *   // Content set successfully.
+   * }
+   * else
+   * {
+   *   // Content set failed.
    * }
    * @endcode
    */
   template <typename TContentType>
-  bool SetLinkContent(ScAddr const & addr, TContentType const & value, bool isSearchableString = true) noexcept(false)
-  {
-    return SetLinkContent(addr, ScStreamMakeRead(value), isSearchableString);
-  }
+  _SC_EXTERN bool SetLinkContent(
+      ScAddr const & linkAddr,
+      TContentType const & linkContent,
+      bool isSearchableLinkContent = true) noexcept(false);
 
   /*!
    * @brief Gets the content of an sc-link as a string.
    *
    * This method retrieves the content of an sc-link identified by the given sc-address as a string.
    *
-   * @param addr The sc-address of the sc-link.
-   * @param typedContent[out] The typed content retrieved from the sc-link.
+   * @param elementAddr A sc-address of the sc-link.
+   * @param outLinkContent[out] A sc-typed content retrieved from the sc-link.
    * @return Returns true if the content was successfully retrieved; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
-   * std::string outString;
-   * if (context.GetLinkContent(linkAddr, outString)) {
-   *     // Content get successfully
-   * } else {
-   *     // Content get failed
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
+   * std::string linkContent;
+   * if (context.GetLinkContent(linkAddr, linkContent))
+   * {
+   *   // Content get successfully.
+   * }
+   * else
+   * {
+   *   // Content get failed.
    * }
    * @endcode
    */
-  _SC_EXTERN bool GetLinkContent(ScAddr const & addr, std::string & typedContent) noexcept(false)
-  {
-    ScStreamPtr const & ptr = GetLinkContent(addr);
-    return ptr != nullptr && ptr->IsValid() && ScStreamConverter::StreamToString(ptr, typedContent);
-  }
+  _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, std::string & outLinkContent) noexcept(false);
 
   /*!
    * @brief Gets the content of an sc-link as a stream.
    *
    * This method retrieves the content of an sc-link identified by the given sc-address as a stream.
    *
-   * @param addr The sc-address of the sc-link.
+   * @param linkAddr A sc-address of the sc-link.
    * @return Returns a shared pointer to the stream containing the content.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    */
-  _SC_EXTERN ScStreamPtr GetLinkContent(ScAddr const & addr) noexcept(false);
+  _SC_EXTERN ScStreamPtr GetLinkContent(ScAddr const & linkAddr) noexcept(false);
 
   /*!
    * @brief Gets the content of an sc-link as a typed string.
    *
    * This method retrieves the content of an sc-link identified by the given sc-address as a typed string.
    *
-   * @param addr The sc-address of the sc-link.
-   * @return Returns a shared pointer to the stream containing the content.
+   * @param linkAddr A sc-address of the sc-link.
+   * @param outLinkContent A sc-link content to get.
+   * @return Returns true if sc-link has content; otherwise, it returns false.
    * @throws ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
-   * std::string outString;
-   * if (context.GetLinkContent(linkAddr, outString)) {
-   *     // Content get successfully
-   * } else {
-   *     // Content get failed
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
+   * std::string linkContent;
+   * if (context.GetLinkContent(linkAddr, linkContent))
+   * {
+   *   // Content get successfully.
+   * }
+   * else
+   * {
+   *   // Content get failed.
    * }
    * @endcode
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr linkAddr = context.CreateLink(ScType::LinkConst);
-   * size_t outNumber;
-   * if (context.GetLinkContent(linkAddr, outNumber)) {
-   *     // Content get successfully
-   * } else {
-   *     // Content get failed
+   * ScAddr linkAddr = context.GenerateLink(ScType::LinkConst);
+   * size_t linkContent;
+   * if (context.GetLinkContent(linkAddr, linkContent))
+   * {
+   *   // Content get successfully.
+   * }
+   * else
+   * {
+   *   // Content get failed.
    * }
    * @endcode
    */
   template <typename TContentType>
-  bool GetLinkContent(ScAddr const & addr, TContentType & typedContent) noexcept(false)
-  {
-    std::string content;
-    ScStreamPtr const & ptr = GetLinkContent(addr);
-    if (ptr != nullptr && ptr->IsValid() && ScStreamConverter::StreamToString(ptr, content))
-    {
-      std::istringstream streamString{content};
-      streamString >> typedContent;
-
-      return true;
-    }
-
-    return true;
-  }
+  _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, TContentType & outLinkContent) noexcept(false);
 
   /*!
-   * @brief Finds sc-links by content using a stream.
+   * @brief Searches sc-links by content using a stream.
    *
    * This method finds sc-links by matching the content with the provided stream.
    *
-   * @param stream The stream to use for content matching.
-   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @param linkContentStream A stream to use for content matching.
+   * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
-  _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & stream) noexcept(false);
+  _SC_EXTERN ScAddrSet SearchLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
 
   /*!
-   * @brief Finds sc-links by content using a typed string.
+   * @brief Searches sc-links by content using a stream.
+   *
+   * This method finds sc-links by matching the content with the provided stream.
+   *
+   * @param linkContentStream A stream to use for content matching.
+   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContent` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContent` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links by content using a typed string.
    *
    * This method finds sc-links by matching the content with the provided typed string.
    *
-   * @param stream The stream to use for content matching.
+   * @param linkContent A sc-link content to search.
+   * @return Returns a set of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddrSet const & linkSet = context.SearchLinksByContent("my node");
+   * for (auto const & linkAddr : linkSet)
+   * {
+   *   // Process sc-links.
+   * }
+   * @endcode
+   */
+  template <typename TContentType>
+  _SC_EXTERN ScAddrSet SearchLinksByContent(TContentType const & linkContent) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links by content using a typed string.
+   *
+   * This method finds sc-links by matching the content with the provided typed string.
+   *
+   * @param linkContent A sc-link content to search.
    * @return Returns a vector of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
@@ -566,235 +845,487 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddrVector const & linkAddrsVector = context.FindLinksByContent("my node");
-   * for (auto const & linkAddr : linkAddrsVector)
+   * ScAddrVector const & linkVector = context.FindLinksByContent("my node");
+   * for (auto const & linkAddr : linkVector)
    * {
-   *    // process links
+   *   // Process sc-links.
    * }
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContent` instead for better readability
+   * and standards compliance.
    */
-  _SC_EXTERN template <typename TContentType>
-  ScAddrVector FindLinksByContent(TContentType const & value) noexcept(false)
-  {
-    return FindLinksByContent(ScStreamMakeRead(value));
-  }
+  template <typename TContentType>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContent` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN ScAddrVector FindLinksByContent(TContentType const & linkContent) noexcept(false);
 
   /*!
-   * @brief Finds sc-links by content substring using a stream.
+   * @brief Searches sc-links by content substring using a stream.
    *
    * This method finds sc-links by matching the content substring with the provided stream.
    *
-   * @param stream The stream to use for content matching.
+   * @param linkContentSubstring A stream to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @return Returns a set of sc-addresses representing the found sc-links.
    * @throws ExceptionInvalidParams if the specified stream is invalid.
    * @throws ExceptionInvalidState if the file memory state is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddrVector const & linkAddrsVector = context.FindLinksByContentSubstring("my");
-   * for (auto const & linkAddr : linkAddrsVector)
+   * ScAddrSet const & linkSet = context.SearchLinksByContentSubstring("my");
+   * for (auto const & linkAddr : linkSet)
    * {
-   *    // process links
+   *   // Process sc-links.
    * }
    * @endcode
    */
-  _SC_EXTERN template <typename TContentType>
-  ScAddrVector FindLinksByContentSubstring(TContentType const & value, size_t maxLengthToSearchAsPrefix = 0) noexcept(
-      false)
-  {
-    return FindLinksByContentSubstring(ScStreamMakeRead(value), maxLengthToSearchAsPrefix);
-  }
-
-  /*!
-   * @brief Finds sc-links by content substring using a typed string.
-   *
-   * This method finds sc-links by matching the content substring with the provided typed string.
-   *
-   * @param stream The stream to use for content matching.
-   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
-   */
-  _SC_EXTERN ScAddrVector
-  FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
-
-  /*!
-   * @brief Finds sc-links contents by content substring using a stream.
-   *
-   * This method finds sc-links contents by matching the content substring with the provided stream.
-   *
-   * @param stream The stream to use for content matching.
-   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of strings representing the found sc-links contents.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
-   *
-   * @code
-   * ScMemoryContext context;
-   *  std::vector<std::string> const & linkContentVector = context.FindLinksByContentSubstring("my");
-   * for (auto const & content : linkContentVector)
-   * {
-   *    // process contents
-   * }
-   * @endcode
-   */
-  _SC_EXTERN template <typename TContentType>
-  std::vector<std::string> FindLinksContentsByContentSubstring(
-      TContentType const & value,
-      size_t maxLengthToSearchAsPrefix = 0) noexcept(false)
-  {
-    return FindLinksContentsByContentSubstring(ScStreamMakeRead(value), maxLengthToSearchAsPrefix);
-  }
-
-  /*!
-   * @brief Finds sc-links contents by content substring using a typed string.
-   *
-   * This method finds sc-links contents by matching the content substring with the provided typed string.
-   *
-   * @param stream The stream to use for content matching.
-   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of strings representing the found sc-links contents.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
-   */
-  _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
-      ScStreamPtr const & stream,
+  template <typename TContentType>
+  _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
+      TContentType const & linkContentSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
-   * @brief Saves the memory state.
+   * @brief Searches sc-links by content substring using a stream.
    *
-   * This method saves the state of the sc-memory.
+   * This method finds sc-links by matching the content substring with the provided stream.
    *
-   * @return Returns true if the memory state was successfully saved; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   * @param linkContentSubstring A stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddrVector const & linkVector = context.FindLinksByContentSubstring("my");
+   * for (auto const & linkAddr : linkVector)
+   * {
+   *   // Process sc-links.
+   * }
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
    */
-  _SC_EXTERN bool Save();
+  template <typename TContentType>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
+      TContentType const & linkContentSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
-  _SC_EXTERN template <
-      typename ParamType1,
-      typename ParamType2,
-      typename ParamType3,
-      typename ParamType4,
-      typename ParamType5>
-  std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> Iterator5(
+  /*!
+   * @brief Searches sc-links by content substring using a typed string.
+   *
+   * This method finds sc-links by matching the content substring with the provided typed string.
+   *
+   * @param linkContentSubstringStream A stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a set of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   */
+  _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
+      ScStreamPtr const & linkContentSubstringStream,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links by content substring using a typed string.
+   *
+   * This method finds sc-links by matching the content substring with the provided typed string.
+   *
+   * @param linkContentSubstringStream A stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of sc-addresses representing the found sc-links.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
+      ScStreamPtr const & linkContentSubstringStream,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links contents by content substring using a stream.
+   *
+   * This method finds sc-links contents by matching the content substring with the provided stream.
+   *
+   * @param linkContent A stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a set of strings representing the found sc-links contents.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * std::set<std::string> const & linkContentSet = context.SearchLinksByContentSubstring("my");
+   * for (auto const & content : linkContentSet)
+   * {
+   *   // Process contents.
+   * }
+   * @endcode
+   */
+  template <typename TContentType>
+  _SC_EXTERN std::set<std::string> SearchLinksContentsByContentSubstring(
+      TContentType const & linkContentSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links contents by content substring using a stream.
+   *
+   * This method finds sc-links contents by matching the content substring with the provided stream.
+   *
+   * @param linkContent A stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of strings representing the found sc-links contents.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * std::vector<std::string> const & linkContentVector = context.SearchLinksByContentSubstring("my");
+   * for (auto const & content : linkContentVector)
+   * {
+   *   // Process contents.
+   * }
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
+   */
+  template <typename TContentType>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
+      TContentType const & linkContentSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links contents by content substring using a typed string.
+   *
+   * This method finds sc-links contents by matching the content substring with the provided typed string.
+   *
+   * @param linkContentStream A stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a set of strings representing the found sc-links contents.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   */
+  _SC_EXTERN std::set<std::string> SearchLinksContentsByContentSubstring(
+      ScStreamPtr const & linkContentStreamSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Searches sc-links contents by content substring using a typed string.
+   *
+   * This method finds sc-links contents by matching the content substring with the provided typed string.
+   *
+   * @param linkContentStream A stream to use for content matching.
+   * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
+   * @return Returns a vector of strings representing the found sc-links contents.
+   * @throws ExceptionInvalidParams if the specified stream is invalid.
+   * @throws ExceptionInvalidState if the file memory state is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchLinksByContentSubstring` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN std::vector<std::string> FindLinksContentsByContentSubstring(
+      ScStreamPtr const & linkContentStreamSubstring,
+      size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  /*!
+   * @brief Creates an iterator for iterating over triples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3>
+  _SC_EXTERN std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> CreateIterator3(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3);
+
+  /*!
+   * @brief Creates an iterator for iterating over triples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `Iterator3` instead for better readability
+   * and standards compliance.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CreateIterator3` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3);
+
+  /*!
+   * @brief Creates an iterator for iterating over quintuples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param param4 A sc-address or sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-address or sc-type of the fifth parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
+  _SC_EXTERN std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> CreateIterator5(
       ParamType1 const & param1,
       ParamType2 const & param2,
       ParamType3 const & param3,
       ParamType4 const & param4,
-      ParamType5 const & param5)
-  {
-    return std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>>(
-        new ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(
-            *this, param1, param2, param3, param4, param5));
-  }
+      ParamType5 const & param5);
 
-  _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3>
-  std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(
+  /*!
+   * @brief Creates an iterator for iterating over quintuples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param param4 A sc-address or sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-address or sc-type of the fifth parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `CreateIterator5` instead for better readability
+   * and standards compliance.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CreateIterator5` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> Iterator5(
       ParamType1 const & param1,
       ParamType2 const & param2,
-      ParamType3 const & param3)
-  {
-    return std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>>(
-        new ScIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3));
-  }
+      ParamType3 const & param3,
+      ParamType4 const & param4,
+      ParamType5 const & param5);
 
   /*!
-   * @brief Generates an iterator for iterating over triples.
+   * @brief Creates an iterator for iterating over triples.
    *
    * This method creates an iterator for iterating over triples and calls the provided function for each result.
    *
-   * @tparam ParamType1 The type of the first parameter for the iterator.
-   * @tparam ParamType2 The type of the second parameter for the iterator.
-   * @tparam ParamType3 The type of the third parameter for the iterator.
-   * @tparam FnT The type of the function to be called for each result.
-   * @param param1 The first parameter for the iterator.
-   * @param param2 The second parameter for the iterator.
-   * @param param3 The third parameter for the iterator.
-   * @param fn The function to be called for each result.
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param callback The function to be called for each result.
    *
-   * @note fn function should have 3 parameters (ScAddr const & source, ScAddr const & edge, ScAddr const & target).
+   * @note callback function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target).
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
-  _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
-  void ForEachIter3(ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3, FnT && fn)
-  {
-    ScIterator3Ptr it = Iterator3(param1, param2, param3);
-    while (it->Next())
-      fn(it->Get(0), it->Get(1), it->Get(2));
-  }
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename TripleCallback>
+  _SC_EXTERN void ForEach(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      TripleCallback && callback);
 
   /*!
-   * @brief Generates an iterator for iterating over triples.
+   * @brief Creates an iterator for iterating over triples.
    *
    * This method creates an iterator for iterating over triples and calls the provided function for each result.
    *
-   * @tparam ParamType1 The type of the first parameter for the iterator.
-   * @tparam ParamType2 The type of the second parameter for the iterator.
-   * @tparam ParamType3 The type of the third parameter for the iterator.
-   * @tparam ParamType4 The type of the fourth parameter for the iterator.
-   * @tparam ParamType5 The type of the fifth parameter for the iterator.
-   * @tparam FnT The type of the function to be called for each result.
-   * @param param1 The first parameter for the iterator.
-   * @param param2 The second parameter for the iterator.
-   * @param param3 The third parameter for the iterator.
-   * @param param4 The fourth parameter for the iterator.
-   * @param param5 The fifth parameter for the iterator.
-   * @param fn The function to be called for each result.
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param callback The function to be called for each result.
    *
-   * @note fn function should have 4 parameters (ScAddr const & source, ScAddr const & edge, ScAddr const & target,
-   * ScAddr const & attrEdge, ScAddr const & attr)
+   * @note callback function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target).
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ForEach` instead for better readability
+   * and standards compliance.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename TripleCallback>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ForEach` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN void ForEachIter3(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      TripleCallback && callback);
+
+  /*!
+   * @brief Creates an iterator for iterating over quintuples.
+   *
+   * This method creates an iterator for iterating over quintuples and calls the provided function for each result.
+   *
+   * @param param1 A sc-type of the first parameter for the iterator.
+   * @param param2 A sc-type of the second parameter for the iterator.
+   * @param param3 A sc-type of the third parameter for the iterator.
+   * @param param4 A sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-type of the fifth parameter for the iterator.
+   * @param callback The function to be called for each result.
+   *
+   * @note callback function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target, ScAddr const & attrConnector, ScAddr const & attr)
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
-  _SC_EXTERN template <
+  template <
       typename ParamType1,
       typename ParamType2,
       typename ParamType3,
       typename ParamType4,
       typename ParamType5,
-      typename FnT>
-  void ForEachIter5(
+      typename QuintupleCallback>
+  _SC_EXTERN void ForEach(
       ParamType1 const & param1,
       ParamType2 const & param2,
       ParamType3 const & param3,
       ParamType4 const & param4,
       ParamType5 const & param5,
-      FnT && fn)
-  {
-    ScIterator5Ptr it = Iterator5(param1, param2, param3, param4, param5);
-    while (it->Next())
-      fn(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
-  }
+      QuintupleCallback && callback);
 
   /*!
-   * @brief Checks the existence of a directed edge between two sc-elements with the specified type.
+   * @brief Creates an iterator for iterating over quintuples.
    *
-   * This function checks if there is an arc (directed edge) between the specified beginning and end sc-elements
-   * with the given type. It returns true if the edge is found; otherwise, it returns false.
+   * This method creates an iterator for iterating over quintuples and calls the provided function for each result.
    *
-   * @param begin The sc-address of the beginning sc-element.
-   * @param end The sc-address of the ending sc-element.
-   * @param edgeType The type of the directed edge to check.
-   * @return Returns true if the specified edge exists; otherwise, returns false.
+   * @param param1 A sc-type of the first parameter for the iterator.
+   * @param param2 A sc-type of the second parameter for the iterator.
+   * @param param3 A sc-type of the third parameter for the iterator.
+   * @param param4 A sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-type of the fifth parameter for the iterator.
+   * @param callback The function to be called for each result.
+   *
+   * @note callback function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target, ScAddr const & attrConnector, ScAddr const & attr)
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ForEach` instead for better readability
+   * and standards compliance.
+   */
+  template <
+      typename ParamType1,
+      typename ParamType2,
+      typename ParamType3,
+      typename ParamType4,
+      typename ParamType5,
+      typename QuintupleCallback>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ForEach` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN void ForEachIter5(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      ParamType4 const & param4,
+      ParamType5 const & param5,
+      QuintupleCallback && callback);
+
+  /*!
+   * @brief Checks the existence of a sc-connector between two sc-elements with the specified type.
+   *
+   * This function checks if there is a sc-connector between the specified beginning and end sc-elements
+   * with the given type. It returns true if the sc-connector is found; otherwise, it returns false.
+   *
+   * @param sourceElementAddr A sc-address of the beginning sc-element.
+   * @param targetElementAddr A sc-address of the ending sc-element.
+   * @param connectorType A sc-type of the sc-connector to check.
+   * @return Returns true if the specified sc-connector exists; otherwise, returns false.
    * @throws ExceptionInvalidState if the sc-memory context is not valid.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr node1 = context.CreateNode(ScType::NodeConst);
-   * ScAddr node2 = context.CreateNode(ScType::NodeConst);
-   * ScAddr edgeType = context.CreateNode(ScType::EdgeDCommonConst);
-   * context.CreateEdge(node1, node2, edgeType);
-   * bool hasEdge = context.HelperCheckEdge(node1, node2, edgeType);
+   * ScAddr nodeAddr1 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr nodeAddr2 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcType = ScType::EdgeDCommonConst;
+   * context.GenerateConnector(arcType, nodeAddr1, nodeAddr2);
+   * bool doesArcExist = context.CheckConnector(nodeAddr1, nodeAddr2, arcType);
    * @endcode
    */
-  _SC_EXTERN bool HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const noexcept(false);
+  _SC_EXTERN bool CheckConnector(
+      ScAddr const & sourceElementAddr,
+      ScAddr const & targetElementAddr,
+      ScType const & connectorType) const noexcept(false);
+
+  /*!
+   * @brief Checks the existence of a sc-connector between two sc-elements with the specified type.
+   *
+   * This function checks if there is a sc-connector between the specified beginning and end sc-elements
+   * with the given type. It returns true if the sc-connector is found; otherwise, it returns false.
+   *
+   * @param sourceElementAddr A sc-address of the beginning sc-element.
+   * @param targetElementAddr A sc-address of the ending sc-element.
+   * @param connectorType A sc-type of the sc-connector to check.
+   * @return Returns true if the specified sc-connector exists; otherwise, returns false.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr nodeAddr1 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr nodeAddr2 = context.GenerateNode(ScType::NodeConst);
+   * ScAddr arcType = ScType::EdgeDCommonConst;
+   * context.GenerateConnector(arcType, nodeAddr1, nodeAddr2);
+   * bool doesArcExist = context.HelperCheckEdge(nodeAddr1, nodeAddr2, arcType);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `CheckConnector` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CheckConnector` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN bool HelperCheckEdge(
+      ScAddr const & sourceElementAddr,
+      ScAddr const & targetElementAddr,
+      ScType const & connectorType) const noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.
@@ -802,8 +1333,32 @@ public:
    * This function resolves the sc-address of an sc-element with the specified system identifier.
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
    *
-   * @param sysIdtf The system identifier of the sc-element to resolve.
-   * @param type The type of the sc-node to create if the element is not found.
+   * @param systemIdentifier The system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
+   * @return Returns the sc-address of the resolved or created sc-element.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
+   * or resolving sc-element type is not ScType::Node subtype
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr resolvedAddr = context.ResolveElementSystemIdentifier("example_identifier", ScType::NodeConstClass);
+   * @endcode
+   */
+  _SC_EXTERN ScAddr ResolveElementSystemIdentifier(
+      std::string const & systemIdentifier,
+      ScType const & elementType = ScType()) noexcept(false);
+
+  /*!
+   * @brief Resolves the sc-address of an sc-element by its system identifier.
+   *
+   * This function resolves the sc-address of an sc-element with the specified system identifier.
+   * If the element is not found, it creates a new sc-node with the specified type and system identifier.
+   *
+   * @param systemIdentifier The system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
    * @return Returns the sc-address of the resolved or created sc-element.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
    * or resolving sc-element type is not ScType::Node subtype
@@ -815,9 +1370,16 @@ public:
    * ScMemoryContext context;
    * ScAddr resolvedAddr = context.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass);
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ResolveElementSystemIdentifier` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ResolveElementSystemIdentifier` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN ScAddr
-  HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type = ScType()) noexcept(false);
+  HelperResolveSystemIdtf(std::string const & systemIdentifier, ScType const & elementType = ScType()) noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.
@@ -826,17 +1388,21 @@ public:
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
    * Additionally, it returns the system identifier quintuple of the resolved or created sc-element.
    *
-   * @param sysIdtf The system identifier of the sc-element to resolve.
-   * @param type The type of the sc-node to create if the element is not found.
-   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved
+   * @param systemIdentifier A system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
+   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved.
+   *
+   * @code
    *                              addr1 (resolved sc-element address)
    *                addr4           |
    *        addr5 --------------->  | addr2
    *     (nrel_system_identifier)   |
    *                              addr3 (system identifier sc-link)
+   * @endcode
+   *
    * @return Returns true if the sc-element is successfully resolved or created; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
-              or resolving sc-element type is not ScType::Node subtype.
+   *          or resolving sc-element type is not ScType::Node subtype.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    permissions.
@@ -844,39 +1410,120 @@ public:
    * @code
    * ScMemoryContext context;
    * ScSystemIdentifierQuintuple resultQuintuple;
-   * bool success = context.HelperResolveSystemIdtf("example_identifier", ScType::NodeConstClass, resultQuintuple);
+   * bool isResolved = context.ResolveElementSystemIdentifier("example_identifier", ScType::NodeConstClass,
+   resultQuintuple);
    * @endcode
    */
-  _SC_EXTERN bool HelperResolveSystemIdtf(
-      std::string const & sysIdtf,
-      ScType const & type,
+  _SC_EXTERN bool ResolveElementSystemIdentifier(
+      std::string const & systemIdentifier,
+      ScType const & elementType,
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
-  /*! Tries to set system identifier for sc-element ScAddr.
-   * @param sysIdtf System identifier to set for sc-element `addr`
-   * @param addr Sc-element address to set `sysIdtf` for it
-   * @returns false if `sysIdtf` set for other sc-element address.
-   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
-   * permissions.
+  /*!
+   * @brief Resolves the sc-address of an sc-element by its system identifier.
+   *
+   * This function resolves the sc-address of an sc-element with the specified system identifier.
+   * If the element is not found, it creates a new sc-node with the specified type and system identifier.
+   * Additionally, it returns the system identifier quintuple of the resolved or created sc-element.
+   *
+   * @param systemIdentifier A system identifier of the sc-element to resolve.
+   * @param elementType A sc-type of the sc-node to create if the element is not found.
+   * @param outQuintuple The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of resolved.
    *
    * @code
-   * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
-   * bool success = context.HelperSetSystemIdtf("example_identifier", elementAddr);
-   * @endcode
-   */
-  _SC_EXTERN bool HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr) noexcept(false);
-
-  /*! Tries to set system identifier for sc-element ScAddr.
-   * @param sysIdtf System identifier to set for sc-element `addr`
-   * @param addr Sc-element address to set `sysIdtf` for it
-   * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
-   * sc-element `addr` with set `sysIdtf` addr1 (`addr`) addr4           | addr5 --------------->  | addr2
+   *                              addr1 (resolved sc-element address)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
    *     (nrel_system_identifier)   |
    *                              addr3 (system identifier sc-link)
-   * @returns false if `sysIdtf` set for other sc-element address.
+   * @endcode
+   *
+   * @return Returns true if the sc-element is successfully resolved or created; otherwise, returns false.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
+   *            or resolving sc-element type is not ScType::Node subtype.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool isResolved = context.ResolveElementSystemIdentifier("example_identifier", ScType::NodeConstClass,
+   * resultQuintuple);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ResolveElementSystemIdentifier` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ResolveElementSystemIdentifier` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN bool HelperResolveSystemIdtf(
+      std::string const & systemIdentifier,
+      ScType const & elementType,
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
+
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
+   * @returns false if `systemIdentifier` set for other sc-element address.
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * bool isSet = context.SetElementSystemIdentifier("example_identifier", elementAddr);
+   * @endcode
+   */
+  _SC_EXTERN bool SetElementSystemIdentifier(std::string const & systemIdentifier, ScAddr const & elementAddr) noexcept(
+      false);
+
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
+   * @returns false if `systemIdentifier` set for other sc-element address.
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * bool isSet = context.HelperSetSystemIdtf("example_identifier", elementAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SetElementSystemIdentifier` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SetElementSystemIdentifier` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN bool HelperSetSystemIdtf(std::string const & systemIdentifier, ScAddr const & elementAddr) noexcept(false);
+
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system sc-identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
+   * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
+   * sc-element `elementAddr` with set `systemIdentifier`.
+   *
+   * @code
+   *                              addr1 (`elementAddr`)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
+   * @endcode
+   *
+   * @returns false if `systemIdentifier` set for other sc-element address.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
@@ -884,40 +1531,104 @@ public:
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
    * ScSystemIdentifierQuintuple resultQuintuple;
-   * bool success = context.HelperSetSystemIdtf("example_identifier", elementAddr, resultQuintuple);
+   * bool isSet = context.SetElementSystemIdentifier("example_identifier", elementAddr, resultQuintuple);
    * @endcode
    */
-  _SC_EXTERN bool HelperSetSystemIdtf(
-      std::string const & sysIdtf,
-      ScAddr const & addr,
+  _SC_EXTERN bool SetElementSystemIdentifier(
+      std::string const & systemIdentifier,
+      ScAddr const & elementAddr,
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
-  /*! Tries to get system identifier for sc-element ScAddr.
-   * @param addr Sc-element address to get it system identifier
-   * @returns "" if system identifier doesn't exist for `addr`.
+  /*!
+   * @brief Tries to set system identifier for sc-element `elementAddr`.
+   * @param systemIdentifier A system sc-identifier to set for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
+   * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
+   * sc-element `elementAddr` with set `systemIdentifier`.
+   *
+   * @code
+   *                              addr1 (`elementAddr`)
+   *                addr4           |
+   *        addr5 --------------->  | addr2
+   *     (nrel_system_identifier)   |
+   *                              addr3 (system identifier sc-link)
+   * @endcode
+   *
+   * @returns false if `systemIdentifier` set for other sc-element address.
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool isSet = context.HelperSetSystemIdtf("example_identifier", elementAddr, resultQuintuple);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SetElementSystemIdentifier` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SetElementSystemIdentifier` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN bool HelperSetSystemIdtf(
+      std::string const & systemIdentifier,
+      ScAddr const & elementAddr,
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
+
+  /*!
+   * @brief Tries to get system identifier for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to get it system identifier.
+   * @returns "" if system identifier doesn't exist for `elementAddr`.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    *
    * @code
    * ScMemoryContext context;
-   * ScAddr elementAddr = context.CreateNode(ScType::NodeConst);
-   * std::string sysIdtf = context.HelperGetSystemIdtf(elementAddr);
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * std::string systemIdentifier = context.GetElementSystemIdentifier(elementAddr);
    * @endcode
    */
-  _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & addr) noexcept(false);
+  _SC_EXTERN std::string GetElementSystemIdentifier(ScAddr const & elementAddr) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address.
+   * @brief Tries to get system identifier for sc-element `elementAddr`.
+   * @param elementAddr A sc-element sc-address to get it system identifier.
+   * @returns "" if system identifier doesn't exist for `elementAddr`.
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr elementAddr = context.GenerateNode(ScType::NodeConst);
+   * std::string systemIdentifier = context.HelperGetSystemIdtf(elementAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GetElementSystemIdentifier` instead for better readability
+   * and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `GetElementSystemIdentifier` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN std::string HelperGetSystemIdtf(ScAddr const & elementAddr) noexcept(false);
+
+  /*!
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
    * If the element is found, the sc-address is stored in the 'outAddr' parameter, and the function returns true;
    * otherwise, it returns false.
    *
-   * @param sysIdtf The system identifier of the sc-element to find.
-   * @param outAddr A reference to store the sc-address of the found sc-element (if any).
+   * @param systemIdentifier A system identifier of the sc-element to find.
+   * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -926,18 +1637,68 @@ public:
    * @code
    * ScMemoryContext context;
    * ScAddr resultAddr;
-   * bool found = context.HelperFindBySystemIdtf("example_identifier", resultAddr);
+   * bool isFound = context.SearchElementBySystemIdentifier("example_identifier", resultAddr);
    * @endcode
    */
-  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr) noexcept(false);
+  _SC_EXTERN bool SearchElementBySystemIdentifier(
+      std::string const & systemIdentifier,
+      ScAddr & outElementAddr) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address.
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
+   *
+   * This function searches for an sc-element with the specified system identifier and returns its sc-address.
+   * If the element is found, the sc-address is stored in the 'outAddr' parameter, and the function returns true;
+   * otherwise, it returns false.
+   *
+   * @param systemIdentifier A system identifier of the sc-element to find.
+   * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
+   * @return Returns true if the sc-element is found; otherwise, returns false.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr resultAddr;
+   * bool isFound = context.HelperFindBySystemIdtf("example_identifier", resultAddr);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchElementBySystemIdentifier` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN bool HelperFindBySystemIdtf(std::string const & systemIdentifier, ScAddr & outElementAddr) noexcept(false);
+
+  /*!
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
    * If the element is found, the function returns its sc-address; otherwise, it throws an exception.
    *
-   * @param sysIdtf The system identifier of the sc-element to find.
+   * @param systemIdentifier A system identifier of the sc-element to find.
+   * @return Returns the sc-address of the found sc-element.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScAddr resultAddr = context.SearchElementBySystemIdentifier("example_identifier");
+   * @endcode
+   */
+  _SC_EXTERN ScAddr SearchElementBySystemIdentifier(std::string const & systemIdentifier) noexcept(false);
+
+  /*!
+   * @brief Searches an sc-element by its system identifier and returns its sc-address.
+   *
+   * This function searches for an sc-element with the specified system identifier and returns its sc-address.
+   * If the element is found, the function returns its sc-address; otherwise, it throws an exception.
+   *
+   * @param systemIdentifier A system identifier of the sc-element to find.
    * @return Returns the sc-address of the found sc-element.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -947,18 +1708,25 @@ public:
    * ScMemoryContext context;
    * ScAddr resultAddr = context.HelperFindBySystemIdtf("example_identifier");
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchElementBySystemIdentifier` instead for better
+   * readability and standards compliance.
    */
-  _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & sysIdtf) noexcept(false);
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN ScAddr HelperFindBySystemIdtf(std::string const & systemIdentifier) noexcept(false);
 
   /*!
-   * @brief Finds an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
+   * @brief Searches an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
    *
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
-   * The sc-address is then converted into a system identifier quintuple, which is stored in the 'outQuintuple'
+   * A sc-address is then converted into a system identifier quintuple, which is stored in the 'outQuintuple'
    * parameter. If the element is found, the function returns true; otherwise, it returns false.
    *
-   * @param sysIdtf The system identifier of the sc-element to find.
-   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element (if any).
+   * @param systemIdentifier The system identifier of the sc-element to find.
+   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
    * @return Returns true if the sc-element is found; otherwise, returns false.
    * @throws ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -967,15 +1735,79 @@ public:
    * @code
    * ScMemoryContext context;
    * ScSystemIdentifierQuintuple resultQuintuple;
-   * bool found = context.HelperFindBySystemIdtf("example_identifier", resultQuintuple);
+   * bool isFound = context.SearchElementBySystemIdentifier("example_identifier", resultQuintuple);
    * @endcode
    */
-  _SC_EXTERN bool HelperFindBySystemIdtf(
-      std::string const & sysIdtf,
+  _SC_EXTERN bool SearchElementBySystemIdentifier(
+      std::string const & systemIdentifier,
       ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
 
   /*!
-   * Generates sc-constructions by object of `ScTemplate` and accumulates generated sc-construction into `result`.
+   * @brief Searches an sc-element by its system identifier and returns its sc-address as a system identifier quintuple.
+   *
+   * This function searches for an sc-element with the specified system identifier and returns its sc-address.
+   * A sc-address is then converted into a system identifier quintuple, which is stored in the 'outQuintuple'
+   * parameter. If the element is found, the function returns true; otherwise, it returns false.
+   *
+   * @param systemIdentifier The system identifier of the sc-element to find.
+   * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
+   * @return Returns true if the sc-element is found; otherwise, returns false.
+   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   * ScMemoryContext context;
+   * ScSystemIdentifierQuintuple resultQuintuple;
+   * bool isFound = context.HelperFindBySystemIdtf("example_identifier", resultQuintuple);
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchElementBySystemIdentifier` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchElementBySystemIdentifier` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN bool HelperFindBySystemIdtf(
+      std::string const & systemIdentifier,
+      ScSystemIdentifierQuintuple & outQuintuple) noexcept(false);
+
+  /*!
+   * @brief Generates sc-constructions by object of `ScTemplate` and accumulates generated sc-construction into
+   * `result`.
+   * @param templateToGenerate An object of `ScTemplate` to find constructions by it.
+   * @param result A generated sc-construction.
+   * @param params A map of specified sc-template sc-variables to user replacements.
+   * @param resultCode A pointer to status of method completion.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ...
+   * ScTemplate templateToGenerate;
+   * templToGenerate.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   *
+   * ScTemplateResultItem result;
+   * m_context->GenerateByTemplate(templateToGenerate, result);
+   *
+   * // handle generated sc-construction sc-elements
+   * m_context->IsElement(item["_addr2"])
+   * @endcode
+   */
+  _SC_EXTERN void GenerateByTemplate(
+      ScTemplate const & templToGenerate,
+      ScTemplateResultItem & result,
+      ScTemplateParams const & params = ScTemplateParams::Empty) noexcept(false);
+
+  /*!
+   * @brief Generates sc-constructions by object of `ScTemplate` and accumulates generated sc-construction into
+   * `result`.
    * @param templateToGenerate An object of `ScTemplate` to find constructions by it.
    * @param result A generated sc-construction.
    * @param params A map of specified sc-template sc-variables to user replacements.
@@ -985,12 +1817,12 @@ public:
    *
    * @code
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToGenerate;
-   * templ.Triple(
+   * templToGenerate.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    *
@@ -1000,9 +1832,16 @@ public:
    * // handle generated sc-construction sc-elements
    * m_context->IsElement(item["_addr2"])
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `GenerateByTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `HelperGenTemplate` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperGenTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templToGenerate,
       ScTemplateResultItem & result,
       ScTemplateParams const & params = ScTemplateParams::Empty,
       ScTemplateResultCode * resultCode = nullptr) noexcept(false);
@@ -1015,16 +1854,53 @@ public:
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use the
-   * one of callback-based HelperSearchTemplate.
+   * one of callback-based SearchByTemplate.
    *
    * @code
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
    * ...
    * ScTemplate templateToFind;
-   * templ.Triple(
+   * templToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   *
+   * ScTemplateSearchResult result;
+   * m_context->SearchByTemplate(templateToFind, result);
+   *
+   * // iterate by all result sc-constructions
+   * for (size_t i = 0; i < result.Size(); ++i)
+   * {
+   *   ScTemplateResultItem const & item = result[i];
+   *   // handle each result sc-construction sc-elements
+   *   m_context->IsElement(item["_addr2"])
+   * }
+   * @endcode
+   */
+  _SC_EXTERN ScTemplate::Result SearchByTemplate(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResult & result) noexcept(false);
+
+  /*!
+   * Searches sc-constructions by object of `ScTemplate` and accumulates found sc-constructions into `result`.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param result A result vector of found sc-constructions.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use the
+   * one of callback-based SearchByTemplate.
+   *
+   * @code
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ...
+   * ScTemplate templateToFind;
+   * templToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    *
@@ -1039,9 +1915,16 @@ public:
    *   m_context->IsElement(item["_addr2"])
    * }
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResult & result) noexcept(false);
 
   /*!
@@ -1049,41 +1932,92 @@ public:
    * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
    * condition.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
    * ...
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
-   * ScAddr const & structureAddr = context.CreateNode(ScType::NodeConstStruct);
-   * ScAddr const & modelAddr = context.CreateNode(ScType::NodeConstStruct);
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
-   * ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * // Find all instances of specified class.
+   * m_context->SearchByTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
+   *  // Add each checked instance of class to set.
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
+   *  // Check that each sc-arc between class and its instance belongs to structure.
+   *  return !context->CheckConnector(structureAddr, item["_arc"], ScType::EdgeAccessConstPosPerm);
+   * }, [&context](ScAddr const & elementAddr) -> bool {
+   *  // Check that each sc-element of find sc-construction belongs to model.
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
+   * });
+   * @endcode
+   */
+  _SC_EXTERN void SearchByTemplate(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallback const & callback,
+      ScTemplateSearchResultFilterCallback const & filterCallback = {},
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
+
+  /*!
+   * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
+   * lambda-function. If `filterCallback` passed, then all found constructions triples are filtered by `filterCallback`
+   * condition.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
+   * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
+   * @param checkCallback A lambda-function, that filters all found elements.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find all instances of specified class.
    * m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
    *  // Add each checked instance of class to set.
-   *  context.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
    * }, [&context](ScTemplateSearchResultItem const & item) -> bool {
    *  // Check that each sc-arc between class and its instance belongs to structure.
-   *  return !context->HelperCheckEdge(structureAddr, item["_edge"], ScType::EdgeAccessConstPosPerm);
-   * }, [&context](ScAddr const & addr) -> bool {
+   *  return !context->CheckConnector(structureAddr, item["_arc"], ScType::EdgeAccessConstPosPerm);
+   * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN void HelperSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
@@ -1092,36 +2026,81 @@ public:
    * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
    * lambda-function.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
    * ...
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
-   * ScAddr const & modelAddr = context.CreateNode(ScType::NodeConstStruct);
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
-   * ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
-   * structure. m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
+   * structure. m_context->SearchByTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
    *  // Add each checked instance of class to set.
-   *  context.CreateEdge(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
-   * }, [&context](ScAddr const & addr) -> bool {
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&context](ScAddr const & elementAddr) -> bool {
    *  // Check that each sc-element of find sc-construction belongs to model.
-   *  return context->HelperCheckEdge(modelAddr, addr, ScType::EdgeAccessConstPosPerm);
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
    * });
    * @endcode
    */
+  _SC_EXTERN void SearchByTemplate(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallback const & callback,
+      ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
+
+  /*!
+   * Searches sc-constructions by object of `ScTemplate` and passes found sc-constructions to `callback`
+   * lambda-function.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
+   * @param checkCallback A lambda-function, that filters all found elements.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & modelAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * // Find all instances of specified class that belong to model and for which input sc-arc from class belongs to
+   * structure.
+   * m_context->HelperSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem const & item) {
+   *  // Add each checked instance of class to set.
+   *  context.GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+   * }, [&context](ScAddr const & elementAddr) -> bool {
+   *  // Check that each sc-element of find sc-construction belongs to model.
+   *  return context->CheckConnector(modelAddr, elementAddr, ScType::EdgeAccessConstPosPerm);
+   * });
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplate` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplate` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN void HelperSearchTemplate(
-      ScTemplate const & templ,
+      ScTemplate const & templateToFind,
       ScTemplateSearchResultCallback const & callback,
       ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
 
@@ -1133,50 +2112,120 @@ public:
    *  - ScTemplateSearchRequest::ERROR.
    * When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If
    * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR returns, then sc-template search stops.
-   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate thrown
+   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateInterruptibly thrown
    * utils::ExceptionInvalidState.
    * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
-   * @param callback A lambda-function, callable when each sc-construction triple was found.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
-   * @param checkCallback A lambda-function, that filters all found triples by checking single sc-elements.
+   * @param checkCallback A lambda-function, that filters all found elements.
    * @return Returns true if the sc-constructions are found; otherwise, returns false.
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
    * ...
    * ...
-   * ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
-   * ScAddr const & structureAddr = context.CreateNode(ScType::NodeConstStruct);
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
    * ...
-   * ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
    * ScTemplate templateToFind;
    * templateToFind.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
-   * belong to structure. m_context->HelperSmartSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem
+   * belong to structure.
+   * m_context->SearchByTemplateInterruptibly(templateToFind, [&context](ScTemplateSearchResultItem
    * const & item) -> ScTemplateSearchRequest
    * {
-   *   ScAddr const & edgeAddr = item["_edge"];
-   *   if (context->HelperCheckEdge(structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))
+   *   ScAddr const & arcAddr = item["_arc"];
+   *   if (context->CheckConnector(structureAddr, arcAddr, ScType::EdgeAccessConstPosPerm))
    *    return ScTemplateSearchRequest::CONTINUE;
    *
-   *   if (context->HelperCheckEdge(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
+   *   if (context->CheckConnector(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
    *    return ScTemplateSearchRequest::STOP;
    *
    *   return ScTemplateSearchRequest::CONTINUE;
    * });
    * @endcode
    */
+  _SC_EXTERN void SearchByTemplateInterruptibly(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallbackWithRequest const & callback,
+      ScTemplateSearchResultFilterCallback const & filterCallback = {},
+      ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
+
+  /*!
+   * Searches constructions by object of `ScTemplate` and pass found sc-constructions to `callback`
+   * lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
+   *  - ScTemplateSearchRequest::CONTINUE,
+   *  - ScTemplateSearchRequest::STOP,
+   *  - ScTemplateSearchRequest::ERROR.
+   * When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If
+   * ScTemplateSearchRequest::STOP or ScTemplateSearchRequest::ERROR returns, then sc-template search stops.
+   * If sc-template search stopped by ScTemplateSearchRequest::ERROR, then SearchByTemplateInterruptibly thrown
+   * utils::ExceptionInvalidState.
+   * If `filterCallback` passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
+   * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
+   * @param callback A lambda-function, callable when all sc-construction triples were found.
+   * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
+   * @param checkCallback A lambda-function, that filters all found elements.
+   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
+   * ScAddr const & structureAddr = context.GenerateNode(ScType::NodeConstStruct);
+   * ...
+   * ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+   * ScTemplate templateToFind;
+   * templateToFind.Triple(
+   *  classAddr,
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
+   *  ScType::Unknown >> "_addr2"
+   * );
+   * // Find random instance of specified class that belongs to set, but for which input sc-arc from class doesn't
+   * belong to structure.
+   * m_context->HelperSmartSearchTemplate(templateToFind, [&context](ScTemplateSearchResultItem
+   * const & item) -> ScTemplateSearchRequest
+   * {
+   *   ScAddr const & arcAddr = item["_arc"];
+   *   if (context->CheckConnector(structureAddr, arcAddr, ScType::EdgeAccessConstPosPerm))
+   *    return ScTemplateSearchRequest::CONTINUE;
+   *
+   *   if (context->CheckConnector(setAddr, item["_addr2"], ScType::EdgeAccessConstPosTemp))
+   *    return ScTemplateSearchRequest::STOP;
+   *
+   *   return ScTemplateSearchRequest::CONTINUE;
+   * });
+   * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `SearchByTemplateInterruptibly` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplateInterruptibly` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
       ScTemplateSearchResultFilterCallback const & filterCallback = {},
       ScTemplateSearchResultCheckCallback const & checkCallback = {}) noexcept(false);
 
+  _SC_EXTERN void SearchByTemplateInterruptibly(
+      ScTemplate const & templateToFind,
+      ScTemplateSearchResultCallbackWithRequest const & callback,
+      ScTemplateSearchResultCheckCallback const & checkCallback) noexcept(false);
+
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `SearchByTemplateInterruptibly` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN void HelperSmartSearchTemplate(
       ScTemplate const & templateToFind,
       ScTemplateSearchResultCallbackWithRequest const & callback,
@@ -1185,7 +2234,30 @@ public:
   /*!
    * Translates a sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`. After
    * sc-template translation you can use object of `ScTemplate` to search or generate sc-constructions: in
-   * `HelperSearchTemplate` and `HelperGenTemplate` correspondingly.
+   * `SearchByTemplate` and `GenerateByTemplate` correspondingly.
+   * @param resultTemplate An object of `ScTemplate` to be gotten.
+   * @param translatableTemplateAddr A sc-address of sc-template structure to be translated.
+   * @param params A map of specified sc-template sc-variables to their replacements.
+   * @throws utils::ExceptionInvalidState if sc-template represented in sc-memory is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScTemplate resultTemplate;
+   * ScAddr const & translatableTemplAddr = m_context->SearchElementBySystemIdentifier("my_template");
+   * m_context->BuildTemplate(resultTemplate, translatableTemplAddr);
+   * ...
+   * @endcode
+   */
+  _SC_EXTERN void BuildTemplate(
+      ScTemplate & resultTemplate,
+      ScAddr const & translatableTemplateAddr,
+      ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
+
+  /*!
+   * Translates a sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`. After
+   * sc-template translation you can use object of `ScTemplate` to search or generate sc-constructions: in
+   * `SearchByTemplate` and `GenerateByTemplate` correspondingly.
    * @param resultTemplate An object of `ScTemplate` to be gotten.
    * @param translatableTemplateAddr A sc-address of sc-template structure to be translated.
    * @param params A map of specified sc-template sc-variables to their replacements.
@@ -1197,11 +2269,18 @@ public:
    * ...
    * ...
    * ScTemplate resultTemplate;
-   * ScAddr const & translatableTemplAddr = m_context->HelperFindBySystemIdtf("my_template");
-   * m_context->HelperBuildTemplate(resultTemplate, translatableTemplAddr);
+   * ScAddr const & translatableTemplAddr = m_context->SearchElementBySystemIdentifier("my_template");
+   * m_context->BuildTemplate(resultTemplate, translatableTemplAddr);
    * ...
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `BuildTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `BuildTemplate` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
       ScTemplate & resultTemplate,
       ScAddr const & translatableTemplateAddr,
@@ -1209,8 +2288,28 @@ public:
 
   /*!
    * Translates a sc-template represented in SCs-code into object of `ScTemplate`. After sc-template translation you can
-   * use object of `ScTemplate` to search or generate sc-constructions: in `HelperSearchTemplate` and
-   * `HelperGenTemplate` correspondingly.
+   * use object of `ScTemplate` to search or generate sc-constructions: in `SearchByTemplate` and
+   * `GenerateByTemplate` correspondingly.
+   * @param resultTemplate An object of `ScTemplate` to be gotten.
+   * @param translatableSCsTemplate A sc.s-representation of sc-template to be translated.
+   * @throws utils::ExceptionInvalidState if sc-template represented in SCs-code is not valid.
+   *
+   * @code
+   * ...
+   * ...
+   * ScTemplate resultTemplate;
+   * std::string const translatableSCsTemplate = "concept_set _-> _var;;";
+   * m_context->BuildTemplate(resultTemplate, translatableSCsTemplate);
+   * ...
+   * @endcode
+   */
+  _SC_EXTERN void BuildTemplate(ScTemplate & resultTemplate, std::string const & translatableSCsTemplate) noexcept(
+      false);
+
+  /*!
+   * Translates a sc-template represented in SCs-code into object of `ScTemplate`. After sc-template translation you can
+   * use object of `ScTemplate` to search or generate sc-constructions: in `SearchByTemplate` and
+   * `GenerateByTemplate` correspondingly.
    * @param resultTemplate An object of `ScTemplate` to be gotten.
    * @param translatableSCsTemplate A sc.s-representation of sc-template to be translated.
    * @return Returns true if the sc-template represented in SCs-code into object of `ScTemplate`; otherwise, throws
@@ -1225,7 +2324,14 @@ public:
    * m_context->HelperBuildTemplate(resultTemplate, translatableSCsTemplate);
    * ...
    * @endcode
+   *
+   * @warning This method is deprecated since 0.10.0. Use `BuildTemplate` instead for better
+   * readability and standards compliance.
    */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `BuildTemplate` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN ScTemplate::Result HelperBuildTemplate(
       ScTemplate & resultTemplate,
       std::string const & translatableSCsTemplate) noexcept(false);
@@ -1233,7 +2339,7 @@ public:
 protected:
   /*!
    * Translates an object of `ScTemplate` to sc-template in sc-memory (sc-structure).
-   * This method is an inverse of the `HelperBuildTemplate` method.
+   * This method is an inverse of the `BuildTemplate` method.
    * @param translatableTemplate An object of `ScTemplate` to be translated.
    * @param resultTemplateAddr A sc-address of sc-template structure to be gotten in sc-memory.
    * @param params A map of specified sc-template sc-variables to their replacements.
@@ -1242,17 +2348,17 @@ protected:
    * ...
    * ...
    * ScTemplate translatableTemplate;
-   * templ.Triple(
+   * translatableTemplate.Triple(
    *  classAddr,
-   *  ScType::EdgeAccessVarPosPerm >> "_edge",
+   *  ScType::EdgeAccessVarPosPerm >> "_arc",
    *  ScType::Unknown >> "_addr2"
    * );
    * ScAddr resultTemplateAddr;
-   * m_context->HelperLoadTemplate(translatableTemplate, resultTemplateAddr);
+   * m_context->LoadTemplate(translatableTemplate, resultTemplateAddr);
    * ...
    * @endcode
    */
-  _SC_EXTERN void HelperLoadTemplate(
+  _SC_EXTERN void LoadTemplate(
       ScTemplate & translatableTemplate,
       ScAddr & resultTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams()) noexcept(false);
@@ -1262,7 +2368,30 @@ public:
    * @return Returns sc-nodes, sc-connectors and sc-links counts.
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
    */
+  _SC_EXTERN ScMemoryStatistics CalculateStatistics() const;
+
+  /*! Calculates sc-element counts.
+   * @return Returns sc-nodes, sc-connectors and sc-links counts.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `CalculateStatistics` instead for better
+   * readability and standards compliance.
+   */
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CalculateStatistics` instead for better readability and standards "
+      "compliance.")
   _SC_EXTERN ScMemoryStatistics CalculateStat() const;
+
+  /*!
+   * @brief Saves the memory state.
+   *
+   * This method saves the state of the sc-memory.
+   *
+   * @return Returns true if the memory state was successfully saved; otherwise, returns false.
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   */
+  _SC_EXTERN bool Save();
 
 protected:
   _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr) noexcept;
@@ -1278,7 +2407,7 @@ public:
   _SC_EXTERN explicit ScMemoryContextEventsPendingGuard(ScMemoryContext & context)
     : m_context(context)
   {
-    m_context.BeingEventsPending();
+    m_context.BeginEventsPending();
   }
 
   _SC_EXTERN ~ScMemoryContextEventsPendingGuard()
@@ -1296,7 +2425,7 @@ public:
   _SC_EXTERN explicit ScMemoryContextEventsBlockingGuard(ScMemoryContext & context)
     : m_context(context)
   {
-    m_context.BeingEventsBlocking();
+    m_context.BeginEventsBlocking();
   }
 
   _SC_EXTERN ~ScMemoryContextEventsBlockingGuard()
@@ -1307,3 +2436,5 @@ public:
 private:
   ScMemoryContext & m_context;
 };
+
+#include "sc_memory.tpp"

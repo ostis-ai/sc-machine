@@ -40,7 +40,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
 
   ScMemoryJsonPayload responsePayload;
   if (requestPayload.find("create") != requestPayload.cend())
-    responsePayload = HandleCreate(sessionId, requestPayload["create"], errorsPayload);
+    responsePayload = HandleGenerate(sessionId, requestPayload["create"], errorsPayload);
   else if (requestPayload.find("delete") != requestPayload.cend())
     responsePayload = HandleDelete(sessionId, requestPayload["delete"], errorsPayload);
   else
@@ -51,7 +51,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleRequestPayload(
   return responsePayload;
 }
 
-ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
+ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleGenerate(
     ScServerSessionId const & sessionId,
     ScMemoryJsonPayload const & message,
     ScMemoryJsonPayload & errorsPayload)
@@ -88,7 +88,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleCreate(
     }
     eventClass = it->second;
 
-    ScAddr const & eventClassAddr = m_context->HelperFindBySystemIdtf(eventClass);
+    ScAddr const & eventClassAddr = m_context->SearchElementBySystemIdentifier(eventClass);
     if (!eventClassAddr.IsValid())
     {
       errorsPayload = "Invalid sc-event type with system identifier `" + eventClass + "`.";

@@ -4,7 +4,7 @@
 
 #include "sc_test.hpp"
 
-TEST(ScTypeTest, nodes)
+TEST(ScTypeTest, Nodes)
 {
   EXPECT_TRUE(ScType::Node.IsNode());
 
@@ -27,7 +27,7 @@ TEST(ScTypeTest, nodes)
   EXPECT_TRUE(ScType::NodeVarTuple.IsNode());
 }
 
-TEST(ScTypeTest, constancy)
+TEST(ScTypeTest, Constancy)
 {
   EXPECT_FALSE(ScType::Node.IsConst());
   EXPECT_FALSE(ScType::Node.IsVar());
@@ -70,7 +70,7 @@ TEST(ScTypeTest, constancy)
   EXPECT_TRUE(ScType::EdgeAccessVarPosTemp.IsVar());
 }
 
-TEST(ScTypeTest, edges)
+TEST(ScTypeTest, Connectors)
 {
   EXPECT_TRUE(ScType::EdgeAccess.IsEdge());
   EXPECT_TRUE(ScType::EdgeAccessConstFuzPerm.IsEdge());
@@ -93,7 +93,7 @@ TEST(ScTypeTest, edges)
   EXPECT_TRUE(ScType::EdgeUCommonVar.IsEdge());
 }
 
-TEST(ScTypeTest, extend)
+TEST(ScTypeTest, ExtendTypes)
 {
   EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::Node));
   EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::NodeConst));

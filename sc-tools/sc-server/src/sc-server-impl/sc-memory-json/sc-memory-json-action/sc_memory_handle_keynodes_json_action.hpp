@@ -23,11 +23,11 @@ public:
 
       ScAddr keynode;
       if (type == "find")
-        keynode = context->HelperFindBySystemIdtf(idtf);
+        keynode = context->SearchElementBySystemIdentifier(idtf);
       else if (type == "resolve")
       {
         ScType const & elType = ScType(atom["elType"].get<size_t>());
-        keynode = context->HelperResolveSystemIdtf(idtf, elType);
+        keynode = context->ResolveElementSystemIdentifier(idtf, elType);
       }
 
       responsePayload.push_back(keynode.Hash());

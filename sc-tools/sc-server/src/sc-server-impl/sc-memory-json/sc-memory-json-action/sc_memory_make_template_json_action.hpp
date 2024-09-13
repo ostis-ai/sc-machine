@@ -25,7 +25,7 @@ protected:
         auto const & value = it.value();
         if (value.is_string())
         {
-          ScAddr const & addr = context->HelperFindBySystemIdtf(value.get<std::string>());
+          ScAddr const & addr = context->SearchElementBySystemIdentifier(value.get<std::string>());
           templParams.Add(key, addr);
         }
         else
@@ -38,7 +38,7 @@ protected:
     {
       scTemplate = new ScTemplate();
       std::string templateStr = payload.get<std::string>();
-      context->HelperBuildTemplate(*scTemplate, templateStr);
+      context->BuildTemplate(*scTemplate, templateStr);
     }
     else if (payload.find("type") != payload.end())
     {
@@ -47,11 +47,11 @@ protected:
 
       scTemplate = new ScTemplate();
       if (type == "addr")
-        context->HelperBuildTemplate(*scTemplate, ScAddr(value.get<size_t>()), templParams);
+        context->BuildTemplate(*scTemplate, ScAddr(value.get<size_t>()), templParams);
       else if (type == "idtf")
       {
-        ScAddr const & templateStruct = context->HelperFindBySystemIdtf(value.get<std::string>());
-        context->HelperBuildTemplate(*scTemplate, templateStruct, templParams);
+        ScAddr const & templateStruct = context->SearchElementBySystemIdentifier(value.get<std::string>());
+        context->BuildTemplate(*scTemplate, templateStruct, templParams);
       }
     }
     else
@@ -93,10 +93,10 @@ protected:
     for (auto const & triple : triples)
     {
       auto const & srcParam = convertItemToParam(triple[0]);
-      auto const & edgeParam = convertItemToParam(triple[1]);
+      auto const & connectorParam = convertItemToParam(triple[1]);
       auto const & trgParam = convertItemToParam(triple[2]);
 
-      scTemplate->Triple(srcParam, edgeParam, trgParam);
+      scTemplate->Triple(srcParam, connectorParam, trgParam);
     }
 
     return scTemplate;

@@ -415,18 +415,18 @@ ScTemplate & ScTemplate::Quintuple(
 {
   size_t const replPos = m_templateTriples.size() * 3;
 
-  ScTemplateItem edgeCommonItem = param2;
+  ScTemplateItem connectorCommonItem = param2;
 
-  // check if relation edge has replacement
-  if (edgeCommonItem.m_name.empty())
+  // check if relation connector has replacement
+  if (connectorCommonItem.m_name.empty())
   {
     std::stringstream ss;
     ss << "_repl_" << replPos + 1;
-    edgeCommonItem.m_name = ss.str();
+    connectorCommonItem.m_name = ss.str();
   }
 
-  Triple(param1, edgeCommonItem, param3);
-  Triple(param5, param4, edgeCommonItem.m_name);
+  Triple(param1, connectorCommonItem, param3);
+  Triple(param5, param4, connectorCommonItem.m_name);
 
   return *this;
 }
@@ -609,7 +609,7 @@ ScAddr ScTemplateResultItem::GetAddrByName(std::string const & name) const
   if (it != m_templateItemsNamesToReplacementItemPositions.cend())
     return m_replacementConstruction[it->second];
 
-  ScAddr const & addr = m_context->HelperFindBySystemIdtf(name);
+  ScAddr const & addr = m_context->SearchElementBySystemIdentifier(name);
   if (addr.IsValid())
   {
     it = m_templateItemsNamesToReplacementItemPositions.find(std::to_string(addr.Hash()));
@@ -629,7 +629,7 @@ ScAddr ScTemplateResultItem::GetAddrByVarAddr(ScAddr const & varAddr) const
   if (it != m_templateItemsNamesToReplacementItemPositions.cend())
     return m_replacementConstruction[it->second];
 
-  std::string const & varIdtf = m_context->HelperGetSystemIdtf(varAddr);
+  std::string const & varIdtf = m_context->GetElementSystemIdentifier(varAddr);
   it = m_templateItemsNamesToReplacementItemPositions.find(varIdtf);
   if (it != m_templateItemsNamesToReplacementItemPositions.cend())
     return m_replacementConstruction[it->second];
@@ -694,7 +694,7 @@ ScTemplate::ScTemplateItemsToReplacementsItemsPositions ScTemplateSearchResult::
       continue;
 
     ScAddr const & varAddr = ScAddr(hash);
-    std::string const & sysIdtf = m_context->HelperGetSystemIdtf(varAddr);
+    std::string const & sysIdtf = m_context->GetElementSystemIdentifier(varAddr);
     if (sysIdtf.empty())
       continue;
 

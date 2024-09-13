@@ -7,11 +7,11 @@
 All agents in C++ represent some classes in C++. To implement an agent in C++, you need to perform the following common steps:
 
 1. Write input (initial) construction and output (result) construction of your future agent in SC-code.
-2. Create folder with source and header files for sc-agent implementation.
+2. Generate folder with source and header files for sc-agent implementation.
 3. Also you need write `CMakeLists.txt` file. We use cmake to build projects in C++.
 4. In header file, define a class in C++ for this agent and specifies in it at least class of actions that this agent performs and its program. In such class you can also specify primary initiation condition, initiation condition, and result condition.
 5. In source file, implement all declared methods of agent's class. You can also implement your own methods and use them in an agent program. You can use all C++ and OOP tools as much as possible. 
-6. Create file and implement class for keynodes used by implemented agent.
+6. Generate file and implement class for keynodes used by implemented agent.
 7. Implement class for module for subscribing implemented agent.
 8. Write tests for implemented agent.
 
@@ -52,7 +52,7 @@ In addition to agents that initiate actions themselves and then perform these ac
 
 --- 
 
-### **2. Create folder with source and header files for agent and `CMakeLists.txt.` file.**
+### **2. Generate folder with source and header files for agent and `CMakeLists.txt.` file.**
 
 You should get something like this structure:
 
@@ -78,7 +78,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "agent/*.cpp" "agent/*.hpp"
 )
 
-# Create and link your library with using libraries.
+# Generate and link your library with using libraries.
 add_library(set-agents SHARED ${SOURCES})
 target_link_libraries(set-agents LINK_PUBLIC sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -134,7 +134,7 @@ To learn more about opportunities and restrictions for implementing agents, see 
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
-  return m_context.HelperFindBySystemIdtf("action_calculate_set_power");
+  return m_context.SearchElementBySystemIdentifier("action_calculate_set_power");
   // You have to make sure that this class is in the knowledge base.
 }
 // You must specify valid action class. In other case, the agent can’t be 
@@ -169,7 +169,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // But, in any problem, the presence of NON-factors must be considered, 
   // but this is omitted here.
   size_t setPower = 0;
-  ScIterator3Ptr const it3 = m_context.Iterator3( 
+  ScIterator3Ptr const it3 = m_context.CreateIterator3( 
     setAddr,
     ScType::EdgeAccessConstPosPerm,
     ScType::NodeConst
@@ -177,14 +177,14 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   while (it3->Next())
     ++setPower;
 
-  ScAddr const & setPowerAddr = m_context.CreateLink(ScType::LinkConst);
+  ScAddr const & setPowerAddr = m_context.GenerateLink(ScType::LinkConst);
   m_context.SetLinkContent(setPowerAddr, setPower);
   ScAddr const & arcCommonAddr 
-    = m_context.CreateEdge(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
+    = m_context.GenerateConnector(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
-    = m_context.HelperFindBySystemIdtf("nrel_set_power");
+    = m_context.SearchElementBySystemIdentifier("nrel_set_power");
   // You have to make sure that this norole relation is in the knowledge base.
-  ScAddr const & arcAccessAddr = m_context.CreateEdge(
+  ScAddr const & arcAccessAddr = m_context.GenerateConnector(
     ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
 
   action.FormResult(
@@ -213,7 +213,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
 ### **6. Define keynodes for implemented agent and integrate their in agent program.**
 
-For each agent, you can specify key sc-elements that this agent uses during the execution of its program. These key sc-elements are sc-elements that agent does not generate, but uses in the process of searching for or creating connections between entities in knowledge base. Key sc-elements are named keynodes. You can find these keynodes by its system identifiers (method `HelperFindBySystemIdtf`) if they have such identifiers. Also, you can use class `ScKeynode` to define keynodes as static objects and use them in agents.
+For each agent, you can specify key sc-elements that this agent uses during the execution of its program. These key sc-elements are sc-elements that agent does not generate, but uses in the process of searching for or creating connections between entities in knowledge base. Key sc-elements are named keynodes. You can find these keynodes by its system identifiers (method `SearchElementBySystemIdentifier`) if they have such identifiers. Also, you can use class `ScKeynode` to define keynodes as static objects and use them in agents.
 
 ```diff
 set-agents-module/
@@ -278,7 +278,7 @@ public:
 
 ScAddr ScAgentCalculateSetPower::GetActionClass() const
 {
-- return m_context.HelperFindBySystemIdtf("action_calculate_set_power");
+- return m_context.SearchElementBySystemIdentifier("action_calculate_set_power");
 + return ScSetKeynodes::action_calculate_set_power;
 }
 
@@ -287,10 +287,10 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   ...
 
 - ScAddr const & nrelSetPowerAddr 
--   = m_context.HelperFindBySystemIdtf("nrel_set_power");
-- ScAddr const & arcAccessAddr = m_context.CreateEdge(
+-   = m_context.SearchElementBySystemIdentifier("nrel_set_power");
+- ScAddr const & arcAccessAddr = m_context.GenerateConnector(
 -   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
-+ ScAddr const & arcAccessAddr = m_context.CreateEdge(
++ ScAddr const & arcAccessAddr = m_context.GenerateConnector(
 +   ScType::EdgeAccessConstPosPerm, 
 +   ScSetKeynodes::nrel_set_power, 
 +   arcCommonAddr);
@@ -425,7 +425,7 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 +    "tests/*.cpp"
 +)
 
-# Create executable for tests.
+# Generate executable for tests.
 +add_executable(set-agents-tests ${TEST_SOURCES})
 +target_link_libraries(set-agents-tests LINK_PRIVATE set-agents)
 +target_include_directories(set-agents-tests 
@@ -449,14 +449,14 @@ using AgentTest = ScMemoryTest;
 
 TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 {
-  // Create action with class that your agent performs.
+  // Generate action with class that your agent performs.
   ScAction action 
     = m_ctx->GenerateAction(ScSetKeynodes::action_calculate_set_power);
 
-  // Create set with two sc-elements.
+  // Generate set with two sc-elements.
   ScSet set = m_ctx->GenerateSet();
-  ScAddr nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   set << nodeAddr1 << nodeAddr2;
 
   // Set generated set as argument for action.
@@ -475,14 +475,14 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 
   // Check sc-constructions in result structure.
   // Check the first three element construction.
-  ScIterator3Ptr it3 = m_ctx->Iterator3(
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(
     structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeDCommonConst);
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr = it3->Get(2);
 
   ScAddr beginAddr;
   ScAddr linkAddr;
-  m_ctx->GetEdgeInfo(arcAddr, beginAddr, linkAddr);
+  m_ctx->GetConnectorIncidentElements(arcAddr, beginAddr, linkAddr);
   EXPECT_EQ(beginAddr, set);
   EXPECT_TRUE(m_ctx->GetElementType(linkAddr).IsLink());
 
@@ -492,14 +492,14 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
   EXPECT_EQ(setPower, 2u);
 
   // Check the second three element construction.
-  it3 = m_ctx->Iterator3(
+  it3 = m_ctx->CreateIterator3(
     structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeAccessConstPosPerm);
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr2 = it3->Get(2);
 
   ScAddr relationAddr;
   ScAddr targetArcAddr;
-  m_ctx->GetEdgeInfo(arcAddr2, relationAddr, targetArcAddr);
+  m_ctx->GetConnectorIncidentElements(arcAddr2, relationAddr, targetArcAddr);
   EXPECT_EQ(relationAddr, ScSetKeynodes::nrel_set_power);
   EXPECT_EQ(targetArcAddr, arcAddr);
 }

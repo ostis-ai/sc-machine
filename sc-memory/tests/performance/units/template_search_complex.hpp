@@ -13,7 +13,7 @@ class TestTemplateSearchComplex : public TestTemplate
 public:
   void Setup(size_t constrCount) override
   {
-    ScAddr const node = m_ctx->CreateNode(ScType::NodeConstStruct);
+    ScAddr const node = m_ctx->GenerateNode(ScType::NodeConstStruct);
     m_templ.Quintuple(
           node,
           ScType::EdgeDCommonVar,
@@ -34,7 +34,7 @@ public:
     for (size_t i = 0; i < constrCount; ++i)
     {
       ScTemplateGenResult result;
-      m_ctx->HelperGenTemplate(m_templ, result);
+      m_ctx->GenerateByTemplate(m_templ, result);
     }
   }
 };

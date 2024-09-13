@@ -21,7 +21,7 @@
 class ScMemoryJsonEventsHandler : public ScMemoryJsonHandler
 {
 public:
-  using ScEventSubscriptionCreateCallback = std::function<ScEventSubscription *(
+  using ScEventSubscriptionGenerateCallback = std::function<ScEventSubscription *(
       ScMemoryContext *,
       ScAddr const &,
       ScMemoryJsonEventsManager *,
@@ -45,7 +45,7 @@ private:
       sc_bool & status,
       sc_bool & isEvent) override;
 
-  ScMemoryJsonPayload HandleCreate(
+  ScMemoryJsonPayload HandleGenerate(
       ScServerSessionId const & sessionId,
       ScMemoryJsonPayload const & message,
       ScMemoryJsonPayload & errorsPayload);

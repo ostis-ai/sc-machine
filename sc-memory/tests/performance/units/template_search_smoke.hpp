@@ -13,11 +13,11 @@ class TestTemplateSearchSmoke : public TestTemplate
 public:
   void Setup(size_t constrCount) override
   {
-    ScAddr const node = m_ctx->CreateNode(ScType::NodeConst);
+    ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
     for (uint32_t i = 0; i < constrCount; ++i)
     {
-      ScAddr const trg = m_ctx->CreateNode(ScType::NodeConstStruct);
-      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, node, trg);
+      ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConstStruct);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, node, trg);
     }
 
     m_templ.Triple(

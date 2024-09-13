@@ -20,7 +20,7 @@ ScAddr const & ScKeynodeCache::GetKeynode(std::string const & idtf)
   auto const it = m_cache.find(idtf);
   if (it == m_cache.cend())
   {
-    ScAddr const addr = m_ctx.HelperResolveSystemIdtf(idtf);
+    ScAddr const addr = m_ctx.ResolveElementSystemIdentifier(idtf);
     if (addr.IsValid())
     {
       auto const it_insert = m_cache.insert(std::make_pair(idtf, addr));

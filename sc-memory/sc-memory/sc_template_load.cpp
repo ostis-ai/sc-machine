@@ -28,7 +28,7 @@ protected:
 
   void operator()(ScTemplate * inTemplate, ScAddr & resultTemplateAddr)
   {
-    resultTemplateAddr = m_context.CreateNode(ScType::NodeConstStruct);
+    resultTemplateAddr = m_context.GenerateNode(ScType::NodeConstStruct);
     ScStructure templateStruct(m_context, resultTemplateAddr);
 
     std::unordered_map<std::string, ScAddr> itemNamesToTemplateElements;
@@ -66,11 +66,11 @@ protected:
         else if (item.IsType())
         {
           if (m_context.IsElement(sourceAddr) && m_context.IsElement(targetAddr))
-            itemAddr = m_context.CreateEdge(item.m_typeValue, sourceAddr, targetAddr);
+            itemAddr = m_context.GenerateConnector(item.m_typeValue, sourceAddr, targetAddr);
           else if (item.m_typeValue.IsLink())
-            itemAddr = m_context.CreateLink(item.m_typeValue);
+            itemAddr = m_context.GenerateLink(item.m_typeValue);
           else
-            itemAddr = m_context.CreateNode(item.m_typeValue);
+            itemAddr = m_context.GenerateNode(item.m_typeValue);
         }
 
         if (item.HasName())

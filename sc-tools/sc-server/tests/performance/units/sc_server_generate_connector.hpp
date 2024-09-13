@@ -9,7 +9,7 @@
 #include "sc_server_test.hpp"
 #include "../../sc_memory_json_converter.hpp"
 
-class TestCreateEdge : public TestScServer
+class TestGenerateConnector : public TestScServer
 {
 public:
   void Run(std::unique_ptr<ScClient> const & client)
@@ -40,7 +40,7 @@ public:
   {
     m_nodes.reserve(elementsNum);
     for (size_t i = 0; i < elementsNum; ++i)
-      m_nodes.push_back(m_ctx->CreateNode(ScType::NodeConst));
+      m_nodes.push_back(m_ctx->GenerateNode(ScType::NodeConst));
   }
 
 private:

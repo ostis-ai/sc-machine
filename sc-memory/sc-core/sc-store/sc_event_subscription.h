@@ -50,7 +50,7 @@ void sc_event_subscription_manager_initialize(sc_event_subscription_manager ** m
 void sc_event_subscription_manager_shutdown(sc_event_subscription_manager * manager);
 
 /*! Subscribe for events from specified sc-element.
- * @param ctx A sc-memory context used to generate sc-event subscription.
+ * @param ctx A sc-memory context used to create sc-event subscription.
  * @param subscription_addr sc-address of subscribed sc-element events.
  * @param event_type_addr Type of listening sc-events.
  * @param data Pointer to user data.
@@ -68,7 +68,7 @@ _SC_EXTERN sc_event_subscription * sc_event_subscription_new(
     sc_event_subscription_delete_function delete_callback);
 
 /*! Subscribe for events from specified sc-element.
- * @param ctx A sc-memory context used to generate sc-event subscription.
+ * @param ctx A sc-memory context used to create sc-event subscription.
  * @param subscription_addr sc-address of subscribed sc-element events.
  * @param event_type_addr Type of listening sc-events.
  * @param event_element_type Type of arc to be involved in event.

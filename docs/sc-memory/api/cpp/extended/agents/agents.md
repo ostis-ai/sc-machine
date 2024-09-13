@@ -378,7 +378,7 @@ ScResult MyAgent::DoProgram(
   ScActionInitiatedEvent const & event, ScAction & action)
 {
   // You can use object of ScAction as object of ScAddr.
-  ScIterator3Ptr const it3 = m_context.Iterator3(action, ..., ...);
+  ScIterator3Ptr const it3 = m_context.CreateIterator3(action, ..., ...);
 
   // Some logic...
 
@@ -590,7 +590,7 @@ bool MyAgent::CheckInitiationCondition(ScActionInitiatedEvent const & event)
  // information about initiated sc-event: GetUser, GetArc, 
  // GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.
  // All events are not copyable and movable.
- return m_context.HelperCheckEdge(
+ return m_context.CheckConnector(
    ScType::EdgeAccessConstPosPerm, 
    MyKeynodes::my_action, 
    event.GetArcTargetElement());
@@ -668,7 +668,7 @@ bool MyAgent::CheckResult(
   ScActionInitiatedEvent const & event, ScAction & action)
 {
   ScStructure const & actionResult = action.GetResult();
-  ScIterator3Ptr const it3 = m_context.Iterator3(
+  ScIterator3Ptr const it3 = m_context.CreateIterator3(
     MyKeynodes::my_class,
     ScType::EdgeAccessConstPosPerm,
     ScType::NodeConst,

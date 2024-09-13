@@ -84,7 +84,7 @@ TEST(scs_level_6, content_empty)
   SPLIT_TRIPLE(triples[0]);
 
   EXPECT_EQ(src.GetIdtf(), "x");
-  EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosPerm);
+  EXPECT_EQ(connector.GetType(), ScType::EdgeAccessConstPosPerm);
   EXPECT_EQ(trg.GetType(), ScType::LinkConst);
 
   EXPECT_EQ(trg.GetValue(), "");
@@ -104,7 +104,7 @@ TEST(scs_level_6, content_constant)
   SPLIT_TRIPLE(triples[0]);
 
   EXPECT_EQ(src.GetIdtf(), "x");
-  EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosPerm);
+  EXPECT_EQ(connector.GetType(), ScType::EdgeAccessConstPosPerm);
   EXPECT_EQ(trg.GetType(), ScType::LinkConst);
 
   EXPECT_EQ(trg.GetValue(), "content_const");
@@ -223,14 +223,14 @@ TEST(scs_level_6, contour_simple)
     SPLIT_TRIPLE(triples[0]);
 
     EXPECT_EQ(src.GetIdtf(), "y");
-    EXPECT_EQ(edge.GetType(), ScType::EdgeDCommonVar);
+    EXPECT_EQ(connector.GetType(), ScType::EdgeDCommonVar);
     EXPECT_EQ(trg.GetIdtf(), "z");
   }
 
   for (size_t i = 1; i < 4; ++i)
   {
-    auto const & edge = parser.GetParsedElement(triples[i].m_edge);
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosPerm);
+    auto const & arcAddr = parser.GetParsedElement(triples[i].m_connector);
+    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessConstPosPerm);
 
     auto const & src = parser.GetParsedElement(triples[i].m_source);
     EXPECT_EQ(src.GetType(), ScType::NodeConstStruct);
@@ -240,7 +240,7 @@ TEST(scs_level_6, contour_simple)
     SPLIT_TRIPLE(triples.back());
 
     EXPECT_EQ(src.GetIdtf(), "x");
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstNegPerm);
+    EXPECT_EQ(connector.GetType(), ScType::EdgeAccessConstNegPerm);
     EXPECT_EQ(trg.GetType(), ScType::NodeConstStruct);
   }
 }
@@ -259,39 +259,39 @@ TEST(scs_level_6, contour_recursive)
   {
     SPLIT_TRIPLE(triples[0]);
     EXPECT_EQ(src.GetIdtf(), "k");
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosTemp);
+    EXPECT_EQ(connector.GetType(), ScType::EdgeAccessConstPosTemp);
     EXPECT_EQ(trg.GetIdtf(), "z");
   }
 
-  auto const checkStructEdges = [&triples, &parser](size_t idxStart, size_t idxEnd)
+  auto const CheckStructArcs = [&triples, &parser](size_t idxStart, size_t idxEnd)
   {
     for (size_t i = idxStart; i < idxEnd; ++i)
     {
-      auto const & edge = parser.GetParsedElement(triples[i].m_edge);
-      EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstPosPerm);
+      auto const & connector = parser.GetParsedElement(triples[i].m_connector);
+      EXPECT_EQ(connector.GetType(), ScType::EdgeAccessConstPosPerm);
 
       auto const & src = parser.GetParsedElement(triples[i].m_source);
       EXPECT_EQ(src.GetType(), ScType::NodeConstStruct);
     }
   };
 
-  checkStructEdges(1, 4);
+  CheckStructArcs(1, 4);
 
   {
     SPLIT_TRIPLE(triples[4]);
 
     EXPECT_EQ(src.GetIdtf(), "y");
-    EXPECT_EQ(edge.GetType(), ScType::EdgeDCommonVar);
+    EXPECT_EQ(connector.GetType(), ScType::EdgeDCommonVar);
     EXPECT_EQ(trg.GetType(), ScType::NodeConstStruct);
   }
 
-  checkStructEdges(5, 14);
+  CheckStructArcs(5, 14);
 
   {
     SPLIT_TRIPLE(triples[14]);
 
     EXPECT_EQ(src.GetIdtf(), "x");
-    EXPECT_EQ(edge.GetType(), ScType::EdgeAccessConstNegTemp);
+    EXPECT_EQ(connector.GetType(), ScType::EdgeAccessConstNegTemp);
     EXPECT_EQ(trg.GetType(), ScType::NodeConstStruct);
   }
 }
@@ -312,7 +312,7 @@ TEST(scs_level_6, contout_with_content)
     SPLIT_TRIPLE(triples[0]);
 
     EXPECT_EQ(src.GetIdtf(), "y");
-    EXPECT_EQ(edge.GetType(), ScType::EdgeDCommonVar);
+    EXPECT_EQ(connector.GetType(), ScType::EdgeDCommonVar);
     EXPECT_EQ(trg.GetType(), ScType::LinkConst);
     EXPECT_EQ(trg.GetValue(), "test*");
   }

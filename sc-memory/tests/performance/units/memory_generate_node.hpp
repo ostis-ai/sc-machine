@@ -8,11 +8,11 @@
 
 #include "memory_test.hpp"
 
-class TestCreateNode : public TestMemory
+class TestGenerateNode : public TestMemory
 {
 public:
   void Run()
   {
-    m_ctx->CreateNode(ScType::NodeConstAbstract);
+    m_ctx->GenerateNode(ScType::NodeConstAbstract);
   }
 };

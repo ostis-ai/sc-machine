@@ -27,7 +27,7 @@ public:
                 {
                     {"type", "type"},
                     {"value", sc_type_arc_pos_var_perm | sc_type_var},
-                    {"alias", "_edge1"},
+                    {"alias", "_connector1"},
                 },
                 {
                     {"type", "type"},
@@ -40,15 +40,15 @@ public:
     client->Send(payloadString);
   }
 
-  void Setup(size_t edgeNum) override
+  void Setup(size_t connectorsNum) override
   {
     size_t nodeNum = 10;
     m_nodes.reserve(nodeNum);
     for (size_t i = 0; i < nodeNum; ++i)
-      m_nodes.push_back(m_ctx->CreateNode(ScType::NodeConst));
+      m_nodes.push_back(m_ctx->GenerateNode(ScType::NodeConst));
 
-    for (size_t i = 0; i < edgeNum; ++i)
-      m_ctx->CreateEdge(
+    for (size_t i = 0; i < connectorsNum; ++i)
+      m_ctx->GenerateConnector(
           ScType::EdgeAccessConstPosPerm, m_nodes[random() % m_nodes.size()], m_nodes[random() % m_nodes.size()]);
   }
 

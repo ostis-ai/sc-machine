@@ -58,12 +58,12 @@ void ScKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (!context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
+    if (!context->CheckConnector(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
   };
 
   ScSystemIdentifierQuintuple quintuple;
-  context->HelperResolveSystemIdtf(std::string(m_sysIdtf), m_type, quintuple);
+  context->ResolveElementSystemIdentifier(std::string(m_sysIdtf), m_type, quintuple);
   this->m_realAddr = quintuple.addr1.GetRealAddr();
 
   if (context->IsElement(contextStructureAddr))
@@ -100,24 +100,24 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (!context->HelperCheckEdge(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
+    if (!context->CheckConnector(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
+      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
   };
 
   ScSystemIdentifierQuintuple quintuple;
   std::string const & sysIdtf = std::string(m_sysIdtf);
-  if (!context->HelperFindBySystemIdtf(sysIdtf, quintuple))
+  if (!context->SearchElementBySystemIdentifier(sysIdtf, quintuple))
   {
     for (auto const & initializer : m_constructionInitializers)
       initializer(*this);
 
-    context->HelperLoadTemplate(*this, *this);
-    context->HelperSetSystemIdtf(sysIdtf, *this, quintuple);
+    context->LoadTemplate(*this, *this);
+    context->SetElementSystemIdentifier(sysIdtf, *this, quintuple);
   }
   else
   {
     this->m_realAddr = quintuple.addr1.GetRealAddr();
-    context->HelperBuildTemplate(*this, *this);
+    context->BuildTemplate(*this, *this);
   }
 
   if (context->IsElement(contextStructureAddr))
@@ -139,14 +139,14 @@ void ScKeynodes::Initialize(ScMemoryContext * context)
   auto const & ResolveArc = [&](ScAddr const & beginAddr, ScAddr const & endAddr)
   {
     ScAddr arcAddr;
-    ScIterator3Ptr it3 = context->Iterator3(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+    ScIterator3Ptr it3 = context->CreateIterator3(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
     if (it3->Next())
       arcAddr = it3->Get(1);
     else
-      arcAddr = context->CreateEdge(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+      arcAddr = context->GenerateConnector(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
 
     if (context->IsElement(contextStructureAddr))
-      context->CreateEdge(ScType::EdgeAccessConstPosPerm, contextStructureAddr, arcAddr);
+      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, arcAddr);
   };
 
   SC_LOG_INFO("Initialize " << GetName<ScKeynodes>());
@@ -157,7 +157,7 @@ void ScKeynodes::Initialize(ScMemoryContext * context)
   for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
   {
     ScAddr & item = kKeynodeRrelList[i];
-    item = context->HelperResolveSystemIdtf("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
+    item = context->ResolveElementSystemIdentifier("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
   }
 
   // command states

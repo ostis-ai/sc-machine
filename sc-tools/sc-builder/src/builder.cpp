@@ -85,14 +85,14 @@ bool Builder::BuildSources(ScRepoPathCollector::Sources const & buildSources, Sc
 ScAddr Builder::ResolveOutputStructure()
 {
   ScSystemIdentifierQuintuple fiver;
-  m_ctx->HelperResolveSystemIdtf(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
+  m_ctx->ResolveElementSystemIdentifier(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
   ScAddr const & outputStructure = fiver.addr1;
 
   auto const & AddElementToStructure = [this, &outputStructure](ScAddr const & addr)
   {
-    if (!m_ctx->HelperCheckEdge(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
+    if (!m_ctx->CheckConnector(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
     {
-      m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
+      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
     }
   };
 
@@ -123,7 +123,7 @@ bool Builder::ProcessFile(std::string const & fileName, ScAddr const & outputStr
 void Builder::DumpStatistics()
 {
   // print statistics
-  ScMemoryContext::ScMemoryStatistics const stats = m_ctx->CalculateStat();
+  ScMemoryContext::ScMemoryStatistics const stats = m_ctx->CalculateStatistics();
 
   auto const allCount = stats.GetAllNum();
 
@@ -135,7 +135,7 @@ void Builder::DumpStatistics()
 
   ScConsole::PrintLine() << ScConsole::Color::White << "Statistics";
   printLine("Nodes", stats.m_nodesNum, float(stats.m_nodesNum) / float(allCount) * 100);
-  printLine("Edges", stats.m_edgesNum, float(stats.m_edgesNum) / float(allCount) * 100);
+  printLine("Connectors", stats.m_connectorsNum, float(stats.m_connectorsNum) / float(allCount) * 100);
   printLine("Links", stats.m_linksNum, float(stats.m_linksNum) / float(allCount) * 100);
   ScConsole::PrintLine() << ScConsole::Color::LightBlue << "Total: " << ScConsole::Color::White << stats.GetAllNum();
 }

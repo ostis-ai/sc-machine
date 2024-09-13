@@ -12,15 +12,15 @@ void checkConnectionInStruct(
     ScAddr const & otherKeynodeAddr,
     ScAddr const & structure)
 {
-  ScIterator3Ptr const it3 = m_ctx->Iterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
+  ScIterator3Ptr const it3 = m_ctx->CreateIterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
   while (it3->Next())
   {
-    bool checkEdge = m_ctx->HelperCheckEdge(structure, it3->Get(1), ScType::EdgeAccessConstPosPerm);
+    bool checkEdge = m_ctx->CheckConnector(structure, it3->Get(1), ScType::EdgeAccessConstPosPerm);
     EXPECT_TRUE(checkEdge);
     if (checkEdge == SC_FALSE)
       SC_LOG_ERROR(
-          "Edge between %s" + m_ctx->HelperGetSystemIdtf(keynodeAddr) + " and %s"
-          + m_ctx->HelperGetSystemIdtf(otherKeynodeAddr) + " doesn't belong to struct");
+          "Edge between %s" + m_ctx->GetElementSystemIdentifier(keynodeAddr) + " and %s"
+          + m_ctx->GetElementSystemIdentifier(otherKeynodeAddr) + " doesn't belong to struct");
   }
 }
 
@@ -30,14 +30,14 @@ bool checkKeynodeInStruct(
     ScAddr const & kNrelSystemIdtf,
     ScAddr const & structure)
 {
-  ScIterator5Ptr const it5 = m_ctx->Iterator5(
+  ScIterator5Ptr const it5 = m_ctx->CreateIterator5(
       keynodeAddr, ScType::EdgeDCommonConst, ScType::LinkConst, ScType::EdgeAccessConstPosPerm, kNrelSystemIdtf);
   bool result = it5->Next();
   if (result)
   {
     for (size_t i = 0; i < 4; i++)
     {
-      result &= m_ctx->HelperCheckEdge(structure, it5->Get(i), ScType::EdgeAccessConstPosPerm);
+      result &= m_ctx->CheckConnector(structure, it5->Get(i), ScType::EdgeAccessConstPosPerm);
     }
   }
 
@@ -49,7 +49,7 @@ TEST_F(ScMemoryTest, LinkContent)
   std::string str("test content string");
   ScStreamPtr const stream = ScStreamMakeRead(str);
 
-  ScAddr const link = m_ctx->CreateLink();
+  ScAddr const link = m_ctx->GenerateLink();
 
   EXPECT_TRUE(link.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(link));
@@ -75,27 +75,27 @@ TEST_F(ScMemoryTest, LinkContent)
 
   EXPECT_EQ(str, str2);
 
-  ScAddrVector const result = m_ctx->FindLinksByContent(stream);
+  ScAddrSet const result = m_ctx->SearchLinksByContent(stream);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(result.front(), link);
+  EXPECT_TRUE(result.count(link));
 }
 
 TEST_F(ScMemoryTest, FindByLinkContent)
 {
-  ScAddr const linkAddr1 = m_ctx->CreateLink();
+  ScAddr const linkAddr1 = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr1.IsValid());
 
   std::string const linkContent1 = "ScMemoryContext_FindLinksByContent_content_1";
   ScLink link1(*m_ctx, linkAddr1);
   EXPECT_TRUE(link1.Set(linkContent1));
 
-  ScAddrVector const result = m_ctx->FindLinksByContent(linkContent1);
+  ScAddrSet const result = m_ctx->SearchLinksByContent(linkContent1);
   EXPECT_EQ(result.size(), 1u);
 }
 
 TEST_F(ScMemoryTest, LinkContentStringApi)
 {
-  ScAddr const linkAddr1 = m_ctx->CreateLink();
+  ScAddr const linkAddr1 = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr1.IsValid());
 
   std::string str;
@@ -109,19 +109,19 @@ TEST_F(ScMemoryTest, LinkContentStringApi)
 TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
 {
   std::string russianIdtf = "узел";
-  ScAddr russianNode = m_ctx->CreateNode(ScType::NodeConstClass);
-  EXPECT_THROW(m_ctx->HelperSetSystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->HelperFindBySystemIdtf(russianIdtf, russianNode), utils::ExceptionInvalidParams);
+  ScAddr russianNode = m_ctx->GenerateNode(ScType::NodeConstClass);
+  EXPECT_THROW(m_ctx->SetElementSystemIdentifier(russianIdtf, russianNode), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->SearchElementBySystemIdentifier(russianIdtf, russianNode), utils::ExceptionInvalidParams);
 
   std::string englishIdtf = "russianNode";
-  ScAddr englishNode = m_ctx->CreateNode(ScType::NodeConstClass);
-  EXPECT_TRUE(m_ctx->HelperSetSystemIdtf(englishIdtf, englishNode));
-  EXPECT_EQ(m_ctx->HelperFindBySystemIdtf(englishIdtf), englishNode);
+  ScAddr englishNode = m_ctx->GenerateNode(ScType::NodeConstClass);
+  EXPECT_TRUE(m_ctx->SetElementSystemIdentifier(englishIdtf, englishNode));
+  EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier(englishIdtf), englishNode);
 }
 
 TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
 {
-  ScAddr const linkAddr = m_ctx->CreateLink();
+  ScAddr const linkAddr = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr.IsValid());
 
   std::string str;
@@ -137,9 +137,9 @@ static inline ScTemplateKeynode const & testTemplate =
 
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {
-  ScAddr const & initMemoryGeneratedStructure = m_ctx->HelperFindBySystemIdtf("result_structure");
+  ScAddr const & initMemoryGeneratedStructure = m_ctx->SearchElementBySystemIdentifier("result_structure");
   EXPECT_TRUE(initMemoryGeneratedStructure.IsValid());
-  ScAddr const & kNrelSystemIdtf = m_ctx->HelperFindBySystemIdtf("nrel_system_identifier");
+  ScAddr const & kNrelSystemIdtf = m_ctx->SearchElementBySystemIdentifier("nrel_system_identifier");
   EXPECT_TRUE(kNrelSystemIdtf.IsValid());
   ScMemoryContext * context = m_ctx.get();
 

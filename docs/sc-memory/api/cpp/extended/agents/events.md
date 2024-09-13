@@ -15,7 +15,7 @@ The sc-machine uses event-driven model to manage processing sc-constructions. Th
 
 These are methods that generate events: 
 
-- `CreateEdge`, 
+- `GenerateConnector`, 
 - `EraseElement`,
 - `SetLinkContent`.
 

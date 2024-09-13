@@ -164,13 +164,13 @@ TEST(ScBuilder, BuilderConfig)
   auto * context = new ScMemoryContext();
 
   ScSystemIdentifierQuintuple quintuple;
-  context->HelperFindBySystemIdtf(builderParams.m_resultStructureSystemIdtf, quintuple);
+  context->SearchElementBySystemIdentifier(builderParams.m_resultStructureSystemIdtf, quintuple);
   ScAddr const & resultStructure = quintuple.addr1;
   EXPECT_TRUE(resultStructure.IsValid());
 
   auto const & CheckInStructure = [&context, &resultStructure](ScAddr const & addr)
   {
-    EXPECT_TRUE(context->HelperCheckEdge(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
+    EXPECT_TRUE(context->CheckConnector(resultStructure, addr, ScType::EdgeAccessConstPosPerm));
   };
 
   CheckInStructure(quintuple.addr2);

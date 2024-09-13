@@ -57,7 +57,7 @@ void _logPrintHandler(sc_char const *, GLogLevelFlags log_level, sc_char const *
   }
 }
 
-#define CHECK_CONTEXT SC_CHECK(IsValid(), "Used context is invalid. Make sure that it's initialized")
+#define CHECK_CONTEXT SC_CHECK(IsValid(), "Used context is invalid. Make sure that it's initialized.")
 
 }  // namespace
 
@@ -77,8 +77,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   ScAddr initMemoryGeneratedStructureAddr;
   if (params.init_memory_generated_upload)
-    initMemoryGeneratedStructureAddr =
-        ms_globalContext->HelperResolveSystemIdtf(params.init_memory_generated_structure, ScType::NodeConstStruct);
+    initMemoryGeneratedStructureAddr = ms_globalContext->ResolveElementSystemIdentifier(
+        params.init_memory_generated_structure, ScType::NodeConstStruct);
   ms_globalContext->m_contextStructureAddr = initMemoryGeneratedStructureAddr;
 
   ScKeynodes::Initialize(ms_globalContext);
@@ -191,7 +191,7 @@ sc_memory_context * ScMemoryContext::GetRealContext() const
   return m_context;
 }
 
-void ScMemoryContext::BeingEventsPending()
+void ScMemoryContext::BeginEventsPending()
 {
   CHECK_CONTEXT;
   sc_memory_context_pending_begin(m_context);
@@ -203,7 +203,7 @@ void ScMemoryContext::EndEventsPending()
   sc_memory_context_pending_end(m_context);
 }
 
-void ScMemoryContext::BeingEventsBlocking()
+void ScMemoryContext::BeginEventsBlocking()
 {
   CHECK_CONTEXT;
   sc_memory_context_blocking_begin(m_context);
@@ -220,22 +220,23 @@ bool ScMemoryContext::IsValid() const
   return m_context != nullptr;
 }
 
-bool ScMemoryContext::IsElement(ScAddr const & addr) const
+bool ScMemoryContext::IsElement(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  bool status = sc_memory_is_element_ext(m_context, *addr, &result);
+  bool status = sc_memory_is_element_ext(m_context, *elementAddr, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to check sc-element because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to check sc-element because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to check sc-element because sc-memory context hasn't read permissions");
+        utils::ExceptionInvalidState,
+        "Not able to check sc-element because sc-memory context hasn't read permissions.");
 
   default:
     break;
@@ -244,28 +245,28 @@ bool ScMemoryContext::IsElement(ScAddr const & addr) const
   return status;
 }
 
-size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
+size_t ScMemoryContext::GetElementEdgesAndOutgoingArcsCount(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  size_t const count = sc_memory_get_element_outgoing_arcs_count(m_context, *addr, &result);
+  size_t const count = sc_memory_get_element_outgoing_arcs_count(m_context, *elementAddr, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get outgoing sc-arcs count");
+        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get outgoing sc-arcs count.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get outgoing sc-arcs count because sc-memory context is not authorized");
+        "Not able to get outgoing sc-arcs count because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get outgoing sc-arcs count because sc-memory context hasn't read permissions");
+        "Not able to get outgoing sc-arcs count because sc-memory context hasn't read permissions.");
 
   default:
     break;
@@ -274,28 +275,33 @@ size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & addr) const
   return count;
 }
 
-size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
+size_t ScMemoryContext::GetElementOutputArcsCount(ScAddr const & elementAddr) const
+{
+  return GetElementEdgesAndOutgoingArcsCount(elementAddr);
+}
+
+size_t ScMemoryContext::GetElementEdgesAndIncomingArcsCount(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  size_t const count = sc_memory_get_element_incoming_arcs_count(m_context, *addr, &result);
+  size_t const count = sc_memory_get_element_incoming_arcs_count(m_context, *elementAddr, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get incoming sc-arcs count");
+        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get incoming sc-arcs count.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incoming sc-arcs count because sc-memory context is not authorized");
+        "Not able to get incoming sc-arcs count because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incoming sc-arcs count because sc-memory context hasn't read permissions");
+        "Not able to get incoming sc-arcs count because sc-memory context hasn't read permissions.");
 
   default:
     break;
@@ -304,27 +310,32 @@ size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & addr) const
   return count;
 }
 
-bool ScMemoryContext::EraseElement(ScAddr const & addr)
+size_t ScMemoryContext::GetElementInputArcsCount(ScAddr const & elementAddr) const
+{
+  return GetElementEdgesAndIncomingArcsCount(elementAddr);
+}
+
+bool ScMemoryContext::EraseElement(ScAddr const & elementAddr)
 {
   CHECK_CONTEXT;
 
-  sc_result const result = sc_memory_element_free(m_context, *addr);
+  sc_result const result = sc_memory_element_free(m_context, *elementAddr);
 
   switch (result)
   {
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to erase sc-element because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to erase sc-element because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to erase sc-element because sc-memory context hasn't erase permissions");
+        "Not able to erase sc-element because sc-memory context hasn't erase permissions.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_ERASE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to erase sc-element because sc-memory context hasn't permissions to erase permissions");
+        "Not able to erase sc-element because sc-memory context hasn't permissions to erase permissions.");
 
   default:
     break;
@@ -333,150 +344,172 @@ bool ScMemoryContext::EraseElement(ScAddr const & addr)
   return result == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::CreateNode(ScType const & type)
+ScAddr ScMemoryContext::GenerateNode(ScType const & nodeType)
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_addr const addr = sc_memory_node_new_ext(m_context, *type, &result);
+  sc_addr const nodeAddr = sc_memory_node_new_ext(m_context, *nodeType, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified type must be sc-node type. You should provide any of ScType::Node... value as a type");
+        "Specified type must be sc-node type. You should provide any of ScType::Node... value as a type.");
 
   case SC_RESULT_ERROR_FULL_MEMORY:
-    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-node because sc-memory is full");
+    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-node because sc-memory is full.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to create sc-node because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to create sc-node because sc-memory context is not authorized.");
 
   default:
     break;
   }
 
-  return addr;
+  return nodeAddr;
 }
 
-ScAddr ScMemoryContext::CreateLink(ScType const & type /* = ScType::LinkConst */)
+ScAddr ScMemoryContext::CreateNode(ScType const & nodeType)
+{
+  return GenerateNode(nodeType);
+}
+
+ScAddr ScMemoryContext::GenerateLink(ScType const & linkType /* = ScType::LinkConst */)
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_addr const addr = sc_memory_link_new_ext(m_context, *type, &result);
+  sc_addr const linkAddr = sc_memory_link_new_ext(m_context, *linkType, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified type must be sc-link type. You should provide any of ScType::Link... value as a type");
+        "Specified type must be sc-link type. You should provide any of ScType::Link... value as a type.");
 
   case SC_RESULT_ERROR_FULL_MEMORY:
-    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-link because sc-memory is full");
+    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-link because sc-memory is full.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to create sc-link because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to create sc-link because sc-memory context is not authorized.");
 
   default:
     break;
   }
 
-  return addr;
+  return linkAddr;
 }
 
-ScAddr ScMemoryContext::CreateEdge(ScType const & type, ScAddr const & addrBeg, ScAddr const & addrEnd)
+ScAddr ScMemoryContext::CreateLink(ScType const & linkType)
+{
+  return GenerateLink(linkType);
+}
+
+ScAddr ScMemoryContext::GenerateConnector(
+    ScType const & connectorType,
+    ScAddr const & sourceElementAddr,
+    ScAddr const & targetElementAddr)
 {
   CHECK_CONTEXT;
 
   sc_result result;
-  sc_addr const addr = sc_memory_arc_new_ext(m_context, *type, *addrBeg, *addrEnd, &result);
+  sc_addr const connectorAddr =
+      sc_memory_arc_new_ext(m_context, *connectorType, *sourceElementAddr, *targetElementAddr, &result);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified source or target sc-element sc-address is invalid to create sc-connector");
+        "Specified source or target sc-element sc-address is invalid to create sc-connector.");
 
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified type must be sc-connector type. You should provide any of ScType::Edge... value as a type");
+        "Specified type must be sc-connector type. You should provide any of ScType::Edge... value as a type.");
 
   case SC_RESULT_ERROR_FULL_MEMORY:
-    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-connector because sc-memory is full");
+    SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-connector because sc-memory is full.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to create sc-connector because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to create sc-connector because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to create sc-connector because sc-memory context hasn't write permissions");
+        "Not able to create sc-connector because sc-memory context hasn't write permissions.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_PERMISSIONS_TO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to create sc-connector because sc-memory context hasn't permissions to write permissions");
+        "Not able to create sc-connector because sc-memory context hasn't permissions to write permissions.");
 
   default:
     break;
   }
 
-  return addr;
+  return connectorAddr;
 }
 
-ScType ScMemoryContext::GetElementType(ScAddr const & addr) const
+ScAddr ScMemoryContext::CreateEdge(
+    ScType const & connectorType,
+    ScAddr const & sourceElementAddr,
+    ScAddr const & targetElementAddr)
+{
+  return GenerateConnector(connectorType, sourceElementAddr, targetElementAddr);
+}
+
+ScType ScMemoryContext::GetElementType(ScAddr const & elementAddr) const
 {
   CHECK_CONTEXT;
 
-  sc_type type = 0;
-  sc_result const result = sc_memory_get_element_type(m_context, *addr, &type);
+  sc_type elementType = 0;
+  sc_result const result = sc_memory_get_element_type(m_context, *elementAddr, &elementType);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get sc-type");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get sc-type.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get sc-type because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to get sc-type because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get sc-type because sc-memory context hasn't read permissions");
+        utils::ExceptionInvalidState, "Not able to get sc-type because sc-memory context hasn't read permissions.");
 
   default:
     break;
   }
 
-  return ScType{type};
+  return ScType{elementType};
 }
 
-bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
+bool ScMemoryContext::SetElementSubtype(ScAddr const & elementAddr, ScType newSubtype)
 {
   CHECK_CONTEXT;
 
-  sc_result const result = sc_memory_change_element_subtype(m_context, *addr, subtype);
+  sc_result const result = sc_memory_change_element_subtype(m_context, *elementAddr, newSubtype);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to set sc-type");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to set sc-type.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set sc-type because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to set sc-type because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set sc-type because sc-memory context hasn't write permissions");
+        utils::ExceptionInvalidState, "Not able to set sc-type because sc-memory context hasn't write permissions.");
 
   default:
     break;
@@ -485,144 +518,171 @@ bool ScMemoryContext::SetElementSubtype(ScAddr const & addr, sc_type subtype)
   return result == SC_RESULT_OK;
 }
 
-ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & edgeAddr) const
+ScAddr ScMemoryContext::GetArcSourceElement(ScAddr const & arcAddr) const
 {
   CHECK_CONTEXT;
 
-  ScAddr addr;
-  sc_result const result = sc_memory_get_arc_begin(m_context, *edgeAddr, &addr.m_realAddr);
+  ScAddr sourceElementAddr;
+  sc_result const result = sc_memory_get_arc_begin(m_context, *arcAddr, &sourceElementAddr.m_realAddr);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified sc-connector sc-address is invalid to get incident source sc-element");
+        "Specified sc-connector sc-address is invalid to get incident source sc-element.");
 
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident source sc-element");
+        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident source sc-element.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident source sc-element because sc-memory context is not authorized");
+        "Not able to get incident source sc-element because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident source sc-element because sc-memory context hasn't read permissions");
+        "Not able to get incident source sc-element because sc-memory context hasn't read permissions.");
 
   default:
     break;
   }
 
-  return addr;
+  return sourceElementAddr;
 }
 
-ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & edgeAddr) const
+ScAddr ScMemoryContext::GetEdgeSource(ScAddr const & arcAddr) const
+{
+  return GetArcSourceElement(arcAddr);
+}
+
+ScAddr ScMemoryContext::GetArcTargetElement(ScAddr const & arcAddr) const
 {
   CHECK_CONTEXT;
 
-  ScAddr addr;
-  sc_result const result = sc_memory_get_arc_end(m_context, *edgeAddr, &addr.m_realAddr);
+  ScAddr targetElementAddr;
+  sc_result const result = sc_memory_get_arc_end(m_context, *arcAddr, &targetElementAddr.m_realAddr);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified sc-connector sc-address is invalid to get incident target sc-element");
+        "Specified sc-connector sc-address is invalid to get incident target sc-element.");
 
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident target sc-element");
+        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident target sc-element.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident target sc-element because sc-memory context is not authorized");
+        "Not able to get incident target sc-element because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident target sc-element because sc-memory context hasn't read permissions");
+        "Not able to get incident target sc-element because sc-memory context hasn't read permissions.");
 
   default:
     break;
   }
 
-  return addr;
+  return targetElementAddr;
 }
 
-bool ScMemoryContext::GetEdgeInfo(ScAddr const & edgeAddr, ScAddr & outSourceAddr, ScAddr & outTargetAddr) const
+ScAddr ScMemoryContext::GetEdgeTarget(ScAddr const & arcAddr) const
+{
+  return GetArcTargetElement(arcAddr);
+}
+
+std::tuple<ScAddr, ScAddr> ScMemoryContext::GetConnectorIncidentElements(ScAddr const & connectorAddr) const
 {
   CHECK_CONTEXT;
 
-  sc_result const result =
-      sc_memory_get_arc_info(m_context, *edgeAddr, &outSourceAddr.m_realAddr, &outTargetAddr.m_realAddr);
+  ScAddr firstIncidentElementAddr;
+  ScAddr secondIncidentElementAddr;
+  sc_result const result = sc_memory_get_arc_info(
+      m_context, *connectorAddr, &firstIncidentElementAddr.m_realAddr, &secondIncidentElementAddr.m_realAddr);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-connector sc-address is invalid to get incident sc-elements");
+        utils::ExceptionInvalidParams, "Specified sc-connector sc-address is invalid to get incident sc-elements.");
 
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident sc-elements");
+        utils::ExceptionInvalidParams, "Specified sc-element is not sc-connector to get incident sc-elements.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident sc-elements because sc-memory context is not authorized");
+        "Not able to get incident sc-elements because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get incident sc-elements because sc-memory context hasn't read permissions");
+        "Not able to get incident sc-elements because sc-memory context hasn't read permissions.");
 
   default:
     break;
   }
 
+  return {firstIncidentElementAddr, secondIncidentElementAddr};
+}
+
+bool ScMemoryContext::GetEdgeInfo(
+    ScAddr const & connectorAddr,
+    ScAddr & outFirstIncidentElementAddr,
+    ScAddr & outSecondIncidentElementAddr) const
+{
+  auto const [firstIncidentElementAddr, secondIncidentElementAddr] = GetConnectorIncidentElements(connectorAddr);
+  outFirstIncidentElementAddr = firstIncidentElementAddr;
+  outSecondIncidentElementAddr = secondIncidentElementAddr;
   return true;
 }
 
-bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & stream, bool isSearchableString)
+bool ScMemoryContext::SetLinkContent(
+    ScAddr const & linkAddr,
+    ScStreamPtr const & linkContentStream,
+    bool isSearchableString)
 {
   CHECK_CONTEXT;
 
-  if (!stream || !stream->IsValid())
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to set content");
+  if (!linkContentStream || !linkContentStream->IsValid())
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to set content.");
 
-  sc_result const result = sc_memory_set_link_content_ext(m_context, *addr, stream->m_stream, isSearchableString);
+  sc_result const result =
+      sc_memory_set_link_content_ext(m_context, *linkAddr, linkContentStream->m_stream, isSearchableString);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-link sc-address is invalid to set content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-link sc-address is invalid to set content.");
 
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to set content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to set content.");
 
   case SC_RESULT_ERROR_STREAM_IO:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to set content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to set content.");
 
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set content.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set content because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to set content because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set content because sc-memory context hasn't erase permissions");
+        utils::ExceptionInvalidState, "Not able to set content because sc-memory context hasn't erase permissions.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set content because sc-memory context hasn't write permissions");
+        utils::ExceptionInvalidState, "Not able to set content because sc-memory context hasn't write permissions.");
 
   default:
     break;
@@ -631,37 +691,44 @@ bool ScMemoryContext::SetLinkContent(ScAddr const & addr, ScStreamPtr const & st
   return result == SC_RESULT_OK;
 }
 
-ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & addr)
+ScStreamPtr ScMemoryContext::GetLinkContent(ScAddr const & linkAddr)
 {
   CHECK_CONTEXT;
 
-  sc_stream * s = nullptr;
-  sc_result const result = sc_memory_get_link_content(m_context, *addr, &s);
+  sc_stream * linkContentStream = nullptr;
+  sc_result const result = sc_memory_get_link_content(m_context, *linkAddr, &linkContentStream);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-link sc-address is invalid to get content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-link sc-address is invalid to get content.");
 
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to get content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified sc-element is not sc-link to get content.");
 
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to get content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to get content.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get content because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to get content because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get content because sc-memory context hasn't read permissions");
+        utils::ExceptionInvalidState, "Not able to get content because sc-memory context hasn't read permissions.");
 
   default:
     break;
   }
 
-  return std::make_shared<ScStream>(s);
+  return std::make_shared<ScStream>(linkContentStream);
+}
+
+bool ScMemoryContext::GetLinkContent(ScAddr const & linkAddr, std::string & outLinkContent) noexcept(false)
+{
+  ScStreamPtr const & linkContentStream = GetLinkContent(linkAddr);
+  return linkContentStream != nullptr && linkContentStream->IsValid()
+         && ScStreamConverter::StreamToString(linkContentStream, outLinkContent);
 }
 
 void _PushLinkAddr(void * _data, sc_addr const link_addr)
@@ -674,8 +741,8 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
       == SC_FALSE)
     return;
 
-  auto * linkAddrList = (ScAddrVector *)data[1];
-  linkAddrList->emplace_back(link_addr);
+  auto * linkSet = (ScAddrSet *)data[1];
+  linkSet->insert(link_addr);
 }
 
 #define _MAKE_DATA(_context_ptr, _list_ptr) \
@@ -688,170 +755,213 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
 
 #define _ERASE_DATA(_data) delete[] _data
 
-ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & stream)
+ScAddrSet ScMemoryContext::SearchLinksByContent(ScStreamPtr const & linkContentStream)
 {
   CHECK_CONTEXT;
 
-  if (!stream || !stream->IsValid())
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content");
+  if (!linkContentStream || !linkContentStream->IsValid())
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content.");
 
-  ScAddrVector linkAddrList;
-  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
+  ScAddrSet linkSet;
+  void ** data = _MAKE_DATA(&*m_context, &linkSet);
   sc_result const result =
-      sc_memory_find_links_with_content_string_ext(m_context, stream->m_stream, data, _PushLinkAddr);
+      sc_memory_find_links_with_content_string_ext(m_context, linkContentStream->m_stream, data, _PushLinkAddr);
   _ERASE_DATA(data);
 
   switch (result)
   {
   case SC_RESULT_ERROR_STREAM_IO:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find sc-links by content");
+        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find sc-links by content.");
 
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to find sc-links by content");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to find sc-links by content.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to find sc-links by content because sc-memory context is not authorized");
+        "Not able to find sc-links by content because sc-memory context is not authorized.");
 
   default:
     break;
   }
 
-  return linkAddrList;
+  return linkSet;
 }
 
-ScAddrVector ScMemoryContext::FindLinksByContentSubstring(ScStreamPtr const & stream, size_t maxLengthToSearchAsPrefix)
+ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContentStream)
 {
-  CHECK_CONTEXT;
-
-  if (!stream || !stream->IsValid())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring");
-
-  ScAddrVector linkAddrList;
-  void ** data = _MAKE_DATA(&*m_context, &linkAddrList);
-  sc_result const result = sc_memory_find_links_by_content_substring_ext(
-      m_context, stream->m_stream, maxLengthToSearchAsPrefix, data, _PushLinkAddr);
-  _ERASE_DATA(data);
-
-  switch (result)
-  {
-  case SC_RESULT_ERROR_STREAM_IO:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find sc-links by content substring");
-
-  case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "File memory state is invalid to find sc-links by content substring");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find sc-links by content substring because sc-memory context is not authorized");
-
-  default:
-    break;
-  }
-
-  return linkAddrList;
+  ScAddrSet const & linkSet = SearchLinksByContent(linkContentStream);
+  return {linkSet.cbegin(), linkSet.cend()};
 }
 
-void _PushLinkContent(void * data, sc_addr const, sc_char const * link_content)
-{
-  auto * linkContentList = (std::vector<std::string> *)data;
-  linkContentList->emplace_back(link_content);
-}
-
-std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
-    ScStreamPtr const & stream,
+ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
     size_t maxLengthToSearchAsPrefix)
 {
   CHECK_CONTEXT;
 
-  if (!stream || !stream->IsValid())
+  if (!linkContentSubstringStream || !linkContentSubstringStream->IsValid())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified stream is invalid to find contents by content substring");
+        utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring.");
 
-  std::vector<std::string> linkContentList;
-  sc_result const result = sc_memory_find_links_contents_by_content_substring_ext(
-      m_context, stream->m_stream, maxLengthToSearchAsPrefix, &linkContentList, _PushLinkContent);
+  ScAddrSet linkSet;
+  void ** data = _MAKE_DATA(&*m_context, &linkSet);
+  sc_result const result = sc_memory_find_links_by_content_substring_ext(
+      m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, data, _PushLinkAddr);
+  _ERASE_DATA(data);
 
   switch (result)
   {
   case SC_RESULT_ERROR_STREAM_IO:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find contents by content substring");
+        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find sc-links by content substring.");
 
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "File memory state is invalid to find contents by content substring");
+        utils::ExceptionInvalidState, "File memory state is invalid to find sc-links by content substring.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to find contents by content substring because sc-memory context is not authorized");
+        "Not able to find sc-links by content substring because sc-memory context is not authorized.");
+
+  default:
+    break;
+  }
+
+  return linkSet;
+}
+
+ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix)
+{
+  ScAddrSet const & linkSet = SearchLinksByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
+  return {linkSet.cbegin(), linkSet.cend()};
+}
+
+void _PushLinkContent(void * data, sc_addr const, sc_char const * link_content)
+{
+  auto * linkContentList = (std::set<std::string> *)data;
+  linkContentList->insert(link_content);
+}
+
+std::set<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix)
+{
+  CHECK_CONTEXT;
+
+  if (!linkContentSubstringStream || !linkContentSubstringStream->IsValid())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified stream is invalid to find contents by content substring.");
+
+  std::set<std::string> linkContentSet;
+  sc_result const result = sc_memory_find_links_contents_by_content_substring_ext(
+      m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, &linkContentSet, _PushLinkContent);
+
+  switch (result)
+  {
+  case SC_RESULT_ERROR_STREAM_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find contents by content substring.");
+
+  case SC_RESULT_ERROR_FILE_MEMORY_IO:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "File memory state is invalid to find contents by content substring.");
+
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to find contents by content substring because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to find contents by content substring because sc-memory context hasn't read permissions");
+        "Not able to find contents by content substring because sc-memory context hasn't read permissions.");
 
   default:
     break;
   }
 
-  return linkContentList;
+  return linkContentSet;
 }
 
-bool ScMemoryContext::Save()
+std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix)
+{
+  std::set<std::string> const & linkContentSet =
+      SearchLinksContentsByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix);
+  return {linkContentSet.cbegin(), linkContentSet.cend()};
+}
+
+bool ScMemoryContext::CheckConnector(
+    ScAddr const & sourcElementAddr,
+    ScAddr const & targetElementAddr,
+    ScType const & connectorType) const
 {
   CHECK_CONTEXT;
-  sc_result const result = sc_memory_save(m_context);
+
+  sc_result result;
+  bool status = sc_helper_check_arc_ext(m_context, *sourcElementAddr, *targetElementAddr, *connectorType, &result);
+
   switch (result)
   {
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to save sc-memory state because sc-memory context is not authorized");
-
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to save sc-memory state because sc-memory context hasn't write permissions");
+        utils::ExceptionInvalidState, "Not able to check sc-connector because sc-memory context is not authorized.");
 
   default:
     break;
   }
 
-  return result == SC_RESULT_OK;
+  return status;
 }
 
-ScAddr ScMemoryContext::HelperResolveSystemIdtf(std::string const & sysIdtf, ScType const & type /* = ScType()*/)
+bool ScMemoryContext::HelperCheckEdge(
+    ScAddr const & sourcElementAddr,
+    ScAddr const & targetElementAddr,
+    ScType const & connectorType) const
+{
+  return CheckConnector(sourcElementAddr, targetElementAddr, connectorType);
+}
+
+ScAddr ScMemoryContext::ResolveElementSystemIdentifier(
+    std::string const & systemIdentifier,
+    ScType const & elementType /* = ScType()*/)
 {
   CHECK_CONTEXT;
 
   ScSystemIdentifierQuintuple quintuple;
-  HelperResolveSystemIdtf(sysIdtf, type, quintuple);
+  ResolveElementSystemIdentifier(systemIdentifier, elementType, quintuple);
   return quintuple.addr1;
 }
 
-bool ScMemoryContext::HelperResolveSystemIdtf(
-    std::string const & sysIdtf,
-    ScType const & type,
+ScAddr ScMemoryContext::HelperResolveSystemIdtf(
+    std::string const & systemIdentifier,
+    ScType const & elementType /* = ScType()*/)
+{
+  return ResolveElementSystemIdentifier(systemIdentifier, elementType);
+}
+
+bool ScMemoryContext::ResolveElementSystemIdentifier(
+    std::string const & systemIdentifier,
+    ScType const & elementType,
     ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
-  bool result = HelperFindBySystemIdtf(sysIdtf, outQuintuple);
+  bool result = SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
   if (result)
     return result;
 
-  if (type.IsUnknown())
+  if (elementType.IsUnknown())
     return false;
 
-  ScAddr const & resultAddr = CreateNode(type);
-  result = HelperSetSystemIdtf(sysIdtf, resultAddr, outQuintuple);
+  ScAddr const & resultAddr = GenerateNode(elementType);
+  result = SetElementSystemIdentifier(systemIdentifier, resultAddr, outQuintuple);
   if (result)
     return result;
 
@@ -862,48 +972,61 @@ bool ScMemoryContext::HelperResolveSystemIdtf(
   return result;
 }
 
-bool ScMemoryContext::HelperSetSystemIdtf(std::string const & sysIdtf, ScAddr const & addr)
+bool ScMemoryContext::HelperResolveSystemIdtf(
+    std::string const & systemIdentifier,
+    ScType const & elementType,
+    ScSystemIdentifierQuintuple & outQuintuple)
 {
-  ScSystemIdentifierQuintuple quintuple;
-  return HelperSetSystemIdtf(sysIdtf, addr, quintuple);
+  return ResolveElementSystemIdentifier(systemIdentifier, elementType, outQuintuple);
 }
 
-bool ScMemoryContext::HelperSetSystemIdtf(
-    std::string const & sysIdtf,
-    ScAddr const & addr,
+bool ScMemoryContext::SetElementSystemIdentifier(std::string const & systemIdentifier, ScAddr const & elementAddr)
+{
+  ScSystemIdentifierQuintuple quintuple;
+  return SetElementSystemIdentifier(systemIdentifier, elementAddr, quintuple);
+}
+
+bool ScMemoryContext::HelperSetSystemIdtf(std::string const & systemIdentifier, ScAddr const & elementAddr)
+{
+  return SetElementSystemIdentifier(systemIdentifier, elementAddr);
+}
+
+bool ScMemoryContext::SetElementSystemIdentifier(
+    std::string const & systemIdentifier,
+    ScAddr const & elementAddr,
     ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
   sc_system_identifier_fiver quintuple;
-  sc_result const result =
-      sc_helper_set_system_identifier_ext(m_context, *addr, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &quintuple);
+  sc_result const result = sc_helper_set_system_identifier_ext(
+      m_context, *elementAddr, systemIdentifier.c_str(), (sc_uint32)systemIdentifier.size(), &quintuple);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to set system identifier");
+        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to set system identifier.");
 
   case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid.");
 
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set system identifier");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "File memory state is invalid to set system identifier.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to set system identifier because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to set system identifier because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to set system identifier because sc-memory context hasn't write permissions");
+        "Not able to set system identifier because sc-memory context hasn't write permissions.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_ERASE_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to set system identifier because sc-memory context hasn't erase permissions");
+        "Not able to set system identifier because sc-memory context hasn't erase permissions.");
 
   default:
     break;
@@ -919,103 +1042,108 @@ bool ScMemoryContext::HelperSetSystemIdtf(
   return result == SC_RESULT_OK;
 }
 
-std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & addr)
+bool ScMemoryContext::HelperSetSystemIdtf(
+    std::string const & systemIdentifier,
+    ScAddr const & elementAddr,
+    ScSystemIdentifierQuintuple & outQuintuple)
+{
+  return SetElementSystemIdentifier(systemIdentifier, elementAddr, outQuintuple);
+}
+
+std::string ScMemoryContext::GetElementSystemIdentifier(ScAddr const & elementAddr)
 {
   CHECK_CONTEXT;
 
-  ScAddr idtfLink;
-  sc_result result = sc_helper_get_system_identifier_link(m_context, *addr, &idtfLink.m_realAddr);
+  ScAddr identifierLinkAddr;
+  sc_result result = sc_helper_get_system_identifier_link(m_context, *elementAddr, &identifierLinkAddr.m_realAddr);
 
   switch (result)
   {
   case SC_RESULT_ERROR_ADDR_IS_NOT_VALID:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get system identifier");
+        utils::ExceptionInvalidParams, "Specified sc-element sc-address is invalid to get system identifier.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to get system identifier because sc-memory context is not authorized");
+        utils::ExceptionInvalidState, "Not able to get system identifier because sc-memory context is not authorized.");
 
   default:
     break;
   }
 
-  std::string systemIdtf;
+  std::string systemIdentifier;
   if (result == SC_RESULT_NO)
-    return systemIdtf;
+    return systemIdentifier;
 
-  ScStreamPtr stream = GetLinkContent(idtfLink);
-  if (stream && stream->IsValid())
+  ScStreamPtr linkContentStream = GetLinkContent(identifierLinkAddr);
+  if (linkContentStream && linkContentStream->IsValid())
   {
-    if (ScStreamConverter::StreamToString(stream, systemIdtf))
-      return systemIdtf;
+    if (ScStreamConverter::StreamToString(linkContentStream, systemIdentifier))
+      return systemIdentifier;
   }
 
-  return systemIdtf;
+  return systemIdentifier;
 }
 
-bool ScMemoryContext::HelperCheckEdge(ScAddr const & begin, ScAddr end, ScType const & edgeType) const
+std::string ScMemoryContext::HelperGetSystemIdtf(ScAddr const & elementAddr)
 {
-  CHECK_CONTEXT;
-
-  sc_result result;
-  bool status = sc_helper_check_arc_ext(m_context, *begin, *end, *edgeType, &result);
-
-  switch (result)
-  {
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not able to check sc-connector because sc-memory context is not authorized");
-
-  default:
-    break;
-  }
-
-  return status;
+  return GetElementSystemIdentifier(elementAddr);
 }
 
-bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScAddr & outAddr)
+bool ScMemoryContext::SearchElementBySystemIdentifier(std::string const & systemIdentifier, ScAddr & outAddr)
 {
   CHECK_CONTEXT;
 
   ScSystemIdentifierQuintuple outQuintuple;
-  bool status = HelperFindBySystemIdtf(sysIdtf, outQuintuple);
+  bool status = SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
   outAddr = outQuintuple.addr1;
 
   return status;
 }
 
-ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf)
+bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & systemIdentifier, ScAddr & outAddr)
+{
+  return SearchElementBySystemIdentifier(systemIdentifier, outAddr);
+}
+
+ScAddr ScMemoryContext::SearchElementBySystemIdentifier(std::string const & systemIdentifier)
 {
   CHECK_CONTEXT;
 
   ScSystemIdentifierQuintuple outQuintuple;
-  HelperFindBySystemIdtf(sysIdtf, outQuintuple);
+  SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
 
   return outQuintuple.addr1;
 }
 
-bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSystemIdentifierQuintuple & outQuintuple)
+ScAddr ScMemoryContext::HelperFindBySystemIdtf(std::string const & systemIdentifier)
+{
+  return SearchElementBySystemIdentifier(systemIdentifier);
+}
+
+bool ScMemoryContext::SearchElementBySystemIdentifier(
+    std::string const & systemIdentifier,
+    ScSystemIdentifierQuintuple & outQuintuple)
 {
   CHECK_CONTEXT;
 
   sc_system_identifier_fiver quintuple;
   sc_result const result = sc_helper_find_element_by_system_identifier_ext(
-      m_context, sysIdtf.c_str(), (sc_uint32)sysIdtf.size(), &quintuple);
+      m_context, systemIdentifier.c_str(), (sc_uint32)systemIdentifier.size(), &quintuple);
 
   switch (result)
   {
   case SC_RESULT_ERROR_INVALID_SYSTEM_IDENTIFIER:
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Specified system identifier is invalid.");
 
   case SC_RESULT_ERROR_FILE_MEMORY_IO:
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "File memory state is invalid to find sc-element by system identifier");
+        utils::ExceptionInvalidState, "File memory state is invalid to find sc-element by system identifier.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to find by system identifier because sc-memory context is not authorized");
+        "Not able to find by system identifier because sc-memory context is not authorized.");
 
   default:
     break;
@@ -1030,58 +1158,122 @@ bool ScMemoryContext::HelperFindBySystemIdtf(std::string const & sysIdtf, ScSyst
   return result == SC_RESULT_OK;
 }
 
+bool ScMemoryContext::HelperFindBySystemIdtf(
+    std::string const & systemIdentifier,
+    ScSystemIdentifierQuintuple & outQuintuple)
+{
+  return SearchElementBySystemIdentifier(systemIdentifier, outQuintuple);
+}
+
+void ScMemoryContext::GenerateByTemplate(
+    ScTemplate const & templateToGenerate,
+    ScTemplateResultItem & result,
+    ScTemplateParams const & params)
+{
+  CHECK_CONTEXT;
+  templateToGenerate.Generate(*this, result, params, nullptr);
+}
+
 ScTemplate::Result ScMemoryContext::HelperGenTemplate(
-    ScTemplate const & templ,
+    ScTemplate const & templateToGenerate,
     ScTemplateResultItem & result,
     ScTemplateParams const & params,
-    ScTemplateResultCode * resultCode)
+    ScTemplateResultCode *)
 {
-  CHECK_CONTEXT;
-  return templ.Generate(*this, result, params, resultCode);
+  GenerateByTemplate(templateToGenerate, result, params);
+  return ScTemplate::Result(true);
 }
 
-ScTemplate::Result ScMemoryContext::HelperSearchTemplate(ScTemplate const & templ, ScTemplateSearchResult & result)
+ScTemplate::Result ScMemoryContext::SearchByTemplate(ScTemplate const & templateToFind, ScTemplateSearchResult & result)
 {
   CHECK_CONTEXT;
-  return templ.Search(*this, result);
+  return templateToFind.Search(*this, result);
 }
 
-void ScMemoryContext::HelperSearchTemplate(
-    ScTemplate const & templ,
+ScTemplate::Result ScMemoryContext::HelperSearchTemplate(
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResult & result)
+{
+  return SearchByTemplate(templateToFind, result);
+}
+
+void ScMemoryContext::SearchByTemplate(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallback const & callback,
     ScTemplateSearchResultFilterCallback const & filterCallback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
   CHECK_CONTEXT;
-  templ.Search(*this, callback, filterCallback, checkCallback);
+  templateToFind.Search(*this, callback, filterCallback, checkCallback);
 }
 
 void ScMemoryContext::HelperSearchTemplate(
-    ScTemplate const & templ,
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplate(templateToFind, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::SearchByTemplate(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallback const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
-  CHECK_CONTEXT;
-  templ.Search(*this, callback, {}, checkCallback);
+  SearchByTemplate(templateToFind, callback, {}, checkCallback);
 }
 
-void ScMemoryContext::HelperSmartSearchTemplate(
-    ScTemplate const & templ,
+void ScMemoryContext::HelperSearchTemplate(
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallback const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplate(templateToFind, callback, checkCallback);
+}
+
+void ScMemoryContext::SearchByTemplateInterruptibly(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultFilterCallback const & filterCallback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
   CHECK_CONTEXT;
-  templ.Search(*this, callback, filterCallback, checkCallback);
+  templateToFind.Search(*this, callback, filterCallback, checkCallback);
 }
 
 void ScMemoryContext::HelperSmartSearchTemplate(
-    ScTemplate const & templ,
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultFilterCallback const & filterCallback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplateInterruptibly(templateToFind, callback, filterCallback, checkCallback);
+}
+
+void ScMemoryContext::SearchByTemplateInterruptibly(
+    ScTemplate const & templateToFind,
     ScTemplateSearchResultCallbackWithRequest const & callback,
     ScTemplateSearchResultCheckCallback const & checkCallback)
 {
+  SearchByTemplateInterruptibly(templateToFind, callback, {}, checkCallback);
+}
+
+void ScMemoryContext::HelperSmartSearchTemplate(
+    ScTemplate const & templateToFind,
+    ScTemplateSearchResultCallbackWithRequest const & callback,
+    ScTemplateSearchResultCheckCallback const & checkCallback)
+{
+  SearchByTemplateInterruptibly(templateToFind, callback, checkCallback);
+}
+
+void ScMemoryContext::BuildTemplate(
+    ScTemplate & resultTemplate,
+    ScAddr const & translatableTemplateAddr,
+    ScTemplateParams const & params)
+{
   CHECK_CONTEXT;
-  templ.Search(*this, callback, {}, checkCallback);
+  resultTemplate.TranslateFrom(*this, translatableTemplateAddr, params);
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
@@ -1089,21 +1281,25 @@ ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
     ScAddr const & translatableTemplateAddr,
     ScTemplateParams const & params)
 {
-  CHECK_CONTEXT;
-  resultTemplate.TranslateFrom(*this, translatableTemplateAddr, params);
+  BuildTemplate(resultTemplate, translatableTemplateAddr, params);
   return ScTemplate::Result(true);
+}
+
+void ScMemoryContext::BuildTemplate(ScTemplate & resultTemplate, std::string const & translatableSCsTemplate)
+{
+  CHECK_CONTEXT;
+  resultTemplate.TranslateFrom(*this, translatableSCsTemplate);
 }
 
 ScTemplate::Result ScMemoryContext::HelperBuildTemplate(
     ScTemplate & resultTemplate,
     std::string const & translatableSCsTemplate)
 {
-  CHECK_CONTEXT;
-  resultTemplate.TranslateFrom(*this, translatableSCsTemplate);
+  BuildTemplate(resultTemplate, translatableSCsTemplate);
   return ScTemplate::Result(true);
 }
 
-void ScMemoryContext::HelperLoadTemplate(
+void ScMemoryContext::LoadTemplate(
     ScTemplate & translatableTemplate,
     ScAddr & resultTemplateAddr,
     ScTemplateParams const & params)
@@ -1112,7 +1308,7 @@ void ScMemoryContext::HelperLoadTemplate(
   translatableTemplate.TranslateTo(*this, resultTemplateAddr, params);
 }
 
-ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
+ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStatistics() const
 {
   CHECK_CONTEXT;
 
@@ -1124,23 +1320,50 @@ ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get sc-memory statistics state because sc-memory context is not authorized");
+        "Not able to get sc-memory statistics state because sc-memory context is not authorized.");
 
   case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Not able to get sc-memory statistics because sc-memory context hasn't read permissions");
+        "Not able to get sc-memory statistics because sc-memory context hasn't read permissions.");
 
   default:
     break;
   }
 
-  ScMemoryStatistics res{};
-  res.m_edgesNum = uint32_t(stat.arc_count);
-  res.m_linksNum = uint32_t(stat.link_count);
-  res.m_nodesNum = uint32_t(stat.node_count);
+  ScMemoryStatistics statistics{};
+  statistics.m_connectorsNum = uint32_t(stat.arc_count);
+  statistics.m_linksNum = uint32_t(stat.link_count);
+  statistics.m_nodesNum = uint32_t(stat.node_count);
 
-  return res;
+  return statistics;
+}
+
+ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStat() const
+{
+  return CalculateStatistics();
+}
+
+bool ScMemoryContext::Save()
+{
+  CHECK_CONTEXT;
+  sc_result const result = sc_memory_save(m_context);
+  switch (result)
+  {
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState, "Not able to save sc-memory state because sc-memory context is not authorized.");
+
+  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_WRITE_PERMISSIONS:
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "Not able to save sc-memory state because sc-memory context hasn't write permissions.");
+
+  default:
+    break;
+  }
+
+  return result == SC_RESULT_OK;
 }
 
 SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END

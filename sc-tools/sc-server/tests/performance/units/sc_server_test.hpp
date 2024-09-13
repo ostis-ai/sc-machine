@@ -69,9 +69,7 @@ public:
       ;
   }
 
-  virtual void Setup(size_t objectsNum)
-  {
-  }
+  virtual void Setup(size_t objectsNum) {}
 
   static std::unique_ptr<ScServer> m_server;
 

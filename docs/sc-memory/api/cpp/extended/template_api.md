@@ -69,9 +69,9 @@ templ.Triple(
   ScType::NodeVar
 );
 </code></pre>
-      <br/>This triple sc-template is used to traverse output edges from specified sc-element.
-      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse output edges from <code>param1</code>. Construction will be added into traverse result, where output sc-connector from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target sc-element of this edge will be suitable for a type <code>_param3</code>.
-      <br/>You can use any sc-type of <code>_param3</code> (including edges) depending on sc-construction you want to find. But <code>_param2</code> should be any sc-type of variable edge.
+      <br/>This triple sc-template is used to traverse outgoing sc-connectors from specified sc-element.
+      <br/>There <code>param1</code> is a known sc-address of sc-element. It must be a valid (use <code>IsElement</code> method to check). Where <code>_param2</code> and <code>_param3</code> are sc-types for compare by search engine. When search engine will traverse outgoing sc-connectors from <code>param1</code>. Construction will be added into traverse result, where outgoing sc-arc from <code>param1</code>, will suitable to specified type <code>_param2</code>, and type of target sc-element of this sc-arc will be suitable for a type <code>_param3</code>.
+      <br/>You can use any sc-type of <code>_param3</code> (including sc-connectors) depending on sc-construction you want to find. But <code>_param2</code> should be any sc-type of variable sc-connector.
     </td>
   </tr>
 
@@ -90,8 +90,8 @@ templ.Triple(
   param3
 );
 </code></pre>
-      <br/>This triple sc-template using to find edge between <code>param1</code> and <code>param3</code>.
-      <br/>There are <code>param1</code> and <code>param3</code> a known <code>ScAddr</code> of sc-elements. Edge type <code>_param2</code> should be variable.
+      <br/>This triple sc-template using to find sc-arc between <code>param1</code> and <code>param3</code>.
+      <br/>There are <code>param1</code> and <code>param3</code> a known <code>ScAddr</code> of sc-elements. Arc type <code>_param2</code> should be variable.
     </td>
   </tr>
   <tr>
@@ -109,8 +109,8 @@ templ.Triple(
   param3
 );
 </code></pre>
-      <br/>This triple sc-template using to traverse input edges from specified sc-element.
-      <br/>There <code>param3</code> is a known sc-address of sc-element. You can use any type of <code>_param1</code> (including edges) depending on construction you want to find. But <code>_param2</code> should be any type of variable edge.
+      <br/>This triple sc-template using to traverse incoming sc-connectors to specified sc-element.
+      <br/>There <code>param3</code> is a known sc-address of sc-element. You can use any type of <code>_param1</code> (including sc-connectors) depending on construction you want to find. But <code>_param2</code> should be any type of variable connector.
     </td>
   </tr>
 </table>
@@ -277,11 +277,11 @@ There is example code that generates equal sc-template.
 ```cpp
 ...
 // Find key concepts that should be used in sc-template.
-ScAddr const & conceptSetAddr = context.HelperFindBySystemIdtf("concept_set");
+ScAddr const & conceptSetAddr = context.SearchElementBySystemIdentifier("concept_set");
 ScAddr const & conceptBinaryRelationAddr 
-    = context.HelperFindBySystemIdtf("concept_binary_relation");
+    = context.SearchElementBySystemIdentifier("concept_binary_relation");
 
-// Create sc-template and add triples into this sc-template.
+// Generate sc-template and add triples into this sc-template.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,    // sc-address of concept set node
@@ -316,12 +316,12 @@ There is the example code with naming.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar  // type of unknown sc-node
 );
 ...
@@ -355,12 +355,12 @@ manipulating sc-template.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-edge
+  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
   ScType::NodeVar  // type of unknown sc-node
 );
 
@@ -397,7 +397,7 @@ sc_char const * data =
 
 // Build program object by this sc-template.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, data);
+context.BuildTemplate(templ, data);
 ...
 ```
 
@@ -414,11 +414,11 @@ Or you can it by specifying valid sc-address of some sc-template in sc-memory.
 ```cpp
 ...
 // Find by system identifier your sc-template in sc-memory.
-ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
+ScAddr const & templAddr = context.SearchElementBySystemIdentifier("my_template");
 
 // Build program object by this sc-template.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, templAddr);
+context.BuildTemplate(templ, templAddr);
 ...
 ```
 
@@ -449,8 +449,8 @@ sc_char const * data =
   "  _<- concept_set;"
   "  _<- concept_binary_set;;";
 
-// Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+// Generate replacement in sc-memory.
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -459,7 +459,7 @@ params.Add("_set", setAddr);
 
 // Build program object by this sc-template, specifying replacements.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, data, params);
+context.BuildTemplate(templ, data, params);
 ...
 ```
 
@@ -469,13 +469,13 @@ sc-address of sc-structure in sc-memory.
 ```cpp
 ...
 // Find by system identifier your sc-template in sc-memory.
-ScAddr const & templAddr = context.HelperFindBySystemIdtf("my_template");
+ScAddr const & templAddr = context.SearchElementBySystemIdentifier("my_template");
 
 // Find by system identifier sc-address of sc-variable in your sc-template.
-ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
+ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
-// Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+// Generate replacement in sc-memory.
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -484,7 +484,7 @@ params.Add(setVarAddr, setAddr);
 
 // Build program object by this sc-template, specifying replacements.
 ScTemplate templ;
-context.HelperBuildTemplate(templ, templAddr, params);
+context.BuildTemplate(templ, templAddr, params);
 ...
 ```
 
@@ -495,8 +495,8 @@ system identifiers and sc-addresses of sc-variables also.
 
 ```cpp
 ...
-// Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+// Generate replacement in sc-memory.
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -511,10 +511,10 @@ ScAddr const & replAddr = params.Get("_set");
 ```cpp
 ...
 // Find by system identifier sc-address of sc-variable in your sc-template.
-ScAddr const & setVarAddr = context.HelperFindBySystemIdtf("_set");
+ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
-// Create replacement in sc-memory.
-ScAddr const & setAddr = context.CreateNode(ScType::NodeConst);
+// Generate replacement in sc-memory.
+ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -542,7 +542,7 @@ bool const isEmpty = params.IsEmpty();
 ...
 ```
 
-## **HelperGenTemplate**
+## **GenerateByTemplate**
 
 Use sc-template to generate graphs in sc-memory and get replacements from result.
 
@@ -552,7 +552,7 @@ Use sc-template to generate graphs in sc-memory and get replacements from result
 // You can use `ScTemplate` methods or method ScTemplateBuild to translate 
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 // Sc-elements sc-addresses of generated sc-construction may be gotten from 
 // `result`.
 ...
@@ -583,7 +583,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 ScAddr setAddr;
 bool replExist = result.Get("_x", setAddr);
@@ -610,7 +610,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 ScAddr setAddr = result.Get("_x");
 
@@ -634,7 +634,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
 // The value of `replExist` be equal to `true`.
@@ -657,7 +657,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 ScAddr const & setAddr = result[2];
 // It is equal to `result.Get("_x")`.
@@ -678,7 +678,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.HelperGenTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 // Iterate by all replacements in result.
 for (size_t i = 0; i < result.Size(); ++i)
@@ -693,7 +693,7 @@ for (size_t i = 0; i < result.Size(); ++i)
     The method `Size` returns summary count of indexes of replacements in each triple in sc-template. If there are 
     `2` triples in sc-template, then there are `2 * 3 = 6` different indexes of replacements in sc-template.
 
-## **HelperSearchTemplate**
+## **SearchByTemplate**
 
 You can search sc-construction in sc-memory by sc-templates. This search refers to isomorphic search by graph-template.
 Search algorithm trying to find all possible variants of specified construction. It uses any constants (available
@@ -705,7 +705,7 @@ sc-addresses from parameters to find equal sc-constructions in sc-memory).
 // You can use `ScTemplate` methods or method ScTemplateBuild to translate 
 // sc-template from SCs-code or sc-memory into program representation.
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 // Program representation of sc-constructions in `ScTemplateResultItem` 
 // may be gotten from `result`.
 ...
@@ -736,7 +736,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 ScTemplateResultItem item;
 bool constrExist = result.Get(0, item);
@@ -763,7 +763,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 ScTemplateResultItem item = result.Get(0);
 // It is a valid item.
@@ -789,7 +789,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 ScTemplateResultItem item = result[0];
 // It is a valid item.
@@ -814,7 +814,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 size_t const count = result.Size();
 // The value of `count` be equal to `1`.
@@ -836,7 +836,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 bool const count = result.IsEmpty();
 // The value of `count` be equal to `false`.
@@ -858,7 +858,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 result.Clear();
 // After that `result` does not contain any information about sc-constructions.
@@ -880,7 +880,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 for (size_t i = 0; i < result.Size(); ++i)
 {
@@ -903,7 +903,7 @@ templ.Triple(
 // There is one sc-construction that is isomorphic this sc-template.
 
 ScTemplateSearchResult result;
-bool const isFoundByTemplate = context.HelperSearchTemplate(templ, result);
+bool const isFoundByTemplate = context.SearchByTemplate(templ, result);
 
 result.ForEach([](ScTemplateResultItem const & item) {
   // Implement logic to handle found sc-constructions.
@@ -911,7 +911,7 @@ result.ForEach([](ScTemplateResultItem const & item) {
 ...
 ```
 
-## **HelperSmartSearchTemplate**
+## **SearchByTemplateInterruptibly**
 
 This method searches constructions by isomorphic sc-template and pass found sc-constructions to `callback` 
 lambda-function. Lambda-function `callback` must return a request command value to manage sc-template search:
@@ -922,30 +922,30 @@ lambda-function. Lambda-function `callback` must return a request command value 
 
 When ScTemplateSearchRequest::CONTINUE returns, sc-template search will be continued. If ScTemplateSearchRequest::STOP 
 or ScTemplateSearchRequest::ERROR returns, then sc-template search stops. If sc-template search stopped by 
-ScTemplateSearchRequest::ERROR, then HelperSmartSearchTemplate thrown utils::ExceptionInvalidState. If `filterCallback` 
+ScTemplateSearchRequest::ERROR, then SearchByTemplateInterruptibly thrown utils::ExceptionInvalidState. If `filterCallback` 
 passed, then all found sc-constructions triples are filtered by `filterCallback` condition.
 
 ```cpp
 ...
-ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
-ScAddr const & setAddr = context.HelperFindBySystemIdtf("my_set");
-ScAddr const & classAddr = context.HelperFindBySystemIdtf("my_class");
+ScAddr const & structureAddr = context.SearchElementBySystemIdentifier("my_structure");
+ScAddr const & setAddr = context.SearchElementBySystemIdentifier("my_set");
+ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
 
 ScTemplate templ;
 templ.Triple(
   classAddr,
-  ScType::EdgeAccessVarPosPerm >> "_edge",
+  ScType::EdgeAccessVarPosPerm >> "_arc",
   ScType::Unknown >> "_addr2"
 );
-m_context->HelperSmartSearchTemplate(templ, [&context](
+m_context->SearchByTemplateInterruptibly(templ, [&context](
     ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest 
 {
-  ScAddr const & edgeAddr = item["_edge"];
-  if (context->HelperCheckEdge(
-      structureAddr, edgeAddr, ScType::EdgeAccessConstPosPerm))   
+  ScAddr const & arcAddr = item["_arc"];
+  if (context->CheckConnector(
+      structureAddr, arcAddr, ScType::EdgeAccessConstPosPerm))   
     return ScTemplateSearchRequest::CONTINUE;
 
-  if (context.CreateEdge(
+  if (context.GenerateConnector(
       ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
     return ScTemplateSearchRequest::STOP;
 

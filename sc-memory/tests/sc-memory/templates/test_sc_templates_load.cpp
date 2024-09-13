@@ -10,19 +10,19 @@ using ScTemplateLoadTest = ScTemplateTest;
 class ScTemplateLoadContext : public ScMemoryContext
 {
 public:
-  void HelperLoadTemplate(
+  void LoadTemplate(
       ScTemplate & translatableTemplate,
       ScAddr & resultTemplateAddr,
       ScTemplateParams const & params = ScTemplateParams())
   {
-    ScMemoryContext::HelperLoadTemplate(translatableTemplate, resultTemplateAddr, params);
+    ScMemoryContext::LoadTemplate(translatableTemplate, resultTemplateAddr, params);
   }
 };
 
 TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & testRelationAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
 
   ScTemplate templ;
   templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
@@ -36,14 +36,14 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
-  ctx.HelperLoadTemplate(templ, templAddr);
+  ctx.LoadTemplate(templ, templAddr);
 
   ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   {
     EXPECT_TRUE(templateStruct.HasElement(testClassAddr));
     EXPECT_TRUE(templateStruct.HasElement(testRelationAddr));
 
-    ScIterator3Ptr it3 = m_ctx->Iterator3(testClassAddr, ScType::EdgeAccessVarPosPerm, ScType::LinkVar);
+    ScIterator3Ptr it3 = m_ctx->CreateIterator3(testClassAddr, ScType::EdgeAccessVarPosPerm, ScType::LinkVar);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToTestObject = it3->Get(1);
     ScAddr const & testObject = it3->Get(2);
@@ -51,7 +51,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_TRUE(templateStruct.HasElement(testObject));
     EXPECT_FALSE(it3->Next());
 
-    ScIterator5Ptr it5 = m_ctx->Iterator5(
+    ScIterator5Ptr it5 = m_ctx->CreateIterator5(
         testObject, ScType::EdgeDCommonVar, ScType::NodeVar, ScType::EdgeAccessVarPosPerm, testRelationAddr);
     EXPECT_TRUE(it5->Next());
     ScAddr const & arcToTestSet = it5->Get(1);
@@ -62,7 +62,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestSet));
     EXPECT_FALSE(it5->Next());
 
-    it3 = m_ctx->Iterator3(testSet, ScType::EdgeAccessVarPosPerm, arcToTestObject);
+    it3 = m_ctx->CreateIterator3(testSet, ScType::EdgeAccessVarPosPerm, arcToTestObject);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToArcToTestObject = it3->Get(1);
     EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestObject));
@@ -72,8 +72,8 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 
 TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & testRelationAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
 
   ScTemplate templ;
   templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
@@ -87,29 +87,29 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
   EXPECT_EQ(templ.Size(), 4u);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
-  ctx.HelperLoadTemplate(templ, templAddr);
+  ctx.LoadTemplate(templ, templAddr);
 
   ScTemplate builtTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(builtTemplate, templAddr));
+  m_ctx->BuildTemplate(builtTemplate, templAddr);
 
   EXPECT_EQ(builtTemplate.Size(), 4u);
 
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(builtTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(builtTemplate, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 }
 
 TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTemplate)
 {
-  ScAddr const & testClassAddr = m_ctx->CreateNode(ScType::NodeConstClass);
-  ScAddr const & testRelationAddr = m_ctx->CreateNode(ScType::NodeConstNoRole);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
 
   ScTemplate templ;
   templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
@@ -123,10 +123,10 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
   EXPECT_EQ(templ.Size(), 4u);
 
   ScTemplateGenResult genResult;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, genResult));
+  m_ctx->GenerateByTemplate(templ, genResult);
 
   ScTemplateSearchResult searchResult;
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(templ, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 
   ScAddr const & testObject = genResult["_test_object"];
@@ -135,15 +135,15 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
 
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
-  ctx.HelperLoadTemplate(templ, templAddr, params);
+  ctx.LoadTemplate(templ, templAddr, params);
   ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   EXPECT_TRUE(templateStruct.HasElement(testObject));
 
   ScTemplate builtTemplate;
-  EXPECT_TRUE(m_ctx->HelperBuildTemplate(builtTemplate, templAddr));
+  m_ctx->BuildTemplate(builtTemplate, templAddr);
 
   EXPECT_EQ(builtTemplate.Size(), 4u);
 
-  EXPECT_TRUE(m_ctx->HelperSearchTemplate(builtTemplate, searchResult));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(builtTemplate, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);
 }

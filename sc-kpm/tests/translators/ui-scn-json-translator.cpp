@@ -25,7 +25,7 @@ ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAdd
       ScType::EdgeAccessVarPosPerm,
       ScAddr(keynode_nrel_translation));
   ScTemplateSearchResult result;
-  context.HelperSearchTemplate(translationTemplate, result);
+  context.SearchByTemplate(translationTemplate, result);
   if (!result.IsEmpty())
     return result[0]["_translation_link"];
   return ScAddr::Empty;
@@ -89,10 +89,10 @@ TEST_F(ScMemoryTest, test_successfull_result)
   EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -117,10 +117,10 @@ TEST_F(ScMemoryTest, test_command_no_class)
   EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "command_init_no_class.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_FALSE(resultLink.IsValid());
 
@@ -136,10 +136,10 @@ TEST_F(ScMemoryTest, test_command_no_lang)
   EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "command_init_no_lang.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
 
@@ -155,10 +155,10 @@ TEST_F(ScMemoryTest, test_command_no_format)
   EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "command_init_no_format.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_FALSE(resultLink.IsValid());
 
@@ -176,10 +176,10 @@ TEST_F(ScMemoryTest, test_struct_with_keynodes)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain_keynodes.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -201,10 +201,10 @@ TEST_F(ScMemoryTest, test_with_definition)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain_keynodes.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "knowledge_definition.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   if (resultLink.IsValid())
   {
@@ -226,10 +226,10 @@ TEST_F(ScMemoryTest, test_with_order_list)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "order_list.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -253,10 +253,10 @@ TEST_F(ScMemoryTest, test_with_filter_list)
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "section_subj_domain.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "filter_list.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -279,10 +279,10 @@ TEST_F(ScMemoryTest, test_kb_fragment)
   EXPECT_TRUE(GenerateByFileURL(helper, COMMAND_INIT_CHECKS_PATH + "init_ui_translator.scs"));
   EXPECT_TRUE(GenerateByFileURL(helper, TEST_STRUCTURES_PATH + "kb_fragment.scs"));
 
-  ScAddr trans_cmd_addr = m_ctx->HelperResolveSystemIdtf("trans_cmd_addr");
-  ScAddr result_addr = m_ctx->HelperResolveSystemIdtf("result_addr");
+  ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
+  ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
 

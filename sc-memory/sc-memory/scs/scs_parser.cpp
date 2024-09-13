@@ -131,10 +131,10 @@ ParsedElement::ParsedElement(
   }
   else
   {
-    SC_ASSERT(!isReversed || (isReversed && type.IsEdge()), ("Trying to set isReversed flag for non edge element"));
+    SC_ASSERT(!isReversed || (isReversed && type.IsEdge()), ("Trying to set isReversed flag for non connector element"));
     ResolveVisibility();
 
-    // all edges has a local visibility
+    // all connectors has a local visibility
     if (type.IsEdge())
       m_visibility = Visibility::Local;
   }
@@ -350,9 +350,9 @@ std::string Parser::GenerateNodeIdtf()
   return std::string("..node_") + std::to_string(m_idtfCounter++);
 }
 
-std::string Parser::GenerateEdgeIdtf()
+std::string Parser::GenerateConnectorIdtf()
 {
-  return std::string("..edge_") + std::to_string(m_idtfCounter++);
+  return std::string("..connector_") + std::to_string(m_idtfCounter++);
 }
 
 std::string Parser::GenerateLinkIdtf()
@@ -421,15 +421,15 @@ ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::str
   return AppendElement(name, elType);
 }
 
-void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & edge, ElementHandle const & target)
+void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & connector, ElementHandle const & target)
 {
-  ParsedElement const & edgeEl = GetParsedElement(edge);
-  SC_ASSERT(edgeEl.GetType().IsEdge(), ("Edge has invalid type"));
+  ParsedElement const & connectorEl = GetParsedElement(connector);
+  SC_ASSERT(connectorEl.GetType().IsEdge(), ("Edge has invalid type"));
 
-  auto addEdge = [this, &edgeEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
+  auto AddConnector = [this, &connectorEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
     ParsedElement const & srcEl = GetParsedElement(src);
     std::string const & idtf = srcEl.GetIdtf();
-    if (edgeEl.GetType() == ScType::EdgeAccessConstPosPerm && scs::TypeResolver::IsKeynodeType(idtf))
+    if (connectorEl.GetType() == ScType::EdgeAccessConstPosPerm && scs::TypeResolver::IsKeynodeType(idtf))
     {
       ParsedElement & targetEl = GetParsedElementRef(trg);
       ScType const newType = targetEl.m_type | scs::TypeResolver::GetKeynodeType(idtf);
@@ -452,13 +452,13 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & e
     }
   };
 
-  if (edgeEl.IsReversed())
+  if (connectorEl.IsReversed())
   {
-    addEdge(target, edge, source);
+    AddConnector(target, connector, source);
   }
   else
   {
-    addEdge(source, edge, target);
+    AddConnector(source, connector, target);
   }
 }
 
@@ -470,7 +470,7 @@ void Parser::ProcessAssign(std::string const & alias, ElementHandle const & valu
 ElementHandle Parser::ProcessConnector(std::string const & connector)
 {
   ScType const type = TypeResolver::GetConnectorType(connector);
-  return AppendElement(GenerateEdgeIdtf(), type, TypeResolver::IsConnectorReversed(connector));
+  return AppendElement(GenerateConnectorIdtf(), type, TypeResolver::IsConnectorReversed(connector));
 }
 
 #define DefineLinkType(content, isVar) \
@@ -551,14 +551,14 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
     auto & t = m_parsedTriples[i];
 
     newElements.insert(t.m_source);
-    newElements.insert(t.m_edge);
+    newElements.insert(t.m_connector);
     newElements.insert(t.m_target);
   }
 
   for (auto const & el : newElements)
   {
-    ElementHandle const edge = ProcessConnector("->");
-    ProcessTriple(contourHandle, edge, el);
+    ElementHandle const connector = ProcessConnector("->");
+    ProcessTriple(contourHandle, connector, el);
   }
 
   ParsedElement & srcEl = GetParsedElementRef(contourHandle);
