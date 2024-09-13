@@ -25,7 +25,7 @@ ScAddr ScAction::GetClass() const noexcept
       && m_context->CheckConnector(m_actionClassAddr, *this, ScType::EdgeAccessConstPosPerm))
     return m_actionClassAddr;
 
-  ScIterator3Ptr const it3 = m_context->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
+  ScIterator3Ptr const it3 = m_context->CreateIterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
   while (it3->Next())
   {
     ScAddr const & actionClassAddr = it3->Get(0);
@@ -49,7 +49,7 @@ bool ScAction::IsActionClassValid(ScMemoryContext * context, ScAddr const & acti
   };
 
   bool isActionClassHasType = false;
-  ScIterator5Ptr const it5 = context->Iterator5(
+  ScIterator5Ptr const it5 = context->CreateIterator5(
       ScType::NodeConstClass,
       ScType::EdgeDCommonConst,
       actionClassAddr,
@@ -74,7 +74,7 @@ ScAddr ScAction::GetArgument(size_t idx, ScAddr const & defaultArgumentAddr) con
 
 ScAddr ScAction::GetArgument(ScAddr const & orderRelationAddr, ScAddr const & defaultArgumentAddr) const noexcept
 {
-  ScIterator5Ptr const it = m_context->Iterator5(
+  ScIterator5Ptr const it = m_context->CreateIterator5(
       *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
 
   if (it->Next())
@@ -90,7 +90,7 @@ ScAction & ScAction::SetArgument(size_t idx, ScAddr const & argumentAddr) noexce
 
 ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const & argumentAddr)
 {
-  ScIterator5Ptr const it = m_context->Iterator5(
+  ScIterator5Ptr const it = m_context->CreateIterator5(
       *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
 
   while (it->Next())
@@ -116,7 +116,7 @@ ScStructure ScAction::GetResult() noexcept(false)
         "Not able to get result of action " << GetActionPrettyString() << GetActionClassPrettyString()
                                             << " because it had not been finished yet.");
 
-  ScIterator5Ptr const & it5 = m_context->Iterator5(
+  ScIterator5Ptr const & it5 = m_context->CreateIterator5(
       *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(

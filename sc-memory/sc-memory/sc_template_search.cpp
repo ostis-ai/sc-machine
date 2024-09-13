@@ -585,27 +585,27 @@ private:
       if (!addr2.IsValid())
       {
         if (addr3.IsValid())  // F_A_F
-          return m_context.Iterator3(addr1, PrepareType(item2), addr3);
+          return m_context.CreateIterator3(addr1, PrepareType(item2), addr3);
         else  // F_A_A
-          return m_context.Iterator3(addr1, PrepareType(item2), PrepareType(item3));
+          return m_context.CreateIterator3(addr1, PrepareType(item2), PrepareType(item3));
       }
       else
       {
         if (addr3.IsValid())  // F_F_F
-          return m_context.Iterator3(addr1, addr2, addr3);
+          return m_context.CreateIterator3(addr1, addr2, addr3);
         else  // F_F_A
-          return m_context.Iterator3(addr1, addr2, PrepareType(item3));
+          return m_context.CreateIterator3(addr1, addr2, PrepareType(item3));
       }
     }
     else if (addr3.IsValid())
     {
       if (addr2.IsValid())  // A_F_F
-        return m_context.Iterator3(PrepareType(item1), addr2, addr3);
+        return m_context.CreateIterator3(PrepareType(item1), addr2, addr3);
       else  // A_A_F
-        return m_context.Iterator3(PrepareType(item1), PrepareType(item2), addr3);
+        return m_context.CreateIterator3(PrepareType(item1), PrepareType(item2), addr3);
     }
     else if (addr2.IsValid() && !addr3.IsValid())  // A_F_A
-      return m_context.Iterator3(PrepareType(item1), addr2, PrepareType(item3));
+      return m_context.CreateIterator3(PrepareType(item1), addr2, PrepareType(item3));
 
     return {};
   }

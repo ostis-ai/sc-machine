@@ -78,7 +78,7 @@ TEST_F(ScServerTest, GenerateElements)
   auto const & links = m_ctx->SearchLinksByContent("connector_end");
   EXPECT_TRUE(std::find(links.begin(), links.end(), trg) != links.end());
 
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, sc_type_arc_pos_const_perm, trg);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, sc_type_arc_pos_const_perm, trg);
   EXPECT_TRUE(iter3->Next());
   EXPECT_TRUE(iter3->Get(1) == connector);
 
@@ -188,7 +188,7 @@ TEST_F(ScServerTest, GenerateElementsBySCsUploadToStructure)
   ScAddr const & set1 = set1SysIdtfFiver.addr1;
   EXPECT_TRUE(set1.IsValid());
 
-  ScIterator3Ptr it3 = m_ctx->Iterator3(classSet, ScType::EdgeAccessConstPosPerm, set1);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(classSet, ScType::EdgeAccessConstPosPerm, set1);
   EXPECT_TRUE(it3->Next());
   ScAddr const & connector = it3->Get(1);
   EXPECT_TRUE(connector.IsValid());
@@ -299,7 +299,7 @@ TEST_F(ScServerTest, CheckElements)
   ScType const & trgType = ScType(responsePayload[2].get<size_t>());
   EXPECT_TRUE(m_ctx->GetElementType(trg) == trgType);
 
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeDCommonConst, trg);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, ScType::EdgeDCommonConst, trg);
   EXPECT_TRUE(iter3->Next());
 
   client.Stop();
@@ -332,7 +332,7 @@ TEST_F(ScServerTest, EraseElements)
   EXPECT_TRUE(response["status"].get<sc_bool>());
   EXPECT_TRUE(response["errors"].empty());
 
-  ScIterator3Ptr const iter3 = m_ctx->Iterator3(src, ScType::EdgeAccessConstPosPerm, trg);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, ScType::EdgeAccessConstPosPerm, trg);
   EXPECT_FALSE(iter3->Next());
 
   client.Stop();

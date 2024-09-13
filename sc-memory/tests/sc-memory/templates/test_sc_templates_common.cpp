@@ -50,7 +50,7 @@ TEST_F(ScTemplateCommonTest, smoke)
   ScTemplateGenResult result;
   m_ctx->GenerateByTemplate(templ, result);
 
-  ScIterator5Ptr const it5 = m_ctx->Iterator5(
+  ScIterator5Ptr const it5 = m_ctx->CreateIterator5(
       addr1, ScType::EdgeAccessConstPosPerm, ScType::Node, ScType::EdgeAccessConstPosPerm, ScType::Node);
 
   EXPECT_TRUE(it5->Next());
@@ -60,7 +60,8 @@ TEST_F(ScTemplateCommonTest, smoke)
   EXPECT_EQ(it5->Get(3), result["_addr2T2"]);
   EXPECT_EQ(it5->Get(4), result["_addr1T2"]);
 
-  ScIterator3Ptr const it3 = m_ctx->Iterator3(result["addr2"], ScType::EdgeDCommon, ScType::EdgeAccessConstPosPerm);
+  ScIterator3Ptr const it3 =
+      m_ctx->CreateIterator3(result["addr2"], ScType::EdgeDCommon, ScType::EdgeAccessConstPosPerm);
 
   EXPECT_TRUE(it3->Next());
   EXPECT_EQ(it3->Get(0), result["addr2"]);

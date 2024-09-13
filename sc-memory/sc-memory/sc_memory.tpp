@@ -82,12 +82,21 @@ std::vector<std::string> ScMemoryContext::FindLinksContentsByContentSubstring(
   return {linkContentSet.cbegin(), linkContentSet.cend()};
 }
 
-_SC_EXTERN template <
-    typename ParamType1,
-    typename ParamType2,
-    typename ParamType3,
-    typename ParamType4,
-    typename ParamType5>
+template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
+std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> ScMemoryContext::
+    CreateIterator5(
+        ParamType1 const & param1,
+        ParamType2 const & param2,
+        ParamType3 const & param3,
+        ParamType4 const & param4,
+        ParamType5 const & param5)
+{
+  return std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>>(
+      new ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(
+          *this, param1, param2, param3, param4, param5));
+}
+
+template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
 std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> ScMemoryContext::Iterator5(
     ParamType1 const & param1,
     ParamType2 const & param2,
@@ -95,13 +104,11 @@ std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, Para
     ParamType4 const & param4,
     ParamType5 const & param5)
 {
-  return std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>>(
-      new ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>(
-          *this, param1, param2, param3, param4, param5));
+  return CreateIterator5(param1, param2, param3, param4, param5);
 }
 
-_SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3>
-std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> ScMemoryContext::Iterator3(
+template <typename ParamType1, typename ParamType2, typename ParamType3>
+std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> ScMemoryContext::CreateIterator3(
     ParamType1 const & param1,
     ParamType2 const & param2,
     ParamType3 const & param3)
@@ -110,34 +117,71 @@ std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> ScMemoryContext
       new ScIterator3<ParamType1, ParamType2, ParamType3>(*this, param1, param2, param3));
 }
 
-template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
+template <typename ParamType1, typename ParamType2, typename ParamType3>
+std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> ScMemoryContext::Iterator3(
+    ParamType1 const & param1,
+    ParamType2 const & param2,
+    ParamType3 const & param3)
+{
+  return CreateIterator3(param1, param2, param3);
+}
+
+template <typename ParamType1, typename ParamType2, typename ParamType3, typename TripleCallback>
+void ScMemoryContext::ForEach(
+    ParamType1 const & param1,
+    ParamType2 const & param2,
+    ParamType3 const & param3,
+    TripleCallback && callback)
+{
+  ScIterator3Ptr it = CreateIterator3(param1, param2, param3);
+  while (it->Next())
+    callback(it->Get(0), it->Get(1), it->Get(2));
+}
+
+template <typename ParamType1, typename ParamType2, typename ParamType3, typename TripleCallback>
 void ScMemoryContext::ForEachIter3(
     ParamType1 const & param1,
     ParamType2 const & param2,
     ParamType3 const & param3,
-    FnT && fn)
+    TripleCallback && callback)
 {
-  ScIterator3Ptr it = Iterator3(param1, param2, param3);
-  while (it->Next())
-    fn(it->Get(0), it->Get(1), it->Get(2));
+  ForEach(param1, param2, param3, callback);
 }
 
-_SC_EXTERN template <
+template <
     typename ParamType1,
     typename ParamType2,
     typename ParamType3,
     typename ParamType4,
     typename ParamType5,
-    typename FnT>
+    typename QuintupleCallback>
+void ScMemoryContext::ForEach(
+    ParamType1 const & param1,
+    ParamType2 const & param2,
+    ParamType3 const & param3,
+    ParamType4 const & param4,
+    ParamType5 const & param5,
+    QuintupleCallback && callback)
+{
+  ScIterator5Ptr it = CreateIterator5(param1, param2, param3, param4, param5);
+  while (it->Next())
+    callback(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
+}
+
+template <
+    typename ParamType1,
+    typename ParamType2,
+    typename ParamType3,
+    typename ParamType4,
+    typename ParamType5,
+    typename QuintupleCallback>
 void ScMemoryContext::ForEachIter5(
     ParamType1 const & param1,
     ParamType2 const & param2,
     ParamType3 const & param3,
     ParamType4 const & param4,
     ParamType5 const & param5,
-    FnT && fn)
+    QuintupleCallback && callback)
 {
-  ScIterator5Ptr it = Iterator5(param1, param2, param3, param4, param5);
-  while (it->Next())
-    fn(it->Get(0), it->Get(1), it->Get(2), it->Get(3), it->Get(4));
+  ForEach(param1, param2, param3, param4, param5, callback);
 }

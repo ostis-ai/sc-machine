@@ -8,7 +8,7 @@
 #include "sc_memory.hpp"
 
 template <>
-sc_iterator3 * GenerateIterator3<sc_addr, sc_type, sc_addr>(
+sc_iterator3 * CreateIterator3<sc_addr, sc_type, sc_addr>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_type const & p2,
@@ -18,7 +18,7 @@ sc_iterator3 * GenerateIterator3<sc_addr, sc_type, sc_addr>(
 }
 
 template <>
-sc_iterator3 * GenerateIterator3<sc_addr, sc_type, sc_type>(
+sc_iterator3 * CreateIterator3<sc_addr, sc_type, sc_type>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_type const & p2,
@@ -28,7 +28,7 @@ sc_iterator3 * GenerateIterator3<sc_addr, sc_type, sc_type>(
 }
 
 template <>
-sc_iterator3 * GenerateIterator3<sc_addr, sc_addr, sc_type>(
+sc_iterator3 * CreateIterator3<sc_addr, sc_addr, sc_type>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_addr const & p2,
@@ -38,7 +38,7 @@ sc_iterator3 * GenerateIterator3<sc_addr, sc_addr, sc_type>(
 }
 
 template <>
-sc_iterator3 * GenerateIterator3<sc_type, sc_type, sc_addr>(
+sc_iterator3 * CreateIterator3<sc_type, sc_type, sc_addr>(
     ScMemoryContext const & context,
     sc_type const & p1,
     sc_type const & p2,
@@ -48,7 +48,7 @@ sc_iterator3 * GenerateIterator3<sc_type, sc_type, sc_addr>(
 }
 
 template <>
-sc_iterator3 * GenerateIterator3<sc_type, sc_addr, sc_addr>(
+sc_iterator3 * CreateIterator3<sc_type, sc_addr, sc_addr>(
     ScMemoryContext const & context,
     sc_type const & p1,
     sc_addr const & p2,
@@ -58,7 +58,7 @@ sc_iterator3 * GenerateIterator3<sc_type, sc_addr, sc_addr>(
 }
 
 template <>
-sc_iterator3 * GenerateIterator3<sc_type, sc_addr, sc_type>(
+sc_iterator3 * CreateIterator3<sc_type, sc_addr, sc_type>(
     ScMemoryContext const & context,
     sc_type const & p1,
     sc_addr const & p2,
@@ -68,7 +68,7 @@ sc_iterator3 * GenerateIterator3<sc_type, sc_addr, sc_type>(
 }
 
 template <>
-sc_iterator3 * GenerateIterator3<sc_addr, sc_addr, sc_addr>(
+sc_iterator3 * CreateIterator3<sc_addr, sc_addr, sc_addr>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_addr const & p2,
@@ -78,7 +78,7 @@ sc_iterator3 * GenerateIterator3<sc_addr, sc_addr, sc_addr>(
 }
 
 template <>
-sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_type, sc_type, sc_type>(
+sc_iterator5 * CreateIterator5<sc_addr, sc_type, sc_type, sc_type, sc_type>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_type const & p2,
@@ -90,7 +90,7 @@ sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_type, sc_type, sc_type>(
 }
 
 template <>
-sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_addr, sc_type, sc_type>(
+sc_iterator5 * CreateIterator5<sc_addr, sc_type, sc_addr, sc_type, sc_type>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_type const & p2,
@@ -102,7 +102,7 @@ sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_addr, sc_type, sc_type>(
 }
 
 template <>
-sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_addr, sc_type, sc_addr>(
+sc_iterator5 * CreateIterator5<sc_addr, sc_type, sc_addr, sc_type, sc_addr>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_type const & p2,
@@ -114,7 +114,7 @@ sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_addr, sc_type, sc_addr>(
 }
 
 template <>
-sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_type, sc_type, sc_addr>(
+sc_iterator5 * CreateIterator5<sc_addr, sc_type, sc_type, sc_type, sc_addr>(
     ScMemoryContext const & context,
     sc_addr const & p1,
     sc_type const & p2,
@@ -126,7 +126,7 @@ sc_iterator5 * GenerateIterator5<sc_addr, sc_type, sc_type, sc_type, sc_addr>(
 }
 
 template <>
-sc_iterator5 * GenerateIterator5<sc_type, sc_type, sc_addr, sc_type, sc_addr>(
+sc_iterator5 * CreateIterator5<sc_type, sc_type, sc_addr, sc_type, sc_addr>(
     ScMemoryContext const & context,
     sc_type const & p1,
     sc_type const & p2,
@@ -138,7 +138,7 @@ sc_iterator5 * GenerateIterator5<sc_type, sc_type, sc_addr, sc_type, sc_addr>(
 }
 
 template <>
-sc_iterator5 * GenerateIterator5<sc_type, sc_type, sc_addr, sc_type, sc_type>(
+sc_iterator5 * CreateIterator5<sc_type, sc_type, sc_addr, sc_type, sc_type>(
     ScMemoryContext const & context,
     sc_type const & p1,
     sc_type const & p2,
@@ -150,7 +150,7 @@ sc_iterator5 * GenerateIterator5<sc_type, sc_type, sc_addr, sc_type, sc_type>(
 }
 
 template <>
-sc_iterator5 * GenerateIterator5<sc_type, sc_type, sc_type, sc_type, sc_addr>(
+sc_iterator5 * CreateIterator5<sc_type, sc_type, sc_type, sc_type, sc_addr>(
     ScMemoryContext const & context,
     sc_type const & p1,
     sc_type const & p2,

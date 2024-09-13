@@ -195,7 +195,7 @@ TEST_F(ScActionTest, GenerateActionAndSetRemoveGetResult)
 
   action.FinishSuccessfully();
 
-  ScIterator5Ptr it5 = m_ctx->Iterator5(
+  ScIterator5Ptr it5 = m_ctx->CreateIterator5(
       action,
       ScType::EdgeDCommonConst,
       ScType::NodeConstStruct,
@@ -395,7 +395,7 @@ TEST_F(ScActionTest, InitiateFinishedAction)
   ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_NO_THROW(action.Initiate());
   EXPECT_NO_THROW(action.FinishSuccessfully());
-  ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
   EXPECT_TRUE(it3->Next());
   m_ctx->EraseElement(it3->Get(1));
   EXPECT_FALSE(action.IsInitiated());
@@ -408,7 +408,7 @@ TEST_F(ScActionTest, InitiateAndWaitFinishedAction)
   ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   EXPECT_NO_THROW(action.InitiateAndWait(1));
   EXPECT_NO_THROW(action.FinishSuccessfully());
-  ScIterator3Ptr it3 = m_ctx->Iterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(ScKeynodes::action_initiated, ScType::EdgeAccessConstPosPerm, action);
   EXPECT_TRUE(it3->Next());
   m_ctx->EraseElement(it3->Get(1));
   EXPECT_FALSE(action.IsInitiated());

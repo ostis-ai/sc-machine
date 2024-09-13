@@ -12,10 +12,10 @@ extern "C"
 }
 
 template <typename P1, typename P2, typename P3>
-sc_iterator3 * GenerateIterator3(ScMemoryContext const & context, P1 const & p1, P2 const & p2, P3 const & p3);
+sc_iterator3 * CreateIterator3(ScMemoryContext const & context, P1 const & p1, P2 const & p2, P3 const & p3);
 
 template <typename P1, typename P2, typename P3, typename P4, typename P5>
-sc_iterator5 * GenerateIterator5(
+sc_iterator5 * CreateIterator5(
     ScMemoryContext const & context,
     P1 const & p1,
     P2 const & p2,
@@ -58,7 +58,7 @@ ScIterator3<ParamType1, ParamType2, ParamType3>::ScIterator3(
     ParamType2 const & p2,
     ParamType3 const & p3)
 {
-  m_iterator = GenerateIterator3(context, Convert(p1), Convert(p2), Convert(p3));
+  m_iterator = CreateIterator3(context, Convert(p1), Convert(p2), Convert(p3));
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3>
@@ -155,7 +155,7 @@ ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>::ScItera
     ParamType4 const & p4,
     ParamType5 const & p5)
 {
-  m_iterator = GenerateIterator5(context, Convert(p1), Convert(p2), Convert(p3), Convert(p4), Convert(p5));
+  m_iterator = CreateIterator5(context, Convert(p1), Convert(p2), Convert(p3), Convert(p4), Convert(p5));
 }
 
 template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>

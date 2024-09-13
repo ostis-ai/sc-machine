@@ -183,7 +183,7 @@ encapsulated this logic;
 - Config options `dump_memory` and `dump_memory_statistics` in `[sc-memory]` for enabling sc-memory dumps
 - Full md docs for sc-memory API on C++ with examples
 - ScTemplate replacement presence check using varAddr
-- Iterator5 AAAAF
+- CreateIterator5 AAAAF
 - Divide params errors handling and memory state handling
 - Provide errors and exceptions information into C and C++ sc-memory API
 - Support for gwf <0.4.0

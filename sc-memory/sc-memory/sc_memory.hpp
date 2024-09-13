@@ -1058,82 +1058,213 @@ public:
       ScStreamPtr const & linkContentStreamSubstring,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
-  _SC_EXTERN template <
-      typename ParamType1,
-      typename ParamType2,
-      typename ParamType3,
-      typename ParamType4,
-      typename ParamType5>
-  std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> Iterator5(
+  /*!
+   * @brief Creates an iterator for iterating over triples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3>
+  _SC_EXTERN std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> CreateIterator3(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3);
+
+  /*!
+   * @brief Creates an iterator for iterating over triples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `Iterator3` instead for better readability
+   * and standards compliance.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CreateIterator3` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3);
+
+  /*!
+   * @brief Creates an iterator for iterating over quintuples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param param4 A sc-address or sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-address or sc-type of the fifth parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
+  _SC_EXTERN std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> CreateIterator5(
       ParamType1 const & param1,
       ParamType2 const & param2,
       ParamType3 const & param3,
       ParamType4 const & param4,
       ParamType5 const & param5);
 
-  _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3>
-  std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> Iterator3(
+  /*!
+   * @brief Creates an iterator for iterating over quintuples.
+   *
+   * This method creates an iterator for iterating over triples and returns it.
+   *
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param param4 A sc-address or sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-address or sc-type of the fifth parameter for the iterator.
+   *
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `CreateIterator5` instead for better readability
+   * and standards compliance.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `CreateIterator5` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> Iterator5(
       ParamType1 const & param1,
       ParamType2 const & param2,
-      ParamType3 const & param3);
+      ParamType3 const & param3,
+      ParamType4 const & param4,
+      ParamType5 const & param5);
 
   /*!
-   * @brief Generates an iterator for iterating over triples.
+   * @brief Creates an iterator for iterating over triples.
    *
    * This method creates an iterator for iterating over triples and calls the provided function for each result.
    *
-   * @tparam ParamType1 A sc-type of the first parameter for the iterator.
-   * @tparam ParamType2 A sc-type of the second parameter for the iterator.
-   * @tparam ParamType3 A sc-type of the third parameter for the iterator.
-   * @tparam FnT A sc-type of the function to be called for each result.
-   * @param param1 The first parameter for the iterator.
-   * @param param2 The second parameter for the iterator.
-   * @param param3 The third parameter for the iterator.
-   * @param fn The function to be called for each result.
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param callback The function to be called for each result.
    *
-   * @note fn function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
+   * @note callback function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
    * ScAddr const & target).
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
-  _SC_EXTERN template <typename ParamType1, typename ParamType2, typename ParamType3, typename FnT>
-  void ForEachIter3(ParamType1 const & param1, ParamType2 const & param2, ParamType3 const & param3, FnT && fn);
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename TripleCallback>
+  _SC_EXTERN void ForEach(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      TripleCallback && callback);
 
   /*!
-   * @brief Generates an iterator for iterating over triples.
+   * @brief Creates an iterator for iterating over triples.
    *
    * This method creates an iterator for iterating over triples and calls the provided function for each result.
    *
-   * @tparam ParamType1 A sc-type of the first parameter for the iterator.
-   * @tparam ParamType2 A sc-type of the second parameter for the iterator.
-   * @tparam ParamType3 A sc-type of the third parameter for the iterator.
-   * @tparam ParamType4 A sc-type of the fourth parameter for the iterator.
-   * @tparam ParamType5 A sc-type of the fifth parameter for the iterator.
-   * @tparam FnT A sc-type of the function to be called for each result.
-   * @param param1 The first parameter for the iterator.
-   * @param param2 The second parameter for the iterator.
-   * @param param3 The third parameter for the iterator.
-   * @param param4 The fourth parameter for the iterator.
-   * @param param5 The fifth parameter for the iterator.
-   * @param fn The function to be called for each result.
+   * @param param1 A sc-address or sc-type of the first parameter for the iterator.
+   * @param param2 A sc-address or sc-type of the second parameter for the iterator.
+   * @param param3 A sc-address or sc-type of the third parameter for the iterator.
+   * @param callback The function to be called for each result.
    *
-   * @note fn function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
+   * @note callback function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target).
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ForEach` instead for better readability
+   * and standards compliance.
+   */
+  template <typename ParamType1, typename ParamType2, typename ParamType3, typename TripleCallback>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ForEach` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN void ForEachIter3(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      TripleCallback && callback);
+
+  /*!
+   * @brief Creates an iterator for iterating over quintuples.
+   *
+   * This method creates an iterator for iterating over quintuples and calls the provided function for each result.
+   *
+   * @param param1 A sc-type of the first parameter for the iterator.
+   * @param param2 A sc-type of the second parameter for the iterator.
+   * @param param3 A sc-type of the third parameter for the iterator.
+   * @param param4 A sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-type of the fifth parameter for the iterator.
+   * @param callback The function to be called for each result.
+   *
+   * @note callback function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
    * ScAddr const & target, ScAddr const & attrConnector, ScAddr const & attr)
    * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
    */
-  _SC_EXTERN template <
+  template <
       typename ParamType1,
       typename ParamType2,
       typename ParamType3,
       typename ParamType4,
       typename ParamType5,
-      typename FnT>
-  void ForEachIter5(
+      typename QuintupleCallback>
+  _SC_EXTERN void ForEach(
       ParamType1 const & param1,
       ParamType2 const & param2,
       ParamType3 const & param3,
       ParamType4 const & param4,
       ParamType5 const & param5,
-      FnT && fn);
+      QuintupleCallback && callback);
+
+  /*!
+   * @brief Creates an iterator for iterating over quintuples.
+   *
+   * This method creates an iterator for iterating over quintuples and calls the provided function for each result.
+   *
+   * @param param1 A sc-type of the first parameter for the iterator.
+   * @param param2 A sc-type of the second parameter for the iterator.
+   * @param param3 A sc-type of the third parameter for the iterator.
+   * @param param4 A sc-type of the fourth parameter for the iterator.
+   * @param param5 A sc-type of the fifth parameter for the iterator.
+   * @param callback The function to be called for each result.
+   *
+   * @note callback function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
+   * ScAddr const & target, ScAddr const & attrConnector, ScAddr const & attr)
+   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @warning This method is deprecated since 0.10.0. Use `ForEach` instead for better readability
+   * and standards compliance.
+   */
+  template <
+      typename ParamType1,
+      typename ParamType2,
+      typename ParamType3,
+      typename ParamType4,
+      typename ParamType5,
+      typename QuintupleCallback>
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `ForEach` instead for better readability and standards "
+      "compliance.")
+  _SC_EXTERN void ForEachIter5(
+      ParamType1 const & param1,
+      ParamType2 const & param2,
+      ParamType3 const & param3,
+      ParamType4 const & param4,
+      ParamType5 const & param5,
+      QuintupleCallback && callback);
 
   /*!
    * @brief Checks the existence of a sc-connector between two sc-elements with the specified type.

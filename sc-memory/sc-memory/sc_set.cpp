@@ -38,7 +38,7 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 bool ScSet::Remove(ScAddr const & elAddr)
 {
   bool found = false;
-  ScIterator3Ptr iter = m_context->Iterator3(*this, ScType::EdgeAccessConstPosPerm, elAddr);
+  ScIterator3Ptr iter = m_context->CreateIterator3(*this, ScType::EdgeAccessConstPosPerm, elAddr);
   while (iter->Next())
   {
     m_context->EraseElement(iter->Get(1));
@@ -76,6 +76,6 @@ ScSet & ScSet::operator>>(ScAddr const & elAddr)
 
 bool ScSet::IsEmpty() const
 {
-  ScIterator3Ptr const iter = m_context->Iterator3(*this, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr const iter = m_context->CreateIterator3(*this, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   return !iter->Next();
 }

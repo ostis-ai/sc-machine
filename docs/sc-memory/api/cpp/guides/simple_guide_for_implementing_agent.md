@@ -169,7 +169,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // But, in any problem, the presence of NON-factors must be considered, 
   // but this is omitted here.
   size_t setPower = 0;
-  ScIterator3Ptr const it3 = m_context.Iterator3( 
+  ScIterator3Ptr const it3 = m_context.CreateIterator3( 
     setAddr,
     ScType::EdgeAccessConstPosPerm,
     ScType::NodeConst
@@ -475,7 +475,7 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 
   // Check sc-constructions in result structure.
   // Check the first three element construction.
-  ScIterator3Ptr it3 = m_ctx->Iterator3(
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(
     structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeDCommonConst);
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr = it3->Get(2);
@@ -492,7 +492,7 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
   EXPECT_EQ(setPower, 2u);
 
   // Check the second three element construction.
-  it3 = m_ctx->Iterator3(
+  it3 = m_ctx->CreateIterator3(
     structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeAccessConstPosPerm);
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr2 = it3->Get(2);

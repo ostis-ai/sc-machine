@@ -12,7 +12,7 @@ void checkConnectionInStruct(
     ScAddr const & otherKeynodeAddr,
     ScAddr const & structure)
 {
-  ScIterator3Ptr const it3 = m_ctx->Iterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
+  ScIterator3Ptr const it3 = m_ctx->CreateIterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
   while (it3->Next())
   {
     bool checkEdge = m_ctx->CheckConnector(structure, it3->Get(1), ScType::EdgeAccessConstPosPerm);
@@ -30,7 +30,7 @@ bool checkKeynodeInStruct(
     ScAddr const & kNrelSystemIdtf,
     ScAddr const & structure)
 {
-  ScIterator5Ptr const it5 = m_ctx->Iterator5(
+  ScIterator5Ptr const it5 = m_ctx->CreateIterator5(
       keynodeAddr, ScType::EdgeDCommonConst, ScType::LinkConst, ScType::EdgeAccessConstPosPerm, kNrelSystemIdtf);
   bool result = it5->Next();
   if (result)

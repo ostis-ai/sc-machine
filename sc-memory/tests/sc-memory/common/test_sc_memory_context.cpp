@@ -77,7 +77,7 @@ void TestRemovePermissionsForUserToInitActions(
     ScAddr const & actionClassAddr)
 {
   ScAddr const & nrelUserActionClassAddr{nrel_user_action_class_addr};
-  ScIterator5Ptr it5 = context->Iterator5(
+  ScIterator5Ptr it5 = context->CreateIterator5(
       userAddr, ScType::EdgeDCommonConst, actionClassAddr, ScType::EdgeAccessConstPosTemp, nrelUserActionClassAddr);
   EXPECT_TRUE(it5->Next());
   ScAddr const & arcAddr = it5->Get(3);
@@ -146,7 +146,7 @@ void TestRemovePermissionsForUsersSetToInitActions(
     ScAddr const & actionClassAddr)
 {
   ScAddr const & nrelUsersSetActionClassAddr{nrel_users_set_action_class_addr};
-  ScIterator5Ptr it5 = context->Iterator5(
+  ScIterator5Ptr it5 = context->CreateIterator5(
       userAddr, ScType::EdgeDCommonConst, actionClassAddr, ScType::EdgeAccessConstPosTemp, nrelUsersSetActionClassAddr);
   EXPECT_TRUE(it5->Next());
   ScAddr const & arcAddr = it5->Get(3);
@@ -252,10 +252,10 @@ void TestReadActionsUnsuccessfullyByNotAuthorizedUserOnly(
   ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
   context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_THROW(it3->Next(), utils::ExceptionInvalidState);
 
-  ScIterator5Ptr it5 = userContext.Iterator5(
+  ScIterator5Ptr it5 = userContext.CreateIterator5(
       nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
   EXPECT_THROW(it5->Next(), utils::ExceptionInvalidState);
 
@@ -269,10 +269,10 @@ void TestIteratorsSuccessfully(std::unique_ptr<ScAgentContext> const & context, 
   ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
   context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_TRUE(it3->Next());
 
-  ScIterator5Ptr it5 = userContext.Iterator5(
+  ScIterator5Ptr it5 = userContext.CreateIterator5(
       nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
   EXPECT_FALSE(it5->Next());
 
@@ -285,10 +285,10 @@ void TestIteratorsUnsuccessfully(std::unique_ptr<ScAgentContext> const & context
   ScAddr const & linkAddr = context->GenerateLink(ScType::LinkConst);
   context->GenerateConnector(ScType::EdgeAccessConstPosTemp, nodeAddr, linkAddr);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_FALSE(it3->Next());
 
-  ScIterator5Ptr it5 = userContext.Iterator5(
+  ScIterator5Ptr it5 = userContext.CreateIterator5(
       nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
   EXPECT_FALSE(it5->Next());
 
@@ -608,7 +608,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUser)
         isChecked = false;
       });
 
-  ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeDCommonConst, userAddr);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(conceptAuthenticatedUserAddr, ScType::EdgeDCommonConst, userAddr);
   while (it3->Next())
   {
     m_ctx->EraseElement(it3->Get(2));
@@ -657,7 +657,7 @@ TEST_F(ScMemoryTestWithUserMode, NoHandleElementsByInvalidConnectorToUsersSet)
         isChecked = false;
       });
 
-  ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeDCommonConst, userAddr);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(conceptAuthenticatedUserAddr, ScType::EdgeDCommonConst, userAddr);
   while (it3->Next())
   {
     m_ctx->EraseElement(it3->Get(2));
@@ -801,7 +801,8 @@ TEST_F(
               isAuthenticated = false;
             });
 
-    ScIterator3Ptr const it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
+    ScIterator3Ptr const it3 =
+        m_ctx->CreateIterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
     EXPECT_TRUE(it3->Next());
     m_ctx->EraseElement(it3->Get(1));
 
@@ -1155,7 +1156,7 @@ void TestReadWriteEraseAccessedElementUnsuccessfully(
 
   EXPECT_THROW(userContext.EraseElement(elementAddr), utils::ExceptionInvalidState);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(elementAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(elementAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_FALSE(it3->Next());
 
   ScAddr const & nodeAddr = userContext.GenerateNode(ScType::NodeConst);
@@ -1166,7 +1167,7 @@ void TestReadWriteEraseAccessedElementUnsuccessfully(
       utils::ExceptionInvalidState);
   EXPECT_TRUE(userContext.GenerateConnector(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
 
-  it3 = userContext.Iterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
+  it3 = userContext.CreateIterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
   EXPECT_TRUE(it3->Next());
 }
 
@@ -1197,12 +1198,12 @@ void TestReadWriteAccessedElementSuccessfully(
 
   EXPECT_TRUE(userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, elementAddr, nodeAddr).IsValid());
 
-  ScIterator3Ptr it3 = userContext.Iterator3(elementAddr, ScType::EdgeAccessConstPosTemp, nodeAddr);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(elementAddr, ScType::EdgeAccessConstPosTemp, nodeAddr);
   EXPECT_TRUE(it3->Next());
 
   EXPECT_TRUE(userContext.GenerateConnector(ScType::EdgeDCommonConst, elementAddr, nodeAddr).IsValid());
 
-  it3 = userContext.Iterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
+  it3 = userContext.CreateIterator3(elementAddr, ScType::EdgeDCommonConst, nodeAddr);
   EXPECT_TRUE(it3->Next());
 }
 
@@ -1402,7 +1403,7 @@ void TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
 {
   EXPECT_EQ(userContext.GetElementType(nodeAddr), ScType::NodeConst);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_TRUE(it3->Next());
   EXPECT_EQ(it3->Get(0), nodeAddr);
   EXPECT_EQ(it3->Get(1), arcAddr);
@@ -1419,7 +1420,7 @@ void TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
 
   EXPECT_FALSE(it3->Next());
 
-  it3 = userContext.Iterator3(nodeAddr, arcAddr, linkAddr);
+  it3 = userContext.CreateIterator3(nodeAddr, arcAddr, linkAddr);
   EXPECT_TRUE(it3->Next());
   EXPECT_EQ(it3->Get(0), nodeAddr);
   EXPECT_EQ(it3->Get(1), arcAddr);
@@ -1439,7 +1440,7 @@ void TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
     EXPECT_FALSE(it5->Next());
   };
 
-  ScIterator5Ptr it5 = userContext.Iterator5(
+  ScIterator5Ptr it5 = userContext.CreateIterator5(
       nodeAddr,
       ScType::EdgeAccessConstPosTemp,
       ScType::LinkConst,
@@ -1447,19 +1448,19 @@ void TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
       ScType::NodeConstRole);
   TestIterator5Successfully(it5);
 
-  it5 = userContext.Iterator5(
+  it5 = userContext.CreateIterator5(
       nodeAddr, ScType::EdgeAccessConstPosTemp, linkAddr, ScType::EdgeAccessConstPosTemp, ScType::NodeConstRole);
   TestIterator5Successfully(it5);
 
-  it5 = userContext.Iterator5(
+  it5 = userContext.CreateIterator5(
       nodeAddr, ScType::EdgeAccessConstPosTemp, linkAddr, ScType::EdgeAccessConstPosTemp, relationAddr);
   TestIterator5Successfully(it5);
 
-  it5 = userContext.Iterator5(
+  it5 = userContext.CreateIterator5(
       ScType::NodeConst, ScType::EdgeAccessConstPosTemp, linkAddr, ScType::EdgeAccessConstPosTemp, relationAddr);
   TestIterator5Successfully(it5);
 
-  it5 = userContext.Iterator5(
+  it5 = userContext.CreateIterator5(
       ScType::NodeConst,
       ScType::EdgeAccessConstPosTemp,
       ScType::LinkConst,
@@ -1467,7 +1468,7 @@ void TestReadActionsWithinStructureWithConnectorAndIncidentElementsSuccessfully(
       relationAddr);
   TestIterator5Successfully(it5);
 
-  it5 = userContext.Iterator5(
+  it5 = userContext.CreateIterator5(
       ScType::NodeConst,
       ScType::EdgeAccessConstPosTemp,
       linkAddr,
@@ -1482,7 +1483,7 @@ void TestReadActionsWithinStructureWithConnectorAndIncidentElementsUnsuccessfull
 {
   EXPECT_THROW(userContext.GetElementType(nodeAddr), utils::ExceptionInvalidState);
 
-  ScIterator3Ptr const it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  ScIterator3Ptr const it3 = userContext.CreateIterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_FALSE(it3->Next());
 }
 
@@ -1848,7 +1849,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
     EXPECT_TRUE(isAuthenticated.load());
   }
 
-  ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
   EXPECT_TRUE(it3->Next());
   m_ctx->EraseElement(it3->Get(1));
   isAuthenticated = false;
@@ -1868,7 +1869,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserWithLocalReadP
             });
 
     ScAddr const & nrelUserActionClassWithinScStructureAddr{nrel_user_action_class_within_sc_structure_addr};
-    it3 = m_ctx->Iterator3(
+    it3 = m_ctx->CreateIterator3(
         nrelUserActionClassWithinScStructureAddr, ScType::EdgeAccessConstPosTemp, ScType::EdgeDCommonConst);
     EXPECT_TRUE(it3->Next());
     m_ctx->EraseElement(it3->Get(1));
@@ -1917,7 +1918,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
     EXPECT_TRUE(isAuthenticated.load());
   }
 
-  ScIterator3Ptr it3 = m_ctx->Iterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(conceptAuthenticatedUserAddr, ScType::EdgeAccessConstPosTemp, userAddr);
   EXPECT_TRUE(it3->Next());
   m_ctx->EraseElement(it3->Get(1));
   isAuthenticated = false;
@@ -1937,7 +1938,7 @@ TEST_F(ScMemoryTestWithUserMode, HandleElementsByAuthenticatedUserHavingClassWit
             });
 
     ScAddr const & nrelUsersSetActionClassWithinScStructureAddr{nrel_users_set_action_class_within_sc_structure_addr};
-    it3 = m_ctx->Iterator3(
+    it3 = m_ctx->CreateIterator3(
         nrelUsersSetActionClassWithinScStructureAddr, ScType::EdgeAccessConstPosTemp, ScType::EdgeDCommonConst);
     EXPECT_TRUE(it3->Next());
     m_ctx->EraseElement(it3->Get(1));
@@ -1975,7 +1976,7 @@ void TestReadActionsWithinStructureWithConnectorAndSourceSuccessfully(
 {
   EXPECT_EQ(userContext.GetElementType(nodeAddr), ScType::NodeConst);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(nodeAddr, ScType::EdgeAccessConstPosTemp, ScType::Unknown);
   EXPECT_TRUE(it3->Next());
   EXPECT_EQ(it3->Get(0), nodeAddr);
   ScAddr const & arcAddr = it3->Get(1);
@@ -1987,7 +1988,7 @@ void TestReadActionsWithinStructureWithConnectorAndSourceSuccessfully(
 
   EXPECT_FALSE(it3->Next());
 
-  it3 = userContext.Iterator3(nodeAddr, arcAddr, ScType::Unknown);
+  it3 = userContext.CreateIterator3(nodeAddr, arcAddr, ScType::Unknown);
   EXPECT_TRUE(it3->Next());
   EXPECT_EQ(it3->Get(0), nodeAddr);
   EXPECT_EQ(it3->Get(1), arcAddr);
@@ -2061,7 +2062,7 @@ void TestReadActionsWithinStructureWithConnectorAndTargetSuccessfully(
 {
   EXPECT_EQ(userContext.GetElementType(linkAddr), ScType::LinkConst);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(ScType::Unknown, ScType::EdgeAccessConstPosTemp, linkAddr);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(ScType::Unknown, ScType::EdgeAccessConstPosTemp, linkAddr);
   EXPECT_TRUE(it3->Next());
   EXPECT_THROW(it3->Get(0), utils::ExceptionInvalidState);
   ScAddr const & arcAddr = it3->Get(1);
@@ -2074,7 +2075,7 @@ void TestReadActionsWithinStructureWithConnectorAndTargetSuccessfully(
 
   EXPECT_FALSE(it3->Next());
 
-  it3 = userContext.Iterator3(ScType::Unknown, arcAddr, linkAddr);
+  it3 = userContext.CreateIterator3(ScType::Unknown, arcAddr, linkAddr);
   EXPECT_TRUE(it3->Next());
   EXPECT_THROW(it3->Get(0), utils::ExceptionInvalidState);
   EXPECT_EQ(it3->Get(1), arcAddr);
@@ -2146,7 +2147,7 @@ void TestReadActionsWithinStructureWithConnectorSuccessfully(TestScMemoryContext
 {
   EXPECT_EQ(userContext.GetElementType(arcAddr), ScType::EdgeAccessConstPosTemp);
 
-  ScIterator3Ptr it3 = userContext.Iterator3(ScType::Unknown, arcAddr, ScType::Unknown);
+  ScIterator3Ptr it3 = userContext.CreateIterator3(ScType::Unknown, arcAddr, ScType::Unknown);
   EXPECT_TRUE(it3->Next());
   EXPECT_THROW(it3->Get(0), utils::ExceptionInvalidState);
   EXPECT_EQ(it3->Get(1), arcAddr);

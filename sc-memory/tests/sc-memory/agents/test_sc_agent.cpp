@@ -401,7 +401,8 @@ bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionInitiatedEv
              ATestGenerateOutgoingArc::generate_outgoing_arc_action,
              event.GetArcTargetElement(),
              ScType::EdgeAccessConstPosPerm)
-         && m_context.Iterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
+         && m_context.CreateIterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)
+                ->Next();
 }
 
 ScResult ATestCheckInitiationCondition::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
@@ -471,7 +472,7 @@ ScResult ATestCheckResultCondition::DoProgram(ScActionInitiatedEvent const &, Sc
 bool ATestCheckResultCondition::CheckResultCondition(ScActionInitiatedEvent const &, ScAction & action)
 {
   return m_context.CheckConnector(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm)
-         && m_context.Iterator3(action, ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
+         && m_context.CreateIterator3(action, ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
 }
 
 /// --------------------------------------

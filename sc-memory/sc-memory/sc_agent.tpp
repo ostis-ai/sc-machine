@@ -28,7 +28,7 @@ ScAgent<TScEvent, TScContext>::~ScAgent() noexcept
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetAbstractAgent() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       ScType::NodeConst,
       ScType::EdgeDCommonConst,
       m_agentImplementationAddr,
@@ -50,7 +50,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventClass() const noexcept(false)
   if constexpr (!std::is_same<TScEvent, ScElementaryEvent>::value)
     return TScEvent::eventClassAddr;
 
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -70,7 +70,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventClass() const noexcept(false)
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -90,7 +90,7 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement() const noexce
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetActionClass() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::NodeConstClass,
@@ -115,7 +115,7 @@ bool ScAgent<TScEvent, TScContext>::CheckInitiationCondition(TScEvent const & ev
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -159,7 +159,7 @@ bool ScAgent<TScEvent, TScContext>::CheckResultCondition(TScEvent const &, ScAct
 template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
 {
-  ScIterator5Ptr const it5 = m_context.Iterator5(
+  ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
       ScType::EdgeDCommonConst,
       ScType::EdgeDCommonConst,
@@ -313,7 +313,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
 
   auto const & GetIteratorForEventTripleWithOutgoingArc = [&]() -> ScIterator5Ptr
   {
-    return this->m_context.Iterator5(
+    return this->m_context.CreateIterator5(
         eventSubscriptionElementAddr,
         ScType::Var,
         ScType::Unknown,
@@ -322,7 +322,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   };
   auto const & GetIteratorForEventTripleWithIncomingArc = [&]() -> ScIterator5Ptr
   {
-    return this->m_context.Iterator5(
+    return this->m_context.CreateIterator5(
         ScType::Unknown,
         ScType::Var,
         eventSubscriptionElementAddr,
@@ -418,7 +418,7 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
   ScType const & connectorType = this->m_context.GetElementType(connectorAddr);
   ScType const & otherElementType = this->m_context.GetElementType(otherElementAddr);
 
-  ScIterator3Ptr const subscriptionElementIterator = this->m_context.Iterator3(
+  ScIterator3Ptr const subscriptionElementIterator = this->m_context.CreateIterator3(
       initiationConditionTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElementAddr);
   if (subscriptionElementIterator->Next())
   {

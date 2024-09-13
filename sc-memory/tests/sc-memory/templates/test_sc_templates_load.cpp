@@ -43,7 +43,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_TRUE(templateStruct.HasElement(testClassAddr));
     EXPECT_TRUE(templateStruct.HasElement(testRelationAddr));
 
-    ScIterator3Ptr it3 = m_ctx->Iterator3(testClassAddr, ScType::EdgeAccessVarPosPerm, ScType::LinkVar);
+    ScIterator3Ptr it3 = m_ctx->CreateIterator3(testClassAddr, ScType::EdgeAccessVarPosPerm, ScType::LinkVar);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToTestObject = it3->Get(1);
     ScAddr const & testObject = it3->Get(2);
@@ -51,7 +51,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_TRUE(templateStruct.HasElement(testObject));
     EXPECT_FALSE(it3->Next());
 
-    ScIterator5Ptr it5 = m_ctx->Iterator5(
+    ScIterator5Ptr it5 = m_ctx->CreateIterator5(
         testObject, ScType::EdgeDCommonVar, ScType::NodeVar, ScType::EdgeAccessVarPosPerm, testRelationAddr);
     EXPECT_TRUE(it5->Next());
     ScAddr const & arcToTestSet = it5->Get(1);
@@ -62,7 +62,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestSet));
     EXPECT_FALSE(it5->Next());
 
-    it3 = m_ctx->Iterator3(testSet, ScType::EdgeAccessVarPosPerm, arcToTestObject);
+    it3 = m_ctx->CreateIterator3(testSet, ScType::EdgeAccessVarPosPerm, arcToTestObject);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToArcToTestObject = it3->Get(1);
     EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestObject));

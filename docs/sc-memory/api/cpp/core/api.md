@@ -165,12 +165,12 @@ First approach is to use simple while loop. It is suitable, when you need to bre
 
 ```cpp
 ...
-// Generate sc-iterator for searching all sc-element sc-addresses 
+// Create sc-iterator for searching all sc-element sc-addresses 
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
-ScIterator3Ptr it3 = context.Iterator3(
-            setAddr,
-            ScType::EdgeAccessConstPosPerm,
-            ScType::Unknown);
+ScIterator3Ptr it3 = context.CreateIterator3(
+    setAddr,
+    ScType::EdgeAccessConstPosPerm,
+    ScType::Unknown);
 // Use it3-Next() to go to the next appropriate by condition sc-construction.
 while (it3->Next())
 {
@@ -185,15 +185,15 @@ while (it3->Next())
 
 ```cpp
 ...
-// Generate sc-iterator for searching all sc-node sc-addresses, 
+// Create sc-iterator for searching all sc-node sc-addresses, 
 // which pairs with sc-element with address `setAddr` belong to the relation 
 // with sc-address `nrelDecompositionAddr`.
-ScIterator5Ptr it5 = context.Iterator5(
-        setAddr,
-        ScType::EdgeDCommonConst,
-        ScType::NodeConst,
-        ScType::EdgeAccessConstPosPerm,
-        nrelDecompositionAddr);
+ScIterator5Ptr it5 = context.CreateIterator5(
+    setAddr,
+    ScType::EdgeDCommonConst,
+    ScType::NodeConst,
+    ScType::EdgeAccessConstPosPerm,
+    nrelDecompositionAddr);
 // Use `it5-Next()` to go to the next appropriate by condition sc-construction. 
 // It returns `true`, if the next appropriate construction is found, 
 // otherwise `false`.
@@ -210,13 +210,13 @@ you need to iterate all results.
 !!! note
     Use next methods if you need to iterate all results. Because it more clearly.
 
-### **ForEachIter3**
+### **ForEach**
 
 ```cpp
 ...
-// Generate callback-based sc-iterator for searching all sc-element sc-addresses 
+// Create callback-based sc-iterator for searching all sc-element sc-addresses 
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
-context.ForEachIter3(
+context.ForEach(
     setAddr,
     ScType::EdgeAccessConstPosPerm,
     ScType::Unknown,
@@ -229,14 +229,14 @@ context.ForEachIter3(
 });
 ```
 
-### **ForEachIter5**
+### **ForEach**
 
 ```cpp
 ...
-// Generate callback-based sc-iterator for searching all sc-node sc-addresses, 
+// Create callback-based sc-iterator for searching all sc-node sc-addresses, 
 // which pairs with sc-element with address `setAddr` belong to the relation 
 // with sc-address `nrelDecompositionAddr`.
-context.ForEachIter5(
+context.ForEach(
   setAddr,
   ScType::EdgeDCommonConst,
   ScType::NodeConst,

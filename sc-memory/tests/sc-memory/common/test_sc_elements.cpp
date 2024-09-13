@@ -256,10 +256,10 @@ TEST_F(ScMemoryTest, CreateDeleteCountEdges)
   EXPECT_EQ(ctx.GetElementEdgesAndOutgoingArcsCount(link), 0u);
   EXPECT_EQ(ctx.GetElementEdgesAndIncomingArcsCount(link), 0u);
 
-  ScIterator3Ptr it3 = ctx.Iterator3(node, ScType::EdgeUCommonConst, link);
+  ScIterator3Ptr it3 = ctx.CreateIterator3(node, ScType::EdgeUCommonConst, link);
   EXPECT_FALSE(it3->Next());
 
-  it3 = ctx.Iterator3(link, ScType::EdgeUCommonConst, node);
+  it3 = ctx.CreateIterator3(link, ScType::EdgeUCommonConst, node);
   EXPECT_FALSE(it3->Next());
 
   ScAddr edge3 = ctx.GenerateConnector(ScType::EdgeUCommonConst, node, link);
@@ -307,7 +307,7 @@ TEST_F(ScMemoryTest, EraseConnectorsBetweenTwoNodesByOneIterator)
     m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
 
   size_t i = 0;
-  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  ScIterator3Ptr const it = m_ctx->CreateIterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
   while (it->Next())
   {
     m_ctx->EraseElement(it->Get(1));
@@ -329,7 +329,7 @@ TEST_F(ScMemoryTest, EraseConnectorsBetweenTwoNodesByTwoIterators)
     m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
 
   size_t i = 0;
-  ScIterator3Ptr it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  ScIterator3Ptr it = m_ctx->CreateIterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
   while (it->Next())
   {
     m_ctx->EraseElement(it->Get(1));
@@ -339,7 +339,7 @@ TEST_F(ScMemoryTest, EraseConnectorsBetweenTwoNodesByTwoIterators)
       break;
   }
 
-  it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  it = m_ctx->CreateIterator3(classAddr, ScType::EdgeAccessConstPosPerm, nodeAddr);
   while (it->Next())
   {
     m_ctx->EraseElement(it->Get(1));
@@ -365,7 +365,7 @@ TEST_F(ScMemoryTest, EraseConnectorsBetweenSomeNodesByOneIterator)
     m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr2);
 
   size_t i = 0;
-  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+  ScIterator3Ptr const it = m_ctx->CreateIterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
   while (it->Next())
   {
     m_ctx->EraseElement(it->Get(1));
@@ -388,7 +388,7 @@ TEST_F(ScMemoryTest, EraseConnectorsFromNodeByOneIterator)
     m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
 
   size_t i = 0;
-  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+  ScIterator3Ptr const it = m_ctx->CreateIterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
   while (it->Next())
   {
     m_ctx->EraseElement(it->Get(1));
@@ -410,7 +410,7 @@ TEST_F(ScMemoryTest, EraseConnectorsToNodeByOneIterator)
     m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr);
 
   size_t i = 0;
-  ScIterator3Ptr const it = m_ctx->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, nodeAddr);
+  ScIterator3Ptr const it = m_ctx->CreateIterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, nodeAddr);
   while (it->Next())
   {
     m_ctx->EraseElement(it->Get(1));
@@ -436,7 +436,7 @@ TEST_F(ScMemoryTest, EraseEdgeTargetsBetweenSomeNodesByOneIterator)
     m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr, nodeAddr2);
 
   size_t i = 0;
-  ScIterator3Ptr const it = m_ctx->Iterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+  ScIterator3Ptr const it = m_ctx->CreateIterator3(classAddr, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
   while (it->Next())
   {
     m_ctx->EraseElement(it->Get(2));

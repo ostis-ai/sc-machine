@@ -37,7 +37,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
           {
             bool result = false;
             ScMemoryContext localCtx;
-            ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            ScIterator3Ptr it = localCtx.CreateIterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
             while (it->Next())
               result = true;
 
@@ -53,7 +53,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
           {
             bool result = false;
             ScMemoryContext localCtx;
-            ScIterator3Ptr it = localCtx.Iterator3(node2, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            ScIterator3Ptr it = localCtx.CreateIterator3(node2, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
             while (it->Next())
               result = true;
 
@@ -69,7 +69,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
           {
             bool result = false;
             ScMemoryContext localCtx;
-            ScIterator3Ptr it = localCtx.Iterator3(node3, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            ScIterator3Ptr it = localCtx.CreateIterator3(node3, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
             while (it->Next())
               result = true;
 
@@ -1147,7 +1147,7 @@ TEST_F(ScEventTest, EventsLock)
           {
             bool result = false;
             ScMemoryContext localCtx;
-            ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            ScIterator3Ptr it = localCtx.CreateIterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
             while (it->Next())
               result = true;
 
@@ -1170,7 +1170,7 @@ TEST_F(ScEventTest, ParallelGenerateConnectors)
           {
             bool result = false;
             ScMemoryContext localCtx;
-            ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            ScIterator3Ptr it = localCtx.CreateIterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
             while (it->Next())
               result = true;
 
@@ -1195,7 +1195,7 @@ TEST_F(ScEventTest, ParallelGenerateEraseConnectors)
           [node](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &)
           {
             ScMemoryContext localCtx;
-            ScIterator3Ptr it = localCtx.Iterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+            ScIterator3Ptr it = localCtx.CreateIterator3(node, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
             while (it->Next())
               localCtx.EraseElement(it->Get(1));
           });

@@ -96,7 +96,7 @@ size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, ScAddr const & set
   SC_CHECK_PARAM(set, "Invalid set address passed to `getSetPower`");
 
   int power = 0;
-  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   while (iterator3->Next())
     power++;
   return power;
@@ -106,7 +106,7 @@ bool CommonUtils::isEmpty(ScMemoryContext * ms_context, ScAddr const & set)
 {
   SC_CHECK_PARAM(set, "Invalid set address to `isEmpty`");
 
-  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   return !iterator3->Next();
 }
 

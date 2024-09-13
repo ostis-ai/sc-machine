@@ -41,7 +41,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr con
           "Specified abstract agent for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
 
     ScIterator3Ptr it3 =
-        context->Iterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
+        context->CreateIterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
     if (!it3->Next())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
@@ -155,11 +155,11 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
   auto const & ValidateAgentImplementation = [&]()
   {
     bool isPlatformIndependentAgent = false;
-    ScIterator3Ptr it3 = context->Iterator3(
+    ScIterator3Ptr it3 = context->CreateIterator3(
         ScKeynodes::platform_dependent_abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_agentImplementationAddr);
     if (!it3->Next())
     {
-      ScIterator3Ptr const it3 = context->Iterator3(
+      ScIterator3Ptr const it3 = context->CreateIterator3(
           ScKeynodes::platform_independent_abstract_sc_agent,
           ScType::EdgeAccessConstPosPerm,
           m_agentImplementationAddr);
@@ -184,7 +184,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
 
     if (!isPlatformIndependentAgent)
     {
-      it3 = context->Iterator3(
+      it3 = context->CreateIterator3(
           ScKeynodes::platform_independent_abstract_sc_agent,
           ScType::EdgeAccessConstPosPerm,
           m_agentImplementationAddr);
@@ -236,7 +236,7 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
 {
   if (context->IsElement(m_abstractAgentAddr))
   {
-    ScIterator5Ptr const it5 = context->Iterator5(
+    ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
         ScType::EdgeDCommonConst,
         m_agentImplementationAddr,
@@ -258,7 +258,7 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
     return;
   }
 
-  ScIterator5Ptr const it5 = context->Iterator5(
+  ScIterator5Ptr const it5 = context->CreateIterator5(
       ScType::Unknown,
       ScType::EdgeDCommonConst,
       m_agentImplementationAddr,
@@ -304,7 +304,7 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
             << "`, because sc-element does not have sc-type `ScType::NodeConst`, it has sc-type `" << type << "`.");
 
   ScIterator3Ptr const it3 =
-      context->Iterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
+      context->CreateIterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
   if (!it3->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
@@ -327,7 +327,7 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
 {
   if (context->IsElement(m_eventClassAddr) && context->IsElement(m_eventSubscriptionElementAddr))
   {
-    ScIterator5Ptr const it5 = context->Iterator5(
+    ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
         ScType::EdgeDCommonConst,
         ScType::EdgeDCommonConst,
@@ -350,7 +350,7 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
     return;
   }
 
-  ScIterator5Ptr const it5 = context->Iterator5(
+  ScIterator5Ptr const it5 = context->CreateIterator5(
       m_abstractAgentAddr,
       ScType::EdgeDCommonConst,
       ScType::Unknown,
@@ -403,7 +403,8 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
   auto [m_eventClassAddr, m_eventSubscriptionElementAddr] =
       context->GetConnectorIncidentElements(primaryInitiationConditionAddr);
 
-  ScIterator3Ptr const it3 = context->Iterator3(ScKeynodes::sc_event, ScType::EdgeAccessConstPosPerm, m_eventClassAddr);
+  ScIterator3Ptr const it3 =
+      context->CreateIterator3(ScKeynodes::sc_event, ScType::EdgeAccessConstPosPerm, m_eventClassAddr);
   if (!it3->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
@@ -425,7 +426,7 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
 {
   if (context->IsElement(m_actionClassAddr))
   {
-    ScIterator5Ptr const it5 = context->Iterator5(
+    ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
         ScType::EdgeDCommonConst,
         m_actionClassAddr,
@@ -447,7 +448,7 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
     return;
   }
 
-  ScIterator5Ptr it5 = context->Iterator5(
+  ScIterator5Ptr it5 = context->CreateIterator5(
       m_abstractAgentAddr,
       ScType::EdgeDCommonConst,
       ScType::Unknown,
@@ -512,7 +513,7 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
 {
   if (context->IsElement(m_initiationConditionAddr) && context->IsElement(m_resultConditionAddr))
   {
-    ScIterator5Ptr const it5 = context->Iterator5(
+    ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
         ScType::EdgeDCommonConst,
         ScType::EdgeDCommonConst,
@@ -535,7 +536,7 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
     return;
   }
 
-  ScIterator5Ptr const it5 = context->Iterator5(
+  ScIterator5Ptr const it5 = context->CreateIterator5(
       m_abstractAgentAddr,
       ScType::EdgeDCommonConst,
       ScType::Unknown,

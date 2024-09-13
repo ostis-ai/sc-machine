@@ -15,7 +15,7 @@ ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, ScAddrVector con
 
   for (auto const & set : sets)
   {
-    ScIterator3Ptr firstIter3 = context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    ScIterator3Ptr firstIter3 = context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
 
     while (firstIter3->Next())
     {
@@ -40,7 +40,7 @@ ScAddr SetOperationsUtils::intersectSets(
 
   for (auto const & set : sets)
   {
-    ScIterator3Ptr firstIter3 = context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    ScIterator3Ptr firstIter3 = context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
     while (firstIter3->Next())
     {
       ScAddr element = firstIter3->Get(2);
@@ -85,7 +85,7 @@ ScAddr SetOperationsUtils::complementSets(
 
   ScAddr resultSet = context->GenerateNode(resultType);
 
-  ScIterator3Ptr secondIter3 = context->Iterator3(secondSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr secondIter3 = context->CreateIterator3(secondSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   while (secondIter3->Next())
   {
     ScAddr element = secondIter3->Get(2);
@@ -111,7 +111,7 @@ bool SetOperationsUtils::compareSets(ScMemoryContext * context, ScAddr const & f
     return false;
   }
 
-  ScIterator3Ptr firstIter3 = context->Iterator3(firstSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr firstIter3 = context->CreateIterator3(firstSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   while (firstIter3->Next())
   {
     ScAddr element = firstIter3->Get(2);

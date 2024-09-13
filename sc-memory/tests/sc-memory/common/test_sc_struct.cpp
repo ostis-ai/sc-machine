@@ -39,7 +39,7 @@ TEST_F(ScStructTest, AppendIterateElements)
 
   EXPECT_TRUE(structure.Append(addr1, attrAddr));
   EXPECT_FALSE(structure.Append(addr1, attrAddr));
-  ScIterator5Ptr iter5 = m_ctx->Iterator5(
+  ScIterator5Ptr iter5 = m_ctx->CreateIterator5(
       structure, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
 
   bool found = false;

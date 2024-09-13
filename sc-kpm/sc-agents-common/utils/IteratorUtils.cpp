@@ -39,7 +39,7 @@ ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, ScAddr const &
 {
   SC_CHECK_PARAM(set, "Invalid set address passed to `getAnyFromSet`");
 
-  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   if (iterator3->Next())
   {
     return iterator3->Get(2);
@@ -58,7 +58,8 @@ ScAddr IteratorUtils::getNextFromSet(
   SC_CHECK_PARAM(sequenceRelation, "Invalid sequence relation address passed to `getNextFromSet`");
 
   ScAddr nextElement;
-  ScIterator3Ptr const & previousElementIterator = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, previous);
+  ScIterator3Ptr const & previousElementIterator =
+      ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, previous);
   if (previousElementIterator->Next())
   {
     ScAddr const & previousElementEdge = previousElementIterator->Get(1);
@@ -78,7 +79,7 @@ ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, ScAddr 
   SC_CHECK_PARAM(set, "Invalid set address passed to `getAllWithType`");
 
   ScAddrVector elementList;
-  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, scType);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, scType);
   while (iterator3->Next())
   {
     elementList.push_back(iterator3->Get(2));
@@ -158,11 +159,11 @@ ScIterator5Ptr IteratorUtils::getIterator5(
   ScIterator5Ptr iterator5;
   if (isBeginNode)
   {
-    iterator5 = ms_context->Iterator5(node, ScType::Unknown, ScType::Unknown, ScType::Unknown, relation);
+    iterator5 = ms_context->CreateIterator5(node, ScType::Unknown, ScType::Unknown, ScType::Unknown, relation);
   }
   else
   {
-    iterator5 = ms_context->Iterator5(ScType::Unknown, ScType::Unknown, node, ScType::Unknown, relation);
+    iterator5 = ms_context->CreateIterator5(ScType::Unknown, ScType::Unknown, node, ScType::Unknown, relation);
   }
   return iterator5;
 }

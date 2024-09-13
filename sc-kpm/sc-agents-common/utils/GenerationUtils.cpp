@@ -94,7 +94,7 @@ bool GenerationUtils::addSetToOutline(ScMemoryContext * ms_context, ScAddr const
   if (!set.IsValid() || !outline.IsValid())
     return false;
 
-  ScIterator3Ptr iterator3 = ms_context->Iterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
   while (iterator3->Next())
   {
     ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(1));
