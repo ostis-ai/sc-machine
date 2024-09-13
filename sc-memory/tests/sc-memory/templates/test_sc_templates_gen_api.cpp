@@ -431,3 +431,23 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedTargetHavingUnextendableType
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result, params), utils::ExceptionInvalidParams);
 }
+
+TEST_F(ScTemplateGenApiTest, GenTemplateWithNodeReplacedByArc)
+{
+  ScTemplate templ;
+  templ.Triple(ScType::NodeVar, ScType::EdgeDCommonVar >> "_arc", ScType::NodeVar);
+  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosTemp, "_arc");
+  templ.Triple("_arc", ScType::EdgeAccessVarPosTemp, ScType::NodeVar >> "_addr2");
+
+  ScAddr const & nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+
+  ScTemplateParams params;
+  params.Add("_addr2", edgeAddr);
+
+  ScTemplateGenResult result;
+  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+
+  EXPECT_EQ(result["_addr2"], edgeAddr);
+}

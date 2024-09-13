@@ -286,7 +286,9 @@ private:
       ScType const & templateItemType = templateItem.m_typeValue;
       ScType const & templateParamType = m_context.GetElementType(templateParamAddr);
 
-      if (!templateItemType.UpConstType().CanExtendTo(templateParamType))
+      // it should be possible to replace variable sc-node by sc-connector for scp program initiation parameters
+      if (!templateItemType.UpConstType().CanExtendTo(templateParamType)
+          && !(templateItemType.IsNode() && templateParamType.IsEdge()))
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "Template item " << (templateItem.HasName() ? (templateItem.GetPrettyName() + " ") : "") << "has type `"
