@@ -51,7 +51,7 @@ encapsulated this logic;
   | HelperGenTemplate                   | GenerateByTemplate                    |
   | HelperSearchTemplate                | SearchByTemplate                      |
   | HelperSmartSearchTemplate           | SearchByTemplateInterruptibly         |
-  | HelperBuildTemplate                 | BuildByTemplate                       |
+  | HelperBuildTemplate                 | BuildTemplate                         |
   | CalculateStat                       | CalculateStatistics                   |
 
   | Removed method                      | Substitution method                   |
@@ -62,7 +62,7 @@ encapsulated this logic;
 
 ### Added
 
-- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetElementEdgesAndOutgoingArcsCount, GetElementEdgesAndIncomingArcsCount, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CreateIterator3, CreateIterator5, ForEach, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, SearchByTemplateInterruptibly, BuildByTemplate, CalculateStatistics, BeginEventsPending
+- Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetElementEdgesAndOutgoingArcsCount, GetElementEdgesAndIncomingArcsCount, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CreateIterator3, CreateIterator5, ForEach, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, SearchByTemplateInterruptibly, BuildTemplate, CalculateStatistics, BeginEventsPending
 - Simple guide for implementing agent in C++
 - Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
 - Full tests for C++ Agents API
