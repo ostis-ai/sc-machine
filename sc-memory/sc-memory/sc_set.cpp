@@ -134,7 +134,7 @@ bool ScSet::IsEmpty() const
 size_t ScSet::GetPower() const
 {
   size_t power = 0;
-  ScIterator3Ptr const iterator3 = m_context->Iterator3(*this, ScType::EdgeAccessConstPos, ScType::Unknown);
+  ScIterator3Ptr const iterator3 = m_context->CreateIterator3(*this, ScType::EdgeAccessConstPos, ScType::Unknown);
   while (iterator3->Next())
     power++;
   return power;
@@ -329,7 +329,7 @@ bool operator==(ScSet const & leftSet, ScSet const & rightSet)
       ScType::EdgeAccessVar >> "_access_arc",
       ScKeynodes::nrel_sets_equality);
   ScTemplateSearchResult searchResult;
-  if (context->HelperSearchTemplate(resultTempl, searchResult))
+  if (context->SearchByTemplate(resultTempl, searchResult))
     return context->GetElementType(searchResult[0]["_access_arc"]).BitAnd(ScType::EdgeAccessConstPos)
            == ScType::EdgeAccessConstPos;
 
@@ -373,7 +373,7 @@ bool operator==(ScSet const & leftSet, ScSet const & rightSet)
       isEqual ? ScType::EdgeAccessVarPosPerm : ScType::EdgeAccessVarNegPerm,
       ScKeynodes::nrel_sets_equality);
   ScTemplateGenResult genResult;
-  context->HelperGenTemplate(resultTempl, genResult);
+  context->GenerateByTemplate(resultTempl, genResult);
 
   return isEqual;
 }
@@ -410,7 +410,7 @@ ScAddr ScSet::SearchBinaryOperationResult(
   GetBinaryOperationResultTemplate(leftSet, rightSet, relationAddr, resultSetAddr, resultTemplate);
 
   ScTemplateSearchResult searchResult;
-  if (context->HelperSearchTemplate(resultTemplate, searchResult))
+  if (context->SearchByTemplate(resultTemplate, searchResult))
     return searchResult[0]["_operation_result"];
 
   return ScAddr::Empty;
@@ -427,7 +427,7 @@ ScAddr ScSet::GenerateBinaryOperationResult(
   GetBinaryOperationResultTemplate(leftSet, rightSet, relationAddr, resultSetAddr, resultTemplate);
 
   ScTemplateGenResult genResult;
-  context->HelperGenTemplate(resultTemplate, genResult);
+  context->GenerateByTemplate(resultTemplate, genResult);
   return genResult["_operation_result"];
 }
 
@@ -435,7 +435,7 @@ bool ScSet::GetElements(ScAddrToValueUnorderedMap<ScType> & elements) const
 {
   bool setHasPermArc = false;
   bool setHasTempArc = false;
-  ScIterator3Ptr const iterator3 = m_context->Iterator3(*this, ScType::EdgeAccessConst, ScType::Unknown);
+  ScIterator3Ptr const iterator3 = m_context->CreateIterator3(*this, ScType::EdgeAccessConst, ScType::Unknown);
   while (iterator3->Next())
   {
     ScAddr const & elementAddr = iterator3->Get(2);
@@ -471,5 +471,4 @@ ScType ScSet::GetPermanencyAccessArcSubtype(ScType const & arcType)
     return ScType::EdgeAccessConstTemp;
 
   return ScType::EdgeAccessConst;
->>>>>>> 23d5bcb2 ([memory][set] Implement union, intersection, subtraction and equality of sets)
 }

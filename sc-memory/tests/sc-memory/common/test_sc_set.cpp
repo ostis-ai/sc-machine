@@ -9,16 +9,16 @@ using ScSetTest = ScMemoryTest;
 
 TEST_F(ScSetTest, AppendElementWithDefaultArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr));
   EXPECT_TRUE(set.Has(elementAddr));
 }
 
 TEST_F(ScSetTest, AppendElementWithTempArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr, ScType::EdgeAccessConstPosTemp));
   EXPECT_TRUE(set.Has(elementAddr));
   EXPECT_TRUE(set.Has(elementAddr, ScType::EdgeAccessConstPosTemp));
@@ -26,16 +26,16 @@ TEST_F(ScSetTest, AppendElementWithTempArcType)
 
 TEST_F(ScSetTest, AppendElementWithNegArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr, ScType::EdgeAccessConstNegPerm));
 }
 
 TEST_F(ScSetTest, AppendMultipleElements)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr1));
   EXPECT_TRUE(set.Append(elementAddr2));
   EXPECT_TRUE(set.Has(elementAddr1));
@@ -44,32 +44,32 @@ TEST_F(ScSetTest, AppendMultipleElements)
 
 TEST_F(ScSetTest, AppendExistingElementWithDefaultArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr));
   EXPECT_FALSE(set.Append(elementAddr));
 }
 
 TEST_F(ScSetTest, AppendExistingElementWithTempArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr, ScType::EdgeAccessConstPosTemp));
   EXPECT_FALSE(set.Append(elementAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 TEST_F(ScSetTest, AppendExistingElementWithDefaultAndTempArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr));
   EXPECT_FALSE(set.Append(elementAddr, ScType::EdgeAccessConstPosTemp));
 }
 
 TEST_F(ScSetTest, AppendElementWithDefaultArcTypeAndRemoveElementWithDefaultArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr));
   EXPECT_TRUE(set.Remove(elementAddr));
   EXPECT_FALSE(set.Has(elementAddr));
@@ -77,8 +77,8 @@ TEST_F(ScSetTest, AppendElementWithDefaultArcTypeAndRemoveElementWithDefaultArcT
 
 TEST_F(ScSetTest, AppendElementWithDefaultArcTypeAndRemoveElementWithTempArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr));
   EXPECT_FALSE(set.Remove(elementAddr, ScType::EdgeAccessConstPosTemp));
   EXPECT_TRUE(set.Has(elementAddr));
@@ -86,8 +86,8 @@ TEST_F(ScSetTest, AppendElementWithDefaultArcTypeAndRemoveElementWithTempArcType
 
 TEST_F(ScSetTest, AppendElementWithTempArcTypeAndRemoveElementWithDefaultArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr, ScType::EdgeAccessConstPosTemp));
   EXPECT_TRUE(set.Remove(elementAddr));
   EXPECT_FALSE(set.Has(elementAddr));
@@ -96,8 +96,8 @@ TEST_F(ScSetTest, AppendElementWithTempArcTypeAndRemoveElementWithDefaultArcType
 
 TEST_F(ScSetTest, AppendElementWithTempArcTypeAndRemoveElementWithTempArcType)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(set.Append(elementAddr, ScType::EdgeAccessConstPosTemp));
   EXPECT_TRUE(set.Remove(elementAddr, ScType::EdgeAccessConstPosTemp));
   EXPECT_FALSE(set.Has(elementAddr));
@@ -106,26 +106,26 @@ TEST_F(ScSetTest, AppendElementWithTempArcTypeAndRemoveElementWithTempArcType)
 
 TEST_F(ScSetTest, RemoveNonExistingElement)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_FALSE(set.Remove(elementAddr));
 }
 
 TEST_F(ScSetTest, IsEmpty)
 {
-  ScSet set = m_ctx->CreateSet();
+  ScSet set = m_ctx->GenerateSet();
   EXPECT_TRUE(set.IsEmpty());
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr);
   EXPECT_FALSE(set.IsEmpty());
 }
 
 TEST_F(ScSetTest, GetPower)
 {
-  ScSet set = m_ctx->CreateSet();
+  ScSet set = m_ctx->GenerateSet();
   EXPECT_EQ(set.GetPower(), 0u);
 
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr);
   EXPECT_EQ(set.GetPower(), 1u);
 
@@ -135,12 +135,12 @@ TEST_F(ScSetTest, GetPower)
 
 TEST_F(ScSetTest, UniteSetsWithoutCommonElements)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr1);
 
-  ScSet otherSet = m_ctx->CreateSet();
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet otherSet = m_ctx->GenerateSet();
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   otherSet.Append(elementAddr2);
 
   ScSet resultSet = set + otherSet;
@@ -156,12 +156,12 @@ TEST_F(ScSetTest, UniteSetsWithoutCommonElements)
 
 TEST_F(ScSetTest, UniteSetsWithCommonElements)
 {
-  ScSet set1 = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set1 = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set1.Append(elementAddr);
 
-  ScSet set2 = m_ctx->CreateSet();
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set2 = m_ctx->GenerateSet();
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   set2.Append(elementAddr2);
   set2.Append(elementAddr);
 
@@ -178,8 +178,8 @@ TEST_F(ScSetTest, UniteSetsWithCommonElements)
 
 TEST_F(ScSetTest, UniteSetWithItself)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr);
 
   ScSet resultSet = set + set;
@@ -194,12 +194,12 @@ TEST_F(ScSetTest, UniteSetWithItself)
 
 TEST_F(ScSetTest, IntersectSetsWithoutCommonElements)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr1);
 
-  ScSet otherSet = m_ctx->CreateSet();
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet otherSet = m_ctx->GenerateSet();
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   otherSet.Append(elementAddr2);
 
   ScSet resultSet = set * otherSet;
@@ -210,13 +210,13 @@ TEST_F(ScSetTest, IntersectSetsWithoutCommonElements)
 
 TEST_F(ScSetTest, IntersectSetsWithCommonElements)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr1);
 
-  ScSet otherSet = m_ctx->CreateSet();
+  ScSet otherSet = m_ctx->GenerateSet();
   otherSet.Append(elementAddr1);
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   otherSet.Append(elementAddr2);
 
   ScSet resultSet = set * otherSet;
@@ -228,8 +228,8 @@ TEST_F(ScSetTest, IntersectSetsWithCommonElements)
 
 TEST_F(ScSetTest, IntersectSetWithItself)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr);
 
   ScSet resultSet = set * set;
@@ -240,11 +240,11 @@ TEST_F(ScSetTest, IntersectSetWithItself)
 
 TEST_F(ScSetTest, SubtractSetsWithCommonElements)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr);
 
-  ScSet otherSet = m_ctx->CreateSet();
+  ScSet otherSet = m_ctx->GenerateSet();
   otherSet.Append(elementAddr);
 
   ScSet resultSet = set - otherSet;
@@ -254,13 +254,13 @@ TEST_F(ScSetTest, SubtractSetsWithCommonElements)
 
 TEST_F(ScSetTest, SubtractLargerSetWithCommonElement)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr1);
 
-  ScSet otherSet = m_ctx->CreateSet();
+  ScSet otherSet = m_ctx->GenerateSet();
   otherSet.Append(elementAddr1);
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   otherSet.Append(elementAddr2);
 
   ScSet resultSet = set - otherSet;
@@ -271,13 +271,13 @@ TEST_F(ScSetTest, SubtractLargerSetWithCommonElement)
 
 TEST_F(ScSetTest, SubtractSmallerSetWithCommonElement)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr1 = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr1);
-  ScAddr const & elementAddr2 = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & elementAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr2);
 
-  ScSet otherSet = m_ctx->CreateSet();
+  ScSet otherSet = m_ctx->GenerateSet();
   otherSet.Append(elementAddr1);
 
   ScSet resultSet = set - otherSet;
@@ -288,8 +288,8 @@ TEST_F(ScSetTest, SubtractSmallerSetWithCommonElement)
 
 TEST_F(ScSetTest, SubtractSetFromItself)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr);
 
   ScSet resultSet = set - set;
@@ -299,11 +299,11 @@ TEST_F(ScSetTest, SubtractSetFromItself)
 
 TEST_F(ScSetTest, CompareEqualSets)
 {
-  ScSet set = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set.Append(elementAddr);
 
-  ScSet otherSet = m_ctx->CreateSet();
+  ScSet otherSet = m_ctx->GenerateSet();
   otherSet.Append(elementAddr);
 
   EXPECT_EQ(set, otherSet);
@@ -311,22 +311,22 @@ TEST_F(ScSetTest, CompareEqualSets)
 
 TEST_F(ScSetTest, CompareNotEqualSets)
 {
-  ScSet set = m_ctx->CreateSet();
-  set.Append(m_ctx->CreateNode(ScType::NodeConst));
+  ScSet set = m_ctx->GenerateSet();
+  set.Append(m_ctx->GenerateNode(ScType::NodeConst));
 
-  ScSet otherSet = m_ctx->CreateSet();
-  otherSet.Append(m_ctx->CreateNode(ScType::NodeConst));
+  ScSet otherSet = m_ctx->GenerateSet();
+  otherSet.Append(m_ctx->GenerateNode(ScType::NodeConst));
 
   EXPECT_NE(set, otherSet);
 }
 
 TEST_F(ScSetTest, CompareSetsWithSameElementsDifferentArcTypes)
 {
-  ScSet set1 = m_ctx->CreateSet();
-  ScAddr const & elementAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScSet set1 = m_ctx->GenerateSet();
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
   set1.Append(elementAddr, ScType::EdgeAccessConstPosTemp);
 
-  ScSet set2 = m_ctx->CreateSet();
+  ScSet set2 = m_ctx->GenerateSet();
   set2.Append(elementAddr, ScType::EdgeAccessConstNegPerm);
 
   EXPECT_NE(set1, set2);
@@ -367,10 +367,10 @@ static ScSetElementsVector const & typicalSetElementsVector = {
 
 ScSet FormSet(std::unique_ptr<ScAgentContext> const & context, ScSetElements const & setElements)
 {
-  ScSet set = context->CreateSet();
+  ScSet set = context->GenerateSet();
   for (auto & [systemIdtf, arcType] : setElements)
   {
-    ScAddr const & nodeAddr = context->HelperResolveSystemIdtf(systemIdtf, ScType::NodeConst);
+    ScAddr const & nodeAddr = context->ResolveElementSystemIdentifier(systemIdtf, ScType::NodeConst);
     EXPECT_TRUE(set.Append(nodeAddr, arcType));
   }
 
@@ -384,7 +384,7 @@ void CheckResultSet(
 {
   for (auto & [systemIdtf, arcType] : resulSetElements)
   {
-    ScAddr const & nodeAddr = context->HelperResolveSystemIdtf(systemIdtf, ScType::NodeConst);
+    ScAddr const & nodeAddr = context->ResolveElementSystemIdentifier(systemIdtf, ScType::NodeConst);
     EXPECT_TRUE(resultSet.Remove(nodeAddr, arcType));
   }
 
