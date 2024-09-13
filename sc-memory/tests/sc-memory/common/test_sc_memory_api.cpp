@@ -246,6 +246,22 @@ TEST_F(ScMemoryAPITest, FindLinksByContent_Deprecated)
   EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr3) != foundLinks.cend());
 }
 
+TEST_F(ScMemoryAPITest, FindLinksByContentWithStream_Deprecated)
+{
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr1, "content");
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr2, "content");
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr3, "content");
+
+  ScAddrVector const & foundLinks = m_ctx->FindLinksByContent(ScStreamMakeRead("content"));
+
+  EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr1) != foundLinks.cend());
+  EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr2) != foundLinks.cend());
+  EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr3) != foundLinks.cend());
+}
+
 TEST_F(ScMemoryAPITest, FindLinksByContentSubstring_Deprecated)
 {
   ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
@@ -264,6 +280,24 @@ TEST_F(ScMemoryAPITest, FindLinksByContentSubstring_Deprecated)
   EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr3) != foundLinks.cend());
 }
 
+TEST_F(ScMemoryAPITest, FindLinksByContentSubstringWithStream_Deprecated)
+{
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr1, "Hello, world!");
+
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr2, "This is a test link.");
+
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr3, "Another link with different content.");
+
+  ScAddrVector const & foundLinks = m_ctx->FindLinksByContentSubstring(ScStreamMakeRead("link"));
+
+  EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr1) == foundLinks.cend());
+  EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr2) != foundLinks.cend());
+  EXPECT_TRUE(std::find(foundLinks.cbegin(), foundLinks.cend(), linkAddr3) != foundLinks.cend());
+}
+
 TEST_F(ScMemoryAPITest, FindLinksContentsByContentSubstring_Deprecated)
 {
   ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
@@ -276,6 +310,30 @@ TEST_F(ScMemoryAPITest, FindLinksContentsByContentSubstring_Deprecated)
   m_ctx->SetLinkContent(linkAddr3, "Another link with different content.");
 
   std::vector<std::string> const & foundLinkContents = m_ctx->FindLinksContentsByContentSubstring("link");
+
+  EXPECT_TRUE(
+      std::find(foundLinkContents.cbegin(), foundLinkContents.cend(), "Hello, world!") == foundLinkContents.cend());
+  EXPECT_TRUE(
+      std::find(foundLinkContents.cbegin(), foundLinkContents.cend(), "This is a test link.")
+      != foundLinkContents.cend());
+  EXPECT_TRUE(
+      std::find(foundLinkContents.cbegin(), foundLinkContents.cend(), "Another link with different content.")
+      != foundLinkContents.cend());
+}
+
+TEST_F(ScMemoryAPITest, FindLinksContentsByContentSubstringWithStream_Deprecated)
+{
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr1, "Hello, world!");
+
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr2, "This is a test link.");
+
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  m_ctx->SetLinkContent(linkAddr3, "Another link with different content.");
+
+  std::vector<std::string> const & foundLinkContents =
+      m_ctx->FindLinksContentsByContentSubstring(ScStreamMakeRead("link"));
 
   EXPECT_TRUE(
       std::find(foundLinkContents.cbegin(), foundLinkContents.cend(), "Hello, world!") == foundLinkContents.cend());
@@ -374,6 +432,17 @@ TEST_F(ScMemoryAPITest, HelperResolveSystemIdtf_Deprecated)
   EXPECT_EQ(resolvedAddr, nodeAddr);
 }
 
+TEST_F(ScMemoryAPITest, HelperResolveSystemIdtfWithQuintuple_Deprecated)
+{
+  std::string systemIdentifier = "example_identifier";
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
+
+  ScSystemIdentifierQuintuple quintuple;
+  EXPECT_TRUE(m_ctx->HelperResolveSystemIdtf(systemIdentifier, ScType::NodeConstClass, quintuple));
+  EXPECT_EQ(quintuple.addr1, nodeAddr);
+}
+
 TEST_F(ScMemoryAPITest, HelperFindBySystemIdtf_Deprecated)
 {
   std::string systemIdentifier = "example_identifier";
@@ -383,6 +452,19 @@ TEST_F(ScMemoryAPITest, HelperFindBySystemIdtf_Deprecated)
   ScAddr foundAddr;
   EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf(systemIdentifier, foundAddr));
   EXPECT_EQ(foundAddr, nodeAddr);
+  foundAddr = m_ctx->HelperFindBySystemIdtf(systemIdentifier);
+  EXPECT_EQ(foundAddr, nodeAddr);
+}
+
+TEST_F(ScMemoryAPITest, HelperFindBySystemIdtfWithQuintuple_Deprecated)
+{
+  std::string systemIdentifier = "example_identifier";
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
+
+  ScSystemIdentifierQuintuple quintuple;
+  EXPECT_TRUE(m_ctx->HelperFindBySystemIdtf(systemIdentifier, quintuple));
+  EXPECT_EQ(quintuple.addr1, nodeAddr);
 }
 
 TEST_F(ScMemoryAPITest, HelperGetSystemIdtf_Deprecated)
@@ -392,6 +474,28 @@ TEST_F(ScMemoryAPITest, HelperGetSystemIdtf_Deprecated)
   m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
 
   EXPECT_EQ(m_ctx->HelperGetSystemIdtf(nodeAddr), systemIdentifier);
+}
+
+TEST_F(ScMemoryAPITest, HelperSetSystemIdtf_Deprecated)
+{
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(nodeAddr), "");
+
+  std::string systemIdentifier = "example_identifier";
+  m_ctx->HelperSetSystemIdtf(systemIdentifier, nodeAddr);
+
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(nodeAddr), systemIdentifier);
+}
+
+TEST_F(ScMemoryAPITest, HelperSetSystemIdtfWithQuintuple_Deprecated)
+{
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  std::string systemIdentifier = "example_identifier";
+  ScSystemIdentifierQuintuple quintuple;
+  m_ctx->HelperSetSystemIdtf(systemIdentifier, nodeAddr, quintuple);
+  EXPECT_EQ(quintuple.addr1, nodeAddr);
+
+  EXPECT_EQ(m_ctx->GetElementSystemIdentifier(nodeAddr), systemIdentifier);
 }
 
 TEST_F(ScMemoryAPITest, HelperGenTemplate_Deprecated)
@@ -435,6 +539,19 @@ TEST_F(ScMemoryAPITest, HelperSearchTemplate_Deprecated)
       });
 
   EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosTemp));
+
+  m_ctx->HelperSearchTemplate(
+      templateToFind,
+      [&](ScTemplateSearchResultItem const & item)
+      {
+        m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, setAddr, item["_addr2"]);
+      },
+      [&](ScAddr const & elementAddr) -> bool
+      {
+        return true;
+      });
+
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosPerm));
 }
 
 TEST_F(ScMemoryAPITest, HelperSmartSearchTemplate_Deprecated)
@@ -465,6 +582,20 @@ TEST_F(ScMemoryAPITest, HelperSmartSearchTemplate_Deprecated)
       });
 
   EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosTemp));
+
+  m_ctx->HelperSmartSearchTemplate(
+      templateToFind,
+      [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
+      {
+        m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, setAddr, item["_addr2"]);
+        return ScTemplateSearchRequest::CONTINUE;
+      },
+      [&](ScAddr const & elementAddr) -> bool
+      {
+        return true;
+      });
+
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosPerm));
 }
 
 TEST_F(ScMemoryAPITest, HelperBuildTemplate_Deprecated)
@@ -475,7 +606,7 @@ TEST_F(ScMemoryAPITest, HelperBuildTemplate_Deprecated)
 
   ScTemplate templ;
   sc_char const * data = "_a _-> d;; _a <- sc_node_class;;";
-  m_ctx->BuildTemplate(templ, data);
+  m_ctx->HelperBuildTemplate(templ, data);
 }
 
 class ScTemplateLoadContext : public ScMemoryContext
