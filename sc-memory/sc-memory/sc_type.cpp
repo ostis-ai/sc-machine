@@ -6,6 +6,211 @@
 
 #include "sc_type.hpp"
 
+ScType::ScType()
+  : m_realType(0)
+{
+}
+
+ScType::ScType(RealType type) noexcept
+  : m_realType(type)
+{
+}
+
+ScType::~ScType() = default;
+
+bool ScType::IsEdge() const
+{
+  return IsConnector();
+}
+
+bool ScType::IsConnector() const
+{
+  return sc_type_has_subtype_in_mask(m_realType, sc_type_connector_mask);
+}
+
+bool ScType::IsArc() const
+{
+  return sc_type_has_subtype_in_mask(m_realType, sc_type_arc_mask);
+}
+
+bool ScType::IsCommonEdge() const
+{
+  return sc_type_is_common_edge(m_realType);
+}
+
+bool ScType::IsCommonArc() const
+{
+  return sc_type_is_common_arc(m_realType);
+}
+
+bool ScType::IsMembershipArc() const
+{
+  return sc_type_is_membership_arc(m_realType);
+}
+
+bool ScType::IsNode() const
+{
+  return sc_type_is_node(m_realType);
+}
+
+bool ScType::IsLink() const
+{
+  return sc_type_is_node(m_realType) && sc_type_has_subtype(m_realType, sc_type_node_link);
+}
+
+bool ScType::IsConst() const
+{
+  return sc_type_has_subtype(m_realType, sc_type_const);
+}
+
+bool ScType::IsVar() const
+{
+  return sc_type_has_subtype(m_realType, sc_type_var);
+}
+
+bool ScType::IsUnknown() const
+{
+  return m_realType == 0;
+}
+
+bool ScType::HasConstancyFlag() const
+{
+  return sc_type_has_subtype_in_mask(m_realType, sc_type_constancy_mask);
+}
+
+ScType ScType::AsConst() const
+{
+  return ScType((m_realType & ~sc_type_var) | sc_type_const);
+}
+
+ScType ScType::UpConstType() const
+{
+  /// TODO: metavar
+  return AsConst();
+}
+
+sc_type ScType::operator*() const
+{
+  return m_realType;
+}
+
+ScType & ScType::operator()(RealType bits)
+{
+  m_realType |= bits;
+  return *this;
+}
+
+bool ScType::operator==(ScType const & other)
+{
+  return m_realType == other.m_realType;
+}
+
+bool ScType::operator!=(ScType const & other)
+{
+  return m_realType != other.m_realType;
+}
+
+ScType::RealType ScType::BitAnd(RealType const & inMask) const
+{
+  return m_realType & inMask;
+}
+
+ScType ScType::operator|(ScType const & other)
+{
+  return ScType(m_realType | other.m_realType);
+}
+
+ScType ScType::operator&(ScType const & other)
+{
+  return ScType(m_realType & other.m_realType);
+}
+
+ScType & ScType::operator|=(ScType const & other)
+{
+  m_realType |= other.m_realType;
+  return *this;
+}
+
+ScType & ScType::operator&=(ScType const & other)
+{
+  m_realType &= other.m_realType;
+  return *this;
+}
+
+ScType::operator RealType() const
+{
+  return m_realType;
+}
+
+bool ScType::CanExtendTo(ScType const & extType) const
+{
+  RealType const selfSemType = m_realType & sc_type_element_mask;
+  RealType const extSemType = extType.m_realType & sc_type_element_mask;
+
+  // check semantic type
+  if (selfSemType != 0 && selfSemType != extSemType)
+    return false;
+
+  // check constancy
+  RealType const selfConstType = m_realType & sc_type_constancy_mask;
+  RealType const extConstType = extType.m_realType & sc_type_constancy_mask;
+
+  if (selfConstType != 0 && selfConstType != extConstType)
+    return false;
+
+  if (IsLink())
+  {
+    if (!extType.IsLink())
+      return false;
+
+    ScType const currentType = m_realType & ~sc_type_node_link;
+    ScType const extendedType = extType.m_realType & ~sc_type_node_link;
+
+    ScType const selfLinkType = currentType & sc_type_node_link_mask;
+    ScType const extLinkType = extendedType & sc_type_node_link_mask;
+    if (!selfLinkType.IsUnknown() && selfLinkType != extLinkType)
+      return false;
+  }
+  else if (IsNode())
+  {
+    if (!extType.IsNode())
+      return false;
+
+    ScType const currentType = m_realType & ~sc_type_node;
+    ScType const extendedType = extType.m_realType & ~sc_type_node;
+
+    ScType const selfNodeType = currentType & sc_type_node_mask;
+    ScType const extNodeType = extendedType & sc_type_node_mask;
+    if (!selfNodeType.IsUnknown() && selfNodeType != extNodeType)
+      return false;
+  }
+  else if (IsConnector())
+  {
+    if (!extType.IsConnector())
+      return false;
+
+    ScType const currentType = m_realType & ~sc_type_connector_mask;
+    ScType const extendedType = extType.m_realType & ~sc_type_connector_mask;
+
+    ScType const selfActualityType = currentType & sc_type_actuality_mask;
+    ScType const extActualityType = extendedType & sc_type_actuality_mask;
+    if (!selfActualityType.IsUnknown() && selfActualityType != extActualityType)
+      return false;
+
+    ScType const selfPermType = currentType & sc_type_permanency_mask;
+    ScType const extPermType = extendedType & sc_type_permanency_mask;
+    if (!selfPermType.IsUnknown() && selfPermType != extPermType)
+      return false;
+
+    ScType const selfPosType = currentType & sc_type_positivity_mask;
+    ScType const extPosType = extendedType & sc_type_positivity_mask;
+    if (!selfPosType.IsUnknown() && selfPosType != extPosType)
+      return false;
+  }
+
+  return true;
+}
+
 ScType const ScType::EdgeUCommon(sc_type_common_edge);
 ScType const ScType::EdgeDCommon(sc_type_common_arc);
 

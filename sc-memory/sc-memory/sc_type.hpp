@@ -39,221 +39,69 @@ class _SC_EXTERN ScType
 public:
   using RealType = sc_type;
 
-  explicit constexpr ScType()
-    : m_realType(0)
-  {
-  }
-
-  constexpr ScType(RealType type) noexcept
-    : m_realType(type)
-  {
-  }
-
-  ~ScType() = default;
+  explicit ScType();
+  ScType(RealType type) noexcept;
+  ~ScType();
 
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `IsConnector` instead for better readability and standards "
       "compliance.")
+  bool IsEdge() const;
 
-  inline bool IsEdge() const
-  {
-    return IsConnector();
-  }
+  bool IsConnector() const;
 
-  inline bool IsConnector() const
-  {
-    return sc_type_has_subtype_in_mask(m_realType, sc_type_connector_mask);
-  }
+  bool IsArc() const;
 
-  inline bool IsArc() const
-  {
-    return sc_type_has_subtype_in_mask(m_realType, sc_type_arc_mask);
-  }
+  bool IsCommonEdge() const;
 
-  inline bool IsCommonEdge() const
-  {
-    return sc_type_has_subtype(m_realType, sc_type_common_edge);
-  }
+  bool IsCommonArc() const;
 
-  inline bool IsCommonArc() const
-  {
-    return sc_type_has_subtype(m_realType, sc_type_common_arc);
-  }
+  bool IsMembershipArc() const;
 
-  inline bool IsMembershipArc() const
-  {
-    return sc_type_is_connector(m_realType);
-  }
+  bool IsNode() const;
 
-  inline bool IsNode() const
-  {
-    return sc_type_is_node(m_realType);
-  }
+  bool IsLink() const;
 
-  inline bool IsLink() const
-  {
-    return sc_type_is_node(m_realType) && sc_type_has_subtype(m_realType, sc_type_node_link);
-  }
+  bool IsConst() const;
 
-  inline bool IsConst() const
-  {
-    return sc_type_has_subtype(m_realType, sc_type_const);
-  }
+  bool IsVar() const;
 
-  inline bool IsVar() const
-  {
-    return sc_type_has_subtype(m_realType, sc_type_var);
-  }
+  bool IsUnknown() const;
 
-  inline bool IsUnknown() const
-  {
-    return m_realType == 0;
-  }
-
-  inline bool HasConstancyFlag() const
-  {
-    return sc_type_has_subtype_in_mask(m_realType, sc_type_constancy_mask);
-  }
+  bool HasConstancyFlag() const;
 
   // Returns copy of this type, but with variable replaced to const
-  inline ScType AsConst() const
-  {
-    return ScType((m_realType & ~sc_type_var) | sc_type_const);
-  }
+  ScType AsConst() const;
 
   // Returns copy of this type, but replace constancy type upward (var -> const)
-  inline ScType UpConstType() const
-  {
-    /// TODO: metavar
-    return AsConst();
-  }
+  ScType UpConstType() const;
 
-  inline sc_type operator*() const
-  {
-    return m_realType;
-  }
+  sc_type operator*() const;
 
-  ScType & operator()(RealType bits)
-  {
-    m_realType |= bits;
-    return *this;
-  }
+  ScType & operator()(RealType bits);
 
-  inline bool operator==(ScType const & other)
-  {
-    return (m_realType == other.m_realType);
-  }
+  bool operator==(ScType const & other);
 
-  inline bool operator!=(ScType const & other)
-  {
-    return (m_realType != other.m_realType);
-  }
+  bool operator!=(ScType const & other);
 
-  inline RealType BitAnd(RealType const & inMask) const
-  {
-    return (m_realType & inMask);
-  }
+  RealType BitAnd(RealType const & inMask) const;
 
-  inline ScType operator|(ScType const & other)
-  {
-    return ScType(m_realType | other.m_realType);
-  }
+  ScType operator|(ScType const & other);
 
-  inline ScType operator&(ScType const & other)
-  {
-    return ScType(m_realType & other.m_realType);
-  }
+  ScType operator&(ScType const & other);
 
-  inline ScType & operator|=(ScType const & other)
-  {
-    m_realType |= other.m_realType;
-    return *this;
-  }
+  ScType & operator|=(ScType const & other);
 
-  inline ScType & operator&=(ScType const & other)
-  {
-    m_realType &= other.m_realType;
-    return *this;
-  }
+  ScType & operator&=(ScType const & other);
 
-  operator RealType() const
-  {
-    return m_realType;
-  }
+  operator RealType() const;
 
   /* Check if specified type can be extended by another one to be a valid type/
    * For example this function returns false, if you try to extend node by
    * connectors type, or const by var and etc.
    */
-  inline bool CanExtendTo(ScType const & extType) const
-  {
-    RealType const selfSemType = m_realType & sc_type_element_mask;
-    RealType const extSemType = extType.m_realType & sc_type_element_mask;
-
-    // check semantic type
-    if (selfSemType != 0 && selfSemType != extSemType)
-      return false;
-
-    // check constancy
-    RealType const selfConstType = m_realType & sc_type_constancy_mask;
-    RealType const extConstType = extType.m_realType & sc_type_constancy_mask;
-
-    if (selfConstType != 0 && selfConstType != extConstType)
-      return false;
-
-    if (IsLink())
-    {
-      if (!extType.IsLink())
-        return false;
-
-      ScType const currentType = m_realType & ~sc_type_node_link;
-      ScType const extendedType = extType.m_realType & ~sc_type_node_link;
-
-      ScType const selfLinkType = currentType & sc_type_node_link_mask;
-      ScType const extLinkType = extendedType & sc_type_node_link_mask;
-      if (!selfLinkType.IsUnknown() && selfLinkType != extLinkType)
-        return false;
-    }
-    else if (IsNode())
-    {
-      if (!extType.IsNode())
-        return false;
-
-      ScType const currentType = m_realType & ~sc_type_node;
-      ScType const extendedType = extType.m_realType & ~sc_type_node;
-
-      ScType const selfNodeType = currentType & sc_type_node_mask;
-      ScType const extNodeType = extendedType & sc_type_node_mask;
-      if (!selfNodeType.IsUnknown() && selfNodeType != extNodeType)
-        return false;
-    }
-    else if (IsConnector())
-    {
-      if (!extType.IsConnector())
-        return false;
-
-      ScType const currentType = m_realType & ~sc_type_connector_mask;
-      ScType const extendedType = extType.m_realType & ~sc_type_connector_mask;
-
-      ScType const selfActualityType = currentType & sc_type_actuality_mask;
-      ScType const extActualityType = extendedType & sc_type_actuality_mask;
-      if (!selfActualityType.IsUnknown() && selfActualityType != extActualityType)
-        return false;
-
-      ScType const selfPermType = currentType & sc_type_permanency_mask;
-      ScType const extPermType = extendedType & sc_type_permanency_mask;
-      if (!selfPermType.IsUnknown() && selfPermType != extPermType)
-        return false;
-
-      ScType const selfPosType = currentType & sc_type_positivity_mask;
-      ScType const extPosType = extendedType & sc_type_positivity_mask;
-      if (!selfPosType.IsUnknown() && selfPosType != extPosType)
-        return false;
-    }
-
-    return true;
-  }
+  bool CanExtendTo(ScType const & extType) const;
 
 private:
   RealType m_realType;
