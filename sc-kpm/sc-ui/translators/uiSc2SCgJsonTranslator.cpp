@@ -58,7 +58,7 @@ void uiSc2SCgJsonTranslator::runImpl()
       attrs["end"] = buildId(end_addr);
     }
 
-    if (el_type & sc_type_link)
+    if (el_type & sc_type_node_link)
     {
       attrs["type"] = "link";
     }

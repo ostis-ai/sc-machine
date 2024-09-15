@@ -82,7 +82,7 @@ bool GenerateByFileURL(SCsHelper & helper, std::string const & url)
 
 TEST_F(ScMemoryTest, test_successfull_result)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -110,7 +110,7 @@ TEST_F(ScMemoryTest, test_successfull_result)
 
 TEST_F(ScMemoryTest, test_command_no_class)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -129,7 +129,7 @@ TEST_F(ScMemoryTest, test_command_no_class)
 
 TEST_F(ScMemoryTest, test_command_no_lang)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -148,7 +148,7 @@ TEST_F(ScMemoryTest, test_command_no_lang)
 
 TEST_F(ScMemoryTest, test_command_no_format)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -167,7 +167,7 @@ TEST_F(ScMemoryTest, test_command_no_format)
 
 TEST_F(ScMemoryTest, test_struct_with_keynodes)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -191,7 +191,7 @@ TEST_F(ScMemoryTest, test_struct_with_keynodes)
 
 TEST_F(ScMemoryTest, test_with_definition)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -218,7 +218,7 @@ TEST_F(ScMemoryTest, test_with_definition)
 
 TEST_F(ScMemoryTest, test_with_order_list)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -245,7 +245,7 @@ TEST_F(ScMemoryTest, test_with_order_list)
 
 TEST_F(ScMemoryTest, test_with_filter_list)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
@@ -272,7 +272,7 @@ TEST_F(ScMemoryTest, test_with_filter_list)
 
 TEST_F(ScMemoryTest, test_kb_fragment)
 {
-  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(m_ctx->GetRealContext(), sc_type_node_structure | sc_type_const);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
 
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());

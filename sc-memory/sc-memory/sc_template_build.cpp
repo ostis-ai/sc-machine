@@ -26,9 +26,9 @@ public:
   {
   }
 
-  [[nodiscard]] inline bool IsEdge() const
+  [[nodiscard]] inline bool IsConnector() const
   {
-    return m_type.IsEdge();
+    return m_type.IsConnector();
   }
 
   [[nodiscard]] inline ScAddr const & GetAddr() const
@@ -129,7 +129,7 @@ protected:
       auto const & it = m_elements.find(objAddr.Hash());
       ObjectInfo obj = it == m_elements.cend() ? CollectObjectInfo(objAddr) : it->second;
 
-      if (obj.IsEdge())
+      if (obj.IsConnector())
       {
         auto [objSrcAddr, objTrgAddr] = m_context.GetConnectorIncidentElements(objAddr);
         obj.SetSourceHash(objSrcAddr.Hash());
@@ -137,11 +137,11 @@ protected:
 
         ScType const srcType = m_context.GetElementType(objSrcAddr);
         ScType const trgType = m_context.GetElementType(objTrgAddr);
-        if (!srcType.IsEdge() && !trgType.IsEdge())
+        if (!srcType.IsConnector() && !trgType.IsConnector())
           independentConnectors.insert(obj.GetHash());
-        if (srcType.IsEdge())
+        if (srcType.IsConnector())
           m_connectorDependenceMap.insert({obj.GetHash(), objSrcAddr.Hash()});
-        if (trgType.IsEdge())
+        if (trgType.IsConnector())
           m_connectorDependenceMap.insert({obj.GetHash(), objTrgAddr.Hash()});
       }
 

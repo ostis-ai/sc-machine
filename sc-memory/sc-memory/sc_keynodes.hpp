@@ -217,6 +217,8 @@ public:
 
   _SC_EXTERN static inline ScKeynode const nrel_idtf{"nrel_idtf", ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const nrel_main_idtf{"nrel_main_idtf", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_system_identifier{"nrel_system_identifier", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_scs_global_idtf{"nrel_scs_global_idtf", ScType::NodeConstNoRole};
   _SC_EXTERN static inline ScKeynode const lang_ru{"lang_ru", ScType::NodeConstClass};
 
   _SC_EXTERN static inline ScKeynode const action{"action", ScType::NodeConstClass};

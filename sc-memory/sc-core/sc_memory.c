@@ -310,7 +310,7 @@ sc_addr sc_memory_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_r
 
 sc_addr sc_memory_link_new(sc_memory_context const * ctx)
 {
-  return sc_memory_link_new2(ctx, sc_type_link | sc_type_const);
+  return sc_memory_link_new2(ctx, sc_type_node_link | sc_type_const);
 }
 
 sc_addr sc_memory_link_new2(sc_memory_context const * ctx, sc_type type)

@@ -14,7 +14,7 @@ TEST_F(ScMemoryTest, erase_elements_success)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
 
@@ -44,7 +44,7 @@ TEST_F(ScMemoryTest, erase_elements_from_init_struct)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
@@ -75,7 +75,7 @@ TEST_F(ScMemoryTest, erase_elements_self_erase)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);
@@ -102,7 +102,7 @@ TEST_F(ScMemoryTest, erase_elements_erase_keynode)
 {
   sc_memory_context * context = m_ctx->GetRealContext();
 
-  sc_addr const structAddr = sc_memory_node_new(context, sc_type_structure | sc_type_const);
+  sc_addr const structAddr = sc_memory_node_new(context, sc_type_node_structure | sc_type_const);
 
   search_keynodes_initialize(context, structAddr);
   sc_module_initialize_with_init_memory_generated_structure(structAddr);

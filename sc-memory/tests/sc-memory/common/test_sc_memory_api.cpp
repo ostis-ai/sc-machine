@@ -48,7 +48,7 @@ TEST_F(ScMemoryAPITest, GenerateElements)
 TEST_F(ScMemoryAPITest, GenerateElementsWithInvalidTypes)
 {
   EXPECT_THROW(m_ctx->GenerateNode(ScType::EdgeAccess), utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->GenerateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateLink(ScType::EdgeAccess), utils::ExceptionInvalidParams);
 
   ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(nodeAddr.IsValid());
@@ -59,6 +59,7 @@ TEST_F(ScMemoryAPITest, GenerateElementsWithInvalidTypes)
   EXPECT_TRUE(m_ctx->IsElement(linkAddr));
 
   EXPECT_THROW(m_ctx->GenerateConnector(ScType::NodeConst, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateConnector(ScType::Const, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScMemoryAPITest, SetGetFindSystemIdentifier)

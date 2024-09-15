@@ -1314,7 +1314,7 @@ sc_result _sc_memory_context_check_local_permissions(
     goto result;
 
   sc_iterator3 * it3 = sc_iterator3_a_a_f_new(
-      s_memory_default_ctx, sc_type_node | sc_type_const | sc_type_structure, sc_type_const_pos_arc, element_addr);
+      s_memory_default_ctx, sc_type_node | sc_type_const | sc_type_node_structure, sc_type_const_pos_arc, element_addr);
   while (result != SC_RESULT_OK && sc_iterator3_next(it3))
   {
     sc_addr const structure_addr = sc_iterator3_value(it3, 0);

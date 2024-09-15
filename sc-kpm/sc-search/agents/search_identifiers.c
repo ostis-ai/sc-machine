@@ -41,9 +41,9 @@ sc_result agent_search_all_identifiers(sc_event_subscription const * event, sc_a
         s_default_ctx,
         sc_iterator3_value(it1, 2),
         sc_type_common_arc | sc_type_const,
-        sc_type_link,
+        sc_type_node_link,
         sc_type_const_perm_pos_arc,
-        sc_type_node | sc_type_const | sc_type_norole);
+        sc_type_node | sc_type_const | sc_type_node_norole);
     while (sc_iterator5_next(it5) == SC_TRUE)
     {
       // check if this relation is an identification

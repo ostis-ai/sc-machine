@@ -127,7 +127,12 @@ sc_result ui_get_main_identifier_link(sc_memory_context * ctx, sc_addr el, sc_ad
   sc_result result = SC_RESULT_ERROR;
 
   sc_iterator5 * it5 = sc_iterator5_f_a_a_a_f_new(
-      ctx, el, sc_type_common_arc | sc_type_const, sc_type_link, sc_type_const_perm_pos_arc, keynode_nrel_main_idtf);
+      ctx,
+      el,
+      sc_type_common_arc | sc_type_const,
+      sc_type_node_link,
+      sc_type_const_perm_pos_arc,
+      keynode_nrel_main_idtf);
   while (sc_iterator5_next(it5) == SC_TRUE)
   {
     sc_addr link_addr = sc_iterator5_value(it5, 2);

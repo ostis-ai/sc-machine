@@ -69,7 +69,7 @@ sc_addr test_generate_elements_and_call_agent_search_full_semantic_neighborhood(
     sc_memory_context * context,
     sc_addr const addr)
 {
-  sc_addr const idtf_addr = sc_memory_node_new(context, sc_type_link | sc_type_const);  // idtf_addr = {}
+  sc_addr const idtf_addr = sc_memory_node_new(context, sc_type_node_link | sc_type_const);  // idtf_addr = {}
   sc_addr const idtf_edge_addr =
       sc_memory_arc_new(context, sc_type_common_arc | sc_type_const, idtf_addr, addr);  // addr => idtf_addr
   sc_memory_arc_new(
@@ -87,14 +87,16 @@ sc_addr test_generate_elements_and_call_agent_search_full_semantic_neighborhood(
       keynode_nrel_translation,
       translation_edge_addr);  // translation => keynode_nrel_translation: addr
 
-  sc_addr const link_addr = sc_memory_node_new(context, sc_type_link | sc_type_const);  // link
-  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, translation_addr, link_addr);  // translation -> link
-  sc_addr const link_class_addr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_class);  // class
+  sc_addr const link_addr = sc_memory_node_new(context, sc_type_node_link | sc_type_const);  // link
+  sc_memory_arc_new(context, sc_type_const_perm_pos_arc, translation_addr, link_addr);       // translation -> link
+  sc_addr const link_class_addr =
+      sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_class);  // class
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, link_class_addr, link_addr);  // class -> link
   sc_memory_arc_new(
       context, sc_type_const_perm_pos_arc, keynode_languages, link_class_addr);  // keynode_languages -> class
 
-  sc_addr const norole_addr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_norole);  // norole
+  sc_addr const norole_addr =
+      sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_norole);  // norole
 
   sc_addr const decomposition_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);  // decomposition
   sc_addr const decomposition_edge_addr = sc_memory_arc_new(

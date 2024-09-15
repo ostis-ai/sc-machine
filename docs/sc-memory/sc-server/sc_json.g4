@@ -381,13 +381,13 @@ SC_EVENT_TYPE
 
 SC_NODE_TYPE
   : '1'     // sc_type_node
-  | '128'   // sc_type_tuple
-  | '256'   // sc_type_structure
-  | '512'   // sc_type_role
-  | '1024'  // sc_type_norole
-  | '2048'  // sc_type_class
-  | '4096'  // sc_type_superclass
-  | '8192'  // sc_type_material
+  | '128'   // sc_type_node_tuple
+  | '256'   // sc_type_node_structure
+  | '512'   // sc_type_node_role
+  | '1024'  // sc_type_node_norole
+  | '2048'  // sc_type_node_class
+  | '4096'  // sc_type_node_superclass
+  | '8192'  // sc_type_node_material
 
   | '33'    // sc_type_const_node
   | '168'   // sc_type_node_const_tuple
@@ -455,9 +455,9 @@ SC_EDGE_TYPE
   ;
 
 SC_LINK_TYPE
-  : '2'     // sc_type_link
-  | '34'    // sc_type_link_const
-  | '66'    // sc_type_link_var
+  : '2'     // sc_type_node_link
+  | '34'    // sc_type_node_link_const
+  | '66'    // sc_type_node_link_var
   ;
 
 SC_ADDR_TYPE

@@ -161,7 +161,7 @@ sc_result ui_command_generate_instance(sc_event_subscription const *, sc_addr ar
         }
         else
         {
-          if (templ_item_type & sc_type_link)
+          if (templ_item_type & sc_type_node_link)
             assert("sc-links not supported yet");
         }
       }
@@ -249,7 +249,7 @@ sc_result ui_command_generate_instance(sc_event_subscription const *, sc_addr ar
   assert(templ_arcs.empty());
 
   // create contour, that contains instance of command
-  sc_addr created_instance_addr = sc_memory_node_new(s_default_ctx, sc_type_structure | sc_type_const);
+  sc_addr created_instance_addr = sc_memory_node_new(s_default_ctx, sc_type_node_structure | sc_type_const);
   SYSTEM_ELEMENT(created_instance_addr);
   tScAddrToScAddrMap::iterator it_res, it_res_end = templ_to_inst.end();
   for (it_res = templ_to_inst.begin(); it_res != it_res_end; ++it_res)
@@ -408,7 +408,7 @@ sc_result ui_remove_displayed_result(sc_event_subscription *, sc_addr arg)
       s_default_ctx,
       result_addr,
       sc_type_common_arc | sc_type_const,
-      sc_type_link,
+      sc_type_node_link,
       sc_type_const_perm_pos_arc,
       keynode_nrel_translation);
   if (sc_iterator5_next(it5) == SC_TRUE)

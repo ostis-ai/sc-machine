@@ -113,7 +113,7 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
           sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it3, 0), &el_type);
-          if (!(el_type & sc_type_role))
+          if (!(el_type & sc_type_node_role))
             continue;
 
           if (sys_off == SC_TRUE
@@ -245,7 +245,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
       while (sc_iterator3_next(it6) == SC_TRUE)
       {
         sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it6, 0), &el_type);
-        if (!(el_type & sc_type_role))
+        if (!(el_type & sc_type_node_role))
           continue;
 
         if (sys_off == SC_TRUE

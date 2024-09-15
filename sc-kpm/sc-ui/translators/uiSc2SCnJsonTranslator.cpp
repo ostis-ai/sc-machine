@@ -166,7 +166,7 @@ void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
   for (auto const & keyword : mKeywordsList)
   {
     elInfo = ResolveStructureElementInfo(keyword);
-    if (elInfo->type & sc_type_structure)
+    if (elInfo->type & sc_type_node_structure)
     {
       // get the key elements of the structure
       ScStructureElementInfo::ScStructureElementInfoList keynodes;
@@ -247,7 +247,7 @@ ScStructureElementInfo * uiSc2SCnJsonTranslator::FindStructureKeyword(
       structureElements.cend(),
       [&structures](ScStructureElementInfo * el)
       {
-        if (el->type & sc_type_structure)
+        if (el->type & sc_type_node_structure)
           structures.insert(el);
       });
   if (!structures.empty())
@@ -335,13 +335,13 @@ void uiSc2SCnJsonTranslator::ParseScnJsonSentence(
     ParseScnJsonArc(elInfo, result);
   }
   // if node is link
-  if (elInfo->type & sc_type_link)
+  if (elInfo->type & sc_type_node_link)
   {
     isFullLinkedNodes = false;
     ParseScnJsonLink(elInfo, result);
   }
   // if the nesting level is not greater than the maximum or the element is not a tuple, get children
-  if (level < maxLevel || (elInfo->type & sc_type_node & sc_type_tuple))
+  if (level < maxLevel || (elInfo->type & sc_type_node & sc_type_node_tuple))
   {
     auto & resultChildren = result[ScnTranslatorConstants::CHILDREN.data()];
     // first get children from ordered list of modifiers
@@ -442,7 +442,7 @@ void uiSc2SCnJsonTranslator::ParseLinkedNodesScnJson(ScJson & children, int leve
           SC_ADDR_LOCAL_SEG_FROM_INT(addr_hash), SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_hash)};
 
       ScStructureElementInfo * linkedNodeInfo = mStructureElementsInfo[linkedNodeAddr];
-      if (!(linkedNodeInfo->type & sc_type_structure))
+      if (!(linkedNodeInfo->type & sc_type_node_structure))
       {
         ParseScnJsonSentence(linkedNodeInfo, level, isStruct, linkedNode);
       }

@@ -13,7 +13,7 @@
 
 sc_addr create_result_node()
 {
-  sc_addr res = sc_memory_node_new(s_default_ctx, sc_type_node | sc_type_const | sc_type_structure);
+  sc_addr res = sc_memory_node_new(s_default_ctx, sc_type_node | sc_type_const | sc_type_node_structure);
   SYSTEM_ELEMENT(res);
   return res;
 }

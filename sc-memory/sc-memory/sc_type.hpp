@@ -51,53 +51,82 @@ public:
 
   ~ScType() = default;
 
+  SC_DEPRECATED(
+      0.10.0,
+      "This method is deprecated. Use `IsConnector` instead for better readability and standards "
+      "compliance.")
+
   inline bool IsEdge() const
   {
-    return (m_realType & sc_type_arc_mask) != 0;
+    return IsConnector();
+  }
+
+  inline bool IsConnector() const
+  {
+    return sc_type_has_subtype_in_mask(m_realType, sc_type_connector_mask);
+  }
+
+  inline bool IsArc() const
+  {
+    return sc_type_has_subtype_in_mask(m_realType, sc_type_arc_mask);
+  }
+
+  inline bool IsCommonEdge() const
+  {
+    return sc_type_has_subtype(m_realType, sc_type_common_edge);
+  }
+
+  inline bool IsCommonArc() const
+  {
+    return sc_type_has_subtype(m_realType, sc_type_common_arc);
+  }
+
+  inline bool IsMembershipArc() const
+  {
+    return sc_type_is_connector(m_realType);
   }
 
   inline bool IsNode() const
   {
-    return (m_realType & sc_type_node) != 0;
+    return sc_type_is_node(m_realType);
   }
 
   inline bool IsLink() const
   {
-    return (m_realType & sc_type_link) != 0;
+    return sc_type_is_node(m_realType) && sc_type_has_subtype(m_realType, sc_type_node_link);
   }
 
   inline bool IsConst() const
   {
-    return (m_realType & sc_type_const) != 0;
+    return sc_type_has_subtype(m_realType, sc_type_const);
   }
 
   inline bool IsVar() const
   {
-    return (m_realType & sc_type_var) != 0;
+    return sc_type_has_subtype(m_realType, sc_type_var);
   }
 
   inline bool IsUnknown() const
   {
-    return (m_realType == 0);
+    return m_realType == 0;
   }
 
   inline bool HasConstancyFlag() const
   {
-    return (m_realType & sc_type_constancy_mask) != 0;
+    return sc_type_has_subtype_in_mask(m_realType, sc_type_constancy_mask);
   }
 
-  // Returns copy of this type, but with variable raplaced to const
+  // Returns copy of this type, but with variable replaced to const
   inline ScType AsConst() const
   {
     return ScType((m_realType & ~sc_type_var) | sc_type_const);
   }
 
-  // Returns copy of this type, but replace constancy type upward (metavar -> var -> const)
+  // Returns copy of this type, but replace constancy type upward (var -> const)
   inline ScType UpConstType() const
   {
     /// TODO: metavar
-    // if (isVar())
-    return ScType((m_realType & ~sc_type_var) | sc_type_const);  // copied from asConst for maximum performance
+    return AsConst();
   }
 
   inline sc_type operator*() const
@@ -173,42 +202,53 @@ public:
     if (selfConstType != 0 && selfConstType != extConstType)
       return false;
 
-    auto const CheckMask = [&extType](RealType const & mask)
-    {
-      return extType.m_realType == (extType.m_realType & mask);
-    };
-
     if (IsLink())
     {
-      if (!CheckMask(sc_type_link | sc_type_constancy_mask))
+      if (!extType.IsLink())
+        return false;
+
+      ScType const currentType = m_realType & ~sc_type_node_link;
+      ScType const extendedType = extType.m_realType & ~sc_type_node_link;
+
+      ScType const selfLinkType = currentType & sc_type_node_link_mask;
+      ScType const extLinkType = extendedType & sc_type_node_link_mask;
+      if (!selfLinkType.IsUnknown() && selfLinkType != extLinkType)
         return false;
     }
     else if (IsNode())
     {
-      if (!CheckMask(sc_type_node | sc_type_constancy_mask | sc_type_node_mask))
+      if (!extType.IsNode())
         return false;
 
-      RealType const selfNodeType = m_realType & sc_type_node_mask;
-      RealType const extNodeType = extType.m_realType & sc_type_node_mask;
-      if (selfNodeType != 0 && selfNodeType != extNodeType)
+      ScType const currentType = m_realType & ~sc_type_node;
+      ScType const extendedType = extType.m_realType & ~sc_type_node;
+
+      ScType const selfNodeType = currentType & sc_type_node_mask;
+      ScType const extNodeType = extendedType & sc_type_node_mask;
+      if (!selfNodeType.IsUnknown() && selfNodeType != extNodeType)
         return false;
     }
-    else if (IsEdge())
+    else if (IsConnector())
     {
-      if (!CheckMask(sc_type_common_arc | sc_type_constancy_mask)
-          && !CheckMask(
-              sc_type_membership_arc | sc_type_constancy_mask | sc_type_positivity_mask | sc_type_permanency_mask)
-          && !CheckMask(sc_type_common_edge | sc_type_constancy_mask))
+      if (!extType.IsConnector())
         return false;
 
-      RealType const selfPermType = m_realType & sc_type_permanency_mask;
-      RealType const extPermType = extType.m_realType & sc_type_permanency_mask;
-      if (selfPermType != 0 && selfPermType != extPermType)
+      ScType const currentType = m_realType & ~sc_type_connector_mask;
+      ScType const extendedType = extType.m_realType & ~sc_type_connector_mask;
+
+      ScType const selfActualityType = currentType & sc_type_actuality_mask;
+      ScType const extActualityType = extendedType & sc_type_actuality_mask;
+      if (!selfActualityType.IsUnknown() && selfActualityType != extActualityType)
         return false;
 
-      RealType const selfPosType = m_realType & sc_type_positivity_mask;
-      RealType const extPosType = extType.m_realType & sc_type_positivity_mask;
-      if (selfPosType != 0 && selfPosType != extPosType)
+      ScType const selfPermType = currentType & sc_type_permanency_mask;
+      ScType const extPermType = extendedType & sc_type_permanency_mask;
+      if (!selfPermType.IsUnknown() && selfPermType != extPermType)
+        return false;
+
+      ScType const selfPosType = currentType & sc_type_positivity_mask;
+      ScType const extPosType = extendedType & sc_type_positivity_mask;
+      if (!selfPosType.IsUnknown() && selfPosType != extPosType)
         return false;
     }
 

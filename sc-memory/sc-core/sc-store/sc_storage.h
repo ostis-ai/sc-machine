@@ -334,7 +334,7 @@ sc_result sc_storage_get_element_type(sc_memory_context const * ctx, sc_addr add
  *
  * This function changes the subtype of the sc-element with the specified sc-addr
  * to the specified type. The provided type should have the same base element type
- * (e.g., sc_type_node, sc_type_link) as the current type of the sc-element.
+ * (e.g., sc_type_node, sc_type_node_link) as the current type of the sc-element.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-element for which to change the subtype.

@@ -39,38 +39,38 @@ ScType const ScType::Const(sc_type_const);
 ScType const ScType::Var(sc_type_var);
 
 ScType const ScType::Node(sc_type_node);
-ScType const ScType::Link(sc_type_link);
+ScType const ScType::Link(sc_type_node | sc_type_node_link);
 ScType const ScType::Unknown;
 
 ScType const ScType::NodeConst(sc_type_node | sc_type_const);
 ScType const ScType::NodeVar(sc_type_node | sc_type_var);
 
-ScType const ScType::LinkConst(sc_type_link | sc_type_const);
-ScType const ScType::LinkVar(sc_type_link | sc_type_var);
-ScType const ScType::LinkClass(sc_type_link | sc_type_class);
-ScType const ScType::LinkConstClass(sc_type_link | sc_type_const | sc_type_class);
-ScType const ScType::LinkVarClass(sc_type_link | sc_type_var | sc_type_class);
+ScType const ScType::LinkConst(sc_type_node | sc_type_node_link | sc_type_const);
+ScType const ScType::LinkVar(sc_type_node | sc_type_node_link | sc_type_var);
+ScType const ScType::LinkClass(sc_type_node | sc_type_node_link | sc_type_node_class);
+ScType const ScType::LinkConstClass(sc_type_node | sc_type_node_link | sc_type_const | sc_type_node_class);
+ScType const ScType::LinkVarClass(sc_type_node | sc_type_node_link | sc_type_var | sc_type_node_class);
 
-ScType const ScType::NodeStruct(sc_type_node | sc_type_structure);
-ScType const ScType::NodeTuple(sc_type_node | sc_type_tuple);
-ScType const ScType::NodeRole(sc_type_node | sc_type_role);
-ScType const ScType::NodeNoRole(sc_type_node | sc_type_norole);
-ScType const ScType::NodeClass(sc_type_node | sc_type_class);
-ScType const ScType::NodeAbstract(sc_type_node | sc_type_superclass);
-ScType const ScType::NodeMaterial(sc_type_node | sc_type_material);
+ScType const ScType::NodeStruct(sc_type_node | sc_type_node_structure);
+ScType const ScType::NodeTuple(sc_type_node | sc_type_node_tuple);
+ScType const ScType::NodeRole(sc_type_node | sc_type_node_role);
+ScType const ScType::NodeNoRole(sc_type_node | sc_type_node_norole);
+ScType const ScType::NodeClass(sc_type_node | sc_type_node_class);
+ScType const ScType::NodeAbstract(sc_type_node | sc_type_node_superclass);
+ScType const ScType::NodeMaterial(sc_type_node | sc_type_node_material);
 
-ScType const ScType::NodeConstStruct(sc_type_node | sc_type_const | sc_type_structure);
-ScType const ScType::NodeConstTuple(sc_type_node | sc_type_const | sc_type_tuple);
-ScType const ScType::NodeConstRole(sc_type_node | sc_type_const | sc_type_role);
-ScType const ScType::NodeConstNoRole(sc_type_node | sc_type_const | sc_type_norole);
-ScType const ScType::NodeConstClass(sc_type_node | sc_type_const | sc_type_class);
-ScType const ScType::NodeConstAbstract(sc_type_node | sc_type_const | sc_type_superclass);
-ScType const ScType::NodeConstMaterial(sc_type_node | sc_type_const | sc_type_material);
+ScType const ScType::NodeConstStruct(sc_type_node | sc_type_const | sc_type_node_structure);
+ScType const ScType::NodeConstTuple(sc_type_node | sc_type_const | sc_type_node_tuple);
+ScType const ScType::NodeConstRole(sc_type_node | sc_type_const | sc_type_node_role);
+ScType const ScType::NodeConstNoRole(sc_type_node | sc_type_const | sc_type_node_norole);
+ScType const ScType::NodeConstClass(sc_type_node | sc_type_const | sc_type_node_class);
+ScType const ScType::NodeConstAbstract(sc_type_node | sc_type_const | sc_type_node_superclass);
+ScType const ScType::NodeConstMaterial(sc_type_node | sc_type_const | sc_type_node_material);
 
-ScType const ScType::NodeVarStruct(sc_type_node | sc_type_var | sc_type_structure);
-ScType const ScType::NodeVarTuple(sc_type_node | sc_type_var | sc_type_tuple);
-ScType const ScType::NodeVarRole(sc_type_node | sc_type_var | sc_type_role);
-ScType const ScType::NodeVarNoRole(sc_type_node | sc_type_var | sc_type_norole);
-ScType const ScType::NodeVarClass(sc_type_node | sc_type_var | sc_type_class);
-ScType const ScType::NodeVarAbstract(sc_type_node | sc_type_var | sc_type_superclass);
-ScType const ScType::NodeVarMaterial(sc_type_node | sc_type_var | sc_type_material);
+ScType const ScType::NodeVarStruct(sc_type_node | sc_type_var | sc_type_node_structure);
+ScType const ScType::NodeVarTuple(sc_type_node | sc_type_var | sc_type_node_tuple);
+ScType const ScType::NodeVarRole(sc_type_node | sc_type_var | sc_type_node_role);
+ScType const ScType::NodeVarNoRole(sc_type_node | sc_type_var | sc_type_node_norole);
+ScType const ScType::NodeVarClass(sc_type_node | sc_type_var | sc_type_node_class);
+ScType const ScType::NodeVarAbstract(sc_type_node | sc_type_var | sc_type_node_superclass);
+ScType const ScType::NodeVarMaterial(sc_type_node | sc_type_var | sc_type_node_material);

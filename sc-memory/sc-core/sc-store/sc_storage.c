@@ -479,9 +479,9 @@ sc_result _sc_storage_element_erase(sc_addr addr)
 
   sc_monitor_release_write(monitor);
 
-  if (sc_type_has_subtype(type, sc_type_link))
+  if (sc_type_has_subtype(type, sc_type_node_link))
     sc_fs_memory_unlink_string(SC_ADDR_LOCAL_TO_INT(addr));
-  else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
+  else if (sc_type_has_subtype_in_mask(type, sc_type_connector_mask))
   {
     sc_bool const is_edge = sc_type_has_subtype(type, sc_type_common_edge);
 
@@ -715,7 +715,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
 
     if ((el->flags.states & SC_STATE_IS_DELETABLE) != SC_STATE_IS_DELETABLE)
     {
-      if ((type & sc_type_arc_mask) != 0)
+      if ((type & sc_type_connector_mask) != 0)
       {
         erase_incoming_connector_result = sc_event_emit(
             ctx,
@@ -758,7 +758,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
             sc_storage_element_erase,
             element_addr);
       }
-      else if (sc_type_has_subtype(type, sc_type_membership_arc) || sc_type_has_subtype(type, sc_type_common_arc))
+      else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
       {
         erase_outgoing_arc_result = sc_event_emit(
             ctx,
@@ -873,7 +873,7 @@ sc_addr sc_storage_node_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
+  if (sc_type_is_not_node(type) && (!sc_type_is(type, sc_type_const) && !sc_type_is(type, sc_type_var)))
   {
     *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE;
     return addr;
@@ -901,7 +901,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  if (sc_type_has_not_subtype(type, sc_type_link))
+  if (sc_type_is_not_node(type))
   {
     *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
     return addr;
@@ -914,7 +914,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
     return addr;
   }
 
-  element->flags.type = sc_type_link | type;
+  element->flags.type = sc_type_node_link | type;
   *result = SC_RESULT_OK;
   return addr;
 }
@@ -1029,7 +1029,7 @@ sc_addr sc_storage_arc_new_ext(
 {
   sc_addr connector_addr = SC_ADDR_EMPTY;
 
-  if (sc_type_has_not_subtype_in_mask(type, sc_type_arc_mask))
+  if (sc_type_is_not_connector(type))
   {
     *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
     return connector_addr;
@@ -1219,7 +1219,7 @@ sc_result sc_storage_get_arc_begin(sc_memory_context const * ctx, sc_addr addr, 
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (sc_type_has_not_subtype_in_mask(el->flags.type, sc_type_arc_mask))
+  if (sc_type_is_not_connector(el->flags.type))
   {
     result = SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
     goto error;
@@ -1246,7 +1246,7 @@ sc_result sc_storage_get_arc_end(sc_memory_context const * ctx, sc_addr addr, sc
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (sc_type_has_not_subtype_in_mask(el->flags.type, sc_type_arc_mask))
+  if (sc_type_is_not_connector(el->flags.type))
   {
     result = SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
     goto error;
@@ -1278,7 +1278,7 @@ sc_result sc_storage_get_arc_info(
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (sc_type_has_not_subtype_in_mask(el->flags.type, sc_type_arc_mask))
+  if (sc_type_is_not_connector(el->flags.type))
   {
     result = SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
     goto error;
@@ -1320,7 +1320,7 @@ sc_result sc_storage_set_link_content(
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (sc_type_has_not_subtype(el->flags.type, sc_type_link))
+  if (sc_type_is_not_node(el->flags.type) || sc_type_has_not_subtype(el->flags.type, sc_type_node_link))
   {
     result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
     goto error;
@@ -1363,7 +1363,7 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (sc_type_has_not_subtype(el->flags.type, sc_type_link))
+  if (sc_type_is_not_node(el->flags.type) || sc_type_has_not_subtype(el->flags.type, sc_type_node_link))
   {
     result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
     goto error;

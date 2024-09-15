@@ -28,7 +28,7 @@ TEST_F(ScServerTest, GenerateElements)
           },
           {
               {"el", "link"},
-              {"type", sc_type_link | sc_type_const},
+              {"type", sc_type_node_link | sc_type_const},
               {"content", "connector_end"},
           },
           {
@@ -47,12 +47,12 @@ TEST_F(ScServerTest, GenerateElements)
           },
           {
               {"el", "link"},
-              {"type", sc_type_link | sc_type_const},
+              {"type", sc_type_node_link | sc_type_const},
               {"content", 100},
           },
           {
               {"el", "link"},
-              {"type", sc_type_link | sc_type_const},
+              {"type", sc_type_node_link | sc_type_const},
               {"content", 100.0f},
           },
       }));
@@ -70,7 +70,7 @@ TEST_F(ScServerTest, GenerateElements)
   EXPECT_TRUE(m_ctx->GetElementType(src).IsNode());
   ScAddr const & connector = ScAddr(responsePayload[2].get<size_t>());
   EXPECT_TRUE(connector.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(connector).IsEdge());
+  EXPECT_TRUE(m_ctx->GetElementType(connector).IsConnector());
   ScAddr const & trg = ScAddr(responsePayload[1].get<size_t>());
   EXPECT_TRUE(trg.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(trg).IsLink());
@@ -351,7 +351,7 @@ TEST_F(ScServerTest, HandleKeynodes)
           {
               {"command", "resolve"},
               {"idtf", "any_system_identifier"},
-              {"elType", sc_type_node | sc_type_const | sc_type_class},
+              {"elType", sc_type_node | sc_type_const | sc_type_node_class},
           },
           {
               {"command", "find"},
@@ -998,7 +998,7 @@ TEST_F(ScServerTest, GenerateTemplate)
           },
           {
               {"type", "type"},
-              {"value", sc_type_link | sc_type_var},
+              {"value", sc_type_node_link | sc_type_var},
               {"alias", "_trg"},
 
           },

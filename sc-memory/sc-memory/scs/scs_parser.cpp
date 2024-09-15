@@ -131,11 +131,11 @@ ParsedElement::ParsedElement(
   }
   else
   {
-    SC_ASSERT(!isReversed || (isReversed && type.IsEdge()), ("Trying to set isReversed flag for non connector element"));
+    SC_ASSERT(!isReversed || (isReversed && type.IsConnector()), ("Trying to set isReversed flag for non connector element"));
     ResolveVisibility();
 
     // all connectors has a local visibility
-    if (type.IsEdge())
+    if (type.IsConnector())
       m_visibility = Visibility::Local;
   }
 }
@@ -424,7 +424,6 @@ ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::str
 void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & connector, ElementHandle const & target)
 {
   ParsedElement const & connectorEl = GetParsedElement(connector);
-  SC_ASSERT(connectorEl.GetType().IsEdge(), ("Edge has invalid type"));
 
   auto AddConnector = [this, &connectorEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
     ParsedElement const & srcEl = GetParsedElement(src);
@@ -435,13 +434,9 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & c
       ScType const newType = targetEl.m_type | scs::TypeResolver::GetKeynodeType(idtf);
 
       if (targetEl.m_type.CanExtendTo(newType))
-      {
         targetEl.m_type = newType;
-      }
       else
-      {
         SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't merge types for element " + targetEl.GetIdtf());
-      }
 
       if (!m_contourTriplesStack.empty())
         m_parsedTriples.emplace_back(src, e, trg);
@@ -453,13 +448,9 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & c
   };
 
   if (connectorEl.IsReversed())
-  {
     AddConnector(target, connector, source);
-  }
   else
-  {
     AddConnector(source, connector, target);
-  }
 }
 
 void Parser::ProcessAssign(std::string const & alias, ElementHandle const & value)

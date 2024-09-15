@@ -446,10 +446,10 @@ ScTemplate::ScTemplateTripleType ScTemplate::GetPriority(ScTemplateTriple * trip
   if (item3.IsFixed())
     return ScTemplate::ScTemplateTripleType::AAF;
 
-  if (item1.IsFixed() && (!item3.m_typeValue.IsEdge() || item3.m_typeValue.IsUnknown()))
+  if (item1.IsFixed() && (!item3.m_typeValue.IsConnector() || item3.m_typeValue.IsUnknown()))
   {
     auto const & it = m_templateItemsNamesToTypes.find(item3.m_name);
-    if (it != m_templateItemsNamesToTypes.cend() && !it->second.IsEdge() && !it->second.IsUnknown())
+    if (it != m_templateItemsNamesToTypes.cend() && !it->second.IsConnector() && !it->second.IsUnknown())
       return ScTemplate::ScTemplateTripleType::FAN;
   }
 

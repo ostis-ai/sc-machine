@@ -232,14 +232,14 @@ TEST_F(ScMemoryTest, agent_search_all_identifiers)
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, action, setAddr);
 
-  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_norole);
+  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_norole);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_nrel_identification, noroleAddr);
 
-  sc_addr const addr1 = sc_memory_node_new(context, sc_type_link);
+  sc_addr const addr1 = sc_memory_node_new(context, sc_type_node_link);
   sc_addr const edge1 = sc_memory_arc_new(context, sc_type_common_arc | sc_type_const, setAddr, addr1);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, noroleAddr, edge1);
 
-  sc_addr const addr2 = sc_memory_node_new(context, sc_type_link);
+  sc_addr const addr2 = sc_memory_node_new(context, sc_type_node_link);
   sc_addr const edge2 = sc_memory_arc_new(context, sc_type_common_arc | sc_type_const, setAddr, addr2);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, noroleAddr, edge2);
 
@@ -279,7 +279,7 @@ TEST_F(ScMemoryTest, agent_search_all_identified_elements)
 
   EXPECT_EQ(sc_module_initialize_with_init_memory_generated_structure(init_memory_generated_structure), SC_RESULT_OK);
 
-  sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_link);
+  sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_node_link);
 
   sc_addr const addr1 = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const edge1 = sc_memory_arc_new(context, sc_type_common_arc | sc_type_const, addr1, setAddr);
@@ -346,13 +346,13 @@ TEST_F(ScMemoryTest, agent_search_full_semantic_neighborhood)
       sc_memory_arc_new(context, sc_type_common_arc | sc_type_const, translationAddr, setAddr);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_nrel_translation, translationEdgeAddr);
 
-  sc_addr const linkAddr = sc_memory_node_new(context, sc_type_link | sc_type_const);
+  sc_addr const linkAddr = sc_memory_node_new(context, sc_type_node_link | sc_type_const);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, translationAddr, linkAddr);
-  sc_addr const linkClass = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_class);
+  sc_addr const linkClass = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_class);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, linkClass, linkAddr);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_languages, linkClass);
 
-  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_norole);
+  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_norole);
 
   sc_addr const decompositionAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_addr const decompositionEdge =
@@ -437,13 +437,13 @@ TEST_F(ScMemoryTest, agent_search_links_of_relation_connected_with_element)
       sc_memory_arc_new(context, sc_type_common_arc | sc_type_const, translationAddr, setAddr);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_nrel_translation, translationEdgeAddr);
 
-  sc_addr const linkAddr = sc_memory_node_new(context, sc_type_link | sc_type_const);
+  sc_addr const linkAddr = sc_memory_node_new(context, sc_type_node_link | sc_type_const);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, translationAddr, linkAddr);
-  sc_addr const linkClass = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_class);
+  sc_addr const linkClass = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_class);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, linkClass, linkAddr);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_languages, linkClass);
 
-  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_norole);
+  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_norole);
   edge = sc_memory_arc_new(context, sc_type_const_perm_pos_arc, action, noroleAddr);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_rrel_2, edge);
 
@@ -516,7 +516,7 @@ TEST_F(ScMemoryTest, agent_search_decomposition)
   sc_addr const setAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, action, setAddr);
 
-  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_norole);
+  sc_addr const noroleAddr = sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_norole);
   sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_decomposition_relation, noroleAddr);
 
   sc_addr const decompositionAddr = sc_memory_node_new(context, sc_type_node | sc_type_const);

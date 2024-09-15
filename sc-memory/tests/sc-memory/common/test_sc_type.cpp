@@ -72,25 +72,25 @@ TEST(ScTypeTest, Constancy)
 
 TEST(ScTypeTest, Connectors)
 {
-  EXPECT_TRUE(ScType::EdgeAccess.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessConstFuzPerm.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessConstFuzTemp.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessConstNegPerm.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessConstNegTemp.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessConstPosPerm.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessConstPosTemp.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessVarFuzPerm.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessVarFuzTemp.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessVarNegPerm.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessVarNegTemp.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessVarPosPerm.IsEdge());
-  EXPECT_TRUE(ScType::EdgeAccessVarPosTemp.IsEdge());
-  EXPECT_TRUE(ScType::EdgeDCommon.IsEdge());
-  EXPECT_TRUE(ScType::EdgeDCommonConst.IsEdge());
-  EXPECT_TRUE(ScType::EdgeDCommonVar.IsEdge());
-  EXPECT_TRUE(ScType::EdgeUCommon.IsEdge());
-  EXPECT_TRUE(ScType::EdgeUCommonConst.IsEdge());
-  EXPECT_TRUE(ScType::EdgeUCommonVar.IsEdge());
+  EXPECT_TRUE(ScType::EdgeAccess.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessConstFuzPerm.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessConstFuzTemp.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessConstNegPerm.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessConstNegTemp.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessConstPosPerm.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessConstPosTemp.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessVarFuzPerm.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessVarFuzTemp.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessVarNegPerm.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessVarNegTemp.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessVarPosPerm.IsConnector());
+  EXPECT_TRUE(ScType::EdgeAccessVarPosTemp.IsConnector());
+  EXPECT_TRUE(ScType::EdgeDCommon.IsConnector());
+  EXPECT_TRUE(ScType::EdgeDCommonConst.IsConnector());
+  EXPECT_TRUE(ScType::EdgeDCommonVar.IsConnector());
+  EXPECT_TRUE(ScType::EdgeUCommon.IsConnector());
+  EXPECT_TRUE(ScType::EdgeUCommonConst.IsConnector());
+  EXPECT_TRUE(ScType::EdgeUCommonVar.IsConnector());
 }
 
 TEST(ScTypeTest, ExtendTypes)
@@ -107,7 +107,7 @@ TEST(ScTypeTest, ExtendTypes)
   EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::Link));
   EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkConst));
   EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkVar));
-  EXPECT_FALSE(ScType::Link.CanExtendTo(ScType::LinkClass));
+  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkClass));
 
   EXPECT_FALSE(ScType::Link.CanExtendTo(ScType::Node));
 

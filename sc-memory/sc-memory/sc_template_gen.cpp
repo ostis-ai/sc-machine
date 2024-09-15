@@ -53,7 +53,7 @@ public:
                 << sourceItem.GetPrettyName() << ".");
 
       ScAddr sourceAddr = TryFindElementReplacement(sourceItem, result.m_replacementConstruction);
-      if (sourceItem.IsType() && sourceItem.m_typeValue.IsEdge() && !sourceAddr.IsValid())
+      if (sourceItem.IsType() && sourceItem.m_typeValue.IsConnector() && !sourceAddr.IsValid())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "You can't generate sc-connector as the first item of triple "
@@ -68,7 +68,7 @@ public:
                 << targetItem.GetPrettyName() << ".");
 
       ScAddr targetAddr = TryFindElementReplacement(targetItem, result.m_replacementConstruction);
-      if (targetItem.IsType() && targetItem.m_typeValue.IsEdge() && !targetAddr.IsValid())
+      if (targetItem.IsType() && targetItem.m_typeValue.IsConnector() && !targetAddr.IsValid())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "You can't generate sc-connector as the third item of triple "
