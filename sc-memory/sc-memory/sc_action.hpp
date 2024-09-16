@@ -141,7 +141,7 @@ public:
    * @brief Gets sc-link with max customer waiting time of an action in milliseconds.
    * @return ScAddr of sc-link containing max customer waiting time in milliseconds if found, empty ScAddr otherwise.
    */
-  _SC_EXTERN ScAddr GetMaxCustomerWaitingTimeAddr() const noexcept;
+  _SC_EXTERN ScAddr GetMaxCustomerWaitingTimeLink() const noexcept;
 
   /*!
    * @brief Gets value of max customer waiting time of an action in milliseconds.
