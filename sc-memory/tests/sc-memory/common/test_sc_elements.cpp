@@ -36,17 +36,17 @@ TEST_F(ScMemoryTest, Elements)
   EXPECT_EQ(ctx.GetElementType(link), ScType::ConstNodeLink);
   EXPECT_EQ(ctx.GetElementType(arcAddr), ScType::ConstPermPosArc);
 
-  EXPECT_TRUE(ctx.SetElementSubtype(node, ScType::VarNode));
-  EXPECT_EQ(ctx.GetElementType(node), ScType::VarNode);
+  EXPECT_FALSE(ctx.SetElementSubtype(node, ScType::VarNode));
+  EXPECT_EQ(ctx.GetElementType(node), ScType::ConstNode);
 
   EXPECT_TRUE(ctx.SetElementSubtype(node, ScType::ConstNodeStructure));
   EXPECT_EQ(ctx.GetElementType(node), ScType::ConstNodeStructure);
 
-  EXPECT_TRUE(ctx.SetElementSubtype(link, ScType::VarNodeLink));
-  EXPECT_EQ(ctx.GetElementType(link), ScType::VarNodeLink);
+  EXPECT_FALSE(ctx.SetElementSubtype(link, ScType::VarNodeLink));
+  EXPECT_EQ(ctx.GetElementType(link), ScType::ConstNodeLink);
 
-  EXPECT_TRUE(ctx.SetElementSubtype(arcAddr, ScType::ConstPermNegArc));
-  EXPECT_EQ(ctx.GetElementType(arcAddr), ScType::ConstPermNegArc);
+  EXPECT_FALSE(ctx.SetElementSubtype(arcAddr, ScType::ConstPermNegArc));
+  EXPECT_EQ(ctx.GetElementType(arcAddr), ScType::ConstPermPosArc);
 
   EXPECT_FALSE(ctx.SetElementSubtype(node, ScType::ConstFuzArc));
 

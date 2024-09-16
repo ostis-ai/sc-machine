@@ -137,7 +137,7 @@ private:
     ScAddr resultAddr;
     std::string const & idtf = el.GetIdtf();
     auto const it = m_idtfCache.find(idtf);
-    if (it != m_idtfCache.end())
+    if (it != m_idtfCache.cend())
       resultAddr = it->second;
     else
     {
@@ -147,7 +147,7 @@ private:
         ScSystemIdentifierQuintuple quintuple;
         m_ctx.SearchElementBySystemIdentifier(el.GetIdtf(), quintuple);
         resultAddr = quintuple.addr1;
-        result = {quintuple.addr2, quintuple.addr3, quintuple.addr4};
+        result = {quintuple.addr2, quintuple.addr3, quintuple.addr4, quintuple.addr5};
       }
       else if (el.GetVisibility() == scs::Visibility::Global)
         resultAddr = FindBySCsGlobalIdtf(el.GetIdtf());
@@ -172,9 +172,9 @@ private:
         // setup system identifier
         if (el.GetVisibility() == scs::Visibility::System)
         {
-          ScSystemIdentifierQuintuple fiver;
-          m_ctx.SetElementSystemIdentifier(el.GetIdtf(), resultAddr, fiver);
-          result = {fiver.addr2, fiver.addr3, fiver.addr4};
+          ScSystemIdentifierQuintuple quintuple;
+          m_ctx.SetElementSystemIdentifier(el.GetIdtf(), resultAddr, quintuple);
+          result = {quintuple.addr2, quintuple.addr3, quintuple.addr4, quintuple.addr5};
         }
         else if (el.GetVisibility() == scs::Visibility::Global)
         {

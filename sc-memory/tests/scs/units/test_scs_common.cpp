@@ -398,7 +398,7 @@ TEST(scs_common, var_connectors_and_nodes)
 
 TEST(scs_common, type_error)
 {
-  std::string const data = "a <- sc_node_abstract;; a <- sc_node_role_relation;;";
+  std::string const data = "a <- sc_node_material;; a <- sc_node_role_relation;;";
 
   scs::Parser parser;
   EXPECT_FALSE(parser.Parse(data));

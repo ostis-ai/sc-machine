@@ -11,8 +11,10 @@
 #include "sc-memory/scs/scs_types.hpp"
 
 #include <limits>
+#include <vector>
 #include <stack>
 #include <map>
+#include <string>
 
 namespace scs
 {
