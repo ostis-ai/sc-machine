@@ -251,13 +251,13 @@ action.InitiateAndWait(100); // milliseconds
 !!! warning
     If you set maximum customer waiting time for an action that already has maximum customer waiting time, then this method will throw `utils::ExceptionInvalidState`.
 
-#### **GetMaxCustomerWaitingTimeAddr**
+#### **GetMaxCustomerWaitingTimeLink**
 
 You can get sc-link with time that customer will wait for action to finish. If action does not have waiting time then empty sc-address will be returned.
 
 ```cpp
 ...
-ScAddr const & waitingTimeAddr = action.GetMaxCustomerWaitingTimeAddr();
+ScAddr const & waitingTimeAddr = action.GetMaxCustomerWaitingTimeLink();
 ...
 ```
 
