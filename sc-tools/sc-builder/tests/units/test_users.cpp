@@ -28,7 +28,7 @@
 void TestAuthenticationRequestUser(
     std::unique_ptr<ScAgentContext> const & context,
     ScAddr const & userAddr,
-    ScType const & arcType = ScType::EdgeAccessConstPosTemp)
+    ScType const & arcType = ScType::ConstTempPosArc)
 {
   ScAddr const & conceptAuthenticationRequestUserAddr{concept_authentication_request_user_addr};
   context->GenerateConnector(arcType, conceptAuthenticationRequestUserAddr, userAddr);
@@ -39,24 +39,23 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
   ScAddr const & userAddr = m_ctx->SearchElementBySystemIdentifier("test_user_1");
 
   TestScMemoryContext userContext{userAddr};
-  EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GenerateNode(ScType::ConstNode), utils::ExceptionInvalidState);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
   auto eventSubscription =
-      m_ctx->CreateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+      m_ctx->CreateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::MembershipArc>>(
           conceptAuthenticatedUserAddr,
-          [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::MembershipArc> const &)
           {
             ScAddr const & otherUserAddr = userContext.SearchElementBySystemIdentifier("test_user_2");
-            ScAddr const & classAddr = userContext.GenerateNode(ScType::NodeConstClass);
+            ScAddr const & classAddr = userContext.GenerateNode(ScType::ConstNodeClass);
             EXPECT_THROW(
-                userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
+                userContext.GenerateConnector(ScType::ConstTempPosArc, classAddr, otherUserAddr),
                 utils::ExceptionInvalidState);
             ScAddr const & userStructureAddr = userContext.SearchElementBySystemIdentifier("user_structure");
             EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
-            EXPECT_NO_THROW(
-                userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr));
+            EXPECT_NO_THROW(userContext.GenerateConnector(ScType::ConstTempPosArc, userStructureAddr, classAddr));
 
             isAuthenticated = true;
           });
@@ -72,24 +71,24 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
   ScAddr const & userAddr = m_ctx->SearchElementBySystemIdentifier("test_user_2");
 
   TestScMemoryContext userContext{userAddr};
-  EXPECT_THROW(userContext.GenerateNode(ScType::NodeConst), utils::ExceptionInvalidState);
+  EXPECT_THROW(userContext.GenerateNode(ScType::ConstNode), utils::ExceptionInvalidState);
 
   ScAddr const & conceptAuthenticatedUserAddr{concept_authenticated_user_addr};
   std::atomic_bool isAuthenticated = false;
   auto eventSubscription =
-      m_ctx->CreateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess>>(
+      m_ctx->CreateElementaryEventSubscription<ScEventAfterGenerateOutgoingArc<ScType::MembershipArc>>(
           conceptAuthenticatedUserAddr,
-          [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccess> const &)
+          [&userContext, &isAuthenticated](ScEventAfterGenerateOutgoingArc<ScType::MembershipArc> const &)
           {
             ScAddr const & otherUserAddr = userContext.SearchElementBySystemIdentifier("test_user_2");
-            ScAddr const & classAddr = userContext.GenerateNode(ScType::NodeConstClass);
+            ScAddr const & classAddr = userContext.GenerateNode(ScType::ConstNodeClass);
             EXPECT_THROW(
-                userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, classAddr, otherUserAddr),
+                userContext.GenerateConnector(ScType::ConstTempPosArc, classAddr, otherUserAddr),
                 utils::ExceptionInvalidState);
             ScAddr const & userStructureAddr = userContext.SearchElementBySystemIdentifier("user_structure");
             EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
             EXPECT_THROW(
-                userContext.GenerateConnector(ScType::EdgeAccessConstPosTemp, userStructureAddr, classAddr),
+                userContext.GenerateConnector(ScType::ConstTempPosArc, userStructureAddr, classAddr),
                 utils::ExceptionInvalidState);
 
             isAuthenticated = true;

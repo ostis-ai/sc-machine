@@ -95,8 +95,8 @@ ScAction ScAgentContext::GenerateAction(ScAddr const & actionClassAddr) noexcept
         "Not able to generate sc-action with action class `" << actionClassAddr.Hash()
                                                              << "`, because action class is not valid.");
 
-  ScAddr const & actionAddr = GenerateNode(ScType::NodeConst);
-  GenerateConnector(ScType::EdgeAccessConstPosPerm, actionClassAddr, actionAddr);
+  ScAddr const & actionAddr = GenerateNode(ScType::ConstNode);
+  GenerateConnector(ScType::ConstPermPosArc, actionClassAddr, actionAddr);
   ScAction action{this, actionAddr};
   return action;
 }
@@ -115,7 +115,7 @@ ScAction ScAgentContext::ConvertToAction(ScAddr const & actionAddr) noexcept(fal
 
 ScSet ScAgentContext::GenerateSet()
 {
-  ScAddr const & setAddr = GenerateNode(ScType::NodeConst);
+  ScAddr const & setAddr = GenerateNode(ScType::ConstNode);
   ScSet set{this, setAddr};
   return set;
 }
@@ -134,7 +134,7 @@ ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr) noexcept(false)
 
 ScStructure ScAgentContext::GenerateStructure()
 {
-  ScAddr const & structureAddr = GenerateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = GenerateNode(ScType::ConstNodeStructure);
   ScStructure structure{this, structureAddr};
   return structure;
 }
@@ -161,7 +161,7 @@ void ScAgentContext::ValidateEventElements(
         utils::ExceptionInvalidParams,
         "Not able to create " << validatorName << " because sc-event class is not valid.");
 
-  if (!CheckConnector(ScKeynodes::sc_event, eventClassAddr, ScType::EdgeAccessConstPosPerm))
+  if (!CheckConnector(ScKeynodes::sc_event, eventClassAddr, ScType::ConstPermPosArc))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to create " << validatorName

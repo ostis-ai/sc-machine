@@ -288,7 +288,7 @@ private:
 
       // it should be possible to replace variable sc-node by sc-connector for scp program initiation parameters
       if (!templateItemType.UpConstType().CanExtendTo(templateParamType)
-          && !(templateItemType.IsNode() && templateParamType.IsEdge()))
+          && !(templateItemType.IsNode() && templateParamType.IsConnector()))
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "Template item " << (templateItem.HasName() ? (templateItem.GetPrettyName() + " ") : "") << "has type `"

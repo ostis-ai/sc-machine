@@ -87,9 +87,9 @@ auto subscription = context->CreateElementaryEventSubscription(
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateConnector<ScType::ConstPermPosArc>>(
   subscriptionElementAddr, 
-  [](ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAfterGenerateConnector<ScType::ConstPermPosArc> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -106,9 +106,9 @@ auto subscription = context->CreateElementaryEventSubscription<
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateOutgoingArc<ScType::ConstPermPosArc>>(
   subscriptionElementAddr, 
-  [](ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAfterGenerateOutgoingArc<ScType::ConstPermPosArc> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -125,9 +125,9 @@ auto subscription = context->CreateElementaryEventSubscription<
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc>>(
   subscriptionElementAddr, 
-  [](ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -144,9 +144,9 @@ auto subscription = context->CreateElementaryEventSubscription<
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventAfterGenerateEdge<ScType::EdgeUCommonConst>>(
+  ScEventAfterGenerateEdge<ScType::ConstCommonEdge>>(
   subscriptionElementAddr, 
-  [](ScEventAfterGenerateEdge<ScType::EdgeUCommonConst> const & event) -> void
+  [](ScEventAfterGenerateEdge<ScType::ConstCommonEdge> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -163,9 +163,9 @@ auto subscription = context->CreateElementaryEventSubscription<
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm>>(
+  ScEventBeforeEraseConnector<ScType::ConstPermPosArc>>(
   subscriptionElementAddr, 
-  [](ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventBeforeEraseConnector<ScType::ConstPermPosArc> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -182,9 +182,9 @@ auto subscription = context->CreateElementaryEventSubscription<
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
   subscriptionElementAddr, 
-  [](ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -201,9 +201,9 @@ auto subscription = context->CreateElementaryEventSubscription<
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm>>(
+  ScEventBeforeEraseIncomingArc<ScType::ConstPermPosArc>>(
   subscriptionElementAddr, 
-  [](ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const & event) -> void
+  [](ScEventBeforeEraseIncomingArc<ScType::ConstPermPosArc> const & event) -> void
 {
   // Handle sc-event.
 });
@@ -220,9 +220,9 @@ auto subscription = context->CreateElementaryEventSubscription<
       <pre><code class="cpp">
 ...
 auto subscription = context->CreateElementaryEventSubscription<
-  ScEventBeforeEraseEdge<ScType::EdgeUCommonConst>>(
+  ScEventBeforeEraseEdge<ScType::ConstCommonEdge>>(
   subscriptionElementAddr, 
-  [](ScEventBeforeEraseEdge<ScType::EdgeUCommonConst> const & event) -> void
+  [](ScEventBeforeEraseEdge<ScType::ConstCommonEdge> const & event) -> void
 {
   // Handle sc-event.
 });

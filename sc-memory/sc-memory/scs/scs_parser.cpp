@@ -155,8 +155,8 @@ ScType const & ParsedElement::GetType() const
   if (!m_type.IsUnknown())
     return m_type;
 
-  static ScType defConst = ScType::NodeConst;
-  static ScType defVar = ScType::NodeVar;
+  static ScType defConst = ScType::ConstNode;
+  static ScType defVar = ScType::VarNode;
   return TypeResolver::IsConst(m_idtf) ? defConst : defVar;
 }
 
@@ -409,7 +409,7 @@ ElementHandle Parser::ResolveAlias(std::string const & name)
 ElementHandle Parser::ProcessIdentifier(std::string const & name)
 {
   // resolve type of sc-element
-  ScType const type = TypeResolver::IsConst(name) ? ScType::NodeConst : ScType::NodeVar;
+  ScType const type = TypeResolver::IsConst(name) ? ScType::ConstNode : ScType::VarNode;
   return AppendElement(name, type);
 }
 
@@ -428,7 +428,7 @@ void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & c
   auto AddConnector = [this, &connectorEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
     ParsedElement const & srcEl = GetParsedElement(src);
     std::string const & idtf = srcEl.GetIdtf();
-    if (connectorEl.GetType() == ScType::EdgeAccessConstPosPerm && scs::TypeResolver::IsKeynodeType(idtf))
+    if (connectorEl.GetType() == ScType::ConstPermPosArc && scs::TypeResolver::IsKeynodeType(idtf))
     {
       ParsedElement & targetEl = GetParsedElementRef(trg);
       ScType const newType = targetEl.m_type | scs::TypeResolver::GetKeynodeType(idtf);
@@ -467,12 +467,12 @@ ElementHandle Parser::ProcessConnector(std::string const & connector)
 #define DefineLinkType(content, isVar) \
   ({ \
     sc_char const startSCsLinkClassSymbol = '!'; \
-    ScType _type = content.find(startSCsLinkClassSymbol) == 0 ? ScType::LinkClass : ScType::Link; \
+    ScType _type = content.find(startSCsLinkClassSymbol) == 0 ? ScType::NodeLinkClass : ScType::NodeLink; \
     _type |= (isVar ? ScType::Var : ScType::Const); \
   })
 
 #define ParseLinkContent(content, type) \
-  if ((type & ScType::LinkClass) == ScType::LinkClass) \
+  if ((type & ScType::NodeLinkClass) == ScType::NodeLinkClass) \
     content = content.substr(1, content.size() - 2); \
   content = UnescapeContent(content.substr(1, content.size() - 2))
 
@@ -507,7 +507,7 @@ ElementHandle Parser::ProcessFileURL(std::string fileURL)
 
 ElementHandle Parser::ProcessEmptyContour()
 {
-  return AppendElement(GenerateContourIdtf(), ScType::NodeConstStruct);
+  return AppendElement(GenerateContourIdtf(), ScType::ConstNodeStructure);
 }
 
 void Parser::ProcessContourBegin()
@@ -553,7 +553,7 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
   }
 
   ParsedElement & srcEl = GetParsedElementRef(contourHandle);
-  srcEl.m_type = ScType::NodeConstStruct;
+  srcEl.m_type = ScType::ConstNodeStructure;
 }
 
 }  // namespace scs

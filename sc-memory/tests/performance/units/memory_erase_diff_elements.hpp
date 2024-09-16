@@ -28,7 +28,7 @@ public:
   void Setup(size_t objectsNum) override
   {
     for (size_t i = 0; i < objectsNum; ++i)
-      m_elements.push_back(m_ctx->GenerateNode(ScType::NodeConst));
+      m_elements.push_back(m_ctx->GenerateNode(ScType::ConstNode));
   }
 
 private:

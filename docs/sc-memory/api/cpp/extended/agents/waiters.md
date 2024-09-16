@@ -27,7 +27,7 @@ To generate object of this class, you should call `CreateEventWaiter` method fro
 // Generate of find some sc-node and generate waiter to wait until 
 // a sc-connector of the specified type is generated from or to this sc-node.
 auto waiter = context.CreateEventWaiter<
-  ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateConnector<ScType::ConstPermPosArc>>(
     nodeAddr,
     []() -> void
     {
@@ -37,7 +37,7 @@ auto waiter = context.CreateEventWaiter<
 ...
 ```
 
-We recommend to use `auto` instead of full type of waiter. In provided example waiter has `std::shared_ptr<ScEventWaiter<ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>>` type.
+We recommend to use `auto` instead of full type of waiter. In provided example waiter has `std::shared_ptr<ScEventWaiter<ScEventAfterGenerateConnector<ScType::ConstPermPosArc>>>` type.
 
 ### **Wait**
 
@@ -97,14 +97,14 @@ This class represents waiter for condition to occur. To generate object of this 
 // Generate of find some sc-node and generate waiter to wait until 
 // a sc-connector of the specified type is generated from or to this sc-node.
 auto waiter = context.GenerateConditionWaiter<
-  ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>>(
+  ScEventAfterGenerateConnector<ScType::ConstPermPosArc>>(
     nodeAddr,
     []() -> void
     {
       // Provide logic here, that should be called at exactly the same time 
       // when waiter will start to wait for sc-event to occur.
     },
-    [](ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm>
+    [](ScEventAfterGenerateConnector<ScType::ConstPermPosArc>
         const & event) -> bool
     {
       // Check here, that occurred sc-event is sc-event that this waiter 
@@ -123,7 +123,7 @@ There are some examples of usage for specified `ScWaiter` objects:
 
 ```cpp
 auto waiter = context.CreateEventWaiter<
-  ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(nodeAddr);
+  ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc>>(nodeAddr);
 waiter.Wait();
 ```
 
@@ -132,7 +132,7 @@ waiter.Wait();
 ```cpp
 auto const CheckCallback 
   = [](ScEventAfterGenerateIncomingArc<
-    ScType::EdgeAccessConstPosPerm> const & event)
+    ScType::ConstPermPosArc> const & event)
 {
   // Check condition here.
   // Return true or false depending on condition.
@@ -141,7 +141,7 @@ auto const CheckCallback
 
 auto waiter = context.CreateConditionWaiter<
   ScEventAfterGenerateIncomingArc<
-    ScType::EdgeAccessConstPosPerm>>(nodeAddr, CheckCallback);
+    ScType::ConstPermPosArc>>(nodeAddr, CheckCallback);
 // Provide wait time value.
 waiter.Wait(10000); // milliseconds.
 ```

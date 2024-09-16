@@ -52,7 +52,7 @@ not valid, then a method throws the exception `utils::ExceptionInvalidParams` wi
 ```cpp
 ...
 // Generate sc-node and get sc-address in sc-memory of it.
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 // Specified sc-type must be one of ScType::Node... type.
 ```
 
@@ -61,8 +61,8 @@ ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
 ```cpp
 ...
 // Generate sc-link and get sc-address in sc-memory of it.
-ScAddr const & linkAddr = context.GenerateLink(ScType::LinkConst);
-// Specified sc-type must be one of ScType::Link... type.
+ScAddr const & linkAddr = context.GenerateLink(ScType::ConstNodeLink);
+// Specified sc-type must be one of ScType::NodeLink... type.
 ```
 
 !!! note
@@ -76,7 +76,7 @@ ScAddr const & linkAddr = context.GenerateLink(ScType::LinkConst);
 // Generate sc-arc between sc-node and sc-link and get sc-address in 
 // sc-memory of it.
 ScAddr const & arcAddr = context.GenerateConnector(
-    ScType::EdgeAccessConstPosPerm, nodeAddr, linkAddr);
+    ScType::ConstPermPosArc, nodeAddr, linkAddr);
 // Specified sc-type must be one of ScType::Edge... type.
 ```
 
@@ -126,7 +126,7 @@ syntactic sc-type for sc-element.
 // Generate sc-node and get sc-address in sc-memory of it.
 ScAddr const & nodeAddr = context.GenerateNode(ScType::Node);
 bool const isSubtypeElementChanged 
-    = context.SetElementSubtype(node, ScType::NodeConst);
+    = context.SetElementSubtype(node, ScType::ConstNode);
 // The value of `isSubtypeElementChanged` must be equal to `true`.
 ```
 
@@ -169,7 +169,7 @@ First approach is to use simple while loop. It is suitable, when you need to bre
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
 ScIterator3Ptr it3 = context.CreateIterator3(
     setAddr,
-    ScType::EdgeAccessConstPosPerm,
+    ScType::ConstPermPosArc,
     ScType::Unknown);
 // Use it3-Next() to go to the next appropriate by condition sc-construction.
 while (it3->Next())
@@ -190,9 +190,9 @@ while (it3->Next())
 // with sc-address `nrelDecompositionAddr`.
 ScIterator5Ptr it5 = context.CreateIterator5(
     setAddr,
-    ScType::EdgeDCommonConst,
-    ScType::NodeConst,
-    ScType::EdgeAccessConstPosPerm,
+    ScType::ConstCommonArc,
+    ScType::ConstNode,
+    ScType::ConstPermPosArc,
     nrelDecompositionAddr);
 // Use `it5-Next()` to go to the next appropriate by condition sc-construction. 
 // It returns `true`, if the next appropriate construction is found, 
@@ -218,7 +218,7 @@ you need to iterate all results.
 // with unknown sc-type belonging to sc-set with sc-address `setAddr`.
 context.ForEach(
     setAddr,
-    ScType::EdgeAccessConstPosPerm,
+    ScType::ConstPermPosArc,
     ScType::Unknown,
     [] (ScAddr const & srcAddr, ScAddr const & edgeAddr, ScAddr const & trgAddr)
 {
@@ -238,9 +238,9 @@ context.ForEach(
 // with sc-address `nrelDecompositionAddr`.
 context.ForEach(
   setAddr,
-  ScType::EdgeDCommonConst,
-  ScType::NodeConst,
-  ScType::EdgeAccessConstPosPerm,
+  ScType::ConstCommonArc,
+  ScType::ConstNode,
+  ScType::ConstPermPosArc,
   nrelDecompositionAddr
   [] (ScAddr const & srcAddr, 
       ScAddr const & connectorAddr, 
@@ -279,11 +279,11 @@ the previous content from this sc-link. If specified sc-address is not valid, th
 
 ```cpp
 ...
-ScAddr const & linkAddr1 = context.GenerateLink(ScType::LinkConst);
+ScAddr const & linkAddr1 = context.GenerateLink(ScType::ConstNodeLink);
 // Set string content into created sc-link.
 context.SetLinkContent(linkAddr1, "my content");
 
-ScAddr const & linkAddr2 = context.GenerateLink(ScType::LinkConst);
+ScAddr const & linkAddr2 = context.GenerateLink(ScType::ConstNodeLink);
 // Set numeric content into created sc-link.
 context.SetLinkContent(linkAddr2, 10f);
 ...
@@ -398,14 +398,14 @@ large graph structures.
 
 ## **Frequently Asked Questions**
 
-- [What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?](#what-is-the-difference-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
+- [What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?](#what-is-the-difference-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
 - [How I can specify empty ScAddr?](#how-i-can-specify-empty-scaddr)
 
-### **What is the difference between ScType::EdgeDCommonConst and ScType::EdgeAccessConstPosPerm?**
+### **What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?**
 
-`ScType::EdgeDCommonConst` is a sc-type of sc-arc that connects two sc-elements in some relation.
-`ScType::EdgeAccessConstPosPerm` is a sc-type of sc-arc that denotes access of target sc-element to source sc-element.
-The sc-arc with sc-type `ScType::EdgeDCommonConst` between some two sc-elements can be transformed to sc-node to which 
+`ScType::ConstCommonArc` is a sc-type of sc-arc that connects two sc-elements in some relation.
+`ScType::ConstPermPosArc` is a sc-type of sc-arc that denotes access of target sc-element to source sc-element.
+The sc-arc with sc-type `ScType::ConstCommonArc` between some two sc-elements can be transformed to sc-node to which 
 this two sc-elements belong.
 
 ### **How I can specify empty ScAddr?**

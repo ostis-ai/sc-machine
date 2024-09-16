@@ -15,15 +15,15 @@ ScAddr SetOperationsUtils::uniteSets(ScMemoryContext * context, ScAddrVector con
 
   for (auto const & set : sets)
   {
-    ScIterator3Ptr firstIter3 = context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    ScIterator3Ptr firstIter3 = context->CreateIterator3(set, ScType::ConstPermPosArc, ScType::Unknown);
 
     while (firstIter3->Next())
     {
       ScAddr element = firstIter3->Get(2);
 
-      if (!context->CheckConnector(resultSet, element, ScType::EdgeAccessConstPosPerm))
+      if (!context->CheckConnector(resultSet, element, ScType::ConstPermPosArc))
       {
-        context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
+        context->GenerateConnector(ScType::ConstPermPosArc, resultSet, element);
       }
     }
   }
@@ -40,14 +40,14 @@ ScAddr SetOperationsUtils::intersectSets(
 
   for (auto const & set : sets)
   {
-    ScIterator3Ptr firstIter3 = context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    ScIterator3Ptr firstIter3 = context->CreateIterator3(set, ScType::ConstPermPosArc, ScType::Unknown);
     while (firstIter3->Next())
     {
       ScAddr element = firstIter3->Get(2);
 
       bool isCommon = true;
 
-      if (!context->CheckConnector(resultSet, element, ScType::EdgeAccessConstPosPerm))
+      if (!context->CheckConnector(resultSet, element, ScType::ConstPermPosArc))
       {
         for (auto const & otherSet : sets)
         {
@@ -56,7 +56,7 @@ ScAddr SetOperationsUtils::intersectSets(
             continue;
           }
 
-          if (context->CheckConnector(otherSet, element, ScType::EdgeAccessConstPosPerm))
+          if (context->CheckConnector(otherSet, element, ScType::ConstPermPosArc))
           {
             isCommon = false;
             break;
@@ -65,7 +65,7 @@ ScAddr SetOperationsUtils::intersectSets(
 
         if (isCommon)
         {
-          context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
+          context->GenerateConnector(ScType::ConstPermPosArc, resultSet, element);
         }
       }
     }
@@ -85,15 +85,15 @@ ScAddr SetOperationsUtils::complementSets(
 
   ScAddr resultSet = context->GenerateNode(resultType);
 
-  ScIterator3Ptr secondIter3 = context->CreateIterator3(secondSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr secondIter3 = context->CreateIterator3(secondSet, ScType::ConstPermPosArc, ScType::Unknown);
   while (secondIter3->Next())
   {
     ScAddr element = secondIter3->Get(2);
 
-    if (!context->CheckConnector(firstSet, element, ScType::EdgeAccessConstPosPerm)
-        && !context->CheckConnector(resultSet, element, ScType::EdgeAccessConstPosPerm))
+    if (!context->CheckConnector(firstSet, element, ScType::ConstPermPosArc)
+        && !context->CheckConnector(resultSet, element, ScType::ConstPermPosArc))
     {
-      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, resultSet, element);
+      context->GenerateConnector(ScType::ConstPermPosArc, resultSet, element);
     }
   }
 
@@ -111,12 +111,12 @@ bool SetOperationsUtils::compareSets(ScMemoryContext * context, ScAddr const & f
     return false;
   }
 
-  ScIterator3Ptr firstIter3 = context->CreateIterator3(firstSet, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr firstIter3 = context->CreateIterator3(firstSet, ScType::ConstPermPosArc, ScType::Unknown);
   while (firstIter3->Next())
   {
     ScAddr element = firstIter3->Get(2);
 
-    if (!context->CheckConnector(secondSet, element, ScType::EdgeAccessConstPosPerm))
+    if (!context->CheckConnector(secondSet, element, ScType::ConstPermPosArc))
     {
       return false;
     }

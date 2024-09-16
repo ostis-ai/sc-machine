@@ -22,10 +22,10 @@ ScAction::ScAction(ScAgentContext * context, ScAddr const & actionAddr) noexcept
 ScAddr ScAction::GetClass() const noexcept
 {
   if (m_context->IsElement(m_actionClassAddr)
-      && m_context->CheckConnector(m_actionClassAddr, *this, ScType::EdgeAccessConstPosPerm))
+      && m_context->CheckConnector(m_actionClassAddr, *this, ScType::ConstPermPosArc))
     return m_actionClassAddr;
 
-  ScIterator3Ptr const it3 = m_context->CreateIterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, *this);
+  ScIterator3Ptr const it3 = m_context->CreateIterator3(ScType::ConstNodeClass, ScType::ConstPermPosArc, *this);
   while (it3->Next())
   {
     ScAddr const & actionClassAddr = it3->Get(0);
@@ -50,10 +50,10 @@ bool ScAction::IsActionClassValid(ScMemoryContext * context, ScAddr const & acti
 
   bool isActionClassHasType = false;
   ScIterator5Ptr const it5 = context->CreateIterator5(
-      ScType::NodeConstClass,
-      ScType::EdgeDCommonConst,
+      ScType::ConstNodeClass,
+      ScType::ConstCommonArc,
       actionClassAddr,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_inclusion);
   while (it5->Next())
   {
@@ -75,7 +75,7 @@ ScAddr ScAction::GetArgument(size_t idx, ScAddr const & defaultArgumentAddr) con
 ScAddr ScAction::GetArgument(ScAddr const & orderRelationAddr, ScAddr const & defaultArgumentAddr) const noexcept
 {
   ScIterator5Ptr const it = m_context->CreateIterator5(
-      *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
+      *this, ScType::ConstPermPosArc, ScType::Unknown, ScType::ConstPermPosArc, orderRelationAddr);
 
   if (it->Next())
     return it->Get(2);
@@ -91,13 +91,13 @@ ScAction & ScAction::SetArgument(size_t idx, ScAddr const & argumentAddr) noexce
 ScAction & ScAction::SetArgument(ScAddr const & orderRelationAddr, ScAddr const & argumentAddr)
 {
   ScIterator5Ptr const it = m_context->CreateIterator5(
-      *this, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, orderRelationAddr);
+      *this, ScType::ConstPermPosArc, ScType::Unknown, ScType::ConstPermPosArc, orderRelationAddr);
 
   while (it->Next())
     m_context->EraseElement(it->Get(1));
 
-  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, *this, argumentAddr);
-  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, orderRelationAddr, arcAddr);
+  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::ConstPermPosArc, *this, argumentAddr);
+  m_context->GenerateConnector(ScType::ConstPermPosArc, orderRelationAddr, arcAddr);
 
   return *this;
 }
@@ -117,7 +117,7 @@ ScStructure ScAction::GetResult() noexcept(false)
                                             << " because it had not been finished yet.");
 
   ScIterator5Ptr const & it5 = m_context->CreateIterator5(
-      *this, ScType::EdgeDCommonConst, ScType::Unknown, ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result);
+      *this, ScType::ConstCommonArc, ScType::Unknown, ScType::ConstPermPosArc, ScKeynodes::nrel_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
@@ -153,7 +153,7 @@ ScAction & ScAction::SetResult(ScAddr const & structureAddr) noexcept(false)
 
 bool ScAction::IsInitiated() const noexcept
 {
-  return m_context->CheckConnector(ScKeynodes::action_initiated, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_initiated, *this, ScType::ConstPermPosArc);
 }
 
 bool ScAction::InitiateAndWait(sc_uint32 maxCustomerWaitingTime) noexcept(false)
@@ -176,7 +176,7 @@ bool ScAction::InitiateAndWait(sc_uint32 maxCustomerWaitingTime) noexcept(false)
       {
         if (!m_context->IsElement(GetMaxCustomerWaitingTimeLink()))
           GenerateMaxCustomerWaitingTime(maxCustomerWaitingTime);
-        m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
+        m_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::action_initiated, *this);
       });
   return wait->Wait(maxCustomerWaitingTime);
 }
@@ -195,7 +195,7 @@ ScAction & ScAction::Initiate() noexcept(false)
         "Not able to initiate action " << GetActionPrettyString() << GetActionClassPrettyString()
                                        << " because it had already been finished.");
 
-  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
+  m_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::action_initiated, *this);
 
   return *this;
 }
@@ -215,23 +215,23 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
                                      << " because it had already been finished.");
 
   if (!m_context->IsElement(m_resultAddr))
-    m_resultAddr = m_context->GenerateNode(ScType::NodeConstStruct);
+    m_resultAddr = m_context->GenerateNode(ScType::ConstNodeStructure);
 
-  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::EdgeDCommonConst, *this, m_resultAddr);
-  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_result, arcAddr);
+  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::ConstCommonArc, *this, m_resultAddr);
+  m_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_result, arcAddr);
 
-  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, actionStateAddr, *this);
-  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_finished, *this);
+  m_context->GenerateConnector(ScType::ConstPermPosArc, actionStateAddr, *this);
+  m_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::action_finished, *this);
 }
 
 bool ScAction::IsFinished() const noexcept
 {
-  return m_context->CheckConnector(ScKeynodes::action_finished, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished, *this, ScType::ConstPermPosArc);
 }
 
 bool ScAction::IsFinishedSuccessfully() const noexcept
 {
-  return m_context->CheckConnector(ScKeynodes::action_finished_successfully, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished_successfully, *this, ScType::ConstPermPosArc);
 }
 
 ScResult ScAction::FinishSuccessfully() noexcept(false)
@@ -242,7 +242,7 @@ ScResult ScAction::FinishSuccessfully() noexcept(false)
 
 bool ScAction::IsFinishedUnsuccessfully() const noexcept
 {
-  return m_context->CheckConnector(ScKeynodes::action_finished_unsuccessfully, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished_unsuccessfully, *this, ScType::ConstPermPosArc);
 }
 
 ScResult ScAction::FinishUnsuccessfully() noexcept(false)
@@ -253,7 +253,7 @@ ScResult ScAction::FinishUnsuccessfully() noexcept(false)
 
 bool ScAction::IsFinishedWithError() const noexcept
 {
-  return m_context->CheckConnector(ScKeynodes::action_finished_with_error, *this, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(ScKeynodes::action_finished_with_error, *this, ScType::ConstPermPosArc);
 }
 
 ScResult ScAction::FinishWithError() noexcept(false)
@@ -299,9 +299,9 @@ ScAddr ScAction::GetMaxCustomerWaitingTimeLink() const noexcept
   ScAddr waitingTimeAddr;
   auto const & waitingTimeIterator = m_context->CreateIterator5(
       *this,
-      ScType::EdgeDCommonConst,
-      ScType::LinkConst,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstCommonArc,
+      ScType::ConstNodeLink,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish);
   if (waitingTimeIterator->Next())
     waitingTimeAddr = waitingTimeIterator->Get(2);
@@ -321,7 +321,7 @@ void ScAction::GenerateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) 
 {
   ScAddr const & linkWithTimeAddr = m_context->GenerateLink();
   m_context->SetLinkContent(linkWithTimeAddr, std::to_string(maxCustomerWaitingTime));
-  ScAddr const & relationArcAddr = m_context->GenerateConnector(ScType::EdgeDCommonConst, *this, linkWithTimeAddr);
+  ScAddr const & relationArcAddr = m_context->GenerateConnector(ScType::ConstCommonArc, *this, linkWithTimeAddr);
   m_context->GenerateConnector(
-      ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish, relationArcAddr);
+      ScType::ConstPermPosArc, ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish, relationArcAddr);
 }

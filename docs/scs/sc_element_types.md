@@ -42,7 +42,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_const.png"></img></td>
     <td>sc_type_node | sc_type_const</td>
-    <td>ScType::NodeConst</td>
+    <td>ScType::ConstNode</td>
     <td></td>
     <td>33</td>
     <td>0x21</td>
@@ -51,7 +51,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_var.png"></img></td>
     <td>sc_type_node | sc_type_var</td>
-    <td>ScType::NodeVar</td>
+    <td>ScType::VarNode</td>
     <td></td>
     <td>65</td>
     <td>0x41</td>
@@ -69,7 +69,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_const_tuple.png"></img></td>
     <td>sc_type_node | sc_type_const | sc_type_node_tuple</td>
-    <td>ScType::NodeConstTuple</td>
+    <td>ScType::ConstNodeTuple</td>
     <td>sc_node_tuple <br> sc_node_not_binary_tuple</td>
     <td>161</td>
     <td>0xA1</td>
@@ -78,7 +78,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_var_tuple.png"></img></td>
     <td>sc_type_node | sc_type_var | sc_type_node_tuple</td>
-    <td>ScType::NodeVarTuple</td>
+    <td>ScType::VarNodeTuple</td>
     <td></td>
     <td>193</td>
     <td>0xC1</td>
@@ -87,7 +87,7 @@
   <tr>
     <td></td>
     <td>sc_type_node | sc_type_node_structure</td>
-    <td>ScType::NodeStruct</td>
+    <td>ScType::NodeStructure</td>
     <td>sc_node_struct</td>
     <td>257</td>
     <td>0x101</td>
@@ -96,7 +96,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_const_struct.png"></img></td>
     <td>sc_type_node | sc_type_const | sc_type_node_structure</td>
-    <td>ScType::NodeConstStruct</td>
+    <td>ScType::ConstNodeStructure</td>
     <td>sc_node_struct</td>
     <td>289</td>
     <td>0x121</td>
@@ -105,7 +105,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_var_struct.png"></img></td>
     <td>sc_type_node | sc_type_var | sc_type_node_structure</td>
-    <td>ScType::NodeVarStruct</td>
+    <td>ScType::VarNodeStructure</td>
     <td></td>
     <td>321</td>
     <td>0x141</td>
@@ -123,7 +123,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_const_role.png"></img></td>
     <td>sc_type_node | sc_type_const | sc_type_node_role</td>
-    <td>ScType::NodeConstRole</td>
+    <td>ScType::ConstNodeRole</td>
     <td>sc_node_role_relation</td>
     <td>545</td>
     <td>0x221</td>
@@ -132,7 +132,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_var_role.png"></img></td>
     <td>sc_type_node | sc_type_var | sc_type_node_role</td>
-    <td>ScType::NodeVarRole</td>
+    <td>ScType::VarNodeRole</td>
     <td></td>
     <td>577</td>
     <td>0x241</td>
@@ -177,7 +177,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_const_class.png"></img></td>
     <td>sc_type_node | sc_type_const | sc_type_node_class</td>
-    <td>ScType::NodeConstClass</td>
+    <td>ScType::ConstNodeClass</td>
     <td>sc_node_class <br> sc_node_not_relation</td>
     <td>2081</td>
     <td>0x821</td>
@@ -186,7 +186,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_var_class.png"></img></td>
     <td>sc_type_node | sc_type_var | sc_type_node_class</td>
-    <td>ScType::NodeVarClass</td>
+    <td>ScType::VarNodeClass</td>
     <td></td>
     <td>2113</td>
     <td>0x841</td>
@@ -204,7 +204,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_const_material.png"></img></td>
     <td>sc_type_node | sc_type_const | sc_type_node_material</td>
-    <td>ScType::NodeConstMaterial</td>
+    <td>ScType::ConstNodeMaterial</td>
     <td>sc_node_material</td>
     <td>8225</td>
     <td>0x2021</td>
@@ -213,7 +213,7 @@
   <tr>
     <td><img src="../images/scg/scg_node_var_material.png"></img></td>
     <td>sc_type_node | sc_type_var | sc_type_node_material</td>
-    <td>ScType::NodeVarMaterial</td>
+    <td>ScType::VarNodeMaterial</td>
     <td></td>
     <td>8257</td>
     <td>0x2041</td>
@@ -222,7 +222,7 @@
   <tr>
     <td><img src="../images/scg/scg_link_const.png"></img></td>
     <td>sc_type_node_link_const</td>
-    <td>ScType::Link</td>
+    <td>ScType::NodeLink</td>
     <td>sc_link</td>
     <td>34</td>
     <td>0x22</td>
@@ -231,7 +231,7 @@
   <tr>
     <td><img src="../images/scg/scg_link_var.png"></img></td>
     <td>sc_type_node_link_var</td>
-    <td>ScType::LinkVar</td>
+    <td>ScType::VarNodeLink</td>
     <td>sc_link_var</td>
     <td>66</td>
     <td>0x42</td>
@@ -240,7 +240,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_common.png"></img></td>
     <td>sc_type_common_edge</td>
-    <td>ScType::EdgeUCommon</td>
+    <td>ScType::CommonEdge</td>
     <td>sc_edge<br>sc_edge_ucommon<br><></td>
     <td>4</td>
     <td>0x04</td>
@@ -249,7 +249,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_common_orient.png"></img></td>
     <td>sc_type_common_arc</td>
-    <td>ScType::EdgeDCommon</td>
+    <td>ScType::CommonArc</td>
     <td>sc_arc_common <br> sc_edge_common <br> < <br> ></td>
     <td>8</td>
     <td>0x08</td>
@@ -258,7 +258,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_common.png"></img></td>
     <td>sc_type_common_edge | sc_type_const</td>
-    <td>ScType::EdgeUCommonConst</td>
+    <td>ScType::ConstCommonEdge</td>
     <td><=></td>
     <td>36</td>
     <td>0x24</td>
@@ -267,7 +267,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_common.png"></img></td>
     <td>sc_type_common_edge | sc_type_var</td>
-    <td>ScType::EdgeUCommonVar</td>
+    <td>ScType::VarCommonEdge</td>
     <td>_<=></td>
     <td>68</td>
     <td>0x44</td>
@@ -276,7 +276,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_common_orient.png"></img></td>
     <td>sc_type_common_arc | sc_type_const</td>
-    <td>ScType::EdgeDCommonConst</td>
+    <td>ScType::ConstCommonArc</td>
     <td>=> <br> <=</td>
     <td>40</td>
     <td>0x28</td>
@@ -285,7 +285,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_common_orient.png"></img></td>
     <td>sc_type_common_arc | sc_type_var</td>
-    <td>ScType::EdgeDCommonVar</td>
+    <td>ScType::VarCommonArc</td>
     <td>_<= <br> <=_ <br> _=></td>
     <td>72</td>
     <td>0x48</td>
@@ -294,7 +294,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_access.png"></img></td>
     <td>sc_type_membership_arc</td>
-    <td>ScType::EdgeAccess</td>
+    <td>ScType::MembershipArc</td>
     <td>sc_arc_access <br> sc_edge_access <br> ..> <br> <.. </td>
     <td>16</td>
     <td>0x10</td>
@@ -303,7 +303,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_pos_perm.png"></img></td>
     <td>sc_type_membership_arc | sc_type_const | sc_type_pos_arc | sc_type_perm_arc</td>
-    <td>ScType::EdgeAccessConstPosPerm</td>
+    <td>ScType::ConstPermPosArc</td>
     <td>sc_arc_main <br> sc_edge_main <br> <- <br> -></td>
     <td>2224</td>
     <td>0x8B0</td>
@@ -312,7 +312,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_pos_perm.png"></img></td>
     <td>sc_type_membership_arc | sc_type_var | sc_type_pos_arc | sc_type_perm_arc</td>
-    <td>ScType::EdgeAccessVarPosPerm</td>
+    <td>ScType::VarPermPosArc</td>
     <td>_<- <br> _-> <br> <-_</td>
     <td>2256</td>
     <td>0x8D0</td>
@@ -321,7 +321,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_neg_perm.png"></img></td>
     <td>sc_type_membership_arc | sc_type_const | sc_type_neg_arc | sc_type_perm_arc</td>
-    <td>ScType::EdgeAccessConstNegPerm</td>
+    <td>ScType::ConstPermNegArc</td>
     <td><|- <br> -|></td>
     <td>2352</td>
     <td>0x930</td>
@@ -330,7 +330,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_neg_perm.png"></img></td>
     <td>sc_type_membership_arc | sc_type_var | sc_type_neg_arc | sc_type_perm_arc</td>
-    <td>ScType::EdgeAccessVarNegPerm</td>
+    <td>ScType::VarPermNegArc</td>
     <td>_<|- <br> _-|> <br> <|-_</td>
     <td>2384</td>
     <td>0x950</td>
@@ -339,7 +339,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_fuz_perm.png"></img></td>
     <td>sc_type_membership_arc | sc_type_const | sc_type_fuz_arc | sc_type_perm_arc</td>
-    <td>ScType::EdgeAccessConstFuzPerm</td>
+    <td>ScType::ConstFuzArc</td>
     <td><<i></i>/- <br> -/></td>
     <td>2608</td>
     <td>0xA30</td>
@@ -348,7 +348,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_fuz_perm.png"></img></td>
     <td>sc_type_membership_arc | sc_type_var | sc_type_fuz_arc | sc_type_perm_arc</td>
-    <td>ScType::EdgeAccessVarFuzPerm</td>
+    <td>ScType::VarFuzArc</td>
     <td>_<<i></i>/-<br>_-/><br><<i></i>/-_</td>
     <td>2640</td>
     <td>0xA50</td>
@@ -357,7 +357,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_pos_temp.png"></img></td>
     <td>sc_type_membership_arc | sc_type_const | sc_type_pos_arc | sc_type_temp_arc</td>
-    <td>ScType::EdgeAccessConstPosTemp</td>
+    <td>ScType::ConstTempPosArc</td>
     <td><~ <br> ~></td>
     <td>1200</td>
     <td>0x4B0</td>
@@ -366,7 +366,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_pos_temp.png"></img></td>
     <td>sc_type_membership_arc | sc_type_var | sc_type_pos_arc | sc_type_temp_arc</td>
-    <td>ScType::EdgeAccessVarPosPerm</td>
+    <td>ScType::VarPermPosArc</td>
     <td>_<~ <br> _~> <br> <~_</td>
     <td>1232</td>
     <td>0x4D0</td>
@@ -375,7 +375,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_neg_temp.png"></img></td>
     <td>sc_type_membership_arc | sc_type_const | sc_type_neg_arc | sc_type_temp_arc</td>
-    <td>ScType::EdgeAccessConstNegTemp</td>
+    <td>ScType::ConstTempNegArc</td>
     <td><|~ <br> ~|></td>
     <td>1328</td>
     <td>0x530</td>
@@ -384,7 +384,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_neg_temp.png"></img></td>
     <td>sc_type_membership_arc | sc_type_var | sc_type_neg_arc | sc_type_temp_arc</td>
-    <td>ScType::EdgeAccessVarNegPerm</td>
+    <td>ScType::VarPermNegArc</td>
     <td>_<|~ <br> _~|> <br> <|~_</td>
     <td>1360</td>
     <td>0x550</td>
@@ -393,7 +393,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_const_fuz_temp.png"></img></td>
     <td>sc_type_membership_arc | sc_type_const | sc_type_fuz_arc | sc_type_temp_arc</td>
-    <td>ScType::EdgeAccessConstFuzTemp</td>
+    <td>ScType::ConstFuzArc</td>
     <td><<i></i>/~ <br> ~/></td>
     <td>1584</td>
     <td>0x630</td>
@@ -402,7 +402,7 @@
   <tr>
     <td><img src="../images/scg/scg_edge_var_fuz_temp.png"></img></td>
     <td>sc_type_membership_arc | sc_type_var | sc_type_fuz_arc | sc_type_temp_arc</td>
-    <td>ScType::EdgeAccessVarFuzPerm</td>
+    <td>ScType::VarFuzArc</td>
     <td>_<<i></i>/~ <br> _~/> <br> <<i></i>/~_</td>
     <td>1616</td>
     <td>0x650</td>

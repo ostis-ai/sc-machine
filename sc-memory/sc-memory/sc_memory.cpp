@@ -78,7 +78,7 @@ bool ScMemory::Initialize(sc_memory_params const & params)
   ScAddr initMemoryGeneratedStructureAddr;
   if (params.init_memory_generated_upload)
     initMemoryGeneratedStructureAddr = ms_globalContext->ResolveElementSystemIdentifier(
-        params.init_memory_generated_structure, ScType::NodeConstStruct);
+        params.init_memory_generated_structure, ScType::ConstNodeStructure);
   ms_globalContext->m_contextStructureAddr = initMemoryGeneratedStructureAddr;
 
   ScKeynodes::Initialize(ms_globalContext);
@@ -377,7 +377,7 @@ ScAddr ScMemoryContext::CreateNode(ScType const & nodeType)
   return GenerateNode(nodeType);
 }
 
-ScAddr ScMemoryContext::GenerateLink(ScType const & linkType /* = ScType::LinkConst */)
+ScAddr ScMemoryContext::GenerateLink(ScType const & linkType /* = ScType::ConstNodeLink */)
 {
   CHECK_CONTEXT;
 
@@ -389,7 +389,7 @@ ScAddr ScMemoryContext::GenerateLink(ScType const & linkType /* = ScType::LinkCo
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified type must be sc-link type. You should provide any of ScType::Link... value as a type.");
+        "Specified type must be sc-link type. You should provide any of ScType::NodeLink... value as a type.");
 
   case SC_RESULT_ERROR_FULL_MEMORY:
     SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-link because sc-memory is full.");

@@ -171,21 +171,21 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   size_t setPower = 0;
   ScIterator3Ptr const it3 = m_context.CreateIterator3( 
     setAddr,
-    ScType::EdgeAccessConstPosPerm,
-    ScType::NodeConst
+    ScType::ConstPermPosArc,
+    ScType::ConstNode
   );
   while (it3->Next())
     ++setPower;
 
-  ScAddr const & setPowerAddr = m_context.GenerateLink(ScType::LinkConst);
+  ScAddr const & setPowerAddr = m_context.GenerateLink(ScType::ConstNodeLink);
   m_context.SetLinkContent(setPowerAddr, setPower);
   ScAddr const & arcCommonAddr 
-    = m_context.GenerateConnector(ScType::EdgeDCommonConst, setAddr, setPowerAddr);
+    = m_context.GenerateConnector(ScType::ConstCommonArc, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
     = m_context.SearchElementBySystemIdentifier("nrel_set_power");
   // You have to make sure that this norole relation is in the knowledge base.
   ScAddr const & arcAccessAddr = m_context.GenerateConnector(
-    ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
+    ScType::ConstPermPosArc, nrelSetPowerAddr, arcCommonAddr);
 
   action.FormResult(
     setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
@@ -246,16 +246,16 @@ class ScSetKeynodes : public ScKeynodes
 {
 public:
   static inline ScKeynode const action_calculate_set_power{
-    "action_calculate_set_power", ScType::NodeConstClass};
+    "action_calculate_set_power", ScType::ConstNodeClass};
   static inline ScKeynode const nrel_set_power{
-    "nrel_set_power", ScType::NodeConstNoRole};
+    "nrel_set_power", ScType::ConstNodeNoRole};
   // Here the first argument in constructor is system identifier of 
   // sc-keynode and the second argument is sc-type of this sc-keynode.
   // If there is no sc-keynode with such system identifier in 
   // knowledge base, then the one with specified sc-type will be generated.
   // You don't should specify type of sc-keynode here, be default it is 
-  // `ScType::NodeConst`. But you sure that your code will use this 
-  // keynode with type `ScType::NodeConst` correctly.
+  // `ScType::ConstNode`. But you sure that your code will use this 
+  // keynode with type `ScType::ConstNode` correctly.
 };
 ```
 
@@ -289,9 +289,9 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 - ScAddr const & nrelSetPowerAddr 
 -   = m_context.SearchElementBySystemIdentifier("nrel_set_power");
 - ScAddr const & arcAccessAddr = m_context.GenerateConnector(
--   ScType::EdgeAccessConstPosPerm, nrelSetPowerAddr, arcCommonAddr);
+-   ScType::ConstPermPosArc, nrelSetPowerAddr, arcCommonAddr);
 + ScAddr const & arcAccessAddr = m_context.GenerateConnector(
-+   ScType::EdgeAccessConstPosPerm, 
++   ScType::ConstPermPosArc, 
 +   ScSetKeynodes::nrel_set_power, 
 +   arcCommonAddr);
 - action.FormResult(
@@ -455,8 +455,8 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 
   // Generate set with two sc-elements.
   ScSet set = m_ctx->GenerateSet();
-  ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
   set << nodeAddr1 << nodeAddr2;
 
   // Set generated set as argument for action.
@@ -476,7 +476,7 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
   // Check sc-constructions in result structure.
   // Check the first three element construction.
   ScIterator3Ptr it3 = m_ctx->CreateIterator3(
-    structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeDCommonConst);
+    structure, ScType::ConstPermPosArc, ScType::ConstCommonArc);
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr = it3->Get(2);
 
@@ -493,7 +493,7 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
 
   // Check the second three element construction.
   it3 = m_ctx->CreateIterator3(
-    structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeAccessConstPosPerm);
+    structure, ScType::ConstPermPosArc, ScType::ConstPermPosArc);
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr2 = it3->Get(2);
 

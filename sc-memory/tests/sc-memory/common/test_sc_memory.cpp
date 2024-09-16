@@ -12,10 +12,10 @@ void checkConnectionInStruct(
     ScAddr const & otherKeynodeAddr,
     ScAddr const & structure)
 {
-  ScIterator3Ptr const it3 = m_ctx->CreateIterator3(keynodeAddr, ScType::EdgeAccessConstPosPerm, otherKeynodeAddr);
+  ScIterator3Ptr const it3 = m_ctx->CreateIterator3(keynodeAddr, ScType::ConstPermPosArc, otherKeynodeAddr);
   while (it3->Next())
   {
-    bool checkEdge = m_ctx->CheckConnector(structure, it3->Get(1), ScType::EdgeAccessConstPosPerm);
+    bool checkEdge = m_ctx->CheckConnector(structure, it3->Get(1), ScType::ConstPermPosArc);
     EXPECT_TRUE(checkEdge);
     if (checkEdge == SC_FALSE)
       SC_LOG_ERROR(
@@ -31,13 +31,13 @@ bool checkKeynodeInStruct(
     ScAddr const & structure)
 {
   ScIterator5Ptr const it5 = m_ctx->CreateIterator5(
-      keynodeAddr, ScType::EdgeDCommonConst, ScType::LinkConst, ScType::EdgeAccessConstPosPerm, kNrelSystemIdtf);
+      keynodeAddr, ScType::ConstCommonArc, ScType::ConstNodeLink, ScType::ConstPermPosArc, kNrelSystemIdtf);
   bool result = it5->Next();
   if (result)
   {
     for (size_t i = 0; i < 4; i++)
     {
-      result &= m_ctx->CheckConnector(structure, it5->Get(i), ScType::EdgeAccessConstPosPerm);
+      result &= m_ctx->CheckConnector(structure, it5->Get(i), ScType::ConstPermPosArc);
     }
   }
 
@@ -109,12 +109,12 @@ TEST_F(ScMemoryTest, LinkContentStringApi)
 TEST_F(ScMemoryTest, ResolveNodeWithRussianIdtf)
 {
   std::string russianIdtf = "узел";
-  ScAddr russianNode = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr russianNode = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_THROW(m_ctx->SetElementSystemIdentifier(russianIdtf, russianNode), utils::ExceptionInvalidParams);
   EXPECT_THROW(m_ctx->SearchElementBySystemIdentifier(russianIdtf, russianNode), utils::ExceptionInvalidParams);
 
   std::string englishIdtf = "russianNode";
-  ScAddr englishNode = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr englishNode = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier(englishIdtf, englishNode));
   EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier(englishIdtf), englishNode);
 }
@@ -133,7 +133,7 @@ TEST_F(ScMemoryTest, LinkContentStringWithSpaces)
 }
 
 static inline ScTemplateKeynode const & testTemplate =
-    ScTemplateKeynode("test_template").Triple(ScKeynodes::action_state, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+    ScTemplateKeynode("test_template").Triple(ScKeynodes::action_state, ScType::VarPermPosArc, ScType::VarNode);
 
 TEST_F(ScMemoryTestWithInitMemoryGeneratedStructure, TestInitMemoryGeneratedStructure)
 {

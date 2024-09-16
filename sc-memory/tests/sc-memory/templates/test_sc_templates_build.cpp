@@ -12,25 +12,25 @@ TEST_F(ScTemplateBuildTest, DoubleAttributes)
   /**
    * addr1 _-> addr3:: addr4:: _addr2;;
    */
-  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeVar);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::VarNode);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const addr3 = m_ctx->GenerateNode(ScType::NodeConstRole);
+  ScAddr const addr3 = m_ctx->GenerateNode(ScType::ConstNodeRole);
   EXPECT_TRUE(addr3.IsValid());
-  ScAddr const addr4 = m_ctx->GenerateNode(ScType::NodeConstRole);
+  ScAddr const addr4 = m_ctx->GenerateNode(ScType::ConstNodeRole);
   EXPECT_TRUE(addr4.IsValid());
 
-  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::VarPermPosArc, addr1, addr2);
   EXPECT_TRUE(arc1.IsValid());
-  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr3, arc1);
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::VarPermPosArc, addr3, arc1);
   EXPECT_TRUE(arc2.IsValid());
-  ScAddr const arc3 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr4, arc1);
+  ScAddr const arc3 = m_ctx->GenerateConnector(ScType::VarPermPosArc, addr4, arc1);
   EXPECT_TRUE(arc3.IsValid());
 
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
-    ScAddr const structAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
+    ScAddr const structAddr = m_ctx->GenerateNode(ScType::ConstNodeStructure);
     ScStructure st = m_ctx->ConvertToStructure(structAddr);
 
     for (auto const & a : addrs)
@@ -51,21 +51,21 @@ TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
    * @arc1 = addr1 _-> _addr2;;
    * @adge1 _-> addr3;;
    */
-  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeVar);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::VarNode);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const addr3 = m_ctx->GenerateNode(ScType::NodeConstRole);
+  ScAddr const addr3 = m_ctx->GenerateNode(ScType::ConstNodeRole);
   EXPECT_TRUE(addr3.IsValid());
 
-  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, addr1, addr2);
+  ScAddr const arc1 = m_ctx->GenerateConnector(ScType::VarPermPosArc, addr1, addr2);
   EXPECT_TRUE(arc1.IsValid());
-  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, arc1, addr3);
+  ScAddr const arc2 = m_ctx->GenerateConnector(ScType::VarPermPosArc, arc1, addr3);
   EXPECT_TRUE(arc2.IsValid());
 
   auto const testOrder = [this](std::vector<ScAddr> const & addrs)
   {
-    ScAddr const structAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
+    ScAddr const structAddr = m_ctx->GenerateNode(ScType::ConstNodeStructure);
     ScStructure st = m_ctx->ConvertToStructure(structAddr);
 
     for (auto const & a : addrs)
@@ -82,12 +82,12 @@ TEST_F(ScTemplateBuildTest, EdgeFromEdgeToEdge)
 
 TEST_F(ScTemplateBuildTest, BuildGenWithParams)
 {
-  m_ctx->ResolveElementSystemIdentifier("_node", ScType::NodeVar);
+  m_ctx->ResolveElementSystemIdentifier("_node", ScType::VarNode);
 
   ScTemplate templ;
   m_ctx->BuildTemplate(templ, "_node _-> rrel_1:: _var;;");
 
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScTemplateParams params;
   params.Add("_node", addr);
 
@@ -101,17 +101,17 @@ TEST_F(ScTemplateBuildTest, BuildGenWithParams)
 
 TEST_F(ScTemplateBuildTest, GenWithParams)
 {
-  m_ctx->ResolveElementSystemIdentifier("_node", ScType::NodeVar);
+  m_ctx->ResolveElementSystemIdentifier("_node", ScType::VarNode);
 
   ScTemplate templ;
   templ(
-      ScType::NodeVar >> "_node",
-      ScType::EdgeDCommonVar,
-      ScType::NodeVar,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::VarNode >> "_node",
+      ScType::VarCommonArc,
+      ScType::VarNode,
+      ScType::VarPermPosArc,
       m_ctx->SearchElementBySystemIdentifier("rrel_1"));
 
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScTemplateParams params;
   params.Add("_node", addr);
   EXPECT_THROW(params.Add("_node", addr), utils::ExceptionInvalidParams);

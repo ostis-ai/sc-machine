@@ -83,8 +83,8 @@ private:
     ScAddrVector const & addrVector{addrs...};
     for (ScAddr const & addr : addrVector)
     {
-      if (!m_ctx.CheckConnector(m_outputStructure, addr, ScType::EdgeAccessConstPosPerm))
-        m_ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, m_outputStructure, addr);
+      if (!m_ctx.CheckConnector(m_outputStructure, addr, ScType::ConstPermPosArc))
+        m_ctx.GenerateConnector(ScType::ConstPermPosArc, m_outputStructure, addr);
     }
   }
 
@@ -95,9 +95,8 @@ private:
     ScLink link(m_ctx, linkAddr);
     link.Set(idtf);
 
-    ScAddr const arcAddr = m_ctx.GenerateConnector(ScType::EdgeDCommonConst, addr, linkAddr);
-    ScAddr const relAddr =
-        m_ctx.GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_scs_global_idtf, arcAddr);
+    ScAddr const arcAddr = m_ctx.GenerateConnector(ScType::ConstCommonArc, addr, linkAddr);
+    ScAddr const relAddr = m_ctx.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_scs_global_idtf, arcAddr);
 
     return {linkAddr, arcAddr, relAddr};
   }
@@ -113,9 +112,9 @@ private:
 
       templ.Quintuple(
           ScType::Unknown >> "_el",
-          ScType::EdgeDCommonVar,
+          ScType::VarCommonArc,
           addr,
-          ScType::EdgeAccessVarPosPerm,
+          ScType::VarPermPosArc,
           ScKeynodes::nrel_scs_global_idtf);
 
       ScTemplateSearchResult searchResult;

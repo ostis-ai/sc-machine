@@ -15,7 +15,7 @@ ScAddr ATestGenerateConnector::GetActionClass() const
 }
 
 ScResult ATestGenerateConnector::DoProgram(
-    ScEventAfterGenerateConnector<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateConnector<ScType::ConstPermPosArc> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -30,7 +30,7 @@ ScAddr ATestGenerateIncomingArc::GetActionClass() const
 }
 
 ScResult ATestGenerateIncomingArc::DoProgram(
-    ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -45,7 +45,7 @@ ScAddr ATestGenerateOutgoingArc::GetActionClass() const
 }
 
 ScResult ATestGenerateOutgoingArc::DoProgram(
-    ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateOutgoingArc<ScType::ConstPermPosArc> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -59,7 +59,7 @@ ScAddr ATestGenerateEdge::GetActionClass() const
   return ATestGenerateEdge::add_edge_action;
 }
 
-ScResult ATestGenerateEdge::DoProgram(ScEventAfterGenerateEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
+ScResult ATestGenerateEdge::DoProgram(ScEventAfterGenerateEdge<ScType::ConstCommonEdge> const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -78,7 +78,7 @@ ScAddr ATestGenerateEdgeAsConnector::GetInitiationCondition() const
 }
 
 ScResult ATestGenerateEdgeAsConnector::DoProgram(
-    ScEventAfterGenerateConnector<ScType::EdgeUCommonConst> const &,
+    ScEventAfterGenerateConnector<ScType::ConstCommonEdge> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -92,9 +92,7 @@ ScAddr ATestEraseConnector::GetActionClass() const
   return ATestEraseConnector::erase_connector_action;
 }
 
-ScResult ATestEraseConnector::DoProgram(
-    ScEventBeforeEraseConnector<ScType::EdgeAccessConstPosPerm> const &,
-    ScAction & action)
+ScResult ATestEraseConnector::DoProgram(ScEventBeforeEraseConnector<ScType::ConstPermPosArc> const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -108,7 +106,7 @@ ScAddr ATestEraseIncomingArc::GetActionClass() const
 }
 
 ScResult ATestEraseIncomingArc::DoProgram(
-    ScEventBeforeEraseIncomingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventBeforeEraseIncomingArc<ScType::ConstPermPosArc> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -123,7 +121,7 @@ ScAddr ATestEraseOutgoingArc::GetActionClass() const
 }
 
 ScResult ATestEraseOutgoingArc::DoProgram(
-    ScEventBeforeEraseOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -137,7 +135,7 @@ ScAddr ATestEraseEdge::GetActionClass() const
   return ATestEraseEdge::erase_edge_action;
 }
 
-ScResult ATestEraseEdge::DoProgram(ScEventBeforeEraseEdge<ScType::EdgeUCommonConst> const &, ScAction & action)
+ScResult ATestEraseEdge::DoProgram(ScEventBeforeEraseEdge<ScType::ConstCommonEdge> const &, ScAction & action)
 {
   msWaiter.Unlock();
   return action.FinishSuccessfully();
@@ -177,7 +175,7 @@ ScAddr ATestGenerateMultipleOutputArc::GetActionClass() const
 }
 
 ScResult ATestGenerateMultipleOutputArc::DoProgram(
-    ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm> const &,
+    ScEventAfterGenerateOutgoingArc<ScType::ConstPermPosArc> const &,
     ScAction & action)
 {
   msWaiter.Unlock();
@@ -295,9 +293,9 @@ ScTemplate ATestGetInitiationConditionTemplate::GetInitiationConditionTemplate(
 {
   ScTemplate initiationCondition;
   initiationCondition.Triple(
-      event.GetSubscriptionElement(), ScType::EdgeAccessVarPosPerm, event.GetOtherElement() >> "_action");
-  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, "_action");
-  initiationCondition.Triple("_action", ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+      event.GetSubscriptionElement(), ScType::VarPermPosArc, event.GetOtherElement() >> "_action");
+  initiationCondition.Triple(GetActionClass(), ScType::VarPermPosArc, "_action");
+  initiationCondition.Triple("_action", ScType::VarPermPosArc, ScType::VarNode);
   return initiationCondition;
 }
 
@@ -378,7 +376,7 @@ ScTemplate ATestGetInvalidInitiationConditionTemplate::GetInitiationConditionTem
     ScActionInitiatedEvent const & event) const
 {
   ScTemplate templ;
-  templ.Triple(ScAddr::Empty, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  templ.Triple(ScAddr::Empty, ScType::VarPermPosArc, ScType::VarNode);
   return templ;
 }
 
@@ -400,9 +398,8 @@ bool ATestCheckInitiationCondition::CheckInitiationCondition(ScActionInitiatedEv
   return m_context.CheckConnector(
              ATestGenerateOutgoingArc::generate_outgoing_arc_action,
              event.GetArcTargetElement(),
-             ScType::EdgeAccessConstPosPerm)
-         && m_context.CreateIterator3(event.GetArcTargetElement(), ScType::EdgeAccessConstPosPerm, ScType::NodeConst)
-                ->Next();
+             ScType::ConstPermPosArc)
+         && m_context.CreateIterator3(event.GetArcTargetElement(), ScType::ConstPermPosArc, ScType::ConstNode)->Next();
 }
 
 ScResult ATestCheckInitiationCondition::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
@@ -429,8 +426,8 @@ ScTemplate ATestGetResultConditionTemplate::GetResultConditionTemplate(
     ScAction & action) const
 {
   ScTemplate initiationCondition;
-  initiationCondition.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, action >> "_action");
-  initiationCondition.Triple(action, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  initiationCondition.Triple(GetActionClass(), ScType::VarPermPosArc, action >> "_action");
+  initiationCondition.Triple(action, ScType::VarPermPosArc, ScType::VarNode);
   return initiationCondition;
 }
 
@@ -452,7 +449,7 @@ ScTemplate ATestGetInvalidResultConditionTemplate::GetResultConditionTemplate(
     ScAction & action) const
 {
   ScTemplate templ;
-  templ.Triple(ScAddr::Empty, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  templ.Triple(ScAddr::Empty, ScType::VarPermPosArc, ScType::VarNode);
   return templ;
 }
 
@@ -471,8 +468,8 @@ ScResult ATestCheckResultCondition::DoProgram(ScActionInitiatedEvent const &, Sc
 
 bool ATestCheckResultCondition::CheckResultCondition(ScActionInitiatedEvent const &, ScAction & action)
 {
-  return m_context.CheckConnector(ScKeynodes::action_finished_successfully, action, ScType::EdgeAccessConstPosPerm)
-         && m_context.CreateIterator3(action, ScType::EdgeAccessConstPosPerm, ScType::NodeConst)->Next();
+  return m_context.CheckConnector(ScKeynodes::action_finished_successfully, action, ScType::ConstPermPosArc)
+         && m_context.CreateIterator3(action, ScType::ConstPermPosArc, ScType::ConstNode)->Next();
 }
 
 /// --------------------------------------

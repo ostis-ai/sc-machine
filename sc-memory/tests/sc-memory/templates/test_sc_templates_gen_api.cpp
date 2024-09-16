@@ -10,7 +10,7 @@ using ScTemplateGenApiTest = ScTemplateTest;
 TEST_F(ScTemplateGenApiTest, GenWithResultNotSafeGet)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarPermPosArc >> "_arc", ScType::VarNode >> "_addr2");
 
   ScTemplateGenResult result;
   m_ctx->GenerateByTemplate(templ, result);
@@ -30,7 +30,7 @@ TEST_F(ScTemplateGenApiTest, GenWithResultNotSafeGet)
 TEST_F(ScTemplateGenApiTest, GenWithResultSafeGet)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_arc", ScType::LinkVar >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarPermPosArc >> "_arc", ScType::VarNodeLink >> "_addr2");
 
   ScTemplateGenResult result;
   m_ctx->GenerateByTemplate(templ, result);
@@ -59,8 +59,7 @@ TEST_F(ScTemplateGenApiTest, GenWithResultSafeGet)
 TEST_F(ScTemplateGenApiTest, GenTripleWithTargetEdge)
 {
   ScTemplate templ;
-  templ.Triple(
-      ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_arc", ScType::EdgeAccessVarPosTemp >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarPermPosArc >> "_arc", ScType::VarTempPosArc >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -69,7 +68,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithTargetEdge)
 TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownTargetElement)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_arc", ScType::Unknown >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarPermPosArc >> "_arc", ScType::Unknown >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -78,7 +77,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownTargetElement)
 TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownSourceElement)
 {
   ScTemplate templ;
-  templ.Triple(ScType::Unknown >> "_addr1", ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::Unknown >> "_addr1", ScType::VarPermPosArc >> "_arc", ScType::VarNode >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -87,7 +86,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownSourceElement)
 TEST_F(ScTemplateGenApiTest, GenTripleWithUnknownSecondElement)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::Unknown >> "_arc", ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::Unknown >> "_arc", ScType::VarNode >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -109,12 +108,12 @@ TEST_F(ScTemplateGenApiTest, GenTemplateSuccessfully)
 
 TEST_F(ScTemplateGenApiTest, GenTripleWithFixedSecondEdge)
 {
-  ScAddr const & addr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & addr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  ScAddr const & addr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & addr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, addr1, addr2);
 
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", arcAddr, ScType::Unknown >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", arcAddr, ScType::Unknown >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -123,7 +122,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithFixedSecondEdge)
 TEST_F(ScTemplateGenApiTest, GenTripleWithTypedFirstEdge)
 {
   ScTemplate templ;
-  templ.Triple(ScType::EdgeAccessVarPosPerm >> "_addr1", ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::VarPermPosArc >> "_addr1", ScType::VarPermPosArc, ScType::VarNode >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -132,7 +131,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithTypedFirstEdge)
 TEST_F(ScTemplateGenApiTest, GenTripleWithTypedThirdEdge)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosPerm, ScType::EdgeAccessVarPosPerm >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarPermPosArc, ScType::VarPermPosArc >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -141,7 +140,7 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithTypedThirdEdge)
 TEST_F(ScTemplateGenApiTest, GenTripleWithInvalidRefSecondElement)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", "_arc", ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", "_arc", ScType::VarNode >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -150,12 +149,12 @@ TEST_F(ScTemplateGenApiTest, GenTripleWithInvalidRefSecondElement)
 TEST_F(ScTemplateGenApiTest, GenTemplateWithFullyReplacedVariableTriple)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_arc", ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, "_arc");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarCommonArc >> "_arc", ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, "_arc");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_addr1", nodeAddr1);
@@ -173,12 +172,12 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithFullyReplacedVariableTriple)
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidSourceElementInFullyReplacedVariableTriple)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_arc", ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, "_arc");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarCommonArc >> "_arc", ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, "_arc");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_addr1", nodeAddr2);
@@ -192,12 +191,12 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidSourceElementInFullyReplacedV
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetElementInFullyReplacedVariableTriple)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_arc", ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, "_arc");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarCommonArc >> "_arc", ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, "_arc");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_addr1", nodeAddr1);
@@ -211,11 +210,11 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetElementInFullyReplacedV
 TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedVariableThirdEdgeInVariableTriple)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr2", ScType::EdgeAccessVarPosTemp, ScType::EdgeDCommonVar >> "_arc");
+  templ.Triple(ScType::VarNode >> "_addr2", ScType::VarTempPosArc, ScType::VarCommonArc >> "_arc");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_arc", arcAddr);
@@ -230,13 +229,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedVariableThirdEdgeInVariableT
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSourceAndTargetInVariableTriple)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", arcAddr, ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, arcAddr);
+  templ.Triple(ScType::VarNode >> "_addr1", arcAddr, ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, arcAddr);
 
   ScTemplateParams params;
   params.Add("_addr1", nodeAddr1);
@@ -252,13 +251,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSourceAndTargetInVariableTri
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantArc)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", arcAddr, ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, arcAddr);
+  templ.Triple(ScType::VarNode >> "_addr1", arcAddr, ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, arcAddr);
 
   ScTemplateGenResult result;
   m_ctx->GenerateByTemplate(templ, result);
@@ -270,13 +269,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantArc)
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacedSourceInVariableTriple)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", arcAddr, ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, arcAddr);
+  templ.Triple(ScType::VarNode >> "_addr1", arcAddr, ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, arcAddr);
 
   ScTemplateParams params;
   params.Add("_addr1", nodeAddr2);
@@ -288,13 +287,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacedSourceInVariableTripl
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacedTargetInVariableTriple)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", arcAddr, ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, arcAddr);
+  templ.Triple(ScType::VarNode >> "_addr1", arcAddr, ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, arcAddr);
 
   ScTemplateParams params;
   params.Add("_addr1", nodeAddr1);
@@ -306,13 +305,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacedTargetInVariableTripl
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantTriple)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
   templ.Triple(nodeAddr1, arcAddr, nodeAddr2);
-  templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, arcAddr);
+  templ.Triple(nodeAddr2, ScType::VarTempPosArc, arcAddr);
 
   ScTemplateGenResult result;
   m_ctx->GenerateByTemplate(templ, result);
@@ -327,13 +326,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithConstantTriple)
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidSourceInConstantTriple)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
   templ.Triple(nodeAddr2, arcAddr, nodeAddr2);
-  templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, arcAddr);
+  templ.Triple(nodeAddr2, ScType::VarTempPosArc, arcAddr);
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -341,13 +340,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidSourceInConstantTriple)
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetInConstantTriple)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplate templ;
   templ.Triple(nodeAddr1, arcAddr, nodeAddr1);
-  templ.Triple(nodeAddr2, ScType::EdgeAccessVarPosTemp, arcAddr);
+  templ.Triple(nodeAddr2, ScType::VarTempPosArc, arcAddr);
 
   ScTemplateGenResult result;
   EXPECT_THROW(m_ctx->GenerateByTemplate(templ, result), utils::ExceptionInvalidParams);
@@ -356,12 +355,12 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidTargetInConstantTriple)
 TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSecondElementInVariableTriple)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosTemp, ScType::EdgeDCommonVar >> "_arc");
-  templ.Triple("_addr1", "_arc", ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarTempPosArc, ScType::VarCommonArc >> "_arc");
+  templ.Triple("_addr1", "_arc", ScType::VarNode >> "_addr2");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_arc", arcAddr);
@@ -378,12 +377,12 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedSecondElementInVariableTripl
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementNameInParams)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_arc", ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, "_arc");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarCommonArc >> "_arc", ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, "_arc");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_invalid_arc_name", arcAddr);
@@ -394,15 +393,15 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementNameInParams)
 
 TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementVarInParams)
 {
-  m_ctx->ResolveElementSystemIdentifier("_var", ScType::NodeVar);
+  m_ctx->ResolveElementSystemIdentifier("_var", ScType::VarNode);
 
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_arc", ScType::NodeVar >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, "_arc");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarCommonArc >> "_arc", ScType::VarNode >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, "_arc");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_var", nodeAddr1);
@@ -420,10 +419,10 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithInvalidReplacementVarInParams)
 TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedTargetHavingUnextendableType)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeDCommonVar >> "_arc", ScType::NodeVarTuple >> "_addr2");
-  templ.Triple("_addr2", ScType::EdgeAccessVarPosTemp, "_arc");
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarCommonArc >> "_arc", ScType::VarNodeTuple >> "_addr2");
+  templ.Triple("_addr2", ScType::VarTempPosArc, "_arc");
 
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
 
   ScTemplateParams params;
   params.Add("_addr2", nodeAddr2);
@@ -435,13 +434,13 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithReplacedTargetHavingUnextendableType
 TEST_F(ScTemplateGenApiTest, GenTemplateWithNodeReplacedByArc)
 {
   ScTemplate templ;
-  templ.Triple(ScType::NodeVar, ScType::EdgeDCommonVar >> "_arc", ScType::NodeVar);
-  templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosTemp, "_arc");
-  templ.Triple("_arc", ScType::EdgeAccessVarPosTemp, ScType::NodeVar >> "_addr2");
+  templ.Triple(ScType::VarNode, ScType::VarCommonArc >> "_arc", ScType::VarNode);
+  templ.Triple(ScType::VarNode >> "_addr1", ScType::VarTempPosArc, "_arc");
+  templ.Triple("_arc", ScType::VarPermPosArc, ScType::VarNode >> "_addr2");
 
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_addr2", edgeAddr);

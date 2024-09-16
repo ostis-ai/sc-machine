@@ -79,7 +79,7 @@ public:
   template <typename Type>
   _SC_EXTERN inline bool IsType() const
   {
-    return m_context->CheckConnector(Type2Addr<Type>(), *this, ScType::EdgeAccessConstPosTemp);
+    return m_context->CheckConnector(Type2Addr<Type>(), *this, ScType::ConstTempPosArc);
   }
 
   template <typename Type>
@@ -103,7 +103,7 @@ public:
 
     // append into set
     if (needAppend)
-      return m_context->GenerateConnector(ScType::EdgeAccessConstPosTemp, newType, *this).IsValid();
+      return m_context->GenerateConnector(ScType::ConstTempPosArc, newType, *this).IsValid();
 
     return true;
   }

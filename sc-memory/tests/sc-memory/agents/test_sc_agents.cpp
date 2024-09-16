@@ -7,14 +7,14 @@
 
 TEST_F(ScAgentTest, AgentClass)
 {
-  ScAddr const & testImplementationAddr = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr arcAddr = m_ctx->GenerateConnector(
-      ScType::EdgeDCommonConst, m_ctx->GenerateNode(ScType::NodeConst), testImplementationAddr);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & testImplementationAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr arcAddr =
+      m_ctx->GenerateConnector(ScType::ConstCommonArc, m_ctx->GenerateNode(ScType::ConstNode), testImplementationAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_inclusion, arcAddr);
 
-  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
-  arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, ScKeynodes::information_action, testClassAddr);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, ScKeynodes::information_action, testClassAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_inclusion, arcAddr);
 
   ScAction action = m_ctx->GenerateAction(testClassAddr);
 
@@ -40,7 +40,7 @@ TEST_F(ScAgentTest, SubscribeAgentToInvalidSubscriptionElement)
 
 TEST_F(ScAgentTest, SubscribeAgentTwice)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_NO_THROW(m_ctx->SubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr));
   EXPECT_THROW(m_ctx->SubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr), utils::ExceptionInvalidState);
   EXPECT_NO_THROW(m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr));
@@ -48,9 +48,9 @@ TEST_F(ScAgentTest, SubscribeAgentTwice)
 
 TEST_F(ScAgentTest, UnsubscribeAgentFromEventForWhichAgentIsNotSubscribed)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_NO_THROW(m_ctx->SubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr));
-  ScAddr const & otherSubscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & otherSubscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_THROW(
       m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(otherSubscriptionElementAddr), utils::ExceptionInvalidState);
 
@@ -59,19 +59,19 @@ TEST_F(ScAgentTest, UnsubscribeAgentFromEventForWhichAgentIsNotSubscribed)
 
 TEST_F(ScAgentTest, UnsubscribeNotSubscribedAgent)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_THROW(
       m_ctx->UnsubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScAgentTest, ATestGenerateConnector)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SubscribeAgent<ATestGenerateConnector>(subscriptionElementAddr);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, node, subscriptionElementAddr);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstPermPosArc, node, subscriptionElementAddr);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestGenerateConnector::msWaiter.Wait());
 
@@ -80,12 +80,12 @@ TEST_F(ScAgentTest, ATestGenerateConnector)
 
 TEST_F(ScAgentTest, ATestGenerateIncomingArc)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SubscribeAgent<ATestGenerateIncomingArc>(subscriptionElementAddr);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, node, subscriptionElementAddr);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstPermPosArc, node, subscriptionElementAddr);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestGenerateIncomingArc::msWaiter.Wait());
 
@@ -94,12 +94,12 @@ TEST_F(ScAgentTest, ATestGenerateIncomingArc)
 
 TEST_F(ScAgentTest, ATestGenerateOutgoingArc)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SubscribeAgent<ATestGenerateOutgoingArc>(subscriptionElementAddr);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, subscriptionElementAddr, node);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstPermPosArc, subscriptionElementAddr, node);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestGenerateOutgoingArc::msWaiter.Wait());
 
@@ -108,12 +108,12 @@ TEST_F(ScAgentTest, ATestGenerateOutgoingArc)
 
 TEST_F(ScAgentTest, ATestGenerateEdge)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SubscribeAgent<ATestGenerateEdge>(subscriptionElementAddr);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, subscriptionElementAddr, node);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstCommonEdge, subscriptionElementAddr, node);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestGenerateEdge::msWaiter.Wait());
 
@@ -124,10 +124,10 @@ TEST_F(ScAgentTest, ATestGenerateEdgeAsConnector)
 {
   m_ctx->SubscribeAgent<ATestGenerateEdgeAsConnector>(ATestGenerateEdgeAsConnector::subscription_element);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
   ScAddr const e =
-      m_ctx->GenerateConnector(ScType::EdgeUCommonConst, ATestGenerateEdgeAsConnector::subscription_element, node);
+      m_ctx->GenerateConnector(ScType::ConstCommonEdge, ATestGenerateEdgeAsConnector::subscription_element, node);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestGenerateEdgeAsConnector::msWaiter.Wait());
 
@@ -136,11 +136,11 @@ TEST_F(ScAgentTest, ATestGenerateEdgeAsConnector)
 
 TEST_F(ScAgentTest, ATestEraseIncomingArc)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, node, subscriptionElementAddr);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstPermPosArc, node, subscriptionElementAddr);
   EXPECT_TRUE(e.IsValid());
 
   m_ctx->SubscribeAgent<ATestEraseIncomingArc>(subscriptionElementAddr);
@@ -153,11 +153,11 @@ TEST_F(ScAgentTest, ATestEraseIncomingArc)
 
 TEST_F(ScAgentTest, ATestEraseOutgoingArc)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, subscriptionElementAddr, node);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstPermPosArc, subscriptionElementAddr, node);
   EXPECT_TRUE(e.IsValid());
 
   m_ctx->SubscribeAgent<ATestEraseOutgoingArc>(subscriptionElementAddr);
@@ -170,11 +170,11 @@ TEST_F(ScAgentTest, ATestEraseOutgoingArc)
 
 TEST_F(ScAgentTest, ATestEraseEdge)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, subscriptionElementAddr, node);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstCommonEdge, subscriptionElementAddr, node);
   EXPECT_TRUE(e.IsValid());
 
   m_ctx->SubscribeAgent<ATestEraseEdge>(subscriptionElementAddr);
@@ -187,7 +187,7 @@ TEST_F(ScAgentTest, ATestEraseEdge)
 
 TEST_F(ScAgentTest, ATestEraseElement)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   m_ctx->SubscribeAgent<ATestEraseElement>(subscriptionElementAddr);
 
@@ -199,7 +199,7 @@ TEST_F(ScAgentTest, ATestEraseElement)
 
 TEST_F(ScAgentTest, ATestEraseElementNotInitiated)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   m_ctx->SubscribeAgent<ATestEraseElement>(subscriptionElementAddr);
   EXPECT_NO_THROW(m_ctx->UnsubscribeAgent<ATestEraseElement>(subscriptionElementAddr));
@@ -207,7 +207,7 @@ TEST_F(ScAgentTest, ATestEraseElementNotInitiated)
 
 TEST_F(ScAgentTest, ATestChangeLinkContent)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateLink(ScType::ConstNodeLink);
 
   m_ctx->SubscribeAgent<ATestChangeLinkContent>(subscriptionElementAddr);
 
@@ -221,18 +221,18 @@ TEST_F(ScAgentTest, ATestChangeLinkContent)
 
 TEST_F(ScAgentTest, ATestGenerateMultipleOutputArc)
 {
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   m_ctx->SubscribeAgent<ATestGenerateMultipleOutputArc>(subscriptionElementAddr);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
 
-  ScAddr const e1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, subscriptionElementAddr, node);
+  ScAddr const e1 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, subscriptionElementAddr, node);
   EXPECT_TRUE(e1.IsValid());
   EXPECT_TRUE(ATestGenerateMultipleOutputArc::msWaiter.Wait());
 
-  ScAddr const e2 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, subscriptionElementAddr, node);
+  ScAddr const e2 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, subscriptionElementAddr, node);
   EXPECT_TRUE(e2.IsValid());
   EXPECT_TRUE(ATestGenerateMultipleOutputArc::msWaiter.Wait());
 
@@ -538,9 +538,7 @@ TEST_F(ScAgentTest, ActionDeactivated)
   m_ctx->SubscribeAgent<ATestActionDeactivated>();
 
   ScAddr const & arcAddr = m_ctx->GenerateConnector(
-      ScType::EdgeAccessConstPosPerm,
-      ScKeynodes::action_deactivated,
-      ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+      ScType::ConstPermPosArc, ScKeynodes::action_deactivated, ATestGenerateOutgoingArc::generate_outgoing_arc_action);
 
   m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
 
@@ -559,15 +557,15 @@ TEST_F(ScAgentTest, RegisterAgentWithinModule)
 {
   ATestGenerateOutgoingArc::msWaiter.Reset();
 
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   TestModule module;
   module.Agent<ATestGenerateOutgoingArc>(subscriptionElementAddr);
   module.Register(&*m_ctx);
 
-  ScAddr const node = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const node = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node.IsValid());
-  ScAddr const e = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, subscriptionElementAddr, node);
+  ScAddr const e = m_ctx->GenerateConnector(ScType::ConstPermPosArc, subscriptionElementAddr, node);
   EXPECT_TRUE(e.IsValid());
   EXPECT_TRUE(ATestGenerateOutgoingArc::msWaiter.Wait());
 
@@ -595,7 +593,7 @@ TEST_F(ScAgentTest, RegisterActionErasingElementWithinModule)
 {
   ATestEraseElement::msWaiter.Reset();
 
-  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & subscriptionElementAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   TestModule module;
   module.Agent<ATestEraseElement>(subscriptionElementAddr);

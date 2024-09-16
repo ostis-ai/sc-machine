@@ -22,9 +22,9 @@ TEST(scs_level_1, SimpleTriple)
   {
     SPLIT_TRIPLE(triples[0]);
 
-    EXPECT_EQ(src.GetType(), ScType::NodeConst);
-    EXPECT_EQ(trg.GetType(), ScType::NodeConst);
-    EXPECT_EQ(connector.GetType(), ScType::EdgeUCommonConst);
+    EXPECT_EQ(src.GetType(), ScType::ConstNode);
+    EXPECT_EQ(trg.GetType(), ScType::ConstNode);
+    EXPECT_EQ(connector.GetType(), ScType::ConstCommonEdge);
   }
 }
 
@@ -40,10 +40,10 @@ TEST(scs_level_1, TripleWithLinkUrl)
   {
     SPLIT_TRIPLE(triples[0]);
 
-    EXPECT_EQ(src.GetType(), ScType::NodeConst);
-    EXPECT_EQ(trg.GetType(), ScType::LinkConst);
+    EXPECT_EQ(src.GetType(), ScType::ConstNode);
+    EXPECT_EQ(trg.GetType(), ScType::ConstNodeLink);
     EXPECT_TRUE(trg.IsURL());
     EXPECT_EQ(trg.GetValue(), "file://my_file.txt");
-    EXPECT_EQ(connector.GetType(), ScType::EdgeUCommonConst);
+    EXPECT_EQ(connector.GetType(), ScType::ConstCommonEdge);
   }
 }

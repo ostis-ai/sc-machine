@@ -41,7 +41,7 @@ ScAgentBuilder<TScAgent> * ScAgentBuilder<TScAgent>::SetAbstractAgent(ScAddr con
           "Specified abstract agent for agent class `" << TScAgent::template GetName<TScAgent>() << "` is not valid.");
 
     ScIterator3Ptr it3 =
-        context->CreateIterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
+        context->CreateIterator3(ScKeynodes::abstract_sc_agent, ScType::ConstPermPosArc, m_abstractAgentAddr);
     if (!it3->Next())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
@@ -156,13 +156,11 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
   {
     bool isPlatformIndependentAgent = false;
     ScIterator3Ptr it3 = context->CreateIterator3(
-        ScKeynodes::platform_dependent_abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_agentImplementationAddr);
+        ScKeynodes::platform_dependent_abstract_sc_agent, ScType::ConstPermPosArc, m_agentImplementationAddr);
     if (!it3->Next())
     {
       ScIterator3Ptr const it3 = context->CreateIterator3(
-          ScKeynodes::platform_independent_abstract_sc_agent,
-          ScType::EdgeAccessConstPosPerm,
-          m_agentImplementationAddr);
+          ScKeynodes::platform_independent_abstract_sc_agent, ScType::ConstPermPosArc, m_agentImplementationAddr);
       if (!it3->Next())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidState,
@@ -185,9 +183,7 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
     if (!isPlatformIndependentAgent)
     {
       it3 = context->CreateIterator3(
-          ScKeynodes::platform_independent_abstract_sc_agent,
-          ScType::EdgeAccessConstPosPerm,
-          m_agentImplementationAddr);
+          ScKeynodes::platform_independent_abstract_sc_agent, ScType::ConstPermPosArc, m_agentImplementationAddr);
       if (it3->Next())
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidState,
@@ -220,10 +216,10 @@ void ScAgentBuilder<TScAgent>::ResolveAgentImplementation(
   }
   else
   {
-    m_agentImplementationAddr = context->GenerateNode(ScType::NodeConst);
+    m_agentImplementationAddr = context->GenerateNode(ScType::ConstNode);
     context->SetElementSystemIdentifier(agentImplementationName, m_agentImplementationAddr);
     context->GenerateConnector(
-        ScType::EdgeAccessConstPosPerm, ScKeynodes::platform_dependent_abstract_sc_agent, m_agentImplementationAddr);
+        ScType::ConstPermPosArc, ScKeynodes::platform_dependent_abstract_sc_agent, m_agentImplementationAddr);
     SC_LOG_DEBUG("Agent implementation for class `" << agentClassName << "` was generated.");
   }
 }
@@ -238,9 +234,9 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
   {
     ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
-        ScType::EdgeDCommonConst,
+        ScType::ConstCommonArc,
         m_agentImplementationAddr,
-        ScType::EdgeAccessConstPosPerm,
+        ScType::ConstPermPosArc,
         ScKeynodes::nrel_inclusion);
     if (it5->Next())
       SC_LOG_DEBUG(
@@ -249,8 +245,8 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
     else
     {
       ScAddr const & arcAddr =
-          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_agentImplementationAddr);
-      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_inclusion, arcAddr);
+          context->GenerateConnector(ScType::ConstCommonArc, m_abstractAgentAddr, m_agentImplementationAddr);
+      context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_inclusion, arcAddr);
       SC_LOG_DEBUG(
           "Connection between specified abstract agent and agent implementation for class `" << agentClassName
                                                                                              << "` was generated.");
@@ -260,9 +256,9 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
 
   ScIterator5Ptr const it5 = context->CreateIterator5(
       ScType::Unknown,
-      ScType::EdgeDCommonConst,
+      ScType::ConstCommonArc,
       m_agentImplementationAddr,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_inclusion);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -296,15 +292,15 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
         "Agent implementation `" << agentImplementationName << "` is included to two or more abstract agents.");
 
   ScType const & type = context->GetElementType(m_abstractAgentAddr);
-  if (type.BitAnd(ScType::NodeConst) != ScType::NodeConst)
+  if (type.BitAnd(ScType::ConstNode) != ScType::ConstNode)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Found sc-element by relation `nrel_inclusion` is not abstract sc-agent for agent implementation `"
             << agentImplementationName
-            << "`, because sc-element does not have sc-type `ScType::NodeConst`, it has sc-type `" << type << "`.");
+            << "`, because sc-element does not have sc-type `ScType::ConstNode`, it has sc-type `" << type << "`.");
 
   ScIterator3Ptr const it3 =
-      context->CreateIterator3(ScKeynodes::abstract_sc_agent, ScType::EdgeAccessConstPosPerm, m_abstractAgentAddr);
+      context->CreateIterator3(ScKeynodes::abstract_sc_agent, ScType::ConstPermPosArc, m_abstractAgentAddr);
   if (!it3->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
@@ -329,9 +325,9 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
   {
     ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
-        ScType::EdgeDCommonConst,
-        ScType::EdgeDCommonConst,
-        ScType::EdgeAccessConstPosPerm,
+        ScType::ConstCommonArc,
+        ScType::ConstCommonArc,
+        ScType::ConstPermPosArc,
         ScKeynodes::nrel_primary_initiation_condition);
     if (it5->Next())
       SC_LOG_DEBUG(
@@ -340,11 +336,10 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
     else
     {
       ScAddr const & primaryConditionAddr =
-          context->GenerateConnector(ScType::EdgeDCommonConst, m_eventClassAddr, m_eventSubscriptionElementAddr);
+          context->GenerateConnector(ScType::ConstCommonArc, m_eventClassAddr, m_eventSubscriptionElementAddr);
       ScAddr const & arcAddr =
-          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, primaryConditionAddr);
-      context->GenerateConnector(
-          ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_primary_initiation_condition, arcAddr);
+          context->GenerateConnector(ScType::ConstCommonArc, m_abstractAgentAddr, primaryConditionAddr);
+      context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_primary_initiation_condition, arcAddr);
       SC_LOG_DEBUG("Primary initiation condition for class  `" << agentClassName << "` was generated.");
     }
     return;
@@ -352,9 +347,9 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
 
   ScIterator5Ptr const it5 = context->CreateIterator5(
       m_abstractAgentAddr,
-      ScType::EdgeDCommonConst,
+      ScType::ConstCommonArc,
       ScType::Unknown,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_primary_initiation_condition);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -391,20 +386,19 @@ void ScAgentBuilder<TScAgent>::ResolvePrimaryInitiationCondition(
                               << "` has two or more connections to different pairs of primary initiation condition.");
 
   ScType const & type = context->GetElementType(primaryInitiationConditionAddr);
-  if (type.BitAnd(ScType::EdgeDCommonConst) != ScType::EdgeDCommonConst)
+  if (type.BitAnd(ScType::ConstCommonArc) != ScType::ConstCommonArc)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Found sc-element by relation `nrel_primary_initiation_condition` is not primary initiation condition for "
         "abstract sc-agent `"
             << abstractAgentName
-            << "`, because found sc-element does not have sc-type `ScType::EdgeDCommonConst`, it has sc-type `" << type
+            << "`, because found sc-element does not have sc-type `ScType::ConstCommonArc`, it has sc-type `" << type
             << "`.");
 
   auto [m_eventClassAddr, m_eventSubscriptionElementAddr] =
       context->GetConnectorIncidentElements(primaryInitiationConditionAddr);
 
-  ScIterator3Ptr const it3 =
-      context->CreateIterator3(ScKeynodes::sc_event, ScType::EdgeAccessConstPosPerm, m_eventClassAddr);
+  ScIterator3Ptr const it3 = context->CreateIterator3(ScKeynodes::sc_event, ScType::ConstPermPosArc, m_eventClassAddr);
   if (!it3->Next())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
@@ -428,9 +422,9 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
   {
     ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
-        ScType::EdgeDCommonConst,
+        ScType::ConstCommonArc,
         m_actionClassAddr,
-        ScType::EdgeAccessConstPosPerm,
+        ScType::ConstPermPosArc,
         ScKeynodes::nrel_sc_agent_action_class);
     if (it5->Next())
       SC_LOG_DEBUG(
@@ -439,8 +433,8 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
     else
     {
       ScAddr const & arcAddr =
-          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, m_actionClassAddr);
-      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_sc_agent_action_class, arcAddr);
+          context->GenerateConnector(ScType::ConstCommonArc, m_abstractAgentAddr, m_actionClassAddr);
+      context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_sc_agent_action_class, arcAddr);
       SC_LOG_DEBUG(
           "Connection between specified abstract agent and action class for agent class `" << agentClassName
                                                                                            << "` was generated.");
@@ -450,9 +444,9 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
 
   ScIterator5Ptr it5 = context->CreateIterator5(
       m_abstractAgentAddr,
-      ScType::EdgeDCommonConst,
+      ScType::ConstCommonArc,
       ScType::Unknown,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_sc_agent_action_class);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -486,12 +480,12 @@ void ScAgentBuilder<TScAgent>::ResolveActionClass(
         "Abstract sc-agent `" << abstractAgentName << "` has two or more connections to different action classes.");
 
   ScType const & type = context->GetElementType(m_actionClassAddr);
-  if (type.BitAnd(ScType::NodeConstClass) != ScType::NodeConstClass)
+  if (type.BitAnd(ScType::ConstNodeClass) != ScType::ConstNodeClass)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Found sc-element by relation `nrel_sc_agent_action_class` is not action class for abstract sc-agent `"
             << abstractAgentName
-            << "`, because sc-element does not have sc-type `ScType::NodeConstClass`, it has sc-type `" << type
+            << "`, because sc-element does not have sc-type `ScType::ConstNodeClass`, it has sc-type `" << type
             << "`.");
 
   if (!ScAction::IsActionClassValid(context, m_actionClassAddr))
@@ -515,9 +509,9 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
   {
     ScIterator5Ptr const it5 = context->CreateIterator5(
         m_abstractAgentAddr,
-        ScType::EdgeDCommonConst,
-        ScType::EdgeDCommonConst,
-        ScType::EdgeAccessConstPosPerm,
+        ScType::ConstCommonArc,
+        ScType::ConstCommonArc,
+        ScType::ConstPermPosArc,
         ScKeynodes::nrel_initiation_condition_and_result);
     if (it5->Next())
       SC_LOG_DEBUG(
@@ -526,11 +520,10 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
     else
     {
       ScAddr const & conditionAndResultAddr =
-          context->GenerateConnector(ScType::EdgeDCommonConst, m_initiationConditionAddr, m_resultConditionAddr);
+          context->GenerateConnector(ScType::ConstCommonArc, m_initiationConditionAddr, m_resultConditionAddr);
       ScAddr const & arcAddr =
-          context->GenerateConnector(ScType::EdgeDCommonConst, m_abstractAgentAddr, conditionAndResultAddr);
-      context->GenerateConnector(
-          ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_initiation_condition_and_result, arcAddr);
+          context->GenerateConnector(ScType::ConstCommonArc, m_abstractAgentAddr, conditionAndResultAddr);
+      context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_initiation_condition_and_result, arcAddr);
       SC_LOG_DEBUG("Initiation condition and result for class  `" << agentClassName << "` was generated.");
     }
     return;
@@ -538,9 +531,9 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
 
   ScIterator5Ptr const it5 = context->CreateIterator5(
       m_abstractAgentAddr,
-      ScType::EdgeDCommonConst,
+      ScType::ConstCommonArc,
       ScType::Unknown,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_initiation_condition_and_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -578,33 +571,33 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
             << "` has two or more connections to different pairs of initiation condition and result.");
 
   ScType type = context->GetElementType(initiationConditionAndResultAddr);
-  if (type.BitAnd(ScType::EdgeDCommonConst) != ScType::EdgeDCommonConst)
+  if (type.BitAnd(ScType::ConstCommonArc) != ScType::ConstCommonArc)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Found sc-element by relation `nrel_initiation_condition_and_result` is initiation condition and result for "
         "abstract sc-agent `"
             << abstractAgentName
-            << "`, because sc-element does not have sc-type `ScType::EdgeDCommonConst`, it has sc-type `" << type
+            << "`, because sc-element does not have sc-type `ScType::ConstCommonArc`, it has sc-type `" << type
             << "`.");
 
   auto const [m_initiationConditionAddr, m_resultConditionAddr] =
       context->GetConnectorIncidentElements(initiationConditionAndResultAddr);
   type = context->GetElementType(m_initiationConditionAddr);
-  if (type.BitAnd(ScType::NodeConstStruct) != ScType::NodeConstStruct)
+  if (type.BitAnd(ScType::ConstNodeStructure) != ScType::ConstNodeStructure)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Initiation condition for abstract sc-agent `"
             << abstractAgentName
-            << "` is not sc-template, because it does not have sc-type `ScType::NodeConstStruct`, it has sc-type `"
+            << "` is not sc-template, because it does not have sc-type `ScType::ConstNodeStructure`, it has sc-type `"
             << type << "`.");
 
   type = context->GetElementType(m_resultConditionAddr);
-  if (type.BitAnd(ScType::NodeConstStruct) != ScType::NodeConstStruct)
+  if (type.BitAnd(ScType::ConstNodeStructure) != ScType::ConstNodeStructure)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
         "Result condition for abstract sc-agent `"
             << abstractAgentName
-            << "` is not sc-template, because it does not have sc-type `ScType::NodeConstStruct`, it has sc-type `"
+            << "` is not sc-template, because it does not have sc-type `ScType::ConstNodeStructure`, it has sc-type `"
             << type << "`.");
 
   SC_LOG_DEBUG("Initiation condition and result for agent class `" << agentClassName << "` was found.");

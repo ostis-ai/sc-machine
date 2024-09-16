@@ -71,7 +71,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_FileURL)
   EXPECT_TRUE(linkAddr.IsValid());
 
   ScType const linkType = m_ctx->GetElementType(linkAddr);
-  EXPECT_EQ(linkType, ScType::LinkConst);
+  EXPECT_EQ(linkType, ScType::ConstNodeLink);
 
   ScLink const link(*m_ctx, linkAddr);
   EXPECT_EQ(link.DetermineType(), ScLink::Type::Custom);
@@ -192,7 +192,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_SingleNode)
 
   ScAddr const node = m_ctx->SearchElementBySystemIdentifier("node");
   EXPECT_TRUE(node.IsValid());
-  EXPECT_EQ(m_ctx->GetElementType(node), ScType::NodeConstClass);
+  EXPECT_EQ(m_ctx->GetElementType(node), ScType::ConstNodeClass);
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
@@ -213,7 +213,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
 
   {
     ScTemplate templ;
-    templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm, yAddr);
+    templ.Triple(xAddr, ScType::VarPermPosArc, yAddr);
 
     ScTemplateSearchResult res;
     EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
@@ -221,7 +221,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
 
   {
     ScTemplate templ;
-    templ.Triple(xAddr, ScType::EdgeAccessVarPosTemp, zAddr);
+    templ.Triple(xAddr, ScType::VarTempPosArc, zAddr);
 
     ScTemplateSearchResult res;
     EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
@@ -245,7 +245,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Global)
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
-  templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::Unknown >> "_trg");
+  templ.Triple(xAddr, ScType::VarPermPosArc >> "_arc", ScType::Unknown >> "_trg");
 
   ScTemplateSearchResult res;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
@@ -270,7 +270,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_Visibility_Local)
   EXPECT_TRUE(xAddr.IsValid());
 
   ScTemplate templ;
-  templ.Triple(xAddr, ScType::EdgeAccessVarPosPerm, ScType::Unknown >> "_trg");
+  templ.Triple(xAddr, ScType::VarPermPosArc, ScType::Unknown >> "_trg");
 
   ScTemplateSearchResult res;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
@@ -282,7 +282,7 @@ TEST_F(SCsHelperTest, GenerateAppendToStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(outputStructure.IsValid());
 
   EXPECT_TRUE(helper.GenerateBySCsText(
@@ -309,7 +309,7 @@ TEST_F(SCsHelperTest, GenerateAppendToStructure)
   result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->CheckConnector(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructure, item[i], ScType::ConstPermPosArc));
     }
   });
 }
@@ -318,7 +318,7 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const outputStructure = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(outputStructure.IsValid());
 
   EXPECT_TRUE(helper.GenerateBySCsText(
@@ -332,7 +332,7 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
   ));
 
   ScAddr const & exampleStructure = m_ctx->SearchElementBySystemIdentifier("example_structure");
-  EXPECT_EQ(m_ctx->GetElementType(exampleStructure), ScType::NodeConstStruct);
+  EXPECT_EQ(m_ctx->GetElementType(exampleStructure), ScType::ConstNodeStructure);
 
   auto const checkInStruct = [this, outputStructure](std::string const & scsText, size_t const expectedStructNum) {
     ScTemplate templ;
@@ -345,7 +345,7 @@ TEST_F(SCsHelperTest, GenerateStructureAppendToStructure)
     result.ForEach([this, &outputStructure](ScTemplateSearchResultItem const & item) {
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->CheckConnector(outputStructure, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructure, item[i], ScType::ConstPermPosArc));
       }
     });
   };
@@ -375,28 +375,28 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const & outputStructureWithRuMainIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithRuMainIdtf = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(outputStructureWithRuMainIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_main_idtf: [] (* <- lang_ru;; *);;",
       outputStructureWithRuMainIdtf
   ));
 
-  ScAddr const & outputStructureWithEnMainIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithEnMainIdtf = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(outputStructureWithEnMainIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_main_idtf: [] (* <- lang_en;; *);;",
       outputStructureWithEnMainIdtf
   ));
 
-  ScAddr const & outputStructureWithRuIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithRuIdtf = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(outputStructureWithRuIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_idtf: [] (* <- lang_ru;; *);;",
       outputStructureWithRuIdtf
   ));
 
-  ScAddr const & outputStructureWithEnIdtf = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const & outputStructureWithEnIdtf = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(outputStructureWithEnIdtf.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => nrel_idtf: [] (* <- lang_en;; *);;",
@@ -423,7 +423,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   result.ForEach([this, &outputStructureWithRuMainIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuMainIdtf, item[i], ScType::ConstPermPosArc));
     }
   });
 
@@ -434,10 +434,10 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuMainIdtf, item[i], ScType::ConstPermPosArc));
       }
     }, [this, outputStructureWithRuMainIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->CheckConnector(outputStructureWithRuMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithRuMainIdtf, elementAddr, ScType::ConstPermPosArc);
     });
     EXPECT_TRUE(isFound);
   }
@@ -454,7 +454,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   result.ForEach([this, &outputStructureWithEnMainIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnMainIdtf, item[i], ScType::ConstPermPosArc));
     }
   });
 
@@ -465,10 +465,10 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnMainIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnMainIdtf, item[i], ScType::ConstPermPosArc));
       }
     }, [this, outputStructureWithEnMainIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->CheckConnector(outputStructureWithEnMainIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithEnMainIdtf, elementAddr, ScType::ConstPermPosArc);
     });
     EXPECT_TRUE(isFound);
   }
@@ -485,7 +485,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   result.ForEach([this, &outputStructureWithRuIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuIdtf, item[i], ScType::ConstPermPosArc));
     }
   });
 
@@ -496,11 +496,11 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithRuIdtf, item[i], ScType::ConstPermPosArc));
       }
     }, 
     [this, outputStructureWithRuIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->CheckConnector(outputStructureWithRuIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithRuIdtf, elementAddr, ScType::ConstPermPosArc);
     });
     EXPECT_TRUE(isFound);
   }
@@ -517,7 +517,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   result.ForEach([this, &outputStructureWithEnIdtf](ScTemplateSearchResultItem const & item) {
     for (size_t i = 0; i < item.Size(); ++i)
     {
-      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+      EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnIdtf, item[i], ScType::ConstPermPosArc));
     }
   });
 
@@ -528,11 +528,11 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
       isFound = true;
       for (size_t i = 0; i < item.Size(); ++i)
       {
-        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnIdtf, item[i], ScType::EdgeAccessConstPosPerm));
+        EXPECT_TRUE(m_ctx->CheckConnector(outputStructureWithEnIdtf, item[i], ScType::ConstPermPosArc));
       }
     }, 
     [this, outputStructureWithEnIdtf](ScAddr const & elementAddr) -> bool {
-      return m_ctx->CheckConnector(outputStructureWithEnIdtf, elementAddr, ScType::EdgeAccessConstPosPerm);
+      return m_ctx->CheckConnector(outputStructureWithEnIdtf, elementAddr, ScType::ConstPermPosArc);
     });
     EXPECT_TRUE(isFound);
   }

@@ -37,22 +37,22 @@ TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
   ScTemplate findTemplate;
   findTemplate.Quintuple(
       orientedSet,
-      ScType::EdgeAccessVarPosPerm >> FIRST_MESSAGE_EDGE_ALIAS,
+      ScType::VarPermPosArc >> FIRST_MESSAGE_EDGE_ALIAS,
       firstMessage,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::VarPermPosArc,
       ScKeynodes::rrel_1);
   findTemplate.Quintuple(
       FIRST_MESSAGE_EDGE_ALIAS,
-      ScType::EdgeDCommonVar,
-      ScType::EdgeAccessVarPosPerm >> SECOND_MESSAGE_EDGE_ALIAS,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::VarCommonArc,
+      ScType::VarPermPosArc >> SECOND_MESSAGE_EDGE_ALIAS,
+      ScType::VarPermPosArc,
       ScKeynodes::nrel_basic_sequence);
   findTemplate.Triple(orientedSet, SECOND_MESSAGE_EDGE_ALIAS, secondMessage);
   findTemplate.Quintuple(
       SECOND_MESSAGE_EDGE_ALIAS,
-      ScType::EdgeDCommonVar,
-      ScType::EdgeAccessVarPosPerm >> THIRD_MESSAGE_EDGE_ALIAS,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::VarCommonArc,
+      ScType::VarPermPosArc >> THIRD_MESSAGE_EDGE_ALIAS,
+      ScType::VarPermPosArc,
       ScKeynodes::nrel_basic_sequence);
   findTemplate.Triple(orientedSet, THIRD_MESSAGE_EDGE_ALIAS, thirdMessage);
 

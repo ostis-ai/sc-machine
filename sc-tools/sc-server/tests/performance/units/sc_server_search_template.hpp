@@ -45,11 +45,11 @@ public:
     size_t nodeNum = 10;
     m_nodes.reserve(nodeNum);
     for (size_t i = 0; i < nodeNum; ++i)
-      m_nodes.push_back(m_ctx->GenerateNode(ScType::NodeConst));
+      m_nodes.push_back(m_ctx->GenerateNode(ScType::ConstNode));
 
     for (size_t i = 0; i < connectorsNum; ++i)
       m_ctx->GenerateConnector(
-          ScType::EdgeAccessConstPosPerm, m_nodes[random() % m_nodes.size()], m_nodes[random() % m_nodes.size()]);
+          ScType::ConstPermPosArc, m_nodes[random() % m_nodes.size()], m_nodes[random() % m_nodes.size()]);
   }
 
 private:

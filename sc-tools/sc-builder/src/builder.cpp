@@ -85,14 +85,14 @@ bool Builder::BuildSources(ScRepoPathCollector::Sources const & buildSources, Sc
 ScAddr Builder::ResolveOutputStructure()
 {
   ScSystemIdentifierQuintuple fiver;
-  m_ctx->ResolveElementSystemIdentifier(m_params.m_resultStructureSystemIdtf, ScType::NodeConstStruct, fiver);
+  m_ctx->ResolveElementSystemIdentifier(m_params.m_resultStructureSystemIdtf, ScType::ConstNodeStructure, fiver);
   ScAddr const & outputStructure = fiver.addr1;
 
   auto const & AddElementToStructure = [this, &outputStructure](ScAddr const & addr)
   {
-    if (!m_ctx->CheckConnector(outputStructure, addr, ScType::EdgeAccessConstPosPerm))
+    if (!m_ctx->CheckConnector(outputStructure, addr, ScType::ConstPermPosArc))
     {
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, outputStructure, addr);
+      m_ctx->GenerateConnector(ScType::ConstPermPosArc, outputStructure, addr);
     }
   };
 

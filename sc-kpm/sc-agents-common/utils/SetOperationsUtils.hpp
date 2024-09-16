@@ -17,18 +17,18 @@ public:
   static ScAddr uniteSets(
       ScMemoryContext * context,
       ScAddrVector const & sets,
-      ScType const & resultType = ScType::NodeConst);
+      ScType const & resultType = ScType::ConstNode);
 
   static ScAddr intersectSets(
       ScMemoryContext * context,
       ScAddrVector const & sets,
-      ScType const & resultType = ScType::NodeConst);
+      ScType const & resultType = ScType::ConstNode);
 
   static ScAddr complementSets(
       ScMemoryContext * context,
       ScAddr const & firstSet,
       ScAddr const & secondSet,
-      ScType const & resultType = ScType::NodeConst);
+      ScType const & resultType = ScType::ConstNode);
 
   static bool compareSets(ScMemoryContext * context, ScAddr const & firstSet, ScAddr const & secondSet);
 };

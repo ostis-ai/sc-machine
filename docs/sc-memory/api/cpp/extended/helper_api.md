@@ -35,7 +35,7 @@ description of the error. If passed system identifier is already used for other 
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -47,7 +47,7 @@ If you want to get creating quintuple you can provide variable of type `ScSystem
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 ScSystemIdentifierQuintuple quintuple;
 bool const & isSystemIdentifierSet 
@@ -76,7 +76,7 @@ identifier then the method will return empty string.
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -94,7 +94,7 @@ You can find sc-element by its system identifier. For this use the method `Searc
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -121,7 +121,7 @@ If you want to find quintuple sc-element with its system identifier you can prov
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -156,10 +156,10 @@ provided system identifier and sc-type.
 ```cpp
 ...
 ScAddr const & nodeAddr 
-    = ResolveElementSystemIdentifier("my_node", ScType::NodeConst);
+    = ResolveElementSystemIdentifier("my_node", ScType::ConstNode);
 // If there is no sc-element with system identifier `"my_node"` 
 // then the method will create sc-element with this system identifier 
-// and provided sc-type `ScType::NodeConst`.
+// and provided sc-type `ScType::ConstNode`.
 ...
 ```
 
@@ -173,7 +173,7 @@ If you want to resolve quintuple sc-element with its system identifier you can p
 ...
 ScSystemIdentifierQuintuple quintuple;
 bool const & isSystemIdentifierResolved 
-    = context.ResolveElementSystemIdentifier("my_node", ScType::NodeConst, quintuple);
+    = context.ResolveElementSystemIdentifier("my_node", ScType::ConstNode, quintuple);
 ScAddr const & myNodeAddr = quintuple.addr1;
 // The sc-address of resolved sc-node by provided system identifier.
 ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;

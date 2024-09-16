@@ -121,7 +121,7 @@ protected:
     ScAddrHashSet independentConnectors;
 
     // define connectors set and independent connectors set
-    ScIterator3Ptr iter = m_context.CreateIterator3(m_templateAddr, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+    ScIterator3Ptr iter = m_context.CreateIterator3(m_templateAddr, ScType::ConstPermPosArc, ScType::Unknown);
     while (iter->Next())
     {
       ScAddr const & objAddr = iter->Get(2);

@@ -20,9 +20,9 @@ ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAdd
   ScTemplate translationTemplate;
   translationTemplate.Quintuple(
       constructionAddr,
-      ScType::EdgeDCommonVar,
-      ScType::LinkVar >> "_translation_link",
-      ScType::EdgeAccessVarPosPerm,
+      ScType::VarCommonArc,
+      ScType::VarNodeLink >> "_translation_link",
+      ScType::VarPermPosArc,
       ScAddr(keynode_nrel_translation));
   ScTemplateSearchResult result;
   context.SearchByTemplate(translationTemplate, result);
@@ -92,7 +92,7 @@ TEST_F(ScMemoryTest, test_successfull_result)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -120,7 +120,7 @@ TEST_F(ScMemoryTest, test_command_no_class)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_FALSE(resultLink.IsValid());
 
@@ -139,7 +139,7 @@ TEST_F(ScMemoryTest, test_command_no_lang)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
 
@@ -158,7 +158,7 @@ TEST_F(ScMemoryTest, test_command_no_format)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_FALSE(resultLink.IsValid());
 
@@ -179,7 +179,7 @@ TEST_F(ScMemoryTest, test_struct_with_keynodes)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -204,7 +204,7 @@ TEST_F(ScMemoryTest, test_with_definition)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   if (resultLink.IsValid())
   {
@@ -229,7 +229,7 @@ TEST_F(ScMemoryTest, test_with_order_list)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -256,7 +256,7 @@ TEST_F(ScMemoryTest, test_with_filter_list)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
   ScStreamPtr stream = m_ctx->GetLinkContent(resultLink);
@@ -282,7 +282,7 @@ TEST_F(ScMemoryTest, test_kb_fragment)
   ScAddr trans_cmd_addr = m_ctx->ResolveElementSystemIdentifier("trans_cmd_addr");
   ScAddr result_addr = m_ctx->ResolveElementSystemIdentifier("result_addr");
 
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, keynode_command_initiated, trans_cmd_addr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, keynode_command_initiated, trans_cmd_addr);
   ScAddr resultLink = getTranslation(*m_ctx, result_addr);
   EXPECT_TRUE(resultLink.IsValid());
 

@@ -3,7 +3,7 @@
 #
 #  GLIB2_MODULE_FOUND - system has GLib2
 #  GLIB2_MODULE_INCLUDE_DIRS - the GLib2 include directory
-#  GLIB2_MODULE_LIBRARIES - Link these to use GLib2
+#  GLIB2_MODULE_LIBRARIES - NodeLink these to use GLib2
 #
 
 IF (GLIB2_MODULE_LIBRARIES AND GLIB2_MODULE_INCLUDE_DIRS )

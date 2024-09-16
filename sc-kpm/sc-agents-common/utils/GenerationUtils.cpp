@@ -22,14 +22,14 @@ ScAddr GenerationUtils::wrapInOrientedSetBySequenceRelation(
   if (addrVector.empty())
     return set;
 
-  ScAddr prevEdge = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, addrVector.at(0));
-  ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::rrel_1, prevEdge);
+  ScAddr prevEdge = ms_context->GenerateConnector(ScType::ConstPermPosArc, set, addrVector.at(0));
+  ms_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::rrel_1, prevEdge);
 
   for (size_t i = 1; i < addrVector.size(); ++i)
   {
-    ScAddr edge = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
-    ScAddr sequenceEdge = ms_context->GenerateConnector(ScType::EdgeDCommonConst, prevEdge, edge);
-    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_basic_sequence, sequenceEdge);
+    ScAddr edge = ms_context->GenerateConnector(ScType::ConstPermPosArc, set, addrVector.at(i));
+    ScAddr sequenceEdge = ms_context->GenerateConnector(ScType::ConstCommonArc, prevEdge, edge);
+    ms_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_basic_sequence, sequenceEdge);
     prevEdge = edge;
   }
 
@@ -48,9 +48,8 @@ ScAddr GenerationUtils::wrapInOrientedSet(
   ScAddr set = ms_context->GenerateNode(setType);
   for (size_t i = 0; i < addrVector.size(); ++i)
   {
-    ScAddr edge = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, addrVector.at(i));
-    ms_context->GenerateConnector(
-        ScType::EdgeAccessConstPosPerm, IteratorUtils::getRoleRelation(ms_context, i + 1), edge);
+    ScAddr edge = ms_context->GenerateConnector(ScType::ConstPermPosArc, set, addrVector.at(i));
+    ms_context->GenerateConnector(ScType::ConstPermPosArc, IteratorUtils::getRoleRelation(ms_context, i + 1), edge);
   }
 
   return set;
@@ -64,7 +63,7 @@ ScAddr GenerationUtils::wrapInSet(ScMemoryContext * ms_context, ScAddrVector con
       addrVector.end(),
       [&ms_context, &set](auto const & element)
       {
-        ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, element);
+        ms_context->GenerateConnector(ScType::ConstPermPosArc, set, element);
       });
 
   return set;
@@ -80,9 +79,9 @@ void GenerationUtils::addToSet(ScMemoryContext * ms_context, ScAddr const & set,
 
 bool GenerationUtils::addToSet(ScMemoryContext * ms_context, ScAddr const & set, ScAddr const & element)
 {
-  if (!ms_context->CheckConnector(set, element, ScType::EdgeAccessConstPosPerm))
+  if (!ms_context->CheckConnector(set, element, ScType::ConstPermPosArc))
   {
-    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, set, element);
+    ms_context->GenerateConnector(ScType::ConstPermPosArc, set, element);
     return true;
   }
 
@@ -94,11 +93,11 @@ bool GenerationUtils::addSetToOutline(ScMemoryContext * ms_context, ScAddr const
   if (!set.IsValid() || !outline.IsValid())
     return false;
 
-  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::ConstPermPosArc, ScType::Unknown);
   while (iterator3->Next())
   {
-    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(1));
-    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, outline, iterator3->Get(2));
+    ms_context->GenerateConnector(ScType::ConstPermPosArc, outline, iterator3->Get(1));
+    ms_context->GenerateConnector(ScType::ConstPermPosArc, outline, iterator3->Get(2));
   }
   return true;
 }
@@ -116,7 +115,7 @@ bool GenerationUtils::addNodeWithOutRelationToOutline(
   while (iterator5->Next())
   {
     for (int i = 1; i < 5; i++)
-      ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, outline, iterator5->Get(i));
+      ms_context->GenerateConnector(ScType::ConstPermPosArc, outline, iterator5->Get(i));
   }
   return true;
 }
@@ -128,12 +127,12 @@ bool GenerationUtils::generateRelationBetween(
     ScAddr const & relation)
 {
   bool isSuccess = false;
-  bool isRole = CommonUtils::checkType(ms_context, relation, ScType::NodeConstRole);
-  ScType arcType = isRole ? ScType::EdgeAccessConstPosPerm : ScType::EdgeDCommonConst;
+  bool isRole = CommonUtils::checkType(ms_context, relation, ScType::ConstNodeRole);
+  ScType arcType = isRole ? ScType::ConstPermPosArc : ScType::ConstCommonArc;
   ScAddr arc = ms_context->GenerateConnector(arcType, start, finish);
   if (arc.IsValid())
   {
-    arc = ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, relation, arc);
+    arc = ms_context->GenerateConnector(ScType::ConstPermPosArc, relation, arc);
     isSuccess = arc.IsValid();
   }
   return isSuccess;

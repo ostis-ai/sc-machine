@@ -109,7 +109,7 @@ encapsulated this logic;
 - Provide sc-arc types for sc-event callbacks
 - User permissions for handling permissions for actions in sc-memory
 - Global user permissions for actions in sc-memory
-- ScType::LinkConstClass and ScType::LinkVarClass
+- ScType::ConstNodeLinkClass and ScType::VarNodeLinkClass
 - User authentication checks
 - Denote sc-machine with sc-element `myself`
 - Provide users for sc-memory, sc-events and sc-agents
@@ -348,7 +348,7 @@ encapsulated this logic;
 
 - Check OS type in `install_dependencies.sh`
 - Check apt command for Linux OS in `install_deps_ubuntu.sh`
-- Create sc-links with ScType::Link type in Debug mode
+- Create sc-links with ScType::NodeLink type in Debug mode
 - Change memory statistics fields types from sc_uint32 to sc_uint64
 - Return empty sc_addr if not found by identifier in `sc-helper`
 - Build kb script doesn't ignore whitespace ([239](https://github.com/ostis-ai/sc-machine/issues/239))
@@ -369,7 +369,7 @@ encapsulated this logic;
 - SCs-file dumps kb-builder by WebSocket ([189](https://github.com/ostis-ai/sc-machine/issues/189))
 - `SCs-parser` create structure twice
 - `SCs-parser` doesn't unite all generated elements into structure ([205](https://github.com/ostis-ai/sc-machine/issues/205))
-- Link deletion ([193](https://github.com/ostis-ai/sc-machine/issues/193))
+- NodeLink deletion ([193](https://github.com/ostis-ai/sc-machine/issues/193))
 - Add curl to installation script
 - Fix memory clear parameter reading from .ini config file
 - Merging identifiers in sc-dictionary ([192](https://github.com/ostis-ai/sc-machine/issues/192))

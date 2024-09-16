@@ -71,11 +71,11 @@ bool ScWaiter::Wait(
 }
 
 ScWaiterActionFinished::ScWaiterActionFinished(ScMemoryContext const & context, ScAddr const & actionAddr)
-  : ScEventWaiter<ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>(context, actionAddr)
+  : ScEventWaiter<ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc>>(context, actionAddr)
 {
 }
 
-bool ScWaiterActionFinished::OnEvent(ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm> const & event)
+bool ScWaiterActionFinished::OnEvent(ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc> const & event)
 {
   return event.GetArcSourceElement() == ScKeynodes::action_finished;
 }

@@ -29,10 +29,10 @@ template <class TScEvent, class TScContext>
 ScAddr ScAgent<TScEvent, TScContext>::GetAbstractAgent() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
-      ScType::NodeConst,
-      ScType::EdgeDCommonConst,
+      ScType::ConstNode,
+      ScType::ConstCommonArc,
       m_agentImplementationAddr,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_inclusion);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -52,9 +52,9 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventClass() const noexcept(false)
 
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
-      ScType::EdgeDCommonConst,
-      ScType::EdgeDCommonConst,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstCommonArc,
+      ScType::ConstCommonArc,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_primary_initiation_condition);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -72,9 +72,9 @@ ScAddr ScAgent<TScEvent, TScContext>::GetEventSubscriptionElement() const noexce
 {
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
-      ScType::EdgeDCommonConst,
-      ScType::EdgeDCommonConst,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstCommonArc,
+      ScType::ConstCommonArc,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_primary_initiation_condition);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -92,9 +92,9 @@ ScAddr ScAgent<TScEvent, TScContext>::GetActionClass() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
-      ScType::EdgeDCommonConst,
-      ScType::NodeConstClass,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstCommonArc,
+      ScType::ConstNodeClass,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_sc_agent_action_class);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -117,9 +117,9 @@ ScAddr ScAgent<TScEvent, TScContext>::GetInitiationCondition() const noexcept(fa
 {
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
-      ScType::EdgeDCommonConst,
-      ScType::EdgeDCommonConst,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstCommonArc,
+      ScType::ConstCommonArc,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_initiation_condition_and_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -161,9 +161,9 @@ ScAddr ScAgent<TScEvent, TScContext>::GetResultCondition() const noexcept(false)
 {
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
       GetAbstractAgent(),
-      ScType::EdgeDCommonConst,
-      ScType::EdgeDCommonConst,
-      ScType::EdgeAccessConstPosPerm,
+      ScType::ConstCommonArc,
+      ScType::ConstCommonArc,
+      ScType::ConstPermPosArc,
       ScKeynodes::nrel_initiation_condition_and_result);
   if (!it5->Next())
     SC_THROW_EXCEPTION(
@@ -198,7 +198,7 @@ template <class TScEvent, class TScContext>
 bool ScAgent<TScEvent, TScContext>::IsActionClassDeactivated() noexcept
 {
   return ScMemory::ms_globalContext->CheckConnector(
-      ScKeynodes::action_deactivated, this->GetActionClass(), ScType::EdgeAccessConstPosPerm);
+      ScKeynodes::action_deactivated, this->GetActionClass(), ScType::ConstPermPosArc);
 }
 
 template <class TScEvent, class TScContext>
@@ -317,7 +317,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
         eventSubscriptionElementAddr,
         ScType::Var,
         ScType::Unknown,
-        ScType::EdgeAccessConstPosPerm,
+        ScType::ConstPermPosArc,
         initiationConditionTemplateAddr);
   };
   auto const & GetIteratorForEventTripleWithIncomingArc = [&]() -> ScIterator5Ptr
@@ -326,7 +326,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
         ScType::Unknown,
         ScType::Var,
         eventSubscriptionElementAddr,
-        ScType::EdgeAccessConstPosPerm,
+        ScType::ConstPermPosArc,
         initiationConditionTemplateAddr);
   };
 
@@ -419,7 +419,7 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
   ScType const & otherElementType = this->m_context.GetElementType(otherElementAddr);
 
   ScIterator3Ptr const subscriptionElementIterator = this->m_context.CreateIterator3(
-      initiationConditionTemplateAddr, ScType::EdgeAccessConstPosPerm, eventSubscriptionElementAddr);
+      initiationConditionTemplateAddr, ScType::ConstPermPosArc, eventSubscriptionElementAddr);
   if (subscriptionElementIterator->Next())
   {
     if (eventTripleIterator->Next())

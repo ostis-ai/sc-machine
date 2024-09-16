@@ -11,73 +11,73 @@ namespace scs
 {
 
 TypeResolver::MapType TypeResolver::ms_connectorToType = {
-    {">", ScType::EdgeDCommon},
-    {"<", ScType::EdgeDCommon},
-    {"<>", ScType::EdgeUCommon},
-    {"..>", ScType::EdgeAccess},
-    {"<..", ScType::EdgeAccess},
-    {"<=>", ScType::EdgeUCommonConst},
-    {"_<=>", ScType::EdgeUCommonVar},
-    {"=>", ScType::EdgeDCommonConst},
-    {"<=", ScType::EdgeDCommonConst},
-    {"_=>", ScType::EdgeDCommonVar},
-    {"_<=", ScType::EdgeDCommonVar},
-    {"<=_", ScType::EdgeDCommonVar},
-    {"->", ScType::EdgeAccessConstPosPerm},
-    {"<-", ScType::EdgeAccessConstPosPerm},
-    {"_->", ScType::EdgeAccessVarPosPerm},
-    {"<-_", ScType::EdgeAccessVarPosPerm},
-    {"_<-", ScType::EdgeAccessVarPosPerm},
-    {"-|>", ScType::EdgeAccessConstNegPerm},
-    {"<|-", ScType::EdgeAccessConstNegPerm},
-    {"_-|>", ScType::EdgeAccessVarNegPerm},
-    {"_<|-", ScType::EdgeAccessVarNegPerm},
-    {"<|-_", ScType::EdgeAccessVarNegPerm},
-    {"-/>", ScType::EdgeAccessConstFuzPerm},
-    {"</-", ScType::EdgeAccessConstFuzPerm},
-    {"_-/>", ScType::EdgeAccessVarFuzPerm},
-    {"_</-", ScType::EdgeAccessVarFuzPerm},
-    {"</-_", ScType::EdgeAccessVarFuzPerm},
-    {"~>", ScType::EdgeAccessConstPosTemp},
-    {"<~", ScType::EdgeAccessConstPosTemp},
-    {"_~>", ScType::EdgeAccessVarPosTemp},
-    {"_<~", ScType::EdgeAccessVarPosTemp},
-    {"<~_", ScType::EdgeAccessVarPosTemp},
-    {"~|>", ScType::EdgeAccessConstNegTemp},
-    {"<|~", ScType::EdgeAccessConstNegTemp},
-    {"_~|>", ScType::EdgeAccessVarNegTemp},
-    {"_<|~", ScType::EdgeAccessVarNegTemp},
-    {"<|~_", ScType::EdgeAccessVarNegTemp},
-    {"~/>", ScType::EdgeAccessConstFuzTemp},
-    {"</~", ScType::EdgeAccessConstFuzTemp},
-    {"_~/>", ScType::EdgeAccessVarFuzTemp},
-    {"_</~", ScType::EdgeAccessVarFuzTemp},
-    {"</~_", ScType::EdgeAccessVarFuzTemp}
+    {">", ScType::CommonArc},
+    {"<", ScType::CommonArc},
+    {"<>", ScType::CommonEdge},
+    {"..>", ScType::MembershipArc},
+    {"<..", ScType::MembershipArc},
+    {"<=>", ScType::ConstCommonEdge},
+    {"_<=>", ScType::VarCommonEdge},
+    {"=>", ScType::ConstCommonArc},
+    {"<=", ScType::ConstCommonArc},
+    {"_=>", ScType::VarCommonArc},
+    {"_<=", ScType::VarCommonArc},
+    {"<=_", ScType::VarCommonArc},
+    {"->", ScType::ConstPermPosArc},
+    {"<-", ScType::ConstPermPosArc},
+    {"_->", ScType::VarPermPosArc},
+    {"<-_", ScType::VarPermPosArc},
+    {"_<-", ScType::VarPermPosArc},
+    {"-|>", ScType::ConstPermNegArc},
+    {"<|-", ScType::ConstPermNegArc},
+    {"_-|>", ScType::VarPermNegArc},
+    {"_<|-", ScType::VarPermNegArc},
+    {"<|-_", ScType::VarPermNegArc},
+    {"-/>", ScType::ConstFuzArc},
+    {"</-", ScType::ConstFuzArc},
+    {"_-/>", ScType::VarFuzArc},
+    {"_</-", ScType::VarFuzArc},
+    {"</-_", ScType::VarFuzArc},
+    {"~>", ScType::ConstTempPosArc},
+    {"<~", ScType::ConstTempPosArc},
+    {"_~>", ScType::VarTempPosArc},
+    {"_<~", ScType::VarTempPosArc},
+    {"<~_", ScType::VarTempPosArc},
+    {"~|>", ScType::ConstTempNegArc},
+    {"<|~", ScType::ConstTempNegArc},
+    {"_~|>", ScType::VarTempNegArc},
+    {"_<|~", ScType::VarTempNegArc},
+    {"<|~_", ScType::VarTempNegArc},
+    {"~/>", ScType::ConstFuzArc},
+    {"</~", ScType::ConstFuzArc},
+    {"_~/>", ScType::VarFuzArc},
+    {"_</~", ScType::VarFuzArc},
+    {"</~_", ScType::VarFuzArc}
 };
 
 // TODO: divide into const and var types
 TypeResolver::MapType TypeResolver::ms_keynodeToType = {
     {"sc_node", ScType::Node},
 
-    {"sc_link", ScType::Link},
-    {"sc_link_class", ScType::LinkClass},
+    {"sc_link", ScType::NodeLink},
+    {"sc_link_class", ScType::NodeLinkClass},
 
-    {"sc_arc_common", ScType::EdgeDCommon}, // backward compatibility
-    {"sc_edge_dcommon", ScType::EdgeDCommon},
+    {"sc_arc_common", ScType::CommonArc}, // backward compatibility
+    {"sc_edge_dcommon", ScType::CommonArc},
 
-    {"sc_edge", ScType::EdgeUCommon}, // backward compatibility
-    {"sc_edge_ucommon", ScType::EdgeUCommon},
+    {"sc_edge", ScType::CommonEdge}, // backward compatibility
+    {"sc_edge_ucommon", ScType::CommonEdge},
 
-    {"sc_arc_main", ScType::EdgeAccessConstPosPerm}, // backward compatibility
-    {"sc_edge_main", ScType::EdgeAccessConstPosPerm},
+    {"sc_arc_main", ScType::ConstPermPosArc}, // backward compatibility
+    {"sc_edge_main", ScType::ConstPermPosArc},
 
-    {"sc_arc_access", ScType::EdgeAccess}, // backward compatibility
-    {"sc_edge_access", ScType::EdgeAccess},
+    {"sc_arc_access", ScType::MembershipArc}, // backward compatibility
+    {"sc_edge_access", ScType::MembershipArc},
 
     {"sc_node_tuple", ScType::NodeTuple}, // backward compatibility
     {"sc_node_not_binary_tuple", ScType::NodeTuple},
 
-    {"sc_node_struct", ScType::NodeStruct},
+    {"sc_node_struct", ScType::NodeStructure},
     {"sc_node_role_relation", ScType::NodeRole},
     {"sc_node_norole_relation", ScType::NodeNoRole},
     //{"sc_node_abstract", ScType::NodeAbstract}, // TODO: remove it

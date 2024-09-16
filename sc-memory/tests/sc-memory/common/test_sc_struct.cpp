@@ -11,10 +11,10 @@ TEST_F(ScStructTest, AppendIterateElements)
 {
   ScStructure structure = m_ctx->GenerateStructure();
 
-  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(addr1.IsValid());
 
-  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstMaterial);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::ConstNodeMaterial);
   EXPECT_TRUE(addr2.IsValid());
 
   structure << addr1 << addr2;
@@ -34,13 +34,13 @@ TEST_F(ScStructTest, AppendIterateElements)
   EXPECT_TRUE(structure.IsEmpty());
 
   // attributes
-  ScAddr const attrAddr = m_ctx->GenerateNode(ScType::NodeConstRole);
+  ScAddr const attrAddr = m_ctx->GenerateNode(ScType::ConstNodeRole);
   EXPECT_TRUE(attrAddr.IsValid());
 
   EXPECT_TRUE(structure.Append(addr1, attrAddr));
   EXPECT_FALSE(structure.Append(addr1, attrAddr));
-  ScIterator5Ptr iter5 = m_ctx->CreateIterator5(
-      structure, ScType::EdgeAccessConstPosPerm, ScType::Unknown, ScType::EdgeAccessConstPosPerm, attrAddr);
+  ScIterator5Ptr iter5 =
+      m_ctx->CreateIterator5(structure, ScType::ConstPermPosArc, ScType::Unknown, ScType::ConstPermPosArc, attrAddr);
 
   bool found = false;
   while (iter5->Next())
@@ -71,11 +71,11 @@ TEST_F(ScStructTest, AppendItSelf)
   EXPECT_TRUE(setCopy.IsValid());
   EXPECT_TRUE(set.IsValid());
 
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   setCopy << nodeAddr;
 
   ScTemplate templ;
-  templ.Triple(setCopy, ScType::EdgeAccessVarPosPerm, ScType::NodeVar);
+  templ.Triple(setCopy, ScType::VarPermPosArc, ScType::VarNode);
   ScTemplateSearchResult result;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 

@@ -25,7 +25,7 @@ Example of an output structure:
 
 <scg src="../images/get-decomposition-agent/output.gwf"></scg>
 
-Link result:
+NodeLink result:
 
 ```json
 {

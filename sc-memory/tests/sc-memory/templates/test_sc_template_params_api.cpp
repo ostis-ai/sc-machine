@@ -9,7 +9,7 @@ using ScTemplateParamsTest = ScTemplateTest;
 
 TEST_F(ScTemplateParamsTest, ParamsWithVarNameSubstitute)
 {
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScTemplateParams params;
 
   params.Add("_node", addr);
@@ -20,7 +20,7 @@ TEST_F(ScTemplateParamsTest, ParamsWithVarNameSubstitute)
 
 TEST_F(ScTemplateParamsTest, ParamsWithVarNameSubstituteDuplicateError)
 {
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScTemplateParams params;
 
   params.Add("_node", addr);
@@ -41,8 +41,8 @@ TEST_F(ScTemplateParamsTest, ParamsWithVarNameSubstituteNotFoundError)
 
 TEST_F(ScTemplateParamsTest, ParamsWithVarAddrSubstitute)
 {
-  ScAddr const & varAddr = m_ctx->GenerateNode(ScType::NodeVar);
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & varAddr = m_ctx->GenerateNode(ScType::VarNode);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScTemplateParams params;
 
   params.Add(varAddr, addr);
@@ -53,8 +53,8 @@ TEST_F(ScTemplateParamsTest, ParamsWithVarAddrSubstitute)
 
 TEST_F(ScTemplateParamsTest, ParamsWithVarAddrSubstituteDuplicateError)
 {
-  ScAddr const & varAddr = m_ctx->GenerateNode(ScType::NodeVar);
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & varAddr = m_ctx->GenerateNode(ScType::VarNode);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScTemplateParams params;
 
   params.Add(varAddr, addr);
@@ -66,7 +66,7 @@ TEST_F(ScTemplateParamsTest, ParamsWithVarAddrSubstituteDuplicateError)
 
 TEST_F(ScTemplateParamsTest, ParamsWithVarAddrSubstituteError)
 {
-  ScAddr const & varAddr = m_ctx->GenerateNode(ScType::NodeVar);
+  ScAddr const & varAddr = m_ctx->GenerateNode(ScType::VarNode);
   ScTemplateParams params;
 
   ScAddr outAddr;

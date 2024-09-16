@@ -26,20 +26,20 @@ ScAddr IteratorUtils::getRoleRelation(ScMemoryContext * ms_context, size_t const
   if (relationIter == orderRelationsMap.end())
   {
     ScAddr relation =
-        ms_context->ResolveElementSystemIdentifier("rrel_" + std::to_string(index), ScType::NodeConstRole);
+        ms_context->ResolveElementSystemIdentifier("rrel_" + std::to_string(index), ScType::ConstNodeRole);
     orderRelationsMap.insert({index, relation});
     return relation;
   }
   // @todo: Implement common memory for tests with caching
   // return relationIter->second;
-  return ms_context->ResolveElementSystemIdentifier("rrel_" + std::to_string(index), ScType::NodeConstRole);
+  return ms_context->ResolveElementSystemIdentifier("rrel_" + std::to_string(index), ScType::ConstNodeRole);
 }
 
 ScAddr IteratorUtils::getAnyFromSet(ScMemoryContext * ms_context, ScAddr const & set)
 {
   SC_CHECK_PARAM(set, "Invalid set address passed to `getAnyFromSet`");
 
-  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::ConstPermPosArc, ScType::Unknown);
   if (iterator3->Next())
   {
     return iterator3->Get(2);
@@ -58,8 +58,7 @@ ScAddr IteratorUtils::getNextFromSet(
   SC_CHECK_PARAM(sequenceRelation, "Invalid sequence relation address passed to `getNextFromSet`");
 
   ScAddr nextElement;
-  ScIterator3Ptr const & previousElementIterator =
-      ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, previous);
+  ScIterator3Ptr const & previousElementIterator = ms_context->CreateIterator3(set, ScType::ConstPermPosArc, previous);
   if (previousElementIterator->Next())
   {
     ScAddr const & previousElementEdge = previousElementIterator->Get(1);
@@ -79,7 +78,7 @@ ScAddrVector IteratorUtils::getAllWithType(ScMemoryContext * ms_context, ScAddr 
   SC_CHECK_PARAM(set, "Invalid set address passed to `getAllWithType`");
 
   ScAddrVector elementList;
-  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, scType);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::ConstPermPosArc, scType);
   while (iterator3->Next())
   {
     elementList.push_back(iterator3->Get(2));

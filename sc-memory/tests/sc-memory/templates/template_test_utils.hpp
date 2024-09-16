@@ -52,7 +52,7 @@ inline bool HasAddr(ScAddrVector const & v, ScAddr const & addr)
 
 inline ScAddr ResolveKeynode(ScMemoryContext & ctx, std::string const & idtf)
 {
-  ScAddr const addr = ctx.ResolveElementSystemIdentifier(idtf, ScType::NodeConst);
+  ScAddr const addr = ctx.ResolveElementSystemIdentifier(idtf, ScType::ConstNode);
   EXPECT_TRUE(addr.IsValid());
   return addr;
 }

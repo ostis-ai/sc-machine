@@ -8,21 +8,21 @@ TEST(ScTypeTest, Nodes)
 {
   EXPECT_TRUE(ScType::Node.IsNode());
 
-  EXPECT_TRUE(ScType::NodeConst.IsNode());
-  EXPECT_TRUE(ScType::NodeConstClass.IsNode());
-  EXPECT_TRUE(ScType::NodeConstMaterial.IsNode());
-  EXPECT_TRUE(ScType::NodeConstNoRole.IsNode());
-  EXPECT_TRUE(ScType::NodeConstRole.IsNode());
-  EXPECT_TRUE(ScType::NodeConstStruct.IsNode());
-  EXPECT_TRUE(ScType::NodeConstTuple.IsNode());
+  EXPECT_TRUE(ScType::ConstNode.IsNode());
+  EXPECT_TRUE(ScType::ConstNodeClass.IsNode());
+  EXPECT_TRUE(ScType::ConstNodeMaterial.IsNode());
+  EXPECT_TRUE(ScType::ConstNodeNoRole.IsNode());
+  EXPECT_TRUE(ScType::ConstNodeRole.IsNode());
+  EXPECT_TRUE(ScType::ConstNodeStructure.IsNode());
+  EXPECT_TRUE(ScType::ConstNodeTuple.IsNode());
 
-  EXPECT_TRUE(ScType::NodeVar.IsNode());
-  EXPECT_TRUE(ScType::NodeVarClass.IsNode());
-  EXPECT_TRUE(ScType::NodeVarMaterial.IsNode());
-  EXPECT_TRUE(ScType::NodeVarNoRole.IsNode());
-  EXPECT_TRUE(ScType::NodeVarRole.IsNode());
-  EXPECT_TRUE(ScType::NodeVarStruct.IsNode());
-  EXPECT_TRUE(ScType::NodeVarTuple.IsNode());
+  EXPECT_TRUE(ScType::VarNode.IsNode());
+  EXPECT_TRUE(ScType::VarNodeClass.IsNode());
+  EXPECT_TRUE(ScType::VarNodeMaterial.IsNode());
+  EXPECT_TRUE(ScType::VarNodeNoRole.IsNode());
+  EXPECT_TRUE(ScType::VarNodeRole.IsNode());
+  EXPECT_TRUE(ScType::VarNodeStructure.IsNode());
+  EXPECT_TRUE(ScType::VarNodeTuple.IsNode());
 }
 
 TEST(ScTypeTest, Constancy)
@@ -30,98 +30,98 @@ TEST(ScTypeTest, Constancy)
   EXPECT_FALSE(ScType::Node.IsConst());
   EXPECT_FALSE(ScType::Node.IsVar());
 
-  EXPECT_TRUE(ScType::LinkConst.IsConst());
+  EXPECT_TRUE(ScType::ConstNodeLink.IsConst());
 
-  EXPECT_TRUE(ScType::NodeConst.IsConst());
-  EXPECT_TRUE(ScType::NodeConstClass.IsConst());
-  EXPECT_TRUE(ScType::NodeConstMaterial.IsConst());
-  EXPECT_TRUE(ScType::NodeConstNoRole.IsConst());
-  EXPECT_TRUE(ScType::NodeConstRole.IsConst());
-  EXPECT_TRUE(ScType::NodeConstStruct.IsConst());
-  EXPECT_TRUE(ScType::NodeConstTuple.IsConst());
-  EXPECT_TRUE(ScType::EdgeDCommonConst.IsConst());
-  EXPECT_TRUE(ScType::EdgeUCommonConst.IsConst());
-  EXPECT_TRUE(ScType::EdgeAccessConstFuzPerm.IsConst());
-  EXPECT_TRUE(ScType::EdgeAccessConstFuzTemp.IsConst());
-  EXPECT_TRUE(ScType::EdgeAccessConstNegPerm.IsConst());
-  EXPECT_TRUE(ScType::EdgeAccessConstNegTemp.IsConst());
-  EXPECT_TRUE(ScType::EdgeAccessConstPosPerm.IsConst());
-  EXPECT_TRUE(ScType::EdgeAccessConstPosTemp.IsConst());
+  EXPECT_TRUE(ScType::ConstNode.IsConst());
+  EXPECT_TRUE(ScType::ConstNodeClass.IsConst());
+  EXPECT_TRUE(ScType::ConstNodeMaterial.IsConst());
+  EXPECT_TRUE(ScType::ConstNodeNoRole.IsConst());
+  EXPECT_TRUE(ScType::ConstNodeRole.IsConst());
+  EXPECT_TRUE(ScType::ConstNodeStructure.IsConst());
+  EXPECT_TRUE(ScType::ConstNodeTuple.IsConst());
+  EXPECT_TRUE(ScType::ConstCommonArc.IsConst());
+  EXPECT_TRUE(ScType::ConstCommonEdge.IsConst());
+  EXPECT_TRUE(ScType::ConstFuzArc.IsConst());
+  EXPECT_TRUE(ScType::ConstFuzArc.IsConst());
+  EXPECT_TRUE(ScType::ConstPermNegArc.IsConst());
+  EXPECT_TRUE(ScType::ConstTempNegArc.IsConst());
+  EXPECT_TRUE(ScType::ConstPermPosArc.IsConst());
+  EXPECT_TRUE(ScType::ConstTempPosArc.IsConst());
 
-  EXPECT_TRUE(ScType::NodeVar.IsVar());
-  EXPECT_TRUE(ScType::LinkVar.IsVar());
-  EXPECT_TRUE(ScType::NodeVarClass.IsVar());
-  EXPECT_TRUE(ScType::NodeVarMaterial.IsVar());
-  EXPECT_TRUE(ScType::NodeVarNoRole.IsVar());
-  EXPECT_TRUE(ScType::NodeVarRole.IsVar());
-  EXPECT_TRUE(ScType::NodeVarStruct.IsVar());
-  EXPECT_TRUE(ScType::NodeVarTuple.IsVar());
-  EXPECT_TRUE(ScType::EdgeDCommonVar.IsVar());
-  EXPECT_TRUE(ScType::EdgeUCommonVar.IsVar());
-  EXPECT_TRUE(ScType::EdgeAccessVarFuzPerm.IsVar());
-  EXPECT_TRUE(ScType::EdgeAccessVarFuzTemp.IsVar());
-  EXPECT_TRUE(ScType::EdgeAccessVarNegPerm.IsVar());
-  EXPECT_TRUE(ScType::EdgeAccessVarNegTemp.IsVar());
-  EXPECT_TRUE(ScType::EdgeAccessVarPosPerm.IsVar());
-  EXPECT_TRUE(ScType::EdgeAccessVarPosTemp.IsVar());
+  EXPECT_TRUE(ScType::VarNode.IsVar());
+  EXPECT_TRUE(ScType::VarNodeLink.IsVar());
+  EXPECT_TRUE(ScType::VarNodeClass.IsVar());
+  EXPECT_TRUE(ScType::VarNodeMaterial.IsVar());
+  EXPECT_TRUE(ScType::VarNodeNoRole.IsVar());
+  EXPECT_TRUE(ScType::VarNodeRole.IsVar());
+  EXPECT_TRUE(ScType::VarNodeStructure.IsVar());
+  EXPECT_TRUE(ScType::VarNodeTuple.IsVar());
+  EXPECT_TRUE(ScType::VarCommonArc.IsVar());
+  EXPECT_TRUE(ScType::VarCommonEdge.IsVar());
+  EXPECT_TRUE(ScType::VarFuzArc.IsVar());
+  EXPECT_TRUE(ScType::VarFuzArc.IsVar());
+  EXPECT_TRUE(ScType::VarPermNegArc.IsVar());
+  EXPECT_TRUE(ScType::VarTempNegArc.IsVar());
+  EXPECT_TRUE(ScType::VarPermPosArc.IsVar());
+  EXPECT_TRUE(ScType::VarTempPosArc.IsVar());
 }
 
 TEST(ScTypeTest, Connectors)
 {
-  EXPECT_TRUE(ScType::EdgeAccess.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessConstFuzPerm.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessConstFuzTemp.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessConstNegPerm.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessConstNegTemp.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessConstPosPerm.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessConstPosTemp.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessVarFuzPerm.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessVarFuzTemp.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessVarNegPerm.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessVarNegTemp.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessVarPosPerm.IsConnector());
-  EXPECT_TRUE(ScType::EdgeAccessVarPosTemp.IsConnector());
-  EXPECT_TRUE(ScType::EdgeDCommon.IsConnector());
-  EXPECT_TRUE(ScType::EdgeDCommonConst.IsConnector());
-  EXPECT_TRUE(ScType::EdgeDCommonVar.IsConnector());
-  EXPECT_TRUE(ScType::EdgeUCommon.IsConnector());
-  EXPECT_TRUE(ScType::EdgeUCommonConst.IsConnector());
-  EXPECT_TRUE(ScType::EdgeUCommonVar.IsConnector());
+  EXPECT_TRUE(ScType::MembershipArc.IsConnector());
+  EXPECT_TRUE(ScType::ConstFuzArc.IsConnector());
+  EXPECT_TRUE(ScType::ConstFuzArc.IsConnector());
+  EXPECT_TRUE(ScType::ConstPermNegArc.IsConnector());
+  EXPECT_TRUE(ScType::ConstTempNegArc.IsConnector());
+  EXPECT_TRUE(ScType::ConstPermPosArc.IsConnector());
+  EXPECT_TRUE(ScType::ConstTempPosArc.IsConnector());
+  EXPECT_TRUE(ScType::VarFuzArc.IsConnector());
+  EXPECT_TRUE(ScType::VarFuzArc.IsConnector());
+  EXPECT_TRUE(ScType::VarPermNegArc.IsConnector());
+  EXPECT_TRUE(ScType::VarTempNegArc.IsConnector());
+  EXPECT_TRUE(ScType::VarPermPosArc.IsConnector());
+  EXPECT_TRUE(ScType::VarTempPosArc.IsConnector());
+  EXPECT_TRUE(ScType::CommonArc.IsConnector());
+  EXPECT_TRUE(ScType::ConstCommonArc.IsConnector());
+  EXPECT_TRUE(ScType::VarCommonArc.IsConnector());
+  EXPECT_TRUE(ScType::CommonEdge.IsConnector());
+  EXPECT_TRUE(ScType::ConstCommonEdge.IsConnector());
+  EXPECT_TRUE(ScType::VarCommonEdge.IsConnector());
 }
 
 TEST(ScTypeTest, ExtendTypes)
 {
   EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::Node));
-  EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::NodeConst));
-  EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::NodeVar));
+  EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::ConstNode));
+  EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::VarNode));
   EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::NodeMaterial));
-  EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::NodeConstMaterial));
+  EXPECT_TRUE(ScType::Node.CanExtendTo(ScType::ConstNodeMaterial));
 
-  EXPECT_FALSE(ScType::Node.CanExtendTo(ScType::EdgeAccess));
+  EXPECT_FALSE(ScType::Node.CanExtendTo(ScType::MembershipArc));
 
-  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::Link));
-  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkConst));
-  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkVar));
-  EXPECT_TRUE(ScType::Link.CanExtendTo(ScType::LinkClass));
+  EXPECT_TRUE(ScType::NodeLink.CanExtendTo(ScType::NodeLink));
+  EXPECT_TRUE(ScType::NodeLink.CanExtendTo(ScType::ConstNodeLink));
+  EXPECT_TRUE(ScType::NodeLink.CanExtendTo(ScType::VarNodeLink));
+  EXPECT_TRUE(ScType::NodeLink.CanExtendTo(ScType::NodeLinkClass));
 
-  EXPECT_FALSE(ScType::Link.CanExtendTo(ScType::Node));
+  EXPECT_FALSE(ScType::NodeLink.CanExtendTo(ScType::Node));
 
   EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::Node));
-  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::NodeConst));
-  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeAccessConstFuzPerm));
-  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::Link));
-  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeAccess));
-  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeUCommon));
-  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::EdgeDCommon));
+  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::ConstNode));
+  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::ConstFuzArc));
+  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::NodeLink));
+  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::MembershipArc));
+  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::CommonEdge));
+  EXPECT_TRUE(ScType::Unknown.CanExtendTo(ScType::CommonArc));
 
-  EXPECT_TRUE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeAccessConstPosPerm));
-  EXPECT_TRUE(ScType::EdgeDCommon.CanExtendTo(ScType::EdgeDCommonConst));
+  EXPECT_TRUE(ScType::MembershipArc.CanExtendTo(ScType::ConstPermPosArc));
+  EXPECT_TRUE(ScType::CommonArc.CanExtendTo(ScType::ConstCommonArc));
 
-  EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeDCommon));
-  EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::EdgeUCommon));
-  EXPECT_FALSE(ScType::EdgeAccess.CanExtendTo(ScType::Link));
+  EXPECT_FALSE(ScType::MembershipArc.CanExtendTo(ScType::CommonArc));
+  EXPECT_FALSE(ScType::MembershipArc.CanExtendTo(ScType::CommonEdge));
+  EXPECT_FALSE(ScType::MembershipArc.CanExtendTo(ScType::NodeLink));
   EXPECT_FALSE(ScType::Const.CanExtendTo(ScType::Var));
-  EXPECT_TRUE(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstFuzTemp));
-  EXPECT_FALSE(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessConstNegPerm));
-  EXPECT_FALSE(ScType::EdgeAccessConstFuzPerm.CanExtendTo(ScType::EdgeAccessVarFuzPerm));
+  EXPECT_TRUE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstFuzArc));
+  EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstPermNegArc));
+  EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::VarFuzArc));
 }

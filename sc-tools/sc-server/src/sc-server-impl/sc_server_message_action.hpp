@@ -85,7 +85,7 @@ public:
     {
       auto * context = new ScMemoryContext(ScKeynodes::myself);
 
-      ScAddr const & tempAddr = context->GenerateNode(ScType::NodeConst);
+      ScAddr const & tempAddr = context->GenerateNode(ScType::ConstNode);
       context->EraseElement(tempAddr);
 
       delete context;

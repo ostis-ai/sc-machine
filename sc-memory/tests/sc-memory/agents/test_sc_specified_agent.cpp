@@ -4,9 +4,9 @@
 
 ScResult ATestSpecifiedAgent::DoProgram(ScElementaryEvent const &, ScAction & action)
 {
-  ScAddr const & nodeAddr2 = m_context.GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_context.GenerateNode(ScType::ConstNode);
   ScAddr const & arcAddr =
-      m_context.GenerateConnector(ScType::EdgeAccessConstPosPerm, ATestSpecifiedAgent::concept_set, nodeAddr2);
+      m_context.GenerateConnector(ScType::ConstPermPosArc, ATestSpecifiedAgent::concept_set, nodeAddr2);
 
   action.FormResult(ATestSpecifiedAgent::concept_set, nodeAddr2, arcAddr);
 

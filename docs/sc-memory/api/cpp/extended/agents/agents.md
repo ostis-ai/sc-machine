@@ -123,10 +123,10 @@ This class can be used for all types of platform-dependent agents. Agents of thi
 
 // Inherit your agent class from `ScAgent` class and specify template argument 
 // as sc-event class. Here `ScEventAfterGenerateIncomingArc<
-// ScType::EdgeAccessConstPosPerm>` is type of event to which the given 
+// ScType::ConstPermPosArc>` is type of event to which the given 
 // agent reacts.
 class MyAgent : public ScAgent<
-  ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+  ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc>>
 {
 public:
   // Here you should specify class of actions which the given agent performs. 
@@ -137,7 +137,7 @@ public:
   // This overriding is required.
   ScResult DoProgram(
     ScEventAfterGenerateIncomingArc<
-      ScType::EdgeAccessConstPosPerm> const & event, 
+      ScType::ConstPermPosArc> const & event, 
     ScAction & action) override;
 
   // Other user-defined methods.
@@ -153,7 +153,7 @@ You can't override `DoProgram` without sc-event argument. There can be override 
 #include <sc-memory/sc_agent.hpp>
 
 class MyAgent : public ScAgent<
-  ScEventAfterGenerateIncomingArc<ScType::EdgeAccessConstPosPerm>>
+  ScEventAfterGenerateIncomingArc<ScType::ConstPermPosArc>>
 {
 public:
   ScAddr GetActionClass() const override;
@@ -248,7 +248,7 @@ public:
     `ScActionInitiatedAgent` has default `GetInitiationConditionTemplate` that returns template that can be used to check that initiated action is action with class of specified agent.
 
 !!! note
-    `ScActionInitiatedEvent` is alias for `ScEventAfterGenerateOutgoingArc<ScType::EdgeAccessConstPosPerm>` with subscription sc-element `action_initiated`.
+    `ScActionInitiatedEvent` is alias for `ScEventAfterGenerateOutgoingArc<ScType::ConstPermPosArc>` with subscription sc-element `action_initiated`.
 
 ---
 
@@ -536,20 +536,20 @@ static inline ScTemplateKeynode const & my_initiation_condition
     // initiation condition is fulfilled for the action of another agent.
     .Triple(
       ScKeynodes::action_initiated,
-      ScType::EdgeAccessVarPosPerm,
-      ScType::NodeVar >> "_action"
+      ScType::VarPermPosArc,
+      ScType::VarNode >> "_action"
     )
     // After you should specify triples that only apply to your agent.
     .Triple(
       MyKeynodes::my_action,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::VarPermPosArc,
       "_action"
     )
     .Quintuple(
       "_action",
-      ScType::EdgeAccessVarPosPerm,
-      ScType::NodeVar,
-      ScType::EdgeAccessVarPosPerm,
+      ScType::VarPermPosArc,
+      ScType::VarNode,
+      ScType::VarPermPosArc,
       ScKeynodes::rrel_1
     );
 ...
@@ -570,7 +570,7 @@ ScTemplate MyAgent::GetInitiationConditionTemplate(
   // You should specify triples that only apply to your agent.
   initiationCondition.Triple(
     MyKeynodes::my_action,
-    ScType::EdgeAccessVarPosPerm,
+    ScType::VarPermPosArc,
     event.GetOtherElement() // It returns sc-action.
   );
   return initiationCondition;
@@ -591,7 +591,7 @@ bool MyAgent::CheckInitiationCondition(ScActionInitiatedEvent const & event)
  // GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.
  // All events are not copyable and movable.
  return m_context.CheckConnector(
-   ScType::EdgeAccessConstPosPerm, 
+   ScType::ConstPermPosArc, 
    MyKeynodes::my_action, 
    event.GetArcTargetElement());
 }
@@ -629,8 +629,8 @@ static inline ScTemplateKeynode const & my_result_condition
   = ScTemplateKeynode(my_result_condition)
     .Triple(
       MyKeynodes::my_class,
-      ScType::EdgeAccessVarPosPerm,
-      ScType::NodeVar
+      ScType::VarPermPosArc,
+      ScType::VarNode
     );
     // This template is used to check that agent generated sc-arc
     // between `MyKeynodes::my_class` and some sc-node.
@@ -649,8 +649,8 @@ ScTemplate MyAgent::GetResultConditionTemplate(
   ScTemplate resultCondition;
   resultCondition.Triple(
     MyKeynodes::my_class,
-    ScType::EdgeAccessVarPosPerm,
-    ScType::NodeVar
+    ScType::VarPermPosArc,
+    ScType::VarNode
   );
   return resultCondition;
 }
@@ -670,9 +670,9 @@ bool MyAgent::CheckResult(
   ScStructure const & actionResult = action.GetResult();
   ScIterator3Ptr const it3 = m_context.CreateIterator3(
     MyKeynodes::my_class,
-    ScType::EdgeAccessConstPosPerm,
-    ScType::NodeConst,
-    ScType::EdgeAccessConstPosPerm,
+    ScType::ConstPermPosArc,
+    ScType::ConstNode,
+    ScType::ConstPermPosArc,
     actionResult
   );
   return it3->Next() 

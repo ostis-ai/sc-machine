@@ -18,24 +18,24 @@ TEST(scs_level_4, simple_1)
   TripleTester tester(parser);
   tester({
            {
-             { ScType::NodeConst, "a" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::NodeConst, "c" }
+             { ScType::ConstNode, "a" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstNode, "c" }
            },
            {
-             { ScType::NodeConst, "b" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             { ScType::ConstNode, "b" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstPermPosArc, scs::Visibility::Local }
            },
            {
-             { ScType::NodeConst, "a" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::NodeConst, "d" }
+             { ScType::ConstNode, "a" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstNode, "d" }
            },
            {
-             { ScType::NodeConst, "b" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+             { ScType::ConstNode, "b" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstPermPosArc, scs::Visibility::Local }
            }
          });
 
@@ -57,29 +57,29 @@ TEST(scs_level_4, simple_2)
   TripleTester tester(parser);
   tester({
            {
-             { ScType::NodeConst, "a" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::NodeConst, "c" }
+             { ScType::ConstNode, "a" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstNode, "c" }
            },
            {
-             { ScType::NodeConst, "b" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+             { ScType::ConstNode, "b" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
            },
            {
-             { ScType::NodeConst, "f" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::NodeConst, "a" }
+             { ScType::ConstNode, "f" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstNode, "a" }
            },
            {
-             { ScType::NodeConst, "d" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+             { ScType::ConstNode, "d" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
            },
            {
-             { ScType::NodeConst, "e" },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-             { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
+             { ScType::ConstNode, "e" },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
+             { ScType::ConstPermPosArc, scs::Visibility::Local },
            }
          });
 
@@ -102,34 +102,34 @@ TEST(scs_level_4, vector_simple_1)
   TripleTester tester(parser);
   tester({
       {
-          { ScType::NodeConstTuple, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeVar, "_el1" },
+          { ScType::ConstNodeTuple, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::VarNode, "_el1" },
       },
       {
-          { ScType::NodeConst, "rrel_1" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+          { ScType::ConstNode, "rrel_1" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConstTuple, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeConst, "el2" },
+          { ScType::ConstNodeTuple, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstNode, "el2" },
       },
       {
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeDCommonConst, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstCommonArc, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConst, "nrel_basic_sequence" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeDCommonConst, scs::Visibility::Local }
+          { ScType::ConstNode, "nrel_basic_sequence" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstCommonArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConst, "set1" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeConstTuple, scs::Visibility::Local }
+          { ScType::ConstNode, "set1" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstNodeTuple, scs::Visibility::Local }
       },
   });
 
@@ -154,19 +154,19 @@ TEST(scs_level_4, vector_simple_2)
   TripleTester tester(parser);
   tester({
       {
-          { ScType::NodeConstTuple, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeVar, "_el1" },
+          { ScType::ConstNodeTuple, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::VarNode, "_el1" },
       },
       {
-          { ScType::NodeConst, "rrel_1" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+          { ScType::ConstNode, "rrel_1" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConst, "set1" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeConstTuple, scs::Visibility::Local }
+          { ScType::ConstNode, "set1" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstNodeTuple, scs::Visibility::Local }
       },
   });
 
@@ -196,59 +196,59 @@ TEST(scs_level_4, vector_4)
   TripleTester tester(parser);
   tester({
       {
-          { ScType::NodeConstTuple, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeVar, "_el1" },
+          { ScType::ConstNodeTuple, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::VarNode, "_el1" },
       },
       {
-          { ScType::NodeConst, "rrel_1" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+          { ScType::ConstNode, "rrel_1" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConstTuple, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeConst, "el3" },
+          { ScType::ConstNodeTuple, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstNode, "el3" },
       },
       {
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeDCommonConst, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstCommonArc, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConst, "nrel_basic_sequence" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeDCommonConst, scs::Visibility::Local }
+          { ScType::ConstNode, "nrel_basic_sequence" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstCommonArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConstTuple, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeConstTuple, scs::Visibility::Local }
+          { ScType::ConstNodeTuple, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstNodeTuple, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConst, "rrel_1" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+          { ScType::ConstNode, "rrel_1" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConstTuple, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeConst, "el2" },
+          { ScType::ConstNodeTuple, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstNode, "el2" },
       },
       {
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeDCommonConst, scs::Visibility::Local },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local }
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstCommonArc, scs::Visibility::Local },
+          { ScType::ConstPermPosArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConst, "nrel_basic_sequence" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::EdgeDCommonConst, scs::Visibility::Local }
+          { ScType::ConstNode, "nrel_basic_sequence" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstCommonArc, scs::Visibility::Local }
       },
       {
-          { ScType::NodeConst, "set1" },
-          { ScType::EdgeAccessConstPosPerm, scs::Visibility::Local },
-          { ScType::NodeConstTuple, scs::Visibility::Local }
+          { ScType::ConstNode, "set1" },
+          { ScType::ConstPermPosArc, scs::Visibility::Local },
+          { ScType::ConstNodeTuple, scs::Visibility::Local }
       },
   });
 

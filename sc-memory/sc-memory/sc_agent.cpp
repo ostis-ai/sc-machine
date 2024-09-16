@@ -19,6 +19,6 @@ ScAddr ScActionInitiatedAgent::GetEventSubscriptionElement() const
 ScTemplate ScActionInitiatedAgent::GetInitiationConditionTemplate(ScActionInitiatedEvent const & event) const
 {
   ScTemplate templ;
-  templ.Triple(GetActionClass(), ScType::EdgeAccessVarPosPerm, event.GetOtherElement());
+  templ.Triple(GetActionClass(), ScType::VarPermPosArc, event.GetOtherElement());
   return templ;
 }

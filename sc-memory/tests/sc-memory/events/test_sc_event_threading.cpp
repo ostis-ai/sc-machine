@@ -26,7 +26,7 @@ TEST_F(ScEventTest, ThreadingSmoke)
 
   for (size_t i = 0; i < nodeNum; ++i)
   {
-    ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
+    ScAddr const addr = m_ctx->GenerateNode(ScType::ConstNode);
     EXPECT_TRUE(addr.IsValid());
     nodes[i] = addr;
   }
@@ -78,7 +78,7 @@ TEST_F(ScEventTest, ThreadingSmoke)
     uint32_t const v = rand() % 2;
     if (v == 0)
     {
-      ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccess, randNode(), randNode());
+      ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::MembershipArc, randNode(), randNode());
       EXPECT_TRUE(arcAddr.IsValid());
       connectors.push_back(arcAddr);
 

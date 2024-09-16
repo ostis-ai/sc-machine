@@ -27,11 +27,11 @@ public:
 
   void Setup(size_t objectsNum) override
   {
-    m_addr = m_ctx->GenerateNode(ScType::NodeConst);
+    m_addr = m_ctx->GenerateNode(ScType::ConstNode);
     for (size_t i = 0; i < objectsNum; ++i)
     {
-      ScAddr target = m_ctx->GenerateNode(ScType::NodeConst);
-      m_connectors.push_back(m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_addr, target));
+      ScAddr target = m_ctx->GenerateNode(ScType::ConstNode);
+      m_connectors.push_back(m_ctx->GenerateConnector(ScType::ConstPermPosArc, m_addr, target));
     }
   }
 

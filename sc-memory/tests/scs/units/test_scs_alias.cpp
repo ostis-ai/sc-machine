@@ -24,7 +24,7 @@ TEST(scs_alias, assign)
   EXPECT_TRUE(parser.GetParsedElement(t.m_source).GetType().IsNode());
   EXPECT_TRUE(parser.GetParsedElement(t.m_target).GetType().IsLink());
 
-  EXPECT_EQ(parser.GetParsedElement(t.m_connector).GetType(), ScType::EdgeAccessConstPosTemp);
+  EXPECT_EQ(parser.GetParsedElement(t.m_connector).GetType(), ScType::ConstTempPosArc);
 }
 
 TEST(scs_alias, no_assign)
@@ -56,10 +56,10 @@ TEST(scs_alias, recursive_assigns)
   EXPECT_TRUE(src.GetType().IsNode());
   EXPECT_TRUE(src.GetType().IsVar());
 
-  EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessConstNegPerm);
+  EXPECT_EQ(arcAddr.GetType(), ScType::ConstPermNegArc);
 
   EXPECT_EQ(trg.GetIdtf(), "x");
-  EXPECT_EQ(trg.GetType(), ScType::NodeConstTuple);
+  EXPECT_EQ(trg.GetType(), ScType::ConstNodeTuple);
 }
 
 TEST(scs_alias, reassign)
@@ -81,12 +81,12 @@ TEST(scs_alias, reassign)
     auto const & trg = parser.GetParsedElement(t.m_target);
 
     EXPECT_EQ(src.GetIdtf(), "y");
-    EXPECT_EQ(src.GetType(), ScType::NodeConst);
+    EXPECT_EQ(src.GetType(), ScType::ConstNode);
 
-    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessVarFuzTemp);
+    EXPECT_EQ(arcAddr.GetType(), ScType::VarFuzArc);
 
     EXPECT_EQ(trg.GetIdtf(), "_x");
-    EXPECT_EQ(trg.GetType(), ScType::NodeVarStruct);
+    EXPECT_EQ(trg.GetType(), ScType::VarNodeStructure);
   }
 
   {
@@ -97,11 +97,11 @@ TEST(scs_alias, reassign)
     auto const & trg = parser.GetParsedElement(t.m_target);
 
     EXPECT_EQ(src.GetIdtf(), "z");
-    EXPECT_EQ(src.GetType(), ScType::NodeConst);
+    EXPECT_EQ(src.GetType(), ScType::ConstNode);
 
-    EXPECT_EQ(arcAddr.GetType(), ScType::EdgeAccessVarPosTemp);
+    EXPECT_EQ(arcAddr.GetType(), ScType::VarTempPosArc);
 
-    EXPECT_EQ(trg.GetType(), ScType::LinkVar);
+    EXPECT_EQ(trg.GetType(), ScType::VarNodeLink);
   }
 }
 
@@ -119,8 +119,8 @@ TEST(scs_alias, contour)
   {
     SPLIT_TRIPLE(triples[0]);
 
-    EXPECT_EQ(src.GetType(), ScType::LinkVar);
-    EXPECT_EQ(connector.GetType(), ScType::EdgeAccessVarPosTemp);
+    EXPECT_EQ(src.GetType(), ScType::VarNodeLink);
+    EXPECT_EQ(connector.GetType(), ScType::VarTempPosArc);
     EXPECT_EQ(trg.GetIdtf(), "y");
   }
 }
