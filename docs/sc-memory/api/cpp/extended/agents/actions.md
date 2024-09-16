@@ -249,15 +249,25 @@ action.InitiateAndWait(100); // milliseconds
 <scg src="../images/actions/action_initiated_with_waiting.gwf"></scg>
 
 !!! warning
-    If you set expected execution time in milliseconds for an action that already has expected execution time in milliseconds, then this method will throw `utils::ExceptionInvalidState`.
+    If you set maximum customer waiting time for an action that already has maximum customer waiting time, then this method will throw `utils::ExceptionInvalidState`.
 
-#### **GetMaxCustomerWaitingTime**
+#### **GetMaxCustomerWaitingTimeAddr**
 
-You can get time that customer will wait for action to finish.
+You can get sc-link with time that customer will wait for action to finish. If action does not have waiting time then empty sc-address will be returned.
 
 ```cpp
 ...
-ScAddr const & waitingTimeAddr = action.GetMaxCustomerWaitingTime();
+ScAddr const & waitingTimeAddr = action.GetMaxCustomerWaitingTimeAddr();
+...
+```
+
+#### **GetMaxCustomerWaitingTime**
+
+You can get time that customer will wait for action to finish. If action does not have waiting time then 0 will be returned.
+
+```cpp
+...
+sc_uint32 const waitingTime = action.GetMaxCustomerWaitingTime();
 ...
 ```
 
