@@ -33,63 +33,167 @@ public:
 
   ~ScType();
 
+  /*!
+   * @brief Checks if the current ScType instance represents an connector (edge).
+   * @return Returns true if the ScType is a connector (edge), false otherwise.
+   */
   SC_DEPRECATED(
       0.10.0,
       "This method is deprecated. Use `IsConnector` instead for better readability and standards "
       "compliance.")
   bool IsEdge() const;
 
+  /*!
+   * @brief Checks if the current ScType instance is a connector.
+   * @return Returns true if the ScType is a connector, false otherwise.
+   */
   bool IsConnector() const;
 
+  /*!
+   * @brief Checks if the current ScType instance is a common edge.
+   * @return Returns true if the ScType is a common edge, false otherwise.
+   */
   bool IsCommonEdge() const;
 
+  /*!
+   * @brief Checks if the current ScType instance represents an arc.
+   * @return Returns true if the ScType is an arc, false otherwise.
+   */
   bool IsArc() const;
 
+  /*!
+   * @brief Checks if the current ScType instance is a common arc.
+   * @return Returns true if the ScType is a common arc, false otherwise.
+   */
   bool IsCommonArc() const;
 
+  /*!
+   * @brief Checks if the current ScType instance represents a membership arc.
+   * @return Returns true if the ScType is a membership arc, false otherwise.
+   */
   bool IsMembershipArc() const;
 
+  /*!
+   * @brief Checks if the current ScType instance represents a node.
+   * @return Returns true if the ScType is a node, false otherwise.
+   */
   bool IsNode() const;
 
+  /*!
+   * @brief Checks if the current ScType instance represents a link.
+   * @return Returns true if the ScType is a link (node link), false otherwise.
+   */
   bool IsLink() const;
 
+  /*!
+   * @brief Checks if the current ScType instance has constant subtype.
+   * @return Returns true if the ScType has constant characteristics, false otherwise.
+   */
   bool IsConst() const;
 
+  /*!
+   * @brief Checks if the current ScType instance has variable subtype.
+   * @return Returns true if the ScType has variable characteristics, false otherwise.
+   */
   bool IsVar() const;
 
+  /*!
+   * @brief Checks if the current ScType instance is of unknown type.
+   * @return Returns true if m_realType is 0, indicating an unknown type; false otherwise.
+   */
   bool IsUnknown() const;
 
+  /*!
+   * @brief Checks if the current ScType instance has a constancy subtype set.
+   * @return Returns true if there is a constancy subtype in m_realType, false otherwise.
+   */
   bool HasConstancyFlag() const;
 
-  // Returns copy of this type, but with variable replaced to const
+  /*!
+   * @brief Converts this instance to a constant type by modifying its subtype bits.
+   * @return A new ScType instance representing the constant version of this type.
+   */
   ScType AsConst() const;
 
-  // Returns copy of this type, but replace constancy type upward (var -> const)
+  /*!
+   * @brief Upgrades this type to its constant form (currently returns AsConst).
+   * @return A new constant version of this type.
+   */
   ScType UpConstType() const;
 
+  /*!
+   * @brief Retrieves the underlying real type value of this instance.
+   * @return A real type represented by m_realType.
+   */
   sc_type operator*() const;
 
+  /*!
+   * @brief Updates this instance's real type with additional bits using bitwise OR.
+   * @param bits A bits to be added to m_realType.
+   * @return A reference to this updated ScType instance.
+   */
   ScType & operator()(RealType bits);
 
+  /*!
+   * @brief Compares two ScTypes for equality.
+   * @param other A other ScType to compare against.
+   * @return Returns true if both instances have equal real types; false otherwise.
+   */
   bool operator==(ScType const & other);
 
+  /*!
+   * @brief Compares two ScTypes for inequality.
+   * @param other A other ScType to compare against.
+   * @return Returns true if both instances have different real types; false otherwise.
+   */
   bool operator!=(ScType const & other);
 
+  /*!
+   * @brief Performs a bitwise AND operation with another mask and returns the result.
+   * @param inMask A mask to perform AND operation with.
+   * @return A result of m_realType AND inMask.
+   */
   RealType BitAnd(RealType const & inMask) const;
 
+  /*!
+   * @brief Performs a bitwise OR operation with another ScType and returns a new instance.
+   * @param other An other sc-type to combine with using OR.
+   * @return A new sc-type representing the result of m_realType OR other.m_realType.
+   */
   ScType operator|(ScType const & other);
 
+  /*!
+   * @brief Performs a bitwise AND operation with another ScType and returns a new instance.
+   * @param other A other ScType to combine with using AND.
+   * @return A new ScType representing the result of m_realType AND other.m_realType.
+   */
   ScType operator&(ScType const & other);
 
+  /*!
+   * @brief Updates this instance's real type using bitwise OR with another instance's real type.
+   * @param other A other sc-type to combine with using OR.
+   * @return A reference to this updated sc-type instance.
+   */
   ScType & operator|=(ScType const & other);
 
+  /*!
+   * @brief Updates this instance's real type using bitwise AND with another instance's real type.
+   * @param other A other sc-type to combine with using AND.
+   * @return A reference to this updated sc-type instance.
+   */
   ScType & operator&=(ScType const & other);
 
+  /*!
+   * @brief Converts this sc-type to its underlying real type representation.
+   * @return An underlying real type value of this sc-type.
+   */
   operator RealType() const;
 
-  /* Check if specified type can be extended by another one to be a valid type/
-   * For example this function returns false, if you try to extend node by
-   * connectors type, or const by var and etc.
+  /*!
+   * @brief Determines whether this sc-type can be extended to another sc-type based on semantic and subtype
+   * compatibility.
+   * @param ext Type A sc-type that may extend this one.
+   * @return True if extension is possible based on semantic and subtype checks; false otherwise.
    */
   bool CanExtendTo(ScType const & extType) const;
 
