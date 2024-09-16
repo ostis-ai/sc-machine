@@ -138,10 +138,16 @@ public:
   _SC_EXTERN bool InitiateAndWait(sc_uint32 maxCustomerWaitingTime = 5000u) noexcept(false);
 
   /*!
-   * @brief Gets max customer waiting time of an action in milliseconds.
-   * @return ScAddr of link containing max customer waiting time in milliseconds if found, empty ScAddr otherwise.
+   * @brief Gets sc-link with max customer waiting time of an action in milliseconds.
+   * @return ScAddr of sc-link containing max customer waiting time in milliseconds if found, empty ScAddr otherwise.
    */
-  _SC_EXTERN ScAddr GetMaxCustomerWaitingTime() noexcept;
+  _SC_EXTERN ScAddr GetMaxCustomerWaitingTimeAddr() const noexcept;
+
+  /*!
+   * @brief Gets value of max customer waiting time of an action in milliseconds.
+   * @return Max customer waiting time in milliseconds if found, 0 otherwise.
+   */
+  _SC_EXTERN sc_uint32 GetMaxCustomerWaitingTime() const noexcept;
 
   /*!
    * @brief Initiates the action.
@@ -273,7 +279,7 @@ private:
    *
    * @param maxCustomerWaitingTime Time in milliseconds that customer will wait for this action to finish.
    */
-  void CreateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) const;
+  void GenerateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) const;
 };
 
 #include "sc_action.tpp"

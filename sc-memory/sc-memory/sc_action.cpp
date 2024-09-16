@@ -175,7 +175,7 @@ bool ScAction::InitiateAndWait(sc_uint32 maxCustomerWaitingTime) noexcept(false)
       [this, &maxCustomerWaitingTime]()
       {
         if (!m_context->IsElement(GetMaxCustomerWaitingTime()))
-          CreateMaxCustomerWaitingTime(maxCustomerWaitingTime);
+          GenerateMaxCustomerWaitingTime(maxCustomerWaitingTime);
         m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, ScKeynodes::action_initiated, *this);
       });
   return wait->Wait(maxCustomerWaitingTime);
@@ -294,21 +294,30 @@ std::string ScAction::GetActionClassPrettyString() const
   return actionClassName;
 }
 
-ScAddr ScAction::GetMaxCustomerWaitingTime() noexcept
+ScAddr ScAction::GetMaxCustomerWaitingTimeAddr() const noexcept
 {
-  ScAddr expectedTimeAddr;
-  auto const & expectedTimeIterator = m_context->CreateIterator5(
+  ScAddr waitingTimeAddr;
+  auto const & waitingTimeIterator = m_context->CreateIterator5(
       *this,
       ScType::EdgeDCommonConst,
       ScType::LinkConst,
       ScType::EdgeAccessConstPosPerm,
       ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish);
-  if (expectedTimeIterator->Next())
-    expectedTimeAddr = expectedTimeIterator->Get(2);
-  return expectedTimeAddr;
+  if (waitingTimeIterator->Next())
+    waitingTimeAddr = waitingTimeIterator->Get(2);
+  return waitingTimeAddr;
 }
 
-void ScAction::CreateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) const
+sc_uint32 ScAction::GetMaxCustomerWaitingTime() const noexcept
+{
+  sc_uint32 waitingTime = 0;
+  ScAddr const & waitingTimeAddr = GetMaxCustomerWaitingTimeAddr();
+  if (m_context->IsElement(waitingTimeAddr))
+    m_context->GetLinkContent(waitingTimeAddr, waitingTime);
+  return waitingTime;
+}
+
+void ScAction::GenerateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) const
 {
   ScAddr const & linkWithTimeAddr = m_context->GenerateLink();
   m_context->SetLinkContent(linkWithTimeAddr, std::to_string(maxCustomerWaitingTime));

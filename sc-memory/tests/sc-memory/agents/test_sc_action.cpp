@@ -536,28 +536,41 @@ TEST_F(ScActionTest, SetExpectedExecutionTimeAndGetExpectedExecutionTime)
           ATestGenerateOutgoingArc::generate_outgoing_arc_action);
   sc_uint32 waitTime = 500;
   SetMaxCustomerWaitingTime(*m_ctx, action, waitTime);
-  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTime();
+  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTimeAddr();
   EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
   EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
   sc_uint32 actualWaitTime;
   EXPECT_TRUE(m_ctx->GetLinkContent(maxCustomerWaitingTime, actualWaitTime));
   EXPECT_EQ(actualWaitTime, waitTime);
+  EXPECT_EQ(action.GetMaxCustomerWaitingTime(), waitTime);
 }
 
-TEST_F(ScActionTest, SetExpectedExecutionTimeTwiceAndGetExpectedExecutionTime)
+TEST_F(ScActionTest, SetNodeAsExpectedExecutionTimeAndGetExpectedExecutionTime)
 {
-  ScAction action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+  ScAction const action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
       .SetArguments(
           ATestGenerateOutgoingArc::generate_outgoing_arc_action,
           ATestGenerateOutgoingArc::generate_outgoing_arc_action);
-  sc_uint32 waitTime = 500;
-  ScAddr const & maxCustomerWaitingTime = SetMaxCustomerWaitingTime(*m_ctx, action, waitTime);
-  EXPECT_EQ(maxCustomerWaitingTime, action.GetMaxCustomerWaitingTime());
-  EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
-  EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
-  sc_uint32 actualWaitTime;
-  EXPECT_TRUE(m_ctx->GetLinkContent(maxCustomerWaitingTime, actualWaitTime));
-  EXPECT_EQ(actualWaitTime, waitTime);
+  ScAddr const & relationArcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, action, ScKeynodes::nrel_inclusion);
+  m_ctx->CreateEdge(
+      ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish, relationArcAddr);
+  EXPECT_EQ(action.GetMaxCustomerWaitingTimeAddr(), ScAddr::Empty);
+  EXPECT_EQ(action.GetMaxCustomerWaitingTime(), 0u);
+}
+
+TEST_F(ScActionTest, SetLinkWithTextAsExpectedExecutionTimeAndGetExpectedExecutionTime)
+{
+  ScAction const action = m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action)
+      .SetArguments(
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action,
+          ATestGenerateOutgoingArc::generate_outgoing_arc_action);
+  ScAddr const & linkWithTextAddr = m_ctx->CreateLink();
+  m_ctx->SetLinkContent(linkWithTextAddr, "text content");
+  ScAddr const & relationArcAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, action, linkWithTextAddr);
+  m_ctx->CreateEdge(
+      ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish, relationArcAddr);
+  EXPECT_EQ(action.GetMaxCustomerWaitingTimeAddr(), linkWithTextAddr);
+  EXPECT_EQ(action.GetMaxCustomerWaitingTime(), 0u);
 }
 
 TEST_F(ScActionTest, InitiateAndWaitActionAndCheckStoredExpectedExecutionTime)
@@ -573,7 +586,7 @@ TEST_F(ScActionTest, InitiateAndWaitActionAndCheckStoredExpectedExecutionTime)
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
-  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTime();
+  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTimeAddr();
   EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
   EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
   std::string actualWaitTimeString;
@@ -600,7 +613,7 @@ TEST_F(ScActionTest, SetExpectedExecutionTimeAndInitiateAndWaitActionAndCheckSto
   EXPECT_TRUE(action.IsInitiated());
   EXPECT_TRUE(action.IsFinished());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
-  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTime();
+  ScAddr const & maxCustomerWaitingTime = action.GetMaxCustomerWaitingTimeAddr();
   EXPECT_TRUE(m_ctx->IsElement(maxCustomerWaitingTime));
   EXPECT_EQ(m_ctx->GetElementType(maxCustomerWaitingTime), ScType::LinkConst);
   sc_uint32 actualWaitTime;
