@@ -3,7 +3,7 @@
 #
 #  GLIB2_FOUND - system has GLib2
 #  GLIB2_INCLUDE_DIRS - the GLib2 include directory
-#  GLIB2_LIBRARIES - NodeLink these to use GLib2
+#  GLIB2_LIBRARIES - Link these to use GLib2
 #
 #  HAVE_GLIB_GREGEX_H  glib has gregex.h header and 
 #                      supports g_regex_match_simple

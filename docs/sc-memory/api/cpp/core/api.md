@@ -142,7 +142,8 @@ that specified sc-address of sc-connector is not valid.
 ```cpp
 ...
 // Get sc-arc incident sc-elements.
-auto const [sourceAddr, targetAddr] = context.GetConnectorIncidentElements(arcAddr, sourceAddr, targetAddr);
+auto const [sourceAddr, targetAddr] 
+  = context.GetConnectorIncidentElements(arcAddr);
 // The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr` 
 // and the sc-address `targetAddr` must be equal to the sc-address `linkAddr`.
 ...
@@ -228,8 +229,6 @@ context.ForEach(
   ... // Write your code to handle found sc-construction.
 });
 ```
-
-### **ForEach**
 
 ```cpp
 ...
@@ -398,7 +397,7 @@ large graph structures.
 
 ## **Frequently Asked Questions**
 
-- [What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?](#what-is-the-difference-between-sctypeedgedcommonconst-and-sctypeedgeaccessconstposperm)
+- [What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?](#what-is-the-difference-between-sctypeconstcommonarc-and-sctypeconstpermposarc)
 - [How I can specify empty ScAddr?](#how-i-can-specify-empty-scaddr)
 
 ### **What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?**
