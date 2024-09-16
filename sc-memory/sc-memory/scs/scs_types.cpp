@@ -80,7 +80,7 @@ TypeResolver::MapType TypeResolver::ms_keynodeToType = {
     {"sc_node_struct", ScType::NodeStruct},
     {"sc_node_role_relation", ScType::NodeRole},
     {"sc_node_norole_relation", ScType::NodeNoRole},
-    {"sc_node_abstract", ScType::NodeAbstract}, // TODO: remove it
+    //{"sc_node_abstract", ScType::NodeAbstract}, // TODO: remove it
     {"sc_node_material", ScType::NodeMaterial},
 
     {"sc_node_not_relation", ScType::NodeClass}, // backward compatibility

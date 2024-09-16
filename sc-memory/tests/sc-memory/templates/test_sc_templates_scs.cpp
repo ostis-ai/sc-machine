@@ -59,7 +59,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("c1", cAddr));
 
   ScTemplate templ;
-  sc_char const * data = "c1 _=> _b1;; _b1 <- sc_node_abstract;;";
+  sc_char const * data = "c1 _=> _b1;; _b1 <- sc_node_material;;";
 
   m_ctx->BuildTemplate(templ, data);
   ScTemplateGenResult genResult;
@@ -67,7 +67,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
 
   // check
   ScTemplate searchTempl;
-  searchTempl.Triple(cAddr >> "c1", ScType::EdgeDCommonVar >> "_edge", ScType::NodeVarAbstract >> "_b1");
+  searchTempl.Triple(cAddr >> "c1", ScType::EdgeDCommonVar >> "_edge", ScType::NodeVarMaterial >> "_b1");
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));

@@ -168,7 +168,7 @@ TEST(scs_common, nodes)
                       "sc_node_norole_relation -> _d;;"
                       "sc_node_class -> e;;"
                       "e -> f;;"
-                      "sc_node_abstract -> f;;"
+                      "sc_node_material -> f;;"
                       "f -> g;;"
                       "sc_node_material -> g;;";
 
@@ -196,8 +196,8 @@ TEST(scs_common, nodes)
     EXPECT_TRUE(CheckSourceNode(1, ScType::NodeConstRole));
     EXPECT_TRUE(CheckTargetNode(1, ScType::NodeVarNoRole));
     EXPECT_TRUE(CheckSourceNode(2, ScType::NodeConstClass));
-    EXPECT_TRUE(CheckTargetNode(2, ScType::NodeConstAbstract));
-    EXPECT_TRUE(CheckSourceNode(3, ScType::NodeConstAbstract));
+    EXPECT_TRUE(CheckTargetNode(2, ScType::NodeConstMaterial));
+    EXPECT_TRUE(CheckSourceNode(3, ScType::NodeConstMaterial));
     EXPECT_TRUE(CheckTargetNode(3, ScType::NodeConstMaterial));
   }
 }

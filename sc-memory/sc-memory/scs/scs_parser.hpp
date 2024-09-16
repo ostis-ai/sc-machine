@@ -12,6 +12,7 @@
 
 #include <limits>
 #include <stack>
+#include <map>
 
 namespace scs
 {

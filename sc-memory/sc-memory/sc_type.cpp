@@ -6,16 +6,6 @@
 
 #include "sc_type.hpp"
 
-ScType::ScType()
-  : m_realType(0)
-{
-}
-
-ScType::ScType(RealType type) noexcept
-  : m_realType(type)
-{
-}
-
 ScType::~ScType() = default;
 
 bool ScType::IsEdge() const
@@ -211,71 +201,173 @@ bool ScType::CanExtendTo(ScType const & extType) const
   return true;
 }
 
-ScType const ScType::EdgeUCommon(sc_type_common_edge);
-ScType const ScType::EdgeDCommon(sc_type_common_arc);
+ScType const ScType::Unknown;
 
-ScType const ScType::EdgeUCommonConst(sc_type_common_edge | sc_type_const);
-ScType const ScType::EdgeDCommonConst(sc_type_common_arc | sc_type_const);
+// sc-elements
+ScType const ScType::Node(sc_type_node);
+ScType const ScType::Connector(sc_type_connector);
+ScType const ScType::CommonEdge(sc_type_common_edge);
+ScType const ScType::Arc(sc_type_arc);
+ScType const ScType::CommonArc(sc_type_common_arc);
+ScType const ScType::MembershipArc(sc_type_membership_arc);
 
-ScType const ScType::EdgeAccess(sc_type_membership_arc);
-ScType const ScType::EdgeAccessConstPosPerm(
-    sc_type_const | sc_type_membership_arc | sc_type_perm_arc | sc_type_pos_arc);
-ScType const ScType::EdgeAccessConstNegPerm(
-    sc_type_const | sc_type_membership_arc | sc_type_perm_arc | sc_type_neg_arc);
-ScType const ScType::EdgeAccessConstFuzPerm(
-    sc_type_const | sc_type_membership_arc | sc_type_perm_arc | sc_type_fuz_arc);
-ScType const ScType::EdgeAccessConstPosTemp(
-    sc_type_const | sc_type_membership_arc | sc_type_temp_arc | sc_type_pos_arc);
-ScType const ScType::EdgeAccessConstNegTemp(
-    sc_type_const | sc_type_membership_arc | sc_type_temp_arc | sc_type_neg_arc);
-ScType const ScType::EdgeAccessConstFuzTemp(
-    sc_type_const | sc_type_membership_arc | sc_type_temp_arc | sc_type_fuz_arc);
-
-ScType const ScType::EdgeUCommonVar(sc_type_common_edge | sc_type_var);
-ScType const ScType::EdgeDCommonVar(sc_type_common_arc | sc_type_var);
-ScType const ScType::EdgeAccessVarPosPerm(sc_type_var | sc_type_membership_arc | sc_type_perm_arc | sc_type_pos_arc);
-ScType const ScType::EdgeAccessVarNegPerm(sc_type_var | sc_type_membership_arc | sc_type_perm_arc | sc_type_neg_arc);
-ScType const ScType::EdgeAccessVarFuzPerm(sc_type_var | sc_type_membership_arc | sc_type_perm_arc | sc_type_fuz_arc);
-ScType const ScType::EdgeAccessVarPosTemp(sc_type_var | sc_type_membership_arc | sc_type_temp_arc | sc_type_pos_arc);
-ScType const ScType::EdgeAccessVarNegTemp(sc_type_var | sc_type_membership_arc | sc_type_temp_arc | sc_type_neg_arc);
-ScType const ScType::EdgeAccessVarFuzTemp(sc_type_var | sc_type_membership_arc | sc_type_temp_arc | sc_type_fuz_arc);
-
+// constancy
 ScType const ScType::Const(sc_type_const);
 ScType const ScType::Var(sc_type_var);
 
-ScType const ScType::Node(sc_type_node);
-ScType const ScType::Link(sc_type_node | sc_type_node_link);
-ScType const ScType::Unknown;
+ScType const ScType::ConstNode(sc_type_const_node);
+ScType const ScType::VarNode(sc_type_var | sc_type_node);
+ScType const ScType::ConstConnector(sc_type_const | sc_type_connector);
+ScType const ScType::VarConnector(sc_type_var | sc_type_connector);
+ScType const ScType::ConstCommonEdge(sc_type_const | sc_type_common_edge);
+ScType const ScType::VarCommonEdge(sc_type_var | sc_type_common_edge);
+ScType const ScType::ConstArc(sc_type_const | sc_type_arc);
+ScType const ScType::VarArc(sc_type_var | sc_type_arc);
+ScType const ScType::ConstCommonArc(sc_type_const | sc_type_common_arc);
+ScType const ScType::VarCommonArc(sc_type_var | sc_type_common_arc);
+ScType const ScType::ConstMembershipArc(sc_type_const | sc_type_membership_arc);
+ScType const ScType::VarMembershipArc(sc_type_var | sc_type_membership_arc);
 
-ScType const ScType::NodeConst(sc_type_node | sc_type_const);
-ScType const ScType::NodeVar(sc_type_node | sc_type_var);
+// permanency
+ScType const ScType::PermArc(sc_type_perm_arc);
+ScType const ScType::TempArc(sc_type_temp_arc);
 
-ScType const ScType::LinkConst(sc_type_node | sc_type_node_link | sc_type_const);
-ScType const ScType::LinkVar(sc_type_node | sc_type_node_link | sc_type_var);
-ScType const ScType::LinkClass(sc_type_node | sc_type_node_link | sc_type_node_class);
-ScType const ScType::LinkConstClass(sc_type_node | sc_type_node_link | sc_type_const | sc_type_node_class);
-ScType const ScType::LinkVarClass(sc_type_node | sc_type_node_link | sc_type_var | sc_type_node_class);
+ScType const ScType::ConstPermArc(sc_type_const | sc_type_perm_arc);
+ScType const ScType::VarPermArc(sc_type_var | sc_type_perm_arc);
+ScType const ScType::ConstTempArc(sc_type_const | sc_type_temp_arc);
+ScType const ScType::VarTempArc(sc_type_var | sc_type_temp_arc);
 
-ScType const ScType::NodeStruct(sc_type_node | sc_type_node_structure);
-ScType const ScType::NodeTuple(sc_type_node | sc_type_node_tuple);
-ScType const ScType::NodeRole(sc_type_node | sc_type_node_role);
-ScType const ScType::NodeNoRole(sc_type_node | sc_type_node_norole);
-ScType const ScType::NodeClass(sc_type_node | sc_type_node_class);
-ScType const ScType::NodeAbstract(sc_type_node | sc_type_node_superclass);
-ScType const ScType::NodeMaterial(sc_type_node | sc_type_node_material);
+// actuality
+ScType const ScType::ActualTempArc(sc_type_actual_arc | sc_type_temp_arc);
+ScType const ScType::InactualTempArc(sc_type_inactual_arc | sc_type_temp_arc);
 
-ScType const ScType::NodeConstStruct(sc_type_node | sc_type_const | sc_type_node_structure);
-ScType const ScType::NodeConstTuple(sc_type_node | sc_type_const | sc_type_node_tuple);
-ScType const ScType::NodeConstRole(sc_type_node | sc_type_const | sc_type_node_role);
-ScType const ScType::NodeConstNoRole(sc_type_node | sc_type_const | sc_type_node_norole);
-ScType const ScType::NodeConstClass(sc_type_node | sc_type_const | sc_type_node_class);
-ScType const ScType::NodeConstAbstract(sc_type_node | sc_type_const | sc_type_node_superclass);
-ScType const ScType::NodeConstMaterial(sc_type_node | sc_type_const | sc_type_node_material);
+ScType const ScType::ConstActualTempArc(sc_type_const | sc_type_actual_arc | sc_type_temp_arc);
+ScType const ScType::VarActualTempArc(sc_type_var | sc_type_actual_arc | sc_type_temp_arc);
+ScType const ScType::ConstInactualTempArc(sc_type_const | sc_type_inactual_arc | sc_type_temp_arc);
+ScType const ScType::VarInactualTempArc(sc_type_var | sc_type_inactual_arc | sc_type_temp_arc);
 
-ScType const ScType::NodeVarStruct(sc_type_node | sc_type_var | sc_type_node_structure);
-ScType const ScType::NodeVarTuple(sc_type_node | sc_type_var | sc_type_node_tuple);
-ScType const ScType::NodeVarRole(sc_type_node | sc_type_var | sc_type_node_role);
-ScType const ScType::NodeVarNoRole(sc_type_node | sc_type_var | sc_type_node_norole);
-ScType const ScType::NodeVarClass(sc_type_node | sc_type_var | sc_type_node_class);
-ScType const ScType::NodeVarAbstract(sc_type_node | sc_type_var | sc_type_node_superclass);
-ScType const ScType::NodeVarMaterial(sc_type_node | sc_type_var | sc_type_node_material);
+// positivity
+ScType const ScType::PosArc(sc_type_pos_arc);
+ScType const ScType::NegArc(sc_type_neg_arc);
+ScType const ScType::FuzArc(sc_type_fuz_arc);
+
+// positive sc-arcs
+ScType const ScType::ConstPosArc(sc_type_const | sc_type_pos_arc);
+ScType const ScType::VarPosArc(sc_type_var | sc_type_pos_arc);
+
+ScType const ScType::PermPosArc(sc_type_perm_arc | sc_type_pos_arc);
+ScType const ScType::TempPosArc(sc_type_temp_arc | sc_type_pos_arc);
+ScType const ScType::ActualTempPosArc(sc_type_actual_arc | sc_type_temp_arc | sc_type_pos_arc);
+ScType const ScType::InactualTempPosArc(sc_type_inactual_arc | sc_type_temp_arc | sc_type_pos_arc);
+
+ScType const ScType::ConstPermPosArc(sc_type_const | sc_type_perm_arc | sc_type_pos_arc);
+ScType const ScType::ConstTempPosArc(sc_type_const | sc_type_temp_arc | sc_type_pos_arc);
+ScType const ScType::ConstActualTempPosArc(sc_type_const | sc_type_actual_arc | sc_type_temp_arc | sc_type_pos_arc);
+ScType const ScType::ConstInactualTempPosArc(sc_type_const | sc_type_inactual_arc | sc_type_temp_arc | sc_type_pos_arc);
+
+ScType const ScType::VarPermPosArc(sc_type_var | sc_type_perm_arc | sc_type_pos_arc);
+ScType const ScType::VarTempPosArc(sc_type_var | sc_type_temp_arc | sc_type_pos_arc);
+ScType const ScType::VarActualTempPosArc(sc_type_var | sc_type_actual_arc | sc_type_temp_arc | sc_type_pos_arc);
+ScType const ScType::VarInactualTempPosArc(sc_type_var | sc_type_inactual_arc | sc_type_temp_arc | sc_type_pos_arc);
+
+// negative sc-arcs
+ScType const ScType::ConstNegArc(sc_type_const | sc_type_neg_arc);
+ScType const ScType::VarNegArc(sc_type_var | sc_type_neg_arc);
+
+ScType const ScType::PermNegArc(sc_type_perm_arc | sc_type_neg_arc);
+ScType const ScType::TempNegArc(sc_type_temp_arc | sc_type_neg_arc);
+ScType const ScType::ActualTempNegArc(sc_type_actual_arc | sc_type_temp_arc | sc_type_neg_arc);
+ScType const ScType::InactualTempNegArc(sc_type_inactual_arc | sc_type_temp_arc | sc_type_neg_arc);
+
+ScType const ScType::ConstPermNegArc(sc_type_const | sc_type_perm_arc | sc_type_neg_arc);
+ScType const ScType::ConstTempNegArc(sc_type_const | sc_type_temp_arc | sc_type_neg_arc);
+ScType const ScType::ConstActualTempNegArc(sc_type_const | sc_type_actual_arc | sc_type_temp_arc | sc_type_neg_arc);
+ScType const ScType::ConstInactualTempNegArc(sc_type_const | sc_type_inactual_arc | sc_type_temp_arc | sc_type_neg_arc);
+
+ScType const ScType::VarPermNegArc(sc_type_var | sc_type_perm_arc | sc_type_neg_arc);
+ScType const ScType::VarTempNegArc(sc_type_var | sc_type_temp_arc | sc_type_neg_arc);
+ScType const ScType::VarActualTempNegArc(sc_type_var | sc_type_actual_arc | sc_type_temp_arc | sc_type_neg_arc);
+ScType const ScType::VarInactualTempNegArc(sc_type_var | sc_type_inactual_arc | sc_type_temp_arc | sc_type_neg_arc);
+
+// fuzzy sc-arcs
+ScType const ScType::ConstFuzArc(sc_type_const | sc_type_fuz_arc);
+ScType const ScType::VarFuzArc(sc_type_var | sc_type_fuz_arc);
+
+// semantic sc-node types
+ScType const ScType::NodeLink(sc_type_node_link);
+ScType const ScType::NodeLinkClass(sc_type_node_link | sc_type_node_class);
+ScType const ScType::NodeTuple(sc_type_node_tuple);
+ScType const ScType::NodeStructure(sc_type_node_structure);
+ScType const ScType::NodeRole(sc_type_node_role);
+ScType const ScType::NodeNoRole(sc_type_node_norole);
+ScType const ScType::NodeClass(sc_type_node_class);
+ScType const ScType::NodeSuperclass(sc_type_node_superclass);
+ScType const ScType::NodeMaterial(sc_type_node_material);
+
+ScType const ScType::ConstNodeLink(sc_type_const | sc_type_node_link);
+ScType const ScType::ConstNodeLinkClass(sc_type_const | sc_type_node_link | sc_type_node_class);
+ScType const ScType::ConstNodeTuple(sc_type_const | sc_type_node_tuple);
+ScType const ScType::ConstNodeStructure(sc_type_const | sc_type_node_structure);
+ScType const ScType::ConstNodeRole(sc_type_const | sc_type_node_role);
+ScType const ScType::ConstNodeNoRole(sc_type_const | sc_type_node_norole);
+ScType const ScType::ConstNodeClass(sc_type_const | sc_type_node_class);
+ScType const ScType::ConstNodeSuperclass(sc_type_const | sc_type_node_superclass);
+ScType const ScType::ConstNodeMaterial(sc_type_const | sc_type_node_material);
+
+ScType const ScType::VarNodeLink(sc_type_var | sc_type_node_link);
+ScType const ScType::VarNodeLinkClass(sc_type_var | sc_type_node_link | sc_type_node_class);
+ScType const ScType::VarNodeTuple(sc_type_var | sc_type_node_tuple);
+ScType const ScType::VarNodeStructure(sc_type_var | sc_type_node_structure);
+ScType const ScType::VarNodeRole(sc_type_var | sc_type_node_role);
+ScType const ScType::VarNodeNoRole(sc_type_var | sc_type_node_norole);
+ScType const ScType::VarNodeClass(sc_type_var | sc_type_node_class);
+ScType const ScType::VarNodeSuperclass(sc_type_var | sc_type_node_superclass);
+ScType const ScType::VarNodeMaterial(sc_type_var | sc_type_node_material);
+
+ScType const ScType::EdgeUCommon(ScType::CommonEdge);
+ScType const ScType::EdgeDCommon(ScType::CommonArc);
+
+ScType const ScType::EdgeUCommonConst(ScType::ConstCommonEdge);
+ScType const ScType::EdgeDCommonConst(ScType::ConstCommonArc);
+
+ScType const ScType::EdgeAccess(ScType::MembershipArc);
+ScType const ScType::EdgeAccessConstPosPerm(ScType::ConstPermPosArc);
+ScType const ScType::EdgeAccessConstNegPerm(ScType::ConstPermNegArc);
+ScType const ScType::EdgeAccessConstFuzPerm(ScType::ConstFuzArc);
+ScType const ScType::EdgeAccessConstPosTemp(ScType::ConstTempPosArc);
+ScType const ScType::EdgeAccessConstNegTemp(ScType::ConstTempNegArc);
+ScType const ScType::EdgeAccessConstFuzTemp(ScType::ConstFuzArc);
+
+ScType const ScType::EdgeUCommonVar(ScType::VarCommonEdge);
+ScType const ScType::EdgeDCommonVar(ScType::VarCommonArc);
+ScType const ScType::EdgeAccessVarPosPerm(ScType::VarPermPosArc);
+ScType const ScType::EdgeAccessVarNegPerm(ScType::VarPermNegArc);
+ScType const ScType::EdgeAccessVarFuzPerm(ScType::VarFuzArc);
+ScType const ScType::EdgeAccessVarPosTemp(ScType::VarTempPosArc);
+ScType const ScType::EdgeAccessVarNegTemp(ScType::VarTempNegArc);
+ScType const ScType::EdgeAccessVarFuzTemp(ScType::VarFuzArc);
+
+ScType const ScType::NodeConst(ScType::ConstNode);
+ScType const ScType::NodeVar(ScType::VarNode);
+
+ScType const ScType::Link(ScType::NodeLink);
+ScType const ScType::LinkClass(ScType::NodeLinkClass);
+ScType const ScType::NodeStruct(ScType::NodeStructure);
+
+ScType const ScType::LinkConst(ScType::ConstNodeLink);
+ScType const ScType::LinkConstClass(ScType::ConstNodeLinkClass);
+ScType const ScType::NodeConstTuple(ScType::ConstNodeTuple);
+ScType const ScType::NodeConstStruct(ScType::ConstNodeStructure);
+ScType const ScType::NodeConstRole(ScType::ConstNodeRole);
+ScType const ScType::NodeConstNoRole(ScType::ConstNodeNoRole);
+ScType const ScType::NodeConstClass(ScType::ConstNodeClass);
+ScType const ScType::NodeConstMaterial(ScType::ConstNodeMaterial);
+
+ScType const ScType::LinkVar(ScType::VarNodeLink);
+ScType const ScType::LinkVarClass(ScType::VarNodeLinkClass);
+ScType const ScType::NodeVarStruct(ScType::VarNodeStructure);
+ScType const ScType::NodeVarTuple(ScType::VarNodeTuple);
+ScType const ScType::NodeVarRole(ScType::VarNodeRole);
+ScType const ScType::NodeVarNoRole(ScType::VarNodeNoRole);
+ScType const ScType::NodeVarClass(ScType::VarNodeClass);
+ScType const ScType::NodeVarMaterial(ScType::VarNodeMaterial);

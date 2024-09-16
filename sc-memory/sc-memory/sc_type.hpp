@@ -6,30 +6,12 @@
 
 #pragma once
 
-#include <string>
-#include <sstream>
-#include <map>
-#include <set>
-#include <vector>
-#include <list>
-#include <array>
-#include <unordered_set>
-#include <unordered_map>
-#include <cassert>
-#include <cstdint>
-
-#include <fstream>
-
 extern "C"
 {
 #include "sc-core/sc-store/sc_types.h"
 }
 
 #include "sc_defines.hpp"
-
-#if SC_IS_PLATFORM_WIN32
-#  define NOMINMAX
-#endif
 
 class ScMemoryContext;
 class ScAddr;
@@ -39,8 +21,16 @@ class _SC_EXTERN ScType
 public:
   using RealType = sc_type;
 
-  explicit ScType();
-  ScType(RealType type) noexcept;
+  explicit constexpr ScType()
+    : m_realType(0)
+  {
+  }
+
+  constexpr ScType(RealType type) noexcept
+    : m_realType(type)
+  {
+  }
+
   ~ScType();
 
   SC_DEPRECATED(
@@ -107,6 +97,130 @@ private:
   RealType m_realType;
 
 public:
+  static ScType const Unknown;
+
+  // sc-elements
+  static ScType const Node;
+  static ScType const Connector;
+  static ScType const CommonEdge;
+  static ScType const Arc;
+  static ScType const CommonArc;
+  static ScType const MembershipArc;
+
+  // constancy
+  static ScType const Const;
+  static ScType const Var;
+
+  static ScType const ConstNode;
+  static ScType const VarNode;
+  static ScType const ConstConnector;
+  static ScType const VarConnector;
+  static ScType const ConstCommonEdge;
+  static ScType const VarCommonEdge;
+  static ScType const ConstArc;
+  static ScType const VarArc;
+  static ScType const ConstCommonArc;
+  static ScType const VarCommonArc;
+  static ScType const ConstMembershipArc;
+  static ScType const VarMembershipArc;
+
+  // permanency
+  static ScType const PermArc;
+  static ScType const TempArc;
+
+  static ScType const ConstPermArc;
+  static ScType const VarPermArc;
+  static ScType const ConstTempArc;
+  static ScType const VarTempArc;
+
+  // actuality
+  static ScType const ActualTempArc;
+  static ScType const InactualTempArc;
+
+  static ScType const ConstActualTempArc;
+  static ScType const VarActualTempArc;
+  static ScType const ConstInactualTempArc;
+  static ScType const VarInactualTempArc;
+
+  // positivity
+  static ScType const PosArc;
+  static ScType const NegArc;
+  static ScType const FuzArc;
+
+  // positive sc-arcs
+  static ScType const ConstPosArc;
+  static ScType const VarPosArc;
+
+  static ScType const PermPosArc;
+  static ScType const TempPosArc;
+  static ScType const ActualTempPosArc;
+  static ScType const InactualTempPosArc;
+
+  static ScType const ConstPermPosArc;
+  static ScType const ConstTempPosArc;
+  static ScType const ConstActualTempPosArc;
+  static ScType const ConstInactualTempPosArc;
+
+  static ScType const VarPermPosArc;
+  static ScType const VarTempPosArc;
+  static ScType const VarActualTempPosArc;
+  static ScType const VarInactualTempPosArc;
+
+  // negative sc-arcs
+  static ScType const ConstNegArc;
+  static ScType const VarNegArc;
+
+  static ScType const PermNegArc;
+  static ScType const TempNegArc;
+  static ScType const ActualTempNegArc;
+  static ScType const InactualTempNegArc;
+
+  static ScType const ConstPermNegArc;
+  static ScType const ConstTempNegArc;
+  static ScType const ConstActualTempNegArc;
+  static ScType const ConstInactualTempNegArc;
+
+  static ScType const VarPermNegArc;
+  static ScType const VarTempNegArc;
+  static ScType const VarActualTempNegArc;
+  static ScType const VarInactualTempNegArc;
+
+  // fuzzy sc-arcs
+  static ScType const ConstFuzArc;
+  static ScType const VarFuzArc;
+
+  // semantic sc-node types
+  static ScType const NodeLink;
+  static ScType const NodeLinkClass;
+  static ScType const NodeTuple;
+  static ScType const NodeStructure;
+  static ScType const NodeRole;
+  static ScType const NodeNoRole;
+  static ScType const NodeClass;
+  static ScType const NodeSuperclass;
+  static ScType const NodeMaterial;
+
+  static ScType const ConstNodeLink;
+  static ScType const ConstNodeLinkClass;
+  static ScType const ConstNodeTuple;
+  static ScType const ConstNodeStructure;
+  static ScType const ConstNodeRole;
+  static ScType const ConstNodeNoRole;
+  static ScType const ConstNodeClass;
+  static ScType const ConstNodeSuperclass;
+  static ScType const ConstNodeMaterial;
+
+  static ScType const VarNodeLink;
+  static ScType const VarNodeLinkClass;
+  static ScType const VarNodeTuple;
+  static ScType const VarNodeStructure;
+  static ScType const VarNodeRole;
+  static ScType const VarNodeNoRole;
+  static ScType const VarNodeClass;
+  static ScType const VarNodeSuperclass;
+  static ScType const VarNodeMaterial;
+
+  // deprecated types
   static ScType const EdgeUCommon;
   static ScType const EdgeDCommon;
 
@@ -131,43 +245,28 @@ public:
   static ScType const EdgeAccessVarNegTemp;
   static ScType const EdgeAccessVarFuzTemp;
 
-  static ScType const Const;
-  static ScType const Var;
-
-  static ScType const Node;
-  static ScType const Link;
-  static ScType const LinkClass;
-  static ScType const LinkConstClass;
-  static ScType const LinkVarClass;
-  static ScType const Unknown;
-
   static ScType const NodeConst;
   static ScType const NodeVar;
 
-  static ScType const LinkConst;
-  static ScType const LinkVar;
-
+  static ScType const Link;
+  static ScType const LinkClass;
   static ScType const NodeStruct;
-  static ScType const NodeTuple;
-  static ScType const NodeRole;
-  static ScType const NodeNoRole;
-  static ScType const NodeClass;
-  static ScType const NodeAbstract;
-  static ScType const NodeMaterial;
 
+  static ScType const LinkConst;
+  static ScType const LinkConstClass;
   static ScType const NodeConstStruct;
   static ScType const NodeConstTuple;
   static ScType const NodeConstRole;
   static ScType const NodeConstNoRole;
   static ScType const NodeConstClass;
-  static ScType const NodeConstAbstract;
   static ScType const NodeConstMaterial;
 
+  static ScType const LinkVar;
+  static ScType const LinkVarClass;
   static ScType const NodeVarStruct;
   static ScType const NodeVarTuple;
   static ScType const NodeVarRole;
   static ScType const NodeVarNoRole;
   static ScType const NodeVarClass;
-  static ScType const NodeVarAbstract;
   static ScType const NodeVarMaterial;
 };

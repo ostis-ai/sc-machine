@@ -144,7 +144,7 @@ TEST_F(ScTemplateSearchTest, UnknownType)
   // addr1 -> addr2;;
   ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstMaterial);
   EXPECT_TRUE(addr2.IsValid());
   ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
   EXPECT_TRUE(arcAddr.IsValid());
@@ -201,7 +201,7 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
   std::vector<TestData> data(50);
   for (auto & d : data)
   {
-    d.m_app = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+    d.m_app = m_ctx->GenerateNode(ScType::NodeConstMaterial);
     EXPECT_TRUE(d.m_app.IsValid());
 
     arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
@@ -303,7 +303,7 @@ TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
   std::vector<TestData> data(50);
   for (auto & d : data)
   {
-    d.m_addr = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+    d.m_addr = m_ctx->GenerateNode(ScType::NodeConst);
     EXPECT_TRUE(d.m_addr.IsValid());
 
     d.m_classEdge1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr1, d.m_addr);
