@@ -439,15 +439,15 @@ TEST_F(ScTemplateGenApiTest, GenTemplateWithNodeReplacedByArc)
   templ.Triple(ScType::NodeVar >> "_addr1", ScType::EdgeAccessVarPosTemp, "_arc");
   templ.Triple("_arc", ScType::EdgeAccessVarPosTemp, ScType::NodeVar >> "_addr2");
 
-  ScAddr const & nodeAddr1 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->CreateNode(ScType::NodeConst);
-  ScAddr const & edgeAddr = m_ctx->CreateEdge(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, nodeAddr1, nodeAddr2);
 
   ScTemplateParams params;
   params.Add("_addr2", edgeAddr);
 
   ScTemplateGenResult result;
-  EXPECT_TRUE(m_ctx->HelperGenTemplate(templ, result, params));
+  m_ctx->GenerateByTemplate(templ, result, params);
 
   EXPECT_EQ(result["_addr2"], edgeAddr);
 }
