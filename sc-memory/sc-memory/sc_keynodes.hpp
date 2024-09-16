@@ -238,6 +238,9 @@ public:
       "action_finished_with_error",
       ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const nrel_result{"nrel_result", ScType::NodeConstNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_max_customer_waiting_time_for_action_to_finish{
+      "nrel_max_customer_waiting_time_for_action_to_finish",
+      ScType::NodeConstNoRole};
 
   _SC_EXTERN static inline ScKeynode const abstract_sc_agent{"abstract_sc_agent", ScType::NodeConstClass};
   _SC_EXTERN static inline ScKeynode const nrel_primary_initiation_condition{

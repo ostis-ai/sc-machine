@@ -21,9 +21,9 @@ encapsulated this logic;
 - Questions were renamed to actions, answers were renamed to results.
 - `m_memoryCtx` in ScAgent renamed to `m_context`.
 - Now we don't use code generation as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API. We have
-  - completely moved from code generation to template programming;
-  - improved the API and aligned with our description of how it should be;
-  - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
+    - completely moved from code generation to template programming;
+    - improved the API and aligned with our description of how it should be;
+    - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
 - All `ScMemoryContext` methods were redesigned to a common style. All methods with not correct names were deprecated, and new ones were added. See the table below to see which methods have been replaced.
   
   | Deprecated method                   | Substitution method                   |

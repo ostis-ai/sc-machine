@@ -236,13 +236,38 @@ bool const isActionInitiated = action.IsInitiated();
 
 #### **InitiateAndWait**
 
-You can initiate action and wait for it to finish.
+You can initiate action and wait for it to finish. This method stores maximum customer waiting time of the action to finish in knowledge base.
 
 ```cpp
 ...
 // Provide maximum time of waiting while action will be finished.
 action.InitiateAndWait(100); // milliseconds
 // This argument has default value, that equals to 5000 milliseconds.
+...
+```
+
+<scg src="../images/actions/action_initiated_with_waiting.gwf"></scg>
+
+!!! warning
+    If you set maximum customer waiting time for an action that already has maximum customer waiting time, then this method will throw `utils::ExceptionInvalidState`.
+
+#### **GetMaxCustomerWaitingTimeLink**
+
+You can get sc-link with time that customer will wait for action to finish. If action does not have waiting time then empty sc-address will be returned.
+
+```cpp
+...
+ScAddr const & waitingTimeAddr = action.GetMaxCustomerWaitingTimeLink();
+...
+```
+
+#### **GetMaxCustomerWaitingTime**
+
+You can get time that customer will wait for action to finish. If action does not have waiting time then 0 will be returned.
+
+```cpp
+...
+sc_uint32 const waitingTime = action.GetMaxCustomerWaitingTime();
 ...
 ```
 
@@ -362,7 +387,6 @@ ScResult const & result = action.FinishWithError();
 
 !!! warning
     If you finish action with error that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
-
 
 All these methods return object of `ScResult`. You should return it in agent program. You can't call constructor of `ScResult` to generate new object.
 

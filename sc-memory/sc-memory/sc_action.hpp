@@ -126,12 +126,28 @@ public:
 
   /*!
    * @brief Initiates and waits the action.
-   * @param waitTime_ms Wait time (in milliseconds) of action being finished. Be default, it equals to 5000
-   * milliseconds.
+   * @param maxCustomerWaitingTime Wait time (in milliseconds) of action being finished. By default, it
+   * equals to 5000 milliseconds.
+   *
+   * This method adds max customer waiting time in millisecond to knowledge base if action does not have max customer
+   * waiting time in milliseconds.
+   *
    * @return true if the action has been waited, otherwise true.
    * @throws utils::ExceptionInvalidState if the action is already initiated or finished.
    */
-  _SC_EXTERN bool InitiateAndWait(sc_uint32 waitTime_ms = 5000u) noexcept(false);
+  _SC_EXTERN bool InitiateAndWait(sc_uint32 maxCustomerWaitingTime = 5000u) noexcept(false);
+
+  /*!
+   * @brief Gets sc-link with max customer waiting time of an action in milliseconds.
+   * @return ScAddr of sc-link containing max customer waiting time in milliseconds if found, empty ScAddr otherwise.
+   */
+  _SC_EXTERN ScAddr GetMaxCustomerWaitingTimeLink() const noexcept;
+
+  /*!
+   * @brief Gets value of max customer waiting time of an action in milliseconds.
+   * @return Max customer waiting time in milliseconds if found, 0 otherwise.
+   */
+  _SC_EXTERN sc_uint32 GetMaxCustomerWaitingTime() const noexcept;
 
   /*!
    * @brief Initiates the action.
@@ -208,7 +224,6 @@ protected:
   /*!
    * @brief Marks the action as finished and add action state class to the action.
    * @param actionStateAddr An address of action state class.
-   * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
    */
   void Finish(ScAddr const & actionStateAddr) noexcept(false);
@@ -254,6 +269,17 @@ private:
    * class name is available.
    */
   std::string GetActionClassPrettyString() const;
+
+  /*!
+   * @brief Sets passed time as max customer waiting time in milliseconds.
+   *
+   * New sc-link will be generated and its content will be set to passed
+   * waiting time. After that this link will be connected to an action via relation
+   * `nrel_max_customer_waiting_time_for_action_to_finish`.
+   *
+   * @param maxCustomerWaitingTime Time in milliseconds that customer will wait for this action to finish.
+   */
+  void GenerateMaxCustomerWaitingTime(sc_uint32 maxCustomerWaitingTime) const;
 };
 
 #include "sc_action.tpp"
