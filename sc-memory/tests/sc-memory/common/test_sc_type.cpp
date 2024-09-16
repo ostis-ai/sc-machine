@@ -4,89 +4,203 @@
 
 #include "sc_test.hpp"
 
-TEST(ScTypeTest, Nodes)
+#define Y true
+#define N false
+
+std::vector<std::pair<ScType, std::tuple<bool, bool, bool, bool, bool, bool, bool, bool, bool>>> GetTypesToSubtypesMap()
 {
-  EXPECT_TRUE(ScType::Node.IsNode());
+  /* clang-format off */
+  return {                        // IsNode     IsLink  IsConnector IsCommonEdge  IsArc IsCommonArc IsMembershipArc IsConst   IsVar
+      {ScType::Unknown,                {N,         N,         N,         N,         N,         N,         N,         N,         N}},
 
-  EXPECT_TRUE(ScType::ConstNode.IsNode());
-  EXPECT_TRUE(ScType::ConstNodeClass.IsNode());
-  EXPECT_TRUE(ScType::ConstNodeMaterial.IsNode());
-  EXPECT_TRUE(ScType::ConstNodeNoRole.IsNode());
-  EXPECT_TRUE(ScType::ConstNodeRole.IsNode());
-  EXPECT_TRUE(ScType::ConstNodeStructure.IsNode());
-  EXPECT_TRUE(ScType::ConstNodeTuple.IsNode());
+      {ScType::Node,                   {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::Connector,              {N,         N,         Y,         N,         N,         N,         N,         N,         N}},
+      {ScType::CommonEdge,             {N,         N,         Y,         Y,         N,         N,         N,         N,         N}},
+      {ScType::Arc,                    {N,         N,         Y,         N,         Y,         N,         N,         N,         N}},
+      {ScType::CommonArc,              {N,         N,         Y,         N,         Y,         Y,         N,         N,         N}},
+      {ScType::MembershipArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
 
-  EXPECT_TRUE(ScType::VarNode.IsNode());
-  EXPECT_TRUE(ScType::VarNodeClass.IsNode());
-  EXPECT_TRUE(ScType::VarNodeMaterial.IsNode());
-  EXPECT_TRUE(ScType::VarNodeNoRole.IsNode());
-  EXPECT_TRUE(ScType::VarNodeRole.IsNode());
-  EXPECT_TRUE(ScType::VarNodeStructure.IsNode());
-  EXPECT_TRUE(ScType::VarNodeTuple.IsNode());
+      // Constancy types
+      {ScType::Const,                  {N,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::Var,                    {N,         N,         N,         N,         N,         N,         N,         N,         Y}},
+
+      {ScType::ConstNode,              {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::VarNode,                {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::ConstConnector,         {N,         N,         Y,         N,         N,         N,         N,         Y,         N}},
+      {ScType::VarConnector,           {N,         N,         Y,         N,         N,         N,         N,         N,         Y}},
+      {ScType::ConstCommonEdge,        {N,         N,         Y,         Y,         N,         N,         N,         Y,         N}},
+      {ScType::VarCommonEdge,          {N,         N,         Y,         Y,         N,         N,         N,         N,         Y}},
+      {ScType::ConstArc,               {N,         N,         Y,         N,         Y,         N,         N,         Y,         N}},
+      {ScType::VarArc,                 {N,         N,         Y,         N,         Y,         N,         N,         N,         Y}},
+      {ScType::ConstCommonArc,         {N,         N,         Y,         N,         Y,         Y,         N,         Y,         N}},
+      {ScType::VarCommonArc,           {N,         N,         Y,         N,         Y,         Y,         N,         N,         Y}},
+      {ScType::ConstMembershipArc,     {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarMembershipArc,       {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      // Permanency types
+      {ScType::PermArc,                {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::TempArc,                {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+
+      {ScType::ConstPermArc,           {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarPermArc,             {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::ConstTempArc,           {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarTempArc,             {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      // Actuality types
+      {ScType::ActualTempArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::InactualTempArc,        {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+
+      {ScType::ConstActualTempArc,     {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarActualTempArc,       {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::ConstInactualTempArc,   {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarInactualTempArc,     {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      // Positivity types
+      {ScType::PosArc,                 {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::NegArc,                 {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::FuzArc,                 {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+
+      // Positive sc-arcs
+      {ScType::ConstPosArc,            {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarPosArc,              {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      {ScType::PermPosArc,             {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::TempPosArc,             {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::ActualTempPosArc,       {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::InactualTempPosArc,     {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+
+      {ScType::ConstPermPosArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::ConstTempPosArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+
+      {ScType::VarPermPosArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::VarTempPosArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      // Negative sc-arcs
+      {ScType::ConstNegArc,            {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarNegArc,              {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      {ScType::PermNegArc,             {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::TempNegArc,             {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::ActualTempNegArc,       {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+      {ScType::InactualTempNegArc,     {N,         N,         Y,         N,         Y,         N,         Y,         N,         N}},
+
+      {ScType::ConstPermNegArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::ConstTempNegArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+
+      {ScType::VarPermNegArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::VarTempNegArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      // Fuzzy sc-arcs
+      {ScType::ConstFuzArc,            {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::VarFuzArc,              {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+
+      // Semantic sc-node types
+      {ScType::NodeLink,               {Y,         Y,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeLinkClass,          {Y,         Y,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeTuple,              {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeStructure,          {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeRole,               {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeNoRole,             {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeClass,              {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeSuperclass,         {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+      {ScType::NodeMaterial,           {Y,         N,         N,         N,         N,         N,         N,         N,         N}},
+
+      // Constant semantic node types
+      {ScType::ConstNodeLink,          {Y,         Y,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeLinkClass,     {Y,         Y,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeTuple,         {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeStructure,     {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeRole,          {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeNoRole,        {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeClass,         {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeSuperclass,    {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+      {ScType::ConstNodeMaterial,      {Y,         N,         N,         N,         N,         N,         N,         Y,         N}},
+
+      // Variable semantic node types
+      {ScType::VarNodeLink,            {Y,         Y,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeLinkClass,       {Y,         Y,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeTuple,           {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeStructure,       {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeRole,            {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeNoRole,          {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeClass,           {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeSuperclass,      {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+      {ScType::VarNodeMaterial,        {Y,         N,         N,         N,         N,         N,         N,         N,         Y}},
+  };
+  /* clang-format on */
 }
 
-TEST(ScTypeTest, Constancy)
+TEST(ScTypeTest, CheckTypeSubtypes)
 {
-  EXPECT_FALSE(ScType::Node.IsConst());
-  EXPECT_FALSE(ScType::Node.IsVar());
-
-  EXPECT_TRUE(ScType::ConstNodeLink.IsConst());
-
-  EXPECT_TRUE(ScType::ConstNode.IsConst());
-  EXPECT_TRUE(ScType::ConstNodeClass.IsConst());
-  EXPECT_TRUE(ScType::ConstNodeMaterial.IsConst());
-  EXPECT_TRUE(ScType::ConstNodeNoRole.IsConst());
-  EXPECT_TRUE(ScType::ConstNodeRole.IsConst());
-  EXPECT_TRUE(ScType::ConstNodeStructure.IsConst());
-  EXPECT_TRUE(ScType::ConstNodeTuple.IsConst());
-  EXPECT_TRUE(ScType::ConstCommonArc.IsConst());
-  EXPECT_TRUE(ScType::ConstCommonEdge.IsConst());
-  EXPECT_TRUE(ScType::ConstFuzArc.IsConst());
-  EXPECT_TRUE(ScType::ConstFuzArc.IsConst());
-  EXPECT_TRUE(ScType::ConstPermNegArc.IsConst());
-  EXPECT_TRUE(ScType::ConstTempNegArc.IsConst());
-  EXPECT_TRUE(ScType::ConstPermPosArc.IsConst());
-  EXPECT_TRUE(ScType::ConstTempPosArc.IsConst());
-
-  EXPECT_TRUE(ScType::VarNode.IsVar());
-  EXPECT_TRUE(ScType::VarNodeLink.IsVar());
-  EXPECT_TRUE(ScType::VarNodeClass.IsVar());
-  EXPECT_TRUE(ScType::VarNodeMaterial.IsVar());
-  EXPECT_TRUE(ScType::VarNodeNoRole.IsVar());
-  EXPECT_TRUE(ScType::VarNodeRole.IsVar());
-  EXPECT_TRUE(ScType::VarNodeStructure.IsVar());
-  EXPECT_TRUE(ScType::VarNodeTuple.IsVar());
-  EXPECT_TRUE(ScType::VarCommonArc.IsVar());
-  EXPECT_TRUE(ScType::VarCommonEdge.IsVar());
-  EXPECT_TRUE(ScType::VarFuzArc.IsVar());
-  EXPECT_TRUE(ScType::VarFuzArc.IsVar());
-  EXPECT_TRUE(ScType::VarPermNegArc.IsVar());
-  EXPECT_TRUE(ScType::VarTempNegArc.IsVar());
-  EXPECT_TRUE(ScType::VarPermPosArc.IsVar());
-  EXPECT_TRUE(ScType::VarTempPosArc.IsVar());
+  auto const & typeMap = GetTypesToSubtypesMap();
+  for (auto const & [type, subtypes] : typeMap)
+  {
+    auto const [isNode, isLink, isConnector, isCommonEdge, isArc, isCommonArc, isMembershipArc, isConst, isVar] =
+        subtypes;
+    EXPECT_EQ(type.IsNode(), isNode);
+    EXPECT_EQ(type.IsLink(), isLink);
+    EXPECT_EQ(type.IsConnector(), isConnector);
+    EXPECT_EQ(type.IsCommonEdge(), isCommonEdge);
+    EXPECT_EQ(type.IsArc(), isArc);
+    EXPECT_EQ(type.IsCommonArc(), isCommonArc);
+    EXPECT_EQ(type.IsMembershipArc(), isMembershipArc);
+    EXPECT_EQ(type.IsConst(), isConst);
+    EXPECT_EQ(type.IsVar(), isVar);
+  }
 }
 
-TEST(ScTypeTest, Connectors)
+std::vector<std::pair<ScType, ScType>> GetDeprecatedTypesToTypesMap()
 {
-  EXPECT_TRUE(ScType::MembershipArc.IsConnector());
-  EXPECT_TRUE(ScType::ConstFuzArc.IsConnector());
-  EXPECT_TRUE(ScType::ConstFuzArc.IsConnector());
-  EXPECT_TRUE(ScType::ConstPermNegArc.IsConnector());
-  EXPECT_TRUE(ScType::ConstTempNegArc.IsConnector());
-  EXPECT_TRUE(ScType::ConstPermPosArc.IsConnector());
-  EXPECT_TRUE(ScType::ConstTempPosArc.IsConnector());
-  EXPECT_TRUE(ScType::VarFuzArc.IsConnector());
-  EXPECT_TRUE(ScType::VarFuzArc.IsConnector());
-  EXPECT_TRUE(ScType::VarPermNegArc.IsConnector());
-  EXPECT_TRUE(ScType::VarTempNegArc.IsConnector());
-  EXPECT_TRUE(ScType::VarPermPosArc.IsConnector());
-  EXPECT_TRUE(ScType::VarTempPosArc.IsConnector());
-  EXPECT_TRUE(ScType::CommonArc.IsConnector());
-  EXPECT_TRUE(ScType::ConstCommonArc.IsConnector());
-  EXPECT_TRUE(ScType::VarCommonArc.IsConnector());
-  EXPECT_TRUE(ScType::CommonEdge.IsConnector());
-  EXPECT_TRUE(ScType::ConstCommonEdge.IsConnector());
-  EXPECT_TRUE(ScType::VarCommonEdge.IsConnector());
+  SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
+  return {
+      {ScType::EdgeUCommon, ScType::CommonEdge},
+      {ScType::EdgeUCommonConst, ScType::ConstCommonEdge},
+      {ScType::EdgeUCommonVar, ScType::VarCommonEdge},
+      {ScType::EdgeDCommon, ScType::CommonArc},
+      {ScType::EdgeDCommonConst, ScType::ConstCommonArc},
+      {ScType::EdgeDCommonVar, ScType::VarCommonArc},
+      {ScType::EdgeAccessConstPosPerm, ScType::ConstPermPosArc},
+      {ScType::EdgeAccessConstNegPerm, ScType::ConstPermNegArc},
+      {ScType::EdgeAccessConstFuzPerm, ScType::ConstFuzArc},
+      {ScType::EdgeAccessConstPosTemp, ScType::ConstTempPosArc},
+      {ScType::EdgeAccessConstNegTemp, ScType::ConstTempNegArc},
+      {ScType::EdgeAccessConstFuzTemp, ScType::ConstFuzArc},
+      {ScType::EdgeAccessVarPosPerm, ScType::VarPermPosArc},
+      {ScType::EdgeAccessVarNegPerm, ScType::VarPermNegArc},
+      {ScType::EdgeAccessVarFuzPerm, ScType::VarFuzArc},
+      {ScType::EdgeAccessVarPosTemp, ScType::VarTempPosArc},
+      {ScType::EdgeAccessVarNegTemp, ScType::VarTempNegArc},
+      {ScType::EdgeAccessVarFuzTemp, ScType::VarFuzArc},
+      {ScType::NodeConst, ScType::ConstNode},
+      {ScType::NodeVar, ScType::VarNode},
+      {ScType::Link, ScType::NodeLink},
+      {ScType::LinkClass, ScType::NodeLinkClass},
+      {ScType::NodeStruct, ScType::NodeStructure},
+      {ScType::LinkConst, ScType::ConstNodeLink},
+      {ScType::LinkConstClass, ScType::ConstNodeLinkClass},
+      {ScType::NodeConstStruct, ScType::ConstNodeStructure},
+      {ScType::NodeConstTuple, ScType::ConstNodeTuple},
+      {ScType::NodeConstRole, ScType::ConstNodeRole},
+      {ScType::NodeConstNoRole, ScType::ConstNodeNoRole},
+      {ScType::NodeConstClass, ScType::ConstNodeClass},
+      {ScType::NodeConstMaterial, ScType::ConstNodeMaterial},
+      {ScType::LinkVar, ScType::VarNodeLink},
+      {ScType::LinkVarClass, ScType::VarNodeLinkClass},
+      {ScType::NodeVarStruct, ScType::VarNodeStructure},
+      {ScType::NodeVarTuple, ScType::VarNodeTuple},
+      {ScType::NodeVarRole, ScType::VarNodeRole},
+      {ScType::NodeVarNoRole, ScType::VarNodeNoRole},
+      {ScType::NodeVarClass, ScType::VarNodeClass},
+      {ScType::NodeVarMaterial, ScType::VarNodeMaterial},
+  };
+  SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
+}
+
+TEST(ScTypeTest, CheckDeprecatedTypes)
+{
+  auto const & typeMap = GetDeprecatedTypesToTypesMap();
+  for (auto const & [deprecatedType, type] : typeMap)
+    EXPECT_EQ(deprecatedType, type);
 }
 
 TEST(ScTypeTest, ExtendTypes)

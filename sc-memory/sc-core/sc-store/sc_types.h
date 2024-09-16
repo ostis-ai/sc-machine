@@ -119,18 +119,21 @@ struct _sc_addr
 typedef sc_uint16 sc_type;
 
 // sc-element types
+#  define sc_type_unknown (sc_type)0
 #  define sc_type_node (sc_type)0x1
-#  define sc_type_common_edge (sc_type)0x4
-#  define sc_type_common_arc (sc_type)0x8
-#  define sc_type_membership_arc (sc_type)0x10
+#  define sc_type_connector (sc_type)0x4000
+#  define sc_type_common_edge (sc_type)(sc_type_connector | (sc_type)0x4)
+#  define sc_type_arc (sc_type)(sc_type_connector | (sc_type)0x8000)
+#  define sc_type_common_arc (sc_type)(sc_type_arc | (sc_type)0x8)
+#  define sc_type_membership_arc (sc_type)(sc_type_arc | (sc_type)0x10)
 
 // sc-element constant
 #  define sc_type_const (sc_type)0x20
 #  define sc_type_var (sc_type)0x40
 
 // sc-arc actuality
-#  define sc_type_actual_arc (sc_type)(sc_type_membership_arc | (sc_type)0x4000)
-#  define sc_type_inactual_arc (sc_type)(sc_type_membership_arc | (sc_type)0x8000)
+#  define sc_type_actual_arc (sc_type)(sc_type_membership_arc | (sc_type)0x1000)
+#  define sc_type_inactual_arc (sc_type)(sc_type_membership_arc | (sc_type)0x2000)
 
 // sc-arc permanence
 #  define sc_type_temp_arc (sc_type)(sc_type_membership_arc | (sc_type)0x400)
@@ -186,10 +189,6 @@ typedef sc_uint16 sc_type;
 #  define sc_type_connector_mask (sc_type)(sc_type_common_edge | sc_type_common_arc | sc_type_membership_arc)
 #  define sc_type_arc_mask (sc_type)(sc_type_common_arc | sc_type_membership_arc)
 
-#  define sc_type_unknown (sc_type)0
-#  define sc_type_connector (sc_type) sc_type_connector_mask
-#  define sc_type_arc (sc_type) sc_type_arc_mask
-
 #  define sc_type_constancy_mask (sc_type)(sc_type_const | sc_type_var)
 #  define sc_type_actuality_mask (sc_type)(sc_type_actual_arc | sc_type_inactual_arc)
 #  define sc_type_permanency_mask (sc_type)(sc_type_perm_arc | sc_type_temp_arc)
@@ -221,20 +220,15 @@ typedef sc_uint16 sc_type;
      && (sc_type_has_subtype_in_mask(_type, sc_type_node_mask) \
          || sc_type_has_subtype_in_mask(_type, sc_type_constancy_mask)))
 #  define sc_type_is_connector(_type) \
-    (sc_type_has_subtype_in_mask(_type, sc_type_connector_mask) \
+    (sc_type_has_subtype(_type, sc_type_connector) \
      && (sc_type_has_subtype_in_mask(_type, sc_type_membership_arc_mask) \
          || sc_type_has_subtype_in_mask(_type, sc_type_common_arc_mask) \
          || sc_type_has_subtype_in_mask(_type, sc_type_common_edge_mask) \
          || sc_type_has_subtype_in_mask(_type, sc_type_constancy_mask)))
-#  define sc_type_is_common_edge(_type) \
-    (sc_type_has_subtype_in_mask(_type, sc_type_connector_mask) \
-     && sc_type_has_subtype_in_mask(_type, sc_type_common_edge_mask))
-#  define sc_type_is_common_arc(_type) \
-    (sc_type_has_subtype_in_mask(_type, sc_type_connector_mask) \
-     && sc_type_has_subtype_in_mask(_type, sc_type_common_arc_mask))
-#  define sc_type_is_membership_arc(_type) \
-    (sc_type_has_subtype_in_mask(_type, sc_type_connector_mask) \
-     && sc_type_has_subtype_in_mask(_type, sc_type_membership_arc_mask))
+#  define sc_type_is_common_edge(_type) sc_type_has_subtype(_type, sc_type_common_edge)
+#  define sc_type_is_arc(_type) sc_type_has_subtype(_type, sc_type_arc)
+#  define sc_type_is_common_arc(_type) sc_type_has_subtype(_type, sc_type_common_arc)
+#  define sc_type_is_membership_arc(_type) sc_type_has_subtype(_type, sc_type_membership_arc)
 
 #  define sc_type_is_not_node(_type) !sc_type_is_node(_type)
 #  define sc_type_is_not_connector(_type) !(sc_type_is_connector(_type))
@@ -244,14 +238,6 @@ typedef sc_uint16 sc_states;
 #  define SC_STATE_REQUEST_DELETION 0x1
 #  define SC_STATE_IS_DELETABLE 0x200
 #  define SC_STATE_ELEMENT_EXIST 0x2
-
-#  define SC_ACCESS_LVL_MAX_VALUE 15
-#  define SC_ACCESS_LVL_MIN_VALUE 0
-
-#  define sc_access_lvl_make(read, write) (sc_uint8)((write) | ((read) << 4))
-
-#  define sc_access_lvl_make_max sc_access_lvl_make(SC_ACCESS_LVL_MAX_VALUE, SC_ACCESS_LVL_MAX_VALUE)
-#  define sc_access_lvl_make_min sc_access_lvl_make(SC_ACCESS_LVL_MIN_VALUE, SC_ACCESS_LVL_MIN_VALUE)
 
 // results
 enum _sc_result

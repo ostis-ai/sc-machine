@@ -15,17 +15,17 @@ bool ScType::IsEdge() const
 
 bool ScType::IsConnector() const
 {
-  return sc_type_has_subtype_in_mask(m_realType, sc_type_connector_mask);
-}
-
-bool ScType::IsArc() const
-{
-  return sc_type_has_subtype_in_mask(m_realType, sc_type_arc_mask);
+  return sc_type_is_connector(m_realType);
 }
 
 bool ScType::IsCommonEdge() const
 {
   return sc_type_is_common_edge(m_realType);
+}
+
+bool ScType::IsArc() const
+{
+  return sc_type_is_arc(m_realType);
 }
 
 bool ScType::IsCommonArc() const

@@ -41,9 +41,9 @@ public:
 
   bool IsConnector() const;
 
-  bool IsArc() const;
-
   bool IsCommonEdge() const;
+
+  bool IsArc() const;
 
   bool IsCommonArc() const;
 
