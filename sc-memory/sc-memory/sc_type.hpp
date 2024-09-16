@@ -21,6 +21,7 @@ class _SC_EXTERN ScType
 public:
   using RealType = sc_type;
 
+  // All sc-types must be calculating in compile time!
   explicit constexpr ScType()
     : m_realType(0)
   {

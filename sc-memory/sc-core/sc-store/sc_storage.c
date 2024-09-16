@@ -1179,6 +1179,100 @@ error:
   return result;
 }
 
+sc_bool sc_storage_is_type_expendable_to(sc_type type, sc_type new_type)
+{
+  sc_type const syntactic_subtype = type & sc_type_element_mask;
+  sc_type const new_syntactic_subtype = new_type & sc_type_element_mask;
+
+  if (syntactic_subtype != sc_type_unknown && syntactic_subtype != new_syntactic_subtype)
+    return SC_FALSE;
+
+  sc_type const const_subtype = type & sc_type_constancy_mask;
+  sc_type const new_const_subtype = new_type & sc_type_constancy_mask;
+
+  if (const_subtype != sc_type_unknown && const_subtype != new_const_subtype)
+    return SC_FALSE;
+
+  if (sc_type_is_node_link(type))
+  {
+    if (!sc_type_is_node_link(new_type))
+      return SC_FALSE;
+
+    type = type & ~sc_type_node_link;
+    new_type = new_type & ~sc_type_node_link;
+
+    sc_type const link_subtype = type & sc_type_node_link_mask;
+    sc_type const new_link_subtype = new_type & sc_type_node_link_mask;
+    if (link_subtype != sc_type_unknown && link_subtype != new_link_subtype)
+      return SC_FALSE;
+  }
+  else if (sc_type_is_node(type))
+  {
+    if (!sc_type_is_node(new_type))
+      return SC_FALSE;
+
+    type = type & ~sc_type_node;
+    new_type = new_type & ~sc_type_node;
+
+    sc_type const node_subtype = type & sc_type_node_mask;
+    sc_type const new_node_subtype = new_type & sc_type_node_mask;
+    if (node_subtype != sc_type_unknown && node_subtype != new_node_subtype)
+      return SC_FALSE;
+  }
+  else if (sc_type_is_connector(type))
+  {
+    if (!sc_type_is_connector(new_type))
+      return SC_FALSE;
+
+    sc_type const connector_subtype = type & sc_type_connector_mask;
+    sc_type const new_connector_subtype = new_type & sc_type_connector_mask;
+    if (connector_subtype != sc_type_unknown && connector_subtype != new_connector_subtype)
+    {
+      if (sc_type_is_common_edge(type))
+      {
+        if (!sc_type_is_common_edge(new_type))
+          return SC_FALSE;
+      }
+      else if (sc_type_is_arc(type))
+      {
+        if (!sc_type_is_arc(new_type))
+          return SC_FALSE;
+
+        if (sc_type_is_common_arc(type))
+        {
+          if (!sc_type_is_common_arc(new_type))
+            return SC_FALSE;
+        }
+        else if (sc_type_is_membership_arc(type))
+        {
+          if (!sc_type_is_membership_arc(new_type))
+            return SC_FALSE;
+        }
+      }
+    }
+
+    type = type & ~sc_type_connector_mask;
+    new_type = new_type & ~sc_type_connector_mask;
+
+    sc_type const actuality_subtype = type & sc_type_actuality_mask;
+    sc_type const new_actuality_subtype = new_type & sc_type_actuality_mask;
+    if (actuality_subtype != sc_type_unknown && actuality_subtype != new_actuality_subtype)
+      return SC_FALSE;
+
+    sc_type const perm_subtype = type & sc_type_permanency_mask;
+    sc_type const new_perm_subtype = new_type & sc_type_permanency_mask;
+    if (perm_subtype != sc_type_unknown && perm_subtype != new_perm_subtype)
+      return SC_FALSE;
+
+    sc_type const pos_subtype = type & sc_type_positivity_mask;
+    sc_type const new_pos_subtype = new_type & sc_type_positivity_mask;
+    if (pos_subtype != sc_type_unknown && pos_subtype != new_pos_subtype)
+      return SC_FALSE;
+  }
+
+  return SC_TRUE;
+}
+
 sc_result sc_storage_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type)
 {
   sc_result result;
@@ -1192,7 +1286,7 @@ sc_result sc_storage_change_element_subtype(sc_memory_context const * ctx, sc_ad
   if (result != SC_RESULT_OK)
     goto error;
 
-  if ((el->flags.type & sc_type_element_mask) != (type & sc_type_element_mask))
+  if (!sc_storage_is_type_expendable_to(el->flags.type, type))
   {
     result = SC_RESULT_ERROR_INVALID_PARAMS;
     goto error;

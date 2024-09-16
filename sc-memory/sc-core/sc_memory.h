@@ -495,6 +495,30 @@ sc_memory_get_element_incoming_arcs_count(sc_memory_context const * ctx, sc_addr
 _SC_EXTERN sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result);
 
 /*!
+ * @brief Checks if a given sc_type can be expanded to a new sc_type.
+ *
+ * This function evaluates whether the original type can be transformed into the new type without losing any semantic or
+ * syntactic information. It considers various aspects of the types, including their syntactic subtypes, constancy, and
+ * specific semantics like node links, nodes, and connectors.
+ *
+ * @param type The original sc_type to be evaluated for expandability.
+ * @param new_type The new sc_type that is being checked against the original type.
+ *
+ * @return SC_TRUE if the new_type is compatible with type and can be used to expand it, SC_FALSE otherwise.
+ *
+ * The function performs the following checks:
+ * - **Syntactic Type Check**: Compares the syntactic subtypes of both types.
+ * - **Constancy Check**: Compares the constancy subtypes of both types.
+ * - **Node Link Check**: If the original type is a node link, it verifies that the new type is also a node link and
+ * checks their respective link subtypes.
+ * - **Node Check**: If the original type is a node, it verifies that the new type is also a node and checks their
+ * respective node subtypes.
+ * - **Connector Check**: If the original type is a connector, it ensures that the new type is also a connector and
+ * checks for compatibility in actuality, permanency, and positivity subtypes.
+ */
+_SC_EXTERN sc_bool sc_memory_is_type_expendable_to(sc_type type, sc_type new_type);
+
+/*!
  * @brief Changes the subtype of the specified sc-element.
  *
  * This function changes the subtype of the sc-element with the specified sc-addr

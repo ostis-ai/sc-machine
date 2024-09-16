@@ -6,6 +6,11 @@
 
 #include "sc_type.hpp"
 
+extern "C"
+{
+#include "sc-core/sc_memory.h"
+}
+
 ScType::~ScType() = default;
 
 bool ScType::IsEdge() const
@@ -45,7 +50,7 @@ bool ScType::IsNode() const
 
 bool ScType::IsLink() const
 {
-  return sc_type_is_node(m_realType) && sc_type_has_subtype(m_realType, sc_type_node_link);
+  return sc_type_is_node_link(m_realType);
 }
 
 bool ScType::IsConst() const
@@ -134,71 +139,7 @@ ScType::operator RealType() const
 
 bool ScType::CanExtendTo(ScType const & extType) const
 {
-  RealType const selfSemType = m_realType & sc_type_element_mask;
-  RealType const extSemType = extType.m_realType & sc_type_element_mask;
-
-  // check semantic type
-  if (selfSemType != 0 && selfSemType != extSemType)
-    return false;
-
-  // check constancy
-  RealType const selfConstType = m_realType & sc_type_constancy_mask;
-  RealType const extConstType = extType.m_realType & sc_type_constancy_mask;
-
-  if (selfConstType != 0 && selfConstType != extConstType)
-    return false;
-
-  if (IsLink())
-  {
-    if (!extType.IsLink())
-      return false;
-
-    ScType const currentType = m_realType & ~sc_type_node_link;
-    ScType const extendedType = extType.m_realType & ~sc_type_node_link;
-
-    ScType const selfLinkType = currentType & sc_type_node_link_mask;
-    ScType const extLinkType = extendedType & sc_type_node_link_mask;
-    if (!selfLinkType.IsUnknown() && selfLinkType != extLinkType)
-      return false;
-  }
-  else if (IsNode())
-  {
-    if (!extType.IsNode())
-      return false;
-
-    ScType const currentType = m_realType & ~sc_type_node;
-    ScType const extendedType = extType.m_realType & ~sc_type_node;
-
-    ScType const selfNodeType = currentType & sc_type_node_mask;
-    ScType const extNodeType = extendedType & sc_type_node_mask;
-    if (!selfNodeType.IsUnknown() && selfNodeType != extNodeType)
-      return false;
-  }
-  else if (IsConnector())
-  {
-    if (!extType.IsConnector())
-      return false;
-
-    ScType const currentType = m_realType & ~sc_type_connector_mask;
-    ScType const extendedType = extType.m_realType & ~sc_type_connector_mask;
-
-    ScType const selfActualityType = currentType & sc_type_actuality_mask;
-    ScType const extActualityType = extendedType & sc_type_actuality_mask;
-    if (!selfActualityType.IsUnknown() && selfActualityType != extActualityType)
-      return false;
-
-    ScType const selfPermType = currentType & sc_type_permanency_mask;
-    ScType const extPermType = extendedType & sc_type_permanency_mask;
-    if (!selfPermType.IsUnknown() && selfPermType != extPermType)
-      return false;
-
-    ScType const selfPosType = currentType & sc_type_positivity_mask;
-    ScType const extPosType = extendedType & sc_type_positivity_mask;
-    if (!selfPosType.IsUnknown() && selfPosType != extPosType)
-      return false;
-  }
-
-  return true;
+  return sc_memory_is_type_expendable_to(*this, extType);
 }
 
 ScType const ScType::Unknown;

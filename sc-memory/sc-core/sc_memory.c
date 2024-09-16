@@ -389,6 +389,11 @@ sc_result sc_memory_get_element_type(sc_memory_context const * ctx, sc_addr addr
   return sc_storage_get_element_type(ctx, addr, result);
 }
 
+sc_bool sc_memory_is_type_expendable_to(sc_type type, sc_type new_type)
+{
+  return sc_storage_is_type_expendable_to(type, new_type);
+}
+
 sc_result sc_memory_change_element_subtype(sc_memory_context const * ctx, sc_addr addr, sc_type type)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
