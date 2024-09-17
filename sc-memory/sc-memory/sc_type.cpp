@@ -80,7 +80,7 @@ ScType ScType::AsConst() const
 
 ScType ScType::UpConstType() const
 {
-  /// TODO: metavar
+  // TODO(NikitaZotov): implement meta-variables
   return AsConst();
 }
 

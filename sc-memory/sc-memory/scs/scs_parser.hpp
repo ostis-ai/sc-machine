@@ -35,7 +35,7 @@ class ParsedElement
 public:
   explicit ParsedElement(
       std::string const & idtf,
-      ScType const & type = ScType(),
+      ScType const & type = ScType::Unknown,
       bool isReversed = false,
       std::string const & value = "",
       bool isURL = false);
@@ -150,7 +150,7 @@ protected:
 private:
   ElementHandle AppendElement(
       std::string idtf,
-      ScType const & type = ScType(),
+      ScType const & type = ScType::Unknown,
       bool isConnectorReversed = false,
       std::string const & value = "",
       bool isURL = false);

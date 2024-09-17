@@ -1349,7 +1349,7 @@ public:
    */
   _SC_EXTERN ScAddr ResolveElementSystemIdentifier(
       std::string const & systemIdentifier,
-      ScType const & elementType = ScType()) noexcept(false);
+      ScType const & elementType = ScType::Unknown) noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.
@@ -1378,8 +1378,9 @@ public:
       0.10.0,
       "This method is deprecated. Use `ResolveElementSystemIdentifier` instead for better readability and standards "
       "compliance.")
-  _SC_EXTERN ScAddr
-  HelperResolveSystemIdtf(std::string const & systemIdentifier, ScType const & elementType = ScType()) noexcept(false);
+  _SC_EXTERN ScAddr HelperResolveSystemIdtf(
+      std::string const & systemIdentifier,
+      ScType const & elementType = ScType::Unknown) noexcept(false);
 
   /*!
    * @brief Resolves the sc-address of an sc-element by its system identifier.

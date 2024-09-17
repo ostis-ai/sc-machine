@@ -292,12 +292,12 @@ TEST_F(ScServerTest, CheckElements)
   EXPECT_TRUE(response["status"].get<sc_bool>());
   EXPECT_TRUE(response["errors"].empty());
 
-  ScType const & srcType = ScType(responsePayload[0].get<size_t>());
-  EXPECT_TRUE(m_ctx->GetElementType(src) == srcType);
-  ScType const & connectorType = ScType(responsePayload[1].get<size_t>());
-  EXPECT_TRUE(m_ctx->GetElementType(connector) == connectorType);
-  ScType const & trgType = ScType(responsePayload[2].get<size_t>());
-  EXPECT_TRUE(m_ctx->GetElementType(trg) == trgType);
+  sc_type const & srcType = responsePayload[0].get<sc_type>();
+  EXPECT_TRUE(*m_ctx->GetElementType(src) == srcType);
+  sc_type const & connectorType = responsePayload[1].get<sc_type>();
+  EXPECT_TRUE(*m_ctx->GetElementType(connector) == connectorType);
+  sc_type const & trgType = responsePayload[2].get<sc_type>();
+  EXPECT_TRUE(*m_ctx->GetElementType(trg) == trgType);
 
   ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(src, ScType::ConstCommonArc, trg);
   EXPECT_TRUE(iter3->Next());

@@ -188,7 +188,7 @@ private:
         if (newType != oldType)
         {
           if (oldType.CanExtendTo(newType))
-            m_ctx.SetElementSubtype(resultAddr, *newType);
+            m_ctx.SetElementSubtype(resultAddr, newType);
           else if (!newType.CanExtendTo(oldType))
             SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Duplicate element type for " + el.GetIdtf());
         }

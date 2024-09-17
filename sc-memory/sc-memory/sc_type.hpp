@@ -16,19 +16,27 @@ extern "C"
 class ScMemoryContext;
 class ScAddr;
 
+namespace scs
+{
+class Parser;
+}  // namespace scs
+
 class _SC_EXTERN ScType
 {
+  friend class ScMemoryContext;
+  template <class TScEvent>
+  friend class ScElementaryEventSubscription;
+  friend class scs::Parser;
+  friend class ScMemoryGenerateElementsJsonAction;
+  friend class ScMemoryHandleKeynodesJsonAction;
+  friend class ScMemoryMakeTemplateJsonAction;
+
 public:
   using RealType = sc_type;
 
   // All sc-types must be calculating in compile time!
   explicit constexpr ScType()
-    : m_realType(0)
-  {
-  }
-
-  constexpr ScType(RealType type) noexcept
-    : m_realType(type)
+    : m_realType(sc_type_unknown)
   {
   }
 
@@ -157,25 +165,11 @@ public:
   RealType BitAnd(RealType const & inMask) const;
 
   /*!
-   * @brief Performs a bitwise OR operation with another ScType and returns a new instance.
-   * @param other An other sc-type to combine with using OR.
-   * @return A new sc-type representing the result of m_realType OR other.m_realType.
-   */
-  ScType operator|(ScType const & other);
-
-  /*!
    * @brief Performs a bitwise AND operation with another ScType and returns a new instance.
    * @param other A other ScType to combine with using AND.
    * @return A new ScType representing the result of m_realType AND other.m_realType.
    */
   ScType operator&(ScType const & other);
-
-  /*!
-   * @brief Updates this instance's real type using bitwise OR with another instance's real type.
-   * @param other A other sc-type to combine with using OR.
-   * @return A reference to this updated sc-type instance.
-   */
-  ScType & operator|=(ScType const & other);
 
   /*!
    * @brief Updates this instance's real type using bitwise AND with another instance's real type.
@@ -200,6 +194,26 @@ public:
 
 private:
   RealType m_realType;
+
+  // All sc-types must be calculating in compile time!
+  constexpr ScType(RealType type) noexcept
+    : m_realType(type)
+  {
+  }
+
+  /*!
+   * @brief Performs a bitwise OR operation with another ScType and returns a new instance.
+   * @param other An other sc-type to combine with using OR.
+   * @return A new sc-type representing the result of m_realType OR other.m_realType.
+   */
+  ScType operator|(ScType const & other);
+
+  /*!
+   * @brief Updates this instance's real type using bitwise OR with another instance's real type.
+   * @param other A other sc-type to combine with using OR.
+   * @return A reference to this updated sc-type instance.
+   */
+  ScType & operator|=(ScType const & other);
 
 public:
   static ScType const Unknown;
