@@ -293,7 +293,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
         },
         [&](ScAddr const & elementAddr) -> bool
         {
-          bool isBelong = result.HasElement(elementAddr);
+          bool isBelong = result.Has(elementAddr);
           return isBelong;
         });
   }

@@ -40,15 +40,15 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 
   ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
   {
-    EXPECT_TRUE(templateStruct.HasElement(testClassAddr));
-    EXPECT_TRUE(templateStruct.HasElement(testRelationAddr));
+    EXPECT_TRUE(templateStruct.Has(testClassAddr));
+    EXPECT_TRUE(templateStruct.Has(testRelationAddr));
 
     ScIterator3Ptr it3 = m_ctx->CreateIterator3(testClassAddr, ScType::EdgeAccessVarPosPerm, ScType::LinkVar);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToTestObject = it3->Get(1);
     ScAddr const & testObject = it3->Get(2);
-    EXPECT_TRUE(templateStruct.HasElement(arcToTestObject));
-    EXPECT_TRUE(templateStruct.HasElement(testObject));
+    EXPECT_TRUE(templateStruct.Has(arcToTestObject));
+    EXPECT_TRUE(templateStruct.Has(testObject));
     EXPECT_FALSE(it3->Next());
 
     ScIterator5Ptr it5 = m_ctx->CreateIterator5(
@@ -57,15 +57,15 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     ScAddr const & arcToTestSet = it5->Get(1);
     ScAddr const & testSet = it5->Get(2);
     ScAddr const & arcToArcToTestSet = it5->Get(3);
-    EXPECT_TRUE(templateStruct.HasElement(arcToTestSet));
-    EXPECT_TRUE(templateStruct.HasElement(testSet));
-    EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestSet));
+    EXPECT_TRUE(templateStruct.Has(arcToTestSet));
+    EXPECT_TRUE(templateStruct.Has(testSet));
+    EXPECT_TRUE(templateStruct.Has(arcToArcToTestSet));
     EXPECT_FALSE(it5->Next());
 
     it3 = m_ctx->CreateIterator3(testSet, ScType::EdgeAccessVarPosPerm, arcToTestObject);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToArcToTestObject = it3->Get(1);
-    EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestObject));
+    EXPECT_TRUE(templateStruct.Has(arcToArcToTestObject));
     EXPECT_FALSE(it3->Next());
   }
 }
@@ -137,7 +137,7 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTe
   ScTemplateLoadContext ctx;
   ctx.LoadTemplate(templ, templAddr, params);
   ScStructure templateStruct = m_ctx->ConvertToStructure(templAddr);
-  EXPECT_TRUE(templateStruct.HasElement(testObject));
+  EXPECT_TRUE(templateStruct.Has(testObject));
 
   ScTemplate builtTemplate;
   m_ctx->BuildTemplate(builtTemplate, templAddr);
