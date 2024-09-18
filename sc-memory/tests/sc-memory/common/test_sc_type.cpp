@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <bitset>
+#include <iomanip>
+
 #include "sc-memory/sc_memory.hpp"
 
 #include "sc_test.hpp"
@@ -279,4 +282,20 @@ TEST(ScTypeTest, ExtendTypes)
   EXPECT_TRUE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstFuzArc));
   EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstPermNegArc));
   EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::VarFuzArc));
+}
+
+TEST(ScTypeTest, PrintTypes)
+{
+  std::size_t const maxNameLength = 8u + 20u;
+  auto const & typeMap = GetTypesToSubtypesMap();
+
+  std::cout << "| Type name                    | Value | Hex Value |\n";
+  std::cout << "|------------------------------|-------|-----------|\n";
+
+  for (auto const & [type, _] : typeMap)
+  {
+    std::cout << "| " << std::left << std::setw(maxNameLength) << "ScType::" + std::string(type) << " | " << std::left
+              << std::setw(5u) << type << " | "
+              << "0x" << std::left << std::setw(7u) << std::hex << std::uppercase << type << std::dec << " |\n";
+  }
 }

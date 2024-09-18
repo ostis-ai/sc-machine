@@ -1,7 +1,7 @@
 # **ScTemplate API**
 
 !!! warning 
-    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+    This documentation is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
 Sc-templates is a very powerful mechanism to work with semantic network (graph). You can generate and search any

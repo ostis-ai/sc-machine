@@ -1,7 +1,7 @@
 # **ScHelper API**
 
 !!! note
-    This is correct for only versions of sc-machine that >= 0.9.0.
+    This is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
 This API allows to work with system identifiers of sc-elements. All methods of this API are the part of class 

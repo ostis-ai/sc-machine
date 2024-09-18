@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <string>
+#include <unordered_map>
+
 extern "C"
 {
 #include "sc-core/sc-store/sc_types.h"
@@ -30,6 +33,7 @@ class _SC_EXTERN ScType
   friend class ScMemoryGenerateElementsJsonAction;
   friend class ScMemoryHandleKeynodesJsonAction;
   friend class ScMemoryMakeTemplateJsonAction;
+  friend struct ScTypeHashFunc;
 
 public:
   using RealType = sc_type;
@@ -185,6 +189,12 @@ public:
   operator RealType() const;
 
   /*!
+   * @brief Converts this sc-type to string name.
+   * @return An string name of sc-type.
+   */
+  operator std::string() const;
+
+  /*!
    * @brief Determines whether this sc-type can be extended to another sc-type based on semantic and subtype
    * compatibility.
    * @param ext Type A sc-type that may extend this one.
@@ -194,6 +204,8 @@ public:
 
 private:
   RealType m_realType;
+  struct ScTypeHashFunc;
+  static std::unordered_map<ScType, std::string, struct ScTypeHashFunc> const m_typesToNames;
 
   // All sc-types must be calculating in compile time!
   constexpr ScType(RealType type) noexcept

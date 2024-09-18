@@ -11,6 +11,14 @@ extern "C"
 #include "sc-core/sc_memory.h"
 }
 
+struct ScType::ScTypeHashFunc
+{
+  sc_type operator()(ScType const & type) const
+  {
+    return type;
+  }
+};
+
 ScType::~ScType() = default;
 
 bool ScType::IsEdge() const
@@ -135,6 +143,15 @@ ScType & ScType::operator&=(ScType const & other)
 ScType::operator RealType() const
 {
   return m_realType;
+}
+
+ScType::operator std::string() const
+{
+  auto const & it = m_typesToNames.find(*this);
+  if (it == m_typesToNames.cend())
+    return "";
+
+  return it->second;
 }
 
 bool ScType::CanExtendTo(ScType const & extType) const
@@ -312,3 +329,98 @@ ScType const ScType::NodeVarRole(ScType::VarNodeRole);
 ScType const ScType::NodeVarNoRole(ScType::VarNodeNoRole);
 ScType const ScType::NodeVarClass(ScType::VarNodeClass);
 ScType const ScType::NodeVarMaterial(ScType::VarNodeMaterial);
+
+std::unordered_map<ScType, std::string, ScType::ScTypeHashFunc> const ScType::m_typesToNames = {
+    {ScType::Unknown, "Unknown"},
+    {ScType::Node, "Node"},
+    {ScType::Connector, "Connector"},
+    {ScType::CommonEdge, "CommonEdge"},
+    {ScType::Arc, "Arc"},
+    {ScType::CommonArc, "CommonArc"},
+    {ScType::MembershipArc, "MembershipArc"},
+    {ScType::Const, "Const"},
+    {ScType::Var, "Var"},
+    {ScType::ConstNode, "ConstNode"},
+    {ScType::VarNode, "VarNode"},
+    {ScType::ConstConnector, "ConstConnector"},
+    {ScType::VarConnector, "VarConnector"},
+    {ScType::ConstCommonEdge, "ConstCommonEdge"},
+    {ScType::VarCommonEdge, "VarCommonEdge"},
+    {ScType::ConstArc, "ConstArc"},
+    {ScType::VarArc, "VarArc"},
+    {ScType::ConstCommonArc, "ConstCommonArc"},
+    {ScType::VarCommonArc, "VarCommonArc"},
+    {ScType::ConstMembershipArc, "ConstMembershipArc"},
+    {ScType::VarMembershipArc, "VarMembershipArc"},
+    {ScType::PermArc, "PermArc"},
+    {ScType::TempArc, "TempArc"},
+    {ScType::ConstPermArc, "ConstPermArc"},
+    {ScType::VarPermArc, "VarPermArc"},
+    {ScType::ConstTempArc, "ConstTempArc"},
+    {ScType::VarTempArc, "VarTempArc"},
+    {ScType::ActualTempArc, "ActualTempArc"},
+    {ScType::InactualTempArc, "InactualTempArc"},
+    {ScType::ConstActualTempArc, "ConstActualTempArc"},
+    {ScType::VarActualTempArc, "VarActualTempArc"},
+    {ScType::ConstInactualTempArc, "ConstInactualTempArc"},
+    {ScType::VarInactualTempArc, "VarInactualTempArc"},
+    {ScType::PosArc, "PosArc"},
+    {ScType::NegArc, "NegArc"},
+    {ScType::FuzArc, "FuzArc"},
+    {ScType::ConstPosArc, "ConstPosArc"},
+    {ScType::VarPosArc, "VarPosArc"},
+    {ScType::PermPosArc, "PermPosArc"},
+    {ScType::TempPosArc, "TempPosArc"},
+    {ScType::ActualTempPosArc, "ActualTempPosArc"},
+    {ScType::InactualTempPosArc, "InactualTempPosArc"},
+    {ScType::ConstPermPosArc, "ConstPermPosArc"},
+    {ScType::ConstTempPosArc, "ConstTempPosArc"},
+    {ScType::ConstActualTempPosArc, "ConstActualTempPosArc"},
+    {ScType::ConstInactualTempPosArc, "ConstInactualTempPosArc"},
+    {ScType::VarPermPosArc, "VarPermPosArc"},
+    {ScType::VarTempPosArc, "VarTempPosArc"},
+    {ScType::VarActualTempPosArc, "VarActualTempPosArc"},
+    {ScType::VarInactualTempPosArc, "VarInactualTempPosArc"},
+    {ScType::ConstNegArc, "ConstNegArc"},
+    {ScType::VarNegArc, "VarNegArc"},
+    {ScType::PermNegArc, "PermNegArc"},
+    {ScType::TempNegArc, "TempNegArc"},
+    {ScType::ActualTempNegArc, "ActualTempNegArc"},
+    {ScType::InactualTempNegArc, "InactualTempNegArc"},
+    {ScType::ConstPermNegArc, "ConstPermNegArc"},
+    {ScType::ConstTempNegArc, "ConstTempNegArc"},
+    {ScType::ConstActualTempNegArc, "ConstActualTempNegArc"},
+    {ScType::ConstInactualTempNegArc, "ConstInactualTempNegArc"},
+    {ScType::VarPermNegArc, "VarPermNegArc"},
+    {ScType::VarTempNegArc, "VarTempNegArc"},
+    {ScType::VarActualTempNegArc, "VarActualTempNegArc"},
+    {ScType::VarInactualTempNegArc, "VarInactualTempNegArc"},
+    {ScType::ConstFuzArc, "ConstFuzArc"},
+    {ScType::VarFuzArc, "VarFuzArc"},
+    {ScType::NodeLink, "NodeLink"},
+    {ScType::NodeLinkClass, "NodeLinkClass"},
+    {ScType::NodeTuple, "NodeTuple"},
+    {ScType::NodeStructure, "NodeStructure"},
+    {ScType::NodeRole, "NodeRole"},
+    {ScType::NodeNoRole, "NodeNoRole"},
+    {ScType::NodeClass, "NodeClass"},
+    {ScType::NodeSuperclass, "NodeSuperclass"},
+    {ScType::NodeMaterial, "NodeMaterial"},
+    {ScType::ConstNodeLink, "ConstNodeLink"},
+    {ScType::ConstNodeLinkClass, "ConstNodeLinkClass"},
+    {ScType::ConstNodeTuple, "ConstNodeTuple"},
+    {ScType::ConstNodeStructure, "ConstNodeStructure"},
+    {ScType::ConstNodeRole, "ConstNodeRole"},
+    {ScType::ConstNodeNoRole, "ConstNodeNoRole"},
+    {ScType::ConstNodeClass, "ConstNodeClass"},
+    {ScType::ConstNodeSuperclass, "ConstNodeSuperclass"},
+    {ScType::ConstNodeMaterial, "ConstNodeMaterial"},
+    {ScType::VarNodeLink, "VarNodeLink"},
+    {ScType::VarNodeLinkClass, "VarNodeLinkClass"},
+    {ScType::VarNodeTuple, "VarNodeTuple"},
+    {ScType::VarNodeStructure, "VarNodeStructure"},
+    {ScType::VarNodeRole, "VarNodeRole"},
+    {ScType::VarNodeNoRole, "VarNodeNoRole"},
+    {ScType::VarNodeClass, "VarNodeClass"},
+    {ScType::VarNodeSuperclass, "VarNodeSuperclass"},
+    {ScType::VarNodeMaterial, "VarNodeMaterial"}};
