@@ -18,7 +18,7 @@ fruit -> apple;
  */
 ```
 
-#### **NodeLink to files**
+#### **Link to files**
 
 To make an `sc-link` into specified file you can use special type identifier:
 ```

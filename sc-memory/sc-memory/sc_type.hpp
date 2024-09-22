@@ -195,18 +195,33 @@ public:
    */
   operator std::string() const;
 
-  std::string GetDirectSCsConnector() const;
+  /*!
+   * @brief Gets direct designation of current sc-connector sc-type in SCs-code.
+   * @return A designation of type.
+   */
+  std::string GetDirectSCsConnectorType() const;
 
-  std::string GetReverseSCsConnector() const;
+  /*!
+   * @brief Gets reverse designation of current sc-connector sc-type in SCs-code.
+   * @return A designation of type.
+   */
+  std::string GetReverseSCsConnectorType() const;
+
+  /*!
+   * @brief Gets system identifier of class for current sc-type that can be used to specify types of sc.s-elements.
+   * @return A system identifier of class for current sc-type.
+   */
+  std::string GetSCsElementKeynode() const;
 
   /*!
    * @brief Determines whether this sc-type can be extended to another sc-type based on semantic and subtype
    * compatibility.
-   * @param ext Type A sc-type that may extend this one.
+   * @param extType Type A sc-type that may extend this one.
    * @return True if extension is possible based on semantic and subtype checks; false otherwise.
    */
   bool CanExtendTo(ScType const & extType) const;
 
+  //! Returns a set of sc-connector sc-types.
   static std::set<ScType> GetConnectorTypes();
 
 private:

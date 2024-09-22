@@ -158,13 +158,14 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedConnectorsToTy
     {">", ScType::CommonArc},
     {"<", ScType::CommonArc},
     {"<>", ScType::CommonEdge},
+};
+
+TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedReverseConnectorsToTypes = {
     {"_<=", ScType::VarCommonArc},
     {"_<-", ScType::VarPermPosArc},
     {"_<|-", ScType::VarPermNegArc},
-    {"_</-", ScType::VarFuzArc},
     {"_<~", ScType::VarActualTempPosArc},
     {"_<|~", ScType::VarActualTempNegArc},
-    {"_</~", ScType::VarFuzArc},
 };
 
 struct TypeResolver::ScTypeHashFunc
@@ -233,7 +234,7 @@ TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToConnectors = {
     {ScType::VarInactualTempNegArc, "_%|>"}
 };
 
-TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToReversedConnectors = {
+TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToReverseConnectors = {
     {ScType::CommonEdge, "?<=>"}, 
     {ScType::CommonArc, "<=?"},
     {ScType::MembershipArc, "<?.?"},
@@ -294,8 +295,8 @@ TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToReversedConnector
 TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_keynodesToTypes = {
     {"sc_common_edge", ScType::CommonEdge},
     {"sc_common_arc", ScType::CommonArc},
-    {"sc_main_arc", ScType::ConstPermPosArc},
     {"sc_membership_arc", ScType::MembershipArc},
+    {"sc_main_arc", ScType::ConstPermPosArc},
 
     {"sc_node", ScType::Node},
     {"sc_link", ScType::NodeLink},
@@ -327,6 +328,24 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedKeynodesToType
     {"sc_node_not_relation", ScType::NodeClass},
 };
 
+TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToKeynodes = {
+    {ScType::CommonEdge, "sc_common_edge"},
+    {ScType::CommonArc, "sc_common_arc"},
+    {ScType::MembershipArc, "sc_membership_arc"},
+    {ScType::ConstPermPosArc, "sc_main_arc"},
+
+    {ScType::Node, "sc_node"},
+    {ScType::NodeLink, "sc_link"},
+    {ScType::NodeLinkClass, "sc_link_class"},
+    {ScType::NodeTuple, "sc_node_tuple"},
+    {ScType::NodeStructure, "sc_node_structure"},
+    {ScType::NodeClass, "sc_node_class"},
+    {ScType::NodeRole, "sc_node_role_relation"},
+    {ScType::NodeNoRole, "sc_node_norole_relation"},
+    {ScType::NodeSuperclass, "sc_node_superclass"},
+    {ScType::NodeMaterial, "sc_node_material"},
+};
+
 TypeResolver::SCsConnectorDesignations TypeResolver::ms_reversedConnectors = {
     "<=?", "<?.?", "<=", "<=_", 
     "<.", "<._", "<?.", "<?._", "<.?", "<|.?", "</?", "<?-?", "<?..?", "<?~?", "<?%?",
@@ -336,10 +355,10 @@ TypeResolver::SCsConnectorDesignations TypeResolver::ms_reversedConnectors = {
 };
 
 TypeResolver::SCsConnectorDesignations TypeResolver::ms_deprecatedReversedConnectors = {
-    "<", "_<=", "_<-", "_<|-", "_</-", "_<~", "_<|~", "_</~"
+    "<", "_<=", "_<-", "_<|-", "_<~", "_<|~",
 };
 
-std::string TypeResolver::GetDirectSCsConnector(ScType const & type)
+std::string TypeResolver::GetDirectSCsConnectorType(ScType const & type)
 {
   auto const it = ms_typesToConnectors.find(type);
   if (it == ms_typesToConnectors.cend())
@@ -348,10 +367,19 @@ std::string TypeResolver::GetDirectSCsConnector(ScType const & type)
   return it->second;
 }
 
-std::string TypeResolver::GetReverseSCsConnector(ScType const & type)
+std::string TypeResolver::GetReverseSCsConnectorType(ScType const & type)
 {
-  auto const it = ms_typesToReversedConnectors.find(type);
-  if (it == ms_typesToReversedConnectors.cend())
+  auto const it = ms_typesToReverseConnectors.find(type);
+  if (it == ms_typesToReverseConnectors.cend())
+    return "";
+
+  return it->second;
+}
+
+std::string TypeResolver::GetSCsElementKeynode(ScType const & type)
+{
+  auto const it = ms_typesToKeynodes.find(type);
+  if (it == ms_typesToKeynodes.cend())
     return "";
 
   return it->second;
@@ -364,8 +392,19 @@ ScType const & TypeResolver::GetConnectorType(std::string const & connectorAlias
   {
     auto const deprecatedIt = ms_deprecatedConnectorsToTypes.find(connectorAlias);
     if (deprecatedIt == ms_deprecatedConnectorsToTypes.cend())
-      return ScType::Unknown;
+    {
+      auto const deprecatedReverseIt = ms_deprecatedReverseConnectorsToTypes.find(connectorAlias);
+      if (deprecatedReverseIt == ms_deprecatedReverseConnectorsToTypes.cend())
+        return ScType::Unknown;
 
+      SC_LOG_WARNING("Specified reverse designation of sc-connector `" << connectorAlias << "` is deprecated"
+        " in SCs-code, use `" << ms_typesToReverseConnectors[deprecatedReverseIt->second] << "` instead.");
+      
+      return deprecatedReverseIt->second;
+    }
+
+    SC_LOG_WARNING("Specified designation of sc-connector `" << connectorAlias << "` is deprecated"
+        " in SCs-code, use `" << ms_typesToConnectors[deprecatedIt->second] << "` instead.");
     return deprecatedIt->second;
   } 
   
@@ -380,6 +419,9 @@ ScType const & TypeResolver::GetKeynodeType(std::string const & keynodeAlias)
     auto const deprecatedIt = ms_deprecatedKeynodesToTypes.find(keynodeAlias);
     if (deprecatedIt == ms_deprecatedKeynodesToTypes.cend())
       return ScType::Unknown;
+
+    SC_LOG_WARNING("Specified sc-type class `" << keynodeAlias << "` is deprecated in SCs-code, "
+        << "use `" << ms_typesToKeynodes[deprecatedIt->second] << "` instead.");
 
     return deprecatedIt->second;
   }

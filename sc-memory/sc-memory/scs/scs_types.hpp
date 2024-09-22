@@ -16,8 +16,10 @@ namespace scs
 class TypeResolver final
 {
 public:
-  static std::string GetDirectSCsConnector(ScType const & type);
-  static std::string GetReverseSCsConnector(ScType const & type);
+  static std::string GetDirectSCsConnectorType(ScType const & type);
+  static std::string GetReverseSCsConnectorType(ScType const & type);
+
+  static std::string GetSCsElementKeynode(ScType const & type);
 
   static ScType const & GetConnectorType(std::string const & connectorAlias);
   static ScType const & GetKeynodeType(std::string const & keynodeAlias);
@@ -37,12 +39,16 @@ protected:
 
   static SCsDesignationsToScTypes ms_connectorsToTypes;
   static SCsDesignationsToScTypes ms_deprecatedConnectorsToTypes;
+  static SCsDesignationsToScTypes ms_deprecatedReverseConnectorsToTypes;
 
   static ScTypesToSCsDesignations ms_typesToConnectors;
-  static ScTypesToSCsDesignations ms_typesToReversedConnectors;
+  static ScTypesToSCsDesignations ms_typesToReverseConnectors;
 
   static SCsDesignationsToScTypes ms_keynodesToTypes;
   static SCsDesignationsToScTypes ms_deprecatedKeynodesToTypes;
+  
+  struct ScTypeEqualFunc;
+  static ScTypesToSCsDesignations ms_typesToKeynodes;
 
   static SCsConnectorDesignations ms_reversedConnectors;
   static SCsConnectorDesignations ms_deprecatedReversedConnectors;

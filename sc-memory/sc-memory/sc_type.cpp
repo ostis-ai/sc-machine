@@ -156,14 +156,19 @@ ScType::operator std::string() const
   return it->second;
 }
 
-std::string ScType::GetDirectSCsConnector() const
+std::string ScType::GetDirectSCsConnectorType() const
 {
-  return scs::TypeResolver::GetDirectSCsConnector(*this);
+  return scs::TypeResolver::GetDirectSCsConnectorType(*this);
 }
 
-std::string ScType::GetReverseSCsConnector() const
+std::string ScType::GetReverseSCsConnectorType() const
 {
-  return scs::TypeResolver::GetReverseSCsConnector(*this);
+  return scs::TypeResolver::GetReverseSCsConnectorType(*this);
+}
+
+std::string ScType::GetSCsElementKeynode() const
+{
+  return scs::TypeResolver::GetSCsElementKeynode(*this);
 }
 
 bool ScType::CanExtendTo(ScType const & extType) const

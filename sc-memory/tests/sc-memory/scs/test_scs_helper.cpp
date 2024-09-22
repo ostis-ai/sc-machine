@@ -33,7 +33,7 @@ TEST_F(SCsHelperTest, GenerateBySCs)
   {
     { "x -> y;;", "x _-> _y;;" },
     { "x1 => nrel_x1: [test_content*];;", "x1 _=> nrel_x1:: _[];;" },
-    { "x2 ~> y2 (* <- z2;; *);;", "x2 _~> _y2 (* _<- _z2;; *);;" },
+    { "x2 ~> y2 (* <- z2;; *);;", "x2 _~> _y2 (* <-_ _z2;; *);;" },
     { "x3 <- y3 (* <- sc_node_class;; *);;", "sc_node_class -> _y3;; _y3 _-> x3;;" },
   };
 
@@ -413,7 +413,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   ScTemplate templ;
   m_ctx->BuildTemplate(
       templ,
-      "test_node _=> nrel_main_idtf:: _[] (* _<- lang_ru;; *);;"
+      "test_node _=> nrel_main_idtf:: _[] (* <-_ lang_ru;; *);;"
   );
 
   ScTemplateSearchResult result;
@@ -445,7 +445,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   templ.Clear();
   m_ctx->BuildTemplate(
       templ,
-      "test_node _=> nrel_main_idtf:: _[] (* _<- lang_en;; *);;"
+      "test_node _=> nrel_main_idtf:: _[] (* <-_ lang_en;; *);;"
   );
 
   result.Clear();
@@ -476,7 +476,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   templ.Clear();
   m_ctx->BuildTemplate(
       templ,
-      "test_node _=> nrel_idtf:: _[] (* _<- lang_ru;; *);;"
+      "test_node _=> nrel_idtf:: _[] (* <-_ lang_ru;; *);;"
   );
 
   result.Clear();
@@ -508,7 +508,7 @@ TEST_F(SCsHelperTest, FindTriplesSmoke)
   templ.Clear();
   m_ctx->BuildTemplate(
       templ,
-      "test_node _=> nrel_idtf:: _[] (* _<- lang_en;; *);;"
+      "test_node _=> nrel_idtf:: _[] (* <-_ lang_en;; *);;"
   );
 
   result.Clear();
