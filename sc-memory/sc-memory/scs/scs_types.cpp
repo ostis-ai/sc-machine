@@ -10,101 +10,354 @@
 namespace scs
 {
 
-TypeResolver::MapType TypeResolver::ms_connectorToType = {
-    {">", ScType::CommonArc},
-    {"<", ScType::CommonArc},
-    {"<>", ScType::CommonEdge},
-    {"..>", ScType::MembershipArc},
-    {"<..", ScType::MembershipArc},
+TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_connectorsToTypes = {
+    {"?<=>", ScType::CommonEdge},
+
+    {"?=>", ScType::CommonArc},
+    {"<=?", ScType::CommonArc},
+
+    {"???" ">", ScType::MembershipArc}, 
+    // Separation disables trigraph warnings
+    {"<???", ScType::MembershipArc},
+
     {"<=>", ScType::ConstCommonEdge},
     {"_<=>", ScType::VarCommonEdge},
+
     {"=>", ScType::ConstCommonArc},
     {"<=", ScType::ConstCommonArc},
     {"_=>", ScType::VarCommonArc},
-    {"_<=", ScType::VarCommonArc},
     {"<=_", ScType::VarCommonArc},
+
+    {"??" ">", ScType::PosArc},
+    // Separation disables trigraph warnings
+    {"<??", ScType::PosArc},
+
+    {"??|>", ScType::NegArc},
+    {"<|??", ScType::NegArc},
+
+    {"?/>", ScType::FuzArc},
+    {"</?", ScType::FuzArc},
+
+    {"?-?>", ScType::PermArc},
+    {"<?-?", ScType::PermArc},
+
+    {"?..?>", ScType::TempArc},
+    {"<?..?", ScType::TempArc},
+
+    {"?~?>", ScType::ActualTempArc},
+    {"<?~?", ScType::ActualTempArc},
+
+    {"?%?>", ScType::InactualTempArc},
+    {"<?%?", ScType::InactualTempArc},
+
+    {"?->", ScType::PermPosArc},
+    {"<-?", ScType::PermPosArc},
+
+    {"?-|>", ScType::PermNegArc},
+    {"<|-?", ScType::PermNegArc},
+
+    {"?..>", ScType::TempPosArc},
+    {"<..?", ScType::TempPosArc},
+
+    {"?~>", ScType::ActualTempPosArc},
+    {"<~?", ScType::ActualTempPosArc},
+
+    {"?%>", ScType::InactualTempPosArc},
+    {"<%?", ScType::InactualTempPosArc},
+
+    {"?..|>", ScType::TempNegArc},
+    {"<|..?", ScType::TempNegArc},
+
+    {"?~|>", ScType::ActualTempNegArc},
+    {"<|~?", ScType::ActualTempNegArc},
+
+    {"?%|>", ScType::InactualTempNegArc},
+    {"<|%?", ScType::InactualTempNegArc},
+
     {"->", ScType::ConstPermPosArc},
     {"<-", ScType::ConstPermPosArc},
     {"_->", ScType::VarPermPosArc},
     {"<-_", ScType::VarPermPosArc},
-    {"_<-", ScType::VarPermPosArc},
+
     {"-|>", ScType::ConstPermNegArc},
     {"<|-", ScType::ConstPermNegArc},
     {"_-|>", ScType::VarPermNegArc},
-    {"_<|-", ScType::VarPermNegArc},
     {"<|-_", ScType::VarPermNegArc},
-    {"-/>", ScType::ConstFuzArc},
-    {"</-", ScType::ConstFuzArc},
-    {"_-/>", ScType::VarFuzArc},
-    {"_</-", ScType::VarFuzArc},
-    {"</-_", ScType::VarFuzArc},
-    {"~>", ScType::ConstTempPosArc},
-    {"<~", ScType::ConstTempPosArc},
-    {"_~>", ScType::VarTempPosArc},
-    {"_<~", ScType::VarTempPosArc},
-    {"<~_", ScType::VarTempPosArc},
-    {"~|>", ScType::ConstTempNegArc},
-    {"<|~", ScType::ConstTempNegArc},
-    {"_~|>", ScType::VarTempNegArc},
-    {"_<|~", ScType::VarTempNegArc},
-    {"<|~_", ScType::VarTempNegArc},
-    {"~/>", ScType::ConstFuzArc},
-    {"</~", ScType::ConstFuzArc},
-    {"_~/>", ScType::VarFuzArc},
-    {"_</~", ScType::VarFuzArc},
-    {"</~_", ScType::VarFuzArc}
+
+    {"/>", ScType::ConstFuzArc},
+    {"</", ScType::ConstFuzArc},
+
+    {"_/>", ScType::VarFuzArc},
+    {"</_", ScType::VarFuzArc},
+
+    {"..>", ScType::ConstTempPosArc},
+    {"<..", ScType::ConstTempPosArc},
+    {"_..>", ScType::VarTempPosArc},
+    {"<.._", ScType::VarTempPosArc},
+
+    {"~>", ScType::ConstActualTempPosArc},
+    {"<~", ScType::ConstActualTempPosArc},
+    {"_~>", ScType::VarActualTempPosArc},
+    {"<~_", ScType::VarActualTempPosArc},
+
+    {"%>", ScType::ConstInactualTempPosArc},
+    {"<%", ScType::ConstInactualTempPosArc},
+    {"_%>", ScType::VarInactualTempPosArc},
+    {"<%_", ScType::VarInactualTempPosArc},
+
+    {"..|>", ScType::ConstTempNegArc},
+    {"<|..", ScType::ConstTempNegArc},
+    {"_..|>", ScType::VarTempNegArc},
+    {"<|.._", ScType::VarTempNegArc},
+
+    {"~|>", ScType::ConstActualTempNegArc},
+    {"<|~", ScType::ConstActualTempNegArc},
+    {"_~|>", ScType::VarActualTempNegArc},
+    {"<|~_", ScType::VarActualTempNegArc},
+
+    {"%|>", ScType::ConstInactualTempNegArc},
+    {"<|%", ScType::ConstInactualTempNegArc},
+    {"_%|>", ScType::VarInactualTempNegArc},
+    {"<|%_", ScType::VarInactualTempNegArc},
 };
 
-// TODO: divide into const and var types
-TypeResolver::MapType TypeResolver::ms_keynodeToType = {
-    {"sc_node", ScType::Node},
+TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedConnectorsToTypes = {
+    {">", ScType::CommonArc},
+    {"<", ScType::CommonArc},
+    {"<>", ScType::CommonEdge},
+    {"_<=", ScType::VarCommonArc},
+    {"_<-", ScType::VarPermPosArc},
+    {"_<|-", ScType::VarPermNegArc},
+    {"_</-", ScType::VarFuzArc},
+    {"_<~", ScType::VarActualTempPosArc},
+    {"_<|~", ScType::VarActualTempNegArc},
+    {"_</~", ScType::VarFuzArc},
+};
 
+struct TypeResolver::ScTypeHashFunc
+{
+  sc_type operator()(ScType const & type) const
+  {
+    return type;
+  }
+};
+
+TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToConnectors = {
+    {ScType::CommonEdge, "?<=>"}, 
+    {ScType::CommonArc, "?=>"},
+    {ScType::MembershipArc, "???" ">"},
+    {ScType::ConstCommonEdge, "<=>"},
+    {ScType::VarCommonEdge, "_<=>"},
+    {ScType::ConstCommonArc, "=>"},
+    {ScType::VarCommonArc, "_=>"},
+    {ScType::ConstMembershipArc, "??" ">"},
+    {ScType::VarMembershipArc, "_??" ">"},
+    {ScType::VarArc, "_=>"},
+    {ScType::PosArc, "??" ">"},
+    {ScType::NegArc, "??|>"},
+    {ScType::FuzArc, "?/>"},
+    {ScType::PermArc, "?-?>"},
+    {ScType::TempArc, "?..?>"},
+    {ScType::ActualTempArc, "?~?>"},
+    {ScType::InactualTempArc, "?%?>"},
+    {ScType::ConstPermArc, "-?>"},
+    {ScType::VarPermArc, "_-?>"},
+    {ScType::ConstTempArc, "..?>"},
+    {ScType::VarTempArc, "_..?>"},
+    {ScType::ConstActualTempArc, "~?>"},
+    {ScType::VarActualTempArc, "_~?>"},
+    {ScType::ConstInactualTempArc, "%?>"},
+    {ScType::VarInactualTempArc, "_%?>"},
+    {ScType::PermPosArc, "?->"},
+    {ScType::PermNegArc, "?-|>"},
+    {ScType::TempPosArc, "?..>"},
+    {ScType::ActualTempPosArc, "?~>"},
+    {ScType::InactualTempPosArc, "?%>"},
+    {ScType::TempNegArc, "?..|>"},
+    {ScType::ActualTempNegArc, "?~|>"},
+    {ScType::InactualTempNegArc, "?%|>"},
+    {ScType::ConstPermPosArc, "->"},
+    {ScType::VarPermPosArc, "_->"},
+    {ScType::ConstPermNegArc, "-|>"},
+    {ScType::VarPermNegArc, "_-|>"},
+    {ScType::ConstPosArc, "?>"},
+    {ScType::VarPosArc, "_?>"},
+    {ScType::ConstNegArc, "?|>"},
+    {ScType::VarNegArc, "_?|>"},
+    {ScType::ConstFuzArc, "/>"},
+    {ScType::VarFuzArc, "_/>"},
+    {ScType::ConstTempPosArc, "..>"},
+    {ScType::VarTempPosArc, "_..>"},
+    {ScType::ConstActualTempPosArc, "~>"},
+    {ScType::VarActualTempPosArc, "_~>"},
+    {ScType::ConstInactualTempPosArc, "%>"},
+    {ScType::VarInactualTempPosArc, "_%>"},
+    {ScType::ConstTempNegArc, "..|>"},
+    {ScType::VarTempNegArc, "_..|>"},
+    {ScType::ConstActualTempNegArc, "~|>"},
+    {ScType::VarActualTempNegArc, "_~|>"},
+    {ScType::ConstInactualTempNegArc, "%|>"},
+    {ScType::VarInactualTempNegArc, "_%|>"}
+};
+
+TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToReversedConnectors = {
+    {ScType::CommonEdge, "?<=>"}, 
+    {ScType::CommonArc, "<=?"},
+    {ScType::MembershipArc, "<" "???"},
+    {ScType::ConstCommonEdge, "<=>"},
+    {ScType::VarCommonEdge, "_<=>"},
+    {ScType::ConstCommonArc, "<="},
+    {ScType::VarCommonArc, "<=_"},
+    {ScType::ConstMembershipArc, "<" "??"},
+    {ScType::VarMembershipArc, "<" "??_"},
+    {ScType::VarArc, "<=_"},
+    {ScType::PosArc, "<??"},
+    {ScType::NegArc, "<|??"},
+    {ScType::FuzArc, "</?"},
+    {ScType::PermArc, "<?-?"},
+    {ScType::TempArc, "<?..?"},
+    {ScType::ActualTempArc, "<?~?"},
+    {ScType::InactualTempArc, "<?%?"},
+    {ScType::ConstPermArc, "<?-"},
+    {ScType::VarPermArc, "<?-_"},
+    {ScType::ConstTempArc, "<?.."},
+    {ScType::VarTempArc, "<?.._"},
+    {ScType::ConstActualTempArc, "<?~"},
+    {ScType::VarActualTempArc, "<?~_"},
+    {ScType::ConstInactualTempArc, "<?%"},
+    {ScType::VarInactualTempArc, "<?%_"},
+    {ScType::PermPosArc, "<-?"},
+    {ScType::PermNegArc, "<|-?"},
+    {ScType::TempPosArc, "<..?"},
+    {ScType::ActualTempPosArc, "<~?"},
+    {ScType::InactualTempPosArc, "<%?"},
+    {ScType::TempNegArc, "<|..?"},
+    {ScType::ActualTempNegArc, "<|~?"},
+    {ScType::InactualTempNegArc, "<|%?"},
+    {ScType::ConstPermPosArc, "<-"},
+    {ScType::VarPermPosArc, "<-_"},
+    {ScType::ConstPermNegArc, "<|-"},
+    {ScType::VarPermNegArc, "<|-_"},
+    {ScType::ConstPosArc, "<?"},
+    {ScType::VarPosArc, "<?_"},
+    {ScType::ConstNegArc, "<|?"},
+    {ScType::VarNegArc, "<|?_"},
+    {ScType::ConstFuzArc, "</"},
+    {ScType::VarFuzArc, "</_"},
+    {ScType::ConstTempPosArc, "<.."},
+    {ScType::VarTempPosArc, "<.._"},
+    {ScType::ConstActualTempPosArc, "<~"},
+    {ScType::VarActualTempPosArc, "<~_"},
+    {ScType::ConstInactualTempPosArc, "<%"},
+    {ScType::VarInactualTempPosArc, "<%_"},
+    {ScType::ConstTempNegArc, "<|.."},
+    {ScType::VarTempNegArc, "<|.._"},
+    {ScType::ConstActualTempNegArc, "<|~"},
+    {ScType::VarActualTempNegArc, "<|~_"},
+    {ScType::ConstInactualTempNegArc, "<|%"},
+    {ScType::VarInactualTempNegArc, "<|%_"}
+};
+
+TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_keynodesToTypes = {
+    {"sc_common_edge", ScType::CommonEdge},
+    {"sc_common_arc", ScType::CommonArc},
+    {"sc_main_arc", ScType::ConstPermPosArc},
+    {"sc_membership_arc", ScType::MembershipArc},
+
+    {"sc_node", ScType::Node},
     {"sc_link", ScType::NodeLink},
     {"sc_link_class", ScType::NodeLinkClass},
-
-    {"sc_arc_common", ScType::CommonArc}, // backward compatibility
-    {"sc_edge_dcommon", ScType::CommonArc},
-
-    {"sc_edge", ScType::CommonEdge}, // backward compatibility
-    {"sc_edge_ucommon", ScType::CommonEdge},
-
-    {"sc_arc_main", ScType::ConstPermPosArc}, // backward compatibility
-    {"sc_edge_main", ScType::ConstPermPosArc},
-
-    {"sc_arc_access", ScType::MembershipArc}, // backward compatibility
-    {"sc_edge_access", ScType::MembershipArc},
-
-    {"sc_node_tuple", ScType::NodeTuple}, // backward compatibility
-    {"sc_node_not_binary_tuple", ScType::NodeTuple},
-
-    {"sc_node_struct", ScType::NodeStructure},
+    {"sc_node_tuple", ScType::NodeTuple},
+    {"sc_node_structure", ScType::NodeStructure},
+    {"sc_node_class", ScType::NodeClass},
     {"sc_node_role_relation", ScType::NodeRole},
     {"sc_node_norole_relation", ScType::NodeNoRole},
-    //{"sc_node_abstract", ScType::NodeAbstract}, // TODO: remove it
+    {"sc_node_superclass", ScType::NodeSuperclass},
     {"sc_node_material", ScType::NodeMaterial},
-
-    {"sc_node_not_relation", ScType::NodeClass}, // backward compatibility
-    {"sc_node_class", ScType::NodeClass},
 };
 
-TypeResolver::IsType TypeResolver::ms_reversedConnectors =
-    {"<", "<..", "<=", "_<=","<=_", "<-", "_<-","<-_", "<|-", "_<|-","<|-_", "</-", "_</-","</-_", "<~", "_<~","<~_", "<|~", "<|~_", "_<|~", "</~", "_</~", "</~_"};
+TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedKeynodesToTypes = {
+    {"sc_edge", ScType::CommonEdge},
+    {"sc_edge_ucommon", ScType::CommonEdge},
+
+    {"sc_arc_common", ScType::CommonArc},
+    {"sc_edge_dcommon", ScType::CommonArc},
+
+    {"sc_arc_main", ScType::ConstPermPosArc},
+    {"sc_edge_main", ScType::ConstPermPosArc},
+
+    {"sc_arc_access", ScType::MembershipArc},
+    {"sc_edge_access", ScType::MembershipArc},
+
+    {"sc_node_not_binary_tuple", ScType::NodeTuple},
+    {"sc_node_struct", ScType::NodeStructure},
+    {"sc_node_not_relation", ScType::NodeClass},
+};
+
+TypeResolver::SCsConnectorDesignations TypeResolver::ms_reversedConnectors = {
+    "<=?", "<???", "<=", "<=_", 
+    "<??", "<|??", "</?", "<?-?", "<?..?", "<?~?", "<?%?",
+    "<-?", "<|-?", "<..?", "<~?", "<%?", "<|..?", "<|~?", "<|%?", 
+    "<-", "<-_", "<|-", "<|-_", "</" "</-", "</_", "</-_", 
+    "<..", "<.._", "<|..", "<|.._", "<~", "<~_", "<|~", "|<~_", "<%", "<%_", "<|%", "|<%_"
+};
+
+TypeResolver::SCsConnectorDesignations TypeResolver::ms_deprecatedReversedConnectors = {
+    "<", "_<=", "_<-", "_<|-", "_</-", "_<~", "_<|~", "_</~"
+};
+
+std::string TypeResolver::GetDirectSCsConnector(ScType const & type)
+{
+  auto const it = ms_typesToConnectors.find(type);
+  if (it == ms_typesToConnectors.cend())
+    return "";
+
+  return it->second;
+}
+
+std::string TypeResolver::GetReverseSCsConnector(ScType const & type)
+{
+  auto const it = ms_typesToReversedConnectors.find(type);
+  if (it == ms_typesToReversedConnectors.cend())
+    return "";
+
+  return it->second;
+}
 
 ScType const & TypeResolver::GetConnectorType(std::string const & connectorAlias)
 {
-  auto const it = ms_connectorToType.find(connectorAlias);
-  return it != ms_connectorToType.cend() ? it->second : ScType::Unknown;
+  auto const it = ms_connectorsToTypes.find(connectorAlias);
+  if (it == ms_connectorsToTypes.cend())
+  {
+    auto const deprecatedIt = ms_deprecatedConnectorsToTypes.find(connectorAlias);
+    if (deprecatedIt == ms_deprecatedConnectorsToTypes.cend())
+      return ScType::Unknown;
+
+    return deprecatedIt->second;
+  } 
+  
+  return it->second;
 }
 
 ScType const & TypeResolver::GetKeynodeType(std::string const & keynodeAlias)
 {
-  auto const it = ms_keynodeToType.find(keynodeAlias);
-  return it != ms_keynodeToType.cend() ? it->second : ScType::Unknown;
+  auto const it = ms_keynodesToTypes.find(keynodeAlias);
+  if (it == ms_keynodesToTypes.cend())
+  {
+    auto const deprecatedIt = ms_deprecatedKeynodesToTypes.find(keynodeAlias);
+    if (deprecatedIt == ms_deprecatedKeynodesToTypes.cend())
+      return ScType::Unknown;
+
+    return deprecatedIt->second;
+  }
+
+  return it->second;
 }
 
 bool TypeResolver::IsConnectorReversed(std::string const & connectorAlias)
 {
-  return ms_reversedConnectors.find(connectorAlias) != ms_reversedConnectors.cend();
+  return ms_reversedConnectors.find(connectorAlias) != ms_reversedConnectors.cend()
+    || ms_deprecatedReversedConnectors.find(connectorAlias) != ms_deprecatedReversedConnectors.cend();
 }
 
 bool TypeResolver::IsConst(std::string const & idtf)
@@ -127,7 +380,8 @@ bool TypeResolver::IsConnectorAttrConst(std::string const & attr)
 
 bool TypeResolver::IsKeynodeType(std::string const & alias)
 {
-  return ms_keynodeToType.find(alias) != ms_keynodeToType.cend();
+  return ms_keynodesToTypes.find(alias) != ms_keynodesToTypes.cend() 
+    || ms_deprecatedKeynodesToTypes.find(alias) != ms_deprecatedKeynodesToTypes.cend();
 }
 
 bool TypeResolver::IsUnnamed(std::string const & alias)

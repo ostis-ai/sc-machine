@@ -74,9 +74,13 @@ std::vector<std::pair<ScType, std::tuple<bool, bool, bool, bool, bool, bool, boo
 
       {ScType::ConstPermPosArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
       {ScType::ConstTempPosArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::ConstActualTempPosArc,  {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::ConstInactualTempPosArc,{N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
 
       {ScType::VarPermPosArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
       {ScType::VarTempPosArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::VarActualTempPosArc,    {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::VarInactualTempPosArc,  {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
 
       // Negative sc-arcs
       {ScType::ConstNegArc,            {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
@@ -89,9 +93,13 @@ std::vector<std::pair<ScType, std::tuple<bool, bool, bool, bool, bool, bool, boo
 
       {ScType::ConstPermNegArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
       {ScType::ConstTempNegArc,        {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::ConstActualTempNegArc,  {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
+      {ScType::ConstInactualTempNegArc,{N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
 
       {ScType::VarPermNegArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
       {ScType::VarTempNegArc,          {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::VarActualTempNegArc,    {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
+      {ScType::VarInactualTempNegArc,  {N,         N,         Y,         N,         Y,         N,         Y,         N,         Y}},
 
       // Fuzzy sc-arcs
       {ScType::ConstFuzArc,            {N,         N,         Y,         N,         Y,         N,         Y,         Y,         N}},
@@ -133,6 +141,23 @@ std::vector<std::pair<ScType, std::tuple<bool, bool, bool, bool, bool, bool, boo
   /* clang-format on */
 }
 
+struct ScType::ScTypeHashFunc
+{
+  sc_type operator()(ScType const & type) const
+  {
+    return type;
+  }
+};
+
+class TestScType : public ScType
+{
+public:
+  static auto const & GetTypesToNames()
+  {
+    return m_typesToNames;
+  }
+};
+
 TEST(ScTypeTest, CheckTypeSubtypes)
 {
   auto const & typeMap = GetTypesToSubtypesMap();
@@ -150,6 +175,8 @@ TEST(ScTypeTest, CheckTypeSubtypes)
     EXPECT_EQ(type.IsConst(), isConst);
     EXPECT_EQ(type.IsVar(), isVar);
   }
+
+  EXPECT_EQ(TestScType::GetTypesToNames().size(), typeMap.size());
 }
 
 std::vector<std::pair<ScType, ScType>> GetDeprecatedTypesToTypesMap()
@@ -286,16 +313,69 @@ TEST(ScTypeTest, ExtendTypes)
 
 TEST(ScTypeTest, PrintTypes)
 {
-  std::size_t const maxNameLength = 8u + 20u;
+  std::size_t const maxNameLength = 8u + 23u;
   auto const & typeMap = GetTypesToSubtypesMap();
 
-  std::cout << "| Type name                    | Value | Hex Value |\n";
-  std::cout << "|------------------------------|-------|-----------|\n";
+  std::cout << "| C++ name                        | Value | Hex Value |\n";
+  std::cout << "|---------------------------------|-------|-----------|\n";
 
   for (auto const & [type, _] : typeMap)
   {
     std::cout << "| " << std::left << std::setw(maxNameLength) << "ScType::" + std::string(type) << " | " << std::left
               << std::setw(5u) << type << " | "
               << "0x" << std::left << std::setw(7u) << std::hex << std::uppercase << type << std::dec << " |\n";
+  }
+}
+
+std::string CamelToSnake(std::string const & name)
+{
+  std::string snakeCase;
+  for (size_t i = 0; i < name.length(); ++i)
+  {
+    sc_char currentChar = name[i];
+
+    if (std::isupper(currentChar) && i != 0)
+      snakeCase += '_';
+
+    snakeCase += std::tolower(currentChar);
+  }
+
+  return snakeCase;
+}
+
+std::string ConvertToSCgFile(std::string const & name)
+{
+  return "<img src=\"../images/scg/scg_" + CamelToSnake(name) + ".png\"></img>";
+}
+
+TEST(ScTypeTest, PrintSCsConnectors)
+{
+  std::size_t const maxNameLength = 8u + 23u;
+  auto const & typeMap = GetTypesToSubtypesMap();
+
+  std::cout << "| C++ name                        | SCg                                                                "
+               "    | SCs                  |\n";
+  std::cout << "|---------------------------------|--------------------------------------------------------------------"
+               "----|----------------------|\n";
+
+  for (auto const & [type, _] : typeMap)
+  {
+    if (type.IsCommonEdge() || type.IsCommonArc() || type.IsMembershipArc())
+    {
+      std::string const & directSCsConnector = type.GetDirectSCsConnector();
+
+      std::cout << "| " << std::left << std::setw(maxNameLength) << "ScType::" + std::string(type) << " | " << std::left
+                << std::setw(70u)
+                << (directSCsConnector.find_first_of('?') == std::string::npos ? ConvertToSCgFile(type)
+                                                                               : "Not specified")
+                << " | ";
+
+      if (type.IsCommonEdge())
+        std::cout << std::setw(20u) << "```" + directSCsConnector + "```"
+                  << " |\n";
+      else
+        std::cout << std::setw(20u) << "```" + directSCsConnector + " " + type.GetReverseSCsConnector() + "```"
+                  << " |\n";
+    }
   }
 }

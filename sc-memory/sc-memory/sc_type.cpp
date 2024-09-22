@@ -11,6 +11,8 @@ extern "C"
 #include "sc-core/sc_memory.h"
 }
 
+#include "scs/scs_types.hpp"
+
 struct ScType::ScTypeHashFunc
 {
   sc_type operator()(ScType const & type) const
@@ -152,6 +154,16 @@ ScType::operator std::string() const
     return "";
 
   return it->second;
+}
+
+std::string ScType::GetDirectSCsConnector() const
+{
+  return scs::TypeResolver::GetDirectSCsConnector(*this);
+}
+
+std::string ScType::GetReverseSCsConnector() const
+{
+  return scs::TypeResolver::GetReverseSCsConnector(*this);
 }
 
 bool ScType::CanExtendTo(ScType const & extType) const

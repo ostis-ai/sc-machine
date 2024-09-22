@@ -194,6 +194,10 @@ public:
    */
   operator std::string() const;
 
+  std::string GetDirectSCsConnector() const;
+
+  std::string GetReverseSCsConnector() const;
+
   /*!
    * @brief Determines whether this sc-type can be extended to another sc-type based on semantic and subtype
    * compatibility.
@@ -204,8 +208,10 @@ public:
 
 private:
   RealType m_realType;
+
+protected:
   struct ScTypeHashFunc;
-  static std::unordered_map<ScType, std::string, struct ScTypeHashFunc> const m_typesToNames;
+  static std::unordered_map<ScType, std::string, ScTypeHashFunc> const m_typesToNames;
 
   // All sc-types must be calculating in compile time!
   constexpr ScType(RealType type) noexcept
