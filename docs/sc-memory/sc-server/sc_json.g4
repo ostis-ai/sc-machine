@@ -379,87 +379,6 @@ SC_EVENT_TYPE
   | '"delete_element"'
   ;
 
-SC_NODE_TYPE
-  : '1'     // sc_type_node
-  | '128'   // sc_type_node_tuple
-  | '256'   // sc_type_node_structure
-  | '512'   // sc_type_node_role
-  | '1024'  // sc_type_node_norole
-  | '2048'  // sc_type_node_class
-  | '4096'  // sc_type_node_superclass
-  | '8192'  // sc_type_node_material
-
-  | '33'    // sc_type_const_node
-  | '168'   // sc_type_node_const_tuple
-  | '288'   // sc_type_node_const_struct
-  | '544'   // sc_type_node_const_role
-  | '1056'  // sc_type_const_node_norole
-  | '2080'  // sc_type_const_node_class
-  | '4128'  // sc_type_node_const_abstract
-  | '8224'  // sc_type_node_const_material
-
-  | '65'    // sc_type_node_var
-  | '192'   // sc_type_node_var_tuple
-  | '320'   // sc_type_node_var_struct
-  | '576'   // sc_type_node_var_role
-  | '1088'  // sc_type_node_var_norole
-  | '2112'  // sc_type_node_var_class
-  | '4160'  // sc_type_node_var_abstract
-  | '8256'  // sc_type_node_var_material
-  ;
-
-SC_EDGE_TYPE
-  : '4'     // sc_type_common_edge
-  | '8'     // sc_type_common_arc
-  | '16'    // sc_type_membership_arc
-
-  | '2212'  // sc_type_edge_common_const_pos_perm
-  | '2216'  // sc_type_arc_common_const_pos_perm
-  | '2224'  // sc_type_arc_access_const_pos_perm
-  | '2340'  // sc_type_edge_common_const_neg_perm
-  | '2344'  // sc_type_arc_common_const_neg_perm
-  | '2352'  // sc_type_arc_access_const_neg_perm
-  | '2596'  // sc_type_edge_common_const_fuz_perm
-  | '2600'  // sc_type_arc_common_const_fuz_perm
-  | '2608'  // sc_type_arc_access_const_fuz_perm
-
-  | '1188'  // sc_type_edge_common_const_pos_temp
-  | '1192'  // sc_type_arc_common_const_pos_temp
-  | '1200'  // sc_type_arc_access_const_pos_temp
-  | '1316'  // sc_type_edge_common_const_neg_temp
-  | '1320'  // sc_type_arc_common_const_neg_temp
-  | '1328'  // sc_type_arc_access_const_neg_temp
-  | '1572'  // sc_type_edge_common_const_fuz_temp
-  | '1576'  // sc_type_arc_common_const_fuz_temp
-  | '1584'  // sc_type_arc_access_const_fuz_temp
-
-  | '2244'  // sc_type_edge_common_var_pos_perm
-  | '2248'  // sc_type_arc_common_var_pos_perm
-  | '2256'  // sc_type_arc_access_var_pos_perm
-  | '2372'  // sc_type_edge_common_var_neg_perm
-  | '2376'  // sc_type_arc_common_var_neg_perm
-  | '2384'  // sc_type_arc_access_var_neg_perm
-  | '2628'  // sc_type_edge_common_var_fuz_perm
-  | '2632'  // sc_type_arc_common_var_fuz_perm
-  | '2640'  // sc_type_arc_access_var_fuz_perm
-
-  | '1220'  // sc_type_edge_common_var_pos_temp
-  | '1224'  // sc_type_arc_common_var_pos_temp
-  | '1232'  // sc_type_arc_access_var_pos_temp
-  | '1348'  // sc_type_edge_common_var_neg_temp
-  | '1352'  // sc_type_arc_common_var_neg_temp
-  | '1360'  // sc_type_arc_access_var_neg_temp
-  | '1604'  // sc_type_edge_common_var_fuz_temp
-  | '1608'  // sc_type_arc_common_var_fuz_temp
-  | '1616'  // sc_type_arc_access_var_fuz_temp
-  ;
-
-SC_LINK_TYPE
-  : '2'     // sc_type_node_link
-  | '34'    // sc_type_node_link_const
-  | '66'    // sc_type_node_link_var
-  ;
-
 SC_ADDR_TYPE
   : SC_NODE_TYPE
   | SC_EDGE_TYPE
@@ -487,7 +406,7 @@ CONTOUR_END
   ;
 
 CONTENT
-  : CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL*
+  : CONTENT_SYMBOL_FIRST_END CONTENT_SYMBOL*
   ;
 
 CONTENT_BODY
