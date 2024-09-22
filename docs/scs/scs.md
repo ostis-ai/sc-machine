@@ -159,7 +159,7 @@ Where `<connector>` can be on of values:
 |----------------------|------------------------------------------------------------------------|
 | ```?<=>```           | Not specified                                                          |
 | ```?=> or <=?```     | Not specified                                                          |
-| ```???> or <???```   | Not specified                                                          |
+| ```?.?> or <?.?```   | Not specified                                                          |
 | ```<=>```            | <img src="../images/scg/scg_const_common_edge.png"></img>              |
 | ```_<=>```           | <img src="../images/scg/scg_var_common_edge.png"></img>                |
 | ```=> or <=```       | <img src="../images/scg/scg_const_common_arc.png"></img>               |

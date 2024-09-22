@@ -10,7 +10,7 @@
 
 TEST(scs_level_5, simple)
 {
-  std::string const data = "set ~> attr:: item (* -/> subitem;; <= subitem2;; *);;";
+  std::string const data = "set ~> attr:: item (* /> subitem;; <= subitem2;; *);;";
 
   scs::Parser parser;
 
@@ -30,13 +30,13 @@ TEST(scs_level_5, simple)
            },
            {
              { ScType::ConstNode, "set" },
-             { ScType::ConstTempPosArc, scs::Visibility::Local },
+             { ScType::ConstActualTempPosArc, scs::Visibility::Local },
              { ScType::ConstNode, "item" }
            },
            {
              { ScType::ConstNode, "attr" },
              { ScType::VarPermPosArc, scs::Visibility::Local },
-             { ScType::ConstTempPosArc, scs::Visibility::Local }
+             { ScType::ConstActualTempPosArc, scs::Visibility::Local }
            }
          });
 

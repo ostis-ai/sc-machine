@@ -24,7 +24,7 @@ TEST(scs_alias, assign)
   EXPECT_TRUE(parser.GetParsedElement(t.m_source).GetType().IsNode());
   EXPECT_TRUE(parser.GetParsedElement(t.m_target).GetType().IsLink());
 
-  EXPECT_EQ(parser.GetParsedElement(t.m_connector).GetType(), ScType::ConstTempPosArc);
+  EXPECT_EQ(parser.GetParsedElement(t.m_connector).GetType(), ScType::ConstActualTempPosArc);
 }
 
 TEST(scs_alias, no_assign)
@@ -64,7 +64,7 @@ TEST(scs_alias, recursive_assigns)
 
 TEST(scs_alias, reassign)
 {
-  std::string const data = "@alias = _x;; _x <- sc_node_struct;; y _~/> @alias;; @alias = _[];; z _~> @alias;;";
+  std::string const data = "@alias = _x;; _x <- sc_node_struct;; y _/> @alias;; @alias = _[];; z _~> @alias;;";
 
   scs::Parser parser;
 
@@ -99,7 +99,7 @@ TEST(scs_alias, reassign)
     EXPECT_EQ(src.GetIdtf(), "z");
     EXPECT_EQ(src.GetType(), ScType::ConstNode);
 
-    EXPECT_EQ(arcAddr.GetType(), ScType::VarTempPosArc);
+    EXPECT_EQ(arcAddr.GetType(), ScType::VarActualTempPosArc);
 
     EXPECT_EQ(trg.GetType(), ScType::VarNodeLink);
   }
@@ -120,7 +120,7 @@ TEST(scs_alias, contour)
     SPLIT_TRIPLE(triples[0]);
 
     EXPECT_EQ(src.GetType(), ScType::VarNodeLink);
-    EXPECT_EQ(connector.GetType(), ScType::VarTempPosArc);
+    EXPECT_EQ(connector.GetType(), ScType::VarActualTempPosArc);
     EXPECT_EQ(trg.GetIdtf(), "y");
   }
 }

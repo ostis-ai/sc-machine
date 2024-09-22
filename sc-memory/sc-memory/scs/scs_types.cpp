@@ -16,9 +16,8 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_connectorsToTypes = {
     {"?=>", ScType::CommonArc},
     {"<=?", ScType::CommonArc},
 
-    {"???" ">", ScType::MembershipArc}, 
-    // Separation disables trigraph warnings
-    {"<???", ScType::MembershipArc},
+    {"?.?>", ScType::MembershipArc}, 
+    {"<?.?", ScType::MembershipArc},
 
     {"<=>", ScType::ConstCommonEdge},
     {"_<=>", ScType::VarCommonEdge},
@@ -28,15 +27,29 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_connectorsToTypes = {
     {"_=>", ScType::VarCommonArc},
     {"<=_", ScType::VarCommonArc},
 
-    {"??" ">", ScType::PosArc},
-    // Separation disables trigraph warnings
-    {"<??", ScType::PosArc},
+    {".?>", ScType::ConstMembershipArc}, 
+    {"<?.", ScType::ConstMembershipArc},
+    {"_.?>", ScType::VarMembershipArc}, 
+    {"<?._", ScType::VarMembershipArc},
 
-    {"??|>", ScType::NegArc},
-    {"<|??", ScType::NegArc},
+    {"?.>", ScType::PosArc},
+    {"<.?", ScType::PosArc},
+
+    {"?.|>", ScType::NegArc},
+    {"<|.?", ScType::NegArc},
 
     {"?/>", ScType::FuzArc},
     {"</?", ScType::FuzArc},
+
+    {".>", ScType::ConstPosArc},
+    {"<.", ScType::ConstPosArc},
+    {"_.>", ScType::VarPosArc},
+    {"<._", ScType::VarPosArc},      
+
+    {".|>", ScType::ConstNegArc},
+    {"<|.", ScType::ConstNegArc},
+    {"_.|>", ScType::VarNegArc},
+    {"<|._", ScType::VarNegArc},
 
     {"?-?>", ScType::PermArc},
     {"<?-?", ScType::PermArc},
@@ -49,6 +62,26 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_connectorsToTypes = {
 
     {"?%?>", ScType::InactualTempArc},
     {"<?%?", ScType::InactualTempArc},
+
+    {"-?>", ScType::ConstPermArc},
+    {"<?-", ScType::ConstPermArc},
+    {"_-?>", ScType::VarPermArc},
+    {"<?-_", ScType::VarPermArc},
+
+    {"..?>", ScType::ConstTempArc},
+    {"<?..", ScType::ConstTempArc},
+    {"_..?>", ScType::VarTempArc},
+    {"<?.._", ScType::VarTempArc},
+
+    {"~?>", ScType::ConstActualTempArc},
+    {"<?~", ScType::ConstActualTempArc},
+    {"_~?>", ScType::VarActualTempArc},
+    {"<?~_", ScType::VarActualTempArc},
+
+    {"%?>", ScType::ConstInactualTempArc},
+    {"<?%", ScType::ConstInactualTempArc},
+    {"_%?>", ScType::VarInactualTempArc},
+    {"<?%_", ScType::VarInactualTempArc},
 
     {"?->", ScType::PermPosArc},
     {"<-?", ScType::PermPosArc},
@@ -145,16 +178,16 @@ struct TypeResolver::ScTypeHashFunc
 TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToConnectors = {
     {ScType::CommonEdge, "?<=>"}, 
     {ScType::CommonArc, "?=>"},
-    {ScType::MembershipArc, "???" ">"},
+    {ScType::MembershipArc, "?.?>"},
     {ScType::ConstCommonEdge, "<=>"},
     {ScType::VarCommonEdge, "_<=>"},
     {ScType::ConstCommonArc, "=>"},
     {ScType::VarCommonArc, "_=>"},
-    {ScType::ConstMembershipArc, "??" ">"},
-    {ScType::VarMembershipArc, "_??" ">"},
+    {ScType::ConstMembershipArc, ".?>"},
+    {ScType::VarMembershipArc, "_.?>"},
     {ScType::VarArc, "_=>"},
-    {ScType::PosArc, "??" ">"},
-    {ScType::NegArc, "??|>"},
+    {ScType::PosArc, "?.>"},
+    {ScType::NegArc, "?.|>"},
     {ScType::FuzArc, "?/>"},
     {ScType::PermArc, "?-?>"},
     {ScType::TempArc, "?..?>"},
@@ -180,10 +213,10 @@ TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToConnectors = {
     {ScType::VarPermPosArc, "_->"},
     {ScType::ConstPermNegArc, "-|>"},
     {ScType::VarPermNegArc, "_-|>"},
-    {ScType::ConstPosArc, "?>"},
-    {ScType::VarPosArc, "_?>"},
-    {ScType::ConstNegArc, "?|>"},
-    {ScType::VarNegArc, "_?|>"},
+    {ScType::ConstPosArc, ".>"},
+    {ScType::VarPosArc, "_.>"},
+    {ScType::ConstNegArc, ".|>"},
+    {ScType::VarNegArc, "_.|>"},
     {ScType::ConstFuzArc, "/>"},
     {ScType::VarFuzArc, "_/>"},
     {ScType::ConstTempPosArc, "..>"},
@@ -203,16 +236,16 @@ TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToConnectors = {
 TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToReversedConnectors = {
     {ScType::CommonEdge, "?<=>"}, 
     {ScType::CommonArc, "<=?"},
-    {ScType::MembershipArc, "<" "???"},
+    {ScType::MembershipArc, "<?.?"},
     {ScType::ConstCommonEdge, "<=>"},
     {ScType::VarCommonEdge, "_<=>"},
     {ScType::ConstCommonArc, "<="},
     {ScType::VarCommonArc, "<=_"},
-    {ScType::ConstMembershipArc, "<" "??"},
-    {ScType::VarMembershipArc, "<" "??_"},
+    {ScType::ConstMembershipArc, "<?."},
+    {ScType::VarMembershipArc, "<?._"},
     {ScType::VarArc, "<=_"},
-    {ScType::PosArc, "<??"},
-    {ScType::NegArc, "<|??"},
+    {ScType::PosArc, "<.?"},
+    {ScType::NegArc, "<|.?"},
     {ScType::FuzArc, "</?"},
     {ScType::PermArc, "<?-?"},
     {ScType::TempArc, "<?..?"},
@@ -238,10 +271,10 @@ TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToReversedConnector
     {ScType::VarPermPosArc, "<-_"},
     {ScType::ConstPermNegArc, "<|-"},
     {ScType::VarPermNegArc, "<|-_"},
-    {ScType::ConstPosArc, "<?"},
-    {ScType::VarPosArc, "<?_"},
-    {ScType::ConstNegArc, "<|?"},
-    {ScType::VarNegArc, "<|?_"},
+    {ScType::ConstPosArc, "<."},
+    {ScType::VarPosArc, "<._"},
+    {ScType::ConstNegArc, "<|."},
+    {ScType::VarNegArc, "<|._"},
     {ScType::ConstFuzArc, "</"},
     {ScType::VarFuzArc, "</_"},
     {ScType::ConstTempPosArc, "<.."},
@@ -295,8 +328,8 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedKeynodesToType
 };
 
 TypeResolver::SCsConnectorDesignations TypeResolver::ms_reversedConnectors = {
-    "<=?", "<???", "<=", "<=_", 
-    "<??", "<|??", "</?", "<?-?", "<?..?", "<?~?", "<?%?",
+    "<=?", "<?.?", "<=", "<=_", 
+    "<.", "<._", "<?.", "<?._", "<.?", "<|.?", "</?", "<?-?", "<?..?", "<?~?", "<?%?",
     "<-?", "<|-?", "<..?", "<~?", "<%?", "<|..?", "<|~?", "<|%?", 
     "<-", "<-_", "<|-", "<|-_", "</" "</-", "</_", "</-_", 
     "<..", "<.._", "<|..", "<|.._", "<~", "<~_", "<|~", "|<~_", "<%", "<%_", "<|%", "|<%_"

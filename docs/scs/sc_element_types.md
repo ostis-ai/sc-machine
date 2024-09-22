@@ -104,13 +104,13 @@
 |---------------------------------|------------------------------------------------------------------------|----------------------|
 | ScType::CommonEdge              | Not specified                                                          | ```?<=>```           |
 | ScType::CommonArc               | Not specified                                                          | ```?=> or <=?```     |
-| ScType::MembershipArc           | Not specified                                                          | ```???> or <???```   |
+| ScType::MembershipArc           | Not specified                                                          | ```?.?> or <?.?```   |
 | ScType::ConstCommonEdge         | <img src="../images/scg/scg_const_common_edge.png"></img>              | ```<=>```            |
 | ScType::VarCommonEdge           | <img src="../images/scg/scg_var_common_edge.png"></img>                | ```_<=>```           |
 | ScType::ConstCommonArc          | <img src="../images/scg/scg_const_common_arc.png"></img>               | ```=> or <=```       |
 | ScType::VarCommonArc            | <img src="../images/scg/scg_var_common_arc.png"></img>                 | ```_=> or <=_```     |
-| ScType::ConstMembershipArc      | Not specified                                                          | ```??> or <??```     |
-| ScType::VarMembershipArc        | Not specified                                                          | ```_??> or <??_```   |
+| ScType::ConstMembershipArc      | Not specified                                                          | ```.?> or <?.```     |
+| ScType::VarMembershipArc        | Not specified                                                          | ```_.?> or <?._```   |
 | ScType::PermArc                 | Not specified                                                          | ```?-?> or <?-?```   |
 | ScType::TempArc                 | Not specified                                                          | ```?..?> or <?..?``` |
 | ScType::ConstPermArc            | Not specified                                                          | ```-?> or <?-```     |
@@ -123,8 +123,8 @@
 | ScType::VarActualTempArc        | Not specified                                                          | ```_~?> or <?~_```   |
 | ScType::ConstInactualTempArc    | Not specified                                                          | ```%?> or <?%```     |
 | ScType::VarInactualTempArc      | Not specified                                                          | ```_%?> or <?%_```   |
-| ScType::PosArc                  | Not specified                                                          | ```??> or <??```     |
-| ScType::NegArc                  | Not specified                                                          | ```??|> or <|??```   |
+| ScType::PosArc                  | Not specified                                                          | ```?.> or <.?```     |
+| ScType::NegArc                  | Not specified                                                          | ```?.|> or <|.?```   |
 | ScType::FuzArc                  | Not specified                                                          | ```?/> or </?```     |
 | ScType::ConstPosArc             | Not specified                                                          | ```?> or <?```       |
 | ScType::VarPosArc               | Not specified                                                          | ```_?> or <?_```     |

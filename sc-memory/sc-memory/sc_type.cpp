@@ -171,6 +171,17 @@ bool ScType::CanExtendTo(ScType const & extType) const
   return sc_memory_is_type_expendable_to(*this, extType);
 }
 
+std::set<ScType> ScType::GetConnectorTypes()
+{
+  std::set<ScType> connectorTypes;
+  for (auto const & [type, name] : m_typesToNames)
+  {
+    if (type.IsCommonEdge() || type.IsCommonArc() || type.IsMembershipArc())
+      connectorTypes.insert(type);
+  }
+  return connectorTypes;
+}
+
 ScType const ScType::Unknown;
 
 // sc-elements

@@ -259,7 +259,7 @@ TEST(scs_level_6, contour_recursive)
   {
     SPLIT_TRIPLE(triples[0]);
     EXPECT_EQ(src.GetIdtf(), "k");
-    EXPECT_EQ(connector.GetType(), ScType::ConstTempPosArc);
+    EXPECT_EQ(connector.GetType(), ScType::ConstActualTempPosArc);
     EXPECT_EQ(trg.GetIdtf(), "z");
   }
 
@@ -291,7 +291,7 @@ TEST(scs_level_6, contour_recursive)
     SPLIT_TRIPLE(triples[14]);
 
     EXPECT_EQ(src.GetIdtf(), "x");
-    EXPECT_EQ(connector.GetType(), ScType::ConstTempNegArc);
+    EXPECT_EQ(connector.GetType(), ScType::ConstActualTempNegArc);
     EXPECT_EQ(trg.GetType(), ScType::ConstNodeStructure);
   }
 }

@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include "test_scs_utils.hpp"
 
 
@@ -162,7 +164,7 @@ TEST(scs_common, nodes)
 {
   char const * data = "a -> b;;"
                       "sc_node_tuple -> a;;"
-                      "sc_node_struct -> b;;"
+                      "sc_node_structure -> b;;"
                       "sc_node_role_relation -> c;;"
                       "c -> _d;;"
                       "sc_node_norole_relation -> _d;;"
@@ -283,59 +285,71 @@ TEST(scs_common, backward_compatibility)
   EXPECT_EQ(parser.GetParsedElement(triples[1].m_target).GetType(), ScType::ConstNodeTuple);
 }
 
-TEST(scs_common, connectors)
+TEST(scs_common, DirectConnectors)
 {
-  std::string const data = "x"
-                           "> _y; <> y4; ..> y5;"
-                           "<=> y7; _<=> y8; => y9; _=> y11;"
-                           "-> y2; _-> y13; -|> y15; _-|> y17; -/> y19; _-/> y21;"
-                           " ~> y23; _~> y25; ~|> y27; _~|> y29; ~/> y31; _~/> y33;;";
+  auto const & connectorTypes = ScType::GetConnectorTypes();
+
+  std::vector<ScType> connectorTypesVec{connectorTypes.cbegin(), connectorTypes.cend()};
+  std::stringstream stream;
+  for (ScType const & connectorType : connectorTypesVec)
+  {
+    stream << "x " << connectorType.GetDirectSCsConnector() << " y;;\n" << std::endl;
+  }
 
   scs::Parser parser;
-
-  EXPECT_TRUE(parser.Parse(data));
+  EXPECT_TRUE(parser.Parse(stream.str()));
 
   auto const & triples = parser.GetParsedTriples();
-  EXPECT_EQ(triples.size(), 19u);
+  EXPECT_EQ(triples.size(), connectorTypes.size());
+
+  auto const GetConnectorType = [&triples, &parser](size_t index) -> ScType
   {
-    auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool
-    {
-      EXPECT_TRUE(index < triples.size());
-      return (parser.GetParsedElement(triples[index].m_connector).GetType() == type);
-    };
+    EXPECT_TRUE(index < triples.size());
+    return parser.GetParsedElement(triples[index].m_connector).GetType();
+  };
 
-    EXPECT_TRUE(CheckEdgeType(0, ScType::CommonArc));
-    EXPECT_TRUE(CheckEdgeType(1, ScType::CommonEdge));
-    EXPECT_TRUE(CheckEdgeType(2, ScType::MembershipArc));
-
-    EXPECT_TRUE(CheckEdgeType(3, ScType::ConstCommonEdge));
-    EXPECT_TRUE(CheckEdgeType(4, ScType::VarCommonEdge));
-    EXPECT_TRUE(CheckEdgeType(5, ScType::ConstCommonArc));
-    EXPECT_TRUE(CheckEdgeType(6, ScType::VarCommonArc));
-
-    EXPECT_TRUE(CheckEdgeType(7, ScType::ConstPermPosArc));
-    EXPECT_TRUE(CheckEdgeType(8, ScType::VarPermPosArc));
-    EXPECT_TRUE(CheckEdgeType(9, ScType::ConstPermNegArc));
-    EXPECT_TRUE(CheckEdgeType(10, ScType::VarPermNegArc));
-    EXPECT_TRUE(CheckEdgeType(11, ScType::ConstFuzArc));
-    EXPECT_TRUE(CheckEdgeType(12, ScType::VarFuzArc));
-
-    EXPECT_TRUE(CheckEdgeType(13, ScType::ConstTempPosArc));
-    EXPECT_TRUE(CheckEdgeType(14, ScType::VarTempPosArc));
-    EXPECT_TRUE(CheckEdgeType(15, ScType::ConstTempNegArc));
-    EXPECT_TRUE(CheckEdgeType(16, ScType::VarTempNegArc));
-    EXPECT_TRUE(CheckEdgeType(17, ScType::ConstFuzArc));
-    EXPECT_TRUE(CheckEdgeType(18, ScType::VarFuzArc));
+  for (size_t i = 0; i < connectorTypesVec.size(); ++i)
+  {
+    EXPECT_EQ(GetConnectorType(i), connectorTypesVec[i]);
   }
 }
 
-TEST(scs_common, reversed_connectors)
+TEST(scs_common, ReverseConnectors)
+{
+  auto const & connectorTypes = ScType::GetConnectorTypes();
+
+  std::vector<ScType> connectorTypesVec{connectorTypes.cbegin(), connectorTypes.cend()};
+  std::stringstream stream;
+  for (ScType const & connectorType : connectorTypesVec)
+  {
+    stream << "x " << connectorType.GetReverseSCsConnector() << " y;;\n" << std::endl;
+  }
+
+  scs::Parser parser;
+  EXPECT_TRUE(parser.Parse(stream.str()));
+
+  auto const & triples = parser.GetParsedTriples();
+  EXPECT_EQ(triples.size(), connectorTypes.size());
+
+  auto const GetConnectorType = [&triples, &parser](size_t index) -> ScType
+  {
+    EXPECT_TRUE(index < triples.size());
+    return parser.GetParsedElement(triples[index].m_connector).GetType();
+  };
+
+  for (size_t i = 0; i < connectorTypesVec.size(); ++i)
+  {
+    EXPECT_EQ(GetConnectorType(i), connectorTypesVec[i]);
+  }
+}
+
+TEST(scs_common, ReversedConnectors)
 {
   std::string const data =
       "x"
       "< _y; <=_ y1; <-_ y2;"
-      "<|-_ y3; </-_ y4; <~_ y5; <|~_ y6;"
-      "</~_ y7;;";
+      "<|-_ y3; </_ y4; <~_ y5; <|~_ y6;"
+      "</_ y7;;";
 
   scs::Parser parser;
 
@@ -354,13 +368,13 @@ TEST(scs_common, reversed_connectors)
     EXPECT_TRUE(CheckEdgeType(2, ScType::VarPermPosArc));
     EXPECT_TRUE(CheckEdgeType(3, ScType::VarPermNegArc));
     EXPECT_TRUE(CheckEdgeType(4, ScType::VarFuzArc));
-    EXPECT_TRUE(CheckEdgeType(5, ScType::VarTempPosArc));
-    EXPECT_TRUE(CheckEdgeType(6, ScType::VarTempNegArc));
+    EXPECT_TRUE(CheckEdgeType(5, ScType::VarActualTempPosArc));
+    EXPECT_TRUE(CheckEdgeType(6, ScType::VarActualTempNegArc));
     EXPECT_TRUE(CheckEdgeType(7, ScType::VarFuzArc));
   }
 }
 
-TEST(scs_common, var_connectors_and_nodes)
+TEST(scs_common, VarConnectorsAndNodes)
 {
   std::string const data =
       "x"

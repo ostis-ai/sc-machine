@@ -158,7 +158,7 @@ EdgeTypes = {
     "pair/-/-/-/orient": "?=>",
     "pair/-/-/-/noorient": "?<=>",
 
-    "arc/-/-": "???>",
+    "arc/-/-": "?.?>",
 
     "arc/const/pos": "->",
     "arc/const/fuz": "/>",

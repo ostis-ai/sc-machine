@@ -311,6 +311,23 @@ TEST(ScTypeTest, ExtendTypes)
   EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::VarFuzArc));
 }
 
+TEST(ScTypeTest, CheckReverseSCsConnectors)
+{
+  auto const & typeMap = GetTypesToSubtypesMap();
+
+  for (auto const & [type, _] : typeMap)
+  {
+    if (type.IsCommonArc() || type.IsMembershipArc())
+    {
+      std::string reverseSCsConnector = type.GetReverseSCsConnector();
+      EXPECT_NE(reverseSCsConnector.find('<'), std::string::npos);
+      std::reverse(reverseSCsConnector.begin(), reverseSCsConnector.end());
+      std::replace(reverseSCsConnector.begin(), reverseSCsConnector.end(), '<', '>');
+      EXPECT_EQ(type.GetDirectSCsConnector(), reverseSCsConnector);
+    }
+  }
+}
+
 TEST(ScTypeTest, PrintTypesToBitValues)
 {
   std::size_t const maxNameLength = 8u + 23u;

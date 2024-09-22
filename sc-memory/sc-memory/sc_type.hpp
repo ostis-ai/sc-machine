@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <set>
 #include <unordered_map>
 
 extern "C"
@@ -205,6 +206,8 @@ public:
    * @return True if extension is possible based on semantic and subtype checks; false otherwise.
    */
   bool CanExtendTo(ScType const & extType) const;
+
+  static std::set<ScType> GetConnectorTypes();
 
 private:
   RealType m_realType;
