@@ -311,7 +311,7 @@ TEST(ScTypeTest, ExtendTypes)
   EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::VarFuzArc));
 }
 
-TEST(ScTypeTest, PrintTypes)
+TEST(ScTypeTest, PrintTypesToBitValues)
 {
   std::size_t const maxNameLength = 8u + 23u;
   auto const & typeMap = GetTypesToSubtypesMap();
@@ -348,13 +348,13 @@ std::string ConvertToSCgFile(std::string const & name)
   return "<img src=\"../images/scg/scg_" + CamelToSnake(name) + ".png\"></img>";
 }
 
-TEST(ScTypeTest, PrintSCsConnectors)
+TEST(ScTypeTest, PrintTypesToSCsSCgConnectors)
 {
   std::size_t const maxNameLength = 8u + 23u;
   auto const & typeMap = GetTypesToSubtypesMap();
 
-  std::cout << "| C++ name                        | SCg                                                                "
-               "    | SCs                  |\n";
+  std::cout << "| C++ name                        | SCg-code                                                           "
+               "    | SCs-code             |\n";
   std::cout << "|---------------------------------|--------------------------------------------------------------------"
                "----|----------------------|\n";
 
@@ -374,8 +374,36 @@ TEST(ScTypeTest, PrintSCsConnectors)
         std::cout << std::setw(20u) << "```" + directSCsConnector + "```"
                   << " |\n";
       else
-        std::cout << std::setw(20u) << "```" + directSCsConnector + " " + type.GetReverseSCsConnector() + "```"
+        std::cout << std::setw(20u) << "```" + directSCsConnector + " or " + type.GetReverseSCsConnector() + "```"
                   << " |\n";
+    }
+  }
+}
+
+TEST(ScTypeTest, PrintSCsToSCgConnectors)
+{
+  std::size_t const maxNameLength = 8u + 23u;
+  auto const & typeMap = GetTypesToSubtypesMap();
+
+  std::cout << "| SCs-code             | SCg-code                                                               |\n";
+  std::cout << "|----------------------|------------------------------------------------------------------------|\n";
+
+  for (auto const & [type, _] : typeMap)
+  {
+    if (type.IsCommonEdge() || type.IsCommonArc() || type.IsMembershipArc())
+    {
+      std::string const & directSCsConnector = type.GetDirectSCsConnector();
+
+      if (type.IsCommonEdge())
+        std::cout << "| " << std::setw(20u) << "```" + directSCsConnector + "```";
+      else
+        std::cout << "| " << std::setw(20u)
+                  << "```" + directSCsConnector + " or " + type.GetReverseSCsConnector() + "```";
+
+      std::cout << " | " << std::left << std::setw(70u)
+                << (directSCsConnector.find_first_of('?') == std::string::npos ? ConvertToSCgFile(type)
+                                                                               : "Not specified")
+                << " |\n";
     }
   }
 }
