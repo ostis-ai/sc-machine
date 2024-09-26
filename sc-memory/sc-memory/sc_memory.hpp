@@ -564,7 +564,7 @@ public:
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `GetEdgeTarget` instead for better readability and standards compliance.")
+      "This method is deprecated. Use `GetArcTargetElement` instead for better readability and standards compliance.")
   _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & arcAddr) const noexcept(false);
 
   /*!
@@ -1838,7 +1838,7 @@ public:
    */
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `HelperGenTemplate` instead for better readability and standards "
+      "This method is deprecated. Use `GenerateByTemplate` instead for better readability and standards "
       "compliance.")
   _SC_EXTERN ScTemplate::Result HelperGenTemplate(
       ScTemplate const & templToGenerate,
