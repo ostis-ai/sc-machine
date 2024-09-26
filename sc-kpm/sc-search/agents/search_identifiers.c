@@ -40,7 +40,7 @@ sc_result agent_search_all_identifiers(sc_event_subscription const * event, sc_a
     it5 = sc_iterator5_f_a_a_a_a_new(
         s_default_ctx,
         sc_iterator3_value(it1, 2),
-        sc_type_common_arc | sc_type_const,
+        sc_type_const_common_arc,
         sc_type_node_link,
         sc_type_const_perm_pos_arc,
         sc_type_node | sc_type_const | sc_type_node_norole);

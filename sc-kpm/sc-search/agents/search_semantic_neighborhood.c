@@ -25,7 +25,7 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
   it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       elem,
       sc_type_const_perm_pos_arc,
       keynode_nrel_translation);
@@ -208,7 +208,7 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr result, sc_bool sys_of
     it5 = sc_iterator5_f_a_f_a_f_new(
         s_default_ctx,
         keynode_sc_neighborhood,
-        sc_type_common_arc | sc_type_const,
+        sc_type_const_common_arc,
         sc_iterator3_value(it0, 0),
         sc_type_const_perm_pos_arc,
         keynode_nrel_strict_inclusion);
@@ -241,7 +241,7 @@ void search_element_identifiers(sc_addr el, sc_addr result)
   it5 = sc_iterator5_f_a_a_a_a_new(
       s_default_ctx,
       el,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       sc_type_node_link,
       sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const | sc_type_node_norole);
@@ -381,7 +381,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
             it_order = sc_iterator5_f_a_a_a_a_new(
                 s_default_ctx,
                 sc_iterator3_value(it4, 2),
-                sc_type_common_arc | sc_type_const,
+                sc_type_const_common_arc,
                 sc_type_node | sc_type_const,
                 sc_type_const_perm_pos_arc,
                 sc_type_node | sc_type_const);
@@ -445,7 +445,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
       it5 = sc_iterator5_f_a_a_a_a_new(
           s_default_ctx,
           sc_iterator3_value(it2, 0),
-          sc_type_common_arc | sc_type_const,
+          sc_type_const_common_arc,
           sc_type_node | sc_type_const,
           sc_type_const_perm_pos_arc,
           sc_type_node | sc_type_const);
@@ -510,7 +510,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
           it_order2 = sc_iterator5_f_a_a_a_f_new(
               s_default_ctx,
               sc_iterator3_value(it2, 1),
-              sc_type_common_arc | sc_type_const,
+              sc_type_const_common_arc,
               sc_type_const_perm_pos_arc,
               sc_type_const_perm_pos_arc,
               keynode_nrel_key_sc_element_base_order);
@@ -672,7 +672,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
         it_order = sc_iterator5_f_a_a_a_a_new(
             s_default_ctx,
             sc_iterator3_value(it1, 2),
-            sc_type_common_arc | sc_type_const,
+            sc_type_const_common_arc,
             sc_type_node | sc_type_const,
             sc_type_const_perm_pos_arc,
             sc_type_node | sc_type_const);
@@ -738,7 +738,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
       it5 = sc_iterator5_f_a_a_a_f_new(
           s_default_ctx,
           sc_iterator3_value(it1, 0),
-          sc_type_common_arc | sc_type_const,
+          sc_type_const_common_arc,
           sc_type_node | sc_type_const,
           sc_type_const_perm_pos_arc,
           param_rel);

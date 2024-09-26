@@ -25,7 +25,7 @@ void uiSc2ScsTranslator::runImpl()
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       mInputConstructionAddr,
       sc_type_const_perm_pos_arc,
       keynode_action_nrel_result);

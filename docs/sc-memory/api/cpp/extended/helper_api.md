@@ -60,7 +60,7 @@ ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
 ScAddr const & systemIdtfLinkAddr = quintuple.addr3;
 // The sc-address of sc-link with system identifier of your sc-node.
 ScAddr const & arcToArcToSystemIdtfLinkAddr = quintuple.addr4;
-// The sc-address of access sc-arc between binary sc-relation 
+// The sc-address of membership sc-arc between binary sc-relation 
 // with system identifier `nrel_system_identifier` and the common sc-arc
 // between your sc-node and sc-link with system identifier of your sc-node.
 ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;
@@ -138,7 +138,7 @@ ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
 ScAddr const & systemIdtfLinkAddr = quintuple.addr3;
 // The sc-address of sc-link with system identifier of your sc-node.
 ScAddr const & arcToArcToSystemIdtfLinkAddr = quintuple.addr4;
-// The sc-address of access sc-arc between binary sc-relation 
+// The sc-address of membership sc-arc between binary sc-relation 
 // with system identifier `nrel_system_identifier` and the common sc-arc 
 // between your sc-node and sc-link with system identifier of your sc-node.
 ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;
@@ -182,7 +182,7 @@ ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
 ScAddr const & systemIdtfLinkAddr = quintuple.addr3;
 // The sc-address of sc-link with system identifier of your sc-node.
 ScAddr const & arcToArcToSystemIdtfLinkAddr = quintuple.addr4;
-// The sc-address of access sc-arc between binary sc-relation
+// The sc-address of membership sc-arc between binary sc-relation
 // with system identifier `nrel_system_identifier` and the common sc-arc 
 // between your sc-node and sc-link with system identifier of your sc-node.
 ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;

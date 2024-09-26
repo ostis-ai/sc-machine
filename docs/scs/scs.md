@@ -30,10 +30,10 @@ To make an `sc-link` into specified file you can use special type identifier:
 
 #### **Names**
 
-There are some tricks with object names:
+There are some tricks with sc-node names:
 
-* `...` - is an unnamed object;
-* `_<object name>` - all object names, that starts with symbol `_` represents a variable type of objects.
+* `...` - is an unnamed sc-node;
+* `_<node name>` - all sc-node names, that starts with symbol `_` represents a variable type of sc-nodes.
 
 Objects identifier visibility. By default, all objects with name `x` are visible anywhere. After translating it into memory this object will have a **system identifier** equal to `x`. So if you use `x` in different *scs* files, then you designate the same object in them (would be the same element in a knowledge base).
 
@@ -74,7 +74,7 @@ You can use alias for any sc-element by using `=` operator. There are some examp
 
 SCs-code level 1 is a simple representation of SC-code. It represents SC-texts
 with just simple triples. Each triple contains `subject`, `predicate`, `object`
-that are split by `|` symbol. Line `sc_node#subject | sc_membership_arc#predicate | sc_node#object;;` is a sentence.
+that are split by `|` symbol. Line `sc_node#subject_identifier | sc_membership_arc#predicate_identifier | sc_node#object_identifier;;` is a sentence.
 
 Identifier of `subject`, `predicate`, `object` build with rule:
 
@@ -108,11 +108,11 @@ Where `type` is an element type specification. It can be one of possible values:
         <code class="js hljs javascript">
 // append set of apples into fruit set
 sc_node#fruit
-  | sc_arc_main#..arc 
+  | sc_main_arc#..arc 
   | sc_node#apple;;
 // append set of bananas into fruit set
 sc_node#fruit
-  | sc_arc_main#..arc
+  | sc_main_arc#..arc
   | sc_node#banana;;
         </code>
       </pre>
@@ -304,7 +304,7 @@ For this example it would be like this:
 a -> c: b;;
 ```
 
-In case, when output sc-arc from `c` is a variable, then use `::` splitter instead of `:`:
+In case, when outgoing sc-arc from `c` is a variable, then use `::` splitter instead of `:`:
 
 ```scs
 a -> c:: b;;
@@ -316,9 +316,8 @@ equal to:
 c _-> (a -> b);;
 ```
 
-<div class="note">
-<b>Note</b>: you can use <code>:</code>, <code>::</code> just to replace <code>-></code> or <code>_-></code> sc-arcs.
-</div>
+!!! note
+    You can use <code>:</code>, <code>::</code> just to replace <code>-></code> or <code>_-></code> sc-arcs.
 
 <hr/>
 

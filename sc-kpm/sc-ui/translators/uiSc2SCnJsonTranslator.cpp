@@ -66,7 +66,7 @@ void uiSc2SCnJsonTranslator::runImpl()
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       mInputConstructionAddr,
       sc_type_const_perm_pos_arc,
       keynode_action_nrel_result);
@@ -707,7 +707,7 @@ sc_addr uiSc2SCnJsonTranslator::GetNextElementArc(sc_addr elementArc)
   sc_iterator5 * nextIt = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       elementArc,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       sc_type_const_perm_pos_arc,
       sc_type_const_perm_pos_arc,
       keynode_nrel_scn_json_elements_base_order);

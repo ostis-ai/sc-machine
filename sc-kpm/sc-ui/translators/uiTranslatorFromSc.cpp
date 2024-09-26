@@ -33,11 +33,11 @@ void uiTranslateFromSc::translate(sc_addr const & input_addr, sc_addr const & fo
   sc_stream_free(result_data_stream);
 
   // generate format info
-  sc_addr arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_common_arc | sc_type_const, result_addr, format_addr);
+  sc_addr arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_const_common_arc, result_addr, format_addr);
   sc_memory_arc_new(s_default_ctx, sc_type_const_perm_pos_arc, keynode_nrel_format, arc_addr);
 
   // generate translation
-  arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_common_arc | sc_type_const, mInputConstructionAddr, result_addr);
+  arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_const_common_arc, mInputConstructionAddr, result_addr);
   sc_memory_arc_new(s_default_ctx, sc_type_const_perm_pos_arc, keynode_nrel_translation, arc_addr);
 }
 

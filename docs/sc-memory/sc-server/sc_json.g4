@@ -389,11 +389,11 @@ fragment CONTENT_ESCAPED
   : '\\' ('[' | ']' | '\\')
   ;
 
-fragment CONTENT_SYBMOL
+fragment CONTENT_SYMBOL
   : (CONTENT_ESCAPED | ~('[' | ']' | '\\'))
   ;
 
-fragment CONTENT_SYBMOL_FIRST_END
+fragment CONTENT_SYMBOL_FIRST_END
   : (CONTENT_ESCAPED | ~('[' | ']' | '\\' | '*'))
   ;
 

@@ -403,7 +403,7 @@ large graph structures.
 ### **What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?**
 
 `ScType::ConstCommonArc` is a sc-type of sc-arc that connects two sc-elements in some relation.
-`ScType::ConstPermPosArc` is a sc-type of sc-arc that denotes access of target sc-element to source sc-element.
+`ScType::ConstPermPosArc` is a sc-type of sc-arc that denotes membership of target sc-element to source sc-element.
 The sc-arc with sc-type `ScType::ConstCommonArc` between some two sc-elements can be transformed to sc-node to which 
 this two sc-elements belong.
 

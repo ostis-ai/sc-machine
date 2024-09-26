@@ -119,7 +119,7 @@ encapsulated this logic;
   | ```_<~```  | ```<~_```    |
   | ```_<|~``` | ```<|~_```   |
 
-- It is now not possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
+- Now it is not possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
 
 - Misleading system identifiers of sc.s-keynodes were also replaced by clear ones.
 
@@ -135,15 +135,15 @@ encapsulated this logic;
   | sc_edge_main    | sc_main_arc       |
   | sc_node_struct  | sc_node_structure |
 
-  Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract` were removed.
+- Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract` were removed.
 
 See documentation, to learn more about using new API.
 
 ### Added
 
 - `GetSCsElementKeynode` method for sc-types to get their sc.s-keynode system identifiers
-- `GetDirectSCsConnectorType` and `GetReverseSCsConnectorType` for sc-types to get their designations in SCs-code
-- std::string operator for sc-types to get names of their variable names
+- `GetDirectSCsConnector` and `GetReverseSCsConnector` for sc-types to get their designations in SCs-code
+- std::string operator for ScType
 - All possible combinations of subtypes in sc-types into ScMemoryContext API and the SCs-code
 - Type `ScType::NodeSuperclass` and sc.s-keynode `sc_node_superclass`
 - Types: `ScType::Connector`, `ScType::Arc`

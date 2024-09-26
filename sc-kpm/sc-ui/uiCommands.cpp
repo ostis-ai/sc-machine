@@ -111,7 +111,7 @@ sc_result ui_command_generate_instance(sc_event_subscription const *, sc_addr ar
   it5 = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       new_command_class_addr,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       sc_type_node | sc_type_const,
       sc_type_const_perm_pos_arc,
       keynode_nrel_command_template);
@@ -259,7 +259,7 @@ sc_result ui_command_generate_instance(sc_event_subscription const *, sc_addr ar
   }
 
   // generate result for command
-  arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_common_arc | sc_type_const, command_addr, created_instance_addr);
+  arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_const_common_arc, command_addr, created_instance_addr);
   SYSTEM_ELEMENT(arc_addr);
   arc_addr = sc_memory_arc_new(s_default_ctx, sc_type_const_perm_pos_arc, keynode_nrel_command_result, arc_addr);
   SYSTEM_ELEMENT(arc_addr);
@@ -290,7 +290,7 @@ sc_result ui_start_result_translation(sc_event_subscription *, sc_addr arg)
   it5 = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       action_addr,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       sc_type_node | sc_type_const,
       sc_type_const_perm_pos_arc,
       keynode_action_nrel_result);
@@ -306,7 +306,7 @@ sc_result ui_start_result_translation(sc_event_subscription *, sc_addr arg)
   it5 = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       action_addr,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       sc_type_node | sc_type_const,
       sc_type_const_perm_pos_arc,
       keynode_nrel_authors);
@@ -325,7 +325,7 @@ sc_result ui_start_result_translation(sc_event_subscription *, sc_addr arg)
       it5 = sc_iterator5_f_a_a_a_f_new(
           s_default_ctx,
           action_addr,
-          sc_type_common_arc | sc_type_const,
+          sc_type_const_common_arc,
           sc_type_node | sc_type_const,
           sc_type_const_perm_pos_arc,
           keynode_nrel_user_result_formats);
@@ -407,7 +407,7 @@ sc_result ui_remove_displayed_result(sc_event_subscription *, sc_addr arg)
   it5 = sc_iterator5_f_a_a_a_f_new(
       s_default_ctx,
       result_addr,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       sc_type_node_link,
       sc_type_const_perm_pos_arc,
       keynode_nrel_translation);
@@ -419,7 +419,7 @@ sc_result ui_remove_displayed_result(sc_event_subscription *, sc_addr arg)
   it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       result_addr,
       sc_type_const_perm_pos_arc,
       keynode_action_nrel_result);

@@ -18,7 +18,7 @@ The class to work with sc-templates in C++ API. Before reading this paragraph yo
 common [information about sc-element types](../../../../scs/sc_element_types.md).
 
 Let use `f` symbols for constant parameter of sc-template. Let use `a` symbol for a variable parameter of sc-template. 
-Then sc-template to search all output sc-connectors from specified sc-element will be a triple:
+Then sc-template to search all outgoing sc-connectors from specified sc-element will be a triple:
 
 * where the first sc-element is known `f`;
 * second and the third sc-elements need to be found `a`.

@@ -43,7 +43,7 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
     it5 = sc_iterator5_a_a_f_a_a_new(
         s_default_ctx,
         sc_type_node | sc_type_const,
-        sc_type_common_arc | sc_type_const,
+        sc_type_const_common_arc,
         sc_iterator3_value(it1, 2),
         sc_type_const_perm_pos_arc,
         sc_type_node | sc_type_const);
@@ -75,7 +75,7 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
         it_order = sc_iterator5_f_a_a_a_a_new(
             s_default_ctx,
             sc_iterator3_value(it2, 2),
-            sc_type_common_arc | sc_type_const,
+            sc_type_const_common_arc,
             sc_type_node | sc_type_const,
             sc_type_const_perm_pos_arc,
             sc_type_node | sc_type_const);
@@ -150,7 +150,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   it5 = sc_iterator5_f_a_a_a_a_new(
       s_default_ctx,
       elem,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       sc_type_node | sc_type_const,
       sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
@@ -178,7 +178,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   it5 = sc_iterator5_a_a_f_a_a_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       elem,
       sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
@@ -211,7 +211,7 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
       it_order = sc_iterator5_f_a_a_a_a_new(
           s_default_ctx,
           sc_iterator3_value(it2, 2),
-          sc_type_common_arc | sc_type_const,
+          sc_type_const_common_arc,
           sc_type_node | sc_type_const,
           sc_type_const_perm_pos_arc,
           sc_type_node | sc_type_const);
@@ -315,7 +315,7 @@ void search_superclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
   it5 = sc_iterator5_a_a_f_a_a_new(
       s_default_ctx,
       sc_type_node | sc_type_const,
-      sc_type_common_arc | sc_type_const,
+      sc_type_const_common_arc,
       elem,
       sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
@@ -347,7 +347,7 @@ void search_superclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
     it5 = sc_iterator5_f_a_a_a_a_new(
         s_default_ctx,
         sc_iterator3_value(it3, 0),
-        sc_type_common_arc | sc_type_const,
+        sc_type_const_common_arc,
         sc_type_node | sc_type_const,
         sc_type_const_perm_pos_arc,
         sc_type_node | sc_type_const);
