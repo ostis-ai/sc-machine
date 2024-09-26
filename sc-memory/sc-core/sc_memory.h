@@ -514,7 +514,8 @@ _SC_EXTERN sc_result sc_memory_get_element_type(sc_memory_context const * ctx, s
  * - **Node Check**: If the original type is a node, it verifies that the new type is also a node and checks their
  * respective node subtypes.
  * - **Connector Check**: If the original type is a connector, it ensures that the new type is also a connector and
- * checks for compatibility in actuality, permanency, and positivity subtypes.
+ * checks for compatibility in actuality, permanency, and positivity subtypes if specified connector is membership
+ * sc-arc.
  */
 _SC_EXTERN sc_bool sc_memory_is_type_expendable_to(sc_type type, sc_type new_type);
 

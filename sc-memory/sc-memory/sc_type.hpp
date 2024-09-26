@@ -130,7 +130,7 @@ public:
   ScType AsConst() const;
 
   /*!
-   * @brief Upgrades this type to its constant form (currently returns AsConst).
+   * @brief Removes variable subtype from this type and add constant subtype to this type (currently returns AsConst).
    * @return A new constant version of this type.
    */
   ScType UpConstType() const;
@@ -375,6 +375,7 @@ public:
   static ScType const VarNodeSuperclass;
   static ScType const VarNodeMaterial;
 
+  SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
   // deprecated types
   SC_DEPRECATED(
       0.10.0,
@@ -584,4 +585,5 @@ public:
       "This object is deprecated. Use `ScType::VarNodeMaterial` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarMaterial;
+  SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
 };

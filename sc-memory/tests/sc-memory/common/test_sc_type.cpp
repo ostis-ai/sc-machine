@@ -372,9 +372,11 @@ std::string CamelToSnake(std::string const & name)
   return snakeCase;
 }
 
-std::string ConvertToSCgFile(std::string const & name)
+std::string ConvertToSCgFile(ScType const & type)
 {
-  return "<img src=\"../images/scg/scg_" + CamelToSnake(name) + ".png\"></img>";
+  return type.GetDirectSCsConnector().find_first_of('?') == std::string::npos
+             ? "<img src=\"../images/scg/scg_" + CamelToSnake(type) + ".png\"></img>"
+             : "Not specified";
 }
 
 TEST(ScTypeTest, PrintTypesToSCsSCgConnectors)
@@ -394,10 +396,7 @@ TEST(ScTypeTest, PrintTypesToSCsSCgConnectors)
       std::string const & directSCsConnector = type.GetDirectSCsConnector();
 
       std::cout << "| " << std::left << std::setw(maxNameLength) << "ScType::" + std::string(type) << " | " << std::left
-                << std::setw(70u)
-                << (directSCsConnector.find_first_of('?') == std::string::npos ? ConvertToSCgFile(type)
-                                                                               : "Not specified")
-                << " | ";
+                << std::setw(70u) << ConvertToSCgFile(type) << " | ";
 
       if (type.IsCommonEdge())
         std::cout << std::setw(20u) << "```" + directSCsConnector + "```"
@@ -452,10 +451,7 @@ TEST(ScTypeTest, PrintSCsToSCgConnectors)
         std::cout << "| " << std::setw(20u)
                   << "```" + directSCsConnector + " or " + type.GetReverseSCsConnector() + "```";
 
-      std::cout << " | " << std::left << std::setw(70u)
-                << (directSCsConnector.find_first_of('?') == std::string::npos ? ConvertToSCgFile(type)
-                                                                               : "Not specified")
-                << " |\n";
+      std::cout << " | " << std::left << std::setw(70u) << ConvertToSCgFile(type) << " |\n";
     }
   }
 }

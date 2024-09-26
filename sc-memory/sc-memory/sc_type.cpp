@@ -235,6 +235,8 @@ ScType const ScType::VarInactualTempArc(sc_type_var | sc_type_inactual_arc | sc_
 // positivity
 ScType const ScType::PosArc(sc_type_pos_arc);
 ScType const ScType::NegArc(sc_type_neg_arc);
+
+// fuzzy sc-arc
 ScType const ScType::FuzArc(sc_type_fuz_arc);
 
 // positive sc-arcs

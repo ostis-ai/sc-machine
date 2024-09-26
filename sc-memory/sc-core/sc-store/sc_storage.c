@@ -901,7 +901,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
 {
   sc_addr addr = SC_ADDR_EMPTY;
 
-  if (sc_type_is_not_node(type))
+  if (sc_type_is_not_node_link(type))
   {
     *result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
     return addr;
@@ -1179,54 +1179,48 @@ error:
   return result;
 }
 
+#define _sc_types_have_not_compatible_mask(type, new_type, mask) \
+  ({ \
+    sc_type const subtype = type & mask; \
+    sc_type const new_subtype = new_type & mask; \
+    subtype != sc_type_unknown && subtype != new_subtype; \
+  })
+
 sc_bool sc_storage_is_type_expendable_to(sc_type type, sc_type new_type)
 {
-  sc_type const syntactic_subtype = type & sc_type_element_mask;
-  sc_type const new_syntactic_subtype = new_type & sc_type_element_mask;
-
-  if (syntactic_subtype != sc_type_unknown && syntactic_subtype != new_syntactic_subtype)
+  if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_element_mask))
     return SC_FALSE;
-
-  sc_type const const_subtype = type & sc_type_constancy_mask;
-  sc_type const new_const_subtype = new_type & sc_type_constancy_mask;
-
-  if (const_subtype != sc_type_unknown && const_subtype != new_const_subtype)
+  if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_constancy_mask))
     return SC_FALSE;
 
   if (sc_type_is_node_link(type))
   {
-    if (!sc_type_is_node_link(new_type))
+    if (sc_type_is_not_node_link(new_type))
       return SC_FALSE;
 
     type = type & ~sc_type_node_link;
     new_type = new_type & ~sc_type_node_link;
 
-    sc_type const link_subtype = type & sc_type_node_link_mask;
-    sc_type const new_link_subtype = new_type & sc_type_node_link_mask;
-    if (link_subtype != sc_type_unknown && link_subtype != new_link_subtype)
+    if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_node_link_mask))
       return SC_FALSE;
   }
   else if (sc_type_is_node(type))
   {
-    if (!sc_type_is_node(new_type))
+    if (sc_type_is_not_node(new_type))
       return SC_FALSE;
 
     type = type & ~sc_type_node;
     new_type = new_type & ~sc_type_node;
 
-    sc_type const node_subtype = type & sc_type_node_mask;
-    sc_type const new_node_subtype = new_type & sc_type_node_mask;
-    if (node_subtype != sc_type_unknown && node_subtype != new_node_subtype)
+    if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_node_mask))
       return SC_FALSE;
   }
   else if (sc_type_is_connector(type))
   {
-    if (!sc_type_is_connector(new_type))
+    if (sc_type_is_not_connector(new_type))
       return SC_FALSE;
 
-    sc_type const connector_subtype = type & sc_type_connector_mask;
-    sc_type const new_connector_subtype = new_type & sc_type_connector_mask;
-    if (connector_subtype != sc_type_unknown && connector_subtype != new_connector_subtype)
+    if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_connector_mask))
     {
       if (sc_type_is_common_edge(type))
       {
@@ -1254,19 +1248,13 @@ sc_bool sc_storage_is_type_expendable_to(sc_type type, sc_type new_type)
     type = type & ~sc_type_connector_mask;
     new_type = new_type & ~sc_type_connector_mask;
 
-    sc_type const actuality_subtype = type & sc_type_actuality_mask;
-    sc_type const new_actuality_subtype = new_type & sc_type_actuality_mask;
-    if (actuality_subtype != sc_type_unknown && actuality_subtype != new_actuality_subtype)
+    if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_actuality_mask))
       return SC_FALSE;
 
-    sc_type const perm_subtype = type & sc_type_permanency_mask;
-    sc_type const new_perm_subtype = new_type & sc_type_permanency_mask;
-    if (perm_subtype != sc_type_unknown && perm_subtype != new_perm_subtype)
+    if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_permanency_mask))
       return SC_FALSE;
 
-    sc_type const pos_subtype = type & sc_type_positivity_mask;
-    sc_type const new_pos_subtype = new_type & sc_type_positivity_mask;
-    if (pos_subtype != sc_type_unknown && pos_subtype != new_pos_subtype)
+    if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_positivity_mask))
       return SC_FALSE;
   }
 
@@ -1414,7 +1402,7 @@ sc_result sc_storage_set_link_content(
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (sc_type_is_not_node(el->flags.type) || sc_type_has_not_subtype(el->flags.type, sc_type_node_link))
+  if (sc_type_is_not_node_link(el->flags.type))
   {
     result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
     goto error;
@@ -1457,7 +1445,7 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (sc_type_is_not_node(el->flags.type) || sc_type_has_not_subtype(el->flags.type, sc_type_node_link))
+  if (sc_type_is_not_node_link(el->flags.type))
   {
     result = SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK;
     goto error;

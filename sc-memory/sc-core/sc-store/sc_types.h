@@ -216,7 +216,7 @@ typedef sc_uint16 sc_type;
      && (sc_type_has_subtype_in_mask(_arc_type, sc_type_const_pos_arc)))
 
 #  define sc_type_is_node(_type) sc_type_has_subtype(_type, sc_type_node)
-#  define sc_type_is_node_link(_type) (sc_type_is_node(_type) && sc_type_has_subtype(_type, sc_type_node_link))
+#  define sc_type_is_node_link(_type) sc_type_has_subtype(_type, sc_type_node_link)
 #  define sc_type_is_connector(_type) sc_type_has_subtype(_type, sc_type_connector)
 #  define sc_type_is_common_edge(_type) sc_type_has_subtype(_type, sc_type_common_edge)
 #  define sc_type_is_arc(_type) sc_type_has_subtype(_type, sc_type_arc)
@@ -224,6 +224,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_is_membership_arc(_type) sc_type_has_subtype(_type, sc_type_membership_arc)
 
 #  define sc_type_is_not_node(_type) !sc_type_is_node(_type)
+#  define sc_type_is_not_node_link(_type) !sc_type_is_node_link(_type)
 #  define sc_type_is_not_connector(_type) !(sc_type_is_connector(_type))
 
 typedef sc_uint16 sc_states;
