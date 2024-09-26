@@ -311,7 +311,7 @@ TEST(scs_common, DirectConnectors)
   std::vector<ScType> connectorTypesVec{connectorTypes.cbegin(), connectorTypes.cend()};
   std::stringstream stream;
   for (ScType const & connectorType : connectorTypesVec)
-    stream << "x " << connectorType.GetDirectSCsConnectorType() << " y;;\n" << std::endl;
+    stream << "x " << connectorType.GetDirectSCsConnector() << " y;;\n" << std::endl;
 
   scs::Parser parser;
   EXPECT_TRUE(parser.Parse(stream.str()));
@@ -336,7 +336,7 @@ TEST(scs_common, ReverseConnectors)
   std::vector<ScType> connectorTypesVec{connectorTypes.cbegin(), connectorTypes.cend()};
   std::stringstream stream;
   for (ScType const & connectorType : connectorTypesVec)
-    stream << "x " << connectorType.GetReverseSCsConnectorType() << " y;;\n" << std::endl;
+    stream << "x " << connectorType.GetReverseSCsConnector() << " y;;\n" << std::endl;
 
   scs::Parser parser;
   EXPECT_TRUE(parser.Parse(stream.str()));

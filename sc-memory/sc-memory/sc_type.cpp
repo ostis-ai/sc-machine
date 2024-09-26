@@ -125,7 +125,7 @@ ScType ScType::operator|(ScType const & other)
   return ScType(m_realType | other.m_realType);
 }
 
-ScType ScType::operator&(ScType const & other)
+ScType ScType::operator&(ScType const & other) const
 {
   return ScType(m_realType & other.m_realType);
 }
@@ -156,14 +156,14 @@ ScType::operator std::string() const
   return it->second;
 }
 
-std::string ScType::GetDirectSCsConnectorType() const
+std::string ScType::GetDirectSCsConnector() const
 {
-  return scs::TypeResolver::GetDirectSCsConnectorType(*this);
+  return scs::TypeResolver::GetDirectSCsConnector(*this);
 }
 
-std::string ScType::GetReverseSCsConnectorType() const
+std::string ScType::GetReverseSCsConnector() const
 {
-  return scs::TypeResolver::GetReverseSCsConnectorType(*this);
+  return scs::TypeResolver::GetReverseSCsConnector(*this);
 }
 
 std::string ScType::GetSCsElementKeynode() const

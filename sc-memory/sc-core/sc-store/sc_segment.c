@@ -46,6 +46,6 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
       }
     }
     else if (sc_type_has_subtype_in_mask(type, sc_type_connector_mask))
-      stat->arc_count++;
+      stat->connector_count++;
   }
 }

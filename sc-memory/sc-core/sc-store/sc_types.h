@@ -154,34 +154,35 @@ typedef sc_uint16 sc_type;
 #  define sc_type_node_superclass (sc_type)(sc_type_node | (sc_type)0x1000)
 #  define sc_type_node_material (sc_type)(sc_type_node | (sc_type)0x2000)
 
-#  define sc_type_const_pos_arc (sc_type)(sc_type_const | sc_type_pos_arc | sc_type_membership_arc)
-#  define sc_type_const_neg_arc (sc_type)(sc_type_const | sc_type_neg_arc | sc_type_membership_arc)
-#  define sc_type_const_fuz_arc (sc_type)(sc_type_const | sc_type_neg_arc | sc_type_membership_arc)
+#  define sc_type_const_pos_arc (sc_type)(sc_type_const | sc_type_pos_arc)
+#  define sc_type_const_neg_arc (sc_type)(sc_type_const | sc_type_neg_arc)
+#  define sc_type_const_fuz_arc (sc_type)(sc_type_const | sc_type_fuz_arc)
 
-#  define sc_type_const_perm_pos_arc \
-    (sc_type)(sc_type_const | sc_type_perm_arc | sc_type_pos_arc | sc_type_membership_arc)
-#  define sc_type_const_perm_neg_arc \
-    (sc_type)(sc_type_const | sc_type_perm_arc | sc_type_neg_arc | sc_type_membership_arc)
-#  define sc_type_const_temp_pos_arc \
-    (sc_type)(sc_type_const | sc_type_temp_arc | sc_type_pos_arc | sc_type_membership_arc)
-#  define sc_type_const_temp_neg_arc \
-    (sc_type)(sc_type_const | sc_type_temp_arc | sc_type_neg_arc | sc_type_membership_arc)
+#  define sc_type_const_perm_pos_arc (sc_type)(sc_type_const | sc_type_perm_arc | sc_type_pos_arc)
+#  define sc_type_const_perm_neg_arc (sc_type)(sc_type_const | sc_type_perm_arc | sc_type_neg_arc)
+#  define sc_type_const_temp_pos_arc (sc_type)(sc_type_const | sc_type_temp_arc | sc_type_pos_arc)
+#  define sc_type_const_temp_neg_arc (sc_type)(sc_type_const | sc_type_temp_arc | sc_type_neg_arc)
 
 #  define sc_type_const_actual_temp_pos_arc \
-    (sc_type)(sc_type_const | sc_type_actual_arc | sc_type_temp_arc | sc_type_pos_arc | sc_type_membership_arc)
+    (sc_type)(sc_type_const | sc_type_actual_arc | sc_type_temp_arc | sc_type_pos_arc)
 #  define sc_type_const_actual_temp_neg_arc \
-    (sc_type)(sc_type_const | sc_type_actual_arc | sc_type_temp_arc | sc_type_neg_arc | sc_type_membership_arc)
+    (sc_type)(sc_type_const | sc_type_actual_arc | sc_type_temp_arc | sc_type_neg_arc)
 #  define sc_type_const_inactual_temp_pos_arc \
-    (sc_type)(sc_type_const | sc_type_inactual_arc | sc_type_temp_arc | sc_type_pos_arc | sc_type_membership_arc)
+    (sc_type)(sc_type_const | sc_type_inactual_arc | sc_type_temp_arc | sc_type_pos_arc)
 #  define sc_type_const_inactual_temp_neg_arc \
-    (sc_type)(sc_type_const | sc_type_inactual_arc | sc_type_temp_arc | sc_type_neg_arc | sc_type_membership_arc)
+    (sc_type)(sc_type_const | sc_type_inactual_arc | sc_type_temp_arc | sc_type_neg_arc)
 
-#  define sc_type_var_perm_pos_arc (sc_type)(sc_type_var | sc_type_perm_arc | sc_type_pos_arc | sc_type_membership_arc)
+#  define sc_type_var_perm_pos_arc (sc_type)(sc_type_var | sc_type_perm_arc | sc_type_pos_arc)
 
 #  define sc_type_const_node (sc_type)(sc_type_const | sc_type_node)
 #  define sc_type_const_node_link (sc_type)(sc_type_const | sc_type_node | sc_type_node_link)
 #  define sc_type_const_node_class (sc_type)(sc_type_const | sc_type_node | sc_type_node_class)
 #  define sc_type_const_node_norole (sc_type)(sc_type_const | sc_type_node | sc_type_node_norole)
+
+#  define sc_type_const_common_arc (sc_type)(sc_type_const | sc_type_common_arc)
+#  define sc_type_var_common_arc (sc_type)(sc_type_var | sc_type_common_arc)
+#  define sc_type_const_common_edge (sc_type)(sc_type_const | sc_type_common_edge)
+#  define sc_type_var_common_edge (sc_type)(sc_type_var | sc_type_common_edge)
 
 // type mask
 #  define sc_type_element_mask (sc_type)(sc_type_node | sc_type_connector)
@@ -204,7 +205,7 @@ typedef sc_uint16 sc_type;
         | sc_type_node_class | sc_type_node_superclass | sc_type_node_material)
 #  define sc_type_node_link_mask (sc_type)(sc_type_node | sc_type_node_link | sc_type_node_class)
 
-#  define sc_type_is(_type, _subtype) ((_type & _subtype) == _type)
+#  define sc_type_is(_type, _other_type) ((_type & _other_type) == _type)
 #  define sc_type_has_subtype(_type, _subtype) ((_type & _subtype) == _subtype)
 #  define sc_type_has_not_subtype(_type, _subtype) !sc_type_has_subtype(_type, _subtype)
 #  define sc_type_has_subtype_in_mask(_type, _mask) ((_type & _mask) != 0)
@@ -227,8 +228,8 @@ typedef sc_uint16 sc_type;
 
 typedef sc_uint16 sc_states;
 
-#  define SC_STATE_REQUEST_DELETION 0x1
-#  define SC_STATE_IS_DELETABLE 0x200
+#  define SC_STATE_REQUEST_ERASURE 0x1
+#  define SC_STATE_IS_ERASABLE 0x200
 #  define SC_STATE_ELEMENT_EXIST 0x2
 
 // results
@@ -268,9 +269,9 @@ enum _sc_result
 // structure to store statistics info
 struct _sc_stat
 {
-  sc_uint64 node_count;  // amount of all sc-nodes stored in memory
-  sc_uint64 arc_count;   // amount of all sc-arcs stored in memory
-  sc_uint64 link_count;  // amount of all sc-links stored in memory
+  sc_uint64 node_count;       // amount of all sc-nodes stored in memory
+  sc_uint64 connector_count;  // amount of all sc-arcs stored in memory
+  sc_uint64 link_count;       // amount of all sc-links stored in memory
 };
 
 #endif

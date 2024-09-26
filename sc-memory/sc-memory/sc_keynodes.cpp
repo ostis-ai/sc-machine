@@ -139,7 +139,7 @@ void ScKeynodes::Initialize(ScMemoryContext * context)
   auto const & ResolveArc = [&](ScAddr const & beginAddr, ScAddr const & endAddr)
   {
     ScAddr arcAddr;
-    ScIterator3Ptr it3 = context->CreateIterator3(ScType::ConstPermPosArc, beginAddr, endAddr);
+    ScIterator3Ptr it3 = context->CreateIterator3(beginAddr, ScType::ConstPermPosArc, endAddr);
     if (it3->Next())
       arcAddr = it3->Get(1);
     else

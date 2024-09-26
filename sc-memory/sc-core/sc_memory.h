@@ -10,7 +10,7 @@
  * @brief This file contains the extended C API for managing sc-memory.
  *
  * In addition to the core C API this API include methods for create, manage and delete sc-memory contexts.
- * Sc-memory contexts are used to manage access rights of user sc-processes.
+ * Sc-memory contexts are used to manage permissions of user sc-processes.
  *
  * @see sc_storage.h
  */
@@ -523,7 +523,7 @@ _SC_EXTERN sc_bool sc_memory_is_type_expendable_to(sc_type type, sc_type new_typ
  *
  * This function changes the subtype of the sc-element with the specified sc-addr
  * to the specified type. The provided type should have the same base element type
- * (e.g., sc_type_node, sc_type_node_link) as the current type of the sc-element.
+ * (e.g., sc_type_node, sc_type_common_arc, sc_type_membership_arc) as the current type of the sc-element.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-element for which to change the subtype.

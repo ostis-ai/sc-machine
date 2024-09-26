@@ -394,11 +394,11 @@ fragment CONTENT_ESCAPED
   : '\\' ('[' | ']' | '\\' | '*' )
   ;
 
-fragment CONTENT_SYBMOL
+fragment CONTENT_SYMBOL
   : (CONTENT_ESCAPED | ~('[' | ']' | '\\'))
   ;
 
-fragment CONTENT_SYBMOL_FIRST_END
+fragment CONTENT_SYMBOL_FIRST_END
   : (CONTENT_ESCAPED | ~('[' | ']' | '\\' | '*' ))
   ;
 
@@ -413,8 +413,8 @@ CONTOUR_END
 CONTENT_BODY
   : '[]'
   | '![]!'
-  | '[' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']'
-  | '![' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']!'
+  | '[' CONTENT_SYMBOL_FIRST_END CONTENT_SYMBOL* ']'
+  | '![' CONTENT_SYMBOL_FIRST_END CONTENT_SYMBOL* ']!'
   ;
 
 LINK

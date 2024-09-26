@@ -44,7 +44,7 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
     sc_iterator5 * it = sc_iterator5_a_a_f_a_a_new(
         ctx,
         sc_type_node | sc_type_const | sc_type_node_norole,
-        sc_type_common_arc | sc_type_const,
+        sc_type_const_common_arc,
         addr,
         sc_type_const_perm_pos_arc,
         sc_type_const | sc_type_node | sc_type_node_norole);
@@ -143,7 +143,7 @@ sc_result sc_helper_init(sc_memory_context * ctx)
 
   sc_stream_free(stream);
 
-  sc_addr arc = sc_memory_arc_new(ctx, sc_type_common_arc | sc_type_const, addr, link);
+  sc_addr arc = sc_memory_arc_new(ctx, sc_type_const_common_arc, addr, link);
   sc_memory_arc_new(ctx, sc_type_const_perm_pos_arc, addr, arc);
   sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER] = addr;
 
@@ -233,7 +233,7 @@ sc_result sc_helper_find_element_by_system_identifier_ext(
     sc_iterator5 * it = sc_iterator5_a_a_f_a_f_new(
         ctx,
         0,
-        sc_type_common_arc | sc_type_const,
+        sc_type_const_common_arc,
         addr,
         sc_type_const_perm_pos_arc,
         sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
@@ -315,7 +315,7 @@ sc_result sc_helper_set_system_identifier_ext(
   sc_stream_free(stream);
 
   // setup new system identifier
-  sc_addr arc_addr = sc_memory_arc_new_ext(ctx, sc_type_common_arc | sc_type_const, addr, idtf_addr, &result);
+  sc_addr arc_addr = sc_memory_arc_new_ext(ctx, sc_type_const_common_arc, addr, idtf_addr, &result);
   if (result != SC_RESULT_OK)
     goto error;
 
@@ -342,8 +342,8 @@ sc_result sc_helper_get_system_identifier_link(sc_memory_context const * ctx, sc
   it = sc_iterator5_f_a_a_a_f_new(
       ctx,
       el,
-      sc_type_common_arc | sc_type_const,
-      sc_type_node_link | sc_type_const,
+      sc_type_const | sc_type_common_arc,
+      sc_type_const_node_link,
       sc_type_const_perm_pos_arc,
       sc_keynodes[SC_KEYNODE_NREL_SYSTEM_IDENTIFIER]);
   if (sc_iterator5_next(it))

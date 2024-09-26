@@ -156,11 +156,11 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_connectorsToTypes = {
 
 TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedConnectorsToTypes = {
     {">", ScType::CommonArc},
-    {"<", ScType::CommonArc},
     {"<>", ScType::CommonEdge},
 };
 
 TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedReverseConnectorsToTypes = {
+    {"<", ScType::CommonArc},
     {"_<=", ScType::VarCommonArc},
     {"_<-", ScType::VarPermPosArc},
     {"_<|-", ScType::VarPermNegArc},
@@ -350,7 +350,7 @@ TypeResolver::SCsConnectorDesignations TypeResolver::ms_reversedConnectors = {
     "<=?", "<?.?", "<=", "<=_", 
     "<.", "<._", "<?.", "<?._", "<.?", "<|.?", "</?", "<?-?", "<?..?", "<?~?", "<?%?",
     "<-?", "<|-?", "<..?", "<~?", "<%?", "<|..?", "<|~?", "<|%?", 
-    "<-", "<-_", "<|-", "<|-_", "</" "</-", "</_", "</-_", 
+    "<-", "<-_", "<|-", "<|-_", "</", "</-", "</_", "</-_", 
     "<..", "<.._", "<|..", "<|.._", "<~", "<~_", "<|~", "|<~_", "<%", "<%_", "<|%", "|<%_"
 };
 
@@ -358,7 +358,7 @@ TypeResolver::SCsConnectorDesignations TypeResolver::ms_deprecatedReversedConnec
     "<", "_<=", "_<-", "_<|-", "_<~", "_<|~",
 };
 
-std::string TypeResolver::GetDirectSCsConnectorType(ScType const & type)
+std::string TypeResolver::GetDirectSCsConnector(ScType const & type)
 {
   auto const it = ms_typesToConnectors.find(type);
   if (it == ms_typesToConnectors.cend())
@@ -367,7 +367,7 @@ std::string TypeResolver::GetDirectSCsConnectorType(ScType const & type)
   return it->second;
 }
 
-std::string TypeResolver::GetReverseSCsConnectorType(ScType const & type)
+std::string TypeResolver::GetReverseSCsConnector(ScType const & type)
 {
   auto const it = ms_typesToReverseConnectors.find(type);
   if (it == ms_typesToReverseConnectors.cend())

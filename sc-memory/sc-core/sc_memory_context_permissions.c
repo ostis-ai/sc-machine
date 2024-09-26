@@ -238,7 +238,7 @@ sc_result _sc_memory_context_manager_on_identified_user(
   sc_unused(&connector_addr);
   sc_unused(&initiator_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -285,7 +285,7 @@ sc_result _sc_memory_context_manager_on_authentication_request_user(
 {
   sc_unused(&initiator_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -331,7 +331,7 @@ sc_result _sc_memory_context_manager_on_unauthentication_request_user(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -388,7 +388,7 @@ sc_result _sc_memory_context_manager_on_new_user_in_users_set(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -437,7 +437,7 @@ sc_result _sc_memory_context_manager_on_remove_user_from_users_set(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -598,7 +598,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -699,7 +699,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class(
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -871,7 +871,7 @@ sc_result _sc_memory_context_manager_on_new_user_or_users_set_action_class_withi
 
   sc_memory_context_manager * manager = sc_event_subscription_get_data(event);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_subtype_in_mask(connector_type, sc_type_const_pos_arc))
   {
     _sc_memory_context_manager_add_user_action_class_within_structure(
@@ -945,7 +945,7 @@ sc_result _sc_memory_context_manager_on_remove_user_or_users_set_action_class_wi
   sc_unused(&initiator_addr);
   sc_unused(&connector_addr);
 
-  // Only positive access sc-arcs can be used
+  // Only positive membership sc-arcs can be used
   if (sc_type_has_not_subtype(connector_type, sc_type_const_pos_arc))
     return SC_RESULT_NO;
 
@@ -1378,7 +1378,7 @@ sc_bool _sc_memory_context_check_global_permissions_to_read_permissions(
 
   sc_permissions const element_permissions = permitted_element->flags.states;
 
-  // Check if the sc-memory context has read access to the element
+  // Check if the sc-memory context has read permissions to the element
   sc_permissions const required_context_permissions = context_permissions & required_permissions;
   sc_permissions const required_element_permissions = element_permissions & required_permissions;
 
@@ -1394,7 +1394,7 @@ sc_bool _sc_memory_context_check_global_permissions_to_handle_permissions(
   sc_permissions const context_permissions = _sc_context_get_context_global_permissions(ctx);
   sc_permissions const element_permissions = _sc_context_get_permissions_for_element(permitted_element_addr);
 
-  // Check if the sc-memory context has access to handle the operation
+  // Check if the sc-memory context has permissions to handle the operation
   sc_permissions const required_context_permissions = context_permissions & required_permissions;
   sc_permissions const required_element_permissions = element_permissions & required_permissions;
 

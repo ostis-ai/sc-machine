@@ -1332,7 +1332,7 @@ ScMemoryContext::ScMemoryStatistics ScMemoryContext::CalculateStatistics() const
   }
 
   ScMemoryStatistics statistics{};
-  statistics.m_connectorsNum = uint32_t(stat.arc_count);
+  statistics.m_connectorsNum = uint32_t(stat.connector_count);
   statistics.m_linksNum = uint32_t(stat.link_count);
   statistics.m_nodesNum = uint32_t(stat.node_count);
 

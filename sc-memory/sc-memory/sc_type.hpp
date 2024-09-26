@@ -158,7 +158,7 @@ public:
   /*!
    * @brief Compares two ScTypes for inequality.
    * @param other A other ScType to compare against.
-   * @return Returns true if both instances have different real types; false otherwise.
+   * @return Returns true if instances have different real types; false otherwise.
    */
   bool operator!=(ScType const & other);
 
@@ -174,7 +174,7 @@ public:
    * @param other A other ScType to combine with using AND.
    * @return A new ScType representing the result of m_realType AND other.m_realType.
    */
-  ScType operator&(ScType const & other);
+  ScType operator&(ScType const & other) const;
 
   /*!
    * @brief Updates this instance's real type using bitwise AND with another instance's real type.
@@ -191,7 +191,7 @@ public:
 
   /*!
    * @brief Converts this sc-type to string name.
-   * @return An string name of sc-type.
+   * @return A string name of sc-type.
    */
   operator std::string() const;
 
@@ -199,13 +199,13 @@ public:
    * @brief Gets direct designation of current sc-connector sc-type in SCs-code.
    * @return A designation of type.
    */
-  std::string GetDirectSCsConnectorType() const;
+  std::string GetDirectSCsConnector() const;
 
   /*!
    * @brief Gets reverse designation of current sc-connector sc-type in SCs-code.
    * @return A designation of type.
    */
-  std::string GetReverseSCsConnectorType() const;
+  std::string GetReverseSCsConnector() const;
 
   /*!
    * @brief Gets system identifier of class for current sc-type that can be used to specify types of sc.s-elements.
@@ -378,210 +378,210 @@ public:
   // deprecated types
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::CommonEdge` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::CommonEdge` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeUCommon;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::CommonArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::CommonArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeDCommon;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstCommonEdge` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstCommonEdge` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeUCommonConst;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstCommonArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstCommonArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeDCommonConst;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::MembershipArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::MembershipArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccess;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstPermPosArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstPermPosArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessConstPosPerm;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstPermNegArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstPermNegArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessConstNegPerm;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstFuzArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstFuzArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessConstFuzPerm;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstTempPosArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstTempPosArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessConstPosTemp;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstTempNegArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstTempNegArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessConstNegTemp;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstFuzArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstFuzArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessConstFuzTemp;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarCommonEdge` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarCommonEdge` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeUCommonVar;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarCommonArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarCommonArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeDCommonVar;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarPermPosArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarPermPosArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessVarPosPerm;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarPermNegArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarPermNegArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessVarNegPerm;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarFuzArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarFuzArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessVarFuzPerm;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarTempPosArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarTempPosArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessVarPosTemp;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarTempNegArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarTempNegArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessVarNegTemp;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarFuzArc` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarFuzArc` instead for better readability and standards "
       "compliance.")
   static ScType const EdgeAccessVarFuzTemp;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNode` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNode` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConst;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNode` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNode` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVar;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::NodeLink` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::NodeLink` instead for better readability and standards "
       "compliance.")
   static ScType const Link;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::NodeLinkClass` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::NodeLinkClass` instead for better readability and standards "
       "compliance.")
   static ScType const LinkClass;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::NodeStructure` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::NodeStructure` instead for better readability and standards "
       "compliance.")
   static ScType const NodeStruct;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeLink` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeLink` instead for better readability and standards "
       "compliance.")
   static ScType const LinkConst;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeLinkClass` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeLinkClass` instead for better readability and standards "
       "compliance.")
   static ScType const LinkConstClass;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeStructure` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeStructure` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConstStruct;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeTuple` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeTuple` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConstTuple;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeRole` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeRole` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConstRole;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeNoRole` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeNoRole` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConstNoRole;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeClass` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeClass` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConstClass;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::ConstNodeMaterial` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeMaterial` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConstMaterial;
 
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeLink` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeLink` instead for better readability and standards "
       "compliance.")
   static ScType const LinkVar;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeLinkClass` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeLinkClass` instead for better readability and standards "
       "compliance.")
   static ScType const LinkVarClass;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeStructure` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeStructure` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarStruct;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeTuple` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeTuple` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarTuple;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeRole` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeRole` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarRole;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeNoRole` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeNoRole` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarNoRole;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeClass` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeClass` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarClass;
   SC_DEPRECATED(
       0.10.0,
-      "This method is deprecated. Use `ScType::VarNodeMaterial` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeMaterial` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarMaterial;
 };

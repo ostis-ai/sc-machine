@@ -468,13 +468,13 @@ sc_result _sc_storage_element_erase(sc_addr addr)
 
   sc_element * element;
   result = sc_storage_get_element_by_addr(addr, &element);
-  if (result != SC_RESULT_OK || (element->flags.states & SC_STATE_REQUEST_DELETION) == SC_STATE_REQUEST_DELETION)
+  if (result != SC_RESULT_OK || (element->flags.states & SC_STATE_REQUEST_ERASURE) == SC_STATE_REQUEST_ERASURE)
   {
     sc_monitor_release_write(monitor);
     return result;
   }
 
-  element->flags.states |= SC_STATE_REQUEST_DELETION;
+  element->flags.states |= SC_STATE_REQUEST_ERASURE;
   sc_type type = element->flags.type;
 
   sc_monitor_release_write(monitor);
@@ -713,7 +713,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
     sc_result erase_outgoing_arc_result = SC_RESULT_NO;
     sc_result erase_element_result = SC_RESULT_NO;
 
-    if ((el->flags.states & SC_STATE_IS_DELETABLE) != SC_STATE_IS_DELETABLE)
+    if ((el->flags.states & SC_STATE_IS_ERASABLE) != SC_STATE_IS_ERASABLE)
     {
       if ((type & sc_type_connector_mask) != 0)
       {
@@ -790,7 +790,7 @@ sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
           sc_storage_element_erase,
           element_addr);
 
-      el->flags.states |= SC_STATE_IS_DELETABLE;
+      el->flags.states |= SC_STATE_IS_ERASABLE;
     }
 
     if (erase_incoming_connector_result == SC_RESULT_OK || erase_outgoing_connector_result == SC_RESULT_OK
