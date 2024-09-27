@@ -30,6 +30,10 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_idtf) == ScType::ConstNodeNoRole);
   EXPECT_TRUE(ScKeynodes::nrel_main_idtf.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_main_idtf) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(ScKeynodes::nrel_system_identifier.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_system_identifier) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(ScKeynodes::nrel_scs_global_idtf.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_scs_global_idtf) == ScType::ConstNodeNoRole);
   EXPECT_TRUE(ScKeynodes::lang_ru.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::lang_ru) == ScType::ConstNodeClass);
 
