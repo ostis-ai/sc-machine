@@ -171,8 +171,8 @@ public:
 
 TEST(ScTypeTest, CheckTypeSubtypes)
 {
-  auto const & typeMap = GetTypesToSubtypesVector();
-  for (auto const & [type, subtypes] : typeMap)
+  auto const & typeVector = GetTypesToSubtypesVector();
+  for (auto const & [type, subtypes] : typeVector)
   {
     auto const [isNode, isLink, isConnector, isCommonEdge, isArc, isCommonArc, isMembershipArc, isConst, isVar] =
         subtypes;
@@ -187,7 +187,7 @@ TEST(ScTypeTest, CheckTypeSubtypes)
     EXPECT_EQ(type.IsVar(), isVar);
   }
 
-  EXPECT_EQ(TestScType::GetTypesToNames().size(), typeMap.size());
+  EXPECT_EQ(TestScType::GetTypesToNames().size(), typeVector.size());
 }
 
 std::vector<std::pair<ScType, ScType>> GetDeprecatedTypesToTypesMap()
@@ -239,8 +239,8 @@ std::vector<std::pair<ScType, ScType>> GetDeprecatedTypesToTypesMap()
 
 TEST(ScTypeTest, CheckDeprecatedTypes)
 {
-  auto const & typeMap = GetDeprecatedTypesToTypesMap();
-  for (auto const & [deprecatedType, type] : typeMap)
+  auto const & typeVector = GetDeprecatedTypesToTypesMap();
+  for (auto const & [deprecatedType, type] : typeVector)
     EXPECT_EQ(deprecatedType, type);
 }
 
@@ -325,9 +325,9 @@ TEST(ScTypeTest, ExtendTypes)
 
 TEST(ScTypeTest, CheckReverseSCsConnectors)
 {
-  auto const & typeMap = GetTypesToSubtypesVector();
+  auto const & typeVector = GetTypesToSubtypesVector();
 
-  for (auto const & [type, _] : typeMap)
+  for (auto const & [type, _] : typeVector)
   {
     if (type.IsCommonArc() || type.IsMembershipArc())
     {
@@ -340,19 +340,54 @@ TEST(ScTypeTest, CheckReverseSCsConnectors)
   }
 }
 
+std::string PrintTabulatedString(size_t n, std::string const & string)
+{
+  std::cout << std::left << std::setw(n) << string;
+  return "";
+}
+
+std::string PrintHyphens(size_t n)
+{
+  while (n > 0)
+  {
+    std::cout << "-";
+    --n;
+  }
+
+  return "";
+}
+
+void PrintTableCap(
+    std::string const & firstColumnName,
+    size_t firstColumnLength,
+    std::string const & secondColumnName,
+    size_t secondColumnLength,
+    std::string const & thirdColumnName,
+    size_t thirdColumnLength)
+{
+  std::cout << "| " << PrintTabulatedString(firstColumnLength, firstColumnName) << " | "
+            << PrintTabulatedString(secondColumnLength, secondColumnName) << " | "
+            << PrintTabulatedString(thirdColumnLength, thirdColumnName) << " |" << std::endl;
+  std::cout << "|" << PrintHyphens(firstColumnLength + 2) << "|" << PrintHyphens(secondColumnLength + 2) << "|"
+            << PrintHyphens(thirdColumnLength + 2) << "|" << std::endl;
+}
+
 TEST(ScTypeTest, PrintTypesToBitValues)
 {
-  std::size_t const maxNameLength = 8u + 23u;
-  auto const & typeMap = GetTypesToSubtypesVector();
+  auto const & typeVector = GetTypesToSubtypesVector();
 
-  std::cout << "| C++ name                        | Decimal value | Hex value |\n";
-  std::cout << "|---------------------------------|---------------|-----------|\n";
+  std::size_t const firstColumnLength = 8u + 23u;
+  std::size_t const secondColumnLength = 13u;
+  std::size_t const thirdColumnLength = 9u;
 
-  for (auto const & [type, _] : typeMap)
+  PrintTableCap("C++ name", firstColumnLength, "Decimal value", secondColumnLength, "Hex value", thirdColumnLength);
+
+  for (auto const & [type, _] : typeVector)
   {
-    std::cout << "| " << std::left << std::setw(maxNameLength) << "ScType::" + std::string(type) << " | " << std::left
-              << std::setw(13u) << type << " | "
-              << "0x" << std::left << std::setw(7u) << std::hex << std::uppercase << type << std::dec << " |\n";
+    std::cout << "| " << PrintTabulatedString(firstColumnLength, "ScType::" + std::string(type)) << " | "
+              << PrintTabulatedString(secondColumnLength, std::to_string(type)) << " | "
+              << "0x" << std::left << std::setw(thirdColumnLength - 2) << std::hex << std::uppercase << type << std::dec
+              << " |\n";
   }
 }
 
@@ -381,28 +416,28 @@ std::string ConvertToSCgFile(ScType const & type)
 
 TEST(ScTypeTest, PrintTypesToSCsSCgConnectors)
 {
-  std::size_t const maxNameLength = 8u + 23u;
-  auto const & typeMap = GetTypesToSubtypesVector();
+  auto const & typeVector = GetTypesToSubtypesVector();
 
-  std::cout << "| C++ name                        | SCg-code                                                           "
-               "    | SCs-code             |\n";
-  std::cout << "|---------------------------------|--------------------------------------------------------------------"
-               "----|----------------------|\n";
+  std::size_t const firstColumnLength = 8u + 23u;
+  std::size_t const secondColumnLength = 70u;
+  std::size_t const thirdColumnLength = 20u;
 
-  for (auto const & [type, _] : typeMap)
+  PrintTableCap("C++ name", firstColumnLength, "SCg-code", secondColumnLength, "SCs-code", thirdColumnLength);
+
+  for (auto const & [type, _] : typeVector)
   {
     if (type.IsCommonEdge() || type.IsCommonArc() || type.IsMembershipArc())
     {
       std::string const & directSCsConnector = type.GetDirectSCsConnector();
 
-      std::cout << "| " << std::left << std::setw(maxNameLength) << "ScType::" + std::string(type) << " | " << std::left
-                << std::setw(70u) << ConvertToSCgFile(type) << " | ";
+      std::cout << "| " << PrintTabulatedString(firstColumnLength, "ScType::" + std::string(type)) << " | "
+                << PrintTabulatedString(secondColumnLength, ConvertToSCgFile(type)) << " | ";
 
       if (type.IsCommonEdge())
-        std::cout << std::setw(20u) << "```" + directSCsConnector + "```"
-                  << " |\n";
+        std::cout << PrintTabulatedString(thirdColumnLength, "```" + directSCsConnector + "```") << " |\n";
       else
-        std::cout << std::setw(20u) << "```" + directSCsConnector + " or " + type.GetReverseSCsConnector() + "```"
+        std::cout << PrintTabulatedString(
+            thirdColumnLength, "```" + directSCsConnector + " or " + type.GetReverseSCsConnector() + "```")
                   << " |\n";
     }
   }
@@ -410,48 +445,54 @@ TEST(ScTypeTest, PrintTypesToSCsSCgConnectors)
 
 TEST(ScTypeTest, PrintTypesToSCgSCsNodes)
 {
-  std::size_t const maxNameLength = 8u + 23u;
-  auto const & typeMap = GetTypesToSubtypesVector();
+  auto const & typeVector = GetTypesToSubtypesVector();
 
-  std::cout << "| C++ name                        | SCg-code                                                           "
-               "    | SCs-code                  |\n";
-  std::cout << "|---------------------------------|--------------------------------------------------------------------"
-               "----|---------------------------|\n";
+  std::size_t const firstColumnLength = 8u + 23u;
+  std::size_t const secondColumnLength = 70u;
+  std::size_t const thirdColumnLength = 25u;
 
-  for (auto const & [type, _] : typeMap)
+  PrintTableCap("C++ name", firstColumnLength, "SCg-code", secondColumnLength, "SCs-code", thirdColumnLength);
+
+  for (auto const & [type, _] : typeVector)
   {
     if (type.IsNode())
     {
       std::string const & nodeKeynode =
           TestScType(type).BitNand(ScType::Const).BitNand(ScType::Var).GetSCsElementKeynode();
 
-      std::cout << "| " << std::left << std::setw(maxNameLength) << "ScType::" + std::string(type) << " | " << std::left
-                << std::setw(70u) << ConvertToSCgFile(type) << " | ";
-      std::cout << std::setw(25u) << nodeKeynode << " |\n";
+      std::cout << "| " << PrintTabulatedString(firstColumnLength, "ScType::" + std::string(type)) << " | " << std::left
+                << PrintTabulatedString(secondColumnLength, ConvertToSCgFile(type)) << " | ";
+      std::cout << PrintTabulatedString(thirdColumnLength, nodeKeynode) << " |\n";
     }
   }
 }
 
 TEST(ScTypeTest, PrintSCsToSCgConnectors)
 {
-  auto const & typeMap = GetTypesToSubtypesVector();
+  auto const & typeVector = GetTypesToSubtypesVector();
 
-  std::cout << "| SCs-code             | SCg-code                                                               |\n";
-  std::cout << "|----------------------|------------------------------------------------------------------------|\n";
+  std::size_t const firstColumnLength = 20u;
+  std::size_t const secondColumnLength = 70u;
 
-  for (auto const & [type, _] : typeMap)
+  std::cout << "| " << PrintTabulatedString(firstColumnLength, "SCs-code") << " | "
+            << PrintTabulatedString(secondColumnLength, "SCg-code") << " |\n";
+  std::cout << "| " << PrintHyphens(firstColumnLength) << " | " << PrintHyphens(secondColumnLength) << " |\n";
+
+  for (auto const & [type, _] : typeVector)
   {
     if (type.IsCommonEdge() || type.IsCommonArc() || type.IsMembershipArc())
     {
       std::string const & directSCsConnector = type.GetDirectSCsConnector();
 
       if (type.IsCommonEdge())
-        std::cout << "| " << std::setw(20u) << "```" + directSCsConnector + "```";
+        std::cout << "| " << PrintTabulatedString(firstColumnLength, "```" + directSCsConnector + "```");
       else
-        std::cout << "| " << std::setw(20u)
-                  << "```" + directSCsConnector + " or " + type.GetReverseSCsConnector() + "```";
+        std::cout << "| "
+                  << PrintTabulatedString(
+                         firstColumnLength,
+                         "```" + directSCsConnector + " or " + type.GetReverseSCsConnector() + "```");
 
-      std::cout << " | " << std::left << std::setw(70u) << ConvertToSCgFile(type) << " |\n";
+      std::cout << " | " << PrintTabulatedString(secondColumnLength, ConvertToSCgFile(type)) << " |\n";
     }
   }
 }
