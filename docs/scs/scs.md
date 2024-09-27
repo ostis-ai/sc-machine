@@ -189,12 +189,12 @@ Where `<connector>` can be on of values:
 | ```?%> or <%?```     | Not specified                                                          |
 | ```-> or <-```       | <img src="../images/scg/scg_const_perm_pos_arc.png"></img>             |
 | ```..> or <..```     | <img src="../images/scg/scg_const_temp_pos_arc.png"></img>             |
-| ```~> or <~```       | <img src="../images/scg/scg_const_actual_temp_pos_arc.png"></img>      |
-| ```%> or <%```       | <img src="../images/scg/scg_const_inactual_temp_pos_arc.png"></img>    |
+| ```~> or <~```       | Not specified                                                          |
+| ```%> or <%```       | Not specified                                                          |
 | ```_-> or <-_```     | <img src="../images/scg/scg_var_perm_pos_arc.png"></img>               |
 | ```_..> or <.._```   | <img src="../images/scg/scg_var_temp_pos_arc.png"></img>               |
-| ```_~> or <~_```     | <img src="../images/scg/scg_var_actual_temp_pos_arc.png"></img>        |
-| ```_%> or <%_```     | <img src="../images/scg/scg_var_inactual_temp_pos_arc.png"></img>      |
+| ```_~> or <~_```     | Not specified                                                          |
+| ```_%> or <%_```     | Not specified                                                          |
 | ```?|> or <|?```     | Not specified                                                          |
 | ```_?|> or <|?_```   | Not specified                                                          |
 | ```?-|> or <|-?```   | Not specified                                                          |
@@ -203,12 +203,12 @@ Where `<connector>` can be on of values:
 | ```?%|> or <|%?```   | Not specified                                                          |
 | ```-|> or <|-```     | <img src="../images/scg/scg_const_perm_neg_arc.png"></img>             |
 | ```..|> or <|..```   | <img src="../images/scg/scg_const_temp_neg_arc.png"></img>             |
-| ```~|> or <|~```     | <img src="../images/scg/scg_const_actual_temp_neg_arc.png"></img>      |
-| ```%|> or <|%```     | <img src="../images/scg/scg_const_inactual_temp_neg_arc.png"></img>    |
+| ```~|> or <|~```     | Not specified                                                          |
+| ```%|> or <|%```     | Not specified                                                          |
 | ```_-|> or <|-_```   | <img src="../images/scg/scg_var_perm_neg_arc.png"></img>               |
 | ```_..|> or <|.._``` | <img src="../images/scg/scg_var_temp_neg_arc.png"></img>               |
-| ```_~|> or <|~_```   | <img src="../images/scg/scg_var_actual_temp_neg_arc.png"></img>        |
-| ```_%|> or <|%_```   | <img src="../images/scg/scg_var_inactual_temp_neg_arc.png"></img>      |
+| ```_~|> or <|~_```   | Not specified                                                          |
+| ```_%|> or <|%_```   | Not specified                                                          |
 | ```/> or </```       | <img src="../images/scg/scg_const_fuz_arc.png"></img>                  |
 | ```_/> or </_```     | <img src="../images/scg/scg_var_fuz_arc.png"></img>                    |
 
@@ -764,7 +764,7 @@ There are a list of element type keynodes, that can be used to specify type of s
 | sc_node_role_relation   | ScType::NodeRole               | ![sc.g-element](images/scg/scg_const_node_role.png) ![sc.g-element](images/scg/scg_var_node_role.png)             |
 | sc_node_norole_relation | ScType::NodeNoRole             | ![sc.g-element](images/scg/scg_const_node_norole.png) ![sc.g-element](images/scg/scg_var_node_norole.png)         |
 | sc_node_class           | ScType::NodeClass              | ![sc.g-element](images/scg/scg_const_node_class.png) ![sc.g-element](images/scg/scg_var_node_class.png)           |
-| sc_node_superclass      | ScType::NodeSuperclass         | ![sc.g-element](images/scg/scg_const_node_superclass.png) ![sc.g-element](images/scg/scg_var_node_superclass.png) |
+| sc_node_superclass      | ScType::NodeSuperclass         | Not specified                                                                                                     |
 | sc_node_material        | ScType::NodeMaterial           | ![sc.g-element](images/scg/scg_const_node_material.png) ![sc.g-element](images/scg/scg_var_node_material.png)     |
 
 There is an example of usage:
