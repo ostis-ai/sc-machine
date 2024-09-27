@@ -757,7 +757,7 @@ nrel_basic_sequence
 
 There are a list of element type keynodes, that can be used to specify type of sc-element:
 
-| Keynode                 | Equal sc-type                  | Equal sc.g-element                                                                                                |
+| Keynode                 | Equal sc-type                  | Possible sc.g-elements                                                                                            |
 |-------------------------|--------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | sc_node                 | ScType::Node                   | ![sc.g-element](images/scg/scg_const_node.png) ![sc.g-element](images/scg/scg_var_node.png)                       |
 | sc_link                 | ScType::ConstNodeLink          | ![sc.g-element](images/scg/scg_const_node_link.png) ![sc.g-element](images/scg/scg_var_node_link.png)             |
@@ -803,9 +803,10 @@ nrel_y <- sc_node_norole_relation;;
 
 ## **Frequently Asked Questions**
 
-- [**Frequently Asked Questions**](#frequently-asked-questions)
-  - [**What SCs-code level is recommended to use?**](#what-scs-code-level-is-recommended-to-use)
-  - [**Can I combine different levels in one SCs file?**](#can-i-combine-different-levels-in-one-scs-file)
+<!-- no toc -->
+- [**What SCs-code level is recommended to use?**](#what-scs-code-level-is-recommended-to-use)
+- [**Can I combine different levels in one SCs file?**](#can-i-combine-different-levels-in-one-scs-file)
+- [**What is the difference between ```set -> a; -> b; -> c;;``` and ```set -> a; b; c;;```?**](#what-is-the-difference-between-set---a---b---c-and-set---a-b-c)
 
 ### **What SCs-code level is recommended to use?**
 
@@ -815,3 +816,7 @@ SCs-code allow you to make sc.s-text more compact, but these levels of SCs-code 
 ### **Can I combine different levels in one SCs file?**
 
 All levels of SCs-code can be combined. Usually it is useful to use 4-6 levels if you use 2-3 levels.
+
+### **What is the difference between ```set -> a; -> b; -> c;;``` and ```set -> a; b; c;;```?**
+
+These sc.s-texts are identical. The second sc.s-text is just short version of the first sc.s-text, it allows to not duplicate sc.s-connectors between sc.s-elements.
