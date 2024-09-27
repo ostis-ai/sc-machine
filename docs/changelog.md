@@ -106,7 +106,7 @@ encapsulated this logic;
   From now on, all sc-links are sc-nodes. Types of actual and inactual temporal membership sc-arc were added. 
   Also, all possible combinations of subtypes in sc-types have been added to the API of ScMemoryContext and to the SCs-code.
 
-- Misleading sc.s-connectors were replaced by clear ones.
+- Incorrect sc.s-connectors were replaced by clear ones.
 
   | Deprecated | Substitution |
   |------------|--------------|
@@ -121,7 +121,7 @@ encapsulated this logic;
 
 - Now it is not possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
 
-- Misleading system identifiers of sc.s-keynodes were also replaced by clear ones.
+- Incorrect system identifiers of sc.s-keynodes were also replaced by clear ones.
 
   | Deprecated      | Substitution      |
   |-----------------|-------------------|
@@ -244,8 +244,8 @@ See documentation, to learn more about using new API.
 
 ### Deprecated
 
-- Misleading designations of sc.s-connectors: `>`, `<`, `<>`, `_<=`, `_<-`, `_<|-`, `_<~`, `_<|~`
-- Misleading sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`
+- Incorrect designations of sc.s-connectors: `>`, `<`, `<>`, `_<=`, `_<-`, `_<|-`, `_<~`, `_<|~`
+- Incorrect sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`
 - C++ sc-types: `ScType::EdgeUCommon`, `ScType::EdgeDCommon`, `ScType::EdgeUCommonConst`, `ScType::EdgeDCommonConst`, `ScType::EdgeAccess`, `ScType::EdgeAccessConstPosPerm`, `ScType::EdgeAccessConstNegPerm`, `ScType::EdgeAccessConstFuzPerm`, `ScType::EdgeAccessConstPosTemp`, `ScType::EdgeAccessConstNegTemp`, `ScType::EdgeAccessConstFuzTemp`, `ScType::EdgeUCommonVar`, `ScType::EdgeDCommonVar`, `ScType::EdgeAccessVarPosPerm`, `ScType::EdgeAccessVarNegPerm`, `ScType::EdgeAccessVarFuzPerm`, `ScType::EdgeAccessVarPosTemp`, `ScType::EdgeAccessVarNegTemp`, `ScType::EdgeAccessVarFuzTemp`, `ScType::NodeConst`, `ScType::NodeVar`, `ScType::Link`, `ScType::LinkClass`, `ScType::NodeStruct`, `ScType::LinkConst`, `ScType::LinkConstClass`, `ScType::NodeConstTuple`, `ScType::NodeConstStruct`, `ScType::NodeConstRole`, `ScType::NodeConstNoRole`, `ScType::NodeConstClass`, `ScType::NodeConstMaterial`, `ScType::LinkVar`, `ScType::LinkVarClass`, `ScType::NodeVarStruct`, `ScType::NodeVarTuple`, `ScType::NodeVarRole`, `ScType::NodeVarNoRole`, `ScType::NodeVarClass`, `ScType::NodeVarMaterial`
 - Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge,GetElementOutputArcsCount, GetElementInputArcsCount, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, Iterator3, Iterator5, ForEachIter3, ForEachIter5, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperSmartSearchTemplate, HelperBuildTemplate, CalculateStat
 - Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve

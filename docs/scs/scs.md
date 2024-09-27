@@ -82,6 +82,12 @@ Identifier of `subject`, `predicate`, `object` build with rule:
 <type>#<identifier>
 ```
 
+If object or subject is sc-link, then you should use the next one:
+
+```scs
+"file://<file name>"
+```
+
 Where `type` is an element type specification. It can be one of possible values:
 
 * `sc_node` - equal to ![SCg-node](images/scg/scg_const_node.png);
