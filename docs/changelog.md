@@ -106,7 +106,7 @@ encapsulated this logic;
   From now on, all sc-links are sc-nodes. Types of actual and inactual temporal membership sc-arc were added. 
   Also, all possible combinations of subtypes in sc-types have been added to the API of ScMemoryContext and to the SCs-code.
 
-- Incorrect sc.s-connectors were replaced by clear ones.
+- Incorrect sc.s-connectors were replaced by correct ones.
 
   | Deprecated | Substitution |
   |------------|--------------|
@@ -121,7 +121,7 @@ encapsulated this logic;
 
 - Now it is not possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
 
-- Incorrect system identifiers of sc.s-keynodes were also replaced by clear ones.
+- Incorrect system identifiers of sc.s-keynodes were also replaced by correct ones.
 
   | Deprecated      | Substitution      |
   |-----------------|-------------------|

@@ -53,7 +53,7 @@ not valid, then a method throws the exception `utils::ExceptionInvalidParams` wi
 ...
 // Generate sc-node and get sc-address in sc-memory of it.
 ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
-// Specified sc-type must be one of ScType::Node... type.
+// Specified sc-type must be one of ScType::...Node... type.
 ```
 
 ### **GenerateLink**
@@ -62,7 +62,7 @@ ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 ...
 // Generate sc-link and get sc-address in sc-memory of it.
 ScAddr const & linkAddr = context.GenerateLink(ScType::ConstNodeLink);
-// Specified sc-type must be one of ScType::NodeLink... type.
+// Specified sc-type must be one of ScType::...NodeLink... type.
 ```
 
 !!! note
@@ -398,7 +398,7 @@ large graph structures.
 ## **Frequently Asked Questions**
 
 - [What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?](#what-is-the-difference-between-sctypeconstcommonarc-and-sctypeconstpermposarc)
-- [How I can specify empty ScAddr?](#how-i-can-specify-empty-scaddr)
+- [How can I specify empty ScAddr?](#how-can-i-specify-empty-scaddr)
 
 ### **What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?**
 
@@ -407,7 +407,7 @@ large graph structures.
 The sc-arc with sc-type `ScType::ConstCommonArc` between some two sc-elements can be transformed to sc-node to which 
 this two sc-elements belong.
 
-### **How I can specify empty ScAddr?**
+### **How can I specify empty ScAddr?**
 
 Empty `ScAddr` is the sc-address that has hash that equals to `0`.
 

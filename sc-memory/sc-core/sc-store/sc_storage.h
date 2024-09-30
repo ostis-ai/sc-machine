@@ -359,7 +359,8 @@ sc_bool sc_storage_is_type_expendable_to(sc_type type, sc_type new_type);
  *
  * This function changes the subtype of the sc-element with the specified sc-addr
  * to the specified type. The provided type should have the same base element type
- * (e.g., sc_type_node, sc_type_node_link) as the current type of the sc-element.
+ * (e.g., sc_type_node, sc_type_membership_arc, sc_type_common_arc, sc_type_common_edge) as the current type of the
+ * sc-element.
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param addr The sc-addr of the sc-element for which to change the subtype.

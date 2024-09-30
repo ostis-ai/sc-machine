@@ -356,7 +356,7 @@ ScAddr ScMemoryContext::GenerateNode(ScType const & nodeType)
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_NODE:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified type must be sc-node type. You should provide any of ScType::Node... value as a type.");
+        "Specified type must be sc-node type. You should provide any of ScType::...Node... value as a type.");
 
   case SC_RESULT_ERROR_FULL_MEMORY:
     SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-node because sc-memory is full.");
@@ -389,7 +389,7 @@ ScAddr ScMemoryContext::GenerateLink(ScType const & linkType /* = ScType::ConstN
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_LINK:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified type must be sc-link type. You should provide any of ScType::NodeLink... value as a type.");
+        "Specified type must be sc-link type. You should provide any of ScType::...NodeLink... value as a type.");
 
   case SC_RESULT_ERROR_FULL_MEMORY:
     SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-link because sc-memory is full.");
@@ -431,7 +431,8 @@ ScAddr ScMemoryContext::GenerateConnector(
   case SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Specified type must be sc-connector type. You should provide any of ScType::Edge... value as a type.");
+        "Specified type must be sc-connector type. You should provide any of ScType::...Arc... or ScType::...Edge... "
+        "value as a type.");
 
   case SC_RESULT_ERROR_FULL_MEMORY:
     SC_THROW_EXCEPTION(utils::ExceptionCritical, "Not able to create sc-connector because sc-memory is full.");

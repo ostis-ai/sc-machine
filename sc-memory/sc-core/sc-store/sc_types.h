@@ -271,7 +271,7 @@ enum _sc_result
 struct _sc_stat
 {
   sc_uint64 node_count;       // amount of all sc-nodes stored in memory
-  sc_uint64 connector_count;  // amount of all sc-arcs stored in memory
+  sc_uint64 connector_count;  // amount of all sc-connectors stored in memory
   sc_uint64 link_count;       // amount of all sc-links stored in memory
 };
 
