@@ -806,7 +806,7 @@ nrel_y <- sc_node_norole_relation;;
 <!-- no toc -->
 - [**What SCs-code level is recommended to use?**](#what-scs-code-level-is-recommended-to-use)
 - [**Can I combine different levels in one SCs file?**](#can-i-combine-different-levels-in-one-scs-file)
-- [**What is the difference between ```set -> a; -> b; -> c;;``` and ```set -> a; b; c;;```?**](#what-is-the-difference-between-set---a---b---c-and-set---a-b-c)
+- [**What is the difference between ```set -> a; -> b; -> c;;``` and ```set -> a; b; c;;```?**](#what-is-the-difference-between-set-a-b-c-and-set-a-b-c)
 
 ### **What SCs-code level is recommended to use?**
 
