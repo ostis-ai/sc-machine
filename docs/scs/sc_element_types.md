@@ -201,16 +201,16 @@
 
 The rules for constructing sc.s-designations of membership sc-arcs follow the rule for constructing sc.s-designation of membership sc-arc of unspecified constancy, permanence and positivity -- `?.?>`.
 
-- The first sign `?` indicates that constancy is not specified for membership sc-arc. If membership sc-arc is constant, no sign is specified in the front of its sc.s-designation. If membership sc-arc is variable, the sign `_` is placed in the front of its sc.s-designation.
-- The second sign `.` indicates that permanence is not specified for membership sc-arc. If membership sc-arc is permanent, the sign `-` is specified in the middle of its sc.s-designation. If membership sc-arc is temporal, the sign `..` is placed in the middle of its sc.s-designation.
-- The third sign `?` indicates that positivity is not specified for membership sc-arc. If membership sc-arc is positive, no sign is specified at the end of its sc.s-designation. If membership sc-arc is negative, the sign `|` is placed at the end of its sc.s-designation.
+- The first sign `?` indicates that constancy is not specified for membership sc-arc. If membership sc-arc is constant, no sign is placed in the front of its sc.s-designation. If membership sc-arc is variable, the sign `_` is placed in the front of its sc.s-designation.
+- The second sign `.` indicates that permanence is not specified for membership sc-arc. If membership sc-arc is permanent, the sign `-` is placed in the middle of its sc.s-designation. If membership sc-arc is temporal, the sign `..` is placed in the middle of its sc.s-designation. If membership sc-arc is actual temporal, the sign `~` is placed in the middle of its sc.s-designation. If membership sc-arc is inactual temporal, the sign `%` is placed in the middle of its sc.s-designation.
+- The third sign `?` indicates that positivity is not specified for membership sc-arc. If membership sc-arc is positive, no sign is placed at the end of its sc.s-designation. If membership sc-arc is negative, the sign `|` is placed at the end of its sc.s-designation.
 - The fourth sign `>` indicates the direction of membership sc-arc.
 
 These rules also work for sc-arcs of fuzzy membership, but no permanence is specified for them in any way.
 
 The rules for constructing sc.s-designations of common sc-arcs follow the rule for constructing sc.s-designation of common sc-arc of unspecified constancy -- `?=>`.
 
-- The first sign `?` indicates that constancy is not specified for common sc-arc. If common sc-arc is constant, no sign is specified in the front of its sc.s-designation. If common sc-arc is variable, the sign `_` is placed in the front of its sc.s-designation.
+- The first sign `?` indicates that constancy is not specified for common sc-arc. If common sc-arc is constant, no sign is placed in the front of its sc.s-designation. If common sc-arc is variable, the sign `_` is placed in the front of its sc.s-designation.
 - The second sign `=` indicates that sc-arc is not membership sc-arc, i.e. it has common subtype.
 - The third sign `>` indicates the direction of common sc-arc.
 
