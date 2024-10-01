@@ -11,9 +11,9 @@ protected:
   {
     ScMemoryTest::SetUp();
 
-    m_source = m_ctx->GenerateNode(ScType::NodeConst);
-    m_target = m_ctx->GenerateNode(ScType::NodeVar);
-    m_connector = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_source, m_target);
+    m_source = m_ctx->GenerateNode(ScType::ConstNode);
+    m_target = m_ctx->GenerateNode(ScType::VarNode);
+    m_connector = m_ctx->GenerateConnector(ScType::ConstPermPosArc, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());
@@ -44,7 +44,7 @@ TEST_F(ScIterator3Test, Smoke)
 
 TEST_F(ScIterator3Test, InvalidIndex)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::EdgeAccessConstPosPerm, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstPermPosArc, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -66,7 +66,7 @@ TEST_F(ScIterator3Test, InvalidIndex)
 
 TEST_F(ScIterator3Test, FAF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::EdgeAccessConstPosPerm, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstPermPosArc, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -82,7 +82,7 @@ TEST_F(ScIterator3Test, FAF)
 
 TEST_F(ScIterator3Test, FAF2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_arc_pos_const_perm, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_const_perm_pos_arc, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -98,7 +98,7 @@ TEST_F(ScIterator3Test, FAF2)
 
 TEST_F(ScIterator3Test, FAA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::EdgeAccessConstPosPerm, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstPermPosArc, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -114,7 +114,7 @@ TEST_F(ScIterator3Test, FAA)
 
 TEST_F(ScIterator3Test, FAA2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_arc_pos_const_perm, sc_type_node);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, sc_type_const_perm_pos_arc, sc_type_node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -130,7 +130,7 @@ TEST_F(ScIterator3Test, FAA2)
 
 TEST_F(ScIterator3Test, AAF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Node, ScType::EdgeAccessConstPosPerm, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Node, ScType::ConstPermPosArc, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -146,7 +146,7 @@ TEST_F(ScIterator3Test, AAF)
 
 TEST_F(ScIterator3Test, AAF2)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(sc_type_node, sc_type_arc_pos_const_perm, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(sc_type_node, sc_type_const_perm_pos_arc, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -279,9 +279,9 @@ protected:
   {
     ScMemoryTest::SetUp();
 
-    m_source = m_ctx->GenerateNode(ScType::NodeConst);
-    m_target = m_ctx->GenerateNode(ScType::NodeVar);
-    m_connector = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, m_source, m_target);
+    m_source = m_ctx->GenerateNode(ScType::ConstNode);
+    m_target = m_ctx->GenerateNode(ScType::VarNode);
+    m_connector = m_ctx->GenerateConnector(ScType::ConstCommonEdge, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());
@@ -301,7 +301,7 @@ protected:
 
 TEST_F(ScEdgeTest, FAF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::EdgeUCommonConst, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstCommonEdge, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -317,7 +317,7 @@ TEST_F(ScEdgeTest, FAF)
 
 TEST_F(ScEdgeTest, FAA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::EdgeUCommonConst, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstCommonEdge, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -333,7 +333,7 @@ TEST_F(ScEdgeTest, FAA)
 
 TEST_F(ScEdgeTest, FAAReverse)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_target, ScType::EdgeUCommonConst, ScType::Const);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_target, ScType::ConstCommonEdge, ScType::Const);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_target);
@@ -349,7 +349,7 @@ TEST_F(ScEdgeTest, FAAReverse)
 
 TEST_F(ScEdgeTest, AAF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Const, ScType::EdgeUCommonConst, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Const, ScType::ConstCommonEdge, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -365,7 +365,7 @@ TEST_F(ScEdgeTest, AAF)
 
 TEST_F(ScEdgeTest, AAFReverse)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Node, ScType::EdgeUCommonConst, m_source);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Node, ScType::ConstCommonEdge, m_source);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_target);
@@ -498,9 +498,9 @@ protected:
   {
     ScMemoryTest::SetUp();
 
-    m_source = m_ctx->GenerateNode(ScType::NodeConst);
+    m_source = m_ctx->GenerateNode(ScType::ConstNode);
     m_target = m_source;
-    m_connector = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, m_source, m_target);
+    m_connector = m_ctx->GenerateConnector(ScType::ConstCommonEdge, m_source, m_target);
 
     ASSERT_TRUE(m_source.IsValid());
     ASSERT_TRUE(m_target.IsValid());
@@ -520,7 +520,7 @@ protected:
 
 TEST_F(ScLoopTest, FAF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::EdgeUCommonConst, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstCommonEdge, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -536,7 +536,7 @@ TEST_F(ScLoopTest, FAF)
 
 TEST_F(ScLoopTest, FAA)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::EdgeUCommonConst, ScType::Node);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstCommonEdge, ScType::Node);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);
@@ -552,7 +552,7 @@ TEST_F(ScLoopTest, FAA)
 
 TEST_F(ScLoopTest, AAF)
 {
-  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Const, ScType::EdgeUCommonConst, m_target);
+  ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(ScType::Const, ScType::ConstCommonEdge, m_target);
   EXPECT_TRUE(iter3->Next());
 
   EXPECT_EQ(iter3->Get(0), m_source);

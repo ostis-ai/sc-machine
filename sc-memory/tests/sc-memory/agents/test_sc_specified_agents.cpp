@@ -62,7 +62,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecification)
   m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 
   ScAddr const & actionClassAddr = m_ctx->SearchElementBySystemIdentifier("test_specified_agent_action");
-  ScAddr const & argAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & argAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   m_ctx->GenerateAction(actionClassAddr).SetArguments(argAddr).Initiate();
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
@@ -1550,7 +1550,7 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentHasFullSpecificationButInitiatio
   m_ctx->SubscribeSpecifiedAgent<ATestSpecifiedAgent>(ATestSpecifiedAgent::test_specified_agent_implementation);
 
   ScAddr const & actionClassAddr = m_ctx->SearchElementBySystemIdentifier("test_specified_agent_action");
-  ScAddr const & argAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & argAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   m_ctx->GenerateAction(actionClassAddr).SetArguments(argAddr).Initiate();
   EXPECT_FALSE(ATestSpecifiedAgent::msWaiter.Wait(0.2));
@@ -1674,8 +1674,8 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingEdgeHasFullSpecification)
   ScAddr const & testSetAddr = m_ctx->SearchElementBySystemIdentifier("test_set");
   ScAddr const & testOtherSetAddr = m_ctx->SearchElementBySystemIdentifier("test_other_set");
   ScAddr const & testRelation = m_ctx->SearchElementBySystemIdentifier("test_relation");
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, testSetAddr, testOtherSetAddr);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::ConstCommonEdge, testSetAddr, testOtherSetAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, testRelation, edgeAddr);
 
   m_ctx->EraseElement(edgeAddr);
 
@@ -1739,8 +1739,8 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingConnectorHasFullSpecifica
   ScAddr const & testSetAddr = m_ctx->SearchElementBySystemIdentifier("test_set");
   ScAddr const & testOtherSetAddr = m_ctx->SearchElementBySystemIdentifier("test_other_set");
   ScAddr const & testRelation = m_ctx->SearchElementBySystemIdentifier("test_relation");
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeUCommonConst, testOtherSetAddr, testSetAddr);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::ConstCommonEdge, testOtherSetAddr, testSetAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, testRelation, edgeAddr);
 
   m_ctx->EraseElement(edgeAddr);
 
@@ -1804,8 +1804,8 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingOutgoingArcAsConnectorHas
   ScAddr const & testSetAddr = m_ctx->SearchElementBySystemIdentifier("test_set");
   ScAddr const & testOtherSetAddr = m_ctx->SearchElementBySystemIdentifier("test_other_set");
   ScAddr const & testRelation = m_ctx->SearchElementBySystemIdentifier("test_relation");
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, testSetAddr, testOtherSetAddr);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, testSetAddr, testOtherSetAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, testRelation, edgeAddr);
 
   m_ctx->EraseElement(edgeAddr);
 
@@ -1869,8 +1869,8 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentErasingIncomingArcAsConnectorHas
   ScAddr const & testSetAddr = m_ctx->SearchElementBySystemIdentifier("test_set");
   ScAddr const & testOtherSetAddr = m_ctx->SearchElementBySystemIdentifier("test_other_set");
   ScAddr const & testRelation = m_ctx->SearchElementBySystemIdentifier("test_relation");
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, testOtherSetAddr, testSetAddr);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, testOtherSetAddr, testSetAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, testRelation, edgeAddr);
 
   m_ctx->EraseElement(edgeAddr);
 
@@ -1934,8 +1934,8 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentGeneratingIncomingArcHasFullSpec
   ScAddr const & testSetAddr = m_ctx->SearchElementBySystemIdentifier("test_set");
   ScAddr const & testOtherSetAddr = m_ctx->SearchElementBySystemIdentifier("test_other_set");
   ScAddr const & testRelation = m_ctx->SearchElementBySystemIdentifier("test_relation");
-  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testOtherSetAddr, testSetAddr);
-  m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, testRelation, edgeAddr);
+  ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, testOtherSetAddr, testSetAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, testRelation, edgeAddr);
 
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
 

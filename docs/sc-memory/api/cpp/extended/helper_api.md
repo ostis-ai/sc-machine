@@ -1,7 +1,7 @@
 # **ScHelper API**
 
 !!! note
-    This is correct for only versions of sc-machine that >= 0.9.0.
+    This is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
 This API allows to work with system identifiers of sc-elements. All methods of this API are the part of class 
@@ -35,7 +35,7 @@ description of the error. If passed system identifier is already used for other 
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -47,7 +47,7 @@ If you want to get creating quintuple you can provide variable of type `ScSystem
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 ScSystemIdentifierQuintuple quintuple;
 bool const & isSystemIdentifierSet 
@@ -60,7 +60,7 @@ ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
 ScAddr const & systemIdtfLinkAddr = quintuple.addr3;
 // The sc-address of sc-link with system identifier of your sc-node.
 ScAddr const & arcToArcToSystemIdtfLinkAddr = quintuple.addr4;
-// The sc-address of access sc-arc between binary sc-relation 
+// The sc-address of membership sc-arc between binary sc-relation 
 // with system identifier `nrel_system_identifier` and the common sc-arc
 // between your sc-node and sc-link with system identifier of your sc-node.
 ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;
@@ -76,7 +76,7 @@ identifier then the method will return empty string.
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -94,7 +94,7 @@ You can find sc-element by its system identifier. For this use the method `Searc
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -121,7 +121,7 @@ If you want to find quintuple sc-element with its system identifier you can prov
 
 ```cpp
 ...
-ScAddr const & nodeAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & nodeAddr = context.GenerateNode(ScType::ConstNode);
 
 bool const & isSystemIdentifierSet 
     = context.SetElementSystemIdentifier("my_node", nodeAddr);
@@ -138,7 +138,7 @@ ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
 ScAddr const & systemIdtfLinkAddr = quintuple.addr3;
 // The sc-address of sc-link with system identifier of your sc-node.
 ScAddr const & arcToArcToSystemIdtfLinkAddr = quintuple.addr4;
-// The sc-address of access sc-arc between binary sc-relation 
+// The sc-address of membership sc-arc between binary sc-relation 
 // with system identifier `nrel_system_identifier` and the common sc-arc 
 // between your sc-node and sc-link with system identifier of your sc-node.
 ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;
@@ -156,10 +156,10 @@ provided system identifier and sc-type.
 ```cpp
 ...
 ScAddr const & nodeAddr 
-    = ResolveElementSystemIdentifier("my_node", ScType::NodeConst);
+    = ResolveElementSystemIdentifier("my_node", ScType::ConstNode);
 // If there is no sc-element with system identifier `"my_node"` 
 // then the method will create sc-element with this system identifier 
-// and provided sc-type `ScType::NodeConst`.
+// and provided sc-type `ScType::ConstNode`.
 ...
 ```
 
@@ -173,7 +173,7 @@ If you want to resolve quintuple sc-element with its system identifier you can p
 ...
 ScSystemIdentifierQuintuple quintuple;
 bool const & isSystemIdentifierResolved 
-    = context.ResolveElementSystemIdentifier("my_node", ScType::NodeConst, quintuple);
+    = context.ResolveElementSystemIdentifier("my_node", ScType::ConstNode, quintuple);
 ScAddr const & myNodeAddr = quintuple.addr1;
 // The sc-address of resolved sc-node by provided system identifier.
 ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
@@ -182,7 +182,7 @@ ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
 ScAddr const & systemIdtfLinkAddr = quintuple.addr3;
 // The sc-address of sc-link with system identifier of your sc-node.
 ScAddr const & arcToArcToSystemIdtfLinkAddr = quintuple.addr4;
-// The sc-address of access sc-arc between binary sc-relation
+// The sc-address of membership sc-arc between binary sc-relation
 // with system identifier `nrel_system_identifier` and the common sc-arc 
 // between your sc-node and sc-link with system identifier of your sc-node.
 ScAddr const & nrelSystemIdtfAddr = quintuple.addr5;

@@ -110,17 +110,17 @@ TEST_F(ScLinkTest, operations)
 {
   ScMemoryContext ctx;
 
-  ScAddr formulaAddr = ctx.GenerateNode(ScType::NodeConst);
+  ScAddr formulaAddr = ctx.GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(ctx.SetElementSystemIdentifier("atomic_formula", formulaAddr));
   EXPECT_TRUE(formulaAddr == ctx.SearchElementBySystemIdentifier("atomic_formula"));
   EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
 
-  ScAddr node1 = ctx.GenerateNode(ScType::NodeConst);
+  ScAddr node1 = ctx.GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node1.IsValid());
   EXPECT_TRUE(ctx.SetElementSystemIdentifier("node1", node1));
   EXPECT_TRUE("node1" == ctx.GetElementSystemIdentifier(node1));
 
-  ScAddr node2 = ctx.ResolveElementSystemIdentifier("_node2", ScType::NodeVarStruct);
+  ScAddr node2 = ctx.ResolveElementSystemIdentifier("_node2", ScType::VarNodeStructure);
   EXPECT_TRUE(node2.IsValid());
   EXPECT_TRUE("_node2" == ctx.GetElementSystemIdentifier(node2));
 
@@ -131,21 +131,21 @@ TEST_F(ScLinkTest, smoke)
 {
   ScMemoryContext ctx;
 
-  ScAddr formulaAddr = ctx.GenerateNode(ScType::NodeConst);
+  ScAddr formulaAddr = ctx.GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(ctx.SetElementSystemIdentifier("atomic_formula", formulaAddr));
   EXPECT_TRUE(formulaAddr == ctx.SearchElementBySystemIdentifier("atomic_formula"));
   EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
   EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
 
-  ScAddr node1 = ctx.GenerateNode(ScType::NodeConst);
+  ScAddr node1 = ctx.GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node1.IsValid());
   EXPECT_FALSE(ctx.SetElementSystemIdentifier("atomic_formula", node1));
   EXPECT_TRUE(ctx.GetElementSystemIdentifier(node1).empty());
 
-  node1 = ctx.GenerateNode(ScType::NodeConst);
+  node1 = ctx.GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(node1.IsValid());
-  EXPECT_FALSE(node1 == ctx.ResolveElementSystemIdentifier("atomic_formula", ScType::NodeConst));
-  EXPECT_TRUE(formulaAddr == ctx.ResolveElementSystemIdentifier("atomic_formula", ScType::NodeConst));
+  EXPECT_FALSE(node1 == ctx.ResolveElementSystemIdentifier("atomic_formula", ScType::ConstNode));
+  EXPECT_TRUE(formulaAddr == ctx.ResolveElementSystemIdentifier("atomic_formula", ScType::ConstNode));
   EXPECT_TRUE("atomic_formula" == ctx.GetElementSystemIdentifier(formulaAddr));
 
   EXPECT_TRUE(ctx.SearchLinksByContent("atomic_formula").size() == 1);
@@ -167,7 +167,7 @@ TEST_F(ScLinkTest, smoke)
 
   EXPECT_TRUE(ctx.SearchLinksByContent("non_atomic_formula").size() == 1);
 
-  ScAddr node2 = ctx.ResolveElementSystemIdentifier("_node2", ScType::NodeVarStruct);
+  ScAddr node2 = ctx.ResolveElementSystemIdentifier("_node2", ScType::VarNodeStructure);
   EXPECT_TRUE(node2.IsValid());
   EXPECT_TRUE("_node2" == ctx.GetElementSystemIdentifier(node2));
 
@@ -207,13 +207,13 @@ TEST_F(ScLinkTest, set_system_idtf)
 {
   ScMemoryContext ctx;
 
-  ScAddr timestamp = ctx.GenerateNode(ScType::NodeConstClass);
+  ScAddr timestamp = ctx.GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(ctx.SetElementSystemIdentifier("2022.03.21 16:07:47", timestamp));
   EXPECT_TRUE("2022.03.21 16:07:47" == ctx.GetElementSystemIdentifier(timestamp));
 
   EXPECT_FALSE(ctx.SearchLinksByContent("2022.03.21 16:07:47").empty());
 
-  timestamp = ctx.GenerateNode(ScType::NodeConstClass);
+  timestamp = ctx.GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(ctx.SetElementSystemIdentifier("2022.03.21 16:07:48", timestamp));
   EXPECT_TRUE("2022.03.21 16:07:48" == ctx.GetElementSystemIdentifier(timestamp));
 
@@ -374,12 +374,12 @@ TEST_F(ScLinkTest, links_deletion)
 {
   ScMemoryContext ctx;
 
-  ScAddr const & linkAddr1 = ctx.GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = ctx.GenerateLink(ScType::ConstNodeLink);
   EXPECT_TRUE(linkAddr1.IsValid());
   EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, "link_content_example"));
   EXPECT_TRUE(ctx.SearchLinksByContent("link_content_example").size() == 1);
 
-  ScAddr const & linkAddr2 = ctx.GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = ctx.GenerateLink(ScType::ConstNodeLink);
   EXPECT_TRUE(linkAddr2.IsValid());
   EXPECT_TRUE(ctx.SetLinkContent(linkAddr2, "link_content_example"));
   EXPECT_TRUE(ctx.SearchLinksByContent("link_content_example").size() == 2);
@@ -397,7 +397,7 @@ TEST_F(ScLinkTest, link_deletion_repeteded)
 {
   ScMemoryContext ctx;
 
-  ScAddr const & linkAddr1 = ctx.GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = ctx.GenerateLink(ScType::ConstNodeLink);
   EXPECT_TRUE(linkAddr1.IsValid());
   EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, "link_content_example"));
   EXPECT_TRUE(ctx.SearchLinksByContent("link_content_example").size() == 1);
@@ -415,7 +415,7 @@ TEST_F(ScLinkTest, empty_link_deletion)
 {
   ScMemoryContext ctx;
 
-  ScAddr const & linkAddr1 = ctx.GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = ctx.GenerateLink(ScType::ConstNodeLink);
   EXPECT_TRUE(linkAddr1.IsValid());
   EXPECT_TRUE(ctx.SetLinkContent(linkAddr1, ""));
   EXPECT_TRUE(ctx.SearchLinksByContent("").size() == 1);

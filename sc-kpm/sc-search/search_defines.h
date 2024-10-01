@@ -8,10 +8,10 @@
 #define _search_defines_h_
 
 #define SYSTEM_ELEMENT(el) \
-  if (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_FALSE) \
-    sc_memory_arc_new(s_default_ctx, sc_type_arc_pos_const_perm, keynode_system_element, el);
+  if (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_const_perm_pos_arc) == SC_FALSE) \
+    sc_memory_arc_new(s_default_ctx, sc_type_const_perm_pos_arc, keynode_system_element, el);
 
 #define IS_SYSTEM_ELEMENT(el) \
-  (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_arc_pos_const_perm) == SC_TRUE)
+  (sc_helper_check_arc(s_default_ctx, keynode_system_element, el, sc_type_const_perm_pos_arc) == SC_TRUE)
 
 #endif  // SEARCH_DEFINES_H

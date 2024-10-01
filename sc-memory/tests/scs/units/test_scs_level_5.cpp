@@ -10,7 +10,7 @@
 
 TEST(scs_level_5, simple)
 {
-  std::string const data = "set ~> attr:: item (* -/> subitem;; <= subitem2;; *);;";
+  std::string const data = "set ~> attr:: item (* /> subitem;; <= subitem2;; *);;";
 
   scs::Parser parser;
 
@@ -19,24 +19,24 @@ TEST(scs_level_5, simple)
   TripleTester tester(parser);
   tester({
            {
-             { ScType::NodeConst, "item" },
-             { ScType::EdgeAccessConstFuzPerm, scs::Visibility::Local },
-             { ScType::NodeConst, "subitem" }
+             { ScType::ConstNode, "item" },
+             { ScType::ConstFuzArc, scs::Visibility::Local },
+             { ScType::ConstNode, "subitem" }
            },
            {
-             { ScType::NodeConst, "subitem2" },
-             { ScType::EdgeDCommonConst, scs::Visibility::Local },
-             { ScType::NodeConst, "item" }
+             { ScType::ConstNode, "subitem2" },
+             { ScType::ConstCommonArc, scs::Visibility::Local },
+             { ScType::ConstNode, "item" }
            },
            {
-             { ScType::NodeConst, "set" },
-             { ScType::EdgeAccessConstPosTemp, scs::Visibility::Local },
-             { ScType::NodeConst, "item" }
+             { ScType::ConstNode, "set" },
+             { ScType::ConstActualTempPosArc, scs::Visibility::Local },
+             { ScType::ConstNode, "item" }
            },
            {
-             { ScType::NodeConst, "attr" },
-             { ScType::EdgeAccessVarPosPerm, scs::Visibility::Local },
-             { ScType::EdgeAccessConstPosTemp, scs::Visibility::Local }
+             { ScType::ConstNode, "attr" },
+             { ScType::VarPermPosArc, scs::Visibility::Local },
+             { ScType::ConstActualTempPosArc, scs::Visibility::Local }
            }
          });
 

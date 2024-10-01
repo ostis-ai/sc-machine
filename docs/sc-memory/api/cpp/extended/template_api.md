@@ -1,7 +1,7 @@
 # **ScTemplate API**
 
 !!! warning 
-    This documentation is correct for only versions of sc-machine that >= 0.9.0.
+    This documentation is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
 Sc-templates is a very powerful mechanism to work with semantic network (graph). You can generate and search any
@@ -18,7 +18,7 @@ The class to work with sc-templates in C++ API. Before reading this paragraph yo
 common [information about sc-element types](../../../../scs/sc_element_types.md).
 
 Let use `f` symbols for constant parameter of sc-template. Let use `a` symbol for a variable parameter of sc-template. 
-Then sc-template to search all output sc-connectors from specified sc-element will be a triple:
+Then sc-template to search all outgoing sc-connectors from specified sc-element will be a triple:
 
 * where the first sc-element is known `f`;
 * second and the third sc-elements need to be found `a`.
@@ -65,8 +65,8 @@ produce simple sc-templates:
 ScTemplate templ;
 templ.Triple(
   param1,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar
+  ScType::VarPermPosArc,
+  ScType::VarNode
 );
 </code></pre>
       <br/>This triple sc-template is used to traverse outgoing sc-connectors from specified sc-element.
@@ -86,7 +86,7 @@ templ.Triple(
 ScTemplate templ;
 templ.Triple(
   param1,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarPermPosArc,
   param3
 );
 </code></pre>
@@ -104,8 +104,8 @@ templ.Triple(
 <pre><code class="cpp">
 ScTemplate templ;
 templ.Triple(
-  ScType::NodeVar,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarNode,
+  ScType::VarPermPosArc,
   param3
 );
 </code></pre>
@@ -137,10 +137,10 @@ function to produce simple sc-templates:
 ScTemplate templ;
 templ.Quintuple(
   param1,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar
+  ScType::VarPermPosArc,
+  ScType::VarNode,
+  ScType::VarPermPosArc,
+  ScType::VarNode
 );
 </code></pre>
     </td>
@@ -157,10 +157,10 @@ templ.Quintuple(
 ScTemplate templ;
 templ.Quintuple(
   param1,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarPermPosArc,
   param3,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar
+  ScType::VarPermPosArc,
+  ScType::VarNode
 );
 </code></pre>
     </td>
@@ -177,9 +177,9 @@ templ.Quintuple(
 ScTemplate templ;
 templ.Quintuple(
   param1,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarPermPosArc,
+  ScType::VarNode,
+  ScType::VarPermPosArc,
   param5
 );
 </code></pre>
@@ -197,9 +197,9 @@ templ.Quintuple(
 ScTemplate templ;
 templ.Quintuple(
   param1,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarPermPosArc,
   param3,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarPermPosArc,
   param5
 );
 </code></pre>
@@ -216,11 +216,11 @@ templ.Quintuple(
 <pre><code class="cpp">
 ScTemplate templ;
 templ.Quintuple(
-  ScType::NodeVar,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarNode,
+  ScType::VarPermPosArc,
   param3,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar
+  ScType::VarPermPosArc,
+  ScType::VarNode
 );
 </code></pre>
     </td>
@@ -236,10 +236,10 @@ templ.Quintuple(
 <pre><code class="cpp">
 ScTemplate templ;
 templ.Quintuple(
-  ScType::NodeVar,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarNode,
+  ScType::VarPermPosArc,
   param3,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarPermPosArc,
   param5
 );
 </code></pre>
@@ -256,10 +256,10 @@ templ.Quintuple(
 <pre><code class="cpp">
 ScTemplate templ;
 templ.Quintuple(
-  ScType::NodeVar,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar,
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarNode,
+  ScType::VarPermPosArc,
+  ScType::VarNode,
+  ScType::VarPermPosArc,
   param5
 );
 </code></pre>
@@ -285,18 +285,18 @@ ScAddr const & conceptBinaryRelationAddr
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,    // sc-address of concept set node
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_set"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_set"
 );
 templ.Triple(
   conceptBinaryRelationAddr,    // sc-address of concept binary relation node
-  ScType::EdgeAccessVarPosPerm,
+  ScType::VarPermPosArc,
   "_set"
 );
 ..
 ```
 
-In code, you can see a construction `ScType::NodeVar >> "_set"` - this is a naming for a sc-template sc-element.
+In code, you can see a construction `ScType::VarNode >> "_set"` - this is a naming for a sc-template sc-element.
 It allows to set alias for a specified sc-element in sc-template, and use it many times in different triples. You can see,
 that in the second triple we use this alias `"_set"`. That means, that we need to place search result from a
 first triple into the second. So the second triple is a `f_a_f` style triple.
@@ -316,13 +316,13 @@ There is the example code with naming.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
-  ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
+  ScType::VarPermPosArc,  // type of unknown sc-arc
+  ScType::VarNode >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
-  ScType::NodeVar  // type of unknown sc-node
+  ScType::VarPermPosArc,  // type of unknown sc-arc
+  ScType::VarNode  // type of unknown sc-node
 );
 ...
 ```
@@ -338,8 +338,8 @@ To check that sc-template has an aliased sc-element you can use the method `HasR
 ScTemplate templ;
 templ.Triple(
   anyAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 bool const hasAliasX = templ.HasReplacement("_x");
 // The value of `hasAliasX` be equal to `true`.
@@ -355,13 +355,13 @@ manipulating sc-template.
 ScTemplate templ;
 templ.Triple(
   anyAddr, // sc-address of known sc-element
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
-  ScType::NodeVar >> "_x"  // type and alias for an unknown sc-element
+  ScType::VarPermPosArc,  // type of unknown sc-arc
+  ScType::VarNode >> "_x"  // type and alias for an unknown sc-element
 );
 templ.Triple(
   "_x",  // say that is the same sc-element as the last on in a previous triple
-  ScType::EdgeAccessVarPosPerm,  // type of unknown sc-arc
-  ScType::NodeVar  // type of unknown sc-node
+  ScType::VarPermPosArc,  // type of unknown sc-arc
+  ScType::VarNode  // type of unknown sc-node
 );
 
 size_t const tripleCount = templ.Size();
@@ -450,7 +450,7 @@ sc_char const * data =
   "  _<- concept_binary_set;;";
 
 // Generate replacement in sc-memory.
-ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::ConstNode);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -475,7 +475,7 @@ ScAddr const & templAddr = context.SearchElementBySystemIdentifier("my_template"
 ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
 // Generate replacement in sc-memory.
-ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::ConstNode);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -496,7 +496,7 @@ system identifiers and sc-addresses of sc-variables also.
 ```cpp
 ...
 // Generate replacement in sc-memory.
-ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::ConstNode);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -514,7 +514,7 @@ ScAddr const & replAddr = params.Get("_set");
 ScAddr const & setVarAddr = context.SearchElementBySystemIdentifier("_set");
 
 // Generate replacement in sc-memory.
-ScAddr const & setAddr = context.GenerateNode(ScType::NodeConst);
+ScAddr const & setAddr = context.GenerateNode(ScType::ConstNode);
 // Also you can find some replacement from sc-memory.
 
 // Define replacements for sc-variables in sc-template.
@@ -578,8 +578,8 @@ this method.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 
 ScTemplateResultItem result;
@@ -605,8 +605,8 @@ of sc-template, use the method `Get` and get replacement as result of this metho
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 
 ScTemplateResultItem result;
@@ -629,12 +629,12 @@ method `Has`.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
 // The value of `replExist` be equal to `true`.
@@ -652,8 +652,8 @@ sc-template. If there is no sc-variable with specified index this method will th
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 
 ScTemplateResultItem result;
@@ -673,8 +673,8 @@ If you want to iterate all replacement in the result you need to know size of th
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 
 ScTemplateResultItem result;
@@ -730,8 +730,8 @@ method `Get` and provide `ScTemplateResultItem` as out parameter in this method.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -757,8 +757,8 @@ specified index this method will throw the exception utils::ExceptionInvalidPara
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -783,8 +783,8 @@ will throw the exception utils::ExceptionInvalidParams with description of the e
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -808,8 +808,8 @@ To get count of found sc-constructions by sc-template you can use the method `Si
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -830,8 +830,8 @@ To check if found result is empty use the method `IsEmpty`.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -852,8 +852,8 @@ To clear all information about found sc-constructions use the method `Clear`.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -874,8 +874,8 @@ To iterate all program objects of found sc-constructions by sc-template you can 
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -897,8 +897,8 @@ Or you can use the method `ForEach` to do this.
 ScTemplate templ;
 templ.Triple(
   conceptSetAddr,
-  ScType::EdgeAccessVarPosPerm,
-  ScType::NodeVar >> "_x"
+  ScType::VarPermPosArc,
+  ScType::VarNode >> "_x"
 );
 // There is one sc-construction that is isomorphic this sc-template.
 
@@ -934,7 +934,7 @@ ScAddr const & classAddr = context.SearchElementBySystemIdentifier("my_class");
 ScTemplate templ;
 templ.Triple(
   classAddr,
-  ScType::EdgeAccessVarPosPerm >> "_arc",
+  ScType::VarPermPosArc >> "_arc",
   ScType::Unknown >> "_addr2"
 );
 m_context->SearchByTemplateInterruptibly(templ, [&context](
@@ -942,11 +942,11 @@ m_context->SearchByTemplateInterruptibly(templ, [&context](
 {
   ScAddr const & arcAddr = item["_arc"];
   if (context->CheckConnector(
-      structureAddr, arcAddr, ScType::EdgeAccessConstPosPerm))   
+      structureAddr, arcAddr, ScType::ConstPermPosArc))   
     return ScTemplateSearchRequest::CONTINUE;
 
   if (context.GenerateConnector(
-      ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]))
+      ScType::ConstTempPosArc, setAddr, item["_addr2"]))
     return ScTemplateSearchRequest::STOP;
 
   return ScTemplateSearchRequest::ERROR;

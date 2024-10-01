@@ -25,16 +25,16 @@ sc_result agent_erase_elements(sc_event_subscription const * event, sc_addr arg)
     return SC_RESULT_ERROR_INVALID_STATE;
   }
 
-  if (sc_helper_check_arc(s_erase_elements_ctx, keynode_action_erase_elements, action_addr, sc_type_arc_pos_const_perm)
+  if (sc_helper_check_arc(s_erase_elements_ctx, keynode_action_erase_elements, action_addr, sc_type_const_perm_pos_arc)
       == SC_FALSE)
     return SC_RESULT_ERROR_INVALID_TYPE;
 
   sc_iterator5 * get_set_it = sc_iterator5_f_a_a_a_f_new(
       s_erase_elements_ctx,
       action_addr,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       keynode_rrel_1);
 
   if (sc_iterator5_next(get_set_it) == SC_FALSE)
@@ -60,7 +60,7 @@ sc_result agent_erase_elements(sc_event_subscription const * event, sc_addr arg)
     }
 
     sc_iterator3 * unerase_it = sc_iterator3_f_a_f_new(
-        s_erase_elements_ctx, keynode_init_memory_generated_structure, sc_type_arc_pos_const_perm, element_addr);
+        s_erase_elements_ctx, keynode_init_memory_generated_structure, sc_type_const_perm_pos_arc, element_addr);
     if (sc_iterator3_next(unerase_it) == SC_TRUE)
     {
       sc_iterator3_free(unerase_it);

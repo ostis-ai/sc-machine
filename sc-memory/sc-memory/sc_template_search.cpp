@@ -133,7 +133,7 @@ private:
     auto const & CheckIfItemIsNodeVarStruct = [this](ScTemplateItem const & item) -> bool
     {
       auto const & found = m_template.m_templateItemsNamesToTypes.find(item.m_name);
-      return found != m_template.m_templateItemsNamesToTypes.cend() && found->second == ScType::NodeVarStruct;
+      return found != m_template.m_templateItemsNamesToTypes.cend() && found->second == ScType::VarNodeStructure;
     };
 
     auto const & faeTriples =
@@ -493,7 +493,7 @@ private:
 
   inline bool IsInStructure(ScAddr const & addr)
   {
-    return m_context.CheckConnector(m_structure, addr, ScType::EdgeAccessConstPosPerm);
+    return m_context.CheckConnector(m_structure, addr, ScType::ConstPermPosArc);
   }
 
   ScAddr const & ResolveAddr(

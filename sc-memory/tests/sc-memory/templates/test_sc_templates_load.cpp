@@ -21,18 +21,14 @@ public:
 
 TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 {
-  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
 
   ScTemplate templ;
-  templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
+  templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");
   templ.Quintuple(
-      "_test_object",
-      ScType::EdgeDCommonVar,
-      ScType::NodeVar >> "_test_set",
-      ScType::EdgeAccessVarPosPerm,
-      testRelationAddr);
-  templ.Triple("_test_set", ScType::EdgeAccessVarPosPerm, "_arc_to_test_object");
+      "_test_object", ScType::VarCommonArc, ScType::VarNode >> "_test_set", ScType::VarPermPosArc, testRelationAddr);
+  templ.Triple("_test_set", ScType::VarPermPosArc, "_arc_to_test_object");
 
   ScAddr templAddr;
   ScTemplateLoadContext ctx;
@@ -43,7 +39,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_TRUE(templateStruct.HasElement(testClassAddr));
     EXPECT_TRUE(templateStruct.HasElement(testRelationAddr));
 
-    ScIterator3Ptr it3 = m_ctx->CreateIterator3(testClassAddr, ScType::EdgeAccessVarPosPerm, ScType::LinkVar);
+    ScIterator3Ptr it3 = m_ctx->CreateIterator3(testClassAddr, ScType::VarPermPosArc, ScType::VarNodeLink);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToTestObject = it3->Get(1);
     ScAddr const & testObject = it3->Get(2);
@@ -52,7 +48,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_FALSE(it3->Next());
 
     ScIterator5Ptr it5 = m_ctx->CreateIterator5(
-        testObject, ScType::EdgeDCommonVar, ScType::NodeVar, ScType::EdgeAccessVarPosPerm, testRelationAddr);
+        testObject, ScType::VarCommonArc, ScType::VarNode, ScType::VarPermPosArc, testRelationAddr);
     EXPECT_TRUE(it5->Next());
     ScAddr const & arcToTestSet = it5->Get(1);
     ScAddr const & testSet = it5->Get(2);
@@ -62,7 +58,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
     EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestSet));
     EXPECT_FALSE(it5->Next());
 
-    it3 = m_ctx->CreateIterator3(testSet, ScType::EdgeAccessVarPosPerm, arcToTestObject);
+    it3 = m_ctx->CreateIterator3(testSet, ScType::VarPermPosArc, arcToTestObject);
     EXPECT_TRUE(it3->Next());
     ScAddr const & arcToArcToTestObject = it3->Get(1);
     EXPECT_TRUE(templateStruct.HasElement(arcToArcToTestObject));
@@ -72,18 +68,14 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 
 TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
 {
-  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
 
   ScTemplate templ;
-  templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
+  templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");
   templ.Quintuple(
-      "_test_object",
-      ScType::EdgeDCommonVar,
-      ScType::NodeVar >> "_test_set",
-      ScType::EdgeAccessVarPosPerm,
-      testRelationAddr);
-  templ.Triple("_test_set", ScType::EdgeAccessVarPosPerm, "_arc_to_test_object");
+      "_test_object", ScType::VarCommonArc, ScType::VarNode >> "_test_set", ScType::VarPermPosArc, testRelationAddr);
+  templ.Triple("_test_set", ScType::VarPermPosArc, "_arc_to_test_object");
   EXPECT_EQ(templ.Size(), 4u);
 
   ScTemplateGenResult genResult;
@@ -108,18 +100,14 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
 
 TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTemplate)
 {
-  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
 
   ScTemplate templ;
-  templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
+  templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");
   templ.Quintuple(
-      "_test_object",
-      ScType::EdgeDCommonVar,
-      ScType::NodeVar >> "_test_set",
-      ScType::EdgeAccessVarPosPerm,
-      testRelationAddr);
-  templ.Triple("_test_set", ScType::EdgeAccessVarPosPerm, "_arc_to_test_object");
+      "_test_object", ScType::VarCommonArc, ScType::VarNode >> "_test_set", ScType::VarPermPosArc, testRelationAddr);
+  templ.Triple("_test_set", ScType::VarPermPosArc, "_arc_to_test_object");
   EXPECT_EQ(templ.Size(), 4u);
 
   ScTemplateGenResult genResult;

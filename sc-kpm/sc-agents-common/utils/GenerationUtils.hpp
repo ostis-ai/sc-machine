@@ -20,17 +20,17 @@ public:
   static ScAddr wrapInOrientedSetBySequenceRelation(
       ScMemoryContext * ms_context,
       ScAddrVector const & addrVector,
-      ScType const & setType = ScType::NodeConst);
+      ScType const & setType = ScType::ConstNode);
 
   static ScAddr wrapInOrientedSet(
       ScMemoryContext * ms_context,
       ScAddrVector const & addrVector,
-      ScType const & setType = ScType::NodeConst);
+      ScType const & setType = ScType::ConstNode);
 
   static ScAddr wrapInSet(
       ScMemoryContext * ms_context,
       ScAddrVector const & addrVector,
-      ScType const & setType = ScType::NodeConst);
+      ScType const & setType = ScType::ConstNode);
 
   static void addToSet(ScMemoryContext * ms_context, ScAddr const & set, ScAddrVector const & elements);
 

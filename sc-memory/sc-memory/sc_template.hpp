@@ -137,10 +137,10 @@ struct _SC_EXTERN ScTemplateItem
    */
   _SC_EXTERN void SetReplacement(sc_char const * name);
 
-  Type m_itemType = Type::Type;  ///< A type of the item.
-  ScAddr m_addrValue;            ///< A value sc-address of the item.
-  ScType m_typeValue;            ///< A type value of the item.
-  std::string m_name;            ///< A name of the item.
+  Type m_itemType = Type::Type;          ///< A type of the item.
+  ScAddr m_addrValue;                    ///< A value sc-address of the item.
+  ScType m_typeValue = ScType::Unknown;  ///< A type value of the item.
+  std::string m_name;                    ///< A name of the item.
 };
 
 /*!

@@ -74,16 +74,22 @@ contour[ElementHandle contourHandle = ElementHandle()]
   ;
 
 connector returns [std::string text]
-  : c=('<>' | '>' | '<' | '..>' | '<..'
-    | '->' | '<-' | '<=>' | '=>' | '<='
-    | '-|>' | '<|-' | '-/>' | '</-'
-    | '~>' | '<~' | '~|>' | '<|~'
-    | '~/>' | '</~' | '_<>' | '_>' | '_<'
-    | '_..>' | '_<..' | '<.._' | '_->' | '_<-'| '<-_'
-    | '_<=>' | '_=>' | '_<=' |'<=_' | '_-|>' | '_<|-' | '<|-_'
-    | '_-/>' | '_</-' | '</-_' | '_~>' | '_<~' | '<~_'
-    | '_~|>' | '_<|~' | '<|~_' | '_~/>' | '_</~' | '</~_')
-
+  : c=('?<=>' | '?=>' | '<=?'
+  | '<=>' | '_<=>' | '=>' | '<=' | '_=>' | '<=_'
+  | '?.?>' | '<?.?' 
+  | '.?>' | '<?.' | '_.?>' | '<?._'
+  | '?.>' | '<.?' | '?.|>' | '<|.?' | '?/>' | '</?' 
+  | '.>' | '<.' | '.|>' | '<|.' | '/>' | '</' 
+  | '_.>' | '<._' | '_.|>' | '<|._' | '_/>' | '</_' 
+  | '?-?>' | '<?-?' | '?..?>' | '<?..?' | '?~?>' | '<?~?' | '?%?>' | '<?%?' 
+  | '?->' | '<-?' | '?-|>' | '<|-?' | '-?>' | '<?-' | '_-?>' | '<?-_' 
+  | '?..>' | '<..?' | '?~>' | '<~?' | '?%>' | '<%?' | '?..|>' | '<|..?' | '?~|>' | '<|~?' | '?%|>' | '<|%?'
+  | '..?>' | '<?..' | '~?>' | '<?~' | '%?>' | '<?%' | '_..?>' | '<?.._' | '_~?>' | '<?~_' | '_%?>' | '<?%_'
+  | '->' | '<-' | '_->' | '<-_' | '-|>' | '<|-' | '_-|>' | '<|-_'
+  | '..>' | '<..' | '_..>' | '<.._' | '~>' | '<~' | '_~>' | '<~_' | '%>' | '<%' | '_%>' | '<%_' 
+  | '..|>' | '<|..' | '_..|>' | '<|.._' | '~|>' | '<|~' | '_~|>' | '<|~_' | '%|>' | '<|%' | '_%|>' | '<|%_'
+  // deprecated
+  | '>' | '<' | '<>' | '_<=' | '_<-' | '_<|-' | '_<~' | '_<|~' )
     {
       $ctx->text = $c->getText();
     }
@@ -148,34 +154,38 @@ sentence_assign_contour
   ;
     
 idtf_lvl1_preffix returns [std::string text]
-  : type=('sc_node'
-  | 'sc_node_tuple'
-  | 'sc_node_not_binary_tuple'
-  | 'sc_node_struct'
-  | 'sc_node_role_relation'
-  | 'sc_node_norole_relation'
-  | 'sc_node_abstract'
-  | 'sc_node_material'
-  | 'sc_node_not_relation'
-  | 'sc_node_class'
+  : type=('sc_common_edge'
+  | 'sc_common_arc'
+  | 'sc_membership_arc'
+  | 'sc_main_arc'
 
+  | 'sc_node'
   | 'sc_link'
   | 'sc_link_class'
-
-  | 'sc_edge_dcommon'
-  | 'sc_edge_ucommon'
-  | 'sc_edge_main'
-  | 'sc_edge_access'
+  | 'sc_node_tuple'
+  | 'sc_node_structure'
+  | 'sc_node_class'
+  | 'sc_node_role_relation'
+  | 'sc_node_norole_relation'
+  | 'sc_node_superclass'
+  | 'sc_node_material'
   
-  // backward compatibility
-  | 'sc_arc_common'
+  // deprecated
   | 'sc_edge'
+  | 'sc_edge_ucommon'
+  | 'sc_arc_common'
+  | 'sc_edge_dcommon'
+  | 'sc_edge_dcommon'
   | 'sc_arc_main'
-  | 'sc_arc_access')
-
-  {
-    $ctx->text = $ctx->type->getText();
-  }
+  | 'sc_edge_main'
+  | 'sc_arc_access'
+  | 'sc_edge_access'
+  | 'sc_node_not_binary_tuple'
+  | 'sc_node_struct'
+  | 'sc_node_not_relation')
+    {
+      $ctx->text = $ctx->type->getText();
+    }
   ;
     
 idtf_lvl1_value returns [ElementHandle handle]
@@ -384,11 +394,11 @@ fragment CONTENT_ESCAPED
   : '\\' ('[' | ']' | '\\' | '*' )
   ;
 
-fragment CONTENT_SYBMOL
+fragment CONTENT_SYMBOL
   : (CONTENT_ESCAPED | ~('[' | ']' | '\\'))
   ;
 
-fragment CONTENT_SYBMOL_FIRST_END
+fragment CONTENT_SYMBOL_FIRST_END
   : (CONTENT_ESCAPED | ~('[' | ']' | '\\' | '*' ))
   ;
 
@@ -403,8 +413,8 @@ CONTOUR_END
 CONTENT_BODY
   : '[]'
   | '![]!'
-  | '[' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']'
-  | '![' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']!'
+  | '[' CONTENT_SYMBOL_FIRST_END CONTENT_SYMBOL* ']'
+  | '![' CONTENT_SYMBOL_FIRST_END CONTENT_SYMBOL* ']!'
   ;
 
 LINK

@@ -24,7 +24,7 @@ void uiSc2SCgJsonTranslator::runImpl()
 
   mOutputData = "[";
 
-  sc_iterator3 * it = sc_iterator3_f_a_a_new(s_default_ctx, mInputConstructionAddr, sc_type_arc_pos_const_perm, 0);
+  sc_iterator3 * it = sc_iterator3_f_a_a_new(s_default_ctx, mInputConstructionAddr, sc_type_const_perm_pos_arc, 0);
   while (sc_iterator3_next(it) == SC_TRUE)
   {
     el_type = 0;
@@ -58,7 +58,7 @@ void uiSc2SCgJsonTranslator::runImpl()
       attrs["end"] = buildId(end_addr);
     }
 
-    if (el_type & sc_type_link)
+    if (el_type & sc_type_node_link)
     {
       attrs["type"] = "link";
     }

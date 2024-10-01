@@ -11,7 +11,7 @@ extern "C"
 TEST_F(ScMemoryTest, sc_memory_find_links_with_content_string)
 {
   sc_memory_context * context = **m_ctx;
-  sc_addr const link_addr = sc_memory_link_new2(context, sc_type_link | sc_type_const);
+  sc_addr const link_addr = sc_memory_link_new2(context, sc_type_const_node_link);
 
   sc_char content[] = "content";
   sc_stream * stream = sc_stream_memory_new(content, sc_str_len(content), SC_STREAM_FLAG_READ, SC_FALSE);
@@ -36,7 +36,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_with_content_string)
 TEST_F(ScMemoryTest, sc_memory_find_links_by_content_substring)
 {
   sc_memory_context * context = **m_ctx;
-  sc_addr const link_addr = sc_memory_link_new2(context, sc_type_link | sc_type_const);
+  sc_addr const link_addr = sc_memory_link_new2(context, sc_type_const_node_link);
 
   sc_char content[] = "context";
   sc_stream * stream = sc_stream_memory_new(content, sc_str_len(content), SC_STREAM_FLAG_READ, SC_FALSE);
@@ -61,7 +61,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_by_content_substring)
 TEST_F(ScMemoryTest, sc_memory_find_links_contents_by_content_substring)
 {
   sc_memory_context * context = **m_ctx;
-  sc_addr const link_addr = sc_memory_link_new2(context, sc_type_link | sc_type_const);
+  sc_addr const link_addr = sc_memory_link_new2(context, sc_type_const_node_link);
 
   sc_char content[] = "context";
   sc_stream * stream = sc_stream_memory_new(content, sc_str_len(content), SC_STREAM_FLAG_READ, SC_FALSE);
@@ -85,7 +85,7 @@ TEST_F(ScMemoryTest, sc_memory_find_links_contents_by_content_substring)
 TEST_F(ScMemoryTest, sc_event_subscription_invalid)
 {
   sc_memory_context * context = **m_ctx;
-  sc_addr const subscription_addr = sc_memory_node_new(context, sc_type_node_const);
+  sc_addr const subscription_addr = sc_memory_node_new(context, sc_type_const_node);
 
   EXPECT_EQ(sc_event_subscription_new(context, subscription_addr, SC_ADDR_EMPTY, nullptr, nullptr, nullptr), nullptr);
   EXPECT_EQ(sc_event_subscription_new(context, SC_ADDR_EMPTY, subscription_addr, nullptr, nullptr, nullptr), nullptr);

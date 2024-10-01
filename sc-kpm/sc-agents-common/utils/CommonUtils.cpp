@@ -37,7 +37,7 @@ std::string CommonUtils::getIdtf(
       scLink = link;
       for (ScAddr const & classAddr : linkClasses)
       {
-        if (!ms_context->CheckConnector(classAddr, link, ScType::EdgeAccessConstPosPerm))
+        if (!ms_context->CheckConnector(classAddr, link, ScType::ConstPermPosArc))
         {
           scLink = {};
           break;
@@ -75,7 +75,7 @@ void CommonUtils::setIdtf(
   ms_context->SetLinkContent(link, identifierStream);
   for (ScAddr linkClass : linkClasses)
   {
-    ms_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, linkClass, link);
+    ms_context->GenerateConnector(ScType::ConstPermPosArc, linkClass, link);
   }
 
   utils::GenerationUtils::generateRelationBetween(ms_context, node, link, relation);
@@ -96,7 +96,7 @@ size_t CommonUtils::getSetPower(ScMemoryContext * ms_context, ScAddr const & set
   SC_CHECK_PARAM(set, "Invalid set address passed to `getSetPower`");
 
   int power = 0;
-  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::ConstPermPosArc, ScType::Unknown);
   while (iterator3->Next())
     power++;
   return power;
@@ -106,7 +106,7 @@ bool CommonUtils::isEmpty(ScMemoryContext * ms_context, ScAddr const & set)
 {
   SC_CHECK_PARAM(set, "Invalid set address to `isEmpty`");
 
-  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr iterator3 = ms_context->CreateIterator3(set, ScType::ConstPermPosArc, ScType::Unknown);
   return !iterator3->Next();
 }
 

@@ -28,7 +28,7 @@ protected:
 
   void operator()(ScTemplate * inTemplate, ScAddr & resultTemplateAddr)
   {
-    resultTemplateAddr = m_context.GenerateNode(ScType::NodeConstStruct);
+    resultTemplateAddr = m_context.GenerateNode(ScType::ConstNodeStructure);
     ScStructure templateStruct(m_context, resultTemplateAddr);
 
     std::unordered_map<std::string, ScAddr> itemNamesToTemplateElements;

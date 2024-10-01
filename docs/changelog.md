@@ -58,10 +58,97 @@ encapsulated this logic;
   |-------------------------------------|---------------------------------------|
   | BeingEventsPending                  | BeginEventsPending                    |
 
-  See documentation, to learn more about using of new methods.
+- All C++ sc-types were also redesigned to a common style. They were deprecated, new ones were added. See changes in the table below.
+  
+  | Deprecated                     | Substitution               |
+  |--------------------------------|----------------------------|
+  | ScType::EdgeUCommon            | ScType::CommonEdge         |
+  | ScType::EdgeDCommon            | ScType::CommonArc          |
+  | ScType::EdgeUCommonConst       | ScType::ConstCommonEdge    |
+  | ScType::EdgeDCommonConst       | ScType::ConstCommonArc     |
+  | ScType::EdgeAccess             | ScType::MembershipArc      |
+  | ScType::EdgeAccessConstPosPerm | ScType::ConstPermPosArc    |
+  | ScType::EdgeAccessConstNegPerm | ScType::ConstPermNegArc    |
+  | ScType::EdgeAccessConstFuzPerm | ScType::ConstFuzArc        |
+  | ScType::EdgeAccessConstPosTemp | ScType::ConstTempPosArc    |
+  | ScType::EdgeAccessConstNegTemp | ScType::ConstTempNegArc    |
+  | ScType::EdgeAccessConstFuzTemp | ScType::ConstFuzArc        |
+  | ScType::EdgeUCommonVar         | ScType::VarCommonEdge      |
+  | ScType::EdgeDCommonVar         | ScType::VarCommonArc       |
+  | ScType::EdgeAccessVarPosPerm   | ScType::VarPermPosArc      |
+  | ScType::EdgeAccessVarNegPerm   | ScType::VarPermNegArc      |
+  | ScType::EdgeAccessVarFuzPerm   | ScType::VarFuzArc          |
+  | ScType::EdgeAccessVarPosTemp   | ScType::VarTempPosArc      |
+  | ScType::EdgeAccessVarNegTemp   | ScType::VarTempNegArc      |
+  | ScType::EdgeAccessVarFuzTemp   | ScType::VarFuzArc          |
+  | ScType::NodeConst              | ScType::ConstNode          |
+  | ScType::NodeVar                | ScType::VarNode            |
+  | ScType::Link                   | ScType::NodeLink           |
+  | ScType::LinkClass              | ScType::NodeLinkClass      |
+  | ScType::NodeStruct             | ScType::NodeStructure      |
+  | ScType::LinkConst              | ScType::ConstNodeLink      |
+  | ScType::LinkConstClass         | ScType::ConstNodeLinkClass |
+  | ScType::NodeConstTuple         | ScType::ConstNodeTuple     |
+  | ScType::NodeConstStruct        | ScType::ConstNodeStructure |
+  | ScType::NodeConstRole          | ScType::ConstNodeRole      |
+  | ScType::NodeConstNoRole        | ScType::ConstNodeNoRole    |
+  | ScType::NodeConstClass         | ScType::ConstNodeClass     |
+  | ScType::NodeConstMaterial      | ScType::ConstNodeMaterial  |
+  | ScType::LinkVar                | ScType::VarNodeLink        |
+  | ScType::LinkVarClass           | ScType::VarNodeLinkClass   |
+  | ScType::NodeVarStruct          | ScType::VarNodeStructure   |
+  | ScType::NodeVarTuple           | ScType::VarNodeTuple       |
+  | ScType::NodeVarRole            | ScType::VarNodeRole        |
+  | ScType::NodeVarNoRole          | ScType::VarNodeNoRole      |
+  | ScType::NodeVarClass           | ScType::VarNodeClass       |
+  | ScType::NodeVarMaterial        | ScType::VarNodeMaterial    |
+
+  From now on, all sc-links are sc-nodes. Types of actual and inactual temporal membership sc-arc were added. 
+  Also, all possible combinations of subtypes in sc-types have been added to the API of ScMemoryContext and to the SCs-code.
+
+- Incorrect sc.s-connectors were replaced by correct ones.
+
+  | Deprecated | Substitution |
+  |------------|--------------|
+  | ```>```    | ```?=>```    |
+  | ```<```    | ```<=?```    |
+  | ```<>```   | ```?<=>```   |
+  | ```_<=```  | ```<=_```    |
+  | ```_<-```  | ```<-_```    |
+  | ```_<|-``` | ```<|-_```   |
+  | ```_<~```  | ```<~_```    |
+  | ```_<|~``` | ```<|~_```   |
+
+- Now it is not possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
+
+- Incorrect system identifiers of sc.s-keynodes were also replaced by correct ones.
+
+  | Deprecated      | Substitution      |
+  |-----------------|-------------------|
+  | sc_edge         | sc_common_edge    |
+  | sc_edge_ucommon | sc_common_edge    |
+  | sc_arc_common   | sc_common_arc     |
+  | sc_edge_dcommon | sc_common_arc     |
+  | sc_arc_access   | sc_membership_arc |
+  | sc_edge_access  | sc_membership_arc |
+  | sc_arc_main     | sc_main_arc       |
+  | sc_edge_main    | sc_main_arc       |
+  | sc_node_struct  | sc_node_structure |
+
+- Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract` were removed.
+
+See documentation, to learn more about using new API.
 
 ### Added
 
+- `GetSCsElementKeynode` method for sc-types to get their sc.s-keynode system identifiers
+- `GetDirectSCsConnector` and `GetReverseSCsConnector` for sc-types to get their designations in SCs-code
+- std::string operator for ScType
+- All possible semantic combinations of subtypes in sc-types into the SCs-code
+- All possible combinations of subtypes in sc-types into ScMemoryContext API
+- Type `ScType::NodeSuperclass` and sc.s-keynode `sc_node_superclass`
+- Types: `ScType::Connector`, `ScType::Arc`
+- Types of actual and inactual temporal sc-arcs into ScMemoryContext API and the SCs-code
 - Methods in ScMemoryContext: GenerateNode, GenerateLink, GenerateConnector, GetElementEdgesAndOutgoingArcsCount, GetElementEdgesAndIncomingArcsCount, GetArcSourceElement, GetArcTargetElement, GetConnectorIncidentElements, CreateIterator3, CreateIterator5, ForEach, CheckConnector, SearchLinksByContent, SearchLinksByContentSubstring, SearchLinksContentsByContentSubstring, SetElementSystemIdentifier, GetElementSystemIdentifier, ResolveElementSystemIdentifier, SearchElementBySystemIdentifier, GenerateByTemplate, SearchByTemplate, SearchByTemplateInterruptibly, BuildTemplate, CalculateStatistics, BeginEventsPending
 - Simple guide for implementing agent in C++
 - Documentation for agents, keynodes, modules, events, subscriptions, waiters, actions and agent context
@@ -109,7 +196,7 @@ encapsulated this logic;
 - Provide sc-arc types for sc-event callbacks
 - User permissions for handling permissions for actions in sc-memory
 - Global user permissions for actions in sc-memory
-- ScType::LinkConstClass and ScType::LinkVarClass
+- ScType::ConstNodeLinkClass and ScType::VarNodeLinkClass
 - User authentication checks
 - Denote sc-machine with sc-element `myself`
 - Provide users for sc-memory, sc-events and sc-agents
@@ -136,6 +223,8 @@ encapsulated this logic;
 
 ### Fixed
 
+- Checking of all syntactic and semantic subtypes for types in `ScMemoryContext::SetElementSubtype` and `ScType::CanExtendTo` methods.
+- Now sc-link is sc-node
 - sc-arcs and sc-elements are removed after agents have worked with them
 - fs-memory uses monitor to resolve string offset
 - fs-memory searches for new strings in all channels instead of only in last channel
@@ -156,11 +245,16 @@ encapsulated this logic;
 
 ### Deprecated
 
+- Incorrect designations of sc.s-connectors: `>`, `<`, `<>`, `_<=`, `_<-`, `_<|-`, `_<~`, `_<|~`
+- Incorrect sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`
+- C++ sc-types: `ScType::EdgeUCommon`, `ScType::EdgeDCommon`, `ScType::EdgeUCommonConst`, `ScType::EdgeDCommonConst`, `ScType::EdgeAccess`, `ScType::EdgeAccessConstPosPerm`, `ScType::EdgeAccessConstNegPerm`, `ScType::EdgeAccessConstFuzPerm`, `ScType::EdgeAccessConstPosTemp`, `ScType::EdgeAccessConstNegTemp`, `ScType::EdgeAccessConstFuzTemp`, `ScType::EdgeUCommonVar`, `ScType::EdgeDCommonVar`, `ScType::EdgeAccessVarPosPerm`, `ScType::EdgeAccessVarNegPerm`, `ScType::EdgeAccessVarFuzPerm`, `ScType::EdgeAccessVarPosTemp`, `ScType::EdgeAccessVarNegTemp`, `ScType::EdgeAccessVarFuzTemp`, `ScType::NodeConst`, `ScType::NodeVar`, `ScType::Link`, `ScType::LinkClass`, `ScType::NodeStruct`, `ScType::LinkConst`, `ScType::LinkConstClass`, `ScType::NodeConstTuple`, `ScType::NodeConstStruct`, `ScType::NodeConstRole`, `ScType::NodeConstNoRole`, `ScType::NodeConstClass`, `ScType::NodeConstMaterial`, `ScType::LinkVar`, `ScType::LinkVarClass`, `ScType::NodeVarStruct`, `ScType::NodeVarTuple`, `ScType::NodeVarRole`, `ScType::NodeVarNoRole`, `ScType::NodeVarClass`, `ScType::NodeVarMaterial`
 - Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge,GetElementOutputArcsCount, GetElementInputArcsCount, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, Iterator3, Iterator5, ForEachIter3, ForEachIter5, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperSmartSearchTemplate, HelperBuildTemplate, CalculateStat
 - Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve
 
 ### Removed
 
+- Designations of fuzzy sc.s-arcs: ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_```
+- Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract`
 - Methods of `BeingEventsPending`: BeingEventsPending
 - Codegen and C++ Agents API based on code generation
 - Deprecated sc-utils in 0.9.0

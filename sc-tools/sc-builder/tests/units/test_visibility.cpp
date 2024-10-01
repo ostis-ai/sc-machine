@@ -15,11 +15,11 @@ namespace
 
 std::string GetIdtf(ScMemoryContext & ctx, ScAddr const & addr)
 {
-  ScAddr const nrelIdtf = ctx.ResolveElementSystemIdentifier("nrel_idtf", ScType::NodeConstNoRole);
+  ScAddr const nrelIdtf = ctx.ResolveElementSystemIdentifier("nrel_idtf", ScType::ConstNodeNoRole);
   EXPECT_TRUE(nrelIdtf.IsValid());
 
   ScTemplate templ;
-  templ.Quintuple(addr, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, nrelIdtf);
+  templ.Quintuple(addr, ScType::VarCommonArc, ScType::NodeLink >> "_link", ScType::VarPermPosArc, nrelIdtf);
 
   ScTemplateSearchResult result;
   EXPECT_TRUE(ctx.SearchByTemplate(templ, result));
@@ -48,9 +48,9 @@ TEST_F(ScBuilderTest, visibility_sys_idtf)
   EXPECT_TRUE(element.IsValid());
 
   ScTemplate templ;
-  templ.Triple(visFirst, ScType::EdgeAccessVarPosPerm, element);
+  templ.Triple(visFirst, ScType::VarPermPosArc, element);
 
-  templ.Triple(visSecond, ScType::EdgeAccessVarPosPerm, element);
+  templ.Triple(visSecond, ScType::VarPermPosArc, element);
 
   ScTemplateSearchResult result;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
@@ -65,9 +65,9 @@ TEST_F(ScBuilderTest, visibility_global)
   EXPECT_TRUE(visSecond.IsValid());
 
   ScTemplate templ;
-  templ.Triple(visFirst, ScType::EdgeAccessVarPosTemp, ScType::Node >> ".visibility_global");
+  templ.Triple(visFirst, ScType::VarTempPosArc, ScType::Node >> ".visibility_global");
 
-  templ.Triple(visSecond, ScType::EdgeAccessVarPosTemp, ".visibility_global");
+  templ.Triple(visSecond, ScType::VarTempPosArc, ".visibility_global");
 
   ScTemplateSearchResult result;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
@@ -91,7 +91,7 @@ TEST_F(ScBuilderTest, visibility_local)
   EXPECT_TRUE(visLocal.IsValid());
 
   ScTemplate templ;
-  templ.Triple(visLocal, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_local");
+  templ.Triple(visLocal, ScType::VarPermPosArc, ScType::VarNode >> "_local");
 
   ScTemplateSearchResult result;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));

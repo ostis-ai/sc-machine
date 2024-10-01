@@ -19,7 +19,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
    *
    * scs: x _-> _z:: _y;; _s _-> x;;
    */
-  ScAddr const templateAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const templateAddr = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(templateAddr.IsValid());
 
   ScStructure templStruct = m_ctx->ConvertToStructure(templateAddr);
@@ -27,7 +27,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
   {
     ScAddr _yAddr, _zAddr, _sAddr;
 
-    xAddr = m_ctx->GenerateNode(ScType::NodeConstMaterial);
+    xAddr = m_ctx->GenerateNode(ScType::ConstNodeMaterial);
     EXPECT_TRUE(xAddr.IsValid());
     EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("x", xAddr));
 
@@ -35,19 +35,19 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
     EXPECT_TRUE(_yAddr.IsValid());
     EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_y", _yAddr));
 
-    _zAddr = m_ctx->GenerateNode(ScType::NodeVarRole);
+    _zAddr = m_ctx->GenerateNode(ScType::VarNodeRole);
     EXPECT_TRUE(_zAddr.IsValid());
     EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_z", _zAddr));
 
-    _sAddr = m_ctx->GenerateNode(ScType::NodeVarClass);
+    _sAddr = m_ctx->GenerateNode(ScType::VarNodeClass);
     EXPECT_TRUE(_sAddr.IsValid());
     EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("_s", _sAddr));
 
-    ScAddr const xyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, xAddr, _yAddr);
+    ScAddr const xyAddr = m_ctx->GenerateConnector(ScType::VarPermPosArc, xAddr, _yAddr);
     EXPECT_TRUE(xyAddr.IsValid());
-    ScAddr const zxyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, _zAddr, xyAddr);
+    ScAddr const zxyAddr = m_ctx->GenerateConnector(ScType::VarPermPosArc, _zAddr, xyAddr);
     EXPECT_TRUE(zxyAddr.IsValid());
-    ScAddr const sxAddr = m_ctx->GenerateConnector(ScType::EdgeAccessVarPosPerm, _sAddr, xAddr);
+    ScAddr const sxAddr = m_ctx->GenerateConnector(ScType::VarPermPosArc, _sAddr, xAddr);
     EXPECT_TRUE(sxAddr.IsValid());
 
     // append created elements into struct
@@ -62,17 +62,17 @@ TEST_F(ScTemplateSearchTest, SimpleSearch1)
     ScAddr const yAddr = m_ctx->GenerateNode(ScType::Const);
     EXPECT_TRUE(yAddr.IsValid());
 
-    ScAddr const zAddr = m_ctx->GenerateNode(ScType::NodeConstRole);
+    ScAddr const zAddr = m_ctx->GenerateNode(ScType::ConstNodeRole);
     EXPECT_TRUE(zAddr.IsValid());
 
-    ScAddr const sAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+    ScAddr const sAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
     EXPECT_TRUE(sAddr.IsValid());
 
-    ScAddr const xyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, xAddr, yAddr);
+    ScAddr const xyAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, xAddr, yAddr);
     EXPECT_TRUE(xyAddr.IsValid());
-    ScAddr const zxyAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, zAddr, xyAddr);
+    ScAddr const zxyAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, zAddr, xyAddr);
     EXPECT_TRUE(zxyAddr.IsValid());
-    ScAddr const sxAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, sAddr, xAddr);
+    ScAddr const sxAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, sAddr, xAddr);
     EXPECT_TRUE(sxAddr.IsValid());
 
     // test search by template
@@ -96,32 +96,32 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
   /** SCs:
    * addr => nrel_main_idtf: [] (* <- lang;; *);;
    */
-  ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const addr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(addr.IsValid());
-  ScAddr const nrelMainIdtf = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelMainIdtf = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
   EXPECT_TRUE(nrelMainIdtf.IsValid());
-  ScAddr const lang = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const lang = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(lang.IsValid());
   ScAddr const link = m_ctx->GenerateLink();
   EXPECT_TRUE(link.IsValid());
 
-  ScAddr const arcCommon = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, addr, link);
+  ScAddr const arcCommon = m_ctx->GenerateConnector(ScType::ConstCommonArc, addr, link);
   EXPECT_TRUE(arcCommon.IsValid());
-  ScAddr const arcAttr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelMainIdtf, arcCommon);
+  ScAddr const arcAttr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nrelMainIdtf, arcCommon);
   EXPECT_TRUE(arcAttr.IsValid());
-  ScAddr const arcLang = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, lang, link);
+  ScAddr const arcLang = m_ctx->GenerateConnector(ScType::ConstPermPosArc, lang, link);
   EXPECT_TRUE(arcLang.IsValid());
 
   // now check search
   ScTemplate templ;
   templ.Quintuple(
       addr >> "_addr",
-      ScType::EdgeDCommonVar >> "_arcCommon",
-      ScType::Link >> "_link",
-      ScType::EdgeAccessVarPosPerm >> "_arcAttr",
+      ScType::VarCommonArc >> "_arcCommon",
+      ScType::NodeLink >> "_link",
+      ScType::VarPermPosArc >> "_arcAttr",
       nrelMainIdtf >> "_nrelMainIdtf");
 
-  templ.Triple(lang >> "_lang", ScType::EdgeAccessVarPosPerm >> "_arcLang", "_link");
+  templ.Triple(lang >> "_lang", ScType::VarPermPosArc >> "_arcLang", "_link");
 
   // search
   {
@@ -142,15 +142,15 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
 TEST_F(ScTemplateSearchTest, UnknownType)
 {
   // addr1 -> addr2;;
-  ScAddr const addr1 = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const addr1 = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(addr1.IsValid());
-  ScAddr const addr2 = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+  ScAddr const addr2 = m_ctx->GenerateNode(ScType::ConstNodeMaterial);
   EXPECT_TRUE(addr2.IsValid());
-  ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, addr1, addr2);
+  ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, addr1, addr2);
   EXPECT_TRUE(arcAddr.IsValid());
 
   ScTemplate templ;
-  templ.Triple(addr1, ScType::EdgeAccessVarPosPerm >> "arcAddr", ScType::Unknown >> "addr2");
+  templ.Triple(addr1, ScType::VarPermPosArc >> "arcAddr", ScType::Unknown >> "addr2");
 
   ScTemplateSearchResult res;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
@@ -169,25 +169,25 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
    *    _app => nrel_image: _image;;
    */
 
-  ScAddr const deviceAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const deviceAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(deviceAddr.IsValid());
 
-  ScAddr const nrelInstalledApp = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelInstalledApp = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
   EXPECT_TRUE(nrelInstalledApp.IsValid());
 
-  ScAddr const _tuple = m_ctx->GenerateNode(ScType::NodeConstTuple);
+  ScAddr const _tuple = m_ctx->GenerateNode(ScType::ConstNodeTuple);
   EXPECT_TRUE(_tuple.IsValid());
 
-  ScAddr const nrelIdtf = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelIdtf = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
   EXPECT_TRUE(nrelIdtf.IsValid());
 
-  ScAddr const nrelImage = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const nrelImage = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
   EXPECT_TRUE(nrelImage.IsValid());
 
-  ScAddr arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, _tuple, deviceAddr);
+  ScAddr arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, _tuple, deviceAddr);
   EXPECT_TRUE(arcAddr.IsValid());
 
-  arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelInstalledApp, arcAddr);
+  arcAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nrelInstalledApp, arcAddr);
   EXPECT_TRUE(arcAddr.IsValid());
 
   struct TestData
@@ -201,10 +201,10 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
   std::vector<TestData> data(50);
   for (auto & d : data)
   {
-    d.m_app = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+    d.m_app = m_ctx->GenerateNode(ScType::ConstNodeMaterial);
     EXPECT_TRUE(d.m_app.IsValid());
 
-    arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, _tuple, d.m_app);
+    arcAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, _tuple, d.m_app);
     EXPECT_TRUE(arcAddr.IsValid());
 
     d.m_idtf = m_ctx->GenerateLink();
@@ -213,10 +213,10 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
     ScLink idtfLink(*m_ctx, d.m_idtf);
     EXPECT_TRUE(idtfLink.Set("idtf_" + std::to_string(i)));
 
-    arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_idtf);
+    arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, d.m_app, d.m_idtf);
     EXPECT_TRUE(arcAddr.IsValid());
 
-    arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelIdtf, arcAddr);
+    arcAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nrelIdtf, arcAddr);
     EXPECT_TRUE(arcAddr.IsValid());
 
     d.m_image = m_ctx->GenerateLink();
@@ -225,10 +225,10 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
     ScLink imageLink(*m_ctx, d.m_image);
     EXPECT_TRUE(imageLink.Set("data_" + std::to_string(i)));
 
-    arcAddr = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, d.m_app, d.m_image);
+    arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, d.m_app, d.m_image);
     EXPECT_TRUE(arcAddr.IsValid());
 
-    arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, nrelImage, arcAddr);
+    arcAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nrelImage, arcAddr);
     EXPECT_TRUE(arcAddr.IsValid());
 
     ++i;
@@ -236,17 +236,13 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
 
   ScTemplate templ;
   templ.Quintuple(
-      ScType::NodeVarTuple >> "_tuple",
-      ScType::EdgeDCommonVar,
-      deviceAddr,
-      ScType::EdgeAccessVarPosPerm,
-      nrelInstalledApp);
+      ScType::VarNodeTuple >> "_tuple", ScType::VarCommonArc, deviceAddr, ScType::VarPermPosArc, nrelInstalledApp);
 
-  templ.Triple("_tuple", ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_app");
+  templ.Triple("_tuple", ScType::VarPermPosArc, ScType::VarNode >> "_app");
 
-  templ.Quintuple("_app", ScType::EdgeDCommonVar, ScType::Link >> "_idtf", ScType::EdgeAccessVarPosPerm, nrelIdtf);
+  templ.Quintuple("_app", ScType::VarCommonArc, ScType::NodeLink >> "_idtf", ScType::VarPermPosArc, nrelIdtf);
 
-  templ.Quintuple("_app", ScType::EdgeDCommonVar, ScType::Link >> "_image", ScType::EdgeAccessVarPosPerm, nrelImage);
+  templ.Quintuple("_app", ScType::VarCommonArc, ScType::NodeLink >> "_image", ScType::VarPermPosArc, nrelImage);
 
   ScTemplateSearchResult searchRes;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchRes));
@@ -287,10 +283,10 @@ TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
    * class2 _-> _element;;
    */
 
-  ScAddr const classAddr1 = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const classAddr1 = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(classAddr1.IsValid());
 
-  ScAddr const classAddr2 = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const classAddr2 = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(classAddr2.IsValid());
 
   struct TestData
@@ -303,19 +299,19 @@ TEST_F(ScTemplateSearchTest, NodesWithTwoClasses)
   std::vector<TestData> data(50);
   for (auto & d : data)
   {
-    d.m_addr = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+    d.m_addr = m_ctx->GenerateNode(ScType::ConstNode);
     EXPECT_TRUE(d.m_addr.IsValid());
 
-    d.m_classEdge1 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr1, d.m_addr);
+    d.m_classEdge1 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, classAddr1, d.m_addr);
     EXPECT_TRUE(d.m_classEdge1.IsValid());
 
-    d.m_classEdge2 = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, classAddr2, d.m_addr);
+    d.m_classEdge2 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, classAddr2, d.m_addr);
     EXPECT_TRUE(d.m_classEdge2.IsValid());
   }
 
   ScTemplate templ;
-  templ.Triple(classAddr1, ScType::EdgeAccessVarPosPerm >> "_class_arc1", ScType::NodeVar >> "_node");
-  templ.Triple(classAddr2, ScType::EdgeAccessVarPosPerm >> "_class_arc2", "_node");
+  templ.Triple(classAddr1, ScType::VarPermPosArc >> "_class_arc1", ScType::VarNode >> "_node");
+  templ.Triple(classAddr2, ScType::VarPermPosArc >> "_class_arc2", "_node");
 
   ScTemplateSearchResult searchRes;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchRes));
@@ -361,9 +357,9 @@ TEST_F(ScTemplateSearchTest, ResultDeduplication)
   EXPECT_TRUE(a.IsValid());
 
   ScTemplate templ;
-  templ.Triple(a >> "a", ScType::EdgeAccessVarPosPerm, ScType::NodeVarMaterial >> "b");
+  templ.Triple(a >> "a", ScType::VarPermPosArc, ScType::VarNodeMaterial >> "b");
 
-  templ.Triple("a", ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "c");
+  templ.Triple("a", ScType::VarPermPosArc, ScType::VarNode >> "c");
 
   ScTemplateGenResult genResult;
   m_ctx->GenerateByTemplate(templ, genResult);
@@ -380,40 +376,40 @@ TEST_F(ScTemplateSearchTest, ResultDeduplication)
 
 TEST_F(ScTemplateSearchTest, EqualConstructions)
 {
-  ScAddr const & begin = m_ctx->ResolveElementSystemIdentifier("begin", ScType::NodeConstClass);
-  ScAddr const & history = m_ctx->ResolveElementSystemIdentifier("history", ScType::NodeConstClass);
+  ScAddr const & begin = m_ctx->ResolveElementSystemIdentifier("begin", ScType::ConstNodeClass);
+  ScAddr const & history = m_ctx->ResolveElementSystemIdentifier("history", ScType::ConstNodeClass);
   ScAddr const & nrel_changes_history =
-      m_ctx->ResolveElementSystemIdentifier("nrel_changes_history", ScType::NodeConstNoRole);
+      m_ctx->ResolveElementSystemIdentifier("nrel_changes_history", ScType::ConstNodeNoRole);
   ScAddr const & nrel_model_version =
-      m_ctx->ResolveElementSystemIdentifier("nrel_model_version", ScType::NodeConstNoRole);
+      m_ctx->ResolveElementSystemIdentifier("nrel_model_version", ScType::ConstNodeNoRole);
 
   ScTemplate initVersionSearchTemplate;
   initVersionSearchTemplate.Triple(
       begin,
-      ScType::EdgeAccessVarPosPerm >> "_begin_date_parameter_access_arc",
-      ScType::NodeVarClass >> "_begin_date_parameter");
+      ScType::VarPermPosArc >> "_begin_date_parameter_access_arc",
+      ScType::VarNodeClass >> "_begin_date_parameter");
   initVersionSearchTemplate.Quintuple(
-      ScType::NodeVar >> "_unchanged_sd_version",
-      ScType::EdgeDCommonVar >> "_version_pair_arc",
-      ScType::NodeVar >> "_changed_sd_version",
-      ScType::EdgeAccessVarPosPerm >> "_begin_date_parameter_relation_access_arc",
+      ScType::VarNode >> "_unchanged_sd_version",
+      ScType::VarCommonArc >> "_version_pair_arc",
+      ScType::VarNode >> "_changed_sd_version",
+      ScType::VarPermPosArc >> "_begin_date_parameter_relation_access_arc",
       "_begin_date_parameter");
   initVersionSearchTemplate.Triple(
-      ScType::NodeVarStruct >> "_changes_history",
-      ScType::EdgeAccessVarPosPerm >> "_changes_history_access_arc",
+      ScType::VarNodeStructure >> "_changes_history",
+      ScType::VarPermPosArc >> "_changes_history_access_arc",
       "_version_pair_arc");
-  initVersionSearchTemplate.Triple(history, ScType::EdgeAccessVarPosPerm >> "_history_access_arc", "_changes_history");
+  initVersionSearchTemplate.Triple(history, ScType::VarPermPosArc >> "_history_access_arc", "_changes_history");
   initVersionSearchTemplate.Quintuple(
-      ScType::NodeVarStruct >> "_model_example",
-      ScType::EdgeDCommonVar >> "_changes_history_pair_arc",
+      ScType::VarNodeStructure >> "_model_example",
+      ScType::VarCommonArc >> "_changes_history_pair_arc",
       "_changes_history",
-      ScType::EdgeAccessVarPosPerm >> "_nrel_changes_history_access_arc",
+      ScType::VarPermPosArc >> "_nrel_changes_history_access_arc",
       nrel_changes_history);
   initVersionSearchTemplate.Quintuple(
       "_model_example",
-      ScType::EdgeDCommonVar >> "_nrel_model_version_pair_arc",
+      ScType::VarCommonArc >> "_nrel_model_version_pair_arc",
       "_version_pair_arc",
-      ScType::EdgeAccessVarPosPerm >> "_nrel_model_version_access_arc",
+      ScType::VarPermPosArc >> "_nrel_model_version_access_arc",
       nrel_model_version);
   ScTemplateGenResult genResult;
   m_ctx->GenerateByTemplate(initVersionSearchTemplate, genResult);
@@ -427,7 +423,7 @@ TEST_F(ScTemplateSearchTest, StructureElements)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
 
-  ScAddr const & structureAddr = m_ctx->GenerateNode(ScType::NodeConstStruct);
+  ScAddr const & structureAddr = m_ctx->GenerateNode(ScType::ConstNodeStructure);
   EXPECT_TRUE(structureAddr.IsValid());
   EXPECT_TRUE(helper.GenerateBySCsText(
       "test_node => test_relation: [];;"
@@ -447,27 +443,26 @@ TEST_F(ScTemplateSearchTest, StructureElements)
   }
 
   ScAddr const & sourceAddr = m_ctx->ResolveElementSystemIdentifier("test_node");
-  ScAddr const & targetAddr = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & targetAddr = m_ctx->GenerateLink(ScType::ConstNodeLink);
   ScAddr const & relationAddr = m_ctx->ResolveElementSystemIdentifier("test_relation");
 
   ScTemplate templ;
   templ.Quintuple(
       sourceAddr >> "_source",
-      ScType::EdgeDCommonVar >> "_arc",
+      ScType::VarCommonArc >> "_arc",
       targetAddr >> "_target",
-      ScType::EdgeAccessVarPosPerm >> "_rel_arc",
+      ScType::VarPermPosArc >> "_rel_arc",
       relationAddr >> "_relation");
-  templ.Triple(structureAddr, ScType::EdgeAccessVarPosPerm, "_rel_arc");
-  templ.Triple(structureAddr, ScType::EdgeAccessVarPosPerm, "_arc");
+  templ.Triple(structureAddr, ScType::VarPermPosArc, "_rel_arc");
+  templ.Triple(structureAddr, ScType::VarPermPosArc, "_arc");
   ScTemplateGenResult genResult;
   m_ctx->GenerateByTemplate(templ, genResult);
 
   templ.Clear();
-  templ.Triple(
-      relationAddr >> "_relation", ScType::EdgeAccessVarPosPerm >> "_rel_arc", ScType::EdgeDCommonVar >> "_arc");
-  templ.Triple(structureAddr, ScType::EdgeAccessVarPosPerm, "_rel_arc");
+  templ.Triple(relationAddr >> "_relation", ScType::VarPermPosArc >> "_rel_arc", ScType::VarCommonArc >> "_arc");
+  templ.Triple(structureAddr, ScType::VarPermPosArc, "_rel_arc");
   templ.Triple(sourceAddr >> "_source", "_arc", targetAddr >> "_target");
-  templ.Triple(structureAddr, ScType::EdgeAccessVarPosPerm, "_arc");
+  templ.Triple(structureAddr, ScType::VarPermPosArc, "_arc");
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, searchResult));
   EXPECT_EQ(searchResult.Size(), 1u);

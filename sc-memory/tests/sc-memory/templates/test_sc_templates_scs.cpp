@@ -9,7 +9,7 @@ using ScTemplateSCsTest = ScTemplateTest;
 
 TEST_F(ScTemplateSCsTest, BuildSuccessful)
 {
-  ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const addr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(addr.IsValid());
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("d", addr));
 
@@ -28,7 +28,7 @@ TEST_F(ScTemplateSCsTest, BuildFail)
 TEST_F(ScTemplateSCsTest, GenBuildSearch)
 {
   ScTemplate genTempl;
-  genTempl.Triple(ScType::NodeVar >> "_a", ScType::EdgeAccessVarPosPerm >> "_edge", ScType::NodeVarTuple >> "b");
+  genTempl.Triple(ScType::VarNode >> "_a", ScType::VarPermPosArc >> "_edge", ScType::VarNodeTuple >> "b");
 
   ScTemplateGenResult genResult;
   m_ctx->GenerateByTemplate(genTempl, genResult);
@@ -59,7 +59,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("c1", cAddr));
 
   ScTemplate templ;
-  sc_char const * data = "c1 _=> _b1;; _b1 <- sc_node_abstract;;";
+  sc_char const * data = "c1 _=> _b1;; _b1 <- sc_node_material;;";
 
   m_ctx->BuildTemplate(templ, data);
   ScTemplateGenResult genResult;
@@ -67,7 +67,7 @@ TEST_F(ScTemplateSCsTest, BuildGenerate)
 
   // check
   ScTemplate searchTempl;
-  searchTempl.Triple(cAddr >> "c1", ScType::EdgeDCommonVar >> "_edge", ScType::NodeVarAbstract >> "_b1");
+  searchTempl.Triple(cAddr >> "c1", ScType::VarCommonArc >> "_edge", ScType::VarNodeMaterial >> "_b1");
 
   ScTemplateSearchResult searchResult;
   EXPECT_TRUE(m_ctx->SearchByTemplate(searchTempl, searchResult));
@@ -89,8 +89,8 @@ TEST_F(ScTemplateSCsTest, GenerateSearch)
   m_ctx->BuildTemplate(templ, data);
   ScTemplateGenResult genResult;
   m_ctx->GenerateByTemplate(templ, genResult);
-  EXPECT_EQ(m_ctx->GetElementType(genResult["_l1"]), ScType::NodeConstMaterial);
-  EXPECT_EQ(m_ctx->GetElementType(genResult["_f1"]), ScType::NodeConst);
+  EXPECT_EQ(m_ctx->GetElementType(genResult["_l1"]), ScType::ConstNodeMaterial);
+  EXPECT_EQ(m_ctx->GetElementType(genResult["_f1"]), ScType::ConstNode);
 
   // check
   ScTemplateSearchResult searchResult;

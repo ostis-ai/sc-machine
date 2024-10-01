@@ -115,9 +115,9 @@ bool ScLink::DetermineTypeArcImpl(ScAddr & outArcAddr, ScAddr & outTypeAddr) con
 {
   // set type
   ScTemplate templ;
-  templ.Triple(ScKeynodes::binary_type, ScType::EdgeAccessVarPosPerm, ScType::NodeVarClass >> "_type");
+  templ.Triple(ScKeynodes::binary_type, ScType::VarPermPosArc, ScType::VarNodeClass >> "_type");
 
-  templ.Triple("_type", ScType::EdgeAccessVarPosTemp >> "_arc", *this);
+  templ.Triple("_type", ScType::VarTempPosArc >> "_arc", *this);
 
   ScTemplateSearchResult res;
   if (m_context->SearchByTemplate(templ, res))

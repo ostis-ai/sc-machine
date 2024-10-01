@@ -13,22 +13,22 @@ class TestTemplateSearchComplex : public TestTemplate
 public:
   void Setup(size_t constrCount) override
   {
-    ScAddr const node = m_ctx->GenerateNode(ScType::NodeConstStruct);
+    ScAddr const node = m_ctx->GenerateNode(ScType::ConstNodeStructure);
     m_templ.Quintuple(
           node,
-          ScType::EdgeDCommonVar,
-          ScType::NodeVarTuple >> "_tuple",
-          ScType::EdgeAccessVarPosPerm,
-          ScType::NodeVarNoRole);
+          ScType::VarCommonArc,
+          ScType::VarNodeTuple >> "_tuple",
+          ScType::VarPermPosArc,
+          ScType::VarNodeNoRole);
     m_templ.Quintuple(
-          ScType::NodeVarClass,
-          ScType::EdgeDCommonVar,
+          ScType::VarNodeClass,
+          ScType::VarCommonArc,
           "_tuple",
-          ScType::EdgeAccessVarPosPerm,
-          ScType::NodeVarNoRole);
+          ScType::VarPermPosArc,
+          ScType::VarNodeNoRole);
     m_templ.Triple(
-          ScType::NodeVarClass,
-          ScType::EdgeAccessVarPosPerm,
+          ScType::VarNodeClass,
+          ScType::VarPermPosArc,
           node);
 
     for (size_t i = 0; i < constrCount; ++i)

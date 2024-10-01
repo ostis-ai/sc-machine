@@ -30,7 +30,7 @@ public:
                      {"type", "addr"},
                      {"value", m_nodes[random() % m_nodes.size()].Hash()},
                  }},
-                {"type", sc_type_arc_pos_const_perm},
+                {"type", sc_type_const_perm_pos_arc},
             },
         }));
     client->Send(payloadString);
@@ -40,7 +40,7 @@ public:
   {
     m_nodes.reserve(elementsNum);
     for (size_t i = 0; i < elementsNum; ++i)
-      m_nodes.push_back(m_ctx->GenerateNode(ScType::NodeConst));
+      m_nodes.push_back(m_ctx->GenerateNode(ScType::ConstNode));
   }
 
 private:

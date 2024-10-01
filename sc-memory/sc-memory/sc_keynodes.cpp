@@ -58,8 +58,8 @@ void ScKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (!context->CheckConnector(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
-      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
+    if (!context->CheckConnector(contextStructureAddr, addr, ScType::ConstPermPosArc))
+      context->GenerateConnector(ScType::ConstPermPosArc, contextStructureAddr, addr);
   };
 
   ScSystemIdentifierQuintuple quintuple;
@@ -100,8 +100,8 @@ void ScTemplateKeynode::Initialize(ScMemoryContext * context)
   ScAddr const & contextStructureAddr = context->GetContextStructure();
   auto const & AppendToContextStructure = [&](ScAddr const & addr)
   {
-    if (!context->CheckConnector(contextStructureAddr, addr, ScType::EdgeAccessConstPosPerm))
-      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, addr);
+    if (!context->CheckConnector(contextStructureAddr, addr, ScType::ConstPermPosArc))
+      context->GenerateConnector(ScType::ConstPermPosArc, contextStructureAddr, addr);
   };
 
   ScSystemIdentifierQuintuple quintuple;
@@ -139,14 +139,14 @@ void ScKeynodes::Initialize(ScMemoryContext * context)
   auto const & ResolveArc = [&](ScAddr const & beginAddr, ScAddr const & endAddr)
   {
     ScAddr arcAddr;
-    ScIterator3Ptr it3 = context->CreateIterator3(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+    ScIterator3Ptr it3 = context->CreateIterator3(beginAddr, ScType::ConstPermPosArc, endAddr);
     if (it3->Next())
       arcAddr = it3->Get(1);
     else
-      arcAddr = context->GenerateConnector(ScType::EdgeAccessConstPosPerm, beginAddr, endAddr);
+      arcAddr = context->GenerateConnector(ScType::ConstPermPosArc, beginAddr, endAddr);
 
     if (context->IsElement(contextStructureAddr))
-      context->GenerateConnector(ScType::EdgeAccessConstPosPerm, contextStructureAddr, arcAddr);
+      context->GenerateConnector(ScType::ConstPermPosArc, contextStructureAddr, arcAddr);
   };
 
   SC_LOG_INFO("Initialize " << GetName<ScKeynodes>());
@@ -157,7 +157,7 @@ void ScKeynodes::Initialize(ScMemoryContext * context)
   for (size_t i = 0; i < kKeynodeRrelListNum; ++i)
   {
     ScAddr & item = kKeynodeRrelList[i];
-    item = context->ResolveElementSystemIdentifier("rrel_" + std::to_string(i + 1), ScType::NodeConstRole);
+    item = context->ResolveElementSystemIdentifier("rrel_" + std::to_string(i + 1), ScType::ConstNodeRole);
   }
 
   // command states

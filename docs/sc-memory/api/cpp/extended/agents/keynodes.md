@@ -19,7 +19,7 @@ It is a base class for all keynodes. Use it to generate keynodes in the `ScKeyno
 #include <sc-memory/sc_keynodes.hpp>
 
 static ScKeynode const my_keynode_class{
-    "my_keynode_class", ScType::NodeConstClass};
+    "my_keynode_class", ScType::ConstNodeClass};
 ```
 
 !!! note
@@ -50,11 +50,11 @@ static ScTemplateKeynode const & my_agent_initiation_condition =
   ScTemplateKeynode("my_agent_initiation_condition")
      .Triple(
         ScKeynodes::action_initiated,
-        ScType::EdgeAccessVarPosPerm,
-        ScType::NodeVar >> "_action")
+        ScType::VarPermPosArc,
+        ScType::VarNode >> "_action")
      .Triple(
         MyKeynodes::my_action,
-        ScType::EdgeAccessVarPosPerm,
+        ScType::VarPermPosArc,
         "_action");
 ```
 
@@ -78,9 +78,9 @@ class MyKeynodes : public ScKeynodes
 {
 public:
   static inline ScKeynode const my_keynode_class_a{
-    "my_keynode_class_a", ScType::NodeConstClass};
+    "my_keynode_class_a", ScType::ConstNodeClass};
   static inline ScKeynode const my_keynode_relation_b{
-    "my_keynode_relation_b", ScType::NodeConstNoRole};
+    "my_keynode_relation_b", ScType::ConstNodeNoRole};
 };
 ```
 
@@ -96,9 +96,9 @@ class MyKeynodes
 {
 public:
   static inline ScKeynode const my_keynode_class_a{
-    "my_keynode_class_a", ScType::NodeConstClass};
+    "my_keynode_class_a", ScType::ConstNodeClass};
   static inline ScKeynode const my_keynode_relation_b{
-    "my_keynode_relation_b", ScType::NodeConstNoRole};
+    "my_keynode_relation_b", ScType::ConstNodeNoRole};
 };
 ```
 

@@ -48,6 +48,17 @@ Both declarative (data, data structures, documentation, tasks specification, etc
 
   or **alternatively** you can build sc-machine documentation only. To do that refer to the [scn-latex-plugin](https://github.com/ostis-ai/scn-latex-plugin) documentation.
 
+<details>
+  <summary>Build documentation locally</summary>
+
+```sh
+# make sure you're using python12
+pip3 install mkdocs mkdocs-material
+mkdocs serve
+# and open http://127.0.0.1:8000/ in your browser
+```
+</details>
+
 ## Quick start
 
 Semantic network storage is a core of any ostis-system, so you can use a reference system named [OSTIS Platform](https://github.com/ostis-ai/ostis-web-platform) to get it up and running quickly.

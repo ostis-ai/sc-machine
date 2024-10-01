@@ -30,22 +30,16 @@ To make an `sc-link` into specified file you can use special type identifier:
 
 #### **Names**
 
-There are some tricks with object names:
+There are some tricks with sc-node names:
 
-* `...` - is an unnamed object;
-* `_<object name>` - all object names, that starts with symbol `_` represents a variable type of objects.
+* `...` - is an unnamed sc-node;
+* `_<node name>` - all sc-node names, that starts with symbol `_` represents a variable type of sc-nodes.
 
-Objects identifier visibility. By default, all objects with name `x` are visible anywhere.
-After translating it into memory this object will have a **system identifier** equal to `x`.
-So if you use `x` in different *scs* files, then you designate the same object in them
-(would be the same element in a knowledge base).
+Objects identifier visibility. By default, all objects with name `x` are visible anywhere. After translating it into memory this object will have a **system identifier** equal to `x`. So if you use `x` in different *scs* files, then you designate the same object in them (would be the same element in a knowledge base).
 
-Sometimes you need to designate the same objects in different files, but do not generate a
-**system identifier** in memory for it. In this case you should to prefix it name with a `.` symbol.
-For example: `.x`.
+Sometimes you need to designate the same objects in different files, but do not generate a **system identifier** in memory for it. In this case you should to prefix it name with a `.` symbol. For example: `.x`.
 
-In case, when you need to make a named object just local for an *scs* file,
-then you should to use `..` prefix (example: `..x`).
+In case, when you need to make a named object just local for an *scs* file, then you should to use `..` prefix (example: `..x`).
 
 So a rule to build identifier is:
 
@@ -63,7 +57,7 @@ You can use alias for any sc-element by using `=` operator. There are some examp
 @file_alias = "file://...";;
 @link_alias = [];;
 @element_alias = element_idtf;;
-@edge_alias = (c -> b);;
+@arc_alias = (c -> b);;
 @alias_to_alias = @element_alias;;
 ```
 
@@ -80,7 +74,7 @@ You can use alias for any sc-element by using `=` operator. There are some examp
 
 SCs-code level 1 is a simple representation of SC-code. It represents SC-texts
 with just simple triples. Each triple contains `subject`, `predicate`, `object`
-that are split by `|` symbol. Line `sc_node#subject | sc_edge_access#predicate | sc_node#object;;` is a sentence.
+that are split by `|` symbol. Line `sc_node#subject_identifier | sc_membership_arc#predicate_identifier | sc_node#object_identifier;;` is a sentence.
 
 Identifier of `subject`, `predicate`, `object` build with rule:
 
@@ -88,14 +82,20 @@ Identifier of `subject`, `predicate`, `object` build with rule:
 <type>#<identifier>
 ```
 
+If object or subject is sc-link, then you should use the next one:
+
+```scs
+"file://<file name>"
+```
+
 Where `type` is an element type specification. It can be one of possible values:
 
-* `sc_node` - equal to ![SCg-node](images/scg/scg_node_const.png);
-* `sc_link` - equal to ![SCg-link](images/scg/scg_link_const.png);
-* `sc_edge_dcommon` - equal to ![SCg-node](images/scg/scg_edge_const_common_orient.png);
-* `sc_edge_ucommon` - equal to ![SCg-node](images/scg/scg_edge_const_common.png);
-* `sc_edge_main` - equal to ![SCg-node](images/scg/scg_edge_const_pos_perm.png);
-* `sc_edge_access` - equal to ![SCg-node](images/scg/scg_edge_access.png).
+* `sc_node` - equal to ![SCg-node](images/scg/scg_const_node.png);
+* `sc_link` - equal to ![SCg-link](images/scg/scg_const_node_link.png);
+* `sc_common_edge` - equal to ![SCg-node](images/scg/scg_common_edge.png);
+* `sc_common_arc` - equal to ![SCg-node](images/scg/scg_common_arc.png);
+* `sc_membership_arc` - equal to ![SCg-node](images/scg/scg_membership_arc.png);
+* `sc_main_arc` - equal to ![SCg-node](images/scg/scg_const_perm_pos_arc.png).
 
 <hr/>
 
@@ -114,11 +114,11 @@ Where `type` is an element type specification. It can be one of possible values:
         <code class="js hljs javascript">
 // append set of apples into fruit set
 sc_node#fruit
-  | sc_edge_main#..edge 
+  | sc_main_arc#..arc 
   | sc_node#apple;;
 // append set of bananas into fruit set
 sc_node#fruit
-  | sc_edge_main#..edge
+  | sc_main_arc#..arc
   | sc_node#banana;;
         </code>
       </pre>
@@ -131,117 +131,92 @@ sc_node#fruit
       <pre>
         <code class="js hljs javascript">
 sc_node#apple 
-  | sc_edge_dcommon#..common_edge 
+  | sc_common_arc#..common_arc 
   | "file://apple.png";;
-/*append edge from nrel_image relation into
-  edge between apple set and it's image*/
+/*append sc-arc from nrel_image relation into
+  sc-arc between apple set and it's image*/
 sc_node_norole_relation#nrel_image 
-  | sc_edge_main#..access_edge 
-  | sc_edge_dcommon#..common_edge;;
+  | sc_main_arc#..membership_arc 
+  | sc_common_arc#..common_arc;;
         </code>
       </pre>
     </td>
   </tr>
 </table>
 
-SCs-code level 1 allows you to represent any kind of SC-code construction. It's a low-level
-representation and commonly used as a transport format, that is very simple for parsing.
+SCs-code level 1 allows you to represent any kind of SC-code construction. It's a low-level representation and commonly used as a transport format, that is very simple for parsing.
 
 ### **SCs-code level 2**
 
 This level of SCs-code add two new features:
 
-* using of extended alphabet of edges;
-* using of compound identifiers of an edges.
+* using of extended alphabet of sc-connectors;
+* using of compound identifiers of sc-connectors.
 
 On this level you can make sentences by rule:
 ```
-<element> <edge> <element>;;
+<element> <connector> <element>;;
 ```
 
-Where `<edge>` can be on of values:
-<table>
-  <tr>
-    <th>SCs-code</th>
-    <th>SCg-code equivalent</th>
-  </tr>
-  <tr>
-    <td>`<` or `>`</td>
-    <td><img src="../images/scg/scg_edge_common_orient.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<>`</td>
-    <td><img src="../images/scg/scg_edge_common.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<..` or `..>`</td>
-    <td><img src="../images/scg/scg_edge_access.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<=>`</td>
-    <td><img src="../images/scg/scg_edge_const_common.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<=>`</td>
-    <td><img src="../images/scg/scg_edge_var_common.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<=` or `=>`</td>
-    <td><img src="../images/scg/scg_edge_const_common_orient.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<=` or `_=>`</td>
-    <td><img src="../images/scg/scg_edge_var_common_orient.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<-` or `->`</td>
-    <td><img src="../images/scg/scg_edge_const_pos_perm.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<-` or `_->`</td>
-    <td><img src="../images/scg/scg_edge_var_pos_perm.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<|-` or `-|>`</td>
-    <td><img src="../images/scg/scg_edge_const_neg_perm.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<|-` or `_-|>`</td>
-    <td><img src="../images/scg/scg_edge_var_neg_perm.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<<i></i>/-` or `-/>`</td>
-    <td><img src="../images/scg/scg_edge_const_fuz_perm.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<<i></i>/-` or `_-/>`</td>
-    <td><img src="../images/scg/scg_edge_var_fuz_perm.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<~` or `~>`</td>
-    <td><img src="../images/scg/scg_edge_const_pos_temp.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<~` or `_~>`</td>
-    <td><img src="../images/scg/scg_edge_var_pos_temp.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<|~` or `~|>`</td>
-    <td><img src="../images/scg/scg_edge_const_neg_temp.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<|~` or `_~|>`</td>
-    <td><img src="../images/scg/scg_edge_var_neg_temp.png"></img></td>
-  </tr>
-  <tr>
-    <td>`<<i></i>/~` or `~/>`</td>
-    <td><img src="../images/scg/scg_edge_const_fuz_temp.png"></img></td>
-  </tr>
-  <tr>
-    <td>`_<<i></i>/~` or `_~/>`</td>
-    <td><img src="../images/scg/scg_edge_var_fuz_temp.png"></img></td>
-  </tr>
-</table>
+Where `<connector>` can be on of values:
+
+<!-- This table is generated by test `PrintSCsToSCgConnectors` in sc-memory/tests/sc-memory/common/test_sc_type.cpp -->
+| SCs-code             | SCg-code                                                               |
+|----------------------|------------------------------------------------------------------------|
+| ```?<=>```           | Not specified                                                          |
+| ```?=> or <=?```     | Not specified                                                          |
+| ```?.?> or <?.?```   | Not specified                                                          |
+| ```<=>```            | <img src="../images/scg/scg_const_common_edge.png"></img>              |
+| ```_<=>```           | <img src="../images/scg/scg_var_common_edge.png"></img>                |
+| ```=> or <=```       | <img src="../images/scg/scg_const_common_arc.png"></img>               |
+| ```_=> or <=_```     | <img src="../images/scg/scg_var_common_arc.png"></img>                 |
+| ```??> or <??```     | Not specified                                                          |
+| ```_??> or <??_```   | Not specified                                                          |
+| ```?-?> or <?-?```   | Not specified                                                          |
+| ```?..?> or <?..?``` | Not specified                                                          |
+| ```-?> or <?-```     | Not specified                                                          |
+| ```_-?> or <?-_```   | Not specified                                                          |
+| ```..?> or <?..```   | Not specified                                                          |
+| ```_..?> or <?.._``` | Not specified                                                          |
+| ```?~?> or <?~?```   | Not specified                                                          |
+| ```?%?> or <?%?```   | Not specified                                                          |
+| ```~?> or <?~```     | Not specified                                                          |
+| ```_~?> or <?~_```   | Not specified                                                          |
+| ```%?> or <?%```     | Not specified                                                          |
+| ```_%?> or <?%_```   | Not specified                                                          |
+| ```??> or <??```     | Not specified                                                          |
+| ```??|> or <|??```   | Not specified                                                          |
+| ```?/> or </?```     | Not specified                                                          |
+| ```.> or <.```       | Not specified                                                          |
+| ```_.> or <._```     | Not specified                                                          |
+| ```?-> or <-?```     | Not specified                                                          |
+| ```?..> or <..?```   | Not specified                                                          |
+| ```?~> or <~?```     | Not specified                                                          |
+| ```?%> or <%?```     | Not specified                                                          |
+| ```-> or <-```       | <img src="../images/scg/scg_const_perm_pos_arc.png"></img>             |
+| ```..> or <..```     | <img src="../images/scg/scg_const_temp_pos_arc.png"></img>             |
+| ```~> or <~```       | Not specified                                                          |
+| ```%> or <%```       | Not specified                                                          |
+| ```_-> or <-_```     | <img src="../images/scg/scg_var_perm_pos_arc.png"></img>               |
+| ```_..> or <.._```   | <img src="../images/scg/scg_var_temp_pos_arc.png"></img>               |
+| ```_~> or <~_```     | Not specified                                                          |
+| ```_%> or <%_```     | Not specified                                                          |
+| ```?|> or <|?```     | Not specified                                                          |
+| ```_?|> or <|?_```   | Not specified                                                          |
+| ```?-|> or <|-?```   | Not specified                                                          |
+| ```?..|> or <|..?``` | Not specified                                                          |
+| ```?~|> or <|~?```   | Not specified                                                          |
+| ```?%|> or <|%?```   | Not specified                                                          |
+| ```-|> or <|-```     | <img src="../images/scg/scg_const_perm_neg_arc.png"></img>             |
+| ```..|> or <|..```   | <img src="../images/scg/scg_const_temp_neg_arc.png"></img>             |
+| ```~|> or <|~```     | Not specified                                                          |
+| ```%|> or <|%```     | Not specified                                                          |
+| ```_-|> or <|-_```   | <img src="../images/scg/scg_var_perm_neg_arc.png"></img>               |
+| ```_..|> or <|.._``` | <img src="../images/scg/scg_var_temp_neg_arc.png"></img>               |
+| ```_~|> or <|~_```   | Not specified                                                          |
+| ```_%|> or <|%_```   | Not specified                                                          |
+| ```/> or </```       | <img src="../images/scg/scg_const_fuz_arc.png"></img>                  |
+| ```_/> or </_```     | <img src="../images/scg/scg_var_fuz_arc.png"></img>                    |
 
 <hr/>
 
@@ -266,9 +241,9 @@ banana <- fruit;;
 </table>
 
 <hr/>
-Compound identifier of an edge builds as a sentence in SCs-code level 2, but without
-`;;` separator and inside brackets `()`: `(<element> <edge> <element>)`.
-So that allows to simplify usage of an edge as a source or target of another one.
+Compound identifier of a sc-connector builds as a sentence in SCs-code level 2, but without
+`;;` separator and inside brackets `()`: `(<element> <connector> <element>)`.
+So that allows to simplify usage of a sc-connector as a source or target of another one.
 
 <hr/>
 
@@ -326,7 +301,7 @@ c -> (a -> b);;
 To do that you should use sentence like this:
 
 ```scs
-<object> <edge> <attribute>: <object>
+<object> <connector> <attribute>: <object>
 ```
 
 For this example it would be like this:
@@ -335,7 +310,7 @@ For this example it would be like this:
 a -> c: b;;
 ```
 
-In case, when output edge from `c` is a variable, then use `::` splitter instead of `:`:
+In case, when outgoing sc-arc from `c` is a variable, then use `::` splitter instead of `:`:
 
 ```scs
 a -> c:: b;;
@@ -347,9 +322,8 @@ equal to:
 c _-> (a -> b);;
 ```
 
-<div class="note">
-<b>Note</b>: you can use <code>:</code>, <code>::</code> just to replace <code>-></code> or <code>_-></code> edges.
-</div>
+!!! note
+    You can use <code>:</code>, <code>::</code> just to replace <code>-></code> or <code>_-></code> sc-arcs.
 
 <hr/>
 
@@ -401,9 +375,10 @@ x => h: r;;
 Then using SCs level 4 we can write them like this:
 
 ```scs
-x -> y;
-  <- z;
-  => h: r;;
+x 
+-> y;
+<- z;
+=> h: r;;
 ```
 
 In other words, this level of SCs-code allows to use source element one time.
@@ -423,8 +398,9 @@ In other words, this level of SCs-code allows to use source element one time.
     <td>
       <pre>
         <code class="js hljs javascript">
-fruit -> apple;
-  -> banana;;
+fruit 
+-> apple;
+-> banana;;
         </code>
       </pre>
     </td>
@@ -435,9 +411,10 @@ fruit -> apple;
     <td>
       <pre>
         <code class="js hljs javascript">
-a -> c: d: b;
-  -> e;
-  -> g: f;;
+a
+-> c: d: b;
+-> e;
+-> g: f;;
         </code>
       </pre>
     </td>
@@ -478,10 +455,10 @@ item -> subitem;;
       <pre>
         <code class="js hljs javascript">
 set
-  -> attr: item 
-    (*
-      -> subitem;;
-    *);;
+-> attr: item 
+(*
+  -> subitem;;
+*);;
         </code>
       </pre>
     </td>
@@ -505,12 +482,11 @@ item -> attr2: subitem2;;
       <pre>
         <code class="js hljs javascript">
 set 
-  -> attr: item
-  (* 
-    -> subitem;;
-    -> attr2:
-      subitem2;;
-  *);;
+-> attr: item
+(* 
+  -> subitem;;
+  -> attr2: subitem2;;
+*);;
         </code>
       </pre>
     </td>
@@ -528,9 +504,9 @@ set
 @en_idtf <- lang_en;;
 @ru_idtf <- lang_ru;;
 sc_element 
-  => nrel_main_idtf: 
-    @en_idtf;
-    @ru_idtf;;
+=> nrel_main_idtf: 
+  @en_idtf;
+  @ru_idtf;;
         </code>
       </pre>
     </td>
@@ -538,12 +514,12 @@ sc_element
       <pre>
         <code class="js hljs javascript">
 sc_element
-  => nrel_main_idtf:
-    [sc-element]
-    (* <- lang_en;; *);
-  => nrel_main_idtf:
-    [sc-элемент]
-    (* <- lang_ru;; *);;
+=> nrel_main_idtf:
+  [sc-element]
+  (* <- lang_en;; *);
+=> nrel_main_idtf:
+  [sc-элемент]
+  (* <- lang_ru;; *);;
         </code>
       </pre>
     </td>
@@ -607,8 +583,8 @@ x -> [^"uint: 781236"];;
 </table>
 
 * `[* ... *]` this is a short representation of <code>sc-structure</code>. You can use just sc.s-text inside these brackets.
-  So these brackets will designate an <code>sc-structure</code> (<code>sc-node</code> with a type <code>sc_node_struct</code>). All elements inside
-  brackets will have incoming sc-arc (type <code>sc_edge_main</code>) from that <code>sc-node</code>.
+  So these brackets will designate an <code>sc-structure</code> (<code>sc-node</code> with a type <code>sc_node_structure</code>). All elements inside
+  brackets will have incoming sc-arc (type <code>sc_main_arc</code>) from that <code>sc-node</code>.
   <table>
     <tr>
       <th>SCs-code level 2-5</th>
@@ -618,14 +594,14 @@ x -> [^"uint: 781236"];;
     <tr>
       <td>
         <pre><code class="js hljs javascript">
-@edge_alias = (set -> item);;
-struct -> set; item; @edge_alias;;
+@arc_alias = (set -> item);;
+structure -> set; item; @arc_alias;;
         </code></pre>
       </td>
       <td>
         <pre>
           <code class="js hljs javascript">
-@struct = [* set -> item;; *];;
+@structure = [* set -> item;; *];;
           </code>
         </pre>
       </td>
@@ -644,7 +620,7 @@ struct -> set; item; @edge_alias;;
     attr2: element2;
     ...
     last_element // no semicolon after last element
-  >;;
+  };;
   ```
 
 * `< ... >` is a short representation of oriented set. This feature allow to make sets in very fast way.
@@ -671,10 +647,10 @@ struct -> set; item; @edge_alias;;
       <pre>
         <code class="js hljs javascript">
 set
-  <- sc_node_tuple;
-  -> element1;
-  -> attr2: element2;
-  -> element3;;
+<- sc_node_tuple;
+-> element1;
+-> attr2: element2;
+-> element3;;
         </code>
       </pre>
     </td>
@@ -697,28 +673,27 @@ set
       <pre>
         <code class="js hljs javascript">
 meta_set 
-  <- sc_node_tuple;
-  -> set1;
-  -> set2;;
+<- sc_node_tuple;
+-> set1;
+-> set2;;
 
 set1
-  <- sc_node_tuple;
-  -> element1;
-  -> attr2: element2;
-  -> element3;;
+<- sc_node_tuple;
+-> element1;
+-> attr2: element2;
+-> element3;;
 
 set2
-  <- sc_node_tuple;
-  -> element5;
-  -> element6;;
+<- sc_node_tuple;
+-> element5;
+-> element6;;
 
 set3
-  <- sc_node_tuple;
-  -> element10;;
+<- sc_node_tuple;
+-> element10;;
 
 element 
-  => nrel_relation:
-    set3;;
+=> nrel_relation: set3;;
         </code>
       </pre>
     </td>
@@ -738,10 +713,10 @@ element
 };;
 
 element 
-  => nrel_relation:
-  {
-    element10
-  };;
+=> nrel_relation:
+{
+  element10
+};;
         </code>
       </pre>
     </td>
@@ -753,15 +728,13 @@ element
       <pre>
         <code class="js hljs javascript">
 set
-  <- sc_node_tuple;;
+<- sc_node_tuple;;
 
-@first_arc 
-  = (set -> rrel_1: element1);;
-@second_arc 
-  = (set -> element2);;
+@first_arc = (set -> rrel_1: element1);;
+@second_arc = (set -> element2);;
 
 nrel_basic_sequence
-  -> (@first_arc => @second_arc);;
+-> (@first_arc => @second_arc);;
         </code>
       </pre>
     </td>
@@ -784,31 +757,21 @@ nrel_basic_sequence
 
 There are a list of element type keynodes, that can be used to specify type of sc-element:
 
-| Keynode                 | Equal sc-type                  | Equal sc.g-element                                                                                      |
-|-------------------------|--------------------------------|---------------------------------------------------------------------------------------------------------|
-| sc_node                 | ScType::NodeConst              | ![sc.g-edge](images/scg/scg_node_const.png)                                                             |
-| sc_link                 | ScType::LinkConst              | ![sc.g-edge](images/scg/scg_link_const.png)                                                             |
-| sc_edge_dcommon         | ScType::EdgeDCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common_orient.png)                                               |
-| sc_edge_ucommon         | ScType::EdgeUCommonConst       | ![sc.g-edge](images/scg/scg_edge_const_common.png)                                                      |
-| sc_edge_main            | ScType::EdgeAccessConstPosPerm | ![sc.g-edge](images/scg/scg_edge_const_pos_perm.png)                                                    |
-| sc_edge_access          | ScType::EdgeAccess             | ![sc.g-edge](images/scg/scg_edge_access.png)                                                            |
-| sc_node_tuple           | ScType::NodeTuple              | ![sc.g-edge](images/scg/scg_node_const_tuple.png) ![sc.g-edge](images/scg/scg_node_var_tuple.png)       |
-| sc_node_struct          | ScType::NodeStruct             | ![sc.g-edge](images/scg/scg_node_const_struct.png) ![sc.g-edge](images/scg/scg_node_var_struct.png)     |
-| sc_node_role_relation   | ScType::NodeRole               | ![sc.g-edge](images/scg/scg_node_const_role.png) ![sc.g-edge](images/scg/scg_node_var_role.png)         |
-| sc_node_norole_relation | ScType::NodeNoRole             | ![sc.g-edge](images/scg/scg_node_const_norole.png) ![sc.g-edge](images/scg/scg_node_var_norole.png)     |
-| sc_node_class           | ScType::NodeClass              | ![sc.g-edge](images/scg/scg_node_const_class.png) ![sc.g-edge](images/scg/scg_node_var_class.png)       |
-| sc_node_material        | ScType::NodeMaterial           | ![sc.g-edge](images/scg/scg_node_const_material.png) ![sc.g-edge](images/scg/scg_node_var_material.png) |
-
-There are old keynodes, that used for backward compatibility:
-
-| Keynode                  | Equal sc-type                  | New keynode     |
-|--------------------------|--------------------------------|-----------------|
-| sc_arc_main              | ScType::EdgeAccessConstPosPerm | sc_edge_main    |
-| sc_edge                  | ScType::EdgeUCommonConst       | sc_edge_ucommon |
-| sc_arc_common            | ScType::EdgeDCommonConst       | sc_edge_dcommon |
-| sc_arc_access            | ScType::EdgeAccess             | sc_edge_access  |
-| sc_node_not_relation     | ScType::NodeConstClass         | sc_node_class   |
-| sc_node_not_binary_tuple | ScType::NodeConstTuple         | sc_node_tuple   |
+| Keynode                 | Equal sc-type                  | Possible sc.g-elements                                                                                            |
+|-------------------------|--------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| sc_node                 | ScType::Node                   | ![sc.g-element](images/scg/scg_const_node.png) ![sc.g-element](images/scg/scg_var_node.png)                       |
+| sc_link                 | ScType::ConstNodeLink          | ![sc.g-element](images/scg/scg_const_node_link.png) ![sc.g-element](images/scg/scg_var_node_link.png)             |
+| sc_common_edge          | ScType::ConstCommonEdge        | ![sc.g-element](images/scg/scg_common_edge.png)                                                                   |
+| sc_common_arc           | ScType::ConstCommonArc         | ![sc.g-element](images/scg/scg_common_arc.png)                                                                    |
+| sc_membership_arc       | ScType::MembershipArc          | ![sc.g-element](images/scg/scg_membership_arc.png)                                                                |
+| sc_main_arc             | ScType::ConstPermPosArc        | ![sc.g-element](images/scg/scg_const_perm_pos_arc.png)                                                            |
+| sc_node_tuple           | ScType::NodeTuple              | ![sc.g-element](images/scg/scg_const_node_tuple.png) ![sc.g-element](images/scg/scg_var_node_tuple.png)           |
+| sc_node_structure       | ScType::NodeStructure          | ![sc.g-element](images/scg/scg_const_node_structure.png) ![sc.g-element](images/scg/scg_var_node_structure.png)   |
+| sc_node_role_relation   | ScType::NodeRole               | ![sc.g-element](images/scg/scg_const_node_role.png) ![sc.g-element](images/scg/scg_var_node_role.png)             |
+| sc_node_norole_relation | ScType::NodeNoRole             | ![sc.g-element](images/scg/scg_const_node_norole.png) ![sc.g-element](images/scg/scg_var_node_norole.png)         |
+| sc_node_class           | ScType::NodeClass              | ![sc.g-element](images/scg/scg_const_node_class.png) ![sc.g-element](images/scg/scg_var_node_class.png)           |
+| sc_node_superclass      | ScType::NodeSuperclass         | Not specified                                                                                                     |
+| sc_node_material        | ScType::NodeMaterial           | ![sc.g-element](images/scg/scg_const_node_material.png) ![sc.g-element](images/scg/scg_var_node_material.png)     |
 
 There is an example of usage:
 
@@ -840,9 +803,10 @@ nrel_y <- sc_node_norole_relation;;
 
 ## **Frequently Asked Questions**
 
-- [**Frequently Asked Questions**](#frequently-asked-questions)
-  - [**What SCs-code level is recommended to use?**](#what-scs-code-level-is-recommended-to-use)
-  - [**Can I combine different levels in one SCs file?**](#can-i-combine-different-levels-in-one-scs-file)
+<!-- no toc -->
+- [**What SCs-code level is recommended to use?**](#what-scs-code-level-is-recommended-to-use)
+- [**Can I combine different levels in one SCs file?**](#can-i-combine-different-levels-in-one-scs-file)
+- [**What is the difference between ```set -> a; -> b; -> c;;``` and ```set -> a; b; c;;```?**](#what-is-the-difference-between-set-a-b-c-and-set-a-b-c)
 
 ### **What SCs-code level is recommended to use?**
 
@@ -852,3 +816,7 @@ SCs-code allow you to make sc.s-text more compact, but these levels of SCs-code 
 ### **Can I combine different levels in one SCs file?**
 
 All levels of SCs-code can be combined. Usually it is useful to use 4-6 levels if you use 2-3 levels.
+
+### **What is the difference between ```set -> a; -> b; -> c;;``` and ```set -> a; b; c;;```?**
+
+These sc.s-texts are identical. The second sc.s-text is just short version of the first sc.s-text, it allows to not duplicate sc.s-connectors between sc.s-elements.

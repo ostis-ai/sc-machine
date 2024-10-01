@@ -19,7 +19,7 @@ ScSet::~ScSet() = default;
 bool ScSet::Append(ScAddr const & elAddr)
 {
   if (!HasElement(elAddr))
-    return m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, *this, elAddr).IsValid();
+    return m_context->GenerateConnector(ScType::ConstPermPosArc, *this, elAddr).IsValid();
 
   return false;
 }
@@ -29,8 +29,8 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
   if (HasElement(elAddr))
     return false;
 
-  ScAddr const arcAddr = m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, *this, elAddr);
-  m_context->GenerateConnector(ScType::EdgeAccessConstPosPerm, attrAddr, arcAddr);
+  ScAddr const arcAddr = m_context->GenerateConnector(ScType::ConstPermPosArc, *this, elAddr);
+  m_context->GenerateConnector(ScType::ConstPermPosArc, attrAddr, arcAddr);
 
   return true;
 }
@@ -38,7 +38,7 @@ bool ScSet::Append(ScAddr const & elAddr, ScAddr const & attrAddr)
 bool ScSet::Remove(ScAddr const & elAddr)
 {
   bool found = false;
-  ScIterator3Ptr iter = m_context->CreateIterator3(*this, ScType::EdgeAccessConstPosPerm, elAddr);
+  ScIterator3Ptr iter = m_context->CreateIterator3(*this, ScType::ConstPermPosArc, elAddr);
   while (iter->Next())
   {
     m_context->EraseElement(iter->Get(1));
@@ -50,7 +50,7 @@ bool ScSet::Remove(ScAddr const & elAddr)
 
 bool ScSet::HasElement(ScAddr const & elAddr) const
 {
-  return m_context->CheckConnector(*this, elAddr, ScType::EdgeAccessConstPosPerm);
+  return m_context->CheckConnector(*this, elAddr, ScType::ConstPermPosArc);
 }
 
 ScSet & ScSet::operator<<(ScAddr const & elAddr)
@@ -76,6 +76,6 @@ ScSet & ScSet::operator>>(ScAddr const & elAddr)
 
 bool ScSet::IsEmpty() const
 {
-  ScIterator3Ptr const iter = m_context->CreateIterator3(*this, ScType::EdgeAccessConstPosPerm, ScType::Unknown);
+  ScIterator3Ptr const iter = m_context->CreateIterator3(*this, ScType::ConstPermPosArc, ScType::Unknown);
   return !iter->Next();
 }

@@ -9,12 +9,18 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <string>
 
 namespace scs
 {
 class TypeResolver final
 {
 public:
+  static std::string GetDirectSCsConnector(ScType const & type);
+  static std::string GetReverseSCsConnector(ScType const & type);
+
+  static std::string GetSCsElementKeynode(ScType const & type);
+
   static ScType const & GetConnectorType(std::string const & connectorAlias);
   static ScType const & GetKeynodeType(std::string const & keynodeAlias);
 
@@ -24,12 +30,26 @@ public:
   static bool IsKeynodeType(std::string const & alias);
   static bool IsUnnamed(std::string const & alias);
 
-private:
-  using MapType = std::unordered_map<std::string, ScType>;
-  using IsType = std::unordered_set<std::string>;
+protected:
+  using SCsDesignationsToScTypes = std::unordered_map<std::string, ScType>;
 
-  static MapType ms_keynodeToType;
-  static MapType ms_connectorToType;
-  static IsType ms_reversedConnectors;
+  struct ScTypeHashFunc;
+  using ScTypesToSCsDesignations = std::unordered_map<ScType, std::string, TypeResolver::ScTypeHashFunc>;
+  using SCsConnectorDesignations = std::unordered_set<std::string>;
+
+  static SCsDesignationsToScTypes ms_connectorsToTypes;
+  static SCsDesignationsToScTypes ms_deprecatedConnectorsToTypes;
+  static SCsDesignationsToScTypes ms_deprecatedReverseConnectorsToTypes;
+
+  static ScTypesToSCsDesignations ms_typesToConnectors;
+  static ScTypesToSCsDesignations ms_typesToReverseConnectors;
+
+  static SCsDesignationsToScTypes ms_keynodesToTypes;
+  static SCsDesignationsToScTypes ms_deprecatedKeynodesToTypes;
+
+  static ScTypesToSCsDesignations ms_typesToKeynodes;
+
+  static SCsConnectorDesignations ms_reversedConnectors;
+  static SCsConnectorDesignations ms_deprecatedReversedConnectors;
 };
 }  // namespace scs

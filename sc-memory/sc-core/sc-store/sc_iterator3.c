@@ -268,7 +268,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_common_edge)
                    ? SC_ADDR_IS_EQUAL(arc_begin, el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
                    : el->arc.next_begin_out_arc;
 
@@ -295,7 +295,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     }
 
     sc_addr next_out_arc =
-        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+        sc_type_has_subtype(el->flags.type, sc_type_common_edge)
             ? SC_ADDR_IS_EQUAL(arc_begin, el->arc.end) ? el->arc.next_end_out_arc : el->arc.next_begin_out_arc
             : el->arc.next_begin_out_arc;
 
@@ -318,7 +318,7 @@ sc_bool _sc_iterator3_f_a_a_next(sc_iterator3 * it)
     }
 
     sc_type arc_type = el->flags.type;
-    sc_addr arc_end = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+    sc_addr arc_end = sc_type_has_subtype(el->flags.type, sc_type_common_edge)
                           ? _sc_iterator3_get_other_edge_incident_element(el, arc_begin)
                           : el->arc.end;
 
@@ -416,7 +416,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_common_edge)
                    ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
                    : el->arc.next_end_in_arc;
 
@@ -443,7 +443,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
     }
 
     sc_addr next_in_arc =
-        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+        sc_type_has_subtype(el->flags.type, sc_type_common_edge)
             ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
             : el->arc.next_end_in_arc;
 
@@ -467,7 +467,7 @@ sc_bool _sc_iterator3_f_a_f_next(sc_iterator3 * it)
 
     sc_type arc_type = el->flags.type;
 
-    sc_bool is_begin_same = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+    sc_bool is_begin_same = sc_type_has_subtype(el->flags.type, sc_type_common_edge)
                                 ? SC_ADDR_IS_EQUAL(arc_begin, el->arc.begin) || SC_ADDR_IS_EQUAL(arc_begin, el->arc.end)
                                 : SC_ADDR_IS_EQUAL(arc_begin, el->arc.begin);
 
@@ -549,7 +549,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
       goto error;
     }
 
-    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+    arc_addr = sc_type_has_subtype(el->flags.type, sc_type_common_edge)
                    ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
                    : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
@@ -580,7 +580,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     }
 
     sc_addr next_in_arc =
-        sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+        sc_type_has_subtype(el->flags.type, sc_type_common_edge)
             ? SC_ADDR_IS_EQUAL(arc_end, el->arc.end) ? el->arc.next_end_in_arc : el->arc.next_begin_in_arc
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
             : (search_structure ? el->arc.next_in_arc_from_structure : el->arc.next_end_in_arc);
@@ -607,7 +607,7 @@ sc_bool _sc_iterator3_a_a_f_next(sc_iterator3 * it)
     }
 
     sc_type arc_type = el->flags.type;
-    sc_addr arc_begin = sc_type_has_subtype(el->flags.type, sc_type_edge_common)
+    sc_addr arc_begin = sc_type_has_subtype(el->flags.type, sc_type_common_edge)
                             ? _sc_iterator3_get_other_edge_incident_element(el, arc_end)
                             : el->arc.begin;
 
@@ -724,7 +724,7 @@ sc_bool _sc_iterator3_f_f_a_next(sc_iterator3 * it)
   it->results[1].is_accessed = SC_TRUE;
 
   sc_addr arc_end;
-  if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
+  if (sc_type_has_subtype(arc_el->flags.type, sc_type_common_edge))
   {
     if (SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.begin) && SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.end))
       goto error;
@@ -788,7 +788,7 @@ sc_bool _sc_iterator3_a_f_f_next(sc_iterator3 * it)
   it->results[1].is_accessed = SC_TRUE;
 
   sc_addr arc_begin;
-  if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
+  if (sc_type_has_subtype(arc_el->flags.type, sc_type_common_edge))
   {
     if (SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.begin) && SC_ADDR_IS_NOT_EQUAL(arc_end, arc_el->arc.end))
       goto error;
@@ -852,7 +852,7 @@ sc_bool _sc_iterator3_f_f_f_next(sc_iterator3 * it)
     goto error;
   it->results[1].is_accessed = SC_TRUE;
 
-  if (sc_type_has_subtype(arc_el->flags.type, sc_type_edge_common))
+  if (sc_type_has_subtype(arc_el->flags.type, sc_type_common_edge))
   {
     if (SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.begin) && SC_ADDR_IS_NOT_EQUAL(arc_begin, arc_el->arc.end))
       goto error;

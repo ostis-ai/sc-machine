@@ -31,7 +31,7 @@ void Translator::GetFileContent(std::string const & fileName, std::string & outC
 void Translator::Clean(ScMemoryContext & ctx)
 {
   // remove global identifiers
-  ScAddr const nrelSCsGlobalIdtf = ctx.ResolveElementSystemIdentifier("nrel_scs_global_idtf", ScType::NodeConstNoRole);
+  ScAddr const nrelSCsGlobalIdtf = ctx.ResolveElementSystemIdentifier("nrel_scs_global_idtf", ScType::ConstNodeNoRole);
   if (!nrelSCsGlobalIdtf.IsValid())
   {
     ScConsole::PrintLine() << ScConsole::Color::Red << "Can't resolve keynode 'nrel_scs_global_idtf'";
@@ -40,11 +40,7 @@ void Translator::Clean(ScMemoryContext & ctx)
 
   ScTemplate templ;
   templ.Quintuple(
-      ScType::Unknown,
-      ScType::EdgeDCommonVar,
-      ScType::Link >> "_link",
-      ScType::EdgeAccessVarPosPerm,
-      nrelSCsGlobalIdtf);
+      ScType::Unknown, ScType::VarCommonArc, ScType::NodeLink >> "_link", ScType::VarPermPosArc, nrelSCsGlobalIdtf);
 
   ScTemplateSearchResult res;
   if (ctx.SearchByTemplate(templ, res))

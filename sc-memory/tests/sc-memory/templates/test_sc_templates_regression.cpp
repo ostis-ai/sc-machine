@@ -78,151 +78,139 @@ TEST_F(ScTemplateRegressionTest, Issue224)
              */
 
       // create known nodes
-      ScAddr const _set1Addr = testGenerateNodeIdtf(ScType::NodeVar, "_set1");
-      ScAddr const _element1Addr = testGenerateNodeIdtf(ScType::NodeVar, "_element1");
-      ScAddr const _arc1Addr = testGenerateNodeIdtf(ScType::NodeVar, "_arc1");
-      ScAddr const _operator1Addr = testGenerateNodeIdtf(ScType::NodeVar, "_operator1");
-      ScAddr const _operator2Addr = testGenerateNodeIdtf(ScType::NodeVar, "_operator2");
-      ScAddr const _operator3Addr = testGenerateNodeIdtf(ScType::NodeVar, "_operator3");
+      ScAddr const _set1Addr = testGenerateNodeIdtf(ScType::VarNode, "_set1");
+      ScAddr const _element1Addr = testGenerateNodeIdtf(ScType::VarNode, "_element1");
+      ScAddr const _arc1Addr = testGenerateNodeIdtf(ScType::VarNode, "_arc1");
+      ScAddr const _operator1Addr = testGenerateNodeIdtf(ScType::VarNode, "_operator1");
+      ScAddr const _operator2Addr = testGenerateNodeIdtf(ScType::VarNode, "_operator2");
+      ScAddr const _operator3Addr = testGenerateNodeIdtf(ScType::VarNode, "_operator3");
 
-      ScAddr const scpProcessAddr = testGenerateNodeIdtf(ScType::NodeConst, "scp_process");
-      ScAddr const rrel_1Addr = testGenerateNodeIdtf(ScType::NodeConstRole, "rrel_1");
-      ScAddr const rrel_2Addr = testGenerateNodeIdtf(ScType::NodeConstRole, "rrel_2");
-      ScAddr const rrel_3Addr = testGenerateNodeIdtf(ScType::NodeConstRole, "rrel_3");
-      ScAddr const rrel_inAddr = testGenerateNodeIdtf(ScType::NodeConstRole, "rrel_in");
-      ScAddr const rrel_arc_const_pos_perm = testGenerateNodeIdtf(ScType::NodeVarRole, "rrel_arc_const_pos_perm");
-      ScAddr const rrel_fixedAddr = testGenerateNodeIdtf(ScType::NodeConstRole, "rrel_fixed");
-      ScAddr const rrel_assignAddr = testGenerateNodeIdtf(ScType::NodeConstRole, "rrel_assign");
-      ScAddr const rrel_scp_varAddr = testGenerateNodeIdtf(ScType::NodeConstRole, "rrel_scp_var");
-      ScAddr const searchElStr3Addr = testGenerateNodeIdtf(ScType::NodeConstClass, "searchElStr3");
-      ScAddr const genElStr3Addr = testGenerateNodeIdtf(ScType::NodeConstClass, "geElStr3");
-      ScAddr const returnAddr = testGenerateNodeIdtf(ScType::NodeConstClass, "return");
+      ScAddr const scpProcessAddr = testGenerateNodeIdtf(ScType::ConstNode, "scp_process");
+      ScAddr const rrel_1Addr = testGenerateNodeIdtf(ScType::ConstNodeRole, "rrel_1");
+      ScAddr const rrel_2Addr = testGenerateNodeIdtf(ScType::ConstNodeRole, "rrel_2");
+      ScAddr const rrel_3Addr = testGenerateNodeIdtf(ScType::ConstNodeRole, "rrel_3");
+      ScAddr const rrel_inAddr = testGenerateNodeIdtf(ScType::ConstNodeRole, "rrel_in");
+      ScAddr const rrel_arc_const_pos_perm = testGenerateNodeIdtf(ScType::VarNodeRole, "rrel_arc_const_pos_perm");
+      ScAddr const rrel_fixedAddr = testGenerateNodeIdtf(ScType::ConstNodeRole, "rrel_fixed");
+      ScAddr const rrel_assignAddr = testGenerateNodeIdtf(ScType::ConstNodeRole, "rrel_assign");
+      ScAddr const rrel_scp_varAddr = testGenerateNodeIdtf(ScType::ConstNodeRole, "rrel_scp_var");
+      ScAddr const searchElStr3Addr = testGenerateNodeIdtf(ScType::ConstNodeClass, "searchElStr3");
+      ScAddr const genElStr3Addr = testGenerateNodeIdtf(ScType::ConstNodeClass, "geElStr3");
+      ScAddr const returnAddr = testGenerateNodeIdtf(ScType::ConstNodeClass, "return");
       ScAddr const nrel_decompoisition_of_actionAddr =
-          testGenerateNodeIdtf(ScType::NodeVarNoRole, "nrel_decomposition_of_action");
-      ScAddr const nrel_thenAddr = testGenerateNodeIdtf(ScType::NodeConstNoRole, "nrel_then");
-      ScAddr const nrel_elseAddr = testGenerateNodeIdtf(ScType::NodeConstNoRole, "nrel_else");
-      ScAddr const nrel_gotoAddr = testGenerateNodeIdtf(ScType::NodeConstNoRole, "nrel_goto");
+          testGenerateNodeIdtf(ScType::VarNodeNoRole, "nrel_decomposition_of_action");
+      ScAddr const nrel_thenAddr = testGenerateNodeIdtf(ScType::ConstNodeNoRole, "nrel_then");
+      ScAddr const nrel_elseAddr = testGenerateNodeIdtf(ScType::ConstNodeNoRole, "nrel_else");
+      ScAddr const nrel_gotoAddr = testGenerateNodeIdtf(ScType::ConstNodeNoRole, "nrel_goto");
 
       {
         // scp_process _-> ..process_instance;;
-        ScAddr const __procInstanceAddr = testGenerateNode(ScType::NodeVar);
-        testGenerateConnector(ScType::EdgeAccessVarPosPerm, scpProcessAddr, __procInstanceAddr);
+        ScAddr const __procInstanceAddr = testGenerateNode(ScType::VarNode);
+        testGenerateConnector(ScType::VarPermPosArc, scpProcessAddr, __procInstanceAddr);
 
         // ..process_instance _-> rrel_1:: rrel_in:: _set1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
-            __procInstanceAddr,
-            _set1Addr,
-            ScType::EdgeAccessVarPosPerm,
-            {rrel_1Addr, rrel_inAddr});
+            ScType::VarPermPosArc, __procInstanceAddr, _set1Addr, ScType::VarPermPosArc, {rrel_1Addr, rrel_inAddr});
 
         // ..process_instance _-> rrel_1:: rrel_in::_element1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
-            __procInstanceAddr,
-            _element1Addr,
-            ScType::EdgeAccessVarPosPerm,
-            {rrel_1Addr, rrel_inAddr});
+            ScType::VarPermPosArc, __procInstanceAddr, _element1Addr, ScType::VarPermPosArc, {rrel_1Addr, rrel_inAddr});
 
         // ..process_instance _<= nrel_decomposition_of_action:: ..proc_decomp_instance;;
-        ScAddr const __procDecompInstanceAddr = testGenerateNode(ScType::NodeVar);
+        ScAddr const __procDecompInstanceAddr = testGenerateNode(ScType::VarNode);
         testGenerateConnectorAttrs(
-            ScType::EdgeDCommonVar,
+            ScType::VarCommonArc,
             __procDecompInstanceAddr,
             __procInstanceAddr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {nrel_decompoisition_of_actionAddr});
 
         // ..proc_decomp_instance _-> rrel_1:: _operator1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
-            __procDecompInstanceAddr,
-            _operator1Addr,
-            ScType::EdgeAccessVarPosPerm,
-            {rrel_1Addr});
+            ScType::VarPermPosArc, __procDecompInstanceAddr, _operator1Addr, ScType::VarPermPosArc, {rrel_1Addr});
 
         // ..proc_decomp_instance _->_operator2;;
-        testGenerateConnector(ScType::EdgeAccessVarPosPerm, __procDecompInstanceAddr, _operator2Addr);
+        testGenerateConnector(ScType::VarPermPosArc, __procDecompInstanceAddr, _operator2Addr);
 
         // ..proc_decomp_instance _-> _operator3;;
-        testGenerateConnector(ScType::EdgeAccessVarPosPerm, __procDecompInstanceAddr, _operator3Addr);
+        testGenerateConnector(ScType::VarPermPosArc, __procDecompInstanceAddr, _operator3Addr);
 
         // _operator1 _<- searchElStr3;;
-        testGenerateConnector(ScType::EdgeAccessVarPosPerm, searchElStr3Addr, _operator1Addr);
+        testGenerateConnector(ScType::VarPermPosArc, searchElStr3Addr, _operator1Addr);
 
         // _operator1 _-> rrel_1:: rrel_fixed:: rrel_scp_var:: _set1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             _operator1Addr,
             _set1Addr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator1 _-> rrel_2:: rrel_assign:: rrel_arc_const_pos_perm:: rrel_scp_var:: _arc1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             _operator1Addr,
             _arc1Addr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr});
 
         // _operator1 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             _operator1Addr,
             _element1Addr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator1 _=> nrel_then:: _operator3;;
         testGenerateConnectorAttrs(
-            ScType::EdgeDCommonVar, _operator1Addr, _operator3Addr, ScType::EdgeAccessVarPosPerm, {nrel_thenAddr});
+            ScType::VarCommonArc, _operator1Addr, _operator3Addr, ScType::VarPermPosArc, {nrel_thenAddr});
 
         // _operator1 _=> nrel_else:: _operator2;;
         testGenerateConnectorAttrs(
-            ScType::EdgeDCommonVar, _operator1Addr, _operator2Addr, ScType::EdgeAccessVarPosPerm, {nrel_elseAddr});
+            ScType::VarCommonArc, _operator1Addr, _operator2Addr, ScType::VarPermPosArc, {nrel_elseAddr});
 
         // _operator2 _<- genElStr3;;
-        testGenerateConnector(ScType::EdgeAccessVarPosPerm, genElStr3Addr, _operator2Addr);
+        testGenerateConnector(ScType::VarPermPosArc, genElStr3Addr, _operator2Addr);
 
         // _operator2 _-> rrel_1:: rrel_fixed:: rrel_scp_var:: _set1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             _operator2Addr,
             _set1Addr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {rrel_1Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator2 _-> rrel_2:: rrel_assign:: rrel_arc_const_pos_perm:: rrel_scp_var:: _arc1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             _operator2Addr,
             _arc1Addr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {rrel_2Addr, rrel_assignAddr, rrel_arc_const_pos_perm, rrel_scp_varAddr});
 
         // _operator2 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             _operator2Addr,
             _element1Addr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator2 _-> rrel_3:: rrel_fixed:: rrel_scp_var:: _element1;;
         testGenerateConnectorAttrs(
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             _operator2Addr,
             _element1Addr,
-            ScType::EdgeAccessVarPosPerm,
+            ScType::VarPermPosArc,
             {rrel_3Addr, rrel_fixedAddr, rrel_scp_varAddr});
 
         // _operator2 _=> nrel_goto:: _operator3;;
         testGenerateConnectorAttrs(
-            ScType::EdgeDCommonVar, _operator2Addr, _operator3Addr, ScType::EdgeAccessVarPosPerm, {nrel_gotoAddr});
+            ScType::VarCommonArc, _operator2Addr, _operator3Addr, ScType::VarPermPosArc, {nrel_gotoAddr});
 
         // _operator3 _<- return;;
-        testGenerateConnector(ScType::EdgeAccessVarPosPerm, returnAddr, _operator3Addr);
+        testGenerateConnector(ScType::VarPermPosArc, returnAddr, _operator3Addr);
       }
     }
 
@@ -249,7 +237,7 @@ TEST_F(ScTemplateRegressionTest, Issue224)
       {
         shuffle(1);
         ScAddr const structAddr =
-            m_ctx->ResolveElementSystemIdentifier("test_program" + std::to_string(i), ScType::NodeConstStruct);
+            m_ctx->ResolveElementSystemIdentifier("test_program" + std::to_string(i), ScType::ConstNodeStructure);
         EXPECT_TRUE(structAddr.IsValid());
         ScStructure contour = m_ctx->ConvertToStructure(structAddr);
 
@@ -270,27 +258,27 @@ TEST_F(ScTemplateRegressionTest, Issue251)
    * k => rel: [] (* <- t;; *);;
    */
 
-  ScAddr const kAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const kAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(kAddr.IsValid());
-  ScAddr const relAddr = m_ctx->GenerateNode(ScType::NodeConstRole);
+  ScAddr const relAddr = m_ctx->GenerateNode(ScType::ConstNodeRole);
   EXPECT_TRUE(relAddr.IsValid());
-  ScAddr const tAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
+  ScAddr const tAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(tAddr.IsValid());
   ScAddr const linkAddr = m_ctx->GenerateLink();
   EXPECT_TRUE(linkAddr.IsValid());
 
-  ScAddr const arcK_link = m_ctx->GenerateConnector(ScType::EdgeDCommonConst, kAddr, linkAddr);
+  ScAddr const arcK_link = m_ctx->GenerateConnector(ScType::ConstCommonArc, kAddr, linkAddr);
   EXPECT_TRUE(arcK_link.IsValid());
-  ScAddr const arcT_link = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, tAddr, linkAddr);
+  ScAddr const arcT_link = m_ctx->GenerateConnector(ScType::ConstPermPosArc, tAddr, linkAddr);
   EXPECT_TRUE(arcT_link.IsValid());
-  ScAddr const arcRel_arc = m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, relAddr, arcK_link);
+  ScAddr const arcRel_arc = m_ctx->GenerateConnector(ScType::ConstPermPosArc, relAddr, arcK_link);
   EXPECT_TRUE(arcRel_arc.IsValid());
 
   // create template for a search
   ScTemplate templ;
 
-  templ.Quintuple(kAddr, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, relAddr);
-  templ.Triple(tAddr, ScType::EdgeAccessVarPosPerm, "_link");
+  templ.Quintuple(kAddr, ScType::VarCommonArc, ScType::NodeLink >> "_link", ScType::VarPermPosArc, relAddr);
+  templ.Triple(tAddr, ScType::VarPermPosArc, "_link");
 
   ScTemplateSearchResult res;
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
@@ -340,6 +328,6 @@ TEST_F(ScTemplateRegressionTest, Issue295)
   EXPECT_TRUE(item["nrel_value"].IsValid());
   EXPECT_TRUE(item["_range"].IsValid());
 
-  EXPECT_EQ(m_ctx->GetElementType(item["device_switch_multilevel"]), ScType::NodeConstClass);
-  EXPECT_EQ(m_ctx->GetElementType(item["nrel_value"]), ScType::NodeConstNoRole);
+  EXPECT_EQ(m_ctx->GetElementType(item["device_switch_multilevel"]), ScType::ConstNodeClass);
+  EXPECT_EQ(m_ctx->GetElementType(item["nrel_value"]), ScType::ConstNodeNoRole);
 }

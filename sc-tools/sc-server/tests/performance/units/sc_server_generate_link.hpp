@@ -21,7 +21,7 @@ public:
         ScMemoryJsonPayload::array({
             {
                 {"el", "link"},
-                {"type", sc_type_link | sc_type_const},
+                {"type", sc_type_const_node_link},
                 {"content", "connector_end"},
             },
         }));

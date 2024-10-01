@@ -17,7 +17,7 @@ TEST_F(ScBuilderTest, clean_global_idtfs)
 
   ScTemplate templ;
   templ.Quintuple(
-      ScType::Unknown, ScType::EdgeDCommonVar, ScType::Link >> "_link", ScType::EdgeAccessVarPosPerm, nrelSCsIdtf);
+      ScType::Unknown, ScType::VarCommonArc, ScType::NodeLink >> "_link", ScType::VarPermPosArc, nrelSCsIdtf);
 
   ScTemplateSearchResult res;
   EXPECT_FALSE(m_ctx->SearchByTemplate(templ, res));

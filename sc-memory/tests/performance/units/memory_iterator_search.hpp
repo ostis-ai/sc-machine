@@ -15,7 +15,7 @@ public:
   {
     if (!it)
     {
-      it = m_ctx->CreateIterator3(m_node, ScType::EdgeAccessConstPosPerm, ScType::NodeConst);
+      it = m_ctx->CreateIterator3(m_node, ScType::ConstPermPosArc, ScType::ConstNode);
     }
 
     BENCHMARK_BUILTIN_EXPECT(it->Next(), true);
@@ -23,11 +23,11 @@ public:
 
   void Setup(size_t connectorsNum) override
   {
-    m_node = m_ctx->GenerateNode(ScType::NodeConstClass);
+    m_node = m_ctx->GenerateNode(ScType::ConstNodeClass);
     for (size_t i = 0; i < connectorsNum; ++i)
     {
-      ScAddr target = m_ctx->GenerateNode(ScType::NodeConst);
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, m_node, target);
+      ScAddr target = m_ctx->GenerateNode(ScType::ConstNode);
+      m_ctx->GenerateConnector(ScType::ConstPermPosArc, m_node, target);
     }
   }
 

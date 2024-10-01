@@ -38,10 +38,14 @@ void sc_segment_collect_elements_stat(sc_segment * seg, sc_stat * stat)
 
     sc_type type = element.flags.type;
     if (sc_type_has_subtype(type, sc_type_node))
+    {
       stat->node_count++;
-    else if (sc_type_has_subtype(type, sc_type_link))
-      stat->link_count++;
-    else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
-      stat->arc_count++;
+      if (sc_type_has_subtype(type, sc_type_node_link))
+      {
+        stat->link_count++;
+      }
+    }
+    else if (sc_type_has_subtype_in_mask(type, sc_type_connector_mask))
+      stat->connector_count++;
   }
 }

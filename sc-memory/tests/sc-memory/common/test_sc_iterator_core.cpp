@@ -12,8 +12,8 @@ protected:
     ScMemoryTest::SetUp();
 
     m_source = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
-    m_target = sc_memory_link_new2(**m_ctx, sc_type_link | sc_type_const);
-    m_connector = sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, m_source, m_target);
+    m_target = sc_memory_link_new2(**m_ctx, sc_type_const_node_link);
+    m_connector = sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, m_source, m_target);
 
     ASSERT_TRUE(SC_ADDR_IS_NOT_EMPTY(m_source));
     ASSERT_TRUE(SC_ADDR_IS_NOT_EMPTY(m_target));
@@ -52,8 +52,7 @@ TEST_F(ScIterator3CoreTest, sc_iterator3_invalid)
 
 TEST_F(ScIterator3CoreTest, sc_iterator3_invalid_index)
 {
-  sc_iterator3 * it =
-      sc_iterator3_f_a_a_new(**m_ctx, m_source, sc_type_arc_pos_const_perm, sc_type_link | sc_type_const);
+  sc_iterator3 * it = sc_iterator3_f_a_a_new(**m_ctx, m_source, sc_type_const_perm_pos_arc, sc_type_const_node_link);
   EXPECT_NE(it, nullptr);
 
   EXPECT_TRUE(sc_iterator3_next(it));
@@ -74,8 +73,7 @@ TEST_F(ScIterator3CoreTest, sc_iterator3_invalid_index)
 
 TEST_F(ScIterator3CoreTest, sc_iterator3_f_a_a)
 {
-  sc_iterator3 * it =
-      sc_iterator3_f_a_a_new(**m_ctx, m_source, sc_type_arc_pos_const_perm, sc_type_link | sc_type_const);
+  sc_iterator3 * it = sc_iterator3_f_a_a_new(**m_ctx, m_source, sc_type_const_perm_pos_arc, sc_type_const_node_link);
   EXPECT_NE(it, nullptr);
 
   EXPECT_TRUE(sc_iterator3_next(it));
@@ -95,7 +93,7 @@ TEST_F(ScIterator3CoreTest, sc_iterator3_f_a_a)
 
 TEST_F(ScIterator3CoreTest, sc_iterator3_f_a_f)
 {
-  sc_iterator3 * it = sc_iterator3_f_a_f_new(**m_ctx, m_source, sc_type_arc_pos_const_perm, m_target);
+  sc_iterator3 * it = sc_iterator3_f_a_f_new(**m_ctx, m_source, sc_type_const_perm_pos_arc, m_target);
   EXPECT_NE(it, nullptr);
 
   EXPECT_TRUE(sc_iterator3_next(it));
@@ -116,7 +114,7 @@ TEST_F(ScIterator3CoreTest, sc_iterator3_f_a_f)
 TEST_F(ScIterator3CoreTest, sc_iterator3_a_a_f)
 {
   sc_iterator3 * it =
-      sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, m_target);
+      sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, m_target);
   EXPECT_NE(it, nullptr);
 
   EXPECT_TRUE(sc_iterator3_next(it));
@@ -136,7 +134,7 @@ TEST_F(ScIterator3CoreTest, sc_iterator3_a_a_f)
 
 TEST_F(ScIterator3CoreTest, sc_iterator3_f_f_a)
 {
-  sc_iterator3 * it = sc_iterator3_f_f_a_new(**m_ctx, m_source, m_connector, sc_type_link | sc_type_const);
+  sc_iterator3 * it = sc_iterator3_f_f_a_new(**m_ctx, m_source, m_connector, sc_type_const_node_link);
   EXPECT_NE(it, nullptr);
 
   EXPECT_TRUE(sc_iterator3_next(it));
@@ -196,28 +194,28 @@ TEST_F(ScIterator3CoreTest, sc_iterator3_f_f_f)
 
 TEST_F(ScMemoryTest, sc_iterator3_search_structure)
 {
-  sc_addr const structure_addr1 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_struct);
+  sc_addr const structure_addr1 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_structure);
   sc_addr const set_addr1 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
-  sc_addr const structure_addr2 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_struct);
-  sc_addr const structure_addr3 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_struct);
+  sc_addr const structure_addr2 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_structure);
+  sc_addr const structure_addr3 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const | sc_type_node_structure);
   sc_addr const set_addr2 = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
 
   sc_addr const node_addr = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
-  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, structure_addr1, node_addr);
-  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, set_addr1, node_addr);
-  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, structure_addr2, node_addr);
-  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, structure_addr3, node_addr);
-  sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, set_addr2, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, structure_addr1, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, set_addr1, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, structure_addr2, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, structure_addr3, node_addr);
+  sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, set_addr2, node_addr);
 
   sc_iterator3 * it3 = sc_iterator3_a_a_f_new(
-      **m_ctx, sc_type_node | sc_type_const | sc_type_node_struct, sc_type_arc_pos_const_perm, node_addr);
+      **m_ctx, sc_type_node | sc_type_const | sc_type_node_structure, sc_type_const_perm_pos_arc, node_addr);
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_FALSE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  it3 = sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, node_addr);
+  it3 = sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, node_addr);
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -229,13 +227,13 @@ TEST_F(ScMemoryTest, sc_iterator3_search_structure)
   sc_memory_element_free(**m_ctx, structure_addr2);
 
   it3 = sc_iterator3_a_a_f_new(
-      **m_ctx, sc_type_node | sc_type_const | sc_type_node_struct, sc_type_arc_pos_const_perm, node_addr);
+      **m_ctx, sc_type_node | sc_type_const | sc_type_node_structure, sc_type_const_perm_pos_arc, node_addr);
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_FALSE(sc_iterator3_next(it3));
   sc_iterator3_free(it3);
 
-  it3 = sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, node_addr);
+  it3 = sc_iterator3_a_a_f_new(**m_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, node_addr);
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
   EXPECT_TRUE(sc_iterator3_next(it3));
@@ -252,10 +250,10 @@ protected:
     ScMemoryTest::SetUp();
 
     m_source = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
-    m_target = sc_memory_link_new2(**m_ctx, sc_type_link | sc_type_const);
-    m_connector = sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, m_source, m_target);
+    m_target = sc_memory_link_new2(**m_ctx, sc_type_const_node_link);
+    m_connector = sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, m_source, m_target);
     m_attr = sc_memory_node_new(**m_ctx, sc_type_node | sc_type_const);
-    m_attrEdge = sc_memory_arc_new(**m_ctx, sc_type_arc_pos_const_perm, m_attr, m_connector);
+    m_attrEdge = sc_memory_arc_new(**m_ctx, sc_type_const_perm_pos_arc, m_attr, m_connector);
 
     ASSERT_TRUE(SC_ADDR_IS_NOT_EMPTY(m_source));
     ASSERT_TRUE(SC_ADDR_IS_NOT_EMPTY(m_target));
@@ -303,9 +301,9 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_invalid_index)
   sc_iterator5 * it = sc_iterator5_f_a_a_a_a_new(
       **m_ctx,
       m_source,
-      sc_type_arc_pos_const_perm,
-      sc_type_link | sc_type_const,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
+      sc_type_const_node_link,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));
@@ -331,9 +329,9 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_f_a_a_a_a)
   sc_iterator5 * it = sc_iterator5_f_a_a_a_a_new(
       **m_ctx,
       m_source,
-      sc_type_arc_pos_const_perm,
-      sc_type_link | sc_type_const,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
+      sc_type_const_node_link,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));
@@ -358,9 +356,9 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_f_a_f_a_a)
   sc_iterator5 * it = sc_iterator5_f_a_f_a_a_new(
       **m_ctx,
       m_source,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       m_target,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));
@@ -383,7 +381,7 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_f_a_f_a_a)
 TEST_F(ScIterator5CoreTest, sc_iterator5_f_a_f_a_f)
 {
   sc_iterator5 * it = sc_iterator5_f_a_f_a_f_new(
-      **m_ctx, m_source, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, m_attr);
+      **m_ctx, m_source, sc_type_const_perm_pos_arc, m_target, sc_type_const_perm_pos_arc, m_attr);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));
 
@@ -405,7 +403,7 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_f_a_f_a_f)
 TEST_F(ScIterator5CoreTest, sc_iterator5_f_a_a_a_f)
 {
   sc_iterator5 * it = sc_iterator5_f_a_a_a_f_new(
-      **m_ctx, m_source, sc_type_arc_pos_const_perm, sc_type_link | sc_type_const, sc_type_arc_pos_const_perm, m_attr);
+      **m_ctx, m_source, sc_type_const_perm_pos_arc, sc_type_const_node_link, sc_type_const_perm_pos_arc, m_attr);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));
 
@@ -429,9 +427,9 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_a_a_f_a_a)
   sc_iterator5 * it = sc_iterator5_a_a_f_a_a_new(
       **m_ctx,
       sc_type_node | sc_type_const,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       m_target,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
       sc_type_node | sc_type_const);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));
@@ -454,7 +452,7 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_a_a_f_a_a)
 TEST_F(ScIterator5CoreTest, sc_iterator5_a_a_f_a_f)
 {
   sc_iterator5 * it = sc_iterator5_a_a_f_a_f_new(
-      **m_ctx, sc_type_node | sc_type_const, sc_type_arc_pos_const_perm, m_target, sc_type_arc_pos_const_perm, m_attr);
+      **m_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, m_target, sc_type_const_perm_pos_arc, m_attr);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));
 
@@ -478,9 +476,9 @@ TEST_F(ScIterator5CoreTest, sc_iterator5_a_a_a_a_f)
   sc_iterator5 * it = sc_iterator5_a_a_a_a_f_new(
       **m_ctx,
       sc_type_node | sc_type_const,
-      sc_type_arc_pos_const_perm,
-      sc_type_link | sc_type_const,
-      sc_type_arc_pos_const_perm,
+      sc_type_const_perm_pos_arc,
+      sc_type_const_node_link,
+      sc_type_const_perm_pos_arc,
       m_attr);
   EXPECT_NE(it, nullptr);
   EXPECT_TRUE(sc_iterator5_next(it));

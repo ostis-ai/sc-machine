@@ -46,28 +46,23 @@ class ATestSpecifiedAgent : public ScAgent<ScElementaryEvent>
 public:
   static inline TestWaiter msWaiter;
   static inline ScKeynode const test_specified_agent_implementation =
-      ScKeynode("test_specified_agent_implementation", ScType::NodeConst);
+      ScKeynode("test_specified_agent_implementation", ScType::ConstNode);
   static inline ScKeynode const test_specified_agent_action =
-      ScKeynode("test_specified_agent_action", ScType::NodeConstClass);
+      ScKeynode("test_specified_agent_action", ScType::ConstNodeClass);
 
   static inline ScTemplateKeynode const & test_specified_agent_initiation_condition =
       ScTemplateKeynode("test_specified_agent_initiation_condition_programably_specified")
-          .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
-          .Triple(test_specified_agent_action, ScType::EdgeAccessVarPosPerm, "_action");
+          .Triple(ScKeynodes::action_initiated, ScType::VarPermPosArc, ScType::VarNode >> "_action")
+          .Triple(test_specified_agent_action, ScType::VarPermPosArc, "_action");
 
   static inline ScTemplateKeynode const & test_specified_agent_initiation_condition_in_kb =
       ScTemplateKeynode("test_specified_agent_initiation_condition_programably_specified");
 
   static inline ScTemplateKeynode const & test_specified_agent_result_condition =
       ScTemplateKeynode("test_specified_agent_result_condition_programably_specified")
-          .Triple(ScKeynodes::action_initiated, ScType::EdgeAccessVarPosPerm, ScType::NodeVar >> "_action")
-          .Triple(test_specified_agent_action, ScType::EdgeAccessVarPosPerm, "_action")
-          .Quintuple(
-              "_action",
-              ScType::EdgeDCommonVar,
-              ScType::NodeVar,
-              ScType::EdgeAccessVarPosPerm,
-              ScKeynodes::nrel_result);
+          .Triple(ScKeynodes::action_initiated, ScType::VarPermPosArc, ScType::VarNode >> "_action")
+          .Triple(test_specified_agent_action, ScType::VarPermPosArc, "_action")
+          .Quintuple("_action", ScType::VarCommonArc, ScType::VarNode, ScType::VarPermPosArc, ScKeynodes::nrel_result);
 
   static inline ScTemplateKeynode const & test_specified_agent_result_condition_in_kb =
       ScTemplateKeynode("test_specified_agent_result_condition_programably_specified");

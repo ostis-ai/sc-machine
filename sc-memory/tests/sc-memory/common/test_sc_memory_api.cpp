@@ -32,38 +32,40 @@ TEST_F(ScMemoryAPITest, MoveContext)
 
 TEST_F(ScMemoryAPITest, GenerateElements)
 {
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(nodeAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr));
 
-  ScAddr const & linkAddr = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr = m_ctx->GenerateLink(ScType::ConstNodeLink);
   EXPECT_TRUE(linkAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(linkAddr));
 
-  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::EdgeAccess, nodeAddr, linkAddr);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::MembershipArc, nodeAddr, linkAddr);
   EXPECT_TRUE(arcAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(arcAddr));
 }
 
 TEST_F(ScMemoryAPITest, GenerateElementsWithInvalidTypes)
 {
-  EXPECT_THROW(m_ctx->GenerateNode(ScType::EdgeAccess), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateNode(ScType::MembershipArc), utils::ExceptionInvalidParams);
   EXPECT_THROW(m_ctx->GenerateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateLink(ScType::MembershipArc), utils::ExceptionInvalidParams);
 
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(nodeAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr));
 
-  ScAddr const & linkAddr = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr = m_ctx->GenerateLink(ScType::ConstNodeLink);
   EXPECT_TRUE(linkAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(linkAddr));
 
-  EXPECT_THROW(m_ctx->GenerateConnector(ScType::NodeConst, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateConnector(ScType::ConstNode, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateConnector(ScType::Const, nodeAddr, linkAddr), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScMemoryAPITest, SetGetFindSystemIdentifier)
 {
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
 
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("test_node", addr));
   EXPECT_EQ(m_ctx->GetElementSystemIdentifier(addr), "test_node");
@@ -72,7 +74,7 @@ TEST_F(ScMemoryAPITest, SetGetFindSystemIdentifier)
 
 TEST_F(ScMemoryAPITest, SetGetFindSystemIdentifierWithOutFiver)
 {
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
 
   ScSystemIdentifierQuintuple setFiver;
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("test_node", addr, setFiver));
@@ -95,19 +97,19 @@ TEST_F(ScMemoryAPITest, SetGetFindSystemIdentifierWithOutFiver)
 
 TEST_F(ScMemoryAPITest, SetGetSystemIdentifierErrorSetTwice)
 {
-  ScAddr const & addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
 
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("test_node", addr));
   EXPECT_EQ(m_ctx->GetElementSystemIdentifier(addr), "test_node");
   EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier("test_node"), addr);
 
-  ScAddr const & otherAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & otherAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_FALSE(m_ctx->SetElementSystemIdentifier("test_node", otherAddr));
 }
 
 TEST_F(ScMemoryAPITest, ResolveGetSystemIdentifier)
 {
-  ScAddr const & addr = m_ctx->ResolveElementSystemIdentifier("test_node", ScType::NodeConst);
+  ScAddr const & addr = m_ctx->ResolveElementSystemIdentifier("test_node", ScType::ConstNode);
 
   EXPECT_TRUE(addr.IsValid());
   EXPECT_EQ(m_ctx->GetElementSystemIdentifier(addr), "test_node");
@@ -117,7 +119,7 @@ TEST_F(ScMemoryAPITest, ResolveGetSystemIdentifier)
 TEST_F(ScMemoryAPITest, ResolveGetSystemIdentifierWithOutFiver)
 {
   ScSystemIdentifierQuintuple resolveQuintuple;
-  EXPECT_TRUE(m_ctx->ResolveElementSystemIdentifier("test_node", ScType::NodeConst, resolveQuintuple));
+  EXPECT_TRUE(m_ctx->ResolveElementSystemIdentifier("test_node", ScType::ConstNode, resolveQuintuple));
 
   EXPECT_EQ(m_ctx->GetElementSystemIdentifier(resolveQuintuple.addr1), "test_node");
   EXPECT_EQ(m_ctx->SearchElementBySystemIdentifier("test_node"), resolveQuintuple.addr1);
@@ -144,7 +146,7 @@ SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
 
 TEST_F(ScMemoryAPITest, CreateNode_Deprecated)
 {
-  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->CreateNode(ScType::ConstNode);
   EXPECT_TRUE(nodeAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr));
 
@@ -153,7 +155,7 @@ TEST_F(ScMemoryAPITest, CreateNode_Deprecated)
 
 TEST_F(ScMemoryAPITest, CreateLink_Deprecated)
 {
-  ScAddr const & linkAddr = m_ctx->CreateLink(ScType::LinkConst);
+  ScAddr const & linkAddr = m_ctx->CreateLink(ScType::ConstNodeLink);
   EXPECT_TRUE(linkAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(linkAddr));
 
@@ -162,10 +164,10 @@ TEST_F(ScMemoryAPITest, CreateLink_Deprecated)
 
 TEST_F(ScMemoryAPITest, CreateEdge_Deprecated)
 {
-  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::ConstPermPosArc, sourceNodeAddr, targetNodeAddr);
   EXPECT_TRUE(arcAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(arcAddr));
 
@@ -174,7 +176,7 @@ TEST_F(ScMemoryAPITest, CreateEdge_Deprecated)
 
 TEST_F(ScMemoryAPITest, GetElementOutputArcsCount_Deprecated)
 {
-  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(elementAddr.IsValid());
 
   size_t outputArcsCount = m_ctx->GetElementOutputArcsCount(elementAddr);
@@ -183,7 +185,7 @@ TEST_F(ScMemoryAPITest, GetElementOutputArcsCount_Deprecated)
 
 TEST_F(ScMemoryAPITest, GetElementInputArcsCount_Deprecated)
 {
-  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & elementAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(elementAddr.IsValid());
 
   size_t inputArcsCount = m_ctx->GetElementInputArcsCount(elementAddr);
@@ -192,11 +194,10 @@ TEST_F(ScMemoryAPITest, GetElementInputArcsCount_Deprecated)
 
 TEST_F(ScMemoryAPITest, GetEdgeSource_Deprecated)
 {
-  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
-  ScAddr const & connectorAddr =
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
+  ScAddr const & connectorAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, sourceNodeAddr, targetNodeAddr);
 
   ScAddr const & retrievedSourceAddr = m_ctx->GetEdgeSource(connectorAddr);
   EXPECT_EQ(retrievedSourceAddr, sourceNodeAddr);
@@ -204,11 +205,10 @@ TEST_F(ScMemoryAPITest, GetEdgeSource_Deprecated)
 
 TEST_F(ScMemoryAPITest, GetEdgeTarget_Deprecated)
 {
-  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
-  ScAddr const & connectorAddr =
-      m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
+  ScAddr const & connectorAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, sourceNodeAddr, targetNodeAddr);
 
   ScAddr const & retrievedTargetAddr = m_ctx->GetEdgeTarget(connectorAddr);
   EXPECT_EQ(retrievedTargetAddr, targetNodeAddr);
@@ -216,10 +216,10 @@ TEST_F(ScMemoryAPITest, GetEdgeTarget_Deprecated)
 
 TEST_F(ScMemoryAPITest, GetEdgeInfo_Deprecated)
 {
-  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & sourceNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & targetNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
-  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::EdgeAccessConstPosPerm, sourceNodeAddr, targetNodeAddr);
+  ScAddr const & arcAddr = m_ctx->CreateEdge(ScType::ConstPermPosArc, sourceNodeAddr, targetNodeAddr);
   EXPECT_TRUE(arcAddr.IsValid());
   EXPECT_TRUE(m_ctx->IsElement(arcAddr));
 
@@ -232,11 +232,11 @@ TEST_F(ScMemoryAPITest, GetEdgeInfo_Deprecated)
 
 TEST_F(ScMemoryAPITest, FindLinksByContent_Deprecated)
 {
-  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr1, "content");
-  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr2, "content");
-  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr3, "content");
 
   ScAddrVector const & foundLinks = m_ctx->FindLinksByContent("content");
@@ -248,11 +248,11 @@ TEST_F(ScMemoryAPITest, FindLinksByContent_Deprecated)
 
 TEST_F(ScMemoryAPITest, FindLinksByContentWithStream_Deprecated)
 {
-  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr1, "content");
-  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr2, "content");
-  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr3, "content");
 
   ScAddrVector const & foundLinks = m_ctx->FindLinksByContent(ScStreamMakeRead("content"));
@@ -264,13 +264,13 @@ TEST_F(ScMemoryAPITest, FindLinksByContentWithStream_Deprecated)
 
 TEST_F(ScMemoryAPITest, FindLinksByContentSubstring_Deprecated)
 {
-  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr1, "Hello, world!");
 
-  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr2, "This is a test link.");
 
-  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr3, "Another link with different content.");
 
   ScAddrVector const & foundLinks = m_ctx->FindLinksByContentSubstring("link");
@@ -282,13 +282,13 @@ TEST_F(ScMemoryAPITest, FindLinksByContentSubstring_Deprecated)
 
 TEST_F(ScMemoryAPITest, FindLinksByContentSubstringWithStream_Deprecated)
 {
-  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr1, "Hello, world!");
 
-  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr2, "This is a test link.");
 
-  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr3, "Another link with different content.");
 
   ScAddrVector const & foundLinks = m_ctx->FindLinksByContentSubstring(ScStreamMakeRead("link"));
@@ -300,13 +300,13 @@ TEST_F(ScMemoryAPITest, FindLinksByContentSubstringWithStream_Deprecated)
 
 TEST_F(ScMemoryAPITest, FindLinksContentsByContentSubstring_Deprecated)
 {
-  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr1, "Hello, world!");
 
-  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr2, "This is a test link.");
 
-  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr3, "Another link with different content.");
 
   std::vector<std::string> const & foundLinkContents = m_ctx->FindLinksContentsByContentSubstring("link");
@@ -323,13 +323,13 @@ TEST_F(ScMemoryAPITest, FindLinksContentsByContentSubstring_Deprecated)
 
 TEST_F(ScMemoryAPITest, FindLinksContentsByContentSubstringWithStream_Deprecated)
 {
-  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr1, "Hello, world!");
 
-  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr2, "This is a test link.");
 
-  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::LinkConst);
+  ScAddr const & linkAddr3 = m_ctx->GenerateLink(ScType::ConstNodeLink);
   m_ctx->SetLinkContent(linkAddr3, "Another link with different content.");
 
   std::vector<std::string> const & foundLinkContents =
@@ -347,9 +347,9 @@ TEST_F(ScMemoryAPITest, FindLinksContentsByContentSubstringWithStream_Deprecated
 
 TEST_F(ScMemoryAPITest, Iterator3_Deprecated)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScType const & arcType = ScType::EdgeDCommonConst;
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScType const & arcType = ScType::ConstCommonArc;
 
   m_ctx->GenerateConnector(arcType, nodeAddr1, nodeAddr2);
 
@@ -358,9 +358,9 @@ TEST_F(ScMemoryAPITest, Iterator3_Deprecated)
 
 TEST_F(ScMemoryAPITest, Iterator5_Deprecated)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScType const & arcType = ScType::EdgeDCommonConst;
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScType const & arcType = ScType::ConstCommonArc;
 
   ScAddr const & arcAddr = m_ctx->GenerateConnector(arcType, nodeAddr1, nodeAddr2);
   m_ctx->GenerateConnector(arcType, nodeAddr2, arcAddr);
@@ -370,9 +370,9 @@ TEST_F(ScMemoryAPITest, Iterator5_Deprecated)
 
 TEST_F(ScMemoryAPITest, ForEachIter3_Deprecated)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScType const & arcType = ScType::EdgeDCommonConst;
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScType const & arcType = ScType::ConstCommonArc;
 
   m_ctx->GenerateConnector(arcType, nodeAddr1, nodeAddr2);
 
@@ -390,9 +390,9 @@ TEST_F(ScMemoryAPITest, ForEachIter3_Deprecated)
 
 TEST_F(ScMemoryAPITest, ForEachIter5_Deprecated)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScType const & arcType = ScType::EdgeDCommonConst;
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScType const & arcType = ScType::ConstCommonArc;
 
   ScAddr const & arcAddr = m_ctx->GenerateConnector(arcType, nodeAddr1, nodeAddr2);
   m_ctx->GenerateConnector(arcType, nodeAddr2, arcAddr);
@@ -413,9 +413,9 @@ TEST_F(ScMemoryAPITest, ForEachIter5_Deprecated)
 
 TEST_F(ScMemoryAPITest, HelperCheckEdge_Deprecated)
 {
-  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::NodeConst);
-  ScType const & arcType = ScType::EdgeDCommonConst;
+  ScAddr const & nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScType const & arcType = ScType::ConstCommonArc;
 
   m_ctx->GenerateConnector(arcType, nodeAddr1, nodeAddr2);
 
@@ -425,28 +425,28 @@ TEST_F(ScMemoryAPITest, HelperCheckEdge_Deprecated)
 TEST_F(ScMemoryAPITest, HelperResolveSystemIdtf_Deprecated)
 {
   std::string systemIdentifier = "example_identifier";
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
 
-  ScAddr resolvedAddr = m_ctx->HelperResolveSystemIdtf(systemIdentifier, ScType::NodeConstClass);
+  ScAddr resolvedAddr = m_ctx->HelperResolveSystemIdtf(systemIdentifier, ScType::ConstNodeClass);
   EXPECT_EQ(resolvedAddr, nodeAddr);
 }
 
 TEST_F(ScMemoryAPITest, HelperResolveSystemIdtfWithQuintuple_Deprecated)
 {
   std::string systemIdentifier = "example_identifier";
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
 
   ScSystemIdentifierQuintuple quintuple;
-  EXPECT_TRUE(m_ctx->HelperResolveSystemIdtf(systemIdentifier, ScType::NodeConstClass, quintuple));
+  EXPECT_TRUE(m_ctx->HelperResolveSystemIdtf(systemIdentifier, ScType::ConstNodeClass, quintuple));
   EXPECT_EQ(quintuple.addr1, nodeAddr);
 }
 
 TEST_F(ScMemoryAPITest, HelperFindBySystemIdtf_Deprecated)
 {
   std::string systemIdentifier = "example_identifier";
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
 
   ScAddr foundAddr;
@@ -459,7 +459,7 @@ TEST_F(ScMemoryAPITest, HelperFindBySystemIdtf_Deprecated)
 TEST_F(ScMemoryAPITest, HelperFindBySystemIdtfWithQuintuple_Deprecated)
 {
   std::string systemIdentifier = "example_identifier";
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
 
   ScSystemIdentifierQuintuple quintuple;
@@ -469,7 +469,7 @@ TEST_F(ScMemoryAPITest, HelperFindBySystemIdtfWithQuintuple_Deprecated)
 
 TEST_F(ScMemoryAPITest, HelperGetSystemIdtf_Deprecated)
 {
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   std::string systemIdentifier = "example_identifier";
   m_ctx->SetElementSystemIdentifier(systemIdentifier, nodeAddr);
 
@@ -478,7 +478,7 @@ TEST_F(ScMemoryAPITest, HelperGetSystemIdtf_Deprecated)
 
 TEST_F(ScMemoryAPITest, HelperSetSystemIdtf_Deprecated)
 {
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_EQ(m_ctx->GetElementSystemIdentifier(nodeAddr), "");
 
   std::string systemIdentifier = "example_identifier";
@@ -489,7 +489,7 @@ TEST_F(ScMemoryAPITest, HelperSetSystemIdtf_Deprecated)
 
 TEST_F(ScMemoryAPITest, HelperSetSystemIdtfWithQuintuple_Deprecated)
 {
-  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   std::string systemIdentifier = "example_identifier";
   ScSystemIdentifierQuintuple quintuple;
   m_ctx->HelperSetSystemIdtf(systemIdentifier, nodeAddr, quintuple);
@@ -500,25 +500,25 @@ TEST_F(ScMemoryAPITest, HelperSetSystemIdtfWithQuintuple_Deprecated)
 
 TEST_F(ScMemoryAPITest, HelperGenTemplate_Deprecated)
 {
-  ScAddr const & classAddr = m_ctx->ResolveElementSystemIdentifier("my_class", ScType::NodeConst);
+  ScAddr const & classAddr = m_ctx->ResolveElementSystemIdentifier("my_class", ScType::ConstNode);
 
   ScTemplate templateToGenerate;
-  templateToGenerate.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
+  templateToGenerate.Triple(classAddr, ScType::VarPermPosArc >> "_arc", ScType::VarNode >> "_addr2");
 
   ScTemplateResultItem result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templateToGenerate, result));
   EXPECT_TRUE(m_ctx->IsElement(result["_addr2"]));
 
-  EXPECT_TRUE(m_ctx->CheckConnector(classAddr, result["_addr2"], ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->CheckConnector(classAddr, result["_addr2"], ScType::ConstPermPosArc));
 }
 
 TEST_F(ScMemoryAPITest, HelperSearchTemplate_Deprecated)
 {
-  ScAddr const & classAddr = m_ctx->ResolveElementSystemIdentifier("my_class", ScType::NodeConst);
-  ScAddr const & setAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & classAddr = m_ctx->ResolveElementSystemIdentifier("my_class", ScType::ConstNode);
+  ScAddr const & setAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   ScTemplate templateToFind;
-  templateToFind.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
+  templateToFind.Triple(classAddr, ScType::VarPermPosArc >> "_arc", ScType::VarNode >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templateToFind, result));
@@ -527,7 +527,7 @@ TEST_F(ScMemoryAPITest, HelperSearchTemplate_Deprecated)
       templateToFind,
       [&](ScTemplateSearchResultItem const & item)
       {
-        m_ctx->GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+        m_ctx->GenerateConnector(ScType::ConstTempPosArc, setAddr, item["_addr2"]);
       },
       [&](ScTemplateSearchResultItem const & item) -> bool
       {
@@ -538,29 +538,29 @@ TEST_F(ScMemoryAPITest, HelperSearchTemplate_Deprecated)
         return true;
       });
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosTemp));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::ConstTempPosArc));
 
   m_ctx->HelperSearchTemplate(
       templateToFind,
       [&](ScTemplateSearchResultItem const & item)
       {
-        m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, setAddr, item["_addr2"]);
+        m_ctx->GenerateConnector(ScType::ConstPermPosArc, setAddr, item["_addr2"]);
       },
       [&](ScAddr const & elementAddr) -> bool
       {
         return true;
       });
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::ConstPermPosArc));
 }
 
 TEST_F(ScMemoryAPITest, HelperSmartSearchTemplate_Deprecated)
 {
-  ScAddr const & classAddr = m_ctx->ResolveElementSystemIdentifier("my_class", ScType::NodeConst);
-  ScAddr const & setAddr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const & classAddr = m_ctx->ResolveElementSystemIdentifier("my_class", ScType::ConstNode);
+  ScAddr const & setAddr = m_ctx->GenerateNode(ScType::ConstNode);
 
   ScTemplate templateToFind;
-  templateToFind.Triple(classAddr, ScType::EdgeAccessVarPosPerm >> "_arc", ScType::NodeVar >> "_addr2");
+  templateToFind.Triple(classAddr, ScType::VarPermPosArc >> "_arc", ScType::VarNode >> "_addr2");
 
   ScTemplateGenResult result;
   EXPECT_TRUE(m_ctx->HelperGenTemplate(templateToFind, result));
@@ -569,7 +569,7 @@ TEST_F(ScMemoryAPITest, HelperSmartSearchTemplate_Deprecated)
       templateToFind,
       [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
       {
-        m_ctx->GenerateConnector(ScType::EdgeAccessConstPosTemp, setAddr, item["_addr2"]);
+        m_ctx->GenerateConnector(ScType::ConstTempPosArc, setAddr, item["_addr2"]);
         return ScTemplateSearchRequest::CONTINUE;
       },
       [&](ScTemplateSearchResultItem const & item) -> bool
@@ -581,13 +581,13 @@ TEST_F(ScMemoryAPITest, HelperSmartSearchTemplate_Deprecated)
         return true;
       });
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosTemp));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::ConstTempPosArc));
 
   m_ctx->HelperSmartSearchTemplate(
       templateToFind,
       [&](ScTemplateSearchResultItem const & item) -> ScTemplateSearchRequest
       {
-        m_ctx->GenerateConnector(ScType::EdgeAccessConstPosPerm, setAddr, item["_addr2"]);
+        m_ctx->GenerateConnector(ScType::ConstPermPosArc, setAddr, item["_addr2"]);
         return ScTemplateSearchRequest::CONTINUE;
       },
       [&](ScAddr const & elementAddr) -> bool
@@ -595,12 +595,12 @@ TEST_F(ScMemoryAPITest, HelperSmartSearchTemplate_Deprecated)
         return true;
       });
 
-  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::EdgeAccessConstPosPerm));
+  EXPECT_TRUE(m_ctx->HelperCheckEdge(setAddr, result["_addr2"], ScType::ConstPermPosArc));
 }
 
 TEST_F(ScMemoryAPITest, HelperBuildTemplate_Deprecated)
 {
-  ScAddr const addr = m_ctx->GenerateNode(ScType::NodeConst);
+  ScAddr const addr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(addr.IsValid());
   EXPECT_TRUE(m_ctx->SetElementSystemIdentifier("d", addr));
 
@@ -623,18 +623,14 @@ public:
 
 TEST_F(ScMemoryAPITest, GenerateSearchLoadCheckBuildSearchTemplate_Deprecated)
 {
-  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::NodeConstClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::NodeConstNoRole);
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
 
   ScTemplate templ;
-  templ.Triple(testClassAddr, ScType::EdgeAccessVarPosPerm >> "_arc_to_test_object", ScType::LinkVar >> "_test_object");
+  templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");
   templ.Quintuple(
-      "_test_object",
-      ScType::EdgeDCommonVar,
-      ScType::NodeVar >> "_test_set",
-      ScType::EdgeAccessVarPosPerm,
-      testRelationAddr);
-  templ.Triple("_test_set", ScType::EdgeAccessVarPosPerm, "_arc_to_test_object");
+      "_test_object", ScType::VarCommonArc, ScType::VarNode >> "_test_set", ScType::VarPermPosArc, testRelationAddr);
+  templ.Triple("_test_set", ScType::VarPermPosArc, "_arc_to_test_object");
   EXPECT_EQ(templ.Size(), 4u);
 
   ScTemplateGenResult genResult;
