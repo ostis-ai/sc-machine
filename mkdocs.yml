@@ -45,6 +45,7 @@ nav:
       - Knowledge Base repo file: sc-tools/kb_repo_file.md
       - Websocket Server: sc-tools/sc_server.md
       - Sc-machine Runner: sc-tools/sc_machine.md
+      - Codegen removal: sc-tools/codegen_removal.md
   - Development:
       - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
       - Codestyle Guide: dev/codestyle.md
