@@ -144,7 +144,8 @@ See documentation, to learn more about using new API.
 - `GetSCsElementKeynode` method for sc-types to get their sc.s-keynode system identifiers
 - `GetDirectSCsConnector` and `GetReverseSCsConnector` for sc-types to get their designations in SCs-code
 - std::string operator for ScType
-- All possible combinations of subtypes in sc-types into ScMemoryContext API and the SCs-code
+- All possible semantic combinations of subtypes in sc-types into the SCs-code
+- All possible combinations of subtypes in sc-types into ScMemoryContext API
 - Type `ScType::NodeSuperclass` and sc.s-keynode `sc_node_superclass`
 - Types: `ScType::Connector`, `ScType::Arc`
 - Types of actual and inactual temporal sc-arcs into ScMemoryContext API and the SCs-code

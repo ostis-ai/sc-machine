@@ -634,7 +634,7 @@ templ.Triple(
 );
 
 ScTemplateResultItem result;
-bool const isGeneratedByTemplate = context.GenerateByTemplate(templ, result);
+context.GenerateByTemplate(templ, result);
 
 bool const replExist = result.Has("_x");
 // The value of `replExist` be equal to `true`.
