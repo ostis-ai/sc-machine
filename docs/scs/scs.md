@@ -187,8 +187,8 @@ Where `<connector>` can be on of values:
 | ```??> or <??```     | Not specified                                                          |
 | ```??|> or <|??```   | Not specified                                                          |
 | ```?/> or </?```     | Not specified                                                          |
-| ```?> or <?```       | Not specified                                                          |
-| ```_?> or <?_```     | Not specified                                                          |
+| ```.> or <.```       | Not specified                                                          |
+| ```_.> or <._```     | Not specified                                                          |
 | ```?-> or <-?```     | Not specified                                                          |
 | ```?..> or <..?```   | Not specified                                                          |
 | ```?~> or <~?```     | Not specified                                                          |

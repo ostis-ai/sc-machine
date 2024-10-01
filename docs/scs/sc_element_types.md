@@ -166,8 +166,8 @@
 | ScType::PosArc                  | Not specified                                                          | ```?.> or <.?```     |
 | ScType::NegArc                  | Not specified                                                          | ```?.|> or <|.?```   |
 | ScType::FuzArc                  | Not specified                                                          | ```?/> or </?```     |
-| ScType::ConstPosArc             | Not specified                                                          | ```?> or <?```       |
-| ScType::VarPosArc               | Not specified                                                          | ```_?> or <?_```     |
+| ScType::ConstPosArc             | Not specified                                                          | ```.> or <.```       |
+| ScType::VarPosArc               | Not specified                                                          | ```_.> or <._```     |
 | ScType::PermPosArc              | Not specified                                                          | ```?-> or <-?```     |
 | ScType::TempPosArc              | Not specified                                                          | ```?..> or <..?```   |
 | ScType::ActualTempPosArc        | Not specified                                                          | ```?~> or <~?```     |
