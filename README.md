@@ -49,7 +49,7 @@ Both declarative (data, data structures, documentation, tasks specification, etc
   or **alternatively** you can build sc-machine documentation only. To do that refer to the [scn-latex-plugin](https://github.com/ostis-ai/scn-latex-plugin) documentation.
 
 <details>
-  <summary>Build docs locally</summary>
+  <summary>Build documentation locally</summary>
 
 ```sh
 # make sure you're using python12
