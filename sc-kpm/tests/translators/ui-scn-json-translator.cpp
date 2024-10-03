@@ -1,13 +1,12 @@
-#include <gtest/gtest.h>
+#include <sc-memory/test/sc_test.hpp>
+#include <sc-memory/test/dummy_file_interface.hpp>
 
-#include "sc_test.hpp"
-#include "dummy_file_interface.hpp"
-
-#include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_scs_helper.hpp"
+#include <sc-memory/sc_memory.hpp>
+#include <sc-memory/sc_scs_helper.hpp>
 
 #include "sc-ui/uiKeynodes.h"
 #include "sc-ui/ui.h"
+
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;

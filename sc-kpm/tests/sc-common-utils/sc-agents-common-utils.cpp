@@ -1,12 +1,11 @@
-#include <gtest/gtest.h>
+#include <sc-memory/test/sc_test.hpp>
 
-#include "sc_test.hpp"
-#include "dummy_file_interface.hpp"
+#include <sc-memory/test/dummy_file_interface.hpp>
 
-#include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_scs_helper.hpp"
+#include <sc-memory/sc_memory.hpp>
+#include <sc-memory/sc_scs_helper.hpp>
 
-#include "sc-agents-common/utils/GenerationUtils.hpp"
+#include <sc-agents-common/utils/GenerationUtils.hpp>
 
 TEST_F(ScMemoryTest, WrapInOrientedSetBySequenceRelation)
 {
