@@ -8,6 +8,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "sc-server-impl/sc_server_defines.hpp"
+
 #include "sc_client_defines.hpp"
 
 using ScMemoryJsonPayload = nlohmann::json;
@@ -91,6 +93,6 @@ private:
 
     m_instance.init_asio();
 
-    m_instance.set_message_handler(bind(&ScClient::OnMessage, this, ::_1, ::_2));
+    m_instance.set_message_handler(bind(&ScClient::OnMessage, this, std::placeholders::_1, std::placeholders::_2));
   }
 };

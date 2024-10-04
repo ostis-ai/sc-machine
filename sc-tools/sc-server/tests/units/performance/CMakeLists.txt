@@ -4,11 +4,12 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 add_executable(sc-server-performance-tests ${SOURCES})
-
 target_link_libraries(sc-server-performance-tests
     LINK_PRIVATE sc-server-lib
     LINK_PRIVATE benchmark
-    INCLUDES "${CMAKE_CURRENT_LIST_DIR}/../include"
+)
+target_include_directories(sc-server-performance-tests
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include
 )
 
 if(${SC_CLANG_FORMAT_CODE})

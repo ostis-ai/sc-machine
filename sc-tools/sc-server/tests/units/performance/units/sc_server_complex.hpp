@@ -7,7 +7,8 @@
 #pragma once
 
 #include "sc_server_test.hpp"
-#include "../../sc_memory_json_converter.hpp"
+
+#include "sc-client/sc_memory_json_converter.hpp"
 
 class TestScServerComplex : public TestScServer
 {
