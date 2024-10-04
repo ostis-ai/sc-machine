@@ -8,6 +8,11 @@
 
 #include "sc_server_action_defines.hpp"
 
+extern "C"
+{
+#include <sc-store/sc_storage.h>
+}
+
 ScServerImpl::ScServerImpl(std::string const & host, ScServerPort port, sc_bool parallelActions)
   : ScServer(host, port)
   , m_parallelActions(parallelActions)
@@ -111,12 +116,13 @@ void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessag
   }
   else
   {
-    // sc_storage_start_new_process();
+    // TODO(NikitaZotov): sc-server should not know about it
+    sc_storage_start_new_process();
 
     action->Emit();
     delete action;
 
-    // sc_storage_end_new_process();
+    sc_storage_end_new_process();
   }
 }
 

@@ -39,10 +39,6 @@ sc_event_subscription_manager * sc_storage_get_event_subscription_manager();
 
 sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_addr * addr);
 
-void sc_storage_start_new_process();
-
-void sc_storage_end_new_process();
-
 sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
 
 sc_result sc_storage_free_element(sc_addr addr);

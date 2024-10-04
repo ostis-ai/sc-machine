@@ -21,6 +21,7 @@ target_compile_definitions(sc-server-lib
 )
 target_include_directories(sc-server-lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PRIVATE ${SC_MEMORY_SRC}/sc-core/src
 )
 
 add_executable(sc-server "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")

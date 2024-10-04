@@ -89,6 +89,10 @@ sc_bool sc_storage_is_initialized();
  */
 sc_bool sc_storage_is_element(sc_memory_context const * ctx, sc_addr addr);
 
+void sc_storage_start_new_process();
+
+void sc_storage_end_new_process();
+
 /*!
  * @brief Erases the memory occupied by a sc-element and all connected sc-elements.
  *
