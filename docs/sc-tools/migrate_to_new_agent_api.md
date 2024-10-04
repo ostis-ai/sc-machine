@@ -1,6 +1,6 @@
 # Migrate to new agent api
 
-This is a program that translates sc-machine usage from old format into new format.
+This is a program that translates sc-machine usage from old API into new API.
 
 Changed files include:
 

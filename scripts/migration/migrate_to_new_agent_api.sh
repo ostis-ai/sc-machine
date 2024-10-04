@@ -8,4 +8,4 @@ if ! which java &> /dev/null; then
     exit 1
 fi
 
-java -jar "$CURRENT_DIR/migrate_to_new_agent_api.jar" "$@"
+java -jar "${CURRENT_DIR}/migrate_to_new_agent_api.jar" "$@"
