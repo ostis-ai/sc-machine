@@ -3,6 +3,8 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "src/*/*.cpp" "src/*/*.h"
 )
 
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 add_library(sc-kpm-ui SHARED ${SOURCES})
 target_link_libraries(sc-kpm-ui
     LINK_PUBLIC sc-memory

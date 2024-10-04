@@ -8,7 +8,30 @@
 #define _sc_dictionary_private_h_
 
 #include "sc-core/sc_types.h"
+
+#include "sc-core/sc-container/sc_dictionary.h"
 #include "sc-core/sc-container/sc_list.h"
+
+#include "sc-store/sc-base/sc_monitor_private.h"
+
+//! A sc-dictionary structure node to store prefixes
+typedef struct _sc_dictionary_node
+{
+  struct _sc_dictionary_node *** next;  // a pointer to sc-dictionary node children pointers
+  sc_char * offset;                     // a pointer to substring of node string
+  sc_uint32 offset_size;                // size to substring of node string
+  void * data;                          // storing data
+  sc_uint8 mask;                        // mask for rights checking and memory optimization
+} sc_dictionary_node;
+
+//! A sc-dictionary structure node to store pairs of <string, object> type
+typedef struct _sc_dictionary
+{
+  sc_dictionary_node * root;  // sc-dictionary tree root node
+  sc_uint8 size;              // default sc-dictionary node children size
+  void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 const *);
+  sc_monitor monitor;
+} sc_dictionary;
 
 sc_dictionary_node * _sc_dictionary_node_initialize(sc_uint8 children_size);
 

@@ -4,9 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc-core/sc-base/sc_monitor_table.h"
+#include "sc_monitor_table.h"
 
 #include "sc-core/sc-base/sc_allocator.h"
+
+#include "sc-store/sc-base/sc_monitor_private.h"
+#include "sc-store/sc-base/sc_monitor_table_private.h"
 
 #define SC_MONITOR_TABLE_CLEAN_SIZE_THRESHOLD 10000
 #define SC_MONITOR_TABLE_CLEAN_INTERVAL_CHECK 10

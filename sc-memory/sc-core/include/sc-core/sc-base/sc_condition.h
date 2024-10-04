@@ -7,18 +7,19 @@
 #ifndef _sc_condition_h_
 #define _sc_condition_h_
 
-#include <glib.h>
+#include "sc-core/sc_defines.h"
 
-typedef GCond sc_condition;
+typedef struct _sc_condition sc_condition;
+typedef struct _sc_mutex sc_mutex;
 
-#define sc_cond_init(condition) g_cond_init(condition)
+_SC_EXTERN void sc_cond_init(sc_condition * condition);
 
-#define sc_cond_wait(condition, mutex) g_cond_wait(condition, mutex)
+_SC_EXTERN void sc_cond_wait(sc_condition * condition, sc_mutex * mutex);
 
-#define sc_cond_signal(condition) g_cond_signal(condition)
+_SC_EXTERN void sc_cond_signal(sc_condition * condition);
 
-#define sc_cond_broadcast(condition) g_cond_broadcast(condition)
+_SC_EXTERN void sc_cond_broadcast(sc_condition * condition);
 
-#define sc_cond_destroy(condition) g_cond_clear(condition)
+_SC_EXTERN void sc_cond_destroy(sc_condition * condition);
 
 #endif

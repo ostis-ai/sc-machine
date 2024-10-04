@@ -7,7 +7,8 @@
 #include "sc-core/sc_memory_version.h"
 
 #include "sc-core/sc-base/sc_allocator.h"
-#include "sc-core/sc-base/sc_assert_utils.h"
+
+#include "sc-store/sc-base/sc_assert_utils.h"
 
 sc_int32 sc_version_compare(sc_version const * a, sc_version const * b)
 {

@@ -7,10 +7,9 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "include/sc-agents-common/*/*.hpp"
 )
 
-add_library(sc-agents-common STATIC ${SOURCES})
+add_library(sc-agents-common SHARED ${SOURCES})
 target_link_libraries(sc-agents-common
     LINK_PUBLIC sc-memory
-    LINK_PRIVATE nlohmann_json::nlohmann_json
 )
 target_include_directories(sc-agents-common
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src

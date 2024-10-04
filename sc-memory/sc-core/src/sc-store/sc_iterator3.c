@@ -7,7 +7,8 @@
 #include "sc-core/sc_iterator.h"
 
 #include "sc-core/sc-base/sc_allocator.h"
-#include "sc-core/sc-base/sc_monitor_table.h"
+
+#include "sc-store/sc-base/sc_monitor_table.h"
 
 #include "sc-store/sc_element.h"
 #include "sc-store/sc_storage.h"

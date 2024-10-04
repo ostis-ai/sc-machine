@@ -7,15 +7,16 @@
 #ifndef _sc_dictionary_fs_memory_private_h_
 #define _sc_dictionary_fs_memory_private_h_
 
-#include "sc-core/sc-base/sc_message.h"
 #include "sc-core/sc_types.h"
 
 #include "sc-core/sc-container/sc_list.h"
 #include "sc-core/sc-container/sc_dictionary.h"
 
-#include "sc-core/sc-base/sc_monitor_table.h"
-
 #include "sc-core/sc_memory_params.h"
+
+#include "sc-store/sc-base/sc_monitor_private.h"
+#include "sc-store/sc-base/sc_monitor_table_private.h"
+#include "sc-store/sc-base/sc_message.h"
 
 #define SC_FS_EXT ".scdb"
 #define INVALID_STRING_OFFSET LONG_MAX

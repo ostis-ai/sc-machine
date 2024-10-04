@@ -7,20 +7,16 @@
 #ifndef _sc_allocator_h_
 #define _sc_allocator_h_
 
-#include <glib.h>
-#include <memory.h>
+#include "sc-core/sc_types.h"
 
-typedef gpointer sc_pointer;
-typedef gconstpointer sc_const_pointer;
+_SC_EXTERN sc_pointer _sc_mem_new(sc_uint32 size);
 
-#define sc_mem_new(struct_type, n_structs) g_new0(struct_type, n_structs)
+#define sc_mem_new(struct_type, n_structs) (struct_type *)_sc_mem_new(sizeof(struct_type) * n_structs)
 
-#define sc_mem_realloc(mem, n_blocks, n_blocks_bytes) g_realloc_n(mem, n_blocks, n_blocks_bytes)
+_SC_EXTERN sc_pointer sc_mem_set(sc_pointer pointer, sc_uint32 constant, sc_uint32 n_structs);
 
-#define sc_mem_set(pointer, constant, n_structs) memset(pointer, constant, n_structs)
+_SC_EXTERN sc_pointer sc_mem_cpy(sc_pointer source, sc_const_pointer dest, sc_uint32 n_structs);
 
-#define sc_mem_cpy(source, dest, n_structs) memcpy(source, dest, n_structs)
-
-#define sc_mem_free(pointer) g_free((sc_pointer)pointer)
+_SC_EXTERN void sc_mem_free(sc_pointer pointer);
 
 #endif

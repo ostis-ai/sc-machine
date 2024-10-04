@@ -1,3 +1,9 @@
+find_package(PkgConfig REQUIRED)
+pkg_search_module(GLIB2 REQUIRED glib-2.0)
+pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
+
+set(GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
+
 make_tests_from_folder(${CMAKE_CURRENT_LIST_DIR}/units/common
     NAME sc-core-common-tests
     DEPENDS ${GLIB2_LIBRARIES} sc-memory

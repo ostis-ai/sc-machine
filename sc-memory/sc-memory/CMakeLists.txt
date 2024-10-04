@@ -1,6 +1,8 @@
 set(SC_MACHINE_ANTRL_DIR "${SC_MACHINE_THIRDPARTY_PATH}/antlr")
 set(SC_MEMORY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
+find_package(Java)
+
 add_custom_command(
     OUTPUT "${SC_MEMORY_SRC}/scs/scsLexer.cpp" "${SC_MEMORY_SRC}/scs/scsLexer.h" 
            "${SC_MEMORY_SRC}/scs/scsParser.cpp" "${SC_MEMORY_SRC}/scs/scsParser.h"
@@ -28,6 +30,12 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "include/sc-memory/*/*.hpp"
     "include/sc-memory/*/*.tpp"
 )
+
+find_package(PkgConfig REQUIRED)
+pkg_search_module(GLIB2 REQUIRED glib-2.0)
+pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
+
+set(GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
 
 add_library(sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 target_link_libraries(sc-memory

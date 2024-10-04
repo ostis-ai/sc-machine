@@ -7,6 +7,10 @@
 #include "sc-core/sc-base/sc_monitor.h"
 #include "sc-core/sc-base/sc_allocator.h"
 
+#include "sc-store/sc-base/sc_monitor_private.h"
+#include "sc-store/sc-base/sc_condition_private.h"
+#include "sc-store/sc-base/sc_thread.h"
+
 #define SC_MONITOR_FREE_PERIOD_CHECK 10
 
 struct _sc_request

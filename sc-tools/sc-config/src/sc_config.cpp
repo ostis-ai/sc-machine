@@ -13,9 +13,10 @@
 
 extern "C"
 {
-#include "sc-config/sc_config.h"
-
+#include <glib.h>
 #include <sc-core/sc-container/sc_string.h>
+
+#include "sc-config/sc_config.h"
 }
 
 ScConfigGroup::ScConfigGroup(

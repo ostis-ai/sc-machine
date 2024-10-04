@@ -8,6 +8,7 @@
 #define _sc_string_h_
 
 #include <stdio.h>
+#include <string.h>
 
 #include "sc-core/sc-base/sc_allocator.h"
 

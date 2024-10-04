@@ -9,8 +9,9 @@
 #include <stdio.h>
 
 #include "sc-core/sc-base/sc_allocator.h"
-#include "sc-core/sc-base/sc_assert_utils.h"
-#include "sc-core/sc-base/sc_message.h"
+
+#include "sc-store/sc-base/sc_assert_utils.h"
+#include "sc-store/sc-base/sc_message.h"
 
 #include "sc-store/sc_stream_private.h"
 

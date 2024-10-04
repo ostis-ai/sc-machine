@@ -15,6 +15,8 @@
 
 #include "sc_element.h"
 
+#include "sc-store/sc-base/sc_monitor_private.h"
+
 #define SC_SEG_ELEMENTS_SIZE_BYTE (sizeof(sc_element) * SC_SEGMENT_ELEMENTS_COUNT)
 
 /*! Structure for segment storing

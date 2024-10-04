@@ -7,32 +7,14 @@
 #ifndef _sc_dictionary_h_
 #define _sc_dictionary_h_
 
-#include "sc-core/sc-base/sc_monitor.h"
-
 #include "sc-core/sc_types.h"
 
 #define sc_dc_node_access_lvl_add_mask(node_mask, mask) ((node_mask) |= (mask))
 #define sc_dc_node_access_lvl_remove_mask(node_mask, mask) ((node_mask) &= ~(mask))
 #define sc_dc_node_access_lvl_check_mask(node_mask, mask) (((node_mask) & (mask)) == (mask))
 
-//! A sc-dictionary structure node to store prefixes
-typedef struct _sc_dictionary_node
-{
-  struct _sc_dictionary_node *** next;  // a pointer to sc-dictionary node children pointers
-  sc_char * offset;                     // a pointer to substring of node string
-  sc_uint32 offset_size;                // size to substring of node string
-  void * data;                          // storing data
-  sc_uint8 mask;                        // mask for rights checking and memory optimization
-} sc_dictionary_node;
-
-//! A sc-dictionary structure node to store pairs of <string, object> type
-typedef struct _sc_dictionary
-{
-  sc_dictionary_node * root;  // sc-dictionary tree root node
-  sc_uint8 size;              // default sc-dictionary node children size
-  void (*char_to_int)(sc_char, sc_uint8 *, sc_uint8 const *);
-  sc_monitor monitor;
-} sc_dictionary;
+typedef struct _sc_dictionary sc_dictionary;
+typedef struct _sc_dictionary_node sc_dictionary_node;
 
 /*! Initializes sc-dictionary
  * @param[out] dictionary Pointer to a sc-dictionary pointer to initialize

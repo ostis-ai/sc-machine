@@ -11,8 +11,10 @@
 
 #include "sc-core/sc_types.h"
 #include "sc-core/sc-base/sc_mutex.h"
-#include "sc-core/sc-container/sc_hash_table.h"
 #include "sc-core/sc-base/sc_monitor.h"
+
+#include "sc-store/sc-container/sc_hash_table.h"
+#include "sc-store/sc-base/sc_monitor_private.h"
 
 typedef sc_result (*sc_event_do_after_callback)(sc_memory_context const * ctx, sc_addr addr);
 

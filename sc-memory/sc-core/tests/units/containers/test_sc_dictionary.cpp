@@ -11,6 +11,8 @@ extern "C"
 #include <sc-core/sc-container/sc_dictionary.h>
 #include <sc-core/sc-container/sc_list.h>
 #include <sc-core/sc-container/sc_string.h>
+
+#include <sc-store/sc-container/sc_dictionary_private.h>
 }
 
 sc_uint8 _test_sc_dictionary_addr_hashes_children_size()

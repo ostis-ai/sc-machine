@@ -10,7 +10,8 @@
 #include "sc-core/sc_memory.h"
 
 #include "sc-core/sc_event_subscription.h"
-#include "sc-core/sc-base/sc_monitor_table.h"
+
+#include "sc-store/sc-base/sc_monitor_table.h"
 
 #include "sc_memory_context_manager.h"
 

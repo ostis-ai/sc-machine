@@ -8,8 +8,6 @@
 #include "utils_erase_elements.h"
 
 #include <sc-common/sc_keynodes.h>
-#include <sc-core/sc-base/sc_message.h>
-
 #include <sc-common/sc_utils.h>
 
 #include "utils_keynodes.h"

@@ -10,9 +10,9 @@
 #include "sc-store/sc_element.h"
 
 #include "sc-core/sc_types.h"
-
-#include "sc-core/sc-base/sc_message.h"
 #include "sc-core/sc-base/sc_monitor.h"
+
+#include "sc-store/sc-base/sc_message.h"
 
 typedef struct _sc_memory_context_manager sc_memory_context_manager;
 typedef struct _sc_event_emit_params sc_event_emit_params;

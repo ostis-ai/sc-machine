@@ -10,6 +10,9 @@
 #include "sc-core/sc_types.h"
 #include "sc-core/sc-base/sc_monitor.h"
 
+#include "sc-store/sc-container/sc_hash_table.h"
+#include "sc-store/sc-base/sc_monitor_private.h"
+
 /*! Structure representing a memory context manager.
  * @note This structure manages memory contexts and user authentications in the sc-memory.
  */

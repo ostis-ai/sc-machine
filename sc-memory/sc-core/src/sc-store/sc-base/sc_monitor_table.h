@@ -9,24 +9,16 @@
 
 #include "sc-core/sc-base/sc_mutex.h"
 #include "sc-core/sc-base/sc_condition.h"
-#include "sc-core/sc-base/sc_thread.h"
 
-#include "sc-core/sc-container/sc_hash_table.h"
 #include "sc-core/sc-container/sc_queue.h"
 #include "sc-core/sc-base/sc_monitor.h"
 
 #include "sc-core/sc_types.h"
 
-typedef pthread_t sc_cleaner;
+#include "sc-store/sc-container/sc_hash_table.h"
+#include "sc-store/sc-base/sc_thread.h"
 
-typedef struct
-{
-  sc_bool is_working;
-  sc_hash_table * monitors;             // Hash table storing addr_monitors_table for each identifier;
-  sc_uint32 global_monitor_id_counter;  // Monitors count
-  sc_mutex rw_mutex;                    // Mutex for data protection
-  sc_cleaner cleaner;
-} sc_monitor_table;
+typedef struct _sc_monitor_table sc_monitor_table;
 
 /*! Initializes the global monitor table
  * @param table Pointer to the sc_monitor_table to be initialized

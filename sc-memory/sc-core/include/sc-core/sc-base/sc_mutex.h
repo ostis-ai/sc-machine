@@ -7,16 +7,16 @@
 #ifndef _sc_mutex_h_
 #define _sc_mutex_h_
 
-#include <glib.h>
+#include "sc-core/sc_defines.h"
 
-typedef GMutex sc_mutex;
+typedef struct _sc_mutex sc_mutex;
 
-#define sc_mutex_init(mutex) g_mutex_init(mutex)
+_SC_EXTERN void sc_mutex_init(sc_mutex * mutex);
 
-#define sc_mutex_lock(mutex) g_mutex_lock(mutex)
+_SC_EXTERN void sc_mutex_lock(sc_mutex * mutex);
 
-#define sc_mutex_unlock(mutex) g_mutex_unlock(mutex)
+_SC_EXTERN void sc_mutex_unlock(sc_mutex * mutex);
 
-#define sc_mutex_destroy(mutex) g_mutex_clear(mutex)
+_SC_EXTERN void sc_mutex_destroy(sc_mutex * mutex);
 
 #endif

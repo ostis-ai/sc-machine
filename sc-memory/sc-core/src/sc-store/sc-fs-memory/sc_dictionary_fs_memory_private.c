@@ -10,6 +10,7 @@
 #include "sc-core/sc-base/sc_allocator.h"
 #include "sc-core/sc-container/sc_string.h"
 
+#include "sc-store/sc-container/sc_dictionary_private.h"
 #include "sc-store/sc-container/sc_struct_node.h"
 
 sc_uint8 _sc_uchar_dictionary_children_size()

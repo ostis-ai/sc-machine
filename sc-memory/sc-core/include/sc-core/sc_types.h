@@ -42,6 +42,7 @@ typedef char sc_char;
 typedef unsigned char sc_uchar;
 
 typedef void * sc_pointer;
+typedef void const * sc_const_pointer;
 
 #  define sc_min(a, b) ((a) < (b) ? (a) : (b))
 #  define sc_max(a, b) ((a) > (b) ? (a) : (b))

@@ -9,8 +9,8 @@
 #include <gmodule.h>
 
 #include "sc-core/sc-base/sc_allocator.h"
-#include "sc-core/sc-base/sc_message.h"
 
+#include "sc-store/sc-base/sc_message.h"
 #include "sc-store/sc-fs-memory/sc_file_system.h"
 
 GList * modules_priority_list = null_ptr;

@@ -7,27 +7,16 @@
 #ifndef _sc_monitor_h_
 #define _sc_monitor_h_
 
-#include "sc-core/sc-base/sc_mutex.h"
-#include "sc-core/sc-base/sc_condition.h"
-#include "sc-core/sc-base/sc_thread.h"
-
-#include "sc-core/sc-container/sc_hash_table.h"
-#include "sc-core/sc-container/sc_queue.h"
-
 #include "sc-core/sc_types.h"
 
-typedef struct
-{
-  sc_mutex rw_mutex;         // Mutex for data protection
-  sc_queue queue;            // Queue of writers and readers
-  sc_uint32 active_readers;  // Number of readers currently accessing the data
-  sc_uint32 active_writer;   // Flag to indicate if a writer is writing
-  sc_uint32 id;              // Unique identifier of monitor
-  sc_mutex ref_count_mutex;
-  sc_uint32 ref_count;
-} sc_monitor;
+#include "sc-core/sc-base/sc_mutex.h"
+#include "sc-core/sc-base/sc_condition.h"
+
+#include "sc-core/sc-container/sc_queue.h"
 
 typedef struct _sc_request sc_request;
+typedef struct _sc_monitor sc_monitor;
+typedef struct _sc_monitor_table sc_monitor_table;
 
 /*! Initializes a monitor instance
  * @param monitor Pointer to the sc_monitor to be initialized

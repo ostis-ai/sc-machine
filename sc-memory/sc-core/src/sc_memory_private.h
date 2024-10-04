@@ -7,7 +7,7 @@
 #ifndef _sc_memory_private_h_
 #define _sc_memory_private_h_
 
-#include "sc-core/sc-base/sc_message.h"
+#include "sc-store/sc-base/sc_message.h"
 
 #define SC_MEMORY_PREFIX "[sc-memory] "
 #define sc_memory_info(...) sc_message(SC_MEMORY_PREFIX __VA_ARGS__)

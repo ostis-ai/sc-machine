@@ -11,8 +11,9 @@
 
 #include "sc-core/sc_memory_headers.h"
 #include "sc-core/sc-base/sc_allocator.h"
-#include "sc-core/sc-base/sc_message.h"
 #include "sc-core/sc-container/sc_string.h"
+
+#include "sc-store/sc-base/sc_message.h"
 
 #include "sc_memory_private.h"
 
