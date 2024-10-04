@@ -438,7 +438,7 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 **test_sc_agent_calculate_set_power.cpp**
 
 ```cpp
-#include <sc-memory/sc_test.hpp>
+#include <sc-memory/test/sc_test.hpp>
 
 #include <sc-memory/sc_memory_headers.hpp>
 
