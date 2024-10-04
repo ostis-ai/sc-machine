@@ -33,7 +33,8 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
     found = SC_TRUE;
 
     if (sys_off == SC_TRUE
-        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
             || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))))
       continue;
 
@@ -47,7 +48,8 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
     while (sc_iterator3_next(it3) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 2))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 2))))
         continue;
 
       // iterate incoming sc-arcs for link
@@ -55,7 +57,8 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
       while (sc_iterator3_next(it4) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 0))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 0))))
           continue;
         if (sc_helper_check_arc(
                 s_default_ctx, keynode_languages, sc_iterator3_value(it4, 0), sc_type_const_perm_pos_arc)
@@ -72,7 +75,8 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
       while (sc_iterator3_next(it4) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 0))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it4, 0));
@@ -126,7 +130,8 @@ void search_nonbinary_relation(sc_addr elem, sc_addr result, sc_bool sys_off)
             s_default_ctx, keynode_nonbinary_relation, sc_iterator3_value(it1, 0), sc_type_const_perm_pos_arc))
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 0))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))))
         continue;
 
       // iterate other elements of link
@@ -134,7 +139,8 @@ void search_nonbinary_relation(sc_addr elem, sc_addr result, sc_bool sys_off)
       while (sc_iterator3_next(it2) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it2, 1));
@@ -148,7 +154,8 @@ void search_nonbinary_relation(sc_addr elem, sc_addr result, sc_bool sys_off)
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
           if (sys_off == SC_TRUE
-              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
+              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))
+                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
             continue;
 
           sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it3, 0), &el_type);
@@ -187,7 +194,8 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr result, sc_bool sys_of
       while (sc_iterator3_next(it1) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 2))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 2))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it1, 1));
@@ -201,7 +209,8 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr result, sc_bool sys_of
     }
 
     if (sys_off == SC_TRUE
-        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it0, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it0, 1))))
+        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it0, 0))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it0, 1))))
       continue;
 
     it5 = sc_iterator5_f_a_f_a_f_new(
@@ -214,7 +223,8 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr result, sc_bool sys_of
     if (sc_iterator5_next(it5) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))))
         continue;
 
       appendIntoResult(s_default_ctx, result, sc_iterator3_value(it0, 0));
@@ -326,7 +336,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 0))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))))
         continue;
 
       appendIntoResult(s_default_ctx, result, sc_iterator3_value(it2, 0));
@@ -343,7 +354,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
           continue;
 
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 0));
@@ -368,7 +380,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
           while (sc_iterator3_next(it4) == SC_TRUE)
           {
             if (sys_off == SC_TRUE
-                && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 2))))
+                && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1))
+                    || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 2))))
               continue;
 
             appendIntoResult(s_default_ctx, result, sc_iterator3_value(it4, 1));
@@ -425,7 +438,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
                 continue;
 
               if (sys_off == SC_TRUE
-                  && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 1))))
+                  && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 0))
+                      || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 1))))
                 continue;
 
               appendIntoResult(s_default_ctx, result, sc_iterator3_value(it6, 0));
@@ -456,8 +470,10 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
             == SC_TRUE)
         {
           if (sys_off == SC_TRUE
-              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
-                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
+              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
+                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))
+                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
             continue;
 
           appendIntoResult(s_default_ctx, result, sc_iterator5_value(it5, 1));
@@ -480,7 +496,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
         continue;
 
       appendIntoResult(s_default_ctx, result, sc_iterator3_value(it2, 1));
@@ -497,7 +514,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
           continue;
 
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 0));
@@ -547,7 +565,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
               == SC_TRUE)
           {
             if (sys_off == SC_TRUE
-                && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))))
+                && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))
+                    || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))))
               continue;
 
             appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 0));
@@ -638,7 +657,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     while (sc_iterator5_next(it5) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
               || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))))
         continue;
 
@@ -657,7 +677,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
       while (sc_iterator3_next(it1) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 2))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 2))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it1, 1));
@@ -713,7 +734,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
             continue;
 
           if (sys_off == SC_TRUE
-              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))))
+              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 0))
+                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))))
             continue;
 
           appendIntoResult(s_default_ctx, result, sc_iterator3_value(it2, 0));
@@ -730,7 +752,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 0))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))))
         continue;
 
       // search all parents in quasybinary relation
@@ -744,7 +767,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
       if (sc_iterator5_next(it5) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
                 || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))))
           continue;
 
@@ -774,7 +798,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     while (sc_iterator5_next(it5) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
               || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))))
         continue;
 
@@ -795,7 +820,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     while (sc_iterator5_next(it5) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
               || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))))
         continue;
 
@@ -815,7 +841,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 0))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it1, 1))))
         continue;
 
       // Iterate incoming sc-arcs for input element
@@ -836,7 +863,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
           if (sys_off == SC_TRUE
-              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 2))))
+              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))
+                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 2))))
             continue;
 
           appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 1));
@@ -851,7 +879,8 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
           while (sc_iterator3_next(it4) == SC_TRUE)
           {
             if (sys_off == SC_TRUE
-                && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1))))
+                && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 0))
+                    || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1))))
               continue;
 
             appendIntoResult(s_default_ctx, result, sc_iterator3_value(it4, 0));

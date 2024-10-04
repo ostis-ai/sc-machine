@@ -40,7 +40,8 @@ sc_result agent_search_all_const_pos_outgoing_arc(sc_event_subscription const * 
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
         continue;
 
       appendIntoResult(s_default_ctx, result, sc_iterator3_value(it2, 1));
@@ -89,7 +90,8 @@ sc_result agent_search_all_const_pos_outgoing_arc_with_rel(sc_event_subscription
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
         continue;
 
       // iterate relations
@@ -97,7 +99,8 @@ sc_result agent_search_all_const_pos_outgoing_arc_with_rel(sc_event_subscription
       while (sc_iterator3_next(it3) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 0));

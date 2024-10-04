@@ -733,8 +733,7 @@ void _PushLinkAddr(void * _data, sc_addr const link_addr)
   void ** data = ((void **)_data);
   auto * context = (sc_memory_context *)data[0];
 
-  if (sc_memory_check_read_local_and_global_permissions(context, link_addr)
-      == SC_FALSE)
+  if (sc_memory_check_read_local_and_global_permissions(context, link_addr) == SC_FALSE)
     return;
 
   auto * linkSet = (ScAddrSet *)data[1];

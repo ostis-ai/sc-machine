@@ -111,12 +111,12 @@ void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessag
   }
   else
   {
-    //sc_storage_start_new_process();
+    // sc_storage_start_new_process();
 
     action->Emit();
     delete action;
 
-    //sc_storage_end_new_process();
+    // sc_storage_end_new_process();
   }
 }
 

@@ -53,8 +53,10 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
               s_default_ctx, keynode_decomposition_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc))
         continue;
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
-              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
         continue;
 
       appendIntoResult(s_default_ctx, result, sc_iterator5_value(it5, 0));
@@ -67,7 +69,8 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
       while (sc_iterator3_next(it2) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
           continue;
 
         // iterate order relations between elements
@@ -116,7 +119,8 @@ sc_result agent_search_decomposition(sc_event_subscription const * event, sc_add
             continue;
 
           if (sys_off == SC_TRUE
-              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
+              && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))
+                  || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
             continue;
 
           appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 0));
@@ -160,8 +164,10 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
             s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc))
       continue;
     if (SC_TRUE == sys_off
-        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
-            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
+        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
       continue;
 
     appendIntoResult(s_default_ctx, result, sc_iterator5_value(it5, 1));
@@ -189,8 +195,10 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
       continue;
 
     if (sys_off == SC_TRUE
-        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
-            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
+        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
       continue;
 
     appendIntoResult(s_default_ctx, result, sc_iterator5_value(it5, 0));
@@ -203,7 +211,8 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
     while (sc_iterator3_next(it2) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
-          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
+          && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 1))
+              || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it2, 2))))
         continue;
 
       // iterate order relations between elements
@@ -226,7 +235,8 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
           continue;
 
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 2))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 2))
                 || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 3))
                 || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 4))))
           continue;
@@ -248,7 +258,8 @@ void search_subclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
           continue;
 
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 1))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 0))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 1))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it6, 0));
@@ -325,8 +336,10 @@ void search_superclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
             s_default_ctx, keynode_taxonomy_relation, sc_iterator5_value(it5, 4), sc_type_const_perm_pos_arc))
       continue;
     if (SC_TRUE == sys_off
-        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
-            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
+        && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 0))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))
+            || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))))
       continue;
 
     appendIntoResult(s_default_ctx, result, sc_iterator5_value(it5, 0));
@@ -369,9 +382,12 @@ void search_superclasses_rec(sc_addr elem, sc_addr result, sc_bool sys_off)
           continue;
 
         if (sys_off == SC_TRUE
-            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
-                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))
-                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0)) || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
+            && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 1))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 2))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 3))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it5, 4))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 0))
+                || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it3, 1))))
           continue;
 
         appendIntoResult(s_default_ctx, result, sc_iterator5_value(it5, 1));

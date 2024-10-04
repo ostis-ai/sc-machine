@@ -55,7 +55,8 @@ sc_addr keynode_rrel_2;
 
 sc_char const keynode_action_all_output_const_pos_arc_str[] = "action_search_all_output_const_pos_arcs";
 sc_char const keynode_action_all_input_const_pos_arc_str[] = "action_search_all_input_const_pos_arcs";
-sc_char const keynode_action_all_output_const_pos_arc_with_rel_str[] = "action_search_all_output_const_pos_arcs_with_rel";
+sc_char const keynode_action_all_output_const_pos_arc_with_rel_str[] =
+    "action_search_all_output_const_pos_arcs_with_rel";
 sc_char const keynode_action_all_input_const_pos_arc_with_rel_str[] = "action_search_all_input_const_pos_arcs_with_rel";
 sc_char const keynode_action_full_semantic_neighborhood_str[] = "action_search_full_semantic_neighborhood";
 sc_char const keynode_action_decomposition_str[] = "action_search_decomposition";

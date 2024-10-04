@@ -839,7 +839,7 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content_string_ext(
     sc_stream const * stream,
     void * data,
     void (*callback)(void * data, sc_addr const link_addr));
-    
+
 /*! Finds sc-links in the sc-memory that have content containing a substring from the provided stream.
  * @param ctx Pointer to the sc-memory context.
  * @param stream Pointer to the stream containing the substring to search for.
