@@ -1,19 +1,20 @@
 file(GLOB SOURCES CONFIGURE_DEPENDS
-    "*.cpp" "*.h"
-    "*/*.cpp" "*/*.h"
+    "src/*.cpp" "src/*.h"
+    "src/*/*.cpp" "src/*/*.h"
 )
 
-add_library(sc-ui SHARED ${SOURCES})
-target_link_libraries(sc-ui
+add_library(sc-kpm-ui SHARED ${SOURCES})
+target_link_libraries(sc-kpm-ui
     LINK_PUBLIC sc-memory
     LINK_PUBLIC sc-kpm-common
     LINK_PUBLIC nlohmann_json::nlohmann_json
 )
-target_include_directories(sc-ui
-    PRIVATE "${CMAKE_CURRENT_LIST_DIR}"
-    PUBLIC "${CMAKE_CURRENT_LIST_DIR}/.."
-)
+target_include_directories(sc-kpm-ui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 if(${SC_CLANG_FORMAT_CODE})
-    target_clangformat_setup(sc-ui)
+    target_clangformat_setup(sc-kpm-ui)
+endif()
+
+if(${SC_BUILD_TESTS})
+    add_subdirectory(tests)
 endif()

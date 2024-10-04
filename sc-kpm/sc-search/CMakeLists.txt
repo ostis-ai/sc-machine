@@ -1,15 +1,16 @@
 file(GLOB SOURCES CONFIGURE_DEPENDS
-    "*.c" "*.h"
-    "*/*.c" "*/*.h"
+    "src/*.h" "src/*.c"
+    "src/*/*.h" "src/*/*.c"
 )
 
-add_library(sc-search SHARED ${SOURCES})
-target_link_libraries(sc-search LINK_PUBLIC sc-kpm-common)
-target_include_directories(sc-search
-    PRIVATE "${CMAKE_CURRENT_LIST_DIR}"
-    PUBLIC "${CMAKE_CURRENT_LIST_DIR}/.."
-)
+add_library(sc-kpm-search SHARED ${SOURCES})
+target_link_libraries(sc-kpm-search LINK_PUBLIC sc-kpm-common)
+target_include_directories(sc-kpm-search PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 if(${SC_CLANG_FORMAT_CODE})
-    target_clangformat_setup(sc-search)
+    target_clangformat_setup(sc-kpm-search)
+endif()
+
+if(${SC_BUILD_TESTS})
+    add_subdirectory(tests)
 endif()

@@ -17,12 +17,6 @@ add_subdirectory(sc-utils)
 add_custom_target(sc-kpm)
 
 add_dependencies(sc-kpm
+    sc-agents-common
     sc-kpm-common
-    sc-ui
-    sc-search
-    sc-utils
 )
-
-if(${SC_BUILD_TESTS})
-   include(${CMAKE_CURRENT_LIST_DIR}/tests/tests.cmake)
-endif()

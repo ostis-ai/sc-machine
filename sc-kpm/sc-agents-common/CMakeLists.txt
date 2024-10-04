@@ -1,20 +1,26 @@
-set(SC_AGENTS_COMMON_SRC "${CMAKE_CURRENT_LIST_DIR}")
+set(SC_AGENTS_COMMON_SRC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 file(GLOB SOURCES CONFIGURE_DEPENDS
-    "*.cpp" "*.hpp"
-    "*/*.cpp" "*/*.hpp"
+    "src/*.hpp" "src/*.cpp"
+    "src/*/*.hpp" "src/*/*.cpp"
+    "include/sc-agents-common/*.hpp"
+    "include/sc-agents-common/*/*.hpp"
 )
 
-add_library(sc-agents-common SHARED ${SOURCES})
+add_library(sc-agents-common STATIC ${SOURCES})
 target_link_libraries(sc-agents-common
     LINK_PUBLIC sc-memory
     LINK_PRIVATE nlohmann_json::nlohmann_json
 )
 target_include_directories(sc-agents-common
-    PRIVATE "${SC_AGENTS_COMMON_SRC}"
-    PUBLIC "${SC_AGENTS_COMMON_SRC}/.."
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-agents-common)
+endif()
+
+if(${SC_BUILD_TESTS})
+    add_subdirectory(tests)
 endif()
