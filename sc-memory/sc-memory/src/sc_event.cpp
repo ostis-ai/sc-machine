@@ -26,7 +26,7 @@ ScElementaryEvent::ScElementaryEvent(
   , m_subscriptionAddr(subscriptionElementAddr)
   , m_connectorAddr(connectorAddr)
   , m_connectorType(connectorType)
-  , m_otherAddr(otherAddr){};
+  , m_otherAddr(otherAddr) {};
 
 ScAddr ScElementaryEvent::GetEventClass() const noexcept
 {
@@ -78,7 +78,7 @@ ScEventBeforeEraseElement::ScEventBeforeEraseElement(
         subscriptionElementAddr,
         connectorAddr,
         connectorType,
-        otherAddr){};
+        otherAddr) {};
 
 // ScEventBeforeChangeLinkContent
 //-------------------------------------------------------------------------
@@ -95,4 +95,4 @@ ScEventBeforeChangeLinkContent::ScEventBeforeChangeLinkContent(
         subscriptionElementAddr,
         connectorAddr,
         connectorType,
-        otherAddr){};
+        otherAddr) {};

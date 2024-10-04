@@ -4,7 +4,7 @@ project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
-set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
+set(SC_MACHINE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
 project_version(SC_MACHINE "0.9.0-Unlock")
 
@@ -21,8 +21,8 @@ message("Binary output dir:" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
 option(SC_AUTO_TEST "Flag to build for automation testing" OFF)
-option(SC_BUILD_TESTS "Flag to build unit tests" OFF)
-option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
+option(SC_BUILD_TESTS "Flag to build unit tests" ON)
+option(SC_BUILD_BENCH "Flag to build benchmark" ON)
 
 set(SC_FILE_MEMORY "Dictionary" CACHE STRING "Sc-fs-storage type")
 option(SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES "Flag to optimize searching incoming sc-connctors from sc-structures" ON)

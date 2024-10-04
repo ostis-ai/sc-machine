@@ -18,7 +18,7 @@ public:
     ScAddr const attr = m_ctx->GenerateNode(ScType::ConstNodeRole);
     for (size_t i = 0; i < constrCount; ++i)
     {
-      ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+      ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConst);
       ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, node, trg);
       m_ctx->GenerateConnector(ScType::ConstPermPosArc, attr, arcAddr);
     }
@@ -26,7 +26,7 @@ public:
     m_templ.Quintuple(
           node,
           ScType::VarCommonArc,
-          ScType::NodeVarAbstract,
+          ScType::NodeVar,
           ScType::VarPermPosArc,
           attr);
   }
@@ -53,7 +53,7 @@ public:
 
     for (size_t i = 0; i < constrCount; ++i)
     {
-      ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConstAbstract);
+      ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConst);
       m_ctx->GenerateConnector(ScType::ConstPermPosArc, kAbstract, trg);
       m_ctx->GenerateConnector(ScType::ConstPermPosArc, kConst, trg);
 
@@ -66,7 +66,7 @@ public:
     m_templ.Quintuple(
           node >> "_node",
           ScType::VarCommonArc >> "_arc",
-          ScType::NodeVarAbstract >> "_trg",
+          ScType::NodeVar >> "_trg",
           ScType::VarPermPosArc,
           attr >> "_attr");
     m_templ.Triple(

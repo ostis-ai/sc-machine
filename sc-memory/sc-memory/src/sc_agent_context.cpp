@@ -29,7 +29,7 @@ ScAgentContext::ScAgentContext(ScAddr const & userAddr) noexcept
 }
 
 ScAgentContext::ScAgentContext(ScAgentContext && other) noexcept
-  : ScMemoryContext(std::move(other)){};
+  : ScMemoryContext(std::move(other)) {};
 
 ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
 {
