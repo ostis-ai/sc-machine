@@ -14,8 +14,8 @@
 #include <sc-memory/sc_debug.hpp>
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
-#include <sc_options.hpp>
-#include <sc_memory_config.hpp>
+#include <sc-config/sc_options.hpp>
+#include <sc-config/sc_memory_config.hpp>
 
 void PrintStartMessage()
 {

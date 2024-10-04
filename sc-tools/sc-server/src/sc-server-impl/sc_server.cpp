@@ -6,7 +6,9 @@
 
 #include "sc_server.hpp"
 
-#include "sc-memory/sc_keynodes.hpp"
+#include <websocketpp/config/asio_no_tls.hpp>
+
+#include <sc-memory/sc_keynodes.hpp>
 
 ScServer::ScServer(std::string hostName, size_t port)
   : m_hostName(std::move(hostName))

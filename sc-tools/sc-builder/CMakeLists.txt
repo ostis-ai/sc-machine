@@ -14,7 +14,7 @@ list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 add_library(sc-builder-lib SHARED ${SOURCES})
 target_link_libraries(sc-builder-lib
     LINK_PUBLIC sc-memory
-    LINK_PUBLIC sc-config-utils
+    LINK_PUBLIC sc-config
 )
 target_include_directories(sc-builder-lib
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src

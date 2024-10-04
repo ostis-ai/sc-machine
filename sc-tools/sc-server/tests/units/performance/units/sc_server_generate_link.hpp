@@ -8,7 +8,7 @@
 
 #include "sc_server_test.hpp"
 
-#include "sc-memory/sc_link.hpp"
+#include <sc-memory/sc_link.hpp>
 
 class TestGenerateLink : public TestScServer
 {

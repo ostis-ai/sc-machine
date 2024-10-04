@@ -6,7 +6,7 @@
 
 #include "sc_server_module.hpp"
 
-#include "../sc_server_setup.hpp"
+#include "sc_server_setup.hpp"
 
 SC_MODULE_REGISTER(ScServerModule);
 

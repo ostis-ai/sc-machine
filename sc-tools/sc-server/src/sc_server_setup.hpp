@@ -8,8 +8,8 @@
 
 #include "sc-server-impl/sc_server.hpp"
 
-#include "sc-config/sc_config.hpp"
-#include "sc_memory_config.hpp"
+#include <sc-config/sc_config.hpp>
+#include <sc-config/sc_memory_config.hpp>
 
 void PrintStartMessage();
 

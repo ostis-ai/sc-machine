@@ -8,10 +8,10 @@
 
 #include <sc-builder/builder.hpp>
 
-#include "sc_builder_setup.hpp"
+#include <sc-config/sc_options.hpp>
+#include <sc-config/sc_memory_config.hpp>
 
-#include "sc_options.hpp"
-#include "sc_memory_config.hpp"
+#include "sc_builder_setup.hpp"
 
 TEST(ScBuilder, RunMain)
 {

@@ -6,13 +6,17 @@
 
 #pragma once
 
-#include "sc-memory/sc_memory.hpp"
-#include "sc-core/sc_memory_params.h"
+#include <sc-memory/sc_memory.hpp>
 
-#include "../../test_defines.hpp"
+extern "C"
+{
+#include <sc-core/sc_memory_params.h>
+}
 
-#include "../../../src/sc-server-impl/sc_server_impl.hpp"
-#include "../../sc_client.hpp"
+#include "sc-client/test_defines.hpp"
+#include "sc-client/sc_client.hpp"
+
+#include "sc-server-impl/sc_server_impl.hpp"
 
 class TestScServer
 {

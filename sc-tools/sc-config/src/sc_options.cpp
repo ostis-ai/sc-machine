@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_options.hpp"
+#include "sc-config/sc_options.hpp"
 
 #include <sstream>
 

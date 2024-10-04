@@ -4,15 +4,14 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
-
 #include "sc_server_test.hpp"
-#include "../../sc_client.hpp"
-#include "../../../src/sc_server_setup.hpp"
 
-#include "sc_options.hpp"
-#include "sc-config/sc_config.hpp"
-#include "sc_memory_config.hpp"
+#include <sc-config/sc_options.hpp>
+#include <sc-config/sc_config.hpp>
+#include <sc-config/sc_memory_config.hpp>
+
+#include "sc-client/sc_client.hpp"
+#include "sc_server_setup.hpp"
 
 TEST(ScServer, RunMain)
 {

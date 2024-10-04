@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "sc-memory/sc_memory.hpp"
+#include <sc-memory/sc_memory.hpp>
 
 #include "sc_server_defines.hpp"
 

@@ -4,11 +4,14 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_memory_config.hpp"
+#include <sc-config/sc_memory_config.hpp>
 
-#include "sc-memory/sc_memory.hpp"
+#include <sc-memory/sc_memory.hpp>
 
-#include "sc-core/sc_memory_version.h"
+extern "C"
+{
+#include <sc-core/sc_memory_version.h>
+}
 
 ScParams::ScParams(ScOptions const & options, std::vector<std::vector<std::string>> const & keysSet)
 {

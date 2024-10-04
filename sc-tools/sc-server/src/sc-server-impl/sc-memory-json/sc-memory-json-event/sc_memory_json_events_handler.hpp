@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "sc-memory/sc_memory.hpp"
+#include <sc-memory/sc_memory.hpp>
 
 #include "../sc_memory_json_handler.hpp"
 #include "../sc_memory_json_payload.hpp"

@@ -1,15 +1,16 @@
-set(SC_MACHINE_RUNNER_SRC ${CMAKE_CURRENT_LIST_DIR})
-
 file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
-list(REMOVE_ITEM SOURCES "${SC_MACHINE_RUNNER_SRC}/src/main.cpp")
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
 add_library(sc-machine-runner SHARED ${SOURCES})
 target_link_libraries(sc-machine-runner
     LINK_PUBLIC sc-memory
-    LINK_PUBLIC sc-config-utils
+    LINK_PUBLIC sc-config
+)
+target_include_directories(sc-machine-runner
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-add_executable(sc-machine "${SC_MACHINE_RUNNER_SRC}/src/main.cpp")
+add_executable(sc-machine "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 target_link_libraries(sc-machine LINK_PRIVATE sc-machine-runner)
 
 if(${SC_CLANG_FORMAT_CODE})
@@ -18,5 +19,5 @@ if(${SC_CLANG_FORMAT_CODE})
 endif()
 
 if(${SC_BUILD_TESTS})
-    include(tests/tests.cmake)
+    add_subdirectory(tests)
 endif()

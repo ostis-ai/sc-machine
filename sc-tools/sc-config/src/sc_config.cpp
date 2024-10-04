@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_config.hpp"
+#include "sc-config/sc_config.hpp"
 
 #include <string>
 #include <utility>
@@ -13,8 +13,9 @@
 
 extern "C"
 {
+#include "sc-config/sc_config.h"
+
 #include <sc-core/sc-container/sc_string.h>
-#include "sc_config.h"
 }
 
 ScConfigGroup::ScConfigGroup(

@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_config.h"
+#include "sc-config/sc_config.h"
 
 #include <glib.h>
 

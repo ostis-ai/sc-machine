@@ -13,9 +13,9 @@ extern "C"
 
 #include <sc-memory/sc_type.hpp>
 
-#include "../../sc_client.hpp"
+#include "sc-client/sc_client.hpp"
 
-#include "../../sc_memory_json_converter.hpp"
+#include "sc-client/sc_memory_json_converter.hpp"
 
 TEST_F(ScServerTest, GenerateElements)
 {

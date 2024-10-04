@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "sc-memory/sc_event_subscription.hpp"
+#include <sc-memory/sc_event_subscription.hpp>
 
 class ScMemoryJsonEventsManager
 {
