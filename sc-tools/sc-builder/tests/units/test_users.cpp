@@ -4,15 +4,16 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
+#include "builder_test.hpp"
 
 #include <thread>
 
 #include <sc-memory/sc_event_subscription.hpp>
 
-#include "sc-core/sc_keynodes.h"
-
-#include "builder_test.hpp"
+extern "C"
+{
+#include <sc-core/sc_keynodes.h>
+}
 
 #define SC_LOCK_WAIT_WHILE_TRUE(expression) \
   ({ \

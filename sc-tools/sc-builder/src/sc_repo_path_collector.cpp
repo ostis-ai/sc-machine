@@ -9,7 +9,7 @@
 #include <regex>
 #include <filesystem>
 
-#include "sc-memory/sc_utils.hpp"
+#include <sc-memory/sc_utils.hpp>
 
 std::unordered_set<std::string> const ScRepoPathCollector::m_supportedSourcesFormats = {"scs", "gwf"};
 std::unordered_set<std::string> const ScRepoPathCollector::m_supportedRepoPathFormats = {"path"};

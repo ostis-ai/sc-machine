@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#include "builder.hpp"
+#include "sc-builder/builder.hpp"
 
 void PrintStartMessage()
 {

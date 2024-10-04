@@ -1,12 +1,15 @@
-set(SC_BUILDER_SRC "${CMAKE_CURRENT_LIST_DIR}")
+set(SC_BUILDER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 configure_file(
-    "${SC_BUILDER_SRC}/src/builder_defines.hpp.in"
-    "${SC_BUILDER_SRC}/src/builder_defines.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/builder_defines.hpp.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/builder_defines.hpp"
 )
 
-file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
-list(REMOVE_ITEM SOURCES "${SC_BUILDER_SRC}/src/main.cpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS
+    "src/*.cpp" "src/*.hpp"
+    "include/sc-builder/*.hpp"
+)
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
 add_library(sc-builder-lib SHARED ${SOURCES})
 target_link_libraries(sc-builder-lib
@@ -14,10 +17,11 @@ target_link_libraries(sc-builder-lib
     LINK_PUBLIC sc-config-utils
 )
 target_include_directories(sc-builder-lib
-    PUBLIC ${SC_BUILDER_SRC}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-add_executable(sc-builder "${SC_BUILDER_SRC}/src/main.cpp")
+add_executable(sc-builder "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 target_link_libraries(sc-builder LINK_PRIVATE sc-builder-lib)
 
 if(${SC_CLANG_FORMAT_CODE})
@@ -26,5 +30,5 @@ if(${SC_CLANG_FORMAT_CODE})
 endif()
 
 if(${SC_BUILD_TESTS})
-    include(tests/tests.cmake)
+    add_subdirectory(tests)
 endif()

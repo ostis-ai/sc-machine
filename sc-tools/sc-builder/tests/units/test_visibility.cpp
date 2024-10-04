@@ -4,11 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
-
-#include "sc-memory/sc_link.hpp"
-
 #include "builder_test.hpp"
+
+#include <sc-memory/sc_link.hpp>
 
 namespace
 {

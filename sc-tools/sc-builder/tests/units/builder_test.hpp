@@ -1,14 +1,20 @@
+/*
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
+
 #pragma once
 
-#include <gtest/gtest.h>
-
-#include "sc-memory/sc_memory.hpp"
-#include "sc-memory/sc_agent_context.hpp"
-#include "sc-memory/sc_keynodes.hpp"
-
-#include "test_defines.hpp"
+#include <sc-memory/test/sc_test.hpp>
 
 #include <memory>
+
+#include <sc-memory/sc_memory.hpp>
+#include <sc-memory/sc_agent_context.hpp>
+#include <algorithm>
+
+#include "test_defines.hpp"
 
 class ScBuilderTest : public testing::Test
 {
@@ -70,15 +76,6 @@ protected:
 
 protected:
   std::unique_ptr<ScAgentContext> m_ctx;
-};
-
-class TestScMemoryContext : public ScAgentContext
-{
-public:
-  TestScMemoryContext(ScAddr const & userAddr = ScAddr::Empty)
-    : ScAgentContext(userAddr)
-  {
-  }
 };
 
 class ScBuilderLoadUserPermissionsTest : public ScBuilderTest

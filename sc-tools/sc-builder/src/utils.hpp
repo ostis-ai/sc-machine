@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "sc-memory/sc_debug.hpp"
+#include <sc-memory/sc_debug.hpp>
 
 #define PARSE_ERROR(source, line, description) \
   { \
