@@ -8,11 +8,6 @@
 
 #include <thread>
 
-extern "C"
-{
-#include "sc-core/sc-store/sc-base/sc_atomic.h"
-}
-
 namespace utils
 {
 ScLock::ScLock()
@@ -23,7 +18,7 @@ ScLock::ScLock()
 
 void ScLock::Lock()
 {
-  while (sc_atomic_int_compare_and_exchange((int *)&m_locked, 0, 1) == FALSE)
+  while (m_locked.exchange(1, std::memory_order_acquire) == 1)
   {
     std::this_thread::sleep_for(std::chrono::microseconds(1));
   }
@@ -31,12 +26,12 @@ void ScLock::Lock()
 
 void ScLock::Unlock()
 {
-  sc_atomic_int_set(&m_locked, 0);
+  m_locked.store(0, std::memory_order_release);
 }
 
 bool ScLock::IsLocked() const
 {
-  return sc_atomic_int_get(&m_locked) == 1;
+  return m_locked.load(std::memory_order_acquire) == 1;
 }
 
 }  // namespace utils

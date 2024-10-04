@@ -7,7 +7,7 @@
 #ifndef _sc_config_h_
 #define _sc_config_h_
 
-#include "sc-core/sc-store/sc_types.h"
+#include <sc-core/sc_types.h>
 
 // Config, that contains all configuration options: ['<group>/<key>'] = <value>
 typedef struct _GHashTable sc_config;

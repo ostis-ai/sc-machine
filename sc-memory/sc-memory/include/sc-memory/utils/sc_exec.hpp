@@ -9,8 +9,12 @@
 #include <string>
 #include <algorithm>
 
-#include "../../sc-core/sc-store/sc_types.h"
-#include "../sc_debug.hpp"
+extern "C"
+{
+#include <sc-core/sc_types.h>
+}
+
+#include "sc-memory/sc_debug.hpp"
 
 /// Class to create and execute system commands
 class ScExec : public std::istream

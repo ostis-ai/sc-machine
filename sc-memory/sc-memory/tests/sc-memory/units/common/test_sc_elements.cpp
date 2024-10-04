@@ -12,8 +12,8 @@
 
 extern "C"
 {
-#include "sc-core/sc-store/sc_storage.h"
-#include "sc-core/sc-store/sc_storage_private.h"
+#include <sc-store/sc_storage.h>
+#include <sc-store/sc_storage_private.h>
 }
 
 TEST_F(ScMemoryTest, Elements)

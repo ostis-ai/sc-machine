@@ -8,7 +8,7 @@
 
 extern "C"
 {
-#include "sc-core/sc-store/sc_defines.h"
+#include <sc-core/sc_defines.h>
 }
 
 // It will be used, when sc-machine will support windows. It is typedef for __declspec(dllexport), that is a

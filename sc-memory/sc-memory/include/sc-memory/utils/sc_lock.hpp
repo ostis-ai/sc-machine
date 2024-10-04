@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include "../sc_defines.hpp"
+#include "sc-memory/sc_defines.hpp"
+
+#include <atomic>
 
 namespace utils
 {
@@ -27,7 +29,7 @@ public:
   _SC_EXTERN bool IsLocked() const;
 
 private:
-  int volatile m_locked;
+  std::atomic_int m_locked;
 };
 
 struct ScLockScope

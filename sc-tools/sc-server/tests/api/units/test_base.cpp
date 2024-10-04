@@ -6,8 +6,13 @@
 
 #include "sc_server_test.hpp"
 
-#include "sc-core/sc-store/sc_types.h"
-#include "sc-memory/sc_type.hpp"
+extern "C"
+{
+#include <sc-core/sc_types.h>
+}
+
+#include <sc-memory/sc_type.hpp>
+
 #include "../../sc_client.hpp"
 
 #include "../../sc_memory_json_converter.hpp"

@@ -6,4 +6,7 @@
 
 #pragma once
 
-#include "sc-core/sc-store/sc_platform.h"
+extern "C"
+{
+#include <sc-core/sc_platform.h>   
+}

@@ -12,7 +12,7 @@
 
 extern "C"
 {
-#include "sc-core/sc-store/sc_types.h"
+#include <sc-core/sc_types.h>
 }
 
 namespace utils

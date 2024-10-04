@@ -6,7 +6,7 @@
 
 #include "sc_keynodes.h"
 
-#include "sc-core/sc-store/sc_iterator3.h"
+#include "sc-core/sc_iterator3.h"
 
 sc_result sc_common_resolve_keynode(
     sc_memory_context * ctx,

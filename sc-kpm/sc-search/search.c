@@ -10,7 +10,6 @@
 
 #include "sc-core/sc_keynodes.h"
 #include "sc-core/sc_memory_headers.h"
-#include "sc-core/sc_memory_context_manager.h"
 
 sc_memory_context * s_default_ctx = 0;
 

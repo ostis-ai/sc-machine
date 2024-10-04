@@ -13,7 +13,7 @@
 
 extern "C"
 {
-#include "sc-core/sc-store/sc-container/sc-string/sc_string.h"
+#include <sc-core/sc-container/sc_string.h>
 #include "sc_config.h"
 }
 
