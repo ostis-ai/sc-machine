@@ -26,17 +26,9 @@ ScElementaryEvent::ScElementaryEvent(
   , m_subscriptionAddr(subscriptionElementAddr)
   , m_connectorAddr(connectorAddr)
   , m_connectorType(connectorType)
-<<<<<<< HEAD:sc-memory/sc-memory/src/sc_event.cpp
-<<<<<<< HEAD:sc-memory/sc-memory/src/sc_event.cpp
   // clang-format off
   , m_otherAddr(otherAddr) {};
 // clang-format on
-=======
-  , m_otherAddr(otherAddr) {};
->>>>>>> ff53310f ([refactor][gwf][translator] Clarify methods and variables names):sc-memory/sc-memory/sc_event.cpp
-=======
-  , m_otherAddr(otherAddr){};
->>>>>>> fab08ecb ([refactor][memory] Format code):sc-memory/sc-memory/sc_event.cpp
 
 ScAddr ScElementaryEvent::GetEventClass() const noexcept
 {

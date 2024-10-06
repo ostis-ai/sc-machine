@@ -4,19 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-<<<<<<< HEAD
-#include "builder_test.hpp"
-
-#include <sc-memory/sc_utils.hpp>
-
-#include "sc-memory/sc_utils.hpp"
-#include "../../src/gwf_translator.hpp"
-#include "../../src/sc_scs_tree.hpp"
-
-using GWFTranslatorTest = ScBuilderTest;
-=======
 #include <gtest/gtest.h>
->>>>>>> ff53310f ([refactor][gwf][translator] Clarify methods and variables names)
 
 #include <iostream>
 #include <sstream>
@@ -145,6 +133,82 @@ std::pair<SCsTreePtr, SCsTreePtr> CompareSCsFiles(std::string const & fileName, 
   auto const & exampleTree = SCsTree::ParseTree(exampleSCsText);
   auto const & resultTree = SCsTree::ParseTree(scsText);
   return std::make_pair(exampleTree, resultTree);
+}
+
+TEST_F(GWFTranslatorTest, InvalidPath)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const filePath = BASE_TEST_PATH "invalid_path.gwf";
+  EXPECT_THROW(translator.GetXMLFileContent(filePath), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, EmptyFile)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const filePath = BASE_TEST_PATH "empty_file.gwf";
+  EXPECT_THROW(translator.GetXMLFileContent(filePath), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, EmptyStatic)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const & filePath = BASE_TEST_PATH "empty_static.gwf";
+  std::string const & gwfText = translator.GetXMLFileContent(filePath);
+  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, EmptyGWF)
+{
+  GWFTranslator translator(*m_ctx);
+  EXPECT_THROW(translator.TranslateGWFToSCs("", BASE_TEST_PATH), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, UnknownTag)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const filePath = BASE_TEST_PATH "unknown_tag.gwf";
+  std::string const & gwfText = translator.GetXMLFileContent(filePath);
+  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, UnknownLinkContent)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const filePath = BASE_TEST_PATH "unknown_link_content.gwf";
+  std::string const & gwfText = translator.GetXMLFileContent(filePath);
+  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, ContourWithUnknownParent)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const filePath = BASE_TEST_PATH "contour_with_unknown_parent.gwf";
+  std::string const & gwfText = translator.GetXMLFileContent(filePath);
+  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, NodeWithUnknownId)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const filePath = BASE_TEST_PATH "node_with_unknown_id.gwf";
+  std::string const & gwfText = translator.GetXMLFileContent(filePath);
+  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, NodeWithUnknownType)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const filePath = BASE_TEST_PATH "element_with_unknown_type.gwf";
+  std::string const & gwfText = translator.GetXMLFileContent(filePath);
+  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionItemNotFound);
 }
 
 TEST_F(GWFTranslatorTest, EmptyContour)

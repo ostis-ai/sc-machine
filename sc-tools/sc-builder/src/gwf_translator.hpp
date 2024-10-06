@@ -10,7 +10,8 @@
 #include <string>
 #include <list>
 
-#include "translator.hpp"
+#include "sc-builder/translator.hpp"
+
 #include "scs_translator.hpp"
 
 class GWFTranslator : public Translator

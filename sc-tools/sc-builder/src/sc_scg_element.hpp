@@ -23,12 +23,9 @@ public:
   virtual ~SCgElement() = default;
 
   std::string const & GetId() const;
-  std::string const & GetParent() const;
   std::string const & GetIdentifier() const;
   std::string const & GetType() const;
   std::string const & GetTag() const;
-
-  void SetIdentifier(std::string const & newIdentifier);
 
 private:
   std::string m_id;
@@ -64,7 +61,6 @@ public:
       std::string const & contentData);
 
   std::string const & GetContentType() const;
-  std::string const & GetMimeType() const;
   std::string const & GetFileName() const;
   std::string const & GetContentData() const;
 
