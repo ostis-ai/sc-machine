@@ -71,7 +71,7 @@ void GWFParser::ProcessStaticSector(xmlNodePtr staticSector, SCgElements & eleme
       auto const type = GetXmlPropStr(child, TYPE);
       auto const tag = XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter>(xmlStrdup(child->name)));
 
-      std::shared_ptr<SCgElement> scgElement;
+      SCgElementPtr scgElement;
       if (tag == NODE)
       {
         if (HasContent(child))
@@ -213,7 +213,7 @@ std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
 
 void GWFParser::FillConnectors(SCgConnectors const & connectors, SCgElements const & elements)
 {
-  auto const & ResolveBus = [&](std::shared_ptr<SCgElement> element) -> std::shared_ptr<SCgElement>
+  auto const & ResolveBus = [&](SCgElementPtr element) -> SCgElementPtr
   {
     if (element->GetTag() == BUS)
     {
@@ -232,8 +232,8 @@ void GWFParser::FillConnectors(SCgConnectors const & connectors, SCgElements con
     auto sourceIt = elements.find(sourceId);
     auto targetIt = elements.find(targetId);
 
-    std::shared_ptr<SCgElement> const & source = sourceIt != elements.cend() ? ResolveBus(sourceIt->second) : nullptr;
-    std::shared_ptr<SCgElement> const & target = targetIt != elements.cend() ? ResolveBus(targetIt->second) : nullptr;
+    SCgElementPtr const & source = sourceIt != elements.cend() ? ResolveBus(sourceIt->second) : nullptr;
+    SCgElementPtr const & target = targetIt != elements.cend() ? ResolveBus(targetIt->second) : nullptr;
 
     if (source == nullptr)
       SC_THROW_EXCEPTION(

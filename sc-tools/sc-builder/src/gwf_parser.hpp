@@ -15,7 +15,7 @@
 #include <libxml2/libxml/parser.h>
 #include <libxml2/libxml/tree.h>
 
-#include "gwf_translator_const.hpp"
+#include "gwf_translator_constants.hpp"
 
 class XmlCharDeleter
 {

@@ -10,8 +10,7 @@
 #include <sstream>
 #include <unordered_set>
 
-#include "sc_scg_to_scs_types.hpp"
-#include "gwf_parser.hpp"
+#include "gwf_translator_constants.hpp"
 
 class Buffer
 {
@@ -35,7 +34,7 @@ class SCsContour;
 class SCsElementFactory
 {
 public:
-  static std::shared_ptr<SCsElement> CreateSCsElementForSCgElement(std::shared_ptr<SCgElement> const & scgElement);
+  static SCsElementPtr CreateSCsElementForSCgElement(SCgElementPtr const & scgElement);
 };
 
 class SCsWriter
@@ -46,14 +45,14 @@ public:
       std::string const & filePath,
       Buffer & buffer,
       size_t depth,
-      std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const;
+      std::unordered_set<SCgElementPtr> & writtenElements) const;
 
   class SCgIdentifierCorrector
   {
   public:
     static void GenerateSCsIdentifier(
-        std::shared_ptr<SCgElement> const & scgElement,
-        std::shared_ptr<SCsElement> & scsElement);
+        SCgElementPtr const & scgElement,
+        SCsElementPtr & scsElement);
 
   private:
     static bool IsRussianIdentifier(std::string const & identifier);

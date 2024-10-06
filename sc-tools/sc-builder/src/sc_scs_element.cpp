@@ -11,10 +11,12 @@
 
 #include <sc-memory/sc_debug.hpp>
 
-#include "gwf_translator_const.hpp"
+#include "gwf_translator_constants.hpp"
 
 #include "sc_scg_element.hpp"
 #include "sc_scs_writer.hpp"
+
+#include "sc_scg_to_scs_types_converter.hpp"
 
 using namespace Constants;
 
@@ -40,12 +42,12 @@ std::string SCsElement::GetMainIdentifier() const
 }
 
 // SCsNode
-void SCsNode::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
+void SCsNode::ConvertFromSCgElement(SCgElementPtr const & scgElement)
 {
   std::string const & scgNodeType = scgElement->GetType();
   std::string scsNodeType = "";
 
-  SCgToSCsTypes::ConvertSCgNodeTypeToSCsElementType(scgNodeType, scsNodeType);
+  SCgToSCsTypesConverter::ConvertSCgNodeTypeToSCsNodeType(scgNodeType, scsNodeType);
 
   if (scsNodeType.empty())
     SC_THROW_EXCEPTION(
@@ -59,7 +61,7 @@ void SCsNode::Dump(
     std::string const & filePath,
     Buffer & buffer,
     size_t depth,
-    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
+    std::unordered_set<SCgElementPtr> & writtenElements) const
 {
   buffer << NEWLINE;
 
@@ -79,7 +81,7 @@ enum class ContentType
   Image = 4
 };
 
-void SCsLink::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
+void SCsLink::ConvertFromSCgElement(SCgElementPtr const & scgElement)
 {
   auto link = std::dynamic_pointer_cast<SCgLink>(scgElement);
   if (link == nullptr)
@@ -116,7 +118,7 @@ void SCsLink::Dump(
     std::string const & filePath,
     Buffer & buffer,
     size_t depth,
-    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
+    std::unordered_set<SCgElementPtr> & writtenElements) const
 {
   buffer << NEWLINE;
 
@@ -168,7 +170,7 @@ void SCsLink::Dump(
 }
 
 // SCsConnector
-void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
+void SCsConnector::ConvertFromSCgElement(SCgElementPtr const & scgElement)
 {
   std::shared_ptr<SCgConnector> connector = std::dynamic_pointer_cast<SCgConnector>(scgElement);
   if (connector == nullptr)
@@ -178,7 +180,7 @@ void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scg
   std::string const & connectorType = connector->GetType();
   std::string const & id = connector->GetId();
 
-  m_isUnsupported = SCgToSCsTypes::ConvertSCgEdgeTypeToSCsElementType(connectorType, m_type);
+  m_isUnsupported = SCgToSCsTypesConverter::ConvertSCgConnectorTypeToSCsConnectorDesignation(connectorType, m_type);
   if (m_type.empty())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
@@ -191,7 +193,7 @@ void SCsConnector::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scg
   m_targetIdentifier = GetIncidentElementIdentifier(connector->GetTarget());
 }
 
-std::string SCsConnector::GetIncidentElementIdentifier(std::shared_ptr<SCgElement> const & element) const
+std::string SCsConnector::GetIncidentElementIdentifier(SCgElementPtr const & element) const
 {
   auto scsElement = SCsElementFactory::CreateSCsElementForSCgElement(element);
   scsElement->ConvertFromSCgElement(element);
@@ -203,7 +205,7 @@ void SCsConnector::Dump(
     std::string const & filePath,
     Buffer & buffer,
     size_t depth,
-    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
+    std::unordered_set<SCgElementPtr> & writtenElements) const
 {
   buffer << NEWLINE;
 
@@ -223,7 +225,7 @@ void SCsConnector::Dump(
 }
 
 // SCsContour
-void SCsContour::ConvertFromSCgElement(std::shared_ptr<SCgElement> const & scgElement)
+void SCsContour::ConvertFromSCgElement(SCgElementPtr const & scgElement)
 {
   std::shared_ptr<SCgContour> contour = std::dynamic_pointer_cast<SCgContour>(scgElement);
   if (contour == nullptr)
@@ -237,7 +239,7 @@ void SCsContour::Dump(
     std::string const & filePath,
     Buffer & buffer,
     size_t depth,
-    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
+    std::unordered_set<SCgElementPtr> & writtenElements) const
 {
   buffer << NEWLINE;
 

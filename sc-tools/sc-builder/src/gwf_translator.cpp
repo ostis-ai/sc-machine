@@ -14,7 +14,7 @@
 
 #include "gwf_parser.hpp"
 #include "sc_scs_writer.hpp"
-#include "gwf_translator_const.hpp"
+#include "gwf_translator_constants.hpp"
 
 using namespace Constants;
 
@@ -24,86 +24,75 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 {
 }
 
-std::string GWFTranslator::GWFToScs(std::string const & xmlStr, std::string const & filePath)
+std::string GWFTranslator::TranslateGWFToSCs(std::string const & xmlStr, std::string const & filePath)
 {
-  GWFParser parser;
-
   SCgElements elementWithoutParents;
-  try
-  {
-    parser.Parse(xmlStr, elementWithoutParents);
-  }
-  catch (utils::ScException const & e)
-  {
-    SC_LOG_ERROR("GWFParser::Parse: Error in parse " << e.Message());
-  }
+
+  GWFParser parser;
+  parser.Parse(xmlStr, elementWithoutParents);
 
   if (elementWithoutParents.empty())
     SC_THROW_EXCEPTION(
-        utils::ExceptionParseError, "GWFTranslator::GWFToScs: There are no elements in file `" << filePath << "`.");
+        utils::ExceptionParseError,
+        "GWFTranslator::TranslateGWFToSCs: There are no elements in file `" << filePath << "`.");
 
   SCsWriter writer;
   Buffer scsBuffer;
-  std::unordered_set<std::shared_ptr<SCgElement>> writtenElements;
-  try
-  {
-    writer.Write(elementWithoutParents, filePath, scsBuffer, 0, writtenElements);
-  }
-  catch (utils::ScException const & e)
-  {
-    SC_LOG_ERROR("SCsWriter::Write: Exception in process elements: " << e.Message());
-  }
+  std::unordered_set<SCgElementPtr> writtenElements;
+  writer.Write(elementWithoutParents, filePath, scsBuffer, 0, writtenElements);
+
   return scsBuffer.GetValue();
 }
 
-std::string GWFTranslator::WriteStringToFile(std::string const & scsStr, std::string const & filePath)
+std::string GWFTranslator::WriteStringToFile(std::string const & scsText, std::string const & fileName)
 {
-  std::string const & scsSource = filePath + GENERATED_EXTENTION + SCS_EXTENTION;
-
-  std::ofstream outputFile(scsSource, std::ios::binary);
+  std::string const & filePath = fileName + GENERATED_EXTENTION + SCS_EXTENTION;
+  std::ofstream outputFile(filePath, std::ios::binary);
 
   if (!outputFile.is_open())
     SC_THROW_EXCEPTION(
-        utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error creating file for writing: " + scsSource);
+        utils::ExceptionCritical,
+        "GWFTranslator::WriteStringToFile: Error creating file for writing `" << filePath << "`.");
 
-  outputFile << scsStr;
+  outputFile << scsText;
 
   if (outputFile.fail())
   {
     outputFile.close();
-    std::remove(scsSource.c_str());
+    std::remove(filePath.c_str());
     SC_THROW_EXCEPTION(
-        utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error writing to file: `" << scsSource << "`.");
+        utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error writing to file `" << filePath << "`.");
   }
 
   outputFile.close();
 
   if (outputFile.fail())
   {
-    std::remove(scsSource.c_str());
+    std::remove(filePath.c_str());
     SC_THROW_EXCEPTION(
-        utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error closing the file: `" << scsSource << "`.");
+        utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error closing the file `" << filePath << "`.");
   }
 
-  return scsSource;
+  return filePath;
 }
 
-std::string GWFTranslator::XmlFileToString(std::string const & filename)
+std::string GWFTranslator::GetXMLFileContent(std::string const & fileName)
 {
   xmlInitParser();
 
-  xmlDocPtr const & doc = xmlReadFile(filename.c_str(), nullptr, 0);
-  if (doc == nullptr)
-    SC_THROW_EXCEPTION(utils::ExceptionParseError, "GWFTranslator::XmlFileToString: Failed to parse XML file.");
+  xmlDocPtr const & document = xmlReadFile(fileName.c_str(), nullptr, 0);
+  if (document == nullptr)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError, "GWFTranslator::GetXMLFileContent: Failed to parse XML file `" << fileName << "`.");
 
   xmlChar * xmlBuffer;
   int bufferSize;
-  xmlDocDumpFormatMemory(doc, &xmlBuffer, &bufferSize, 0);
+  xmlDocDumpFormatMemory(document, &xmlBuffer, &bufferSize, 0);
 
   std::string xmlString((char *)xmlBuffer, bufferSize);
 
   xmlFree(xmlBuffer);
-  xmlFreeDoc(doc);
+  xmlFreeDoc(document);
   xmlCleanupParser();
 
   return xmlString;
@@ -113,15 +102,14 @@ bool GWFTranslator::TranslateImpl(Params const & params)
 {
   try
   {
-    std::string const xmlStr = XmlFileToString(params.m_fileName);
-    if (xmlStr.empty())
+    std::string const & gwfText = GetXMLFileContent(params.m_fileName);
+    if (gwfText.empty())
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "GWFTranslator::TranslateImpl: Gwf file is empty: `" << params.m_fileName << "`.");
+          "GWFTranslator::TranslateImpl: .gwf file `" << params.m_fileName << "` is empty.");
 
-    std::string const scsStr = GWFToScs(xmlStr, params.m_fileName);
-
-    std::string const scsSource = WriteStringToFile(scsStr, params.m_fileName);
+    std::string const & scsText = TranslateGWFToSCs(gwfText, params.m_fileName);
+    std::string const & scsSource = WriteStringToFile(scsText, params.m_fileName);
 
     Params newParams;
     newParams.m_fileName = scsSource;
@@ -129,7 +117,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
     newParams.m_outputStructure = params.m_outputStructure;
     bool status = m_scsTranslator.Translate(newParams);
 
-    // std::filesystem::remove(scsSource.c_str());
+    std::filesystem::remove(scsSource.c_str());
 
     return status;
   }

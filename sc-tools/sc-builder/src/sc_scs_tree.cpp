@@ -14,8 +14,8 @@ SCsTree::SCsTree(std::string const & name, std::string const & content)
 {
 }
 
-std::shared_ptr<SCsTree> SCsTree::AddChildNode(
-    std::shared_ptr<SCsTree> parent,
+SCsTreePtr SCsTree::AddChildNode(
+    SCsTreePtr parent,
     std::string const & name,
     std::string const & content)
 {
@@ -31,11 +31,11 @@ bool SCsTree::Check(std::string const & example, std::string const & line)
   return line.find(example) != std::string::npos;
 }
 
-std::shared_ptr<SCsTree> SCsTree::ParseTree(std::string const & input)
+SCsTreePtr SCsTree::ParseTree(std::string const & input)
 {
   std::istringstream iss(input);
   std::string line;
-  std::list<std::shared_ptr<SCsTree>> nodeStack;
+  std::list<SCsTreePtr> nodeStack;
   auto root = std::make_shared<SCsTree>("root", "");
   auto currentNode = root;
   bool isContentMultiLine = false;
@@ -64,7 +64,6 @@ std::shared_ptr<SCsTree> SCsTree::ParseTree(std::string const & input)
       }
 
       multiLineContent += "\n" + line;
-
       continue;
     }
     else if (flag)
@@ -175,7 +174,7 @@ std::shared_ptr<SCsTree> SCsTree::ParseTree(std::string const & input)
   return root;
 }
 
-void SCsTree::PrintTree(std::shared_ptr<SCsTree> const & node, int level)
+void SCsTree::PrintTree(SCsTreePtr const & node, int level)
 {
   if (!node)
     return;
@@ -198,7 +197,7 @@ void SCsTree::PrintDifferences(std::shared_ptr<std::list<std::pair<std::string, 
 }
 
 std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTree::CompareTrees(
-    std::pair<std::shared_ptr<SCsTree>, std::shared_ptr<SCsTree>> const & nodes)
+    std::pair<SCsTreePtr, SCsTreePtr> const & nodes)
 {
   auto differences = std::make_shared<std::list<std::pair<std::string, std::string>>>();
 

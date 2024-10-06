@@ -6,13 +6,10 @@
 
 #pragma once
 
-#include <string>
 #include <list>
 #include <unordered_set>
-#include <unordered_map>
-#include <memory>
 
-#include "gwf_translator_const.hpp"
+#include "gwf_translator_constants.hpp"
 
 class SCgElement;
 class Buffer;
@@ -20,12 +17,12 @@ class Buffer;
 class SCsElement
 {
 public:
-  virtual void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) = 0;
+  virtual void ConvertFromSCgElement(SCgElementPtr const & element) = 0;
   virtual void Dump(
       std::string const & filePath,
       Buffer & buffer,
       size_t depth,
-      std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const = 0;
+      std::unordered_set<SCgElementPtr> & writtenElements) const = 0;
   virtual ~SCsElement() = default;
 
   void SetSystemIdentifier(std::string const & identifier);
@@ -41,12 +38,12 @@ protected:
 class SCsNode : public SCsElement
 {
 public:
-  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+  void ConvertFromSCgElement(SCgElementPtr const & element) override;
   void Dump(
       std::string const & filePath,
       Buffer & buffer,
       size_t depth,
-      std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const override;
+      std::unordered_set<SCgElementPtr> & writtenElements) const override;
 
 private:
   std::string type;
@@ -55,12 +52,12 @@ private:
 class SCsLink : public SCsElement
 {
 public:
-  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+  void ConvertFromSCgElement(SCgElementPtr const & element) override;
   void Dump(
       std::string const & filePath,
       Buffer & buffer,
       size_t depth,
-      std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const override;
+      std::unordered_set<SCgElementPtr> & writtenElements) const override;
 
 private:
   bool m_isUrl{false};
@@ -73,13 +70,13 @@ private:
 class SCsConnector : public SCsElement
 {
 public:
-  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+  void ConvertFromSCgElement(SCgElementPtr const & element) override;
   void Dump(
       std::string const & filePath,
       Buffer & buffer,
       size_t depth,
-      std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const override;
-  std::string GetIncidentElementIdentifier(std::shared_ptr<SCgElement> const & element) const;
+      std::unordered_set<SCgElementPtr> & writtenElements) const override;
+  std::string GetIncidentElementIdentifier(SCgElementPtr const & element) const;
 
 private:
   std::string m_type;
@@ -94,12 +91,12 @@ private:
 class SCsContour : public SCsElement
 {
 public:
-  void ConvertFromSCgElement(std::shared_ptr<SCgElement> const & element) override;
+  void ConvertFromSCgElement(SCgElementPtr const & element) override;
   void Dump(
       std::string const & filePath,
       Buffer & buffer,
       size_t depth,
-      std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const override;
+      std::unordered_set<SCgElementPtr> & writtenElements) const override;
 
 private:
   SCgElements m_scgElements;

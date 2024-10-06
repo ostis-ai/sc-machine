@@ -86,12 +86,12 @@ void ScRepoPathCollector::ParseRepoPath(std::string const & repoPath, Sources & 
     const
 {
   if (!IsRepoPathFile(repoPath))
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Repo path file \"" << repoPath << "\" has invalid extension");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Repo path file `" << repoPath << "` has invalid extension");
 
   std::ifstream infile;
   infile.open(repoPath);
   if (!infile.is_open())
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open repo path file \"" << repoPath << "\"");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't open repo path file `" << repoPath << "`.");
 
   std::string path;
   std::string const & repoDirectoryPath = GetFileDirectory(repoPath);
@@ -144,7 +144,7 @@ void ScRepoPathCollector::CollectBuildSources(
   }
 
   if (!impl::IsDirectory(path))
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Sources path \"" << path << "\" is invalid");
+    SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Sources path `" << path << "` is invalid.");
 
   auto const & items = std::filesystem::directory_iterator{path};
   for (auto const & item : items)
