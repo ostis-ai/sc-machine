@@ -20,119 +20,55 @@
 #include "builder_test.hpp"
 
 #include "gwf_translator.hpp"
+
 #include "sc_scs_tree.hpp"
 
 using GWFTranslatorTest = ScBuilderTest;
 
 #define BASE_TEST_PATH SC_BUILDER_KB "/tests-gwf-to-scs/"
 
-std::string RemoveEmptyLines(std::string const & input)
-{
-  std::stringstream ss(input);
-  std::string line;
-  std::vector<std::string> lines;
-
-  while (std::getline(ss, line))
-  {
-    line.erase(
-        line.begin(),
-        std::find_if(
-            line.begin(),
-            line.end(),
-            [](unsigned char ch)
-            {
-              return !std::isspace(ch);
-            }));
-    line.erase(
-        std::find_if(
-            line.rbegin(),
-            line.rend(),
-            [](unsigned char ch)
-            {
-              return !std::isspace(ch);
-            })
-            .base(),
-        line.end());
-
-    if (!line.empty())
-    {
-      lines.push_back(line);
-    }
-  }
-
-  std::stringstream result;
-  for (auto const & l : lines)
-  {
-    result << l << "\n";
-  }
-
-  return result.str();
-}
-
 std::vector<char> ReadFileToBytes(std::string const & filePath)
 {
   std::ifstream file(filePath, std::ios::binary | std::ios::ate);
-  if (!file)
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not open file: " << filePath);
-  }
   std::streamsize size = file.tellg();
   file.seekg(0, std::ios::beg);
   std::vector<char> buffer(size);
-  if (!file.read(buffer.data(), size))
-  {
-    SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not read file: " << filePath);
-  }
+  file.read(buffer.data(), size);
   return buffer;
 }
 
 bool CompareFiles(std::string const & filePath1, std::string const & filePath2)
 {
-  try
-  {
-    std::vector<char> file1Bytes = ReadFileToBytes(filePath1);
-    std::vector<char> file2Bytes = ReadFileToBytes(filePath2);
-    return file1Bytes == file2Bytes;
-  }
-  catch (utils::ScException const & e)
-  {
-    SC_LOG_ERROR("Exception in reading file to string: " << e.Message());
-    return false;
-  }
+  std::vector<char> file1Bytes = ReadFileToBytes(filePath1);
+  std::vector<char> file2Bytes = ReadFileToBytes(filePath2);
+  return file1Bytes == file2Bytes;
 }
 
 std::string ReadFileToString(std::string const & filePath)
 {
-  try
-  {
-    std::ifstream file(filePath);
-    if (!file.is_open())
-      SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Could not open file");
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return RemoveEmptyLines(buffer.str());
-  }
-  catch (utils::ScException const & e)
-  {
-    SC_LOG_ERROR("Exception in reading file to string: " << e.Message());
-    return "";
-  }
+  std::ifstream file(filePath);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
 }
 
-std::pair<SCsTreePtr, SCsTreePtr> CompareSCsFiles(std::string const & fileName, GWFTranslator translator)
+bool CheckGWFToSCSTranslation(std::unique_ptr<ScAgentContext> & context, std::string const & fileName)
 {
-  std::string const & gwfFilePath = BASE_TEST_PATH + fileName;
-  std::string const & scsFilePath = gwfFilePath + ".scs";
+  GWFTranslator translator(*context);
 
-  std::string const & gwfText = translator.GetXMLFileContent(gwfFilePath);
-  std::string const & scsText = translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH);
+  std::string const & testGWFFilePath = BASE_TEST_PATH + fileName;
+  std::string const & correctSCsFilePath = testGWFFilePath + ".scs";
 
-  std::string const & exampleSCsText = RemoveEmptyLines(ReadFileToString(scsFilePath));
+  std::string const & testGWFText = translator.GetXMLFileContent(testGWFFilePath);
+  std::string const & testSCsText = translator.TranslateGWFToSCs(testGWFText, BASE_TEST_PATH);
 
-  auto const & exampleTree = SCsTree::ParseTree(exampleSCsText);
-  auto const & resultTree = SCsTree::ParseTree(scsText);
-  return std::make_pair(exampleTree, resultTree);
+  std::string const & correctSCsText = ReadFileToString(correctSCsFilePath);
+
+  SCsTree testSCsTree;
+  testSCsTree.Parse(testSCsText);
+  SCsTree correctSCsTree;
+  correctSCsTree.Parse(correctSCsText);
+  return testSCsTree.Compare(correctSCsTree)->empty();
 }
 
 TEST_F(GWFTranslatorTest, InvalidPath)
@@ -213,30 +149,39 @@ TEST_F(GWFTranslatorTest, NodeWithUnknownType)
 
 TEST_F(GWFTranslatorTest, EmptyContour)
 {
-  GWFTranslator translator(*m_ctx);
-
-  auto const & trees = CompareSCsFiles("empty_contour.gwf", translator);
-  auto const diff = SCsTree::CompareTrees(trees);
-  EXPECT_TRUE(diff->empty());
+  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "empty_contour.gwf"));
 }
 
 TEST_F(GWFTranslatorTest, LotOfContours)
 {
-  GWFTranslator translator(*m_ctx);
-
-  auto const & trees = CompareSCsFiles("lot_of_contours.gwf", translator);
-  auto const diff = SCsTree::CompareTrees(trees);
-  EXPECT_TRUE(diff->empty());
+  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "lot_of_contours.gwf"));
 }
 
 TEST_F(GWFTranslatorTest, ContentTypes)
 {
-  GWFTranslator translator(*m_ctx);
-
-  auto const & trees = CompareSCsFiles("content_types.gwf", translator);
-  auto const diff = SCsTree::CompareTrees(trees);
-  EXPECT_TRUE(diff->empty());
+  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "content_types.gwf"));
 
   EXPECT_TRUE(CompareFiles(BASE_TEST_PATH "ostis.png", BASE_TEST_PATH "ostis_ref.png"));
   std::filesystem::remove(BASE_TEST_PATH "ostis.png");
+}
+
+TEST_F(GWFTranslatorTest, SCsTree)
+{
+  GWFTranslator translator(*m_ctx);
+
+  std::string const & testGWFFilePath = BASE_TEST_PATH "empty_contour.gwf";
+  std::string const & correctGWFFilePath = BASE_TEST_PATH "lot_of_contours.gwf";
+  std::string const & correctSCsFilePath = correctGWFFilePath + ".scs";
+
+  std::string const & testGWFText = translator.GetXMLFileContent(testGWFFilePath);
+  std::string const & testSCsText = translator.TranslateGWFToSCs(testGWFText, BASE_TEST_PATH);
+
+  std::string const & correctSCsText = ReadFileToString(correctSCsFilePath);
+
+  SCsTree testSCsTree;
+  testSCsTree.Parse(testSCsText);
+  SCsTree correctSCsTree;
+  correctSCsTree.Parse(correctSCsText);
+  EXPECT_FALSE(testSCsTree.Compare(correctSCsTree)->empty());
+  EXPECT_FALSE(correctSCsTree.Compare(testSCsTree)->empty());
 }
