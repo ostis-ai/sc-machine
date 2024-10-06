@@ -241,7 +241,9 @@ bool SCgToSCsTypesConverter::ConvertSCgNodeTypeToSCsNodeType(std::string const &
   return false;
 }
 
-bool SCgToSCsTypesConverter::ConvertSCgConnectorTypeToSCsConnectorDesignation(std::string const & edgeType, std::string & symbol)
+bool SCgToSCsTypesConverter::ConvertSCgConnectorTypeToSCsConnectorDesignation(
+    std::string const & edgeType,
+    std::string & symbol)
 {
   symbol = GetSCsElementTypeBySCgElementType(edgeType, "ConnectorTypes");
 
@@ -258,7 +260,9 @@ bool SCgToSCsTypesConverter::ConvertSCgConnectorTypeToSCsConnectorDesignation(st
   return false;
 }
 
-std::string SCgToSCsTypesConverter::GetSCsElementTypeBySCgElementType(std::string const & scgElement, std::string const & dict)
+std::string SCgToSCsTypesConverter::GetSCsElementTypeBySCgElementType(
+    std::string const & scgElement,
+    std::string const & dict)
 {
   static std::unordered_map<std::string, std::unordered_map<std::string, std::string> const *> const dictMap = {
       {"NodeTypeSets", &m_nodeTypeSets},

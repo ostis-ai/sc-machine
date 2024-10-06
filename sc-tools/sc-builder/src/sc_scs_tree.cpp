@@ -14,10 +14,7 @@ SCsTree::SCsTree(std::string const & name, std::string const & content)
 {
 }
 
-SCsTreePtr SCsTree::AddChildNode(
-    SCsTreePtr parent,
-    std::string const & name,
-    std::string const & content)
+SCsTreePtr SCsTree::AddChildNode(SCsTreePtr parent, std::string const & name, std::string const & content)
 {
   auto node = std::make_shared<SCsTree>(name, content);
   if (parent != nullptr)

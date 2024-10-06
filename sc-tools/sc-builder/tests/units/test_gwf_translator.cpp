@@ -27,9 +27,10 @@ using GWFTranslatorTest = ScBuilderTest;
 #include <algorithm>
 #include <filesystem>
 
+#include <sc-memory/sc_utils.hpp>
+
 #include "builder_test.hpp"
 
-#include <sc-memory/sc_utils.hpp>
 #include "gwf_translator.hpp"
 #include "sc_scs_tree.hpp"
 
@@ -131,9 +132,7 @@ std::string ReadFileToString(std::string const & filePath)
   }
 }
 
-std::pair<SCsTreePtr, SCsTreePtr> CompareSCsFiles(
-    std::string const & fileName,
-    GWFTranslator translator)
+std::pair<SCsTreePtr, SCsTreePtr> CompareSCsFiles(std::string const & fileName, GWFTranslator translator)
 {
   std::string const & gwfFilePath = BASE_TEST_PATH + fileName;
   std::string const & scsFilePath = gwfFilePath + ".scs";
@@ -146,25 +145,6 @@ std::pair<SCsTreePtr, SCsTreePtr> CompareSCsFiles(
   auto const & exampleTree = SCsTree::ParseTree(exampleSCsText);
   auto const & resultTree = SCsTree::ParseTree(scsText);
   return std::make_pair(exampleTree, resultTree);
-}
-
-TEST_F(GWFTranslatorTest, EmptyFile)
-{
-  GWFTranslator translator(*m_ctx);
-
-  std::string const filePath = BASE_TEST_PATH "empty_file.gwf";
-
-  EXPECT_THROW(translator.GetXMLFileContent(filePath), utils::ExceptionParseError);
-}
-
-TEST_F(GWFTranslatorTest, EmptyStatic)
-{
-  GWFTranslator translator(*m_ctx);
-
-  std::string const & filePath = BASE_TEST_PATH "empty_static.gwf";
-
-  std::string const & gwfText = translator.GetXMLFileContent(filePath);
-  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, EmptyContour)

@@ -50,9 +50,7 @@ public:
   class SCgIdentifierCorrector
   {
   public:
-    static void GenerateSCsIdentifier(
-        SCgElementPtr const & scgElement,
-        SCsElementPtr & scsElement);
+    static void GenerateSCsIdentifier(SCgElementPtr const & scgElement, SCsElementPtr & scsElement);
 
   private:
     static bool IsRussianIdentifier(std::string const & identifier);

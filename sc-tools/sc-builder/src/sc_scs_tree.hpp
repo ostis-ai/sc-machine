@@ -34,9 +34,6 @@ private:
   std::string content;
   std::map<std::string, SCsTreePtr> children;
 
-  static SCsTreePtr AddChildNode(
-      SCsTreePtr parent,
-      std::string const & name,
-      std::string const & content);
+  static SCsTreePtr AddChildNode(SCsTreePtr parent, std::string const & name, std::string const & content);
   static bool Check(std::string const & example, std::string const & line);
 };

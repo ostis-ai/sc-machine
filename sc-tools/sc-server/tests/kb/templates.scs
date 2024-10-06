@@ -3,6 +3,6 @@ test_template_1 = [*
 	@edge_2 = (concept_developer _-> _user);;
 *];;
 
-test_template_1 <- sc_node_struct;;
+test_template_1 <- sc_node_structure;;
 concept_user <- sc_node_class;;
 concept_developer <- sc_node_class;;
