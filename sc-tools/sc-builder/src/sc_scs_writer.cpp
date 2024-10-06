@@ -105,8 +105,8 @@ std::string SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifierForNonVariab
 }
 
 void SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifier(
-    std::shared_ptr<SCgElement> const & scgElement,
-    std::shared_ptr<SCsElement> & scsElement)
+    SCgElementPtr const & scgElement,
+    SCsElementPtr & scsElement)
 {
   scsElement->SetSystemIdentifier(scgElement->GetIdentifier());
   bool isVar = SCsWriter::IsVariable(scgElement->GetType());
@@ -138,14 +138,14 @@ void SCsWriter::Write(
     std::string const & filePath,
     Buffer & buffer,
     size_t depth,
-    std::unordered_set<std::shared_ptr<SCgElement>> & writtenElements) const
+    std::unordered_set<SCgElementPtr> & writtenElements) const
 {
-  std::queue<std::shared_ptr<SCgElement>> dependedConnectors;
+  std::queue<SCgElementPtr> dependedConnectors;
 
   auto it = elements.cbegin();
   while (it != elements.cend() || !dependedConnectors.empty())
   {
-    std::shared_ptr<SCgElement> scgElement;
+    SCgElementPtr scgElement;
     if (it == elements.cend())
     {
       scgElement = dependedConnectors.front();
@@ -208,10 +208,10 @@ void SCsWriter::WriteMainIdentifier(
 
 // SCsFactory
 
-std::shared_ptr<SCsElement> SCsElementFactory::CreateSCsElementForSCgElement(
-    std::shared_ptr<SCgElement> const & scgElement)
+SCsElementPtr SCsElementFactory::CreateSCsElementForSCgElement(
+    SCgElementPtr const & scgElement)
 {
-  std::shared_ptr<SCsElement> scsElement;
+  SCsElementPtr scsElement;
   std::string const & tag = scgElement->GetTag();
   if (tag == NODE || tag == BUS)
   {

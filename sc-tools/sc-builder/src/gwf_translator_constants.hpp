@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
 #include <unordered_map>
 
 namespace Constants
@@ -78,6 +80,9 @@ std::string const NO_PARENT = "0";
 std::unordered_map<std::string, std::string> const IMAGE_FORMATS = {{".png", "format_png"}};
 }  // namespace Constants
 
-using SCgElements = std::unordered_map<std::string, std::shared_ptr<class SCgElement>>;
+using SCsElementPtr = std::shared_ptr<class SCsElement>;
+using SCgElementPtr = std::shared_ptr<class SCgElement>;
+
+using SCgElements = std::unordered_map<std::string, SCgElementPtr>;
 using SCgConnectors = std::unordered_map<std::shared_ptr<class SCgConnector>, std::pair<std::string, std::string>>;
 using SCgContours = std::unordered_map<std::string, SCgElements>;

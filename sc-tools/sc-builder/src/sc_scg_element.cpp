@@ -147,30 +147,30 @@ SCgConnector::SCgConnector(
     std::string const & identifier,
     std::string const & type,
     std::string const & tag,
-    std::shared_ptr<SCgElement> source,
-    std::shared_ptr<SCgElement> target)
+    SCgElementPtr source,
+    SCgElementPtr target)
   : SCgElement(id, parent, identifier, type, tag)
   , m_source(source)
   , m_target(target)
 {
 }
 
-std::shared_ptr<SCgElement> SCgConnector::GetSource() const
+SCgElementPtr SCgConnector::GetSource() const
 {
   return m_source;
 }
 
-std::shared_ptr<SCgElement> SCgConnector::GetTarget() const
+SCgElementPtr SCgConnector::GetTarget() const
 {
   return m_target;
 }
 
-void SCgConnector::SetSource(std::shared_ptr<SCgElement> const & sourceEl)
+void SCgConnector::SetSource(SCgElementPtr const & sourceEl)
 {
   m_source = sourceEl;
 }
 
-void SCgConnector::SetTarget(std::shared_ptr<SCgElement> const & targetEl)
+void SCgConnector::SetTarget(SCgElementPtr const & targetEl)
 {
   m_target = targetEl;
 }

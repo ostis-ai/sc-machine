@@ -6,11 +6,9 @@
 
 #pragma once
 
-#include <string>
 #include <list>
-#include <memory>
 
-#include "gwf_translator_const.hpp"
+#include "gwf_translator_constants.hpp"
 
 class SCgElement
 {
@@ -120,16 +118,16 @@ public:
       std::string const & identifier,
       std::string const & type,
       std::string const & tag,
-      std::shared_ptr<SCgElement> sourceEl,
-      std::shared_ptr<SCgElement> targetEl);
+      SCgElementPtr sourceEl,
+      SCgElementPtr targetEl);
 
-  std::shared_ptr<SCgElement> GetSource() const;
-  std::shared_ptr<SCgElement> GetTarget() const;
+  SCgElementPtr GetSource() const;
+  SCgElementPtr GetTarget() const;
 
-  void SetSource(std::shared_ptr<SCgElement> const & sourceEl);
-  void SetTarget(std::shared_ptr<SCgElement> const & targetEl);
+  void SetSource(SCgElementPtr const & sourceEl);
+  void SetTarget(SCgElementPtr const & targetEl);
 
 private:
-  std::shared_ptr<SCgElement> m_source;
-  std::shared_ptr<SCgElement> m_target;
+  SCgElementPtr m_source;
+  SCgElementPtr m_target;
 };

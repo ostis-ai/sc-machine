@@ -9,14 +9,14 @@
 #include <unordered_map>
 #include <string>
 
-class SCgToSCsTypes
+class SCgToSCsTypesConverter
 {
 public:
-  static bool ConvertSCgNodeTypeToSCsElementType(std::string const & nodeType, std::string & symbol);
-  static bool ConvertSCgEdgeTypeToSCsElementType(std::string const & edgeType, std::string & symbol);
+  static bool ConvertSCgNodeTypeToSCsNodeType(std::string const & nodeType, std::string & symbol);
+  static bool ConvertSCgConnectorTypeToSCsConnectorDesignation(std::string const & edgeType, std::string & symbol);
 
 private:
-  static std::string FindValue(
+  static std::string GetSCsElementDesignation(
       std::unordered_map<std::string, std::string> const & dictionary,
       std::string const & key);
 

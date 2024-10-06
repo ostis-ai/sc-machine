@@ -7,10 +7,11 @@
 #pragma once
 
 #include "sc-memory/sc_memory.hpp"
-#include "translator.hpp"
-#include "sc_repo_path_collector.hpp"
 
 #include <string>
+
+#include "translator.hpp"
+#include "sc_repo_path_collector.hpp"
 
 struct BuilderParams
 {
