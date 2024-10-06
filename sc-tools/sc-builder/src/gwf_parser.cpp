@@ -15,13 +15,18 @@
 
 using namespace Constants;
 
+void XmlCharDeleter::operator()(xmlChar * ptr) const
+{
+  if (ptr != nullptr)
+    xmlFree(ptr);
+}
+
 void GWFParser::Parse(std::string const & xmlStr, SCgElements & elements)
 {
   xmlInitParser();
 
   auto xmlTree = std::unique_ptr<xmlDoc, decltype(&xmlFreeDoc)>(
       xmlReadMemory(xmlStr.c_str(), xmlStr.size(), "noname.xml", nullptr, 0), xmlFreeDoc);
-
   if (xmlTree == nullptr)
     SC_THROW_EXCEPTION(utils::ExceptionParseError, "Failed to open XML xmlTree.");
 
@@ -43,15 +48,7 @@ void GWFParser::Parse(std::string const & xmlStr, SCgElements & elements)
   if (staticSector->children == nullptr)
     return;
 
-  try
-  {
-    ProcessStaticSector(staticSector, elements);
-  }
-  catch (utils::ScException const & e)
-  {
-    SC_LOG_ERROR("GWFParser::ProcessStaticSector: Exception caught in process static sector " << e.Message());
-  }
-
+  ProcessStaticSector(staticSector, elements);
   xmlCleanupParser();
 }
 
@@ -159,9 +156,6 @@ std::shared_ptr<SCgLink> GWFParser::CreateLink(
 
 bool GWFParser::HasContent(xmlNodePtr const node) const
 {
-  if (node == nullptr)
-    return false;
-
   for (xmlNodePtr child = node->children; child; child = child->next)
   {
     if (child->type == XML_ELEMENT_NODE && xmlStrcmp(child->name, CONTENT) == 0)
@@ -253,16 +247,18 @@ void GWFParser::FillContours(SCgContours const & contours, SCgElements const & a
 {
   for (auto const & [contourId, elements] : contours)
   {
-    auto const & contour = std::dynamic_pointer_cast<SCgContour>(allElements.at(contourId));
+    auto const & it = allElements.find(contourId);
+    if (it == allElements.cend())
+      SC_THROW_EXCEPTION(
+          utils::ExceptionParseError, "GWFParser::FillContours: Invalid contour id `" << contourId << "`.");
+
+    auto const & contour = std::dynamic_pointer_cast<SCgContour>(it->second);
     contour->SetElements(elements);
   }
 }
 
 std::string GWFParser::XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr) const
 {
-  if (ptr == nullptr)
-    return "";
-
   std::size_t length = xmlStrlen(ptr.get());
 
   std::string result(length, '\0');
@@ -280,6 +276,11 @@ std::unique_ptr<xmlChar, XmlCharDeleter> GWFParser::GetXmlProp(xmlNodePtr node, 
 std::string GWFParser::GetXmlPropStr(xmlNodePtr node, std::string const & propName) const
 {
   std::unique_ptr<xmlChar, XmlCharDeleter> const prop = GetXmlProp(node, propName);
+  if (prop == nullptr)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError,
+        "GWFParser::GetXmlPropStr: Gwf-element doesn't have property name `" << propName << "`.");
+
   std::string const propStr = XmlCharToString(prop);
   return propStr;
 }

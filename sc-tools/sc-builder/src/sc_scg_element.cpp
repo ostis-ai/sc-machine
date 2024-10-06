@@ -26,11 +26,6 @@ std::string const & SCgElement::GetId() const
   return m_id;
 }
 
-std::string const & SCgElement::GetParent() const
-{
-  return m_parent;
-}
-
 std::string const & SCgElement::GetIdentifier() const
 {
   return m_identifier;
@@ -44,11 +39,6 @@ std::string const & SCgElement::GetType() const
 std::string const & SCgElement::GetTag() const
 {
   return m_tag;
-}
-
-void SCgElement::SetIdentifier(std::string const & newIdentifier)
-{
-  m_identifier = newIdentifier;
 }
 
 // SCgNode
@@ -84,11 +74,6 @@ SCgLink::SCgLink(
 std::string const & SCgLink::GetContentType() const
 {
   return m_contentType;
-}
-
-std::string const & SCgLink::GetMimeType() const
-{
-  return m_mimeType;
 }
 
 std::string const & SCgLink::GetFileName() const

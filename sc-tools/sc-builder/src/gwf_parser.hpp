@@ -20,11 +20,7 @@
 class XmlCharDeleter
 {
 public:
-  void operator()(xmlChar * ptr) const
-  {
-    if (ptr == nullptr)
-      xmlFree(ptr);
-  }
+  void operator()(xmlChar * ptr) const;
 };
 
 class SCgElement;

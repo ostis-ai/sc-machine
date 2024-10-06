@@ -272,9 +272,6 @@ std::string SCgToSCsTypesConverter::GetSCsElementTypeBySCgElementType(
       {"BackwardConnectorTypes", &m_backwardConnectorTypes},
       {"UnsupportedConnectorTypes", &m_unsupportedConnectorTypes}};
 
-  auto it = dictMap.find(dict);
-  if (it == dictMap.end())
-    return "";
-
+  auto const it = dictMap.find(dict);
   return GetSCsElementDesignation(*(it->second), scgElement);
 }

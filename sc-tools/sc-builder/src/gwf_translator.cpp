@@ -26,12 +26,12 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 
 std::string GWFTranslator::TranslateGWFToSCs(std::string const & xmlStr, std::string const & filePath)
 {
-  SCgElements elementWithoutParents;
+  SCgElements elementsWithoutParents;
 
   GWFParser parser;
-  parser.Parse(xmlStr, elementWithoutParents);
+  parser.Parse(xmlStr, elementsWithoutParents);
 
-  if (elementWithoutParents.empty())
+  if (elementsWithoutParents.empty())
     SC_THROW_EXCEPTION(
         utils::ExceptionParseError,
         "GWFTranslator::TranslateGWFToSCs: There are no elements in file `" << filePath << "`.");
@@ -39,7 +39,7 @@ std::string GWFTranslator::TranslateGWFToSCs(std::string const & xmlStr, std::st
   SCsWriter writer;
   Buffer scsBuffer;
   std::unordered_set<SCgElementPtr> writtenElements;
-  writer.Write(elementWithoutParents, filePath, scsBuffer, 0, writtenElements);
+  writer.Write(elementsWithoutParents, filePath, scsBuffer, 0, writtenElements);
 
   return scsBuffer.GetValue();
 }
@@ -104,7 +104,7 @@ bool GWFTranslator::TranslateImpl(Params const & params)
   if (gwfText.empty())
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "GWFTranslator::TranslateImpl: .gwf file `" << params.m_fileName << "` is empty.");
+        "GWFTranslator::TranslateImpl: GWF file `" << params.m_fileName << "` is empty.");
 
   std::string const & scsText = TranslateGWFToSCs(gwfText, params.m_fileName);
   std::string const & scsSource = WriteStringToFile(scsText, params.m_fileName);
