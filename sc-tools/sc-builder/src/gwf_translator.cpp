@@ -100,30 +100,22 @@ std::string GWFTranslator::GetXMLFileContent(std::string const & fileName)
 
 bool GWFTranslator::TranslateImpl(Params const & params)
 {
-  try
-  {
-    std::string const & gwfText = GetXMLFileContent(params.m_fileName);
-    if (gwfText.empty())
-      SC_THROW_EXCEPTION(
-          utils::ExceptionInvalidParams,
-          "GWFTranslator::TranslateImpl: .gwf file `" << params.m_fileName << "` is empty.");
+  std::string const & gwfText = GetXMLFileContent(params.m_fileName);
+  if (gwfText.empty())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "GWFTranslator::TranslateImpl: .gwf file `" << params.m_fileName << "` is empty.");
 
-    std::string const & scsText = TranslateGWFToSCs(gwfText, params.m_fileName);
-    std::string const & scsSource = WriteStringToFile(scsText, params.m_fileName);
+  std::string const & scsText = TranslateGWFToSCs(gwfText, params.m_fileName);
+  std::string const & scsSource = WriteStringToFile(scsText, params.m_fileName);
 
-    Params newParams;
-    newParams.m_fileName = scsSource;
-    newParams.m_autoFormatInfo = params.m_autoFormatInfo;
-    newParams.m_outputStructure = params.m_outputStructure;
-    bool status = m_scsTranslator.Translate(newParams);
+  Params newParams;
+  newParams.m_fileName = scsSource;
+  newParams.m_autoFormatInfo = params.m_autoFormatInfo;
+  newParams.m_outputStructure = params.m_outputStructure;
+  bool status = m_scsTranslator.Translate(newParams);
 
-    std::filesystem::remove(scsSource.c_str());
+  std::filesystem::remove(scsSource.c_str());
 
-    return status;
-  }
-  catch (utils::ScException const & e)
-  {
-    SC_LOG_ERROR("Parse error: " << e.Message());
-    return false;
-  }
+  return status;
 }

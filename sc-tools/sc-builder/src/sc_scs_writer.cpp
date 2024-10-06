@@ -208,8 +208,7 @@ void SCsWriter::WriteMainIdentifier(
 
 // SCsFactory
 
-SCsElementPtr SCsElementFactory::CreateSCsElementForSCgElement(
-    SCgElementPtr const & scgElement)
+SCsElementPtr SCsElementFactory::CreateSCsElementForSCgElement(SCgElementPtr const & scgElement)
 {
   SCsElementPtr scsElement;
   std::string const & tag = scgElement->GetTag();

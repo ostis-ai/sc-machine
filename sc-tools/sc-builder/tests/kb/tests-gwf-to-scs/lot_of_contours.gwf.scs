@@ -37,7 +37,7 @@
                      => nrel_main_idtf: [ааа];;
 
                     ..el_102182952252272
-                      <- sc_node_struct_meta;;
+                      <- sc_node_structure;;
 
                     fkfkkf
                       <- sc_node;;
