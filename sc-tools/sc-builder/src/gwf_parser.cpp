@@ -185,7 +185,6 @@ std::shared_ptr<SCgContour> GWFParser::CreateContour(
     xmlNodePtr el) const
 {
   return std::make_shared<SCgContour>(id, parent, identifier, type, tag);
-  ;
 }
 
 std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
