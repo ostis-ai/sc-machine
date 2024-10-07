@@ -25,7 +25,7 @@ public:
   std::string TranslateGWFToSCs(std::string const & xmlStr, std::string const & filePath);
   std::string GetXMLFileContent(std::string const & filename);
 
-private:
+protected:
   SCsTranslator m_scsTranslator;
 
   std::string WriteStringToFile(std::string const & scsStr, std::string const & filePath);
