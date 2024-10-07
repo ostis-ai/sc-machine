@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+       <node type="node/const/perm/general" idtf="" shapeColor="0" id="180" parent="0" left="0" top="0" right="16.125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="454.40625" y="164" haveBus="true" idtf_pos="0">
+           <content type="0" mime_type="" content_visibility="false" file_name=""/>
+       </node>
+       <node type="node/const/perm/general" idtf="" shapeColor="0" id="182" parent="0" left="0" top="0" right="16.125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="624.40625" y="276" haveBus="false" idtf_pos="0">
+           <content type="0" mime_type="" content_visibility="false" file_name=""/>
+       </node>
+       <bus type="" idtf="" shapeColor="0" id="181" parent="0" owner="180" b_x="454.40625" b_y="184" e_x="454.40625" e_y="422">
+           <points/>
+       </bus>
+       <arc type="pair/const/pos/perm/orient/membership" idtf="" shapeColor="0" id="183" parent="0" id_b="181" id_e="182" b_x="464.4060769941108" b_y="275.0588225114464" e_x="604.4065960118068" e_y="275.88235497228544" dotBBalance="0.38235294117647056" dotEBalance="0">
+           <points/>
+       </arc>
+    </staticSector>
+</GWF>

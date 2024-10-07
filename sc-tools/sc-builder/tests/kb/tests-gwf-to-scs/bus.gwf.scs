@@ -1,0 +1,8 @@
+
+..el_182
+  <- sc_node;;
+
+..el_180
+  <- sc_node;;
+
+@connector_183 = (..el_180 -> ..el_182);;

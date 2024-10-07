@@ -101,11 +101,6 @@ std::string GWFTranslator::GetXMLFileContent(std::string const & fileName)
 bool GWFTranslator::TranslateImpl(Params const & params)
 {
   std::string const & gwfText = GetXMLFileContent(params.m_fileName);
-  if (gwfText.empty())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams,
-        "GWFTranslator::TranslateImpl: GWF file `" << params.m_fileName << "` is empty.");
-
   std::string const & scsText = TranslateGWFToSCs(gwfText, params.m_fileName);
   std::string const & scsSource = WriteStringToFile(scsText, params.m_fileName);
 
