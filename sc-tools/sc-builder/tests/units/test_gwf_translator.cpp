@@ -190,3 +190,23 @@ TEST_F(GWFTranslatorTest, SCsTree)
   EXPECT_FALSE(testSCsTree.Compare(correctSCsTree)->empty());
   EXPECT_FALSE(correctSCsTree.Compare(testSCsTree)->empty());
 }
+
+class TestGWFTranslator : public GWFTranslator
+{
+public:
+  explicit TestGWFTranslator(class ScMemoryContext & context)
+    : GWFTranslator(context)
+  {
+  }
+
+  std::string WriteStringToFile(std::string const & scsText, std::string const & fileName)
+  {
+    return GWFTranslator::WriteStringToFile(scsText, fileName);
+  }
+};
+
+TEST_F(GWFTranslatorTest, WriteStringToFileInUnknownDirectory)
+{
+  TestGWFTranslator translator(*m_ctx);
+  EXPECT_THROW(translator.WriteStringToFile("text", "test/test.txt"), utils::ExceptionCritical);
+}
