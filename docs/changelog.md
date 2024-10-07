@@ -144,6 +144,7 @@ See documentation, to learn more about using new API.
 
 ### Added
 
+- Implement gwf2scs-translator in cpp
 - `GetSCsElementKeynode` method for sc-types to get their sc.s-keynode system identifiers
 - `GetDirectSCsConnector` and `GetReverseSCsConnector` for sc-types to get their designations in SCs-code
 - std::string operator for ScType
@@ -206,7 +207,6 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
-- Rewrite gwf-translator from py to cpp
 - Specify dependencies near targets, not in overall file
 - Make glib dependencies private
 - Replace public sc-base defines with methods
@@ -261,6 +261,7 @@ See documentation, to learn more about using new API.
 
 ### Removed
 
+- gwf2scs-translator in python
 - Designations of fuzzy sc.s-arcs: ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_```
 - Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract`
 - Methods of `BeingEventsPending`: BeingEventsPending
