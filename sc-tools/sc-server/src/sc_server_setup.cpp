@@ -14,7 +14,7 @@
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
 #include "sc_server_factory.hpp"
-#include "sc-server-module/sc_server_module.hpp"
+#include "sc_server_module.hpp"
 
 void PrintStartMessage()
 {

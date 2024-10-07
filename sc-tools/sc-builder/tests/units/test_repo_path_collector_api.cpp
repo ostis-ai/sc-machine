@@ -4,10 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
-
-#include "sc-memory/sc_utils.hpp"
 #include "repo_path_collector_test_api.hpp"
+
+#include <sc-memory/sc_utils.hpp>
 
 #define TEST_SIMPLE_REPO SC_BUILDER_TEST_REPOS "/simple_repo.path"
 #define TEST_REPEATED_REPOS SC_BUILDER_TEST_REPOS "/repeated_repos.path"

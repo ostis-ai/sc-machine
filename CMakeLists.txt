@@ -4,7 +4,7 @@ project(sc-machine)
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
-set(SC_MACHINE_ROOT ${CMAKE_CURRENT_LIST_DIR})
+set(SC_MACHINE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 include(${SC_MACHINE_ROOT}/macro/macros.cmake)
 project_version(SC_MACHINE "0.9.0-Unlock")
 
@@ -73,6 +73,8 @@ elseif (NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM AND ${AUTO_CCACHE})
     message(STATUS "Using ${CCACHE_PROGRAM} as compiler launcher")
@@ -93,8 +95,7 @@ if(${SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES})
     add_definitions(-DSC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES)
 endif()
 
-include("${SC_MACHINE_ROOT}/dependencies.cmake")
-sc_target_dependencies()
+include(CTest)
 
 message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")

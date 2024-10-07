@@ -4,15 +4,14 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
-
 #include "builder_test.hpp"
 
-#include "../../src/builder.hpp"
-#include "../../src/sc_builder_setup.hpp"
+#include <sc-builder/builder.hpp>
 
-#include "sc_options.hpp"
-#include "sc_memory_config.hpp"
+#include <sc-config/sc_options.hpp>
+#include <sc-config/sc_memory_config.hpp>
+
+#include "sc_builder_setup.hpp"
 
 TEST(ScBuilder, RunMain)
 {

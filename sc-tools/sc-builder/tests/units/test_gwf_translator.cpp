@@ -4,12 +4,11 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
-
 #include "builder_test.hpp"
 
-#include "sc-memory/sc_utils.hpp"
-#include "../../src/gwf_translator.hpp"
+#include <sc-memory/sc_utils.hpp>
+
+#include "gwf_translator.hpp"
 
 #define TEST_CORRECT_GWF SC_BUILDER_KB "/test-templates/test_template_1.gwf"
 #define TEST_INCORRECT_GWF SC_BUILDER_TEST_REPOS "/kb/example.gwf"

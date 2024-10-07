@@ -10,8 +10,7 @@
 
 extern "C"
 {
-#include "sc-core/sc-store/sc_storage.h"
-#include "sc-core/sc-store/sc_storage_private.h"
+#include <sc-store/sc_storage.h>
 }
 
 ScServerImpl::ScServerImpl(std::string const & host, ScServerPort port, sc_bool parallelActions)
@@ -117,6 +116,7 @@ void ScServerImpl::OnMessage(ScServerSessionId const & sessionId, ScServerMessag
   }
   else
   {
+    // TODO(NikitaZotov): sc-server should not know about it
     sc_storage_start_new_process();
 
     action->Emit();

@@ -17,19 +17,19 @@ libraries. External libraries have the highest priority.
 * Order of directories in includes: `current_dir/current_file.hpp`, other includes from the same dir, includes from other dirs sorted by name.
 
 ```cpp
-#include "../test.hpp"
-
-#include "hash/hmac.h"
-#include "hash/sha256.h"
-
-#include "sc-memory/sc_event_wait.hpp"
-#include "sc-memory/sc_agent.hpp"
+#include "test.hpp"
 
 #include <curl/curl.h>
 
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
+
+#include "hash/hmac.h"
+#include "hash/sha256.h"
+
+#include "sc-memory/sc_event_wait.hpp"
+#include "sc-memory/sc_agent.hpp"
 ```
 
 * Don't use `using namespace std` or other namespaces globally. You can use them locally in test cpp files or functions.

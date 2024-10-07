@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "translator.hpp"
+#include "sc-builder/translator.hpp"
 
 class SCsTranslator : public Translator
 {

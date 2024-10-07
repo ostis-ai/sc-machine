@@ -4,8 +4,6 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
-
 #include "builder_test.hpp"
 
 TEST_F(ScBuilderTest, Smoke)

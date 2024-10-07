@@ -4,13 +4,13 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "builder.hpp"
-#include "scs_translator.hpp"
-#include "gwf_translator.hpp"
+#include "sc-builder/builder.hpp"
 
 #include <memory>
-
 #include <fstream>
+
+#include "scs_translator.hpp"
+#include "gwf_translator.hpp"
 
 Builder::Builder() = default;
 

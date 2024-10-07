@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "translator.hpp"
+#include "sc-builder/translator.hpp"
+
 #include "scs_translator.hpp"
 #include "builder_defines.hpp"
 

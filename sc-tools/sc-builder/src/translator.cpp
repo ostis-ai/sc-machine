@@ -4,9 +4,9 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "translator.hpp"
+#include "sc-builder/translator.hpp"
 
-#include "sc-memory/sc_memory.hpp"
+#include <sc-memory/sc_memory.hpp>
 
 Translator::Translator(ScMemoryContext & ctx)
   : m_ctx(ctx)

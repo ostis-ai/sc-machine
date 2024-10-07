@@ -7,7 +7,8 @@
 #pragma once
 
 #include "sc-server-impl/sc_server_impl.hpp"
-#include "sc_memory_config.hpp"
+
+#include <sc-config/sc_memory_config.hpp>
 
 class ScServerFactory
 {

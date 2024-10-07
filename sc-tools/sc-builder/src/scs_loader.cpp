@@ -4,9 +4,10 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "scs_loader.hpp"
+#include "sc-builder/scs_loader.hpp"
 
-#include "sc-memory/sc_memory.hpp"
+#include <sc-memory/sc_memory.hpp>
+
 #include "scs_translator.hpp"
 
 bool ScsLoader::loadScsFile(ScMemoryContext &context, const std::string &filename)
