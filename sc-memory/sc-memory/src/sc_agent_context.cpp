@@ -28,8 +28,10 @@ ScAgentContext::ScAgentContext(ScAddr const & userAddr) noexcept
 {
 }
 
+// clang-format off
 ScAgentContext::ScAgentContext(ScAgentContext && other) noexcept
   : ScMemoryContext(std::move(other)) {};
+// clang-format on
 
 ScAgentContext & ScAgentContext::operator=(ScAgentContext && other) noexcept
 {

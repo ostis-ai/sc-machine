@@ -26,7 +26,9 @@ ScElementaryEvent::ScElementaryEvent(
   , m_subscriptionAddr(subscriptionElementAddr)
   , m_connectorAddr(connectorAddr)
   , m_connectorType(connectorType)
+  // clang-format off
   , m_otherAddr(otherAddr) {};
+// clang-format on
 
 ScAddr ScElementaryEvent::GetEventClass() const noexcept
 {
@@ -78,7 +80,9 @@ ScEventBeforeEraseElement::ScEventBeforeEraseElement(
         subscriptionElementAddr,
         connectorAddr,
         connectorType,
+        // clang-format off
         otherAddr) {};
+// clang-format on
 
 // ScEventBeforeChangeLinkContent
 //-------------------------------------------------------------------------
@@ -95,4 +99,6 @@ ScEventBeforeChangeLinkContent::ScEventBeforeChangeLinkContent(
         subscriptionElementAddr,
         connectorAddr,
         connectorType,
+        // clang-format off
         otherAddr) {};
+// clang-format on
