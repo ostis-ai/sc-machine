@@ -20,9 +20,8 @@ target_compile_definitions(sc-server-lib
 )
 target_include_directories(sc-server-lib
     PRIVATE ${SC_CORE_SRC}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PUBLIC $<INSTALL_INTERFACE:include>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    PUBLIC $<INSTALL_INTERFACE:src>
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/

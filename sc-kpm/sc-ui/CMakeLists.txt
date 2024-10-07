@@ -18,5 +18,6 @@ if(${SC_CLANG_FORMAT_CODE})
 endif()
 
 if(${SC_BUILD_TESTS})
+    set(SC_KPM_UI_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
     add_subdirectory(tests)
 endif()
