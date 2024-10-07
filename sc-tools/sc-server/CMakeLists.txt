@@ -1,3 +1,5 @@
+set(SC_CORE_SRC "${SC_MACHINE_ROOT}/sc-memory/sc-core/src")
+
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "src/*.cpp" "src/*.hpp"
     "src/*/*.cpp" "src/*/*.hpp"

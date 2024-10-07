@@ -47,7 +47,7 @@ jobs:
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: ON
           SANITIZER_TYPE: none
-        run: scripts/ci/make_tests.sh
+        run: scripts/build_sc_machine.sh --cmake-arg "-DSC_COVERAGE=ON" -t
 
       - name: Prepare coverage
         id: prepare_coverage
@@ -55,7 +55,7 @@ jobs:
 
       - name: Run tests
         id: run_tests
-        run: scripts/ci/run_tests.sh
+        run: scripts/run_tests.sh
 
       - name: Export coverage report
         id: export_coverage

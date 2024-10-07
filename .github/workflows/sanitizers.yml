@@ -47,8 +47,8 @@ jobs:
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
-        run: scripts/ci/make_tests.sh
+        run: scripts/build_sc_machine.sh -t
 
       - name: Run tests
         id: run_tests
-        run: scripts/ci/run_tests.sh
+        run: scripts/run_tests.sh

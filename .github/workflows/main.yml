@@ -43,15 +43,15 @@ jobs:
           BUILD_TYPE: ${{ matrix.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: none
-        run: scripts/ci/make_tests.sh
+        run: scripts/build_sc_machine.sh -t
 
       - name: Run tests
         id: run_tests
-        run: scripts/ci/run_tests.sh
+        run: scripts/run_tests.sh
 
       - name: Run sc-machine
         id: run_sc_machine
         run: |
           mkdir kb
-          bin/sc-builder -i kb -o kb.bin --clear
-          bin/sc-machine -t -c sc-machine.ini -s kb.bin
+          build/bin/sc-builder -i kb -o kb.bin --clear
+          build/bin/sc-machine -t -c sc-machine.ini -s kb.bin
