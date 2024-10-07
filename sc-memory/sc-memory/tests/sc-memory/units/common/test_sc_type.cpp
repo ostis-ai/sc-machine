@@ -6,6 +6,7 @@
 
 #include <sc-memory/test/sc_test.hpp>
 
+#include <algorithm>
 #include <bitset>
 #include <iomanip>
 
