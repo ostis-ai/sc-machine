@@ -147,6 +147,11 @@ TEST_F(GWFTranslatorTest, NodeWithUnknownType)
   EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionItemNotFound);
 }
 
+TEST_F(GWFTranslatorTest, Bus)
+{
+  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "bus.gwf"));
+}
+
 TEST_F(GWFTranslatorTest, EmptyContour)
 {
   EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "empty_contour.gwf"));
