@@ -1,6 +1,7 @@
-macro(project_version _PACKAGE _VERSION)
-    set(${_PACKAGE}_VERSION ${_VERSION})
-    add_definitions(-D${_PACKAGE}_VERSION=${_VERSION})
+macro(parse_project_version)
+    set(_PACKAGE SC_MACHINE)
+    set(${_PACKAGE}_VERSION ${CMAKE_PROJECT_VERSION})
+    add_definitions(-D${_PACKAGE}_VERSION=${CMAKE_PROJECT_VERSION})
 
     string(REGEX MATCHALL "[0-9A-Za-z]+" _VERSION_COMPONENTS "${${_PACKAGE}_VERSION}")
     list(LENGTH _VERSION_COMPONENTS _LEN)
