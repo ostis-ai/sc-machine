@@ -19,7 +19,7 @@ Changed files include:
 
 Example of usage:
 ```shell
-./scripts/migration/migrate_to_new_agent_api.sh /absolute/path/to/folder/with/project
+./scripts/migration/migrate_to_new_agent_api.sh path/to/folder/with/project
 ```
 
 There may be a situation when this program won't be able to replace code correctly, these places in code are marked with `//todo(codegen-removal):`
