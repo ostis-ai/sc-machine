@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include "sc-memory/sc_memory.hpp"
-#include "../sc_memory_json_payload.hpp"
+#include <sc-memory/sc_memory.hpp>
+
+#include "sc-server-impl/sc-memory-json/sc_memory_json_payload.hpp"
 
 class ScMemoryJsonAction
 {

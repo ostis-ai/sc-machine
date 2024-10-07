@@ -8,4 +8,4 @@ if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-ui-translators-tests)
 endif()
 
-add_definitions(-DSC_KPM_TEST_SRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
+add_definitions(-DSC_UI_TEST_SRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}")

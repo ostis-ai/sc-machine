@@ -26,7 +26,7 @@
 */
 #pragma once
 
-#include "../sc_defines.hpp"
+#include "sc-memory/sc_defines.hpp"
 
 #include <string>
 

@@ -30,8 +30,7 @@ void connect_result_to_action(sc_memory_context * context, sc_addr action, sc_ad
 void appendIntoResult(sc_memory_context * context, sc_addr result, sc_addr el);
 
 /*!
- * Remove action from action_initiated set and append it into
- * action_finished set.
+ * Append action into action_finished set.
  * @param action sc-add of action node
  */
 void finish_action(sc_memory_context * context, sc_addr action);

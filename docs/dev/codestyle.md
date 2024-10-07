@@ -17,7 +17,7 @@ libraries. External libraries have the highest priority.
 * Order of directories in includes: `current_dir/current_file.hpp`, other includes from the same dir, includes from other dirs sorted by name.
 
 ```cpp
-#include "../test.hpp"
+#include "test.hpp"
 
 #include <curl/curl.h>
 

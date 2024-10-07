@@ -6,7 +6,7 @@
 
 #include "sc-memory/utils/sc_message.hpp"
 
-#include "../sc_platform.hpp"
+#include "sc_platform.hpp"
 
 std::string DebugPrint(std::string const & t)
 {

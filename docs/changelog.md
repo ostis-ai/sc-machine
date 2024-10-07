@@ -138,7 +138,7 @@ encapsulated this logic;
 - Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract` were removed.
 - Sources of the sc-machine were separated into public and private ones. Public sources of targets are located in `include` directory, private ones - in `src` directory, tests for code - in `tests` directory. Private sources can't be included into project's code directly. Besides that there are changes of location of some API classes of the sc-machine:
     - Now `ScTest` class is part of `sc-memory` target. Use `#include <sc-memory/test/sc_test.hpp>` to include it into code.
-    - To include `ScsLoader` class, use `#include <sc-builder/sc_loader.hpp>` to include it into code.
+    - To include `ScsLoader` class into code, use `#include <sc-builder/sc_loader.hpp>`.
 
 See documentation, to learn more about using new API.
 

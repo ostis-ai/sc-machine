@@ -10,13 +10,13 @@
 
 #include <sc-memory/sc_memory.hpp>
 
-#include "../sc_memory_json_handler.hpp"
-#include "../sc_memory_json_payload.hpp"
+#include "sc-server-impl/sc-memory-json/sc_memory_json_handler.hpp"
+#include "sc-server-impl/sc-memory-json/sc_memory_json_payload.hpp"
 
 #include "sc_memory_json_events_manager.hpp"
 
-#include "../../sc_server_defines.hpp"
-#include "../../sc_server.hpp"
+#include "sc-server-impl/sc_server_defines.hpp"
+#include "sc-server-impl/sc_server.hpp"
 
 class ScMemoryJsonEventsHandler : public ScMemoryJsonHandler
 {

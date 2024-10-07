@@ -6,8 +6,9 @@
 
 #include "sc-memory/utils/sc_signal_handler.hpp"
 
-#include "../sc_platform.hpp"
 #include "sc-memory/sc_debug.hpp"
+
+#include "sc_platform.hpp"
 
 #if SC_IS_PLATFORM_WIN32
 #  include <windows.h>

@@ -6,13 +6,13 @@
 
 #pragma once
 
-// Originaly got it there: https://github.com/tapio/rlutil/blob/master/rlutil.h
-
-#include "../sc_defines.hpp"
+// Originally got it there: https://github.com/tapio/rlutil/blob/master/rlutil.h
 
 #include <cinttypes>
 #include <iostream>
 #include <string>
+
+#include "sc-memory/sc_defines.hpp"
 
 class ScConsole final
 {

@@ -17,7 +17,7 @@
 
 using json = nlohmann::json;
 
-std::string const TEST_STRUCTURES_PATH = SC_KPM_TEST_SRC_PATH "/translators/test-structures/";
+std::string const TEST_STRUCTURES_PATH = SC_UI_TEST_SRC_PATH "/translators/test-structures/";
 std::string const COMMAND_INIT_CHECKS_PATH = TEST_STRUCTURES_PATH + "command_init_checks/";
 
 ScAddr findTranslation(ScMemoryContext & context, ScAddr const & constructionAddr)

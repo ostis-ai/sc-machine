@@ -8,7 +8,8 @@
 
 #include <string>
 
-#include "../sc_memory_json_handler.hpp"
+#include "sc-server-impl/sc-memory-json/sc_memory_json_handler.hpp"
+
 #include "sc_memory_json_action.hpp"
 
 class ScMemoryJsonActionsHandler : public ScMemoryJsonHandler

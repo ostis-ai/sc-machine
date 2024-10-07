@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "../sc_defines.hpp"
-#include "../sc_addr.hpp"
-
 #include <unordered_map>
 #include <string>
+
+#include "sc-memory/sc_defines.hpp"
+#include "sc-memory/sc_addr.hpp"
 
 class ScMemoryContext;
 
