@@ -1,21 +1,17 @@
 cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 17)
 project(sc-machine VERSION "0.9.0")
+message(STATUS "Current Project Version: ${CMAKE_PROJECT_VERSION}")
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-include(${SC_MACHINE_ROOT}/macro/macros.cmake)
-project_version(SC_MACHINE "0.9.0-Unlock")
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
-# CMAKE_BINARY_DIR is a path to the top level of the build tree (i.e to the "build" folder). Placing a "bin" folder nearby
-# if(NOT SC_BIN_PATH)
-#     set(SC_BIN_PATH "${CMAKE_BINARY_DIR}/../bin")
-# endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-message("Binary output dir:" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+message(STATUS "Binary output directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+message(STATUS "Libary output directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
 option(SC_BUILD_TESTS "Flag to build unit tests" OFF)
@@ -24,10 +20,12 @@ option(SC_BUILD_BENCH "Flag to build benchmark" OFF)
 set(SC_FILE_MEMORY "Dictionary" CACHE STRING "Sc-fs-storage type")
 option(SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES "Flag to optimize searching incoming sc-connctors from sc-structures" ON)
 
+include(${SC_MACHINE_ROOT}/macro/macros.cmake)
+parse_project_version()
+
 code_coverage(SC_COVERAGE "Flag to generate coverage report" OFF "-g -O0 --coverage")
 option(SC_CLANG_FORMAT_CODE "Flag to add clangformat and clangformat_check targets" OFF)
 sanitizer(SC_USE_SANITIZER "Build with specified sanitizer" "none")
-
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSC_DEBUG -DSC_PROFILE")
