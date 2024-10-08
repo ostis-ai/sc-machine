@@ -13,8 +13,6 @@
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/sc_keynodes.hpp>
 
-#include "test_defines.hpp"
-
 #include "sc-server-impl/sc_server_impl.hpp"
 
 class ScServerTest : public testing::Test

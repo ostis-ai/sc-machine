@@ -14,8 +14,6 @@
 #include <sc-memory/sc_agent_context.hpp>
 #include <algorithm>
 
-#include "test_defines.hpp"
-
 class ScBuilderTest : public testing::Test
 {
 protected:
