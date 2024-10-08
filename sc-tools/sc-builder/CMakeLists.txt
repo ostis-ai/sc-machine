@@ -1,10 +1,5 @@
 set(SC_BUILDER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/builder_defines.hpp.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/builder_defines.hpp"
-)
-
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "src/*.cpp" "src/*.hpp"
     "include/sc-builder/*.hpp"
@@ -24,6 +19,9 @@ target_include_directories(sc-builder-lib
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PUBLIC $<INSTALL_INTERFACE:include>
+)
+target_compile_definitions(sc-builder-lib PRIVATE
+    SC_PREPARE_BUILD_SCRIPTS_PATH="${SC_MACHINE_ROOT}/scripts"
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/

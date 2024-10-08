@@ -6,8 +6,6 @@
 
 #include <sc-memory/test/sc_test.hpp>
 
-#include "test_defines.hpp"
-
 extern "C"
 {
 #include <sc-core/sc-container/sc_string.h>

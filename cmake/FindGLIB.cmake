@@ -1,6 +1,6 @@
 function(FindGLIB)
     if (glib_CACHED)
-        message(STATUS "GLib found in cache.")
+        message(STATUS "GLib found in cache")
         return()
     endif()
 
@@ -22,6 +22,6 @@ function(FindGLIB)
         
         set(glib_CACHED TRUE CACHE BOOL "GLib found")
     else()
-        message(STATUS "GLib is already found.")
+        message(STATUS "GLib is already found")
     endif()
 endfunction()
