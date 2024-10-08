@@ -20,7 +20,7 @@ services:
       # Use the commented env variable if you need to rebuild KB every startup.
       - "REBUILD_KB=${REBUILD_KB:-0}"
       - "KB_PATH=${KB_PATH:-/kb/repo.path}"
-      - "BINARY_PATH=/sc-machine/bin"
+      - "BINARY_PATH=/sc-machine/build/bin"
       - "CONFIG_PATH=/sc-machine/sc-machine.ini"
     command:
       - "run"
