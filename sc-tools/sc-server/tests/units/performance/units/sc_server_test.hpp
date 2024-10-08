@@ -13,7 +13,6 @@ extern "C"
 #include <sc-core/sc_memory_params.h>
 }
 
-#include "test_defines.hpp"
 #include "sc-client/sc_client.hpp"
 
 #include "sc-server-impl/sc_server_impl.hpp"
