@@ -36,6 +36,7 @@
     * [Knowledge Base repo file](sc-tools/kb_repo_file.md) - *description of configuration of knowledge base sources*
     * [Websocket Server](sc-tools/sc_server.md) - *description of options of sc-server for communication with sc-memory through network*
     * [Sc-machine Runner](sc-tools/sc_machine.md) - *description of options of sc-machine runner*
+    * [Migrate to new agent API](sc-tools/migrate_to_new_agent_api.md) - *description of script that can be used to migrate to new C++ Agents API*
 - **Development**
     * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
     * [Codestyle Guide](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
