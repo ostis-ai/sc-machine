@@ -30,6 +30,7 @@ COPY --from=builder /sc-machine/requirements.txt /sc-machine/requirements.txt
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
 COPY --from=builder /sc-machine/sc-machine.ini /sc-machine/sc-machine.ini 
 COPY --from=builder /sc-machine/build/bin /sc-machine/build/bin
+COPY --from=builder /sc-machine/build/lib /sc-machine/build/lib
 RUN /sc-machine/scripts/install_deps_python.sh
 WORKDIR /sc-machine/scripts
 

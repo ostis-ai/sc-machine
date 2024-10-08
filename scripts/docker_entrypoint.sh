@@ -49,7 +49,7 @@ function start_server() {
     then
         # you should provide the config file path and host settings yourself in case you want to use custom options!
         echo "Using default arguments."
-        "$BINARY_PATH"/sc-server -c "$CONFIG_PATH" -h 0.0.0.0 -e "$BINARY_PATH/extensions"
+        "$BINARY_PATH"/sc-server -c "$CONFIG_PATH" -h 0.0.0.0 -e "$EXTENSIONS_PATH"
     else
         "$BINARY_PATH"/sc-server "$@"
     fi
@@ -67,7 +67,7 @@ function start_machine {
     then
         # you should provide the config file path and host settings yourself in case you want to use custom options!
         echo "Using default arguments."
-        "$BINARY_PATH"/sc-machine -c "$CONFIG_PATH" -e "$BINARY_PATH/extensions"
+        "$BINARY_PATH"/sc-machine -c "$CONFIG_PATH" -e "$EXTENSIONS_PATH"
     else
         "$BINARY_PATH"/sc-machine "$@"
     fi
