@@ -53,7 +53,7 @@ The package artifacts are available [here](https://github.com/ostis-ai/sc-machin
 # you can override this variable via -D<proj_name>_PATH_SC_MACHINE_PATH or CMakeUserPreset.json / CMakePreset.json files
 set(<proj_name>_SC_MACHINE_PATH "/location/to/sc-machine-<version>-<platform>" CACHE PATH "sc-machine installation path")
 
-# can be overriden using env variables as well
+# can be override using env variables as well
 if(DEFINED ENV{<proj_name>_SC_MACHINE_PATH})
   set(<proj_name>_SC_MACHINE_PATH "$ENV{<proj_name>_SC_MACHINE_PATH}")
 endif()
@@ -140,7 +140,7 @@ target_link_libraries(wave-find-path sc-machine::sc-memory)
 ```
 
 ```cpp
-#include "sc-memory/sc_addr.hpp"
+#include <sc-memory/sc_addr.hpp>
 
 ScAddr graph, rrel_arcs, rrel_nodes;
 ```
@@ -164,7 +164,7 @@ It's almost always problematic to edit a project while also consuming it as a li
 ```sh
 conan editable add <path to sc-machine repo>
 conan editable list
-# sc-machine of the corersponding version should be in the output
+# sc-machine of the corresponding version should be in the output
 # make changes in the project and run a rebuild
 cmake --preset debug-conan
 # using a debug build since that would allow us to step into the library's code while debugging
@@ -193,6 +193,7 @@ You can use convenience scripts provided in our repo (`scripts/install_deps_ubun
 ### Testing Conan package definition
 
 It is possible to write tests for the Conan packaging using [local package development flow](https://docs.conan.io/2/tutorial/developing_packages/local_package_development_flow.html).
+
 ## Troubleshooting
 
 - If you encounter issues with Conan, try clearing the Conan cache: `conan cache clean`
