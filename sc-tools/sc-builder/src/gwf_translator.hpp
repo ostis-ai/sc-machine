@@ -22,11 +22,12 @@ public:
 
   bool TranslateImpl(Params const & params) override;
 
-  std::string TranslateGWFToSCs(std::string const & xmlStr, std::string const & filePath);
-  std::string GetXMLFileContent(std::string const & filename);
+  static std::string TranslateXMLFileContentToSCs(std::string const & filename);
 
 protected:
   SCsTranslator m_scsTranslator;
 
-  std::string WriteStringToFile(std::string const & scsStr, std::string const & filePath);
+  static std::string WriteStringToFile(std::string const & scsStr, std::string const & filePath);
+  static std::string TranslateGWFToSCs(std::string const & xmlStr, std::string const & filePath);
+  static std::string GetXMLFileContent(std::string const & filename);
 };

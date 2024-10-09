@@ -16,6 +16,7 @@
 #include <libxml2/libxml/tree.h>
 
 #include "gwf_translator_constants.hpp"
+#include "sc_scg_element.hpp"
 
 class XmlCharDeleter
 {
@@ -23,72 +24,60 @@ public:
   void operator()(xmlChar * ptr) const;
 };
 
-class SCgElement;
-class SCgNode;
-class SCgLink;
-class SCgBus;
-class SCgContour;
-class SCgConnector;
-
 class GWFParser
 {
 public:
-  void Parse(std::string const & xmlStr, SCgElements & elements);
+  static void Parse(std::string const & xmlStr, SCgElements & elements);
 
 private:
-  xmlChar const * const STATIC_SECTOR = (xmlChar const *)"staticSector";
-  xmlChar const * const CONTENT = (xmlChar const *)"content";
-
-  std::shared_ptr<SCgNode> CreateNode(
-      std::string const & tag,
+  static std::shared_ptr<SCgNode> CreateNode(
       std::string const & id,
       std::string const & parent,
       std::string const & identifier,
       std::string const & type,
-      xmlNodePtr el) const;
+      std::string const & tag);
 
-  std::shared_ptr<SCgLink> CreateLink(
-      std::string const & tag,
-      std::string const & id,
-      std::string const & parent,
-      std::string const & identifier,
-      std::string const & type,
-      xmlNodePtr el) const;
-
-  bool HasContent(xmlNodePtr const node) const;
-
-  std::shared_ptr<SCgBus> CreateBus(
-      std::string const & tag,
-      std::string const & id,
-      std::string const & parent,
-      std::string const & identifier,
-      std::string const & type,
-      xmlNodePtr el) const;
-
-  std::shared_ptr<SCgContour> CreateContour(
+  static std::shared_ptr<SCgLink> CreateLink(
       std::string const & id,
       std::string const & parent,
       std::string const & identifier,
       std::string const & type,
       std::string const & tag,
-      xmlNodePtr el) const;
+      xmlNodePtr el);
 
-  std::shared_ptr<SCgConnector> CreateConnector(
-      std::string const & tag,
+  static bool HasContent(xmlNodePtr node);
+
+  static std::shared_ptr<SCgBus> CreateBus(
       std::string const & id,
       std::string const & parent,
       std::string const & identifier,
       std::string const & type,
+      std::string const & tag,
+      xmlNodePtr el);
+
+  static std::shared_ptr<SCgContour> CreateContour(
+      std::string const & id,
+      std::string const & parent,
+      std::string const & identifier,
+      std::string const & type,
+      std::string const & tag);
+
+  static std::shared_ptr<SCgConnector> CreateConnector(
+      std::string const & id,
+      std::string const & parent,
+      std::string const & identifier,
+      std::string const & type,
+      std::string const & tag,
       xmlNodePtr el,
-      SCgConnectors & connectors) const;
+      SCgConnectors & connectors);
 
-  void FillConnectors(SCgConnectors const & connectors, SCgElements const & elements);
+  static void FillConnectors(SCgConnectors const & connectors, SCgElements const & elements);
 
-  void FillContours(SCgContours const & contours, SCgElements const & elements);
+  static void FillContours(SCgContours const & contours, SCgElements const & elements);
 
-  void ProcessStaticSector(xmlNodePtr staticSector, SCgElements & elementsWithParents);
+  static void ProcessStaticSector(xmlNodePtr staticSector, SCgElements & elementsWithParents);
 
-  std::string XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr) const;
-  std::unique_ptr<xmlChar, XmlCharDeleter> GetXmlProp(xmlNodePtr node, std::string const & propName) const;
-  std::string GetXmlPropStr(xmlNodePtr node, std::string const & propName) const;
+  static std::string XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr);
+  static std::unique_ptr<xmlChar, XmlCharDeleter> GetXmlProp(xmlNodePtr node, std::string const & propName);
+  static std::string GetXmlPropStr(xmlNodePtr node, std::string const & propName);
 };

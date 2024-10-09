@@ -21,27 +21,28 @@ SCsTreeNodePtr SCsTreeNode::AddChildNode(std::string const & name, std::string c
   return node;
 }
 
-std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTreeNode::Compare(SCsTreeNode const & otherNode)
+Differences SCsTreeNode::Compare(SCsTreeNode const & otherNode)
 {
   auto differences = std::make_shared<std::list<std::pair<std::string, std::string>>>();
 
   for (auto const & child1 : this->children)
   {
-    auto it = otherNode.children.find(child1.first);
+    auto const & it = otherNode.children.find(child1.first);
     if (it == otherNode.children.cend())
-      differences->emplace_back(child1.first, "missing");
+      differences->emplace_back(child1.first + " with parent " + this->m_name, "missing");
     else
     {
-      auto childDifferences = child1.second->Compare(*it->second);
+      auto const & childDifferences = child1.second->Compare(*it->second);
       if (childDifferences)
-        differences->insert(differences->cend(), childDifferences->cbegin(), childDifferences->cend());
+        differences->splice(differences->cend(), *childDifferences);
     }
   }
 
   for (auto const & child2 : otherNode.children)
   {
-    if (this->children.find(child2.first) == this->children.cend())
-      differences->emplace_back("missing", child2.first);
+    auto const & it = this->children.find(child2.first);
+    if (it == this->children.cend())
+      differences->emplace_back("missing", child2.first + " with parent " + otherNode.m_name);
   }
 
   return differences;
@@ -51,13 +52,12 @@ void SCsTree::Parse(std::string const & scsText)
 {
   std::istringstream iss(scsText);
   std::string line;
-  std::list<SCsTreeNodePtr> nodeStack;
+  std::list<SCsTreeNodePtr> contoursStack;
 
   m_root = std::make_shared<SCsTreeNode>("root", "");
 
-  auto currentNode = m_root;
-  bool isContentMultiLine = false;
-  bool flag = false;
+  bool isContentMultiLineInsideConnectorOrLink = false;
+  bool isNodeMultiline = false;
   std::string multiLineContent;
   std::string currentName;
 
@@ -67,17 +67,17 @@ void SCsTree::Parse(std::string const & scsText)
     if (line.empty())
       continue;
 
-    auto parentNode = nodeStack.empty() ? m_root : nodeStack.back();
+    auto parentNode = contoursStack.empty() ? m_root : contoursStack.back();
 
-    if (isContentMultiLine)
+    if (isContentMultiLineInsideConnectorOrLink)
     {
       if (Check(BLOCK_END, line))
       {
-        size_t blockEndPos = line.find(BLOCK_END);
+        size_t const blockEndPos = line.find(BLOCK_END);
         multiLineContent += "\n" + line.substr(0, blockEndPos);
 
-        currentNode = parentNode->AddChildNode(currentName, multiLineContent);
-        isContentMultiLine = false;
+        parentNode->AddChildNode(currentName, multiLineContent);
+        isContentMultiLineInsideConnectorOrLink = false;
         multiLineContent.clear();
 
         continue;
@@ -86,38 +86,38 @@ void SCsTree::Parse(std::string const & scsText)
       multiLineContent += "\n" + line;
       continue;
     }
-    else if (flag)
+    else if (isNodeMultiline)
     {
-      size_t elementEndPos = line.find(ELEMENT_END);
+      size_t const elementEndPos = line.find(ELEMENT_END);
 
       std::string content = line.substr(0, elementEndPos);
       utils::StringUtils::Trim(content);
 
-      currentNode = parentNode->AddChildNode(currentName, content);
+      parentNode->AddChildNode(currentName, content);
 
-      flag = false;
+      isNodeMultiline = false;
       continue;
     }
 
     if (Check(EQUAL, line))
     {
-      size_t equalPos = line.find(EQUAL);
+      size_t const equalPos = line.find(EQUAL);
 
       std::string name = line.substr(0, equalPos);
       utils::StringUtils::Trim(name);
 
       if (Check(CONNECTOR_BEGIN, line))
       {
-        size_t edgeBeginPos = line.find(CONNECTOR_BEGIN) + CONNECTOR_BEGIN.length();
+        size_t const connectorBeginPos = line.find(CONNECTOR_BEGIN) + CONNECTOR_BEGIN.length();
 
         if (Check(CONNECTOR_END, line))
         {
-          size_t edgeEndPos = line.find(CONNECTOR_END);
+          size_t const connectorEndPos = line.find(CONNECTOR_END);
 
-          std::string content = line.substr(edgeBeginPos, edgeEndPos - edgeBeginPos);
+          std::string content = line.substr(connectorBeginPos, connectorEndPos - connectorBeginPos);
           utils::StringUtils::Trim(content);
 
-          currentNode = parentNode->AddChildNode(name, content);
+          parentNode->AddChildNode(name, content);
 
           continue;
         }
@@ -125,30 +125,30 @@ void SCsTree::Parse(std::string const & scsText)
         {
           currentName = name;
 
-          std::string content = line.substr(edgeBeginPos);
+          std::string content = line.substr(connectorBeginPos);
           utils::StringUtils::Trim(content);
 
           multiLineContent = content;
-          isContentMultiLine = true;
+          isContentMultiLineInsideConnectorOrLink = true;
         }
       }
       else if (Check(CONTOUR_BEGIN, line))
       {
-        currentNode = parentNode->AddChildNode(name, "");
-        nodeStack.push_back(currentNode);
+        auto const currentContour = parentNode->AddChildNode(name, "");
+        contoursStack.push_back(currentContour);
       }
       else if (Check(BLOCK_BEGIN, line))
       {
-        size_t blockBeginPos = line.find(BLOCK_BEGIN) + BLOCK_BEGIN.length();
+        size_t const blockBeginPos = line.find(BLOCK_BEGIN) + BLOCK_BEGIN.length();
 
         if (Check(BLOCK_END, line))
         {
-          size_t blockEndPos = line.find(BLOCK_END);
+          size_t const blockEndPos = line.find(BLOCK_END);
 
           std::string content = line.substr(blockBeginPos, blockEndPos - blockBeginPos);
           utils::StringUtils::Trim(content);
 
-          currentNode = parentNode->AddChildNode(name, content);
+          parentNode->AddChildNode(name, content);
 
           continue;
         }
@@ -160,39 +160,36 @@ void SCsTree::Parse(std::string const & scsText)
           utils::StringUtils::Trim(content);
 
           multiLineContent = content;
-          isContentMultiLine = true;
+          isContentMultiLineInsideConnectorOrLink = true;
         }
       }
     }
     else if (Check(CONTOUR_END, line))
-    {
-      nodeStack.pop_back();
-      currentNode = parentNode;
-    }
+      contoursStack.pop_back();
     else if (Check(ELEMENT_END, line))
     {
-      size_t elementEndPos = line.find(ELEMENT_END);
+      size_t const elementEndPos = line.find(ELEMENT_END);
 
       std::string name = line.substr(0, elementEndPos);
       utils::StringUtils::Trim(name);
 
-      currentNode = parentNode->AddChildNode(name, "");
+      parentNode->AddChildNode(name, "");
     }
     else
     {
       currentName = line;
       utils::StringUtils::Trim(currentName);
 
-      // Use flag to correct process elements like:
+      // Use flag isNodeMultiline to correct process elements like:
       // ..el_102182951392320
       //  => nrel_main_idtf: [ostis];;
 
-      flag = true;
+      isNodeMultiline = true;
     }
   }
 }
 
-std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTree::Compare(SCsTree const & otherTree)
+Differences SCsTree::Compare(SCsTree const & otherTree)
 {
   return this->m_root->Compare(*otherTree.m_root);
 }
@@ -200,4 +197,21 @@ std::shared_ptr<std::list<std::pair<std::string, std::string>>> SCsTree::Compare
 bool SCsTree::Check(std::string const & example, std::string const & line)
 {
   return line.find(example) != std::string::npos;
+}
+
+std::string differencesToString(Differences const & differences)
+{
+  if (differences->empty())
+    return "";
+  std::ostringstream oss;
+  oss << "Differences:\n";
+  for (auto difference = differences->begin(); difference != differences->end(); ++difference)
+  {
+    if (difference != differences->begin())
+    {
+      oss << ",\n";
+    }
+    oss << "(" << difference->first << ", " << difference->second << ")";
+  }
+  return oss.str();
 }

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <libxml2/libxml/xmlstring.h>
 
 namespace Constants
 {
@@ -23,8 +24,8 @@ std::string const UNDERSCORE = "_";
 std::string const DASH = "-";
 std::string const ALIAS_PREFIX = "@";
 
-std::string const N_REL_SYSTEM_IDTF = "nrel_system_identifier";
-std::string const N_REL_MAIN_IDTF = "nrel_main_idtf";
+std::string const NREL_SYSTEM_IDTF = "nrel_system_identifier";
+std::string const NREL_MAIN_IDTF = "nrel_main_idtf";
 std::string const FORMAT_ARC = "@format_arc";
 std::string const NREL_FORMAT_ARC = "@nrel_format_arc";
 std::string const NREL_FORMAT = "nrel_format";
@@ -78,6 +79,9 @@ std::string const NO_CONTENT = "0";
 std::string const NO_PARENT = "0";
 
 std::unordered_map<std::string, std::string> const IMAGE_FORMATS = {{".png", "format_png"}};
+
+xmlChar const * const STATIC_SECTOR = (xmlChar const *)"staticSector";
+xmlChar const * const CONTENT = (xmlChar const *)"content";
 }  // namespace Constants
 
 using SCsElementPtr = std::shared_ptr<class SCsElement>;

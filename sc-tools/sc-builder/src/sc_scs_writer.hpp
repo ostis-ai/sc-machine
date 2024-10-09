@@ -10,42 +10,19 @@
 #include <sstream>
 #include <unordered_set>
 
+#include "buffer.hpp"
 #include "gwf_translator_constants.hpp"
-
-class Buffer
-{
-public:
-  Buffer();
-
-  Buffer & operator<<(std::string const & string);
-  Buffer & AddTabs(std::size_t const & count);
-
-  std::string GetValue() const;
-
-private:
-  std::stringstream m_value;
-};
-
-class SCgElement;
-class SCsElement;
-class SCgContour;
-class SCsContour;
-
-class SCsElementFactory
-{
-public:
-  static SCsElementPtr CreateSCsElementForSCgElement(SCgElementPtr const & scgElement);
-};
+#include "sc_scs_element.hpp"
 
 class SCsWriter
 {
 public:
-  void Write(
+  static void Write(
       SCgElements const & elements,
       std::string const & filePath,
       Buffer & buffer,
       size_t depth,
-      std::unordered_set<SCgElementPtr> & writtenElements) const;
+      std::unordered_set<SCgElementPtr> & writtenElements);
 
   class SCgIdentifierCorrector
   {
@@ -65,7 +42,6 @@ public:
         std::string const & elementId,
         bool isVar);
     static std::string GenerateSCsIdentifierForVariable(std::string & systemIdentifier);
-    static std::string GenerateSCsIdentifierForNonVariable(std::string & systemIdentifier);
   };
 
   static void WriteMainIdentifier(
