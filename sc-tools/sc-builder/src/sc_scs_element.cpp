@@ -90,7 +90,6 @@ void SCsLink::ConvertFromSCgElement(SCgElementPtr const & scgElement)
 
   auto contentType = static_cast<ContentType>(std::stoi(link->GetContentType()));
   m_type = link->GetType();
-  SC_LOG_INFO_COLOR("link->GetType is " << m_type, ScConsole::Color::Green);
   m_fileName = link->GetFileName();
 
   switch (contentType)
