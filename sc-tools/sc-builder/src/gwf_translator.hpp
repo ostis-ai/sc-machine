@@ -6,10 +6,13 @@
 
 #pragma once
 
+#include <vector>
+#include <string>
+#include <list>
+
 #include "sc-builder/translator.hpp"
 
 #include "scs_translator.hpp"
-#include "builder_defines.hpp"
 
 class GWFTranslator : public Translator
 {
@@ -19,12 +22,12 @@ public:
 
   bool TranslateImpl(Params const & params) override;
 
-private:
+  static std::string TranslateXMLFileContentToSCs(std::string const & filename);
+
+protected:
   SCsTranslator m_scsTranslator;
 
-  std::string ConvertToSCsPath(std::string const & path) const;
-
-  bool ErrorsExist(std::string const & path) const;
-
-  std::string GetError(std::string const & path) const;
+  static std::string WriteStringToFile(std::string const & scsStr, std::string const & filePath);
+  static std::string TranslateGWFToSCs(std::string const & xmlStr, std::string const & filePath);
+  static std::string GetXMLFileContent(std::string const & filename);
 };

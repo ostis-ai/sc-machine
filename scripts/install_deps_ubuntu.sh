@@ -38,6 +38,7 @@ packagelist_dev=(
   libasio-dev
   libwebsocketpp-dev
   nlohmann-json3-dev
+  libxml2-dev
   python3-dev
 )
 

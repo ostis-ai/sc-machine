@@ -21,9 +21,9 @@ TEST(ScBuilder, RunMain)
       "-c",
       SC_BUILDER_INI,
       "-i",
-      SC_BUILDER_KB,
-      "-o",
       SC_BUILDER_REPO_PATH,
+      "-o",
+      SC_BUILDER_KB_BIN,
       "--enabled_ext",
       "",
       "--clear"};
@@ -49,14 +49,14 @@ TEST(ScBuilder, RunStopBuilder)
   ScOptions options{1, nullptr};
 
   BuilderParams params;
-  params.m_inputPath = SC_BUILDER_KB;
-  params.m_outputPath = SC_BUILDER_REPO_PATH;
+  params.m_inputPath = SC_BUILDER_REPO_PATH;
+  params.m_outputPath = SC_BUILDER_KB_BIN;
   params.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"repo_path", SC_BUILDER_REPO_PATH});
+  memoryParams.Insert({"repo_path", SC_BUILDER_KB_BIN});
 
   ScConfig configFile{config, {"repo_path"}};
   std::string memoryGroupName = "sc-memory";
@@ -112,15 +112,15 @@ TEST(ScBuilder, BuilderConfig)
   ScOptions options{1, nullptr};
 
   BuilderParams builderParams;
-  builderParams.m_inputPath = SC_BUILDER_KB;
-  builderParams.m_outputPath = SC_BUILDER_REPO_PATH;
+  builderParams.m_inputPath = SC_BUILDER_REPO_PATH;
+  builderParams.m_outputPath = SC_BUILDER_KB_BIN;
   builderParams.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
   ScConfig configFile{config, {"repo_path"}};
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"repo_path", SC_BUILDER_REPO_PATH});
+  memoryParams.Insert({"repo_path", SC_BUILDER_KB_BIN});
   memoryParams.Insert({"clear", {}});
   ScMemoryConfig memoryConfig{configFile, memoryParams};
 

@@ -5,7 +5,8 @@
  */
 
 #include "utils.hpp"
-#include "sc-memory/sc_memory.hpp"
+
+#include <sc-memory/sc_memory.hpp>
 
 class ScsLoader
 {

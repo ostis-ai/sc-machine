@@ -115,7 +115,7 @@ bool Builder::ProcessFile(std::string const & fileName, ScAddr const & outputStr
   auto const & it = m_translators.find(fileExt);
   if (it == m_translators.cend())
     SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "Not found translators for sources with extension \"" << fileExt << "\"");
+        utils::ExceptionInvalidState, "Not found translators for sources with extension `" << fileExt << "`.");
 
   return it->second->Translate(translateParams);
 }

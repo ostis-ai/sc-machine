@@ -11,10 +11,13 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
+find_package(LibXml2 REQUIRED)
+
 add_library(sc-builder-lib SHARED ${SOURCES})
 target_link_libraries(sc-builder-lib
     LINK_PUBLIC sc-memory
     LINK_PUBLIC sc-config
+    LINK_PUBLIC LibXml2::LibXml2
 )
 target_include_directories(sc-builder-lib
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
