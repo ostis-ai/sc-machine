@@ -32,15 +32,20 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_nod
 };
 
 std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_backwardNodeTypes = {
-    {"node/-/not_define", "node/-/-/not_define"},      {"node/var/symmetry", "node/var/tuple"},
-    {"node/const/general_node", "node/const/general"}, {"node/const/relation", "node/const/relation"},
-    {"node/const/attribute", "node/const/role"},       {"node/const/nopredmet", "node/const/struct"},
-    {"node/const/material", "node/const/terminal"},    {"node/const/asymmetry", "node/const/tuple"},
-    {"node/var/general_node", "node/var/general"},     {"node/var/relation", "node/var/relation"},
-    {"node/var/attribute", "node/var/role"},           {"node/var/nopredmet", "node/var/struct"},
-    {"node/var/material", "node/var/terminal"},        {"node/const/predmet", "node/const/struct"},
-    {"node/const/group", "node/const/group"},          {"node/const/super_group", "node/const/superclass"},
-    {"node/var/predmet", "node/var/struct"},           {"node/var/group", "node/var/group"},
+    {"node/-/not_define", "node/-/-/not_define"},
+    {"node/var/symmetry", "node/var/tuple"},
+    {"node/const/general_node", "node/const/general"},
+    {"node/const/attribute", "node/const/role"},
+    {"node/const/nopredmet", "node/const/struct"},
+    {"node/const/material", "node/const/terminal"},
+    {"node/const/asymmetry", "node/const/tuple"},
+    {"node/var/general_node", "node/var/general"},
+    {"node/var/attribute", "node/var/role"},
+    {"node/var/nopredmet", "node/var/struct"},
+    {"node/var/material", "node/var/terminal"},
+    {"node/const/predmet", "node/const/struct"},
+    {"node/const/super_group", "node/const/superclass"},
+    {"node/var/predmet", "node/var/struct"},
     {"node/var/super_group", "node/var/superclass"},
 };
 
@@ -224,54 +229,31 @@ std::string SCgToSCsTypesConverter::GetSCsElementDesignation(
   return it != dictionary.cend() ? it->second : "";
 }
 
-bool SCgToSCsTypesConverter::ConvertSCgNodeTypeToSCsNodeType(std::string const & nodeType, std::string & symbol)
+void SCgToSCsTypesConverter::ConvertSCgNodeTypeToSCsNodeType(std::string const & nodeType, std::string & symbol)
 {
-  symbol = GetSCsElementTypeBySCgElementType(nodeType, "NodeTypeSets");
+  symbol = GetSCsElementDesignation(m_nodeTypeSets, nodeType);
 
   if (symbol.empty())
-    symbol = GetSCsElementTypeBySCgElementType(
-        GetSCsElementTypeBySCgElementType(nodeType, "BackwardNodeTypes"), "NodeTypeSets");
+    symbol = GetSCsElementDesignation(m_nodeTypeSets, GetSCsElementDesignation(m_backwardNodeTypes, nodeType));
 
   if (symbol.empty())
-  {
-    symbol = GetSCsElementTypeBySCgElementType(nodeType, "UnsupportedNodeTypeSets");
-    return true;
-  }
-
-  return false;
+    symbol = GetSCsElementDesignation(m_unsupportedNodeTypeSets, nodeType);
 }
 
 bool SCgToSCsTypesConverter::ConvertSCgConnectorTypeToSCsConnectorDesignation(
     std::string const & edgeType,
     std::string & symbol)
 {
-  symbol = GetSCsElementTypeBySCgElementType(edgeType, "ConnectorTypes");
+  symbol = GetSCsElementDesignation(m_connectorTypes, edgeType);
 
   if (symbol.empty())
-    symbol = GetSCsElementTypeBySCgElementType(
-        GetSCsElementTypeBySCgElementType(edgeType, "BackwardConnectorTypes"), "ConnectorTypes");
+    symbol = GetSCsElementDesignation(m_connectorTypes, GetSCsElementDesignation(m_backwardConnectorTypes, edgeType));
 
   if (symbol.empty())
   {
-    symbol = GetSCsElementTypeBySCgElementType(edgeType, "UnsupportedConnectorTypes");
+    symbol = GetSCsElementDesignation(m_unsupportedConnectorTypes, edgeType);
     return true;
   }
 
   return false;
-}
-
-std::string SCgToSCsTypesConverter::GetSCsElementTypeBySCgElementType(
-    std::string const & scgElement,
-    std::string const & dict)
-{
-  static std::unordered_map<std::string, std::unordered_map<std::string, std::string> const *> const dictMap = {
-      {"NodeTypeSets", &m_nodeTypeSets},
-      {"BackwardNodeTypes", &m_backwardNodeTypes},
-      {"UnsupportedNodeTypeSets", &m_unsupportedNodeTypeSets},
-      {"ConnectorTypes", &m_connectorTypes},
-      {"BackwardConnectorTypes", &m_backwardConnectorTypes},
-      {"UnsupportedConnectorTypes", &m_unsupportedConnectorTypes}};
-
-  auto const it = dictMap.find(dict);
-  return GetSCsElementDesignation(*(it->second), scgElement);
 }

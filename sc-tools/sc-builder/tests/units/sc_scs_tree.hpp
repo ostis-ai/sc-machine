@@ -17,7 +17,7 @@
 #include "gwf_translator_constants.hpp"
 
 using SCsTreeNodePtr = std::shared_ptr<class SCsTreeNode>;
-using SCsTreePtr = std::shared_ptr<class SCsTree>;
+using Differences = std::shared_ptr<std::list<std::pair<std::string, std::string>>>;
 
 class SCsTreeNode
 {
@@ -26,7 +26,7 @@ class SCsTreeNode
 public:
   SCsTreeNode(std::string const & name, std::string const & content);
 
-  std::shared_ptr<std::list<std::pair<std::string, std::string>>> Compare(SCsTreeNode const & otherNode);
+  Differences Compare(SCsTreeNode const & otherNode);
 
 private:
   std::string m_name;
@@ -41,10 +41,12 @@ class SCsTree
 public:
   void Parse(std::string const & scsText);
 
-  std::shared_ptr<std::list<std::pair<std::string, std::string>>> Compare(SCsTree const & otherTree);
+  Differences Compare(SCsTree const & otherTree);
 
 private:
   SCsTreeNodePtr m_root;
 
   static bool Check(std::string const & example, std::string const & line);
 };
+
+std::string differencesToString(Differences const & differences);

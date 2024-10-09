@@ -74,12 +74,12 @@ void GWFParser::ProcessStaticSector(xmlNodePtr staticSector, SCgElements & eleme
         if (HasContent(child))
           scgElement = CreateLink(id, parent, identifier, type, tag, child);
         else
-          scgElement = CreateNode(id, parent, identifier, type, tag, child);
+          scgElement = CreateNode(id, parent, identifier, type, tag);
       }
       else if (tag == BUS)
         scgElement = CreateBus(id, parent, identifier, type, tag, child);
       else if (tag == CONTOUR)
-        scgElement = CreateContour(id, parent, identifier, type, tag, child);
+        scgElement = CreateContour(id, parent, identifier, type, tag);
       else if (tag == PAIR || tag == ARC)
         scgElement = CreateConnector(id, parent, identifier, type, tag, child, connectors);
       else
@@ -100,7 +100,7 @@ void GWFParser::ProcessStaticSector(xmlNodePtr staticSector, SCgElements & eleme
     }
   }
 
-  // To correctly process contours(connectors), all elements are first collected, then the contours(connectors) are
+  // To correctly process contours and connectors all elements are first collected, then the contours and connectors are
   // assigned elements
   FillConnectors(connectors, allElements);
   FillContours(contours, allElements);
@@ -111,8 +111,7 @@ std::shared_ptr<SCgNode> GWFParser::CreateNode(
     std::string const & parent,
     std::string const & identifier,
     std::string const & type,
-    std::string const & tag,
-    xmlNodePtr el) const
+    std::string const & tag)
 {
   return std::make_shared<SCgNode>(id, parent, identifier, type, tag);
 }
@@ -123,7 +122,7 @@ std::shared_ptr<SCgLink> GWFParser::CreateLink(
     std::string const & identifier,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr el) const
+    xmlNodePtr el)
 {
   for (xmlNodePtr contentChild = el->children; contentChild; contentChild = contentChild->next)
   {
@@ -154,11 +153,12 @@ std::shared_ptr<SCgLink> GWFParser::CreateLink(
   return nullptr;
 }
 
-bool GWFParser::HasContent(xmlNodePtr const node) const
+bool GWFParser::HasContent(xmlNodePtr node)
 {
   for (xmlNodePtr child = node->children; child; child = child->next)
   {
-    if (child->type == XML_ELEMENT_NODE && xmlStrcmp(child->name, CONTENT) == 0)
+    if (child->type == XML_ELEMENT_NODE && xmlStrcmp(child->name, CONTENT) == 0
+        && GetXmlPropStr(child, TYPE) != NO_CONTENT)
       return true;
   }
   return false;
@@ -170,7 +170,7 @@ std::shared_ptr<SCgBus> GWFParser::CreateBus(
     std::string const & identifier,
     std::string const & type,
     std::string const & tag,
-    xmlNodePtr el) const
+    xmlNodePtr el)
 {
   auto const nodeId = GetXmlPropStr(el, OWNER);
   return std::make_shared<SCgBus>(id, parent, identifier, type, tag, nodeId);
@@ -181,8 +181,7 @@ std::shared_ptr<SCgContour> GWFParser::CreateContour(
     std::string const & parent,
     std::string const & identifier,
     std::string const & type,
-    std::string const & tag,
-    xmlNodePtr el) const
+    std::string const & tag)
 {
   return std::make_shared<SCgContour>(id, parent, identifier, type, tag);
 }
@@ -194,7 +193,7 @@ std::shared_ptr<SCgConnector> GWFParser::CreateConnector(
     std::string const & type,
     std::string const & tag,
     xmlNodePtr el,
-    SCgConnectors & connectors) const
+    SCgConnectors & connectors)
 {
   std::string const & sourceId = GetXmlPropStr(el, ID_B);
   std::string const & targetId = GetXmlPropStr(el, ID_E);
@@ -231,11 +230,11 @@ void GWFParser::FillConnectors(SCgConnectors const & connectors, SCgElements con
     if (source == nullptr)
       SC_THROW_EXCEPTION(
           utils::ExceptionParseError,
-          "GWFParser::FillConnector: Source element not found for connector `" << connector->GetId() << "`.");
+          "GWFParser::FillConnectors: Source element not found for connector `" << connector->GetId() << "`.");
     if (target == nullptr)
       SC_THROW_EXCEPTION(
           utils::ExceptionParseError,
-          "GWFParser::FillConnector: Target element not found for connector `" << connector->GetId() << "`.");
+          "GWFParser::FillConnectors: Target element not found for connector `" << connector->GetId() << "`.");
 
     connector->SetSource(source);
     connector->SetTarget(target);
@@ -256,7 +255,7 @@ void GWFParser::FillContours(SCgContours const & contours, SCgElements const & a
   }
 }
 
-std::string GWFParser::XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr) const
+std::string GWFParser::XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> const & ptr)
 {
   std::size_t length = xmlStrlen(ptr.get());
 
@@ -266,13 +265,13 @@ std::string GWFParser::XmlCharToString(std::unique_ptr<xmlChar, XmlCharDeleter> 
   return result;
 }
 
-std::unique_ptr<xmlChar, XmlCharDeleter> GWFParser::GetXmlProp(xmlNodePtr node, std::string const & propName) const
+std::unique_ptr<xmlChar, XmlCharDeleter> GWFParser::GetXmlProp(xmlNodePtr node, std::string const & propName)
 {
   xmlChar * propValue = xmlGetProp(node, BAD_CAST propName.c_str());
   return std::unique_ptr<xmlChar, XmlCharDeleter>(propValue);
 }
 
-std::string GWFParser::GetXmlPropStr(xmlNodePtr node, std::string const & propName) const
+std::string GWFParser::GetXmlPropStr(xmlNodePtr node, std::string const & propName)
 {
   std::unique_ptr<xmlChar, XmlCharDeleter> const prop = GetXmlProp(node, propName);
   if (prop == nullptr)

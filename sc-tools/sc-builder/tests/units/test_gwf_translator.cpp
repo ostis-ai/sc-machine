@@ -10,9 +10,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <map>
 #include <memory>
-#include <algorithm>
 #include <filesystem>
 
 #include <sc-memory/sc_utils.hpp>
@@ -52,15 +50,12 @@ std::string ReadFileToString(std::string const & filePath)
   return buffer.str();
 }
 
-bool CheckGWFToSCSTranslation(std::unique_ptr<ScAgentContext> & context, std::string const & fileName)
+Differences CheckGWFToSCSTranslation(std::string const & fileName)
 {
-  GWFTranslator translator(*context);
-
   std::string const & testGWFFilePath = BASE_TEST_PATH + fileName;
   std::string const & correctSCsFilePath = testGWFFilePath + ".scs";
 
-  std::string const & testGWFText = translator.GetXMLFileContent(testGWFFilePath);
-  std::string const & testSCsText = translator.TranslateGWFToSCs(testGWFText, BASE_TEST_PATH);
+  std::string const & testSCsText = GWFTranslator::TranslateXMLFileContentToSCs(testGWFFilePath);
 
   std::string const & correctSCsText = ReadFileToString(correctSCsFilePath);
 
@@ -68,7 +63,7 @@ bool CheckGWFToSCSTranslation(std::unique_ptr<ScAgentContext> & context, std::st
   testSCsTree.Parse(testSCsText);
   SCsTree correctSCsTree;
   correctSCsTree.Parse(correctSCsText);
-  return testSCsTree.Compare(correctSCsTree)->empty();
+  return testSCsTree.Compare(correctSCsTree);
 }
 
 TEST_F(GWFTranslatorTest, InvalidPath)
@@ -76,7 +71,7 @@ TEST_F(GWFTranslatorTest, InvalidPath)
   GWFTranslator translator(*m_ctx);
 
   std::string const filePath = BASE_TEST_PATH "invalid_path.gwf";
-  EXPECT_THROW(translator.GetXMLFileContent(filePath), utils::ExceptionParseError);
+  EXPECT_THROW(translator.TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, EmptyFile)
@@ -84,87 +79,90 @@ TEST_F(GWFTranslatorTest, EmptyFile)
   GWFTranslator translator(*m_ctx);
 
   std::string const filePath = BASE_TEST_PATH "empty_file.gwf";
-  EXPECT_THROW(translator.GetXMLFileContent(filePath), utils::ExceptionParseError);
+  EXPECT_THROW(translator.TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, EmptyStatic)
 {
-  GWFTranslator translator(*m_ctx);
-
   std::string const & filePath = BASE_TEST_PATH "empty_static.gwf";
-  std::string const & gwfText = translator.GetXMLFileContent(filePath);
-  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
+}
+
+TEST_F(GWFTranslatorTest, NoStatic)
+{
+  std::string const & filePath = BASE_TEST_PATH "no_static_sector.gwf";
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, EmptyGWF)
 {
-  GWFTranslator translator(*m_ctx);
-  EXPECT_THROW(translator.TranslateGWFToSCs("", BASE_TEST_PATH), utils::ExceptionParseError);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(BASE_TEST_PATH), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, UnknownTag)
 {
-  GWFTranslator translator(*m_ctx);
-
   std::string const filePath = BASE_TEST_PATH "unknown_tag.gwf";
-  std::string const & gwfText = translator.GetXMLFileContent(filePath);
-  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, UnknownLinkContent)
 {
-  GWFTranslator translator(*m_ctx);
-
   std::string const filePath = BASE_TEST_PATH "unknown_link_content.gwf";
-  std::string const & gwfText = translator.GetXMLFileContent(filePath);
-  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, ContourWithUnknownParent)
 {
-  GWFTranslator translator(*m_ctx);
-
   std::string const filePath = BASE_TEST_PATH "contour_with_unknown_parent.gwf";
-  std::string const & gwfText = translator.GetXMLFileContent(filePath);
-  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, NodeWithUnknownId)
 {
-  GWFTranslator translator(*m_ctx);
-
   std::string const filePath = BASE_TEST_PATH "node_with_unknown_id.gwf";
-  std::string const & gwfText = translator.GetXMLFileContent(filePath);
-  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionParseError);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, NodeWithUnknownType)
 {
-  GWFTranslator translator(*m_ctx);
-
   std::string const filePath = BASE_TEST_PATH "element_with_unknown_type.gwf";
-  std::string const & gwfText = translator.GetXMLFileContent(filePath);
-  EXPECT_THROW(translator.TranslateGWFToSCs(gwfText, BASE_TEST_PATH), utils::ExceptionItemNotFound);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionItemNotFound);
+}
+
+TEST_F(GWFTranslatorTest, ConnectorLoopedOnItself)
+{
+  std::string const filePath = BASE_TEST_PATH "connector_from_itself_to_itself.gwf";
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionInvalidState);
 }
 
 TEST_F(GWFTranslatorTest, Bus)
 {
-  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "bus.gwf"));
+  Differences const & differences = CheckGWFToSCSTranslation("bus.gwf");
+  EXPECT_TRUE(differences->empty()) << differencesToString(differences);
 }
 
 TEST_F(GWFTranslatorTest, EmptyContour)
 {
-  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "empty_contour.gwf"));
+  Differences const & differences = CheckGWFToSCSTranslation("empty_contour.gwf");
+  EXPECT_TRUE(differences->empty()) << differencesToString(differences);
 }
 
 TEST_F(GWFTranslatorTest, LotOfContours)
 {
-  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "lot_of_contours.gwf"));
+  Differences const & differences = CheckGWFToSCSTranslation("lot_of_contours.gwf");
+  EXPECT_TRUE(differences->empty()) << differencesToString(differences);
+}
+
+TEST_F(GWFTranslatorTest, ContourWithMainKeyScElement)
+{
+  Differences const & differences = CheckGWFToSCSTranslation("contour_with_main_key_sc_element.gwf");
+  EXPECT_TRUE(differences->empty()) << differencesToString(differences);
 }
 
 TEST_F(GWFTranslatorTest, ContentTypes)
 {
-  EXPECT_TRUE(CheckGWFToSCSTranslation(m_ctx, "content_types.gwf"));
+  Differences const & differences = CheckGWFToSCSTranslation("content_types.gwf");
+  EXPECT_TRUE(differences->empty()) << differencesToString(differences);
 
   EXPECT_TRUE(CompareFiles(BASE_TEST_PATH "ostis.png", BASE_TEST_PATH "ostis_ref.png"));
   std::filesystem::remove(BASE_TEST_PATH "ostis.png");
@@ -172,23 +170,42 @@ TEST_F(GWFTranslatorTest, ContentTypes)
 
 TEST_F(GWFTranslatorTest, SCsTree)
 {
-  GWFTranslator translator(*m_ctx);
+  std::string const & emptyContourGWFFilePath = BASE_TEST_PATH "empty_contour.gwf";
+  std::string const & lotOfContoursGWFFilePath = BASE_TEST_PATH "lot_of_contours.gwf";
+  std::string const & lotOfContoursSCsFilePath = lotOfContoursGWFFilePath + ".scs";
 
-  std::string const & testGWFFilePath = BASE_TEST_PATH "empty_contour.gwf";
-  std::string const & correctGWFFilePath = BASE_TEST_PATH "lot_of_contours.gwf";
-  std::string const & correctSCsFilePath = correctGWFFilePath + ".scs";
+  std::string const & emptyContourSCsText = GWFTranslator::TranslateXMLFileContentToSCs(emptyContourGWFFilePath);
 
-  std::string const & testGWFText = translator.GetXMLFileContent(testGWFFilePath);
-  std::string const & testSCsText = translator.TranslateGWFToSCs(testGWFText, BASE_TEST_PATH);
+  std::string const & lotOfContoursSCsText = ReadFileToString(lotOfContoursSCsFilePath);
 
-  std::string const & correctSCsText = ReadFileToString(correctSCsFilePath);
-
-  SCsTree testSCsTree;
-  testSCsTree.Parse(testSCsText);
-  SCsTree correctSCsTree;
-  correctSCsTree.Parse(correctSCsText);
-  EXPECT_FALSE(testSCsTree.Compare(correctSCsTree)->empty());
-  EXPECT_FALSE(correctSCsTree.Compare(testSCsTree)->empty());
+  SCsTree emptyContourSCsTree;
+  emptyContourSCsTree.Parse(emptyContourSCsText);
+  SCsTree lotOfContoursSCsTree;
+  lotOfContoursSCsTree.Parse(lotOfContoursSCsText);
+  Differences const & emptyCompared = emptyContourSCsTree.Compare(lotOfContoursSCsTree);
+  EXPECT_FALSE(emptyCompared->empty());
+  Differences const & notEmptyCompared = lotOfContoursSCsTree.Compare(emptyContourSCsTree);
+  EXPECT_FALSE(notEmptyCompared->empty());
+  for (auto const & differenceWithEmptyFirst : *emptyCompared)
+  {
+    EXPECT_NE(
+        std::find(
+            notEmptyCompared->cbegin(),
+            notEmptyCompared->cend(),
+            std::make_pair(differenceWithEmptyFirst.second, differenceWithEmptyFirst.first)),
+        notEmptyCompared->cend())
+        << "not found pair " << differenceWithEmptyFirst.first << ", " << differenceWithEmptyFirst.second;
+  }
+  for (auto const & differenceWithNotEmptyFirst : *notEmptyCompared)
+  {
+    EXPECT_NE(
+        std::find(
+            emptyCompared->cbegin(),
+            emptyCompared->cend(),
+            std::make_pair(differenceWithNotEmptyFirst.second, differenceWithNotEmptyFirst.first)),
+        notEmptyCompared->cend())
+        << "not found pair " << differenceWithNotEmptyFirst.first << ", " << differenceWithNotEmptyFirst.second;
+  }
 }
 
 class TestGWFTranslator : public GWFTranslator
@@ -199,14 +216,23 @@ public:
   {
   }
 
-  std::string WriteStringToFile(std::string const & scsText, std::string const & fileName)
-  {
-    return GWFTranslator::WriteStringToFile(scsText, fileName);
-  }
+  using GWFTranslator::WriteStringToFile;
 };
 
 TEST_F(GWFTranslatorTest, WriteStringToFileInUnknownDirectory)
 {
   TestGWFTranslator translator(*m_ctx);
   EXPECT_THROW(translator.WriteStringToFile("text", "test/test.txt"), utils::ExceptionCritical);
+}
+
+TEST_F(GWFTranslatorTest, DifferencesToString)
+{
+  Differences differences = std::make_shared<std::list<std::pair<std::string, std::string>>>();
+  differences->emplace_back("first", "second");
+  differences->emplace_back("third", "fourth");
+  std::string expectedDifferences =
+      "Differences:\n"
+      "(first, second),\n"
+      "(third, fourth)";
+  EXPECT_EQ(differencesToString(differences), expectedDifferences);
 }

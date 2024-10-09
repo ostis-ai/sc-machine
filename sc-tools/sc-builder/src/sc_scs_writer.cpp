@@ -7,7 +7,6 @@
 #include "sc_scs_writer.hpp"
 
 #include <regex>
-#include <queue>
 
 #include <sc-memory/sc_utils.hpp>
 
@@ -16,48 +15,19 @@
 
 using namespace Constants;
 
-// BUFFER CLASS
-
-Buffer::Buffer()
-  : m_value("")
+std::string SCsWriter::MakeAlias(std::string const & prefix, std::string const & elementId)
 {
+  return ALIAS_PREFIX + prefix + UNDERSCORE + utils::StringUtils::ReplaceAll(elementId, DASH, UNDERSCORE);
 }
 
-Buffer & Buffer::operator<<(std::string const & string)
+bool SCsWriter::IsVariable(std::string const & elementType)
 {
-  m_value << string;
-  return *this;
+  return elementType.find(VAR) != std::string::npos;
 }
-
-Buffer & Buffer::AddTabs(std::size_t const & count)
-{
-  std::string tabs(count * 4, SPACE[0]);
-  m_value << tabs;
-  return *this;
-}
-
-std::string Buffer::GetValue() const
-{
-  return m_value.str();
-}
-
-// UTILS
-
-std::string SCsWriter::MakeAlias(std::string const & prefix, std::string const & element_id)
-{
-  return ALIAS_PREFIX + prefix + UNDERSCORE + utils::StringUtils::ReplaceAll(element_id, DASH, UNDERSCORE);
-}
-
-bool SCsWriter::IsVariable(std::string const & el_type)
-{
-  return el_type.find(VAR) != std::string::npos;
-}
-
-// SCS WRITER CLASS
 
 bool SCsWriter::SCgIdentifierCorrector::IsRussianIdentifier(std::string const & identifier)
 {
-  std::regex identifierPatternRus("^[0-9a-zA-Z_\\xD0\\x80-\\xD1\\x8F\\xD1\\x90-\\xD1\\x8F\\xD1\\x91\\xD0\\x81*' ]*$");
+  std::regex identifierPatternRus(R"(^[0-9a-zA-Z_\xD0\x80-\xD1\x8F\xD1\x90-\xD1\x8F\xD1\x91\xD0\x81*' ]*$)");
   return std::regex_match(identifier, identifierPatternRus);
 }
 
@@ -78,9 +48,6 @@ std::string SCsWriter::SCgIdentifierCorrector::GenerateCorrectedIdentifier(
   if (isVar && systemIdentifier[0] != UNDERSCORE[0])
     return GenerateSCsIdentifierForVariable(systemIdentifier);
 
-  if (!isVar && systemIdentifier[0] == UNDERSCORE[0])
-    return GenerateSCsIdentifierForNonVariable(systemIdentifier);
-
   return systemIdentifier;
 }
 
@@ -96,41 +63,33 @@ std::string SCsWriter::SCgIdentifierCorrector::GenerateIdentifierForUnresolvedCh
 
 std::string SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifierForVariable(std::string & systemIdentifier)
 {
-  return UNDERSCORE + utils::StringUtils::ReplaceAll(systemIdentifier, DASH, UNDERSCORE);
-}
-
-std::string SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifierForNonVariable(std::string & systemIdentifier)
-{
-  return utils::StringUtils::ReplaceAll(systemIdentifier.substr(1), DASH, UNDERSCORE);
+  return UNDERSCORE + systemIdentifier;
 }
 
 void SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifier(
     SCgElementPtr const & scgElement,
     SCsElementPtr & scsElement)
 {
-  scsElement->SetSystemIdentifier(scgElement->GetIdentifier());
+  scsElement->SetIdentifierForSCs(scgElement->GetIdentifier());
   bool isVar = SCsWriter::IsVariable(scgElement->GetType());
 
-  std::string const & systemIdentifier = scsElement->GetSystemIdentifier();
+  std::string const & systemIdentifier = scsElement->GetIdentifierForSCs();
   if (!IsEnglishIdentifier(systemIdentifier))
   {
     if (IsRussianIdentifier(systemIdentifier))
       scsElement->SetMainIdentifier(systemIdentifier);
 
-    scsElement->SetSystemIdentifier("");
+    scsElement->SetIdentifierForSCs("");
   }
 
   std::string id = scgElement->GetId();
-  std::string correctedIdentifier = scsElement->GetSystemIdentifier();
+  std::string correctedIdentifier = scsElement->GetIdentifierForSCs();
   correctedIdentifier = GenerateCorrectedIdentifier(correctedIdentifier, id, isVar);
-  scsElement->SetSystemIdentifier(correctedIdentifier);
+  scsElement->SetIdentifierForSCs(correctedIdentifier);
 
   auto const & tag = scgElement->GetTag();
   if (tag == PAIR || tag == ARC)
-  {
-    auto const & id = scgElement->GetId();
-    scsElement->SetSystemIdentifier(SCsWriter::MakeAlias(CONNECTOR, id));
-  }
+    scsElement->SetIdentifierForSCs(SCsWriter::MakeAlias(CONNECTOR, id));
 }
 
 void SCsWriter::Write(
@@ -138,21 +97,14 @@ void SCsWriter::Write(
     std::string const & filePath,
     Buffer & buffer,
     size_t depth,
-    std::unordered_set<SCgElementPtr> & writtenElements) const
+    std::unordered_set<SCgElementPtr> & writtenElements)
 {
-  std::queue<SCgElementPtr> dependedConnectors;
+  std::list<SCgElementPtr> dependedConnectors;
 
   auto it = elements.cbegin();
-  while (it != elements.cend() || !dependedConnectors.empty())
+  while (it != elements.cend())
   {
-    SCgElementPtr scgElement;
-    if (it == elements.cend())
-    {
-      scgElement = dependedConnectors.front();
-      dependedConnectors.pop();
-    }
-    else
-      scgElement = it->second;
+    SCgElementPtr scgElement = it->second;
 
     bool isElementWritable = true;
     std::string const & scgTag = scgElement->GetTag();
@@ -167,7 +119,7 @@ void SCsWriter::Write(
       if (writtenElements.find(source) == writtenElements.cend()
           || writtenElements.find(target) == writtenElements.cend())
       {
-        dependedConnectors.push(scgElement);
+        dependedConnectors.push_back(scgElement);
         isElementWritable = false;
       }
     }
@@ -180,9 +132,41 @@ void SCsWriter::Write(
       writtenElements.insert(scgElement);
     }
 
-    if (it != elements.cend())
-      ++it;
+    ++it;
   }
+  if (!dependedConnectors.empty())
+  {
+    size_t connectorsWrittenOnPreviousIteration = dependedConnectors.size();
+    while (connectorsWrittenOnPreviousIteration != 0)
+    {
+      connectorsWrittenOnPreviousIteration = 0;
+      for (auto dependedConnector = dependedConnectors.cbegin(); dependedConnector != dependedConnectors.cend();)
+      {
+        auto scgConnector = std::dynamic_pointer_cast<SCgConnector>(*dependedConnector);
+        auto const & source = scgConnector->GetSource();
+        auto const & target = scgConnector->GetTarget();
+        bool isElementWritable =
+            (writtenElements.find(source) != writtenElements.cend()
+             && writtenElements.find(target) != writtenElements.cend());
+        if (isElementWritable)
+        {
+          auto const & scsElement = SCsElementFactory::CreateSCsElementForSCgElement(*dependedConnector);
+          scsElement->ConvertFromSCgElement(*dependedConnector);
+          scsElement->Dump(filePath, buffer, depth, writtenElements);
+          writtenElements.insert(*dependedConnector);
+          ++connectorsWrittenOnPreviousIteration;
+          dependedConnector = dependedConnectors.erase(dependedConnector);
+        }
+        else
+          ++dependedConnector;
+      }
+    }
+  }
+  if (!dependedConnectors.empty())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidState,
+        "SCsWriter: unknown incident elements for " << dependedConnectors.size() << " connectors at `" << filePath
+                                                    << "`.");
 }
 
 void SCsWriter::WriteMainIdentifier(
@@ -192,42 +176,7 @@ void SCsWriter::WriteMainIdentifier(
     std::string const & mainIdentifier)
 {
   buffer << NEWLINE;
-  if (mainIdentifier[0] == OPEN_BRACKET[0])
-  {
-    buffer.AddTabs(depth) << systemIdentifier << NEWLINE;
-    buffer.AddTabs(depth) << SPACE << SC_CONNECTOR_DCOMMON_R << SPACE << N_REL_MAIN_IDTF << COLON << SPACE
-                          << mainIdentifier << ELEMENT_END << NEWLINE;
-  }
-  else
-  {
-    buffer.AddTabs(depth) << systemIdentifier << NEWLINE;
-    buffer.AddTabs(depth) << SPACE << SC_CONNECTOR_DCOMMON_R << SPACE << N_REL_MAIN_IDTF << COLON << SPACE
-                          << OPEN_BRACKET << mainIdentifier << CLOSE_BRACKET << ELEMENT_END << NEWLINE;
-  }
-}
-
-// SCsFactory
-
-SCsElementPtr SCsElementFactory::CreateSCsElementForSCgElement(SCgElementPtr const & scgElement)
-{
-  SCsElementPtr scsElement;
-  std::string const & tag = scgElement->GetTag();
-  if (tag == NODE || tag == BUS)
-  {
-    std::shared_ptr<SCgLink> link = std::dynamic_pointer_cast<SCgLink>(scgElement);
-    if (link != nullptr && link->GetContentType() != NO_CONTENT)
-      scsElement = std::make_shared<SCsLink>();
-    else
-      scsElement = std::make_shared<SCsNode>();
-  }
-  else if (tag == PAIR || tag == ARC)
-    scsElement = std::make_shared<SCsConnector>();
-  else if (tag == CONTOUR)
-    scsElement = std::make_shared<SCsContour>();
-  else
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidType, "SCsWriter::CreateSCsElementForSCgElement: Unsupported SCgElement type.");
-
-  SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifier(scgElement, scsElement);
-  return scsElement;
+  buffer.AddTabs(depth) << systemIdentifier << NEWLINE;
+  buffer.AddTabs(depth) << SPACE << SC_CONNECTOR_DCOMMON_R << SPACE << NREL_MAIN_IDTF << COLON << SPACE << OPEN_BRACKET
+                        << mainIdentifier << CLOSE_BRACKET << ELEMENT_END << NEWLINE;
 }

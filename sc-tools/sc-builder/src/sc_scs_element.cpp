@@ -21,9 +21,9 @@
 using namespace Constants;
 
 // SCsElement
-void SCsElement::SetSystemIdentifier(std::string const & identifier)
+void SCsElement::SetIdentifierForSCs(std::string const & identifier)
 {
-  m_systemIdentifier = identifier;
+  m_identifierForSCs = identifier;
 }
 
 void SCsElement::SetMainIdentifier(std::string const & identifier)
@@ -31,9 +31,9 @@ void SCsElement::SetMainIdentifier(std::string const & identifier)
   m_mainIdentifier = identifier;
 }
 
-std::string SCsElement::GetSystemIdentifier() const
+std::string SCsElement::GetIdentifierForSCs() const
 {
-  return m_systemIdentifier;
+  return m_identifierForSCs;
 }
 
 std::string SCsElement::GetMainIdentifier() const
@@ -45,7 +45,7 @@ std::string SCsElement::GetMainIdentifier() const
 void SCsNode::ConvertFromSCgElement(SCgElementPtr const & scgElement)
 {
   std::string const & scgNodeType = scgElement->GetType();
-  std::string scsNodeType = "";
+  std::string scsNodeType;
 
   SCgToSCsTypesConverter::ConvertSCgNodeTypeToSCsNodeType(scgNodeType, scsNodeType);
 
@@ -54,7 +54,7 @@ void SCsNode::ConvertFromSCgElement(SCgElementPtr const & scgElement)
         utils::ExceptionItemNotFound,
         "SCsNode::ConvertFromSCgElement: No matching sc.s-node type for sc.g-node `" << scgNodeType << "`.");
 
-  type = scsNodeType;
+  m_type = scsNodeType;
 }
 
 void SCsNode::Dump(
@@ -65,20 +65,20 @@ void SCsNode::Dump(
 {
   buffer << NEWLINE;
 
-  buffer.AddTabs(depth) << GetSystemIdentifier() << NEWLINE;
-  buffer.AddTabs(depth) << SPACE << SPACE << SC_CONNECTOR_MAIN_L << SPACE << type << ELEMENT_END << NEWLINE;
+  buffer.AddTabs(depth) << GetIdentifierForSCs() << NEWLINE;
+  buffer.AddTabs(depth) << SPACE << SPACE << SC_CONNECTOR_MAIN_L << SPACE << m_type << ELEMENT_END << NEWLINE;
 
   if (!this->GetMainIdentifier().empty())
-    SCsWriter::WriteMainIdentifier(buffer, depth, this->GetSystemIdentifier(), this->GetMainIdentifier());
+    SCsWriter::WriteMainIdentifier(buffer, depth, this->GetIdentifierForSCs(), this->GetMainIdentifier());
 }
 
 // SCsLink
 enum class ContentType
 {
-  String = 1,
-  Integer = 2,
-  Float = 3,
-  Image = 4
+  STRING = 1,
+  INTEGER = 2,
+  FLOAT = 3,
+  IMAGE = 4
 };
 
 void SCsLink::ConvertFromSCgElement(SCgElementPtr const & scgElement)
@@ -88,29 +88,31 @@ void SCsLink::ConvertFromSCgElement(SCgElementPtr const & scgElement)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidType, "SCsLink::ConvertFromSCgElement: Invalid SCgElement passed to SCsLink.");
 
-  ContentType contentType = static_cast<ContentType>(std::stoi(link->GetContentType()));
+  auto contentType = static_cast<ContentType>(std::stoi(link->GetContentType()));
   m_type = link->GetType();
+  SC_LOG_INFO_COLOR("link->GetType is " << m_type, ScConsole::Color::Green);
   m_fileName = link->GetFileName();
 
   switch (contentType)
   {
-  case ContentType::String:
+  case ContentType::STRING:
     m_content = link->GetContentData();
     break;
-  case ContentType::Integer:
+  case ContentType::INTEGER:
     m_content = DOUBLE_QUOTE + INT64 + link->GetContentData() + DOUBLE_QUOTE;
     break;
-  case ContentType::Float:
+  case ContentType::FLOAT:
     m_content = DOUBLE_QUOTE + FLOAT + link->GetContentData() + DOUBLE_QUOTE;
     break;
-  case ContentType::Image:
+  case ContentType::IMAGE:
     m_urlContent = link->GetContentData();
     m_isUrl = true;
     break;
   default:
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidType,
-        "SCsLink::ConvertFromSCgElement: Content type for link `" << link->GetId() << "` is not supported.");
+        "SCsLink::ConvertFromSCgElement: Content type " << link->GetContentType() << " for link `" << link->GetId()
+                                                        << "` is not supported.");
   }
 }
 
@@ -124,7 +126,6 @@ void SCsLink::Dump(
 
   if (m_isUrl)
   {
-    bool isImage = false;
     std::string imageFormat;
 
     std::filesystem::path const & basePath = std::filesystem::path(filePath).parent_path();
@@ -138,7 +139,6 @@ void SCsLink::Dump(
           utils::ExceptionItemNotFound, "SCsLink::Dump: File extension `" << fileExtension << "` is not supported.");
 
     imageFormat = it->second;
-    isImage = true;
 
     std::ofstream file(fullPath, std::ios::binary);
     if (!file)
@@ -149,22 +149,18 @@ void SCsLink::Dump(
     file.write(m_urlContent.data(), m_urlContent.size());
     file.close();
 
-    buffer.AddTabs(depth) << m_systemIdentifier << SPACE << EQUAL << SPACE << DOUBLE_QUOTE << content << DOUBLE_QUOTE
+    buffer.AddTabs(depth) << m_identifierForSCs << SPACE << EQUAL << SPACE << DOUBLE_QUOTE << content << DOUBLE_QUOTE
                           << ELEMENT_END << NEWLINE;
-    if (isImage)
-    {
-      buffer.AddTabs(depth) << FORMAT_ARC << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_systemIdentifier << SPACE
-                            << SC_CONNECTOR_DCOMMON_R << SPACE << imageFormat << CLOSE_PARENTHESIS << ELEMENT_END
-                            << NEWLINE;
-      buffer.AddTabs(depth) << NREL_FORMAT_ARC << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << NREL_FORMAT << SPACE
-                            << SC_CONNECTOR_MAIN_R << SPACE << FORMAT_ARC << CLOSE_PARENTHESIS << ELEMENT_END
-                            << NEWLINE;
-    }
+    buffer.AddTabs(depth) << FORMAT_ARC << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_identifierForSCs << SPACE
+                          << SC_CONNECTOR_DCOMMON_R << SPACE << imageFormat << CLOSE_PARENTHESIS << ELEMENT_END
+                          << NEWLINE;
+    buffer.AddTabs(depth) << NREL_FORMAT_ARC << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << NREL_FORMAT << SPACE
+                          << SC_CONNECTOR_MAIN_R << SPACE << FORMAT_ARC << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE;
   }
   else
   {
     std::string const & isVar = SCsWriter::IsVariable(m_type) ? UNDERSCORE : "";
-    buffer.AddTabs(depth) << m_systemIdentifier << SPACE << EQUAL << SPACE << isVar << OPEN_BRACKET << m_content
+    buffer.AddTabs(depth) << m_identifierForSCs << SPACE << EQUAL << SPACE << isVar << OPEN_BRACKET << m_content
                           << CLOSE_BRACKET << ELEMENT_END << NEWLINE;
   }
 }
@@ -178,27 +174,22 @@ void SCsConnector::ConvertFromSCgElement(SCgElementPtr const & scgElement)
         utils::ExceptionInvalidType, "SCsConnector::ConvertFromSCgElement: Invalid SCgElement passed to SCsConnector.");
 
   std::string const & connectorType = connector->GetType();
-  std::string const & id = connector->GetId();
 
   m_isUnsupported = SCgToSCsTypesConverter::ConvertSCgConnectorTypeToSCsConnectorDesignation(connectorType, m_type);
   if (m_type.empty())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        "SCsConnector::ConvertFromSCgElement: No matching sc.s-node type for sc.g-connector type `" << connectorType
-                                                                                                    << "`.");
-
-  m_alias = SCsWriter::MakeAlias(CONNECTOR, id);
+        "SCsConnector::ConvertFromSCgElement: No matching sc.s-connector type for sc.g-connector type `"
+            << connectorType << "`.");
 
   m_sourceIdentifier = GetIncidentElementIdentifier(connector->GetSource());
   m_targetIdentifier = GetIncidentElementIdentifier(connector->GetTarget());
 }
 
-std::string SCsConnector::GetIncidentElementIdentifier(SCgElementPtr const & element) const
+std::string SCsConnector::GetIncidentElementIdentifier(SCgElementPtr const & element)
 {
   auto scsElement = SCsElementFactory::CreateSCsElementForSCgElement(element);
-  scsElement->ConvertFromSCgElement(element);
-  SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifier(element, scsElement);
-  return scsElement->GetSystemIdentifier();
+  return scsElement->GetIdentifierForSCs();
 }
 
 void SCsConnector::Dump(
@@ -211,16 +202,18 @@ void SCsConnector::Dump(
 
   if (m_isUnsupported)
   {
-    buffer.AddTabs(depth) << m_alias << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_sourceIdentifier << SPACE
-                          << SC_CONNECTOR_DCOMMON_R << SPACE << m_targetIdentifier << CLOSE_PARENTHESIS << ELEMENT_END
-                          << NEWLINE;
+    buffer.AddTabs(depth) << m_identifierForSCs << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_sourceIdentifier
+                          << SPACE << SC_CONNECTOR_DCOMMON_R << SPACE << m_targetIdentifier << CLOSE_PARENTHESIS
+                          << ELEMENT_END << NEWLINE;
 
-    buffer.AddTabs(depth) << m_type << SPACE << SC_CONNECTOR_MAIN_R << SPACE << m_alias << ELEMENT_END << NEWLINE;
+    buffer.AddTabs(depth) << m_type << SPACE << SC_CONNECTOR_MAIN_R << SPACE << m_identifierForSCs << ELEMENT_END
+                          << NEWLINE;
   }
   else
   {
-    buffer.AddTabs(depth) << m_alias << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_sourceIdentifier << SPACE
-                          << m_type << SPACE << m_targetIdentifier << CLOSE_PARENTHESIS << ELEMENT_END << NEWLINE;
+    buffer.AddTabs(depth) << m_identifierForSCs << SPACE << EQUAL << SPACE << OPEN_PARENTHESIS << m_sourceIdentifier
+                          << SPACE << m_type << SPACE << m_targetIdentifier << CLOSE_PARENTHESIS << ELEMENT_END
+                          << NEWLINE;
   }
 }
 
@@ -244,10 +237,35 @@ void SCsContour::Dump(
   buffer << NEWLINE;
 
   Buffer contourBuffer;
-  SCsWriter writer;
-  writer.Write(m_scgElements, filePath, contourBuffer, depth + 1, writtenElements);
+  SCsWriter::Write(m_scgElements, filePath, contourBuffer, depth + 1, writtenElements);
 
-  buffer.AddTabs(depth) << GetSystemIdentifier() << SPACE << EQUAL << SPACE << OPEN_CONTOUR << NEWLINE;
+  buffer.AddTabs(depth) << GetIdentifierForSCs() << SPACE << EQUAL << SPACE << OPEN_CONTOUR << NEWLINE;
   buffer << contourBuffer.GetValue() << NEWLINE;
   buffer.AddTabs(depth) << CLOSE_CONTOUR << ELEMENT_END << NEWLINE;
+}
+
+// SCsFactory
+
+SCsElementPtr SCsElementFactory::CreateSCsElementForSCgElement(SCgElementPtr const & scgElement)
+{
+  SCsElementPtr scsElement;
+  std::string const & tag = scgElement->GetTag();
+  if (tag == NODE || tag == BUS)
+  {
+    std::shared_ptr<SCgLink> link = std::dynamic_pointer_cast<SCgLink>(scgElement);
+    if (link != nullptr && link->GetContentType() != NO_CONTENT)
+      scsElement = std::make_shared<SCsLink>();
+    else
+      scsElement = std::make_shared<SCsNode>();
+  }
+  else if (tag == PAIR || tag == ARC)
+    scsElement = std::make_shared<SCsConnector>();
+  else if (tag == CONTOUR)
+    scsElement = std::make_shared<SCsContour>();
+  else
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidType, "SCsElementFactory::CreateSCsElementForSCgElement: Unsupported SCgElement type.");
+
+  SCsWriter::SCgIdentifierCorrector::GenerateSCsIdentifier(scgElement, scsElement);
+  return scsElement;
 }
