@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+        os: [macos-14, ubuntu-22.04, ubuntu-24.04]
         build_type: ["Debug", "Release"]
         config:
           - { cc: "gcc", cxx: "g++" }
@@ -43,16 +43,16 @@ jobs:
           BUILD_TYPE: ${{ matrix.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: none
-        run: scripts/ci/make_tests.sh
+        run: scripts/build_sc_machine.sh -t
 
       - name: Run tests
         id: run_tests
-        run: scripts/ci/run_tests.sh
+        run: scripts/run_tests.sh
 
       - name: Run sc-machine
         id: run_sc_machine
         run: |
           mkdir kb
-          bin/sc-builder -i kb -o kb.bin --clear -f
-          bin/sc-server -t -c sc-machine.ini -r kb.bin
-          bin/sc-machine -t -c sc-machine.ini -r kb.bin
+          build/bin/sc-builder -i kb -o kb.bin --clear -f
+          build/bin/sc-server -t -c sc-machine.ini -r kb.bin
+          build/bin/sc-machine -t -c sc-machine.ini -r kb.bin

@@ -1,4 +1,4 @@
-FROM ubuntu:focal as base
+FROM ubuntu:noble as base
 
 ENV CCACHE_DIR=/ccache
 USER root
@@ -29,7 +29,8 @@ FROM base AS final
 COPY --from=builder /sc-machine/requirements.txt /sc-machine/requirements.txt
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
 COPY --from=builder /sc-machine/sc-machine.ini /sc-machine/sc-machine.ini 
-COPY --from=builder /sc-machine/bin /sc-machine/bin
+COPY --from=builder /sc-machine/build/bin /sc-machine/build/bin
+COPY --from=builder /sc-machine/build/lib /sc-machine/build/lib
 RUN /sc-machine/scripts/install_deps_python.sh
 WORKDIR /sc-machine/scripts
 

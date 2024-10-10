@@ -6,8 +6,14 @@ target_link_libraries(sc-machine-runner
     LINK_PUBLIC sc-memory
     LINK_PUBLIC sc-config
 )
+
 target_include_directories(sc-machine-runner
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    PUBLIC $<INSTALL_INTERFACE:include>
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 add_executable(sc-machine "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")

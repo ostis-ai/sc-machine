@@ -6,8 +6,6 @@
 
 #include <gtest/gtest.h>
 
-#include "test_defines.hpp"
-
 #include "sc_machine_setup.hpp"
 
 #include <sc-config/sc_options.hpp>
