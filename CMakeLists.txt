@@ -1,17 +1,20 @@
 cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 17)
 project(sc-machine VERSION "0.9.0" LANGUAGES C CXX)
-message(STATUS "Current Project Version: ${CMAKE_PROJECT_VERSION}")
+message(STATUS "Current project version: ${CMAKE_PROJECT_VERSION}")
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-message(STATUS "Libary output directory: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(SC_EXTENSIONS_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/extensions)
+make_directory(${SC_EXTENSIONS_DIRECTORY})
+
 message(STATUS "Binary output directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+message(STATUS "Libary output directory: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
 option(SC_BUILD_TESTS "Flag to build unit tests" OFF)
@@ -99,9 +102,9 @@ message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, path:
 # Set up dynamic linking paths for our own libraries
 # For macOS, use @loader_path instead of $ORIGIN
 if(APPLE)
-    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib")
+    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib;@loader_path/../lib/extensions")
 else()
-    set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib")
+    set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib;$ORIGIN/../lib/extensions")
 endif()
 
 # Always use full RPATH

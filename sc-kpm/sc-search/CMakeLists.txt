@@ -6,6 +6,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 add_library(sc-kpm-search SHARED ${SOURCES})
 target_link_libraries(sc-kpm-search LINK_PUBLIC sc-kpm-common)
 target_include_directories(sc-kpm-search PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set_target_properties(sc-kpm-search PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY})
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-search)

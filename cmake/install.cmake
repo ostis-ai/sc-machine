@@ -11,7 +11,7 @@ install(TARGETS
 )
 
 # a target set for things we don't want to export to the consumers
-install(TARGETS sc-server-lib EXPORT privateExport LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS sc-kpm-search sc-kpm-utils sc-kpm-ui sc-server-lib EXPORT privateExport LIBRARY DESTINATION lib/extensions)
 
 install(EXPORT sc-machineExport
     FILE sc-machineTargets.cmake
