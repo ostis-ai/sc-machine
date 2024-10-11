@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+        <pair type="pair/const/pos/perm/orient/membership" idtf="" shapeColor="0" id="3355" parent="0" id_b="3355" id_e="3355" b_x="187" b_y="543" e_x="0" e_y="1" dotBBalance="0" dotEBalance="0.523677">
+            <points/>
+        </pair>
+    </staticSector>
+</GWF>

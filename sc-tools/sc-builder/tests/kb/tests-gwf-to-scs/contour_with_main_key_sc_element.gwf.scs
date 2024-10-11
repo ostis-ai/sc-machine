@@ -1,0 +1,8 @@
+cookie_specification = [*
+    cookie
+        <- sc_node;;
+*];;
+rrel_main_key_sc_element
+    <- sc_node_role_relation;;
+@connector_105067938008576 = (rrel_main_key_sc_element -> @connector_105067947536816);;
+@connector_105067947536816 = (cookie_specification -> cookie);;

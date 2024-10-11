@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "sc-memory/sc_addr.hpp"
-
 #include <string>
+
+#include <sc-memory/sc_addr.hpp>
 
 class Translator
 {

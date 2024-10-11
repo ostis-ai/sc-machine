@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+        <node type="node/const/perm/general" idtf="3type" shapeColor="0" id="108733542566480" parent="0" left="0" top="0" right="52.8125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="64" y="368.647" haveBus="false" idtf_pos="0">
+            <content type="5" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[343.344]]></content>
+        </node>
+    </staticSector>
+</GWF>

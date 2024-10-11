@@ -7,6 +7,7 @@
 #include "sc-builder/translator.hpp"
 
 #include <sc-memory/sc_memory.hpp>
+#include <sc-memory/sc_keynodes.hpp>
 
 Translator::Translator(ScMemoryContext & ctx)
   : m_ctx(ctx)
@@ -30,17 +31,13 @@ void Translator::GetFileContent(std::string const & fileName, std::string & outC
 
 void Translator::Clean(ScMemoryContext & ctx)
 {
-  // remove global identifiers
-  ScAddr const nrelSCsGlobalIdtf = ctx.ResolveElementSystemIdentifier("nrel_scs_global_idtf", ScType::ConstNodeNoRole);
-  if (!nrelSCsGlobalIdtf.IsValid())
-  {
-    ScConsole::PrintLine() << ScConsole::Color::Red << "Can't resolve keynode 'nrel_scs_global_idtf'";
-    return;
-  }
-
   ScTemplate templ;
   templ.Quintuple(
-      ScType::Unknown, ScType::VarCommonArc, ScType::NodeLink >> "_link", ScType::VarPermPosArc, nrelSCsGlobalIdtf);
+      ScType::Unknown,
+      ScType::VarCommonArc,
+      ScType::NodeLink >> "_link",
+      ScType::VarPermPosArc,
+      ScKeynodes::nrel_scs_global_idtf);
 
   ScTemplateSearchResult res;
   if (ctx.SearchByTemplate(templ, res))

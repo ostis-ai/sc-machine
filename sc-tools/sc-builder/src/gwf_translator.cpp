@@ -10,11 +10,13 @@
 
 #include <sc-memory/utils/sc_exec.hpp>
 
-#define PYTHON_INTERPRETER "python3"
-#define GWF_TRANSLATOR_SCRIPT SC_PREPARE_BUILD_SCRIPTS_PATH "/kb-scripts/gwf_to_scs.py"
-#define GWF_TRANSLATOR_ERRORS_LOG SC_PREPARE_BUILD_SCRIPTS_PATH "/prepare_kb.log"
-#define GWF_TRANSLATOR_INPUT_FILE_PARAM "--input="
-#define GWF_TRANSLATOR_ERRORS_LOG_PARAM "--errors_file="
+#include "builder_defines.hpp"
+
+#include "gwf_parser.hpp"
+#include "sc_scs_writer.hpp"
+#include "gwf_translator_constants.hpp"
+
+using namespace Constants;
 
 GWFTranslator::GWFTranslator(ScMemoryContext & context)
   : Translator(context)
@@ -22,48 +24,96 @@ GWFTranslator::GWFTranslator(ScMemoryContext & context)
 {
 }
 
-std::string GWFTranslator::ConvertToSCsPath(std::string const & path) const
-{
-  return path + ".scs";
-}
-
-bool GWFTranslator::ErrorsExist(std::string const & path) const
-{
-  return std::filesystem::is_regular_file(path) && std::filesystem::file_size(path) > 0;
-}
-
-std::string GWFTranslator::GetError(std::string const & path) const
-{
-  std::string error;
-  GetFileContent(path, error);
-  return error;
-}
-
 bool GWFTranslator::TranslateImpl(Params const & params)
 {
-  std::string result;
-  ScExec exec{
-      {PYTHON_INTERPRETER,
-       GWF_TRANSLATOR_SCRIPT,
-       GWF_TRANSLATOR_INPUT_FILE_PARAM + params.m_fileName,
-       GWF_TRANSLATOR_ERRORS_LOG_PARAM GWF_TRANSLATOR_ERRORS_LOG}};
-  std::string const & scsSource = ConvertToSCsPath(params.m_fileName);
-
-  if (ErrorsExist(GWF_TRANSLATOR_ERRORS_LOG))
-  {
-    std::string const & error = GetError(GWF_TRANSLATOR_ERRORS_LOG);
-    std::filesystem::remove(scsSource);
-    std::filesystem::remove(GWF_TRANSLATOR_ERRORS_LOG);
-
-    SC_THROW_EXCEPTION(utils::ExceptionParseError, error);
-  }
+  std::string const & scsText = TranslateXMLFileContentToSCs(params.m_fileName);
+  std::string const & scsSource = WriteStringToFile(scsText, params.m_fileName);
 
   Params newParams;
   newParams.m_fileName = scsSource;
   newParams.m_autoFormatInfo = params.m_autoFormatInfo;
   newParams.m_outputStructure = params.m_outputStructure;
-
   bool status = m_scsTranslator.Translate(newParams);
-  std::filesystem::remove(scsSource);
+
+  std::filesystem::remove(scsSource.c_str());
+
   return status;
+}
+
+std::string GWFTranslator::TranslateXMLFileContentToSCs(std::string const & filename)
+{
+  std::string const & gwfText = GetXMLFileContent(filename);
+  return TranslateGWFToSCs(gwfText, filename);
+}
+
+std::string GWFTranslator::GetXMLFileContent(std::string const & fileName)
+{
+  xmlInitParser();
+
+  xmlDocPtr const & document = xmlReadFile(fileName.c_str(), nullptr, 0);
+  if (document == nullptr)
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError, "GWFTranslator::GetXMLFileContent: Failed to parse XML file `" << fileName << "`.");
+
+  xmlChar * xmlBuffer;
+  int bufferSize;
+  xmlDocDumpFormatMemory(document, &xmlBuffer, &bufferSize, 0);
+
+  std::string xmlString((char *)xmlBuffer, bufferSize);
+
+  xmlFree(xmlBuffer);
+  xmlFreeDoc(document);
+  xmlCleanupParser();
+
+  return xmlString;
+}
+
+std::string GWFTranslator::TranslateGWFToSCs(std::string const & xmlStr, std::string const & filePath)
+{
+  SCgElements elementsWithoutParents;
+
+  GWFParser::Parse(xmlStr, elementsWithoutParents);
+
+  if (elementsWithoutParents.empty())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError,
+        "GWFTranslator::TranslateGWFToSCs: There are no elements in file `" << filePath << "`.");
+
+  Buffer scsBuffer;
+  std::unordered_set<SCgElementPtr> writtenElements;
+  SCsWriter::Write(elementsWithoutParents, filePath, scsBuffer, 0, writtenElements);
+
+  return scsBuffer.GetValue();
+}
+
+std::string GWFTranslator::WriteStringToFile(std::string const & scsText, std::string const & fileName)
+{
+  std::string const & filePath = fileName + GENERATED_EXTENTION + SCS_EXTENTION;
+  std::ofstream outputFile(filePath, std::ios::binary);
+
+  if (!outputFile.is_open())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionCritical,
+        "GWFTranslator::WriteStringToFile: Error creating file for writing `" << filePath << "`.");
+
+  outputFile << scsText;
+
+  if (outputFile.fail())
+  {
+    outputFile.close();
+    std::remove(filePath.c_str());
+    SC_THROW_EXCEPTION(
+        utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error writing to file `" << filePath << "`.");
+  }
+
+  outputFile.close();
+
+  if (outputFile.fail())
+  {
+    std::remove(filePath.c_str());
+    SC_THROW_EXCEPTION(
+        utils::ExceptionCritical, "GWFTranslator::WriteStringToFile: Error closing the file `" << filePath << "`.");
+  }
+
+  return filePath;
 }

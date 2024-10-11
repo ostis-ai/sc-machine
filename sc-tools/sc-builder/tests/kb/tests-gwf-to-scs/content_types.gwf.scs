@@ -1,0 +1,12 @@
+
+4type = "file://ostis.png";;
+@format_arc = (4type => format_png);;
+@nrel_format_arc = (nrel_format -> @format_arc);;
+
+2type = ["int64:12"];;
+
+3type = ["float:343.344"];;
+
+1type = [OSTIS
+the
+best!];;
