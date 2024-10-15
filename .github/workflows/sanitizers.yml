@@ -47,8 +47,8 @@ jobs:
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
-        run: scripts/build_sc_machine.sh -t
+        run: cmake --preset debug -DSC_USE_SANITIZER=${{ matrix.config.sanitizer }} && cmake --build --preset debug
 
       - name: Run tests
         id: run_tests
-        run: scripts/run_tests.sh
+        run: cd build/Debug && ctest -C Debug -V
