@@ -12,7 +12,7 @@ RUN apt update && apt install -y --no-install-recommends sudo tini && /tmp/sc-ma
 
 #build using ccache
 FROM base as devdeps
-RUN /tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev && sudo apt install ninja-build
+RUN /tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev
 
 FROM devdeps as devcontainer
 RUN apt install -y --no-install-recommends git cppcheck valgrind gdb bash-completion curl
