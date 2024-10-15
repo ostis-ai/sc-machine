@@ -5,3 +5,5 @@ README.md
 codecov.yml
 .git
 .venv
+**/*.scdb
+/CMakeUserPresets.json
