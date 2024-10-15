@@ -12,7 +12,9 @@ RUN apt update && apt install -y --no-install-recommends sudo tini && /tmp/sc-ma
 
 #build using ccache
 FROM base as devdeps
-RUN /tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+--mount=type=cache,target=/var/lib/apt,sharing=locked \
+/tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev
 
 FROM devdeps as devcontainer
 RUN apt install -y --no-install-recommends git cppcheck valgrind gdb bash-completion curl

@@ -30,6 +30,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: apt cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/cache/apt/
+            /var/lib/apt/
+          key: apt-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/install_deps_ubuntu.sh') }}
+
       - name: Install dependencies
         id: install_deps
         run: scripts/install_deps_ubuntu.sh --dev
