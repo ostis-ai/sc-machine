@@ -39,7 +39,9 @@ class sc_machineRecipe(ConanFile):
         self.build_requires("nlohmann_json/3.11.3")
         self.build_requires("glib/2.78.3")
         self.build_requires("antlr4-cppruntime/4.9.3")
+        self.build_requires("libxml2/2.13.4")
         self.test_requires("gtest/1.14.0")
+        self.test_requires("benchmark/1.9.0")
 
     def layout(self):
         cmake_layout(self)
