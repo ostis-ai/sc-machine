@@ -18,7 +18,7 @@ jobs:
         config:
           - {
             name: "Sanitizer - address",
-            os: ubuntu-22.04,
+            os: ubuntu-24.04,
             sanitizer: "address",
             cc: clang,
             cxx: clang++,
@@ -30,13 +30,22 @@ jobs:
         with:
           submodules: recursive
 
+      - name: apt cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/cache/apt/
+            /var/lib/apt/
+          key: apt-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/install_deps_ubuntu.sh') }}
+
       - name: Install dependencies
         id: install_deps
         run: scripts/install_deps_ubuntu.sh --dev
 
       - name: Restore build caches
-        uses: hendrikmuhs/ccache-action@v1.2
+        uses: actions/cache@v4
         with:
+          path: ~/.ccache
           key: ${{ github.job }}-${{ matrix.config.os}}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}
 
       - name: Build
@@ -47,8 +56,8 @@ jobs:
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: OFF
           SANITIZER_TYPE: ${{ matrix.config.sanitizer }}
-        run: scripts/ci/make_tests.sh
+        run: cmake --preset debug -DSC_USE_SANITIZER=${{ matrix.config.sanitizer }} && cmake --build --preset debug
 
       - name: Run tests
         id: run_tests
-        run: scripts/ci/run_tests.sh
+        run: cd build/Debug && ctest -C Debug -V

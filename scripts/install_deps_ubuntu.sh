@@ -33,6 +33,7 @@ packagelist_dev=(
   gcc
   g++
   clang
+  ninja-build
   default-jre
   clang-format
   libasio-dev
@@ -40,6 +41,8 @@ packagelist_dev=(
   nlohmann-json3-dev
   libxml2-dev
   python3-dev
+  libgtest-dev
+  libbenchmark-dev
 )
 
 packages=() 

@@ -52,6 +52,7 @@ Examples:
 
 Possible tags:
 
+  * `[build]` - changes in build system;
   * `[memory]` - changes in `sc-memory` module;
   * `[kpm]` - changes in `sc-kpm` module;
   * `[tests]` or `[test]` - changes in tests;

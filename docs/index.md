@@ -1,9 +1,8 @@
 # Documentation
 
-- **Build**
-    * [Build on Linux](build/linux_build.md) - *installation manual of sc-machine on Linux-based systems*
-    * [Build on OSX](build/osx_build.md) - *installation manual of sc-machine on OSX-based systems*
-    * [CMake Flags](build/cmake_flags.md) - *description of CMake flags using to configure sc-machine*
+- **Build system**
+    * [Build system](build/build_system.md) - *how to build the project and use it as a library*
+    * [CMake Flags](build/cmake_flags.md) - *description of CMake flags used to configure sc-machine*
     * [Configuration File](build/config.md) - *description of a configuration file of sc-machine*
 - **API**
     * C++ API - *documentation of C++ API provided by sc-machine*
