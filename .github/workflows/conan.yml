@@ -58,17 +58,17 @@ jobs:
           pipx install conan
 
       - name: Install compilers
-        run: sudo apt install build-essential ninja-build
+        run: sudo apt install build-essential ninja-build ccache cmake
 
       - name: Build sc-machine with tests
         id: run_cmake
         run: |
-          cmake --preset=release-with-tests-conan
+          cmake --preset release-with-tests-conan
           cmake --build --preset release
 
       - name: Run sc-machine tests
         id: run_tests
-        run: cd build/Release && ctest -C Debug -V
+        run: cd build/Release && ctest -C Release -V
 
       - name: Run sc-machine
         id: run_sc_machine
