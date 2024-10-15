@@ -47,7 +47,7 @@ jobs:
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: ON
           SANITIZER_TYPE: none
-        run: scripts/build_sc_machine.sh --cmake-arg "-DSC_COVERAGE=ON" -t
+        run: cmake --preset debug -DSC_COVERAGE=ON && cmake --build --preset debug
 
       - name: Prepare coverage
         id: prepare_coverage
@@ -55,7 +55,7 @@ jobs:
 
       - name: Run tests
         id: run_tests
-        run: scripts/run_tests.sh
+        run: cd build/Debug && ctest -C Debug -V
 
       - name: Export coverage report
         id: export_coverage
@@ -65,7 +65,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{secrets.CODECOV_TOKEN}}
-          directory: ${{github.workspace}}/build
+          directory: ${{github.workspace}}/build/Debug
           files: coverage.info
           flags: unittests
           fail_ci_if_error: true

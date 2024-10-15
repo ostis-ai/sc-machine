@@ -16,7 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-14, ubuntu-22.04, ubuntu-24.04]
-        build_type: ["Debug", "Release"]
+        build_type:
+          - { preset: "release", name: "Release" }
+          - { preset: "debug", name: "Debug" }
         config:
           - { cc: "gcc", cxx: "g++" }
 
@@ -33,25 +35,22 @@ jobs:
       - name: Restore build caches
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-${{ matrix.os }}-${{ matrix.config.cxx }}-${{ matrix.build_type }}
+          key: ${{ github.job }}-${{ matrix.os }}-${{ matrix.config.cxx }}-${{ matrix.build_type.name }}
 
       - name: Build
         id: run_cmake
         env:
           CC: ${{ matrix.config.cc }}
           CXX: ${{ matrix.config.cxx }}
-          BUILD_TYPE: ${{ matrix.build_type }}
-          COVERAGE: OFF
-          SANITIZER_TYPE: none
-        run: scripts/build_sc_machine.sh -t
+        run: cmake --preset ${{ matrix.build_type.preset }} && cmake --build --preset ${{ matrix.build_type.preset }}
 
       - name: Run tests
         id: run_tests
-        run: scripts/run_tests.sh
+        run: cd build/${{ matrix.build_type.name }} && ctest -C ${{ matrix.build_type.name }} -V
 
       - name: Run sc-machine
         id: run_sc_machine
         run: |
           mkdir kb
-          build/bin/sc-builder -i kb -o kb.bin --clear
-          build/bin/sc-machine -t -c sc-machine.ini -s kb.bin
+          build/${{ matrix.build_type.name }}/bin/sc-builder -i kb -o kb.bin --clear
+          build/${{ matrix.build_type.name }}/bin/sc-machine -c sc-machine.ini -s kb.bin -t

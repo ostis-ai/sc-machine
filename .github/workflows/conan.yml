@@ -56,7 +56,7 @@ jobs:
 
       - name: Run sc-machine tests
         id: run_tests
-        run: cd build && ctest -C Debug -V
+        run: cd build/Release && ctest -C Debug -V
 
       - name: Run sc-machine
         id: run_sc_machine
