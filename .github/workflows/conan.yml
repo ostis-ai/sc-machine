@@ -39,9 +39,7 @@ jobs:
           pipx install conan
 
       - name: Install compilers
-        run: |
-          sudo apt-get install ninja-build
-          ./scripts/install_deps_ubuntu.sh --dev
+        run: ./scripts/install_deps_ubuntu.sh --dev
 
       - name: Restore build caches
         uses: hendrikmuhs/ccache-action@v1.2

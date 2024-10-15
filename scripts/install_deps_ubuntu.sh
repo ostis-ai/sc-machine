@@ -33,6 +33,7 @@ packagelist_dev=(
   gcc
   g++
   clang
+  ninja-build
   default-jre
   clang-format
   libasio-dev
