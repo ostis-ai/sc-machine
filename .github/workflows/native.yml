@@ -41,8 +41,9 @@ jobs:
           scripts/install_dependencies.sh --dev
 
       - name: Restore build caches
-        uses: hendrikmuhs/ccache-action@v1.2
+        uses: actions/cache@v4
         with:
+          path: ~/.ccache
           key: ${{ github.job }}-${{ matrix.os }}-${{ matrix.config.cxx }}-${{ matrix.build_type.name }}
 
       - name: Build
