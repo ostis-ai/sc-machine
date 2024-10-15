@@ -43,8 +43,9 @@ jobs:
         run: scripts/install_deps_ubuntu.sh --dev
 
       - name: Restore build caches
-        uses: hendrikmuhs/ccache-action@v1.2
+        uses: actions/cache@v4
         with:
+          path: ~/.ccache
           key: ${{ github.job }}-${{ matrix.config.os }}-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}
 
       - name: Build
