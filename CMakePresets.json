@@ -57,7 +57,10 @@
       "name": "release-with-tests-conan",
       "displayName": "Release config with tests (Conan)",
       "description": "Release config with tests (Conan dependencies used)",
-      "inherits": "release-with-tests"
+      "inherits": "release-with-tests",
+      "cacheVariables": {
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "./cmake/conan_provider.cmake"
+      }
     }
   ],
   "buildPresets": [
