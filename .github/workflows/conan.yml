@@ -24,10 +24,29 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Restore ccache caches
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}
+
+      - name: Conan cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan/data
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.py') }}
+
+      - name: apt cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/cache/apt/
+            /var/lib/apt/
+          key: apt-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/install_deps_ubuntu.sh') }}
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Set up pipx
         run: |
@@ -39,12 +58,7 @@ jobs:
           pipx install conan
 
       - name: Install compilers
-        run: ./scripts/install_deps_ubuntu.sh --dev
-
-      - name: Restore build caches
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}
+        run: sudo apt install build-essential ninja-build
 
       - name: Build sc-machine with tests
         id: run_cmake
