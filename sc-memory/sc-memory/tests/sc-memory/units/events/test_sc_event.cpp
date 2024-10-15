@@ -1367,3 +1367,52 @@ TEST_F(ScEventTest, BlockEventsGuardAndEmitAfter)
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   EXPECT_TRUE(isCalled);
 }
+
+TEST_F(ScEventTest, TwoSubscriptionsForOneArcErasure)
+{
+  ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  bool isDelayedCalled = false;
+  auto delayedSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeAddr1,
+          [&isDelayedCalled, this](auto const & event)
+          {
+            isDelayedCalled = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            EXPECT_TRUE(m_ctx->IsElement(event.GetArc()));
+            auto const & [sourceAddr, targetAddr] = m_ctx->GetConnectorIncidentElements(event.GetArc());
+            EXPECT_TRUE(m_ctx->IsElement(sourceAddr));
+            EXPECT_TRUE(m_ctx->IsElement(targetAddr));
+            auto const & [source2Addr, target2Addr] = m_ctx->GetConnectorIncidentElements(targetAddr);
+            EXPECT_TRUE(m_ctx->IsElement(source2Addr));
+            EXPECT_TRUE(m_ctx->IsElement(target2Addr));
+            auto const & [source3Addr, target3Addr] = m_ctx->GetConnectorIncidentElements(target2Addr);
+            EXPECT_TRUE(m_ctx->IsElement(source3Addr));
+            EXPECT_TRUE(m_ctx->IsElement(target3Addr));
+            auto const & [source4Addr, target4Addr] = m_ctx->GetConnectorIncidentElements(target3Addr);
+            EXPECT_TRUE(m_ctx->IsElement(source4Addr));
+            EXPECT_TRUE(m_ctx->IsElement(target4Addr));
+            EXPECT_TRUE(m_ctx->GetElementType(target4Addr).IsNode());
+          });
+  bool isInstantCalled = false;
+  auto instantSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeAddr1,
+          [&isInstantCalled](auto const &)
+          {
+            isInstantCalled = true;
+          });
+
+  ScAddr const nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const nodeAddr3 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const nodeAddr4 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const nodeAddr5 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr const & arcAddr1 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr3, nodeAddr2);
+  ScAddr const & arcAddr2 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr4, arcAddr1);
+  ScAddr const & arcAddr3 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr5, arcAddr2);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr1, arcAddr3);
+  m_ctx->EraseElement(nodeAddr2);
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  EXPECT_TRUE(isInstantCalled);
+  EXPECT_TRUE(isDelayedCalled);
+}

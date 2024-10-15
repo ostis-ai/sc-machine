@@ -50,7 +50,7 @@ sc_result sc_event_notify_element_deleted(sc_addr addr);
  * @param subscription_addr sc-addr of element that emitting event
  * @param event_type_addr Emitting event type
  * @param connector_addr A sc-address of added/removed sc-connector (just for specified events)
- * @param edge_type A sc-type of added/removed sc-connector (just for specified events)
+ * @param connector_type A sc-type of added/removed sc-connector (just for specified events)
  * @param other_addr A sc-address of the second sc-element of sc-connector. If \p subscription_addr is a source, then \p
  * other_addr is a target. If \p subscription_addr is a target, then \p other_addr is a source.
  * @param callback A pointer function that is executed after the execution of a function that was called on the
@@ -63,7 +63,7 @@ sc_result sc_event_emit(
     sc_addr subscription_addr,
     sc_event_type event_type_addr,
     sc_addr connector_addr,
-    sc_type edge_type,
+    sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
     sc_addr event_addr);

@@ -111,7 +111,7 @@ struct _sc_addr
  * and get them back from int
  */
 #  define SC_ADDR_LOCAL_TO_INT(addr) (sc_uint32)(((addr).seg << 16) | ((addr).offset & 0xffff))
-#  define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v) & 0x0000ffff)
+#  define SC_ADDR_LOCAL_OFFSET_FROM_INT(v) (sc_uint16)((v)&0x0000ffff)
 #  define SC_ADDR_LOCAL_SEG_FROM_INT(v) SC_ADDR_LOCAL_OFFSET_FROM_INT(v >> 16)
 #  define SC_ADDR_LOCAL_FROM_INT(hash, addr) \
     addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash); \
@@ -231,7 +231,7 @@ typedef sc_uint16 sc_type;
 typedef sc_uint16 sc_states;
 
 #  define SC_STATE_REQUEST_ERASURE 0x1
-#  define SC_STATE_IS_ERASABLE 0x200
+#  define SC_STATE_IS_UNDER_ERASURE 0x200
 #  define SC_STATE_ELEMENT_EXIST 0x2
 
 // results
