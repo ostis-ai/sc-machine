@@ -674,7 +674,7 @@ sc_result _sc_storage_element_erase_with_base_element(
     sc_addr connector_chain_begin_addr,
     sc_addr addr,
     sc_hash_table * processed_connectors,
-    sc_list * connector_lists_required_for_erase_events,
+    sc_bool * does_branch_have_emitted_events,
     sc_list * elements_that_can_be_erased)
 {
   sc_result result;
@@ -793,10 +793,7 @@ sc_result _sc_storage_element_erase_with_base_element(
       || erase_incoming_arc_result == SC_RESULT_OK || erase_outgoing_arc_result == SC_RESULT_OK
       || erase_element_result == SC_RESULT_OK || there_are_active_erase_events_with_addr)
   {
-    sc_list * end_of_erased_connectors_chain;
-    sc_list_init(&end_of_erased_connectors_chain);
-    sc_list_push_back(end_of_erased_connectors_chain, (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(addr));
-    sc_list_push_back(connector_lists_required_for_erase_events, end_of_erased_connectors_chain);
+    *does_branch_have_emitted_events = SC_TRUE;
     sc_monitor_release_write(monitor);
     return SC_RESULT_OK;
   }
@@ -813,27 +810,15 @@ sc_result _sc_storage_element_erase_with_base_element(
         break;
 
       sc_hash_table_insert(processed_connectors, p_addr, connector);
-      sc_list * connectors_with_emitted_erase_events;
-      sc_list_init(&connectors_with_emitted_erase_events);
+      sc_bool does_subbranch_have_emitted_events;
       _sc_storage_element_erase_with_base_element(
           ctx,
           connector_chain_begin_addr,
           connector_addr,
           processed_connectors,
-          connectors_with_emitted_erase_events,
+          &does_subbranch_have_emitted_events,
           elements_that_can_be_erased);
-      if (connectors_with_emitted_erase_events->size == 0)
-        sc_list_destroy(connectors_with_emitted_erase_events);
-      else
-      {
-        sc_iterator * lists_it = sc_list_iterator(connectors_with_emitted_erase_events);
-        while (sc_iterator_next(lists_it))
-        {
-          sc_list * connectors_list = (sc_list *)sc_iterator_get(lists_it);
-          sc_list_push_back(connector_lists_required_for_erase_events, connectors_list);
-        }
-        sc_iterator_destroy(lists_it);
-      }
+      *does_branch_have_emitted_events |= does_subbranch_have_emitted_events;
     }
 
     connector_addr = connector->arc.next_begin_out_arc;
@@ -852,60 +837,33 @@ sc_result _sc_storage_element_erase_with_base_element(
         break;
 
       sc_hash_table_insert(processed_connectors, p_addr, connector);
-      sc_list * connectors_with_emitted_erase_events;
-      sc_list_init(&connectors_with_emitted_erase_events);
+      sc_bool does_subbranch_have_emitted_events;
       _sc_storage_element_erase_with_base_element(
           ctx,
           connector_chain_begin_addr,
           connector_addr,
           processed_connectors,
-          connectors_with_emitted_erase_events,
+          &does_subbranch_have_emitted_events,
           elements_that_can_be_erased);
-      if (connectors_with_emitted_erase_events->size == 0)
-        sc_list_destroy(connectors_with_emitted_erase_events);
-      else
-      {
-        sc_iterator * lists_it = sc_list_iterator(connectors_with_emitted_erase_events);
-        while (sc_iterator_next(lists_it))
-        {
-          sc_list * connectors_list = (sc_list *)sc_iterator_get(lists_it);
-          sc_list_push_back(connector_lists_required_for_erase_events, connectors_list);
-        }
-        sc_iterator_destroy(lists_it);
-      }
+      *does_branch_have_emitted_events |= does_subbranch_have_emitted_events;
     }
 
     connector_addr = connector->arc.next_end_in_arc;
   }
 
   sc_monitor_release_write(monitor);
-  if (connector_lists_required_for_erase_events->size == 0)
-  {
-    sc_list_push_back(elements_that_can_be_erased, (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(addr));
-  }
-  else
-  {
-    sc_iterator * lists_it = sc_list_iterator(connector_lists_required_for_erase_events);
-    while (sc_iterator_next(lists_it))
-    {
-      sc_list * connectors_list = (sc_list *)sc_iterator_get(lists_it);
-      sc_list_push_back(connectors_list, (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(addr));
-    }
-    sc_iterator_destroy(lists_it);
-  }
   return SC_RESULT_OK;
 }
 
 sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
 {
   sc_hash_table * connectors_added_to_queue = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
-  sc_list * connectors_lists_used_for_erase_events;
-  sc_list_init(&connectors_lists_used_for_erase_events);
+  sc_bool does_branch_have_emitted_events = SC_FALSE;
   sc_list * elements_that_can_be_erased;
   sc_list_init(&elements_that_can_be_erased);
 
   sc_result result = _sc_storage_element_erase_with_base_element(
-      ctx, addr, addr, connectors_added_to_queue, connectors_lists_used_for_erase_events, elements_that_can_be_erased);
+      ctx, addr, addr, connectors_added_to_queue, &does_branch_have_emitted_events, elements_that_can_be_erased);
 
   sc_hash_table_destroy(connectors_added_to_queue);
 
