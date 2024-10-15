@@ -21,7 +21,7 @@ services:
       - "REBUILD_KB=${REBUILD_KB:-0}"
       - "KB_PATH=${KB_PATH:-/kb/repo.path}"
       - "BINARY_PATH=/sc-machine/build/bin"
-      - "EXTENSIONS_PATH=/sc-machine/build/lib"
+      - "EXTENSIONS_PATH=/sc-machine/build/lib/extensions"
       - "CONFIG_PATH=/sc-machine/sc-machine.ini"
     command:
       - "run"

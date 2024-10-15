@@ -12,16 +12,16 @@ RUN apt update && apt install -y --no-install-recommends sudo tini && /tmp/sc-ma
 
 #build using ccache
 FROM base as devdeps
-RUN /tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev
+RUN /tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev && sudo apt install ninja-build
 
 FROM devdeps as devcontainer
-RUN apt install -y --no-install-recommends git cppcheck valgrind gdb bash-completion ninja-build curl
+RUN apt install -y --no-install-recommends git cppcheck valgrind gdb bash-completion curl
 ENTRYPOINT ["/bin/bash"]
 
 FROM devdeps as builder
 WORKDIR /sc-machine
 COPY . .
-RUN --mount=type=cache,target=/ccache/ ./scripts/build_sc_machine.sh -r
+RUN --mount=type=cache,target=/ccache/ cmake --preset release . && cmake --build --preset release
 
 #Gathering all artifacts together
 FROM base AS final
@@ -29,8 +29,8 @@ FROM base AS final
 COPY --from=builder /sc-machine/requirements.txt /sc-machine/requirements.txt
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
 COPY --from=builder /sc-machine/sc-machine.ini /sc-machine/sc-machine.ini 
-COPY --from=builder /sc-machine/build/bin /sc-machine/build/bin
-COPY --from=builder /sc-machine/build/lib /sc-machine/build/lib
+COPY --from=builder /sc-machine/build/Release/bin /sc-machine/build/bin
+COPY --from=builder /sc-machine/build/Release/lib /sc-machine/build/lib
 RUN /sc-machine/scripts/install_deps_python.sh
 WORKDIR /sc-machine/scripts
 
