@@ -57,6 +57,7 @@ class sc_machineRecipe(ConanFile):
         # deps.build_context_activated = ["my_tool"]
         deps.generate()
         tc = CMakeToolchain(self)
+        tc.user_presets_path = "ConanPresets.json"
         tc.generate()
 
     def package(self):
