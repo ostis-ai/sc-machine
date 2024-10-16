@@ -810,15 +810,13 @@ sc_result _sc_storage_element_erase_with_base_element(
         break;
 
       sc_hash_table_insert(processed_connectors, p_addr, connector);
-      sc_bool does_subbranch_have_emitted_events;
       _sc_storage_element_erase_with_base_element(
           ctx,
           connector_chain_begin_addr,
           connector_addr,
           processed_connectors,
-          &does_subbranch_have_emitted_events,
+          does_branch_have_emitted_events,
           elements_that_can_be_erased);
-      *does_branch_have_emitted_events |= does_subbranch_have_emitted_events;
     }
 
     connector_addr = connector->arc.next_begin_out_arc;
@@ -837,21 +835,22 @@ sc_result _sc_storage_element_erase_with_base_element(
         break;
 
       sc_hash_table_insert(processed_connectors, p_addr, connector);
-      sc_bool does_subbranch_have_emitted_events;
       _sc_storage_element_erase_with_base_element(
           ctx,
           connector_chain_begin_addr,
           connector_addr,
           processed_connectors,
-          &does_subbranch_have_emitted_events,
+          does_branch_have_emitted_events,
           elements_that_can_be_erased);
-      *does_branch_have_emitted_events |= does_subbranch_have_emitted_events;
     }
 
     connector_addr = connector->arc.next_end_in_arc;
   }
 
   sc_monitor_release_write(monitor);
+
+  if (!*does_branch_have_emitted_events)
+    sc_list_push_back(elements_that_can_be_erased, (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(addr));
   return SC_RESULT_OK;
 }
 
