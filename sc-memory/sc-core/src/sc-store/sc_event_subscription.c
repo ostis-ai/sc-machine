@@ -304,7 +304,7 @@ sc_result sc_event_emit(
 
   if (_sc_memory_context_are_events_pending(ctx))
   {
-    _sc_memory_context_pend_event(ctx, event_type_addr, subscription_addr, connector_addr, connector_type, other_addr);
+    _sc_memory_context_pend_event(ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr);
     return SC_RESULT_OK;
   }
 
