@@ -780,13 +780,16 @@ sc_result _sc_storage_element_erase_with_base_element(
   else
   {
     sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
-    sc_monitor_acquire_read(&emission_manager->pool_monitor);
-    if (sc_hash_table_get(emission_manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)))
-        != null_ptr)
+    if (emission_manager != null_ptr)
     {
-      there_are_active_erase_events_with_addr = SC_TRUE;
+      sc_monitor_acquire_read(& emission_manager->pool_monitor);
+      if (sc_hash_table_get(emission_manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)))
+          != null_ptr)
+      {
+        there_are_active_erase_events_with_addr = SC_TRUE;
+      }
+      sc_monitor_release_read(& emission_manager->pool_monitor);
     }
-    sc_monitor_release_read(&emission_manager->pool_monitor);
   }
 
   if (erase_incoming_connector_result == SC_RESULT_OK || erase_outgoing_connector_result == SC_RESULT_OK
