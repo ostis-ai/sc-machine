@@ -788,7 +788,7 @@ sc_result _sc_storage_element_erase_with_base_element(
       {
         there_are_active_erase_events_with_addr = SC_TRUE;
       }
-      sc_monitor_release_read(& emission_manager->pool_monitor);
+      sc_monitor_release_read(&emission_manager->pool_monitor);
     }
   }
 
