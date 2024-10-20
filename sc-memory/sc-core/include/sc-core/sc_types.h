@@ -193,7 +193,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_constancy_mask (sc_type)(sc_type_const | sc_type_var)
 #  define sc_type_actuality_mask (sc_type)(sc_type_actual_arc | sc_type_inactual_arc)
 #  define sc_type_permanency_mask (sc_type)(sc_type_perm_arc | sc_type_temp_arc)
-#  define sc_type_positivity_mask (sc_type)(sc_type_pos_arc | sc_type_neg_arc | sc_type_fuz_arc)
+#  define sc_type_positivity_mask (sc_type)(sc_type_pos_arc | sc_type_neg_arc)
 
 #  define sc_type_membership_arc_mask \
     (sc_type)(sc_type_actuality_mask | sc_type_permanency_mask | sc_type_positivity_mask)
