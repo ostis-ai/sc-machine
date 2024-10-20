@@ -173,7 +173,7 @@ std::string ScType::GetSCsElementKeynode() const
 
 bool ScType::CanExtendTo(ScType const & extType) const
 {
-  return sc_memory_is_type_expendable_to(*this, extType);
+  return sc_memory_is_type_extendable_to(*this, extType);
 }
 
 std::set<ScType> ScType::GetConnectorTypes()

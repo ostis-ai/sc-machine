@@ -334,16 +334,16 @@ sc_uint32 sc_storage_get_element_incoming_arcs_count(sc_memory_context const * c
 sc_result sc_storage_get_element_type(sc_memory_context const * ctx, sc_addr addr, sc_type * result);
 
 /*!
- * @brief Checks if a given sc_type can be expanded to a new sc_type.
+ * @brief Checks if a given sc_type can be extended to a new sc_type.
  *
  * This function evaluates whether the original type can be transformed into the new type without losing any semantic or
  * syntactic information. It considers various aspects of the types, including their syntactic subtypes, constancy, and
  * specific semantics like node links, nodes, and connectors.
  *
- * @param type The original sc_type to be evaluated for expandability.
+ * @param type The original sc_type to be evaluated for extendability.
  * @param new_type The new sc_type that is being checked against the original type.
  *
- * @return SC_TRUE if the new_type is compatible with type and can be used to expand it, SC_FALSE otherwise.
+ * @return SC_TRUE if the new_type is compatible with type and can be used to extend it, SC_FALSE otherwise.
  *
  * The function performs the following checks:
  * - **Syntactic Type Check**: Compares the syntactic subtypes of both types.
@@ -356,7 +356,7 @@ sc_result sc_storage_get_element_type(sc_memory_context const * ctx, sc_addr add
  * checks for compatibility in actuality, permanency, and positivity subtypes if specified connector is membership
  * sc-arc.
  */
-sc_bool sc_storage_is_type_expendable_to(sc_type type, sc_type new_type);
+sc_bool sc_storage_is_type_extendable_to(sc_type type, sc_type new_type);
 
 /*!
  * @brief Changes the subtype of the specified sc-element.

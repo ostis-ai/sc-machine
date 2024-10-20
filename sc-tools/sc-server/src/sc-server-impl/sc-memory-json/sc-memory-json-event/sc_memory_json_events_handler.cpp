@@ -87,7 +87,14 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleGenerate(
     ScAddr const & eventClassAddr = m_context->SearchElementBySystemIdentifier(eventClass);
     if (!eventClassAddr.IsValid())
     {
-      errorsPayload = "Invalid sc-event type with system identifier `" + eventClass + "`.";
+      errorsPayload = "sc-element was not found by system identifier `" + eventClass + "`.";
+      return responsePayload;
+    }
+
+    if (!m_context->CheckConnector(ScKeynodes::sc_event, eventClassAddr, ScType::ConstPermPosArc))
+    {
+      errorsPayload = "Found sc-element by system identifier `" + eventClass
+                      + "` is not sc-event, because it doesn't belong `sc_event` class.";
       return responsePayload;
     }
 
