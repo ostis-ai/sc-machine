@@ -5,13 +5,14 @@
  */
 
 #include "utils.h"
-#include "utils_keynodes.h"
-#include "utils_erase_elements.h"
 
 #include <sc-core/sc_memory.h>
 #include <sc-core/sc_keynodes.h>
 
 #include <sc-common/sc_keynodes.h>
+
+#include "utils_keynodes.h"
+#include "utils_erase_elements.h"
 
 sc_memory_context * s_erase_elements_ctx = 0;
 
@@ -23,6 +24,9 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
   s_erase_elements_ctx = s_memory_default_ctx;
 
   if (utils_keynodes_initialize(init_memory_generated_structure) != SC_RESULT_OK)
+    return SC_RESULT_ERROR;
+
+  if (sc_common_keynodes_initialize(s_erase_elements_ctx, init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   event_remove_elements = sc_event_subscription_new(

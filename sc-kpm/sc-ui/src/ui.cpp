@@ -7,6 +7,12 @@
 #include "ui.h"
 
 #include "uiTranslators.h"
+
+extern "C"
+{
+#include <sc-common/sc_keynodes.h>
+}
+
 #include "uiCommands.h"
 #include "uiKeynodes.h"
 
@@ -19,6 +25,9 @@ sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_mem
   s_default_ctx = s_memory_default_ctx;
 
   if (!initialize_keynodes(init_memory_generated_structure))
+    return SC_RESULT_ERROR;
+
+  if (sc_common_keynodes_initialize(s_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
 
   ui_initialize_commands();

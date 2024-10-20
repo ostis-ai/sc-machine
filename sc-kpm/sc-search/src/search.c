@@ -5,11 +5,14 @@
  */
 
 #include "search.h"
+
+#include <sc-core/sc_keynodes.h>
+#include <sc-core/sc_memory_headers.h>
+
+#include <sc-common/sc_keynodes.h>
+
 #include "search_agents.h"
 #include "search_keynodes.h"
-
-#include "sc-core/sc_keynodes.h"
-#include "sc-core/sc_memory_headers.h"
 
 sc_memory_context * s_default_ctx = 0;
 
@@ -30,6 +33,9 @@ sc_event_subscription * event_action_search_links_of_relation_connected_with_ele
 sc_result sc_module_initialize_with_init_memory_generated_structure(sc_addr const init_memory_generated_structure)
 {
   s_default_ctx = s_memory_default_ctx;
+
+  if (sc_common_keynodes_initialize(s_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
+    return SC_RESULT_ERROR;
 
   if (search_keynodes_initialize(s_default_ctx, init_memory_generated_structure) != SC_RESULT_OK)
     return SC_RESULT_ERROR;
