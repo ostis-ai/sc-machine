@@ -81,12 +81,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleGenerate(
     ScAddr const & subscriptionElementAddr = ScAddr(atom["addr"].get<size_t>());
 
     auto const & it = m_deprecatedEventsIdtfsToSystemEventsIdtfs.find(eventClass);
-    if (it == m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
-    {
-      errorsPayload = "Unknown sc-event type with system identifier `" + eventClass + "`.";
-      return responsePayload;
-    }
-    eventClass = it->second;
+    if (it != m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
+      eventClass = it->second;
 
     ScAddr const & eventClassAddr = m_context->SearchElementBySystemIdentifier(eventClass);
     if (!eventClassAddr.IsValid())
