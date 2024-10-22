@@ -138,7 +138,7 @@ typedef sc_uint16 sc_type;
 
 // sc-arc permanence
 #  define sc_type_temp_arc (sc_type)(sc_type_membership_arc | (sc_type)0x400)
-#  define sc_type_perm_arc (sc_type)(sc_type_membership_arc | sc_type_actual_arc | (sc_type)0x800)
+#  define sc_type_perm_arc (sc_type)(sc_type_membership_arc | (sc_type)0x800)
 
 // sc-arc positivity
 #  define sc_type_pos_arc (sc_type)(sc_type_membership_arc | (sc_type)0x80)

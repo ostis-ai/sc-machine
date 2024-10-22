@@ -321,6 +321,17 @@ TEST(ScTypeTest, ExtendTypes)
   EXPECT_FALSE(ScType::MembershipArc.CanExtendTo(ScType::CommonEdge));
   EXPECT_FALSE(ScType::MembershipArc.CanExtendTo(ScType::NodeLink));
 
+  EXPECT_FALSE(ScType::ActualTempArc.CanExtendTo(ScType::TempArc));
+  EXPECT_FALSE(ScType::InactualTempArc.CanExtendTo(ScType::TempArc));
+  EXPECT_FALSE(ScType::ActualTempArc.CanExtendTo(ScType::PermArc));
+  EXPECT_FALSE(ScType::InactualTempArc.CanExtendTo(ScType::PermArc));
+  EXPECT_FALSE(ScType::PermArc.CanExtendTo(ScType::ActualTempArc));
+  EXPECT_FALSE(ScType::PermArc.CanExtendTo(ScType::InactualTempArc));
+  EXPECT_FALSE(ScType::ActualTempArc.CanExtendTo(ScType::InactualTempArc));
+  EXPECT_FALSE(ScType::InactualTempArc.CanExtendTo(ScType::ActualTempArc));
+  EXPECT_TRUE(ScType::TempArc.CanExtendTo(ScType::ActualTempArc));
+  EXPECT_TRUE(ScType::TempArc.CanExtendTo(ScType::InactualTempArc));
+
   EXPECT_FALSE(ScType::Const.CanExtendTo(ScType::Var));
   EXPECT_TRUE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstFuzArc));
   EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstPermNegArc));
