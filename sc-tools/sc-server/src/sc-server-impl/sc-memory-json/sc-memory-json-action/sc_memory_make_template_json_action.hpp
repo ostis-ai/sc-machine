@@ -11,7 +11,7 @@
 class ScMemoryMakeTemplateJsonAction : public ScMemoryJsonAction
 {
 protected:
-  std::pair<ScTemplate *, ScTemplateParams> GetTemplate(ScMemoryContext * context, ScMemoryJsonPayload payload)
+  std::pair<ScTemplate *, ScTemplateParams> GetTemplate(ScAgentContext * context, ScMemoryJsonPayload payload)
   {
     ScTemplateParams templParams;
     if (payload.is_object())

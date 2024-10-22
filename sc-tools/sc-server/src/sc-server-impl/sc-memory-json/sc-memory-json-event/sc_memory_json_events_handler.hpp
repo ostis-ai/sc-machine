@@ -7,8 +7,7 @@
 #pragma once
 
 #include <string>
-
-#include <sc-memory/sc_memory.hpp>
+#include <unordered_map>
 
 #include "sc-server-impl/sc-memory-json/sc_memory_json_handler.hpp"
 #include "sc-server-impl/sc-memory-json/sc_memory_json_payload.hpp"
@@ -18,21 +17,23 @@
 #include "sc-server-impl/sc_server_defines.hpp"
 #include "sc-server-impl/sc_server.hpp"
 
+class ScAgentContext;
+
 class ScMemoryJsonEventsHandler : public ScMemoryJsonHandler
 {
 public:
   using ScEventSubscriptionGenerateCallback = std::function<ScEventSubscription *(
-      ScMemoryContext *,
+      ScAgentContext *,
       ScAddr const &,
       ScMemoryJsonEventsManager *,
       ScServer *,
       ScServerSessionId const &)>;
-  explicit ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx);
+  explicit ScMemoryJsonEventsHandler(ScServer * server, ScAgentContext * processCtx);
 
   ~ScMemoryJsonEventsHandler() override;
 
 private:
-  ScMemoryContext * m_context;
+  ScAgentContext * m_context;
   ScMemoryJsonEventsManager * m_manager;
 
   static std::unordered_map<std::string, std::string> const m_deprecatedEventsIdtfsToSystemEventsIdtfs;

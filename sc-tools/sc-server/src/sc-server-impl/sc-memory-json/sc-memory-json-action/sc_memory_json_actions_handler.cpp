@@ -10,7 +10,7 @@
 
 std::map<std::string, ScMemoryJsonAction *> ScMemoryJsonActionsHandler::m_actions;
 
-ScMemoryJsonActionsHandler::ScMemoryJsonActionsHandler(ScServer * server, ScMemoryContext * sessionCtx)
+ScMemoryJsonActionsHandler::ScMemoryJsonActionsHandler(ScServer * server, ScAgentContext * sessionCtx)
   : ScMemoryJsonHandler(server)
   , m_context(sessionCtx)
 {

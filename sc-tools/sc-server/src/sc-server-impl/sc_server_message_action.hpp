@@ -8,7 +8,8 @@
 
 #include <utility>
 
-#include "sc-memory/sc_keynodes.hpp"
+#include <sc-memory/sc_keynodes.hpp>
+#include <sc-memory/sc_agent_context.hpp>
 
 #include "sc_server_action.hpp"
 #include "sc_server.hpp"
@@ -25,7 +26,7 @@ public:
     , m_server(server)
     , m_msg(std::move(msg))
   {
-    ScMemoryContext * sessionCtx = m_server->GetSessionContext(sessionId);
+    ScAgentContext * sessionCtx = m_server->GetSessionContext(sessionId);
     m_actionsHandler = new ScMemoryJsonActionsHandler(server, sessionCtx);
     m_eventsHandler = new ScMemoryJsonEventsHandler(server, sessionCtx);
   }
@@ -83,7 +84,7 @@ public:
     ScMemoryJsonPayload response;
     try
     {
-      auto * context = new ScMemoryContext(ScKeynodes::myself);
+      auto * context = new ScAgentContext(ScKeynodes::myself);
 
       ScAddr const & tempAddr = context->GenerateNode(ScType::ConstNode);
       context->EraseElement(tempAddr);

@@ -22,7 +22,7 @@ public:
 
   void Emit() override
   {
-    auto * sessionCtx = new ScMemoryContext();
+    auto * sessionCtx = new ScAgentContext();
     m_server->AddSessionContext(m_sessionId, sessionCtx);
   }
 

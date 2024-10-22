@@ -11,7 +11,7 @@
 class ScMemoryTemplateGenerateJsonAction : public ScMemoryMakeTemplateJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
+  ScMemoryJsonPayload Complete(ScAgentContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
       override
   {
     ScTemplateGenResult result;

@@ -6,6 +6,8 @@
 
 #include "sc_memory_json_events_handler.hpp"
 
+#include <sc-memory/sc_agent_context.hpp>
+
 std::unordered_map<std::string, std::string> const
     ScMemoryJsonEventsHandler::m_deprecatedEventsIdtfsToSystemEventsIdtfs = {
         {"add_ingoing_edge", "sc_event_after_generate_incoming_arc"},
@@ -16,7 +18,7 @@ std::unordered_map<std::string, std::string> const
         {"content_change", "sc_event_before_change_link_content"},
 };
 
-ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx)
+ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScAgentContext * processCtx)
   : ScMemoryJsonHandler(server)
   , m_context(processCtx)
   , m_manager(ScMemoryJsonEventsManager::GetInstance())
@@ -85,24 +87,8 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleGenerate(
       eventClass = it->second;
 
     ScAddr const & eventClassAddr = m_context->SearchElementBySystemIdentifier(eventClass);
-    if (!eventClassAddr.IsValid())
-    {
-      errorsPayload = "sc-element was not found by system identifier `" + eventClass + "`.";
-      return responsePayload;
-    }
-
-    if (!m_context->CheckConnector(ScKeynodes::sc_event, eventClassAddr, ScType::ConstPermPosArc))
-    {
-      errorsPayload = "Found sc-element by system identifier `" + eventClass
-                      + "` is not sc-event, because it doesn't belong `sc_event` class.";
-      return responsePayload;
-    }
-
-    ScEventSubscription * subscription = new ScElementaryEventSubscription<>(
-        *m_context,
-        eventClassAddr,
-        subscriptionElementAddr,
-        bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
+    auto const & subscription = m_context->CreateElementaryEventSubscription(
+        eventClassAddr, subscriptionElementAddr, bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
     responsePayload.push_back(m_manager->Add(subscription));
   }
 
@@ -115,7 +101,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
     ScMemoryJsonPayload &)
 {
   for (auto & atom : message)
-    delete m_manager->Remove(atom.get<size_t>());
+    m_manager->Remove(atom.get<size_t>());
 
   return message;
 }

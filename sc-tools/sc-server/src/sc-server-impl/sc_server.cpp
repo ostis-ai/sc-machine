@@ -117,21 +117,21 @@ bool ScServer::IsSessionValid(ScServerSessionId const & sessionId)
   return m_connections->find(sessionId) != m_connections->cend();
 }
 
-void ScServer::AddSessionContext(ScServerSessionId const & sessionId, ScMemoryContext * sessionCtx)
+void ScServer::AddSessionContext(ScServerSessionId const & sessionId, ScAgentContext * sessionCtx)
 {
   ScServerLock lock(m_connectionsMutex);
   m_connections->insert({sessionId, sessionCtx});
 }
 
-ScMemoryContext * ScServer::PopSessionContext(ScServerSessionId const & sessionId)
+ScAgentContext * ScServer::PopSessionContext(ScServerSessionId const & sessionId)
 {
   ScServerLock lock(m_connectionsMutex);
-  ScMemoryContext * sessionCtx = m_connections->at(sessionId);
+  ScAgentContext * sessionCtx = m_connections->at(sessionId);
   m_connections->erase(sessionId);
   return sessionCtx;
 }
 
-ScMemoryContext * ScServer::GetSessionContext(ScServerSessionId const & sessionId)
+ScAgentContext * ScServer::GetSessionContext(ScServerSessionId const & sessionId)
 {
   ScServerLock lock(m_connectionsMutex);
   return m_connections->at(sessionId);

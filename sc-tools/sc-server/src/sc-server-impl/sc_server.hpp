@@ -37,11 +37,11 @@ public:
 
   bool IsSessionValid(ScServerSessionId const & sessionId);
 
-  void AddSessionContext(ScServerSessionId const & sessionId, ScMemoryContext * sessionCtx);
+  void AddSessionContext(ScServerSessionId const & sessionId, ScAgentContext * sessionCtx);
 
-  ScMemoryContext * PopSessionContext(ScServerSessionId const & sessionId);
+  ScAgentContext * PopSessionContext(ScServerSessionId const & sessionId);
 
-  ScMemoryContext * GetSessionContext(ScServerSessionId const & sessionId);
+  ScAgentContext * GetSessionContext(ScServerSessionId const & sessionId);
 
   void SetChannels(ScServerLogLevel channels);
 

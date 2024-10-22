@@ -15,7 +15,7 @@
 class ScMemoryJsonActionsHandler : public ScMemoryJsonHandler
 {
 public:
-  explicit ScMemoryJsonActionsHandler(ScServer * server, ScMemoryContext * processCtx);
+  explicit ScMemoryJsonActionsHandler(ScServer * server, ScAgentContext * processCtx);
 
   ~ScMemoryJsonActionsHandler() override;
 
@@ -24,7 +24,7 @@ public:
   static void ClearActionClasses();
 
 private:
-  ScMemoryContext * m_context;
+  ScAgentContext * m_context;
 
   ScMemoryJsonPayload HandleRequestPayload(
       ScServerSessionId const & sessionId,
