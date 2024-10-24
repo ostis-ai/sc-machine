@@ -287,7 +287,7 @@ ScType const ScType::NodeLinkClass(sc_type_node_link | sc_type_node_class);
 ScType const ScType::NodeTuple(sc_type_node_tuple);
 ScType const ScType::NodeStructure(sc_type_node_structure);
 ScType const ScType::NodeRole(sc_type_node_role);
-ScType const ScType::NodeNoRole(sc_type_node_norole);
+ScType const ScType::NodeNoRole(sc_type_node_no_role);
 ScType const ScType::NodeClass(sc_type_node_class);
 ScType const ScType::NodeSuperclass(sc_type_node_superclass);
 ScType const ScType::NodeMaterial(sc_type_node_material);
@@ -297,7 +297,7 @@ ScType const ScType::ConstNodeLinkClass(sc_type_const | sc_type_node_link | sc_t
 ScType const ScType::ConstNodeTuple(sc_type_const | sc_type_node_tuple);
 ScType const ScType::ConstNodeStructure(sc_type_const | sc_type_node_structure);
 ScType const ScType::ConstNodeRole(sc_type_const | sc_type_node_role);
-ScType const ScType::ConstNodeNoRole(sc_type_const | sc_type_node_norole);
+ScType const ScType::ConstNodeNoRole(sc_type_const | sc_type_node_no_role);
 ScType const ScType::ConstNodeClass(sc_type_const | sc_type_node_class);
 ScType const ScType::ConstNodeSuperclass(sc_type_const | sc_type_node_superclass);
 ScType const ScType::ConstNodeMaterial(sc_type_const | sc_type_node_material);
@@ -307,7 +307,7 @@ ScType const ScType::VarNodeLinkClass(sc_type_var | sc_type_node_link | sc_type_
 ScType const ScType::VarNodeTuple(sc_type_var | sc_type_node_tuple);
 ScType const ScType::VarNodeStructure(sc_type_var | sc_type_node_structure);
 ScType const ScType::VarNodeRole(sc_type_var | sc_type_node_role);
-ScType const ScType::VarNodeNoRole(sc_type_var | sc_type_node_norole);
+ScType const ScType::VarNodeNoRole(sc_type_var | sc_type_node_no_role);
 ScType const ScType::VarNodeClass(sc_type_var | sc_type_node_class);
 ScType const ScType::VarNodeSuperclass(sc_type_var | sc_type_node_superclass);
 ScType const ScType::VarNodeMaterial(sc_type_var | sc_type_node_material);

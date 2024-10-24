@@ -99,7 +99,7 @@ sc_addr test_generate_elements_and_call_agent_search_full_semantic_neighborhood(
       context, sc_type_const_perm_pos_arc, keynode_languages, link_class_addr);  // keynode_languages -> class
 
   sc_addr const norole_addr =
-      sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_norole);  // norole
+      sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_no_role);  // norole
 
   sc_addr const decomposition_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);  // decomposition
   sc_addr const decomposition_edge_addr =

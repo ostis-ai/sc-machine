@@ -44,11 +44,11 @@ sc_result resolve_nrel_system_identifier(sc_memory_context const * ctx)
 
     sc_iterator5 * it = sc_iterator5_a_a_f_a_a_new(
         ctx,
-        sc_type_node | sc_type_const | sc_type_node_norole,
+        sc_type_node | sc_type_const | sc_type_node_no_role,
         sc_type_const_common_arc,
         addr,
         sc_type_const_perm_pos_arc,
-        sc_type_const | sc_type_node | sc_type_node_norole);
+        sc_type_const | sc_type_node | sc_type_node_no_role);
 
     while (sc_iterator5_next(it))
     {
@@ -127,7 +127,7 @@ sc_result sc_helper_init(sc_memory_context * ctx)
 
   sc_memory_info("Can't resolve nrel_system_identifier node. Create the last one");
 
-  sc_addr addr = sc_memory_node_new(ctx, sc_type_node | sc_type_const | sc_type_node_norole);
+  sc_addr addr = sc_memory_node_new(ctx, sc_type_node | sc_type_const | sc_type_node_no_role);
   sc_addr link = sc_memory_link_new(ctx);
 
   sc_stream * stream = sc_stream_memory_new(
