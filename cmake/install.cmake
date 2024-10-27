@@ -11,7 +11,11 @@ install(TARGETS
 )
 
 # a target set for things we don't want to export to the consumers
-install(TARGETS sc-kpm-search sc-kpm-utils sc-kpm-ui sc-server-lib EXPORT privateExport LIBRARY DESTINATION lib/extensions)
+install(TARGETS
+    sc-kpm-search sc-kpm-utils sc-kpm-ui sc-server-lib
+    EXPORT privateExport
+    LIBRARY DESTINATION ${SC_EXTENSIONS_DIRECTORY}
+)
 
 install(EXPORT sc-machineExport
     FILE sc-machineTargets.cmake
@@ -41,7 +45,8 @@ configure_package_config_file(
 install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/sc-machine-config.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/sc-machine-config-version.cmake"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sc-machine)
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sc-machine
+)
 
 set(CPACK_PACKAGE_NAME                  sc-machine)
 set(CPACK_PACKAGE_VENDOR                "OSTIS AI")
