@@ -24,7 +24,10 @@ class sc_machineRecipe(ConanFile):
     exports_sources = "*", "!.venv", "!build", "!.cache", "!kb", "!kb.bin", "!.env", "!ConanPresets.json", "!docs"
     settings = "os", "compiler", "build_type", "arch"
     requires = ()
-    options = {"shared": [True], "fPIC": [True, False]}
+    options = {
+        "shared": [True],
+        "fPIC": [True, False],
+    }
     default_options = {
         "shared": True,
         "fPIC": True,
@@ -53,7 +56,6 @@ class sc_machineRecipe(ConanFile):
 
     def generate(self):
         deps = CMakeDeps(self)
-        # deps.build_context_activated = ["my_tool"]
         deps.generate()
         tc = CMakeToolchain(self)
         tc.user_presets_path = "ConanPresets.json"
@@ -69,17 +71,17 @@ class sc_machineRecipe(ConanFile):
         del self.info.settings.build_type
 
     def parse_version(self):
-            content = tools.files.load(self, self.recipe_folder + "/CMakeLists.txt")
-            version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content).group(1)
-            return version.strip()
+        content = tools.files.load(self, self.recipe_folder + "/CMakeLists.txt")
+        version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content).group(1)
+        return version.strip()
 
-    def package(self):
-        cmake = CMake(self)
-        cmake.install()
-
-    def package_info(self):
-        self.cpp_info.libs = ['new-project']
-
-    # uncomment for a header-only library
-    # def package_id(self):
-    #     self.info.header_only()
+    def package_info(self): 
+        self.cpp_info.libs = [
+            "sc-core",
+            "sc-memory",
+            "sc-agents-common",
+            "sc-builder-lib",
+            "sc-config"
+        ]
+        self.cpp_info.includedirs = ['include']
+        self.cpp_info.libdirs = ["lib"]
