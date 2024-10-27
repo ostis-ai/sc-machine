@@ -24,6 +24,16 @@
       }
     },
     {
+      "name": "debug-with-tests",
+      "displayName": "Debug config with tests",
+      "description": "Debug config with tests",
+      "inherits": "debug",
+      "cacheVariables": {
+        "SC_BUILD_TESTS": true,
+        "SC_BUILD_BENCH": true
+      }
+    },
+    {
       "name": "release",
       "displayName": "Release config",
       "description": "Release config",

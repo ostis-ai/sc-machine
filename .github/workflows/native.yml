@@ -17,8 +17,8 @@ jobs:
       matrix:
         os: [macos-14, ubuntu-22.04, ubuntu-24.04]
         build_type:
-          - { preset: "release", name: "Release" }
-          - { preset: "debug", name: "Debug" }
+          - { name: "Release", configure_preset: "release-with-tests", build_preset: "release" }
+          - { name: "Debug", configure_preset: "debug-with-tests", build_preset: "debug" }
         config:
           - { cc: "gcc", cxx: "g++" }
 
@@ -51,7 +51,7 @@ jobs:
         env:
           CC: ${{ matrix.config.cc }}
           CXX: ${{ matrix.config.cxx }}
-        run: cmake --preset ${{ matrix.build_type.preset }} && cmake --build --preset ${{ matrix.build_type.preset }}
+        run: cmake --preset ${{ matrix.build_type.configure_preset }} && cmake --build --preset ${{ matrix.build_type.build_preset }}
 
       - name: Run tests
         id: run_tests
