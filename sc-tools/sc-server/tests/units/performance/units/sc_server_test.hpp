@@ -20,11 +20,13 @@ extern "C"
 class TestScServer
 {
 public:
+  static inline std::string const & SC_SERVER_KB_BIN = "sc-server-test-bin";
+
   void Initialize(size_t objectsNum = 0)
   {
     sc_memory_params params;
     sc_memory_params_clear(&params);
-    params.storage = SC_SERVER_REPO_PATH;
+    params.storage = SC_SERVER_KB_BIN.c_str();
 
     params.clear = SC_FALSE;
 

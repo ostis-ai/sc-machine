@@ -1,5 +1,5 @@
 install(TARGETS 
-    sc-machine sc-builder sc-machine-runner sc-server 
+    sc-machine sc-builder sc-machine-runner
     sc-kpm-common
     sc-core sc-memory sc-agents-common sc-builder-lib sc-config
     EXPORT sc-machineExport

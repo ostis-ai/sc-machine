@@ -8,7 +8,7 @@
 
 #include <sc-memory/sc_link.hpp>
 
-TEST_F(ScBuilderTest, clean_global_idtfs)
+TEST_F(ScBuilderTest, CleanGlobalIdtfs)
 {
   ScAddr const nrelSCsIdtf = m_ctx->ResolveElementSystemIdentifier("nrel_scs_global_idtf");
   EXPECT_TRUE(nrelSCsIdtf.IsValid());

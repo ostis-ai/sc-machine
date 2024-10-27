@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <sc-memory/test/sc_test.hpp>
+#include "sc_fs_memory_test.hpp"
 
 extern "C"
 {
@@ -17,10 +17,7 @@ extern "C"
 #include <sc-store/sc_storage_private.h>
 }
 
-#define SC_FS_MEMORY_PATH "fs-memory"
-#define SC_FS_MEMORY_SEGMENTS_PATH SC_FS_MEMORY_PATH "/segments.scdb"
-
-TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown)
+TEST_F(ScFSMemoryTest, sc_fs_memory_initialize_shutdown)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_FALSE), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
@@ -29,7 +26,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_invalid_path)
+TEST_F(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_invalid_path)
 {
   EXPECT_EQ(sc_fs_memory_initialize("", SC_FALSE), SC_FS_MEMORY_NO);
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_NO);
@@ -38,7 +35,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_invalid_path)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_NO);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_clear)
+TEST_F(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_clear)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
@@ -47,7 +44,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_initialize_shutdown_clear)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_save_load)
+TEST_F(ScFSMemoryTest, sc_fs_memory_save_load)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
@@ -74,38 +71,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_save_load_deprecated_segments)
-{
-  EXPECT_TRUE(sc_fs_copy_file(
-      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/test/segments.scdb",
-      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/segments.scdb"));
-  EXPECT_TRUE(sc_fs_copy_file(
-      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/test/strings.scdb",
-      SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH "/strings.scdb"));
-
-  EXPECT_EQ(sc_fs_memory_initialize(SC_DEPRECATED_DICTIONARY_FS_MEMORY_PATH, SC_FALSE), SC_FS_MEMORY_OK);
-
-  sc_storage * storage = sc_mem_new(sc_storage, 1);
-  storage->segments = sc_mem_new(sc_segment *, 1);
-
-  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
-  EXPECT_EQ(storage->segments_count, 1u);
-
-  EXPECT_EQ(sc_fs_memory_save(storage), SC_FS_MEMORY_OK);
-  for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
-    sc_segment_free(storage->segments[i]);
-
-  EXPECT_EQ(sc_fs_memory_load(storage), SC_FS_MEMORY_OK);
-  for (sc_addr_seg i = 0; i < storage->segments_count; ++i)
-    sc_segment_free(storage->segments[i]);
-
-  sc_mem_free(storage->segments);
-  sc_mem_free(storage);
-
-  EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
-}
-
-TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
+TEST_F(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
@@ -127,7 +93,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_read)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
+TEST_F(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
@@ -147,7 +113,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_read)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
+TEST_F(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
@@ -179,7 +145,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_read)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
+TEST_F(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
   EXPECT_TRUE(sc_fs_remove_directory(SC_FS_MEMORY_PATH));
@@ -199,7 +165,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_file_write)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
+TEST_F(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 
@@ -218,7 +184,7 @@ TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segments_num_write)
   EXPECT_EQ(sc_fs_memory_shutdown(), SC_FS_MEMORY_OK);
 }
 
-TEST(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_write)
+TEST_F(ScFSMemoryTest, sc_fs_memory_save_load_save_invalid_segment_write)
 {
   EXPECT_EQ(sc_fs_memory_initialize(SC_FS_MEMORY_PATH, SC_TRUE), SC_FS_MEMORY_OK);
 

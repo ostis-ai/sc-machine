@@ -16,7 +16,7 @@ TEST(ScServer, RunStopServer)
 {
   ScOptions options{1, nullptr};
 
-  std::string configFile = SC_SERVER_INI;
+  std::string configFile = ScServerTest::SC_SERVER_INI.c_str();
 
   ScParams serverParams{options, {}};
 
@@ -26,7 +26,7 @@ TEST(ScServer, RunStopServer)
     serverParams.Insert({key, serverConfig[key]});
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"storage", SC_SERVER_REPO_PATH});
+  memoryParams.Insert({"storage", ScServerTest::SC_SERVER_KB_BIN.c_str()});
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 

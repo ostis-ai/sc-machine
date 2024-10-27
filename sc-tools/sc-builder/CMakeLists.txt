@@ -20,9 +20,6 @@ target_include_directories(sc-builder-lib
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PUBLIC $<INSTALL_INTERFACE:include>
 )
-target_compile_definitions(sc-builder-lib PRIVATE
-    SC_PREPARE_BUILD_SCRIPTS_PATH="${SC_MACHINE_ROOT}/scripts"
-)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

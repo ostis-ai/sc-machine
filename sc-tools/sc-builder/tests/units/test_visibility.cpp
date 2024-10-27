@@ -34,8 +34,10 @@ std::string GetIdtf(ScMemoryContext & ctx, ScAddr const & addr)
 
 }  // namespace
 
-TEST_F(ScBuilderTest, visibility_sys_idtf)
+TEST_F(ScBuilderTest, SystemIdentifierVisibility)
 {
+  LoadKB(m_ctx, {"visibility_first.scs", "visibility_second.scs"});
+
   ScAddr const visFirst = m_ctx->ResolveElementSystemIdentifier("visibility_first");
   EXPECT_TRUE(visFirst.IsValid());
 
@@ -54,8 +56,10 @@ TEST_F(ScBuilderTest, visibility_sys_idtf)
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
 }
 
-TEST_F(ScBuilderTest, visibility_global)
+TEST_F(ScBuilderTest, GlobalVisibility)
 {
+  LoadKB(m_ctx, {"visibility_first.scs", "visibility_second.scs"});
+
   ScAddr const visFirst = m_ctx->ResolveElementSystemIdentifier("visibility_first_global");
   EXPECT_TRUE(visFirst.IsValid());
 
@@ -77,8 +81,10 @@ TEST_F(ScBuilderTest, visibility_global)
   EXPECT_EQ(GetIdtf(*m_ctx, element), ".visibility_global");
 }
 
-TEST_F(ScBuilderTest, visibility_local)
+TEST_F(ScBuilderTest, LocalVisibility)
 {
+  LoadKB(m_ctx, {"visibility_first.scs", "visibility_second.scs"});
+
   ScAddr const visFirst = m_ctx->ResolveElementSystemIdentifier("visibility_first_local");
   EXPECT_TRUE(visFirst.IsValid());
 
