@@ -53,7 +53,7 @@ The package artifacts are available [here](https://github.com/ostis-ai/sc-machin
 # you can override this variable via -D<proj_name>_PATH_SC_MACHINE_PATH or CMakeUserPreset.json / CMakePreset.json files
 set(<proj_name>_SC_MACHINE_PATH "/location/to/sc-machine-<version>-<platform>" CACHE PATH "sc-machine installation path")
 
-# can be override using env variables as well
+# can be overriden using env variables as well
 if(DEFINED ENV{<proj_name>_SC_MACHINE_PATH})
   set(<proj_name>_SC_MACHINE_PATH "$ENV{<proj_name>_SC_MACHINE_PATH}")
 endif()
@@ -86,6 +86,8 @@ list(APPEND CMAKE_PREFIX_PATH ${<proj_name>_SC_MACHINE_PATH})
 
   ```sh
   conan install .
+  cmake --preset conan-release
+  cmake --build --preset conan-release
   ```
 
 - You want to use a package version that is not published in a Conan repo:
@@ -119,6 +121,7 @@ list(APPEND CMAKE_PREFIX_PATH ${<proj_name>_SC_MACHINE_PATH})
 
   ```sh
   conan install .
+  cmake --preset conan-release
   cmake --build --preset conan-release
   ```
 
@@ -187,6 +190,7 @@ Currently, we require the following packages to be available to CMake at build-t
 - `websocketpp`
   - [`asio`](https://think-async.com/Asio/) as the transitive dependency
 - `nlohmann_json`
+- `xml2`
 
 You can use convenience scripts provided in our repo (`scripts/install_deps_ubuntu.sh` and `scripts/install_deps_macOS.sh`) to install these dependencies.
 
