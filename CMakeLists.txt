@@ -6,15 +6,22 @@ site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
 
 set(SC_MACHINE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
 set(CMAKE_MODULE_PATH "${SC_MACHINE_ROOT}/cmake")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(SC_EXTENSIONS_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/extensions)
-make_directory(${SC_EXTENSIONS_DIRECTORY})
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "Binary output directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-message(STATUS "Libary output directory: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+message(STATUS "Library output directory: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
+if (DEFINED "${SC_EXTENSIONS_DIRECTORY}")
+    message(STATUS "Provided extensions directory: ${SC_EXTENSIONS_DIRECTORY}")
+    file(MAKE_DIRECTORY ${SC_EXTENSIONS_DIRECTORY})
+else()
+    set(SC_EXTENSIONS_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/extensions)
+    make_directory(${SC_EXTENSIONS_DIRECTORY})
+    message(STATUS "No extensions directory provided. Defaulting to: ${SC_EXTENSIONS_DIRECTORY}")
+endif()
+
 set(SC_MACHINE_THIRDPARTY_PATH "${SC_MACHINE_ROOT}/thirdparty")
 
 option(SC_BUILD_TESTS "Flag to build unit tests" OFF)
@@ -102,9 +109,9 @@ message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, path:
 # Set up dynamic linking paths for our own libraries
 # For macOS, use @loader_path instead of $ORIGIN
 if(APPLE)
-    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib;@loader_path/../lib/extensions")
+    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib;${SC_EXTENSIONS_DIRECTORY}")
 else()
-    set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib;$ORIGIN/../lib/extensions")
+    set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${SC_EXTENSIONS_DIRECTORY}")
 endif()
 
 # Always use full RPATH
