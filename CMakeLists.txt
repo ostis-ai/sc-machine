@@ -109,9 +109,9 @@ message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, path:
 # Set up dynamic linking paths for our own libraries
 # For macOS, use @loader_path instead of $ORIGIN
 if(APPLE)
-    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib;${SC_EXTENSIONS_DIRECTORY}")
+    set(CMAKE_INSTALL_RPATH "@loader_path/../lib;${SC_EXTENSIONS_DIRECTORY}")
 else()
-    set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${SC_EXTENSIONS_DIRECTORY}")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY};${SC_EXTENSIONS_DIRECTORY}")
 endif()
 
 # Always use full RPATH
