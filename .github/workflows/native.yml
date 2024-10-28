@@ -18,7 +18,7 @@ jobs:
         os: [macos-14, ubuntu-22.04, ubuntu-24.04]
         build_type:
           - { name: "Release", configure_preset: "release-with-tests", build_preset: "release" }
-          - { name: "Debug", configure_preset: "debug-with-tests", build_preset: "debug" }
+          - { name: "Debug", configure_preset: "debug", build_preset: "debug" }
         config:
           - { cc: "gcc", cxx: "g++" }
 
