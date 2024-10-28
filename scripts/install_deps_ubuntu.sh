@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-if [[ -z "${SC_MACHINE_PATH}" || -z "${BINARY_PATH}" || -z "${BUILD_PATH}" ]];
-then
-  source "$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)/set_vars.sh"
-fi
+SCRIPTS_PATH="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 
 function usage() {
   cat <<USAGE
@@ -72,7 +69,7 @@ then
 Please install the following packages by yourself:
   ${packages[*]}
 At the end run the following script:
-  ${SC_MACHINE_PATH}/scripts/install_deps_python.sh ${NC}"
+  ${SCRIPTS_PATH}/install_deps_python.sh ${NC}"
   exit 1
 fi
 
@@ -83,4 +80,4 @@ sudo apt-get update
 sudo apt-get install -y --no-install-recommends "${packages[@]}"
 sudo apt autoremove
 
-"${SC_MACHINE_PATH}/scripts/install_deps_python.sh"
+"${SCRIPTS_PATH}/install_deps_python.sh"
