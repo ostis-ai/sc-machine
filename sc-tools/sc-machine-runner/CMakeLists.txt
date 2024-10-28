@@ -1,4 +1,7 @@
-file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS 
+    "src/*.cpp"
+    "include/sc-machine-runner/*.hpp"
+)
 list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
 add_library(sc-machine-runner SHARED ${SOURCES})

@@ -27,10 +27,6 @@ target_include_directories(sc-server-lib
 )
 set_target_properties(sc-server-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY})
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-server-lib)
 endif()
