@@ -17,6 +17,11 @@ install(TARGETS
     LIBRARY DESTINATION ${SC_EXTENSIONS_DIRECTORY}
 )
 
+export(EXPORT sc-machineExport 
+    NAMESPACE sc-machine::  # to simulate a different name and see it works
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/sc-machineTargets.cmake"
+)
+
 install(EXPORT sc-machineExport
     FILE sc-machineTargets.cmake
     NAMESPACE sc-machine::

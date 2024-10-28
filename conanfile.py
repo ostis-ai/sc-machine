@@ -21,7 +21,7 @@ class sc_machineRecipe(ConanFile):
     url = "https://github.com/ostis-ai/sc-machine"
     description = "Software implementation of semantic network storage"
     exports = ["LICENSE.md"]
-    exports_sources = "*", "!.venv", "!build", "!.cache", "!kb", "!kb.bin", "!.env", "!ConanPresets.json", "!docs"
+    exports_sources = "*", "!.venv", "!build", "!.cache", "!kb", "!kb.bin", "!.env", "!ConanPresets.json", "!docs", "!.git"
     settings = "os", "compiler", "build_type", "arch"
     requires = ()
     options = {
@@ -59,6 +59,7 @@ class sc_machineRecipe(ConanFile):
         deps.generate()
         tc = CMakeToolchain(self)
         tc.user_presets_path = "ConanPresets.json"
+        tc.variables["CMAKE_CXX_STANDARD"] = 17
         tc.generate()
 
     def package(self):
@@ -76,12 +77,6 @@ class sc_machineRecipe(ConanFile):
         return version.strip()
 
     def package_info(self): 
-        self.cpp_info.libs = [
-            "sc-core",
-            "sc-memory",
-            "sc-agents-common",
-            "sc-builder-lib",
-            "sc-config"
-        ]
-        self.cpp_info.includedirs = ['include']
-        self.cpp_info.libdirs = ["lib"]
+        self.cpp_info.set_property("cmake_find_mode", "none") # Do NOT generate any files
+        self.cpp_info.builddirs.append("lib/cmake/sc-machine")
+        self.cpp_info.builddirs.append("build/" + str(self.settings.build_type)) # Provides correct install path for conan editable
