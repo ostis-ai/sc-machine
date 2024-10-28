@@ -5,7 +5,6 @@ USER root
 
 #install runtime dependencies
 COPY scripts /tmp/sc-machine/scripts
-COPY scripts/set_vars.sh /tmp/sc-machine/scripts/set_vars.sh
 COPY requirements.txt /tmp/sc-machine/requirements.txt
 # tini is an init system to forward interrupt signals properly
 RUN apt update && apt install -y --no-install-recommends sudo tini && /tmp/sc-machine/scripts/install_deps_ubuntu.sh
@@ -31,8 +30,8 @@ FROM base AS final
 COPY --from=builder /sc-machine/requirements.txt /sc-machine/requirements.txt
 COPY --from=builder /sc-machine/scripts /sc-machine/scripts 
 COPY --from=builder /sc-machine/sc-machine.ini /sc-machine/sc-machine.ini 
-COPY --from=builder /sc-machine/build/Release/bin /sc-machine/build/bin
-COPY --from=builder /sc-machine/build/Release/lib /sc-machine/build/lib
+COPY --from=builder /sc-machine/build/Release/bin /sc-machine/build/Release/bin
+COPY --from=builder /sc-machine/build/Release/lib /sc-machine/build/Release/lib
 RUN /sc-machine/scripts/install_deps_python.sh
 WORKDIR /sc-machine/scripts
 
