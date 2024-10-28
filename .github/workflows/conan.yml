@@ -75,5 +75,5 @@ jobs:
         run: |
           mkdir kb
           build/Release/bin/sc-builder -i kb -o kb.bin --clear -f
-          build/Release/bin/sc-server -t -c sc-machine.ini -r kb.bin
-          build/Release/bin/sc-machine -t -c sc-machine.ini -r kb.bin
+          build/Release/bin/sc-server -c sc-machine.ini -e build/Release/lib/extensions -r kb.bin -t
+          build/Release/bin/sc-machine -c sc-machine.ini -e -e build/Release/lib/extensions -r kb.bin -t
