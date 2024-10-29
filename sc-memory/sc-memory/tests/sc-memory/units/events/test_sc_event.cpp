@@ -1371,13 +1371,14 @@ TEST_F(ScEventTest, BlockEventsGuardAndEmitAfter)
 TEST_F(ScEventTest, TwoSubscriptionsForOneArcErasure)
 {
   ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
-  bool isDelayedCalled = false;
-  auto delayedSubscription =
+  bool isLongExecutedSubscriptionCalled = false;
+  auto longExecutedSubscription =
       m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
           nodeAddr1,
-          [&isDelayedCalled, this](auto const & event)
+          [&isLongExecutedSubscriptionCalled, this](auto const & event)
           {
-            isDelayedCalled = true;
+            EXPECT_FALSE(isLongExecutedSubscriptionCalled);
+            isLongExecutedSubscriptionCalled = true;
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             EXPECT_TRUE(m_ctx->IsElement(event.GetArc()));
             auto const & [sourceAddr, targetAddr] = m_ctx->GetConnectorIncidentElements(event.GetArc());
@@ -1394,13 +1395,14 @@ TEST_F(ScEventTest, TwoSubscriptionsForOneArcErasure)
             EXPECT_TRUE(m_ctx->IsElement(target4Addr));
             EXPECT_TRUE(m_ctx->GetElementType(target4Addr).IsNode());
           });
-  bool isInstantCalled = false;
-  auto instantSubscription =
+  bool isShortExecutedSubscriptionCalled = false;
+  auto shortExecutedSubscription =
       m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
           nodeAddr1,
-          [&isInstantCalled](auto const &)
+          [&isShortExecutedSubscriptionCalled](auto const &)
           {
-            isInstantCalled = true;
+            EXPECT_FALSE(isShortExecutedSubscriptionCalled);
+            isShortExecutedSubscriptionCalled = true;
           });
 
   ScAddr const nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
@@ -1413,6 +1415,6 @@ TEST_F(ScEventTest, TwoSubscriptionsForOneArcErasure)
   m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr1, arcAddr3);
   m_ctx->EraseElement(nodeAddr2);
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
-  EXPECT_TRUE(isInstantCalled);
-  EXPECT_TRUE(isDelayedCalled);
+  EXPECT_TRUE(isShortExecutedSubscriptionCalled);
+  EXPECT_TRUE(isLongExecutedSubscriptionCalled);
 }
