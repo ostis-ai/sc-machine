@@ -78,7 +78,7 @@
 | ScType::NodeTuple               | 129           | 0x81      |
 | ScType::NodeStructure           | 257           | 0x101     |
 | ScType::NodeRole                | 513           | 0x201     |
-| ScType::NodeNoRole              | 1025          | 0x401     |
+| ScType::NodeNonRole             | 1025          | 0x401     |
 | ScType::NodeClass               | 2049          | 0x801     |
 | ScType::NodeSuperclass          | 4097          | 0x1001    |
 | ScType::NodeMaterial            | 8193          | 0x2001    |
@@ -87,7 +87,7 @@
 | ScType::ConstNodeTuple          | 161           | 0xA1      |
 | ScType::ConstNodeStructure      | 289           | 0x121     |
 | ScType::ConstNodeRole           | 545           | 0x221     |
-| ScType::ConstNodeNoRole         | 1057          | 0x421     |
+| ScType::ConstNodeNonRole        | 1057          | 0x421     |
 | ScType::ConstNodeClass          | 2081          | 0x821     |
 | ScType::ConstNodeSuperclass     | 4129          | 0x1021    |
 | ScType::ConstNodeMaterial       | 8225          | 0x2021    |
@@ -96,7 +96,7 @@
 | ScType::VarNodeTuple            | 193           | 0xC1      |
 | ScType::VarNodeStructure        | 321           | 0x141     |
 | ScType::VarNodeRole             | 577           | 0x241     |
-| ScType::VarNodeNoRole           | 1089          | 0x441     |
+| ScType::VarNodeNonRole          | 1089          | 0x441     |
 | ScType::VarNodeClass            | 2113          | 0x841     |
 | ScType::VarNodeSuperclass       | 4161          | 0x1041    |
 | ScType::VarNodeMaterial         | 8257          | 0x2041    |
@@ -114,7 +114,7 @@
 | ScType::NodeTuple               | Not specified                                                          | sc_node_tuple             |
 | ScType::NodeStructure           | Not specified                                                          | sc_node_structure         |
 | ScType::NodeRole                | Not specified                                                          | sc_node_role_relation     |
-| ScType::NodeNoRole              | Not specified                                                          | sc_node_norole_relation   |
+| ScType::NodeNonRole             | Not specified                                                          | sc_node_non_role_relation |
 | ScType::NodeClass               | Not specified                                                          | sc_node_class             |
 | ScType::NodeSuperclass          | Not specified                                                          | sc_node_superclass        |
 | ScType::NodeMaterial            | Not specified                                                          | sc_node_material          |
@@ -123,7 +123,7 @@
 | ScType::ConstNodeTuple          | <img src="../images/scg/scg_const_node_tuple.png"></img>               | sc_node_tuple             |
 | ScType::ConstNodeStructure      | <img src="../images/scg/scg_const_node_structure.png"></img>           | sc_node_structure         |
 | ScType::ConstNodeRole           | <img src="../images/scg/scg_const_node_role.png"></img>                | sc_node_role_relation     |
-| ScType::ConstNodeNoRole         | <img src="../images/scg/scg_const_node_norole.png"></img>              | sc_node_norole_relation   |
+| ScType::ConstNodeNonRole        | <img src="../images/scg/scg_const_node_non_role.png"></img>            | sc_node_non_role_relation |
 | ScType::ConstNodeClass          | <img src="../images/scg/scg_const_node_class.png"></img>               | sc_node_class             |
 | ScType::ConstNodeSuperclass     | Not specified                                                          | sc_node_superclass        |
 | ScType::ConstNodeMaterial       | <img src="../images/scg/scg_const_node_material.png"></img>            | sc_node_material          |
@@ -132,7 +132,7 @@
 | ScType::VarNodeTuple            | <img src="../images/scg/scg_var_node_tuple.png"></img>                 | sc_node_tuple             |
 | ScType::VarNodeStructure        | <img src="../images/scg/scg_var_node_structure.png"></img>             | sc_node_structure         |
 | ScType::VarNodeRole             | <img src="../images/scg/scg_var_node_role.png"></img>                  | sc_node_role_relation     |
-| ScType::VarNodeNoRole           | <img src="../images/scg/scg_var_node_norole.png"></img>                | sc_node_norole_relation   |
+| ScType::VarNodeNonRole          | <img src="../images/scg/scg_var_node_non_role.png"></img>              | sc_node_non_role_relation |
 | ScType::VarNodeClass            | <img src="../images/scg/scg_var_node_class.png"></img>                 | sc_node_class             |
 | ScType::VarNodeSuperclass       | Not specified                                                          | sc_node_superclass        |
 | ScType::VarNodeMaterial         | <img src="../images/scg/scg_var_node_material.png"></img>              | sc_node_material          |

@@ -183,7 +183,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
     = m_context.GenerateConnector(ScType::ConstCommonArc, setAddr, setPowerAddr);
   ScAddr const & nrelSetPowerAddr 
     = m_context.SearchElementBySystemIdentifier("nrel_set_power");
-  // You have to make sure that this norole relation is in the knowledge base.
+  // You have to make sure that this non-role relation is in the knowledge base.
   ScAddr const & arcAccessAddr = m_context.GenerateConnector(
     ScType::ConstPermPosArc, nrelSetPowerAddr, arcCommonAddr);
 
@@ -248,7 +248,7 @@ public:
   static inline ScKeynode const action_calculate_set_power{
     "action_calculate_set_power", ScType::ConstNodeClass};
   static inline ScKeynode const nrel_set_power{
-    "nrel_set_power", ScType::ConstNodeNoRole};
+    "nrel_set_power", ScType::ConstNodeNonRole};
   // Here the first argument in constructor is system identifier of 
   // sc-keynode and the second argument is sc-type of this sc-keynode.
   // If there is no sc-keynode with such system identifier in 

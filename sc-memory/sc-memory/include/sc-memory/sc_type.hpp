@@ -350,7 +350,7 @@ public:
   static ScType const NodeTuple;
   static ScType const NodeStructure;
   static ScType const NodeRole;
-  static ScType const NodeNoRole;
+  static ScType const NodeNonRole;
   static ScType const NodeClass;
   static ScType const NodeSuperclass;
   static ScType const NodeMaterial;
@@ -360,7 +360,7 @@ public:
   static ScType const ConstNodeTuple;
   static ScType const ConstNodeStructure;
   static ScType const ConstNodeRole;
-  static ScType const ConstNodeNoRole;
+  static ScType const ConstNodeNonRole;
   static ScType const ConstNodeClass;
   static ScType const ConstNodeSuperclass;
   static ScType const ConstNodeMaterial;
@@ -370,7 +370,7 @@ public:
   static ScType const VarNodeTuple;
   static ScType const VarNodeStructure;
   static ScType const VarNodeRole;
-  static ScType const VarNodeNoRole;
+  static ScType const VarNodeNonRole;
   static ScType const VarNodeClass;
   static ScType const VarNodeSuperclass;
   static ScType const VarNodeMaterial;
@@ -531,7 +531,7 @@ public:
   static ScType const NodeConstRole;
   SC_DEPRECATED(
       0.10.0,
-      "This object is deprecated. Use `ScType::ConstNodeNoRole` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::ConstNodeNonRole` instead for better readability and standards "
       "compliance.")
   static ScType const NodeConstNoRole;
   SC_DEPRECATED(
@@ -572,7 +572,7 @@ public:
   static ScType const NodeVarRole;
   SC_DEPRECATED(
       0.10.0,
-      "This object is deprecated. Use `ScType::VarNodeNoRole` instead for better readability and standards "
+      "This object is deprecated. Use `ScType::VarNodeNonRole` instead for better readability and standards "
       "compliance.")
   static ScType const NodeVarNoRole;
   SC_DEPRECATED(

@@ -67,6 +67,6 @@ TEST_F(ScTemplateApiTest, FiverWithConstSourceType)
           ScType::VarPermPosArc >> "_arc",
           ScType::Unknown >> "_addr2",
           ScType::VarPermPosArc,
-          ScType::VarNodeNoRole >> "_relation"),
+          ScType::VarNodeNonRole >> "_relation"),
       utils::ExceptionInvalidParams);
 }

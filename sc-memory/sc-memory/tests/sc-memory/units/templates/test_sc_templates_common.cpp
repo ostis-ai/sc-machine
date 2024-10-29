@@ -337,7 +337,7 @@ TEST_F(ScTemplateCommonTest, a_a_a_a_f)
 TEST_F(ScTemplateCommonTest, DISABLED_BigTemplateSmoke)
 {
   ScAddr const set1 = m_ctx->GenerateNode(ScType::ConstNodeClass);
-  ScAddr const rel = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const rel = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   static size_t const el_num = 1 << 12;
   ScAddrSet elements;

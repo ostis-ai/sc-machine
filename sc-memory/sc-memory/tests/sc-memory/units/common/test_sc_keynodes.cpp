@@ -14,7 +14,7 @@ using ScKeynodesTest = ScMemoryTest;
 TEST_F(ScKeynodesTest, CoreKeynodes)
 {
   EXPECT_TRUE(ScKeynodes::nrel_inclusion.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_inclusion) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_inclusion) == ScType::ConstNodeNonRole);
 
   EXPECT_TRUE(ScKeynodes::rrel_1.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_1) == ScType::ConstNodeRole);
@@ -23,7 +23,7 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(ScKeynodes::rrel_3.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_3) == ScType::ConstNodeRole);
   EXPECT_TRUE(ScKeynodes::nrel_basic_sequence.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_basic_sequence) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_basic_sequence) == ScType::ConstNodeNonRole);
 
   EXPECT_TRUE(ScKeynodes::rrel_key_sc_element.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_key_sc_element) == ScType::ConstNodeRole);
@@ -31,13 +31,13 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::rrel_main_key_sc_element) == ScType::ConstNodeRole);
 
   EXPECT_TRUE(ScKeynodes::nrel_idtf.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_idtf) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_idtf) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::nrel_main_idtf.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_main_idtf) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_main_idtf) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::nrel_system_identifier.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_system_identifier) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_system_identifier) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::nrel_scs_global_idtf.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_scs_global_idtf) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_scs_global_idtf) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::lang_ru.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::lang_ru) == ScType::ConstNodeClass);
 
@@ -66,47 +66,47 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(ScKeynodes::action_finished_with_error.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_finished_with_error) == ScType::ConstNodeClass);
   EXPECT_TRUE(ScKeynodes::nrel_result.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_result) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_result) == ScType::ConstNodeNonRole);
 
   EXPECT_TRUE(ScKeynodes::abstract_sc_agent.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::abstract_sc_agent) == ScType::ConstNodeClass);
   EXPECT_TRUE(ScKeynodes::nrel_primary_initiation_condition.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_primary_initiation_condition) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_primary_initiation_condition) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::nrel_sc_agent_action_class.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_sc_agent_action_class) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_sc_agent_action_class) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::nrel_initiation_condition_and_result.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_initiation_condition_and_result) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_initiation_condition_and_result) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::platform_dependent_abstract_sc_agent.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::platform_dependent_abstract_sc_agent) == ScType::ConstNodeClass);
   EXPECT_TRUE(ScKeynodes::platform_independent_abstract_sc_agent.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::platform_independent_abstract_sc_agent) == ScType::ConstNodeClass);
   EXPECT_TRUE(ScKeynodes::nrel_sc_agent_program.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_sc_agent_program) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_sc_agent_program) == ScType::ConstNodeNonRole);
 
   EXPECT_TRUE(ScKeynodes::sc_event.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event) == ScType::ConstNodeClass);
   EXPECT_TRUE(ScKeynodes::sc_event_after_generate_connector.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_connector) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_connector) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_after_generate_incoming_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_incoming_arc) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_incoming_arc) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_after_generate_outgoing_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_outgoing_arc) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_after_generate_outgoing_arc) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_connector.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_connector) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_connector) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_incoming_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_incoming_arc) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_incoming_arc) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish.IsValid());
   EXPECT_TRUE(
       m_ctx->GetElementType(ScKeynodes::nrel_max_customer_waiting_time_for_action_to_finish)
-      == ScType::ConstNodeNoRole);
+      == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_outgoing_arc.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_outgoing_arc) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_outgoing_arc) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_edge.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_edge) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_edge) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_erase_element.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_element) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_erase_element) == ScType::ConstNodeNonRole);
   EXPECT_TRUE(ScKeynodes::sc_event_before_change_link_content.IsValid());
-  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_change_link_content) == ScType::ConstNodeNoRole);
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_change_link_content) == ScType::ConstNodeNonRole);
 
   EXPECT_TRUE(ScKeynodes::binary_type.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_type) == ScType::ConstNodeClass);

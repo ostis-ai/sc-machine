@@ -102,7 +102,7 @@ TEST_F(ScTemplateSearchTest, SimpleSearch2)
    */
   ScAddr const addr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(addr.IsValid());
-  ScAddr const nrelMainIdtf = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const nrelMainIdtf = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
   EXPECT_TRUE(nrelMainIdtf.IsValid());
   ScAddr const lang = m_ctx->GenerateNode(ScType::ConstNodeClass);
   EXPECT_TRUE(lang.IsValid());
@@ -176,16 +176,16 @@ TEST_F(ScTemplateSearchTest, LinkWithRelation)
   ScAddr const deviceAddr = m_ctx->GenerateNode(ScType::ConstNode);
   EXPECT_TRUE(deviceAddr.IsValid());
 
-  ScAddr const nrelInstalledApp = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const nrelInstalledApp = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
   EXPECT_TRUE(nrelInstalledApp.IsValid());
 
   ScAddr const _tuple = m_ctx->GenerateNode(ScType::ConstNodeTuple);
   EXPECT_TRUE(_tuple.IsValid());
 
-  ScAddr const nrelIdtf = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const nrelIdtf = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
   EXPECT_TRUE(nrelIdtf.IsValid());
 
-  ScAddr const nrelImage = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const nrelImage = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
   EXPECT_TRUE(nrelImage.IsValid());
 
   ScAddr arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, _tuple, deviceAddr);
@@ -383,9 +383,9 @@ TEST_F(ScTemplateSearchTest, EqualConstructions)
   ScAddr const & begin = m_ctx->ResolveElementSystemIdentifier("begin", ScType::ConstNodeClass);
   ScAddr const & history = m_ctx->ResolveElementSystemIdentifier("history", ScType::ConstNodeClass);
   ScAddr const & nrel_changes_history =
-      m_ctx->ResolveElementSystemIdentifier("nrel_changes_history", ScType::ConstNodeNoRole);
+      m_ctx->ResolveElementSystemIdentifier("nrel_changes_history", ScType::ConstNodeNonRole);
   ScAddr const & nrel_model_version =
-      m_ctx->ResolveElementSystemIdentifier("nrel_model_version", ScType::ConstNodeNoRole);
+      m_ctx->ResolveElementSystemIdentifier("nrel_model_version", ScType::ConstNodeNonRole);
 
   ScTemplate initVersionSearchTemplate;
   initVersionSearchTemplate.Triple(

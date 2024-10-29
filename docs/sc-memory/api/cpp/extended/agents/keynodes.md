@@ -80,7 +80,7 @@ public:
   static inline ScKeynode const my_keynode_class_a{
     "my_keynode_class_a", ScType::ConstNodeClass};
   static inline ScKeynode const my_keynode_relation_b{
-    "my_keynode_relation_b", ScType::ConstNodeNoRole};
+    "my_keynode_relation_b", ScType::ConstNodeNonRole};
 };
 ```
 
@@ -98,7 +98,7 @@ public:
   static inline ScKeynode const my_keynode_class_a{
     "my_keynode_class_a", ScType::ConstNodeClass};
   static inline ScKeynode const my_keynode_relation_b{
-    "my_keynode_relation_b", ScType::ConstNodeNoRole};
+    "my_keynode_relation_b", ScType::ConstNodeNonRole};
 };
 ```
 

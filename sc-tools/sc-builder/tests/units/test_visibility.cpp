@@ -13,7 +13,7 @@ namespace
 
 std::string GetIdtf(ScMemoryContext & ctx, ScAddr const & addr)
 {
-  ScAddr const nrelIdtf = ctx.ResolveElementSystemIdentifier("nrel_idtf", ScType::ConstNodeNoRole);
+  ScAddr const nrelIdtf = ctx.ResolveElementSystemIdentifier("nrel_idtf", ScType::ConstNodeNonRole);
   EXPECT_TRUE(nrelIdtf.IsValid());
 
   ScTemplate templ;

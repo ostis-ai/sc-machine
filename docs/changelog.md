@@ -91,7 +91,7 @@ encapsulated this logic;
   | ScType::NodeConstTuple         | ScType::ConstNodeTuple     |
   | ScType::NodeConstStruct        | ScType::ConstNodeStructure |
   | ScType::NodeConstRole          | ScType::ConstNodeRole      |
-  | ScType::NodeConstNoRole        | ScType::ConstNodeNoRole    |
+  | ScType::NodeConstNoRole        | ScType::ConstNodeNonRole   |
   | ScType::NodeConstClass         | ScType::ConstNodeClass     |
   | ScType::NodeConstMaterial      | ScType::ConstNodeMaterial  |
   | ScType::LinkVar                | ScType::VarNodeLink        |
@@ -99,7 +99,7 @@ encapsulated this logic;
   | ScType::NodeVarStruct          | ScType::VarNodeStructure   |
   | ScType::NodeVarTuple           | ScType::VarNodeTuple       |
   | ScType::NodeVarRole            | ScType::VarNodeRole        |
-  | ScType::NodeVarNoRole          | ScType::VarNodeNoRole      |
+  | ScType::NodeVarNoRole          | ScType::VarNodeNonRole     |
   | ScType::NodeVarClass           | ScType::VarNodeClass       |
   | ScType::NodeVarMaterial        | ScType::VarNodeMaterial    |
 
@@ -123,17 +123,18 @@ encapsulated this logic;
 
 - Incorrect system identifiers of sc.s-keynodes were also replaced by correct ones.
 
-  | Deprecated      | Substitution      |
-  |-----------------|-------------------|
-  | sc_edge         | sc_common_edge    |
-  | sc_edge_ucommon | sc_common_edge    |
-  | sc_arc_common   | sc_common_arc     |
-  | sc_edge_dcommon | sc_common_arc     |
-  | sc_arc_access   | sc_membership_arc |
-  | sc_edge_access  | sc_membership_arc |
-  | sc_arc_main     | sc_main_arc       |
-  | sc_edge_main    | sc_main_arc       |
-  | sc_node_struct  | sc_node_structure |
+  | Deprecated              | Substitution              |
+  |-------------------------|---------------------------|
+  | sc_edge                 | sc_common_edge            |
+  | sc_edge_ucommon         | sc_common_edge            |
+  | sc_arc_common           | sc_common_arc             |
+  | sc_edge_dcommon         | sc_common_arc             |
+  | sc_arc_access           | sc_membership_arc         |
+  | sc_edge_access          | sc_membership_arc         |
+  | sc_arc_main             | sc_main_arc               |
+  | sc_edge_main            | sc_main_arc               |
+  | sc_node_struct          | sc_node_structure         |
+  | sc_node_norole_relation | sc_node_non_role_relation |
 
 - Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract` were removed.
 - Sources of the sc-machine were separated into public and private ones. Public sources of targets are located in `include` directory, private ones - in `src` directory, tests for code - in `tests` directory. Private sources can't be included into project's code directly. Besides that there are changes of location of some API classes of the sc-machine:
@@ -254,7 +255,7 @@ See documentation, to learn more about using new API.
 ### Deprecated
 
 - Incorrect designations of sc.s-connectors: `>`, `<`, `<>`, `_<=`, `_<-`, `_<|-`, `_<~`, `_<|~`
-- Incorrect sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`
+- Incorrect sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`, `sc_node_norole_relation`
 - C++ sc-types: `ScType::EdgeUCommon`, `ScType::EdgeDCommon`, `ScType::EdgeUCommonConst`, `ScType::EdgeDCommonConst`, `ScType::EdgeAccess`, `ScType::EdgeAccessConstPosPerm`, `ScType::EdgeAccessConstNegPerm`, `ScType::EdgeAccessConstFuzPerm`, `ScType::EdgeAccessConstPosTemp`, `ScType::EdgeAccessConstNegTemp`, `ScType::EdgeAccessConstFuzTemp`, `ScType::EdgeUCommonVar`, `ScType::EdgeDCommonVar`, `ScType::EdgeAccessVarPosPerm`, `ScType::EdgeAccessVarNegPerm`, `ScType::EdgeAccessVarFuzPerm`, `ScType::EdgeAccessVarPosTemp`, `ScType::EdgeAccessVarNegTemp`, `ScType::EdgeAccessVarFuzTemp`, `ScType::NodeConst`, `ScType::NodeVar`, `ScType::Link`, `ScType::LinkClass`, `ScType::NodeStruct`, `ScType::LinkConst`, `ScType::LinkConstClass`, `ScType::NodeConstTuple`, `ScType::NodeConstStruct`, `ScType::NodeConstRole`, `ScType::NodeConstNoRole`, `ScType::NodeConstClass`, `ScType::NodeConstMaterial`, `ScType::LinkVar`, `ScType::LinkVarClass`, `ScType::NodeVarStruct`, `ScType::NodeVarTuple`, `ScType::NodeVarRole`, `ScType::NodeVarNoRole`, `ScType::NodeVarClass`, `ScType::NodeVarMaterial`
 - Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge,GetElementOutputArcsCount, GetElementInputArcsCount, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, Iterator3, Iterator5, ForEachIter3, ForEachIter5, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperSmartSearchTemplate, HelperBuildTemplate, CalculateStat
 - Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve

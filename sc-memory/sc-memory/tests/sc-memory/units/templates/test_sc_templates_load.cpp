@@ -26,7 +26,7 @@ public:
 TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 {
   ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   ScTemplate templ;
   templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");
@@ -73,7 +73,7 @@ TEST_F(ScTemplateLoadTest, LoadCheckTemplate)
 TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
 {
   ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   ScTemplate templ;
   templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");
@@ -105,7 +105,7 @@ TEST_F(ScTemplateLoadTest, GenerateSearchLoadCheckBuildSearchTemplate)
 TEST_F(ScTemplateLoadTest, GenerateSearchLoadWithGeneratedLinkCheckBuildSearchTemplate)
 {
   ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   ScTemplate templ;
   templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");

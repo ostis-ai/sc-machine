@@ -98,18 +98,18 @@ sc_addr test_generate_elements_and_call_agent_search_full_semantic_neighborhood(
   sc_memory_arc_new(
       context, sc_type_const_perm_pos_arc, keynode_languages, link_class_addr);  // keynode_languages -> class
 
-  sc_addr const norole_addr =
-      sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_no_role);  // norole
+  sc_addr const non_role_addr =
+      sc_memory_node_new(context, sc_type_node | sc_type_const | sc_type_node_non_role);  // non_role
 
   sc_addr const decomposition_addr = sc_memory_node_new(context, sc_type_node | sc_type_const);  // decomposition
   sc_addr const decomposition_edge_addr =
       sc_memory_arc_new(context, sc_type_const_common_arc, decomposition_addr, addr);  // decomposition => addr
   sc_memory_arc_new(
-      context, sc_type_const_perm_pos_arc, norole_addr, decomposition_edge_addr);  // decomposition => norole: addr
+      context, sc_type_const_perm_pos_arc, non_role_addr, decomposition_edge_addr);  // decomposition => non_role: addr
   sc_memory_arc_new(
-      context, sc_type_const_perm_pos_arc, keynode_quasybinary_relation, norole_addr);  //?? quasybinary -> norole
+      context, sc_type_const_perm_pos_arc, keynode_quasybinary_relation, non_role_addr);  //?? quasybinary -> non_role
   sc_memory_arc_new(
-      context, sc_type_const_perm_pos_arc, keynode_nonbinary_relation, norole_addr);  //??? nonbinary -> norole
+      context, sc_type_const_perm_pos_arc, keynode_nonbinary_relation, non_role_addr);  //??? nonbinary -> non_role
 
   sc_addr const decomposition_link_addr1 =
       sc_memory_node_new(context, sc_type_node | sc_type_const);  // decomposition_link1
