@@ -105,9 +105,13 @@ bool TestEventSubscriptionGenerateConnector(ScAgentContext * ctx)
   {
     nodeAddr2 = ctx->GenerateNode(ScType::ConstNode);
     EXPECT_TRUE(nodeAddr2.IsValid());
-
-    arcAddr = ctx->GenerateConnector(eventConnectorType, nodeAddr2, nodeAddr1);
-    EXPECT_TRUE(arcAddr.IsValid());
+    {
+      //sometimes OnEvent is called before arcAddr is assigned to generated connector, so pending is used to assure that
+      // arcAddr is assigned before it is used in OnEvent
+      ScMemoryContextEventsPendingGuard guard(*ctx);
+      arcAddr = ctx->GenerateConnector(eventConnectorType, nodeAddr2, nodeAddr1);
+      EXPECT_TRUE(arcAddr.IsValid());
+    }
   };
 
   bool isDone = false;
