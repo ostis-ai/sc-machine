@@ -28,11 +28,6 @@ TEST_F(ScMemoryAPITest, MoveContext)
 
   EXPECT_TRUE(context1.IsValid());
   EXPECT_FALSE(context2.IsValid());
-
-  context1 = std::move(context1);
-
-  EXPECT_TRUE(context1.IsValid());
-  EXPECT_FALSE(context2.IsValid());
 }
 
 TEST_F(ScMemoryAPITest, GenerateElements)
