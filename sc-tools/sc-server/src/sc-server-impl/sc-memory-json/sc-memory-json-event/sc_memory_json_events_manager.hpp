@@ -21,7 +21,7 @@ public:
     return m_instance;
   }
 
-  size_t Add(ScEventSubscription * event)
+  size_t Add(ScEventSubscriptionPtr const & event)
   {
     m_events.insert({counter, event});
     return counter++;
@@ -32,14 +32,14 @@ public:
     return counter;
   }
 
-  ScEventSubscription * Remove(size_t index)
+  ScEventSubscriptionPtr Remove(size_t index)
   {
     auto const & it = m_events.find(index);
     if (it != m_events.end())
     {
       auto const & pair = m_events.find(index);
-      auto * e = pair->second;
-      pair->second = nullptr;
+      auto e = pair->second;
+      m_events.erase(index);
       return e;
     }
 
@@ -48,8 +48,6 @@ public:
 
   ~ScMemoryJsonEventsManager()
   {
-    for (auto const & pair : m_events)
-      delete pair.second;
     m_events.clear();
 
     delete m_instance;
@@ -57,7 +55,7 @@ public:
 
 private:
   static ScMemoryJsonEventsManager * m_instance;
-  std::unordered_map<size_t, ScEventSubscription *> m_events;
+  std::unordered_map<size_t, ScEventSubscriptionPtr> m_events;
   size_t counter = 0;
 
   ScMemoryJsonEventsManager() = default;

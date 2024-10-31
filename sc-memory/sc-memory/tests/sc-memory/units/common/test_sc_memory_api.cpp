@@ -28,11 +28,6 @@ TEST_F(ScMemoryAPITest, MoveContext)
 
   EXPECT_TRUE(context1.IsValid());
   EXPECT_FALSE(context2.IsValid());
-
-  context1 = std::move(context1);
-
-  EXPECT_TRUE(context1.IsValid());
-  EXPECT_FALSE(context2.IsValid());
 }
 
 TEST_F(ScMemoryAPITest, GenerateElements)
@@ -53,7 +48,7 @@ TEST_F(ScMemoryAPITest, GenerateElements)
 TEST_F(ScMemoryAPITest, GenerateElementsWithInvalidTypes)
 {
   EXPECT_THROW(m_ctx->GenerateNode(ScType::MembershipArc), utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->GenerateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateLink(ScType::ConstNode), utils::ExceptionInvalidParams);
   EXPECT_THROW(m_ctx->GenerateLink(ScType::MembershipArc), utils::ExceptionInvalidParams);
 
   ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
@@ -629,7 +624,7 @@ public:
 TEST_F(ScMemoryAPITest, GenerateSearchLoadCheckBuildSearchTemplate_Deprecated)
 {
   ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
-  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const & testRelationAddr = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   ScTemplate templ;
   templ.Triple(testClassAddr, ScType::VarPermPosArc >> "_arc_to_test_object", ScType::VarNodeLink >> "_test_object");

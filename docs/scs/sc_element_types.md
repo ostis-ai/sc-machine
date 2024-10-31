@@ -28,10 +28,10 @@
 | ScType::VarCommonArc            | 49224         | 0xC048    |
 | ScType::ConstMembershipArc      | 49200         | 0xC030    |
 | ScType::VarMembershipArc        | 49232         | 0xC050    |
-| ScType::PermArc                 | 55312         | 0xD810    |
+| ScType::PermArc                 | 51216         | 0xC810    |
 | ScType::TempArc                 | 50192         | 0xC410    |
-| ScType::ConstPermArc            | 55344         | 0xD830    |
-| ScType::VarPermArc              | 55376         | 0xD850    |
+| ScType::ConstPermArc            | 51248         | 0xC830    |
+| ScType::VarPermArc              | 51280         | 0xC850    |
 | ScType::ConstTempArc            | 50224         | 0xC430    |
 | ScType::VarTempArc              | 50256         | 0xC450    |
 | ScType::ActualTempArc           | 54288         | 0xD410    |
@@ -45,29 +45,29 @@
 | ScType::FuzArc                  | 49680         | 0xC210    |
 | ScType::ConstPosArc             | 49328         | 0xC0B0    |
 | ScType::VarPosArc               | 49360         | 0xC0D0    |
-| ScType::PermPosArc              | 55440         | 0xD890    |
+| ScType::PermPosArc              | 51344         | 0xC890    |
 | ScType::TempPosArc              | 50320         | 0xC490    |
 | ScType::ActualTempPosArc        | 54416         | 0xD490    |
 | ScType::InactualTempPosArc      | 58512         | 0xE490    |
-| ScType::ConstPermPosArc         | 55472         | 0xD8B0    |
+| ScType::ConstPermPosArc         | 51376         | 0xC8B0    |
 | ScType::ConstTempPosArc         | 50352         | 0xC4B0    |
 | ScType::ConstActualTempPosArc   | 54448         | 0xD4B0    |
 | ScType::ConstInactualTempPosArc | 58544         | 0xE4B0    |
-| ScType::VarPermPosArc           | 55504         | 0xD8D0    |
+| ScType::VarPermPosArc           | 51408         | 0xC8D0    |
 | ScType::VarTempPosArc           | 50384         | 0xC4D0    |
 | ScType::VarActualTempPosArc     | 54480         | 0xD4D0    |
 | ScType::VarInactualTempPosArc   | 58576         | 0xE4D0    |
 | ScType::ConstNegArc             | 49456         | 0xC130    |
 | ScType::VarNegArc               | 49488         | 0xC150    |
-| ScType::PermNegArc              | 55568         | 0xD910    |
+| ScType::PermNegArc              | 51472         | 0xC910    |
 | ScType::TempNegArc              | 50448         | 0xC510    |
 | ScType::ActualTempNegArc        | 54544         | 0xD510    |
 | ScType::InactualTempNegArc      | 58640         | 0xE510    |
-| ScType::ConstPermNegArc         | 55600         | 0xD930    |
+| ScType::ConstPermNegArc         | 51504         | 0xC930    |
 | ScType::ConstTempNegArc         | 50480         | 0xC530    |
 | ScType::ConstActualTempNegArc   | 54576         | 0xD530    |
 | ScType::ConstInactualTempNegArc | 58672         | 0xE530    |
-| ScType::VarPermNegArc           | 55632         | 0xD950    |
+| ScType::VarPermNegArc           | 51536         | 0xC950    |
 | ScType::VarTempNegArc           | 50512         | 0xC550    |
 | ScType::VarActualTempNegArc     | 54608         | 0xD550    |
 | ScType::VarInactualTempNegArc   | 58704         | 0xE550    |
@@ -78,7 +78,7 @@
 | ScType::NodeTuple               | 129           | 0x81      |
 | ScType::NodeStructure           | 257           | 0x101     |
 | ScType::NodeRole                | 513           | 0x201     |
-| ScType::NodeNoRole              | 1025          | 0x401     |
+| ScType::NodeNonRole             | 1025          | 0x401     |
 | ScType::NodeClass               | 2049          | 0x801     |
 | ScType::NodeSuperclass          | 4097          | 0x1001    |
 | ScType::NodeMaterial            | 8193          | 0x2001    |
@@ -87,7 +87,7 @@
 | ScType::ConstNodeTuple          | 161           | 0xA1      |
 | ScType::ConstNodeStructure      | 289           | 0x121     |
 | ScType::ConstNodeRole           | 545           | 0x221     |
-| ScType::ConstNodeNoRole         | 1057          | 0x421     |
+| ScType::ConstNodeNonRole        | 1057          | 0x421     |
 | ScType::ConstNodeClass          | 2081          | 0x821     |
 | ScType::ConstNodeSuperclass     | 4129          | 0x1021    |
 | ScType::ConstNodeMaterial       | 8225          | 0x2021    |
@@ -96,7 +96,7 @@
 | ScType::VarNodeTuple            | 193           | 0xC1      |
 | ScType::VarNodeStructure        | 321           | 0x141     |
 | ScType::VarNodeRole             | 577           | 0x241     |
-| ScType::VarNodeNoRole           | 1089          | 0x441     |
+| ScType::VarNodeNonRole          | 1089          | 0x441     |
 | ScType::VarNodeClass            | 2113          | 0x841     |
 | ScType::VarNodeSuperclass       | 4161          | 0x1041    |
 | ScType::VarNodeMaterial         | 8257          | 0x2041    |
@@ -114,7 +114,7 @@
 | ScType::NodeTuple               | Not specified                                                          | sc_node_tuple             |
 | ScType::NodeStructure           | Not specified                                                          | sc_node_structure         |
 | ScType::NodeRole                | Not specified                                                          | sc_node_role_relation     |
-| ScType::NodeNoRole              | Not specified                                                          | sc_node_norole_relation   |
+| ScType::NodeNonRole             | Not specified                                                          | sc_node_non_role_relation |
 | ScType::NodeClass               | Not specified                                                          | sc_node_class             |
 | ScType::NodeSuperclass          | Not specified                                                          | sc_node_superclass        |
 | ScType::NodeMaterial            | Not specified                                                          | sc_node_material          |
@@ -123,7 +123,7 @@
 | ScType::ConstNodeTuple          | <img src="../images/scg/scg_const_node_tuple.png"></img>               | sc_node_tuple             |
 | ScType::ConstNodeStructure      | <img src="../images/scg/scg_const_node_structure.png"></img>           | sc_node_structure         |
 | ScType::ConstNodeRole           | <img src="../images/scg/scg_const_node_role.png"></img>                | sc_node_role_relation     |
-| ScType::ConstNodeNoRole         | <img src="../images/scg/scg_const_node_norole.png"></img>              | sc_node_norole_relation   |
+| ScType::ConstNodeNonRole        | <img src="../images/scg/scg_const_node_non_role.png"></img>            | sc_node_non_role_relation |
 | ScType::ConstNodeClass          | <img src="../images/scg/scg_const_node_class.png"></img>               | sc_node_class             |
 | ScType::ConstNodeSuperclass     | Not specified                                                          | sc_node_superclass        |
 | ScType::ConstNodeMaterial       | <img src="../images/scg/scg_const_node_material.png"></img>            | sc_node_material          |
@@ -132,7 +132,7 @@
 | ScType::VarNodeTuple            | <img src="../images/scg/scg_var_node_tuple.png"></img>                 | sc_node_tuple             |
 | ScType::VarNodeStructure        | <img src="../images/scg/scg_var_node_structure.png"></img>             | sc_node_structure         |
 | ScType::VarNodeRole             | <img src="../images/scg/scg_var_node_role.png"></img>                  | sc_node_role_relation     |
-| ScType::VarNodeNoRole           | <img src="../images/scg/scg_var_node_norole.png"></img>                | sc_node_norole_relation   |
+| ScType::VarNodeNonRole          | <img src="../images/scg/scg_var_node_non_role.png"></img>              | sc_node_non_role_relation |
 | ScType::VarNodeClass            | <img src="../images/scg/scg_var_node_class.png"></img>                 | sc_node_class             |
 | ScType::VarNodeSuperclass       | Not specified                                                          | sc_node_superclass        |
 | ScType::VarNodeMaterial         | <img src="../images/scg/scg_var_node_material.png"></img>              | sc_node_material          |

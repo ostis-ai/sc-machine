@@ -8,10 +8,12 @@
 
 #include "sc_memory_json_action.hpp"
 
+#include <sc-memory/sc_agent_context.hpp>
+
 class ScMemoryConnectionInfoJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload, ScMemoryJsonPayload &) override
+  ScMemoryJsonPayload Complete(ScAgentContext * context, ScMemoryJsonPayload, ScMemoryJsonPayload &) override
   {
     ScMemoryJsonPayload responsePayload{
         {"connection_id", (sc_uint64)context}, {"user_addr", context->GetUser().Hash()}};

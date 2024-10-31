@@ -135,7 +135,7 @@ sc_node#apple
   | "file://apple.png";;
 /*append sc-arc from nrel_image relation into
   sc-arc between apple set and it's image*/
-sc_node_norole_relation#nrel_image 
+sc_node_non_role_relation#nrel_image 
   | sc_main_arc#..membership_arc 
   | sc_common_arc#..common_arc;;
         </code>
@@ -757,21 +757,21 @@ nrel_basic_sequence
 
 There are a list of element type keynodes, that can be used to specify type of sc-element:
 
-| Keynode                 | Equal sc-type                  | Possible sc.g-elements                                                                                            |
-|-------------------------|--------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| sc_node                 | ScType::Node                   | ![sc.g-element](images/scg/scg_const_node.png) ![sc.g-element](images/scg/scg_var_node.png)                       |
-| sc_link                 | ScType::ConstNodeLink          | ![sc.g-element](images/scg/scg_const_node_link.png) ![sc.g-element](images/scg/scg_var_node_link.png)             |
-| sc_common_edge          | ScType::ConstCommonEdge        | ![sc.g-element](images/scg/scg_common_edge.png)                                                                   |
-| sc_common_arc           | ScType::ConstCommonArc         | ![sc.g-element](images/scg/scg_common_arc.png)                                                                    |
-| sc_membership_arc       | ScType::MembershipArc          | ![sc.g-element](images/scg/scg_membership_arc.png)                                                                |
-| sc_main_arc             | ScType::ConstPermPosArc        | ![sc.g-element](images/scg/scg_const_perm_pos_arc.png)                                                            |
-| sc_node_tuple           | ScType::NodeTuple              | ![sc.g-element](images/scg/scg_const_node_tuple.png) ![sc.g-element](images/scg/scg_var_node_tuple.png)           |
-| sc_node_structure       | ScType::NodeStructure          | ![sc.g-element](images/scg/scg_const_node_structure.png) ![sc.g-element](images/scg/scg_var_node_structure.png)   |
-| sc_node_role_relation   | ScType::NodeRole               | ![sc.g-element](images/scg/scg_const_node_role.png) ![sc.g-element](images/scg/scg_var_node_role.png)             |
-| sc_node_norole_relation | ScType::NodeNoRole             | ![sc.g-element](images/scg/scg_const_node_norole.png) ![sc.g-element](images/scg/scg_var_node_norole.png)         |
-| sc_node_class           | ScType::NodeClass              | ![sc.g-element](images/scg/scg_const_node_class.png) ![sc.g-element](images/scg/scg_var_node_class.png)           |
-| sc_node_superclass      | ScType::NodeSuperclass         | Not specified                                                                                                     |
-| sc_node_material        | ScType::NodeMaterial           | ![sc.g-element](images/scg/scg_const_node_material.png) ![sc.g-element](images/scg/scg_var_node_material.png)     |
+| Keynode                   | Equal sc-type                  | Possible sc.g-elements                                                                                            |
+|---------------------------|--------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| sc_node                   | ScType::Node                   | ![sc.g-element](images/scg/scg_const_node.png) ![sc.g-element](images/scg/scg_var_node.png)                       |
+| sc_link                   | ScType::ConstNodeLink          | ![sc.g-element](images/scg/scg_const_node_link.png) ![sc.g-element](images/scg/scg_var_node_link.png)             |
+| sc_common_edge            | ScType::ConstCommonEdge        | ![sc.g-element](images/scg/scg_common_edge.png)                                                                   |
+| sc_common_arc             | ScType::ConstCommonArc         | ![sc.g-element](images/scg/scg_common_arc.png)                                                                    |
+| sc_membership_arc         | ScType::MembershipArc          | ![sc.g-element](images/scg/scg_membership_arc.png)                                                                |
+| sc_main_arc               | ScType::ConstPermPosArc        | ![sc.g-element](images/scg/scg_const_perm_pos_arc.png)                                                            |
+| sc_node_tuple             | ScType::NodeTuple              | ![sc.g-element](images/scg/scg_const_node_tuple.png) ![sc.g-element](images/scg/scg_var_node_tuple.png)           |
+| sc_node_structure         | ScType::NodeStructure          | ![sc.g-element](images/scg/scg_const_node_structure.png) ![sc.g-element](images/scg/scg_var_node_structure.png)   |
+| sc_node_role_relation     | ScType::NodeRole               | ![sc.g-element](images/scg/scg_const_node_role.png) ![sc.g-element](images/scg/scg_var_node_role.png)             |
+| sc_node_non_role_relation | ScType::NodeNonRole            | ![sc.g-element](images/scg/scg_const_node_non_role.png) ![sc.g-element](images/scg/scg_var_node_non_role.png)     |
+| sc_node_class             | ScType::NodeClass              | ![sc.g-element](images/scg/scg_const_node_class.png) ![sc.g-element](images/scg/scg_var_node_class.png)           |
+| sc_node_superclass        | ScType::NodeSuperclass         | Not specified                                                                                                     |
+| sc_node_material          | ScType::NodeMaterial           | ![sc.g-element](images/scg/scg_const_node_material.png) ![sc.g-element](images/scg/scg_var_node_material.png)     |
 
 There is an example of usage:
 
@@ -794,7 +794,7 @@ _b <- sc_node_material;;
     <td>
       <pre>
 _x => nrel_y: t;;
-nrel_y <- sc_node_norole_relation;;
+nrel_y <- sc_node_non_role_relation;;
       </pre>
     </td>
     <td><scg src="../images/scs_keynodes_old_example_2.gwf"></scg></td>

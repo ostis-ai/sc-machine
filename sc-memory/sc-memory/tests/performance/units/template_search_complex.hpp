@@ -19,13 +19,13 @@ public:
           ScType::VarCommonArc,
           ScType::VarNodeTuple >> "_tuple",
           ScType::VarPermPosArc,
-          ScType::VarNodeNoRole);
+          ScType::VarNodeNonRole);
     m_templ.Quintuple(
           ScType::VarNodeClass,
           ScType::VarCommonArc,
           "_tuple",
           ScType::VarPermPosArc,
-          ScType::VarNodeNoRole);
+          ScType::VarNodeNonRole);
     m_templ.Triple(
           ScType::VarNodeClass,
           ScType::VarPermPosArc,

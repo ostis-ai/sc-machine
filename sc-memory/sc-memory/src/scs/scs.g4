@@ -166,7 +166,7 @@ idtf_lvl1_preffix returns [std::string text]
   | 'sc_node_structure'
   | 'sc_node_class'
   | 'sc_node_role_relation'
-  | 'sc_node_norole_relation'
+  | 'sc_node_non_role_relation'
   | 'sc_node_superclass'
   | 'sc_node_material'
   
@@ -182,7 +182,8 @@ idtf_lvl1_preffix returns [std::string text]
   | 'sc_edge_access'
   | 'sc_node_not_binary_tuple'
   | 'sc_node_struct'
-  | 'sc_node_not_relation')
+  | 'sc_node_not_relation'
+  | 'sc_node_norole_relation')
     {
       $ctx->text = $ctx->type->getText();
     }

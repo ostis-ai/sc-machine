@@ -13,6 +13,6 @@ class TestGenerateNode : public TestMemory
 public:
   void Run()
   {
-    m_ctx->GenerateNode(ScType::NodeConst);
+    m_ctx->GenerateNode(ScType::ConstNode);
   }
 };

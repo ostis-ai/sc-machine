@@ -193,7 +193,7 @@ private:
  * {
  * public:
  *   static inline ScKeynode const my_keynode_class_a{"my_keynode_class_a", ScType::ConstNodeClass};
- *   static inline ScKeynode const my_keynode_relation_b{"my_keynode_relation_b", ScType::ConstNodeNoRole};
+ *   static inline ScKeynode const my_keynode_relation_b{"my_keynode_relation_b", ScType::ConstNodeNonRole};
  * };
  * @endcode
  */
@@ -206,19 +206,19 @@ class _SC_EXTERN ScKeynodes : public ScObject
 public:
   _SC_EXTERN static inline ScKeynode const myself{"myself"};
 
-  _SC_EXTERN static inline ScKeynode const nrel_inclusion{"nrel_inclusion", ScType::ConstNodeNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_inclusion{"nrel_inclusion", ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const rrel_1{"rrel_1", ScType::ConstNodeRole};
   _SC_EXTERN static inline ScKeynode const rrel_2{"rrel_2", ScType::ConstNodeRole};
   _SC_EXTERN static inline ScKeynode const rrel_3{"rrel_3", ScType::ConstNodeRole};
-  _SC_EXTERN static inline ScKeynode const nrel_basic_sequence{"nrel_basic_sequence", ScType::ConstNodeNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_basic_sequence{"nrel_basic_sequence", ScType::ConstNodeNonRole};
 
   _SC_EXTERN static inline ScKeynode const rrel_key_sc_element{"rrel_key_sc_element", ScType::ConstNodeRole};
   _SC_EXTERN static inline ScKeynode const rrel_main_key_sc_element{"rrel_main_key_sc_element", ScType::ConstNodeRole};
 
-  _SC_EXTERN static inline ScKeynode const nrel_idtf{"nrel_idtf", ScType::ConstNodeNoRole};
-  _SC_EXTERN static inline ScKeynode const nrel_main_idtf{"nrel_main_idtf", ScType::ConstNodeNoRole};
-  _SC_EXTERN static inline ScKeynode const nrel_system_identifier{"nrel_system_identifier", ScType::ConstNodeNoRole};
-  _SC_EXTERN static inline ScKeynode const nrel_scs_global_idtf{"nrel_scs_global_idtf", ScType::ConstNodeNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_idtf{"nrel_idtf", ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const nrel_main_idtf{"nrel_main_idtf", ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const nrel_system_identifier{"nrel_system_identifier", ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const nrel_scs_global_idtf{"nrel_scs_global_idtf", ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const lang_ru{"lang_ru", ScType::ConstNodeClass};
 
   _SC_EXTERN static inline ScKeynode const action{"action", ScType::ConstNodeClass};
@@ -239,61 +239,61 @@ public:
   _SC_EXTERN static inline ScKeynode const action_finished_with_error{
       "action_finished_with_error",
       ScType::ConstNodeClass};
-  _SC_EXTERN static inline ScKeynode const nrel_result{"nrel_result", ScType::ConstNodeNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_result{"nrel_result", ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const nrel_max_customer_waiting_time_for_action_to_finish{
       "nrel_max_customer_waiting_time_for_action_to_finish",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
 
   _SC_EXTERN static inline ScKeynode const abstract_sc_agent{"abstract_sc_agent", ScType::ConstNodeClass};
   _SC_EXTERN static inline ScKeynode const nrel_primary_initiation_condition{
       "nrel_primary_initiation_condition",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const nrel_sc_agent_action_class{
       "nrel_sc_agent_action_class",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const nrel_initiation_condition_and_result{
       "nrel_initiation_condition_and_result",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const platform_dependent_abstract_sc_agent{
       "platform_dependent_abstract_sc_agent",
       ScType::ConstNodeClass};
   _SC_EXTERN static inline ScKeynode const platform_independent_abstract_sc_agent{
       "platform_independent_abstract_sc_agent",
       ScType::ConstNodeClass};
-  _SC_EXTERN static inline ScKeynode const nrel_sc_agent_program{"nrel_sc_agent_program", ScType::ConstNodeNoRole};
+  _SC_EXTERN static inline ScKeynode const nrel_sc_agent_program{"nrel_sc_agent_program", ScType::ConstNodeNonRole};
 
   _SC_EXTERN static inline ScKeynode const sc_event{"sc_event", ScType::ConstNodeClass};
-  _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::ConstNodeNoRole};
+  _SC_EXTERN static inline ScKeynode const sc_event_unknown{"sc_event_unknown", ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_connector{
       "sc_event_after_generate_connector",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_incoming_arc{
       "sc_event_after_generate_incoming_arc",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_outgoing_arc{
       "sc_event_after_generate_outgoing_arc",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_after_generate_edge{
       "sc_event_after_generate_edge",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_connector{
       "sc_event_before_erase_connector",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_incoming_arc{
       "sc_event_before_erase_incoming_arc",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_outgoing_arc{
       "sc_event_before_erase_outgoing_arc",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_edge{
       "sc_event_before_erase_edge",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_erase_element{
       "sc_event_before_erase_element",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
   _SC_EXTERN static inline ScKeynode const sc_event_before_change_link_content{
       "sc_event_before_change_link_content",
-      ScType::ConstNodeNoRole};
+      ScType::ConstNodeNonRole};
 
   _SC_EXTERN static inline ScKeynode const binary_type{"binary_type", ScType::ConstNodeClass};
   _SC_EXTERN static inline ScKeynode const binary_float{"binary_float", ScType::ConstNodeClass};

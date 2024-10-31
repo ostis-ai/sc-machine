@@ -16,7 +16,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_nod
     {"node/const/tuple", "sc_node_tuple"},
     {"node/const/role", "sc_node_role_relation"},
     {"node/const/attribute", "sc_node_role_relation"},
-    {"node/const/relation", "sc_node_norole_relation"},
+    {"node/const/relation", "sc_node_non_role_relation"},
     {"node/const/group", "sc_node_class"},
     {"node/const/superclass", "sc_node_superclass"},
 
@@ -26,7 +26,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_nod
     {"node/var/tuple", "sc_node_tuple"},
     {"node/var/role", "sc_node_role_relation"},
     {"node/var/attribute", "sc_node_role_relation"},
-    {"node/var/relation", "sc_node_norole_relation"},
+    {"node/var/relation", "sc_node_non_role_relation"},
     {"node/var/group", "sc_node_class"},
     {"node/var/superclass", "sc_node_superclass"},
 };
@@ -57,7 +57,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_uns
     {"node/const/perm/tuple", "sc_node_tuple"},
     {"node/const/perm/role", "sc_node_role_relation"},
     {"node/const/perm/attribute", "sc_node_role_relation"},
-    {"node/const/perm/relation", "sc_node_norole_relation"},
+    {"node/const/perm/relation", "sc_node_non_role_relation"},
     {"node/const/perm/group", "sc_node_class"},
     {"node/const/perm/super_group", "sc_node_superclass"},
 
@@ -68,7 +68,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_uns
     {"node/const/temp/tuple", "sc_node_tuple"},
     {"node/const/temp/role", "sc_node_role_relation"},
     {"node/const/temp/attribute", "sc_node_role_relation"},
-    {"node/const/temp/relation", "sc_node_norole_relation"},
+    {"node/const/temp/relation", "sc_node_non_role_relation"},
     {"node/const/temp/group", "sc_node_class"},
     {"node/const/temp/super_group", "sc_node_superclass"},
 
@@ -79,7 +79,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_uns
     {"node/var/temp/tuple", "sc_node_tuple"},
     {"node/var/temp/role", "sc_node_role_relation"},
     {"node/var/temp/attribute", "sc_node_role_relation"},
-    {"node/var/temp/relation", "sc_node_norole_relation"},
+    {"node/var/temp/relation", "sc_node_non_role_relation"},
     {"node/var/temp/group", "sc_node_class"},
     {"node/var/temp/super_group", "sc_node_super_group"},
 
@@ -90,7 +90,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_uns
     {"node/var/perm/tuple", "sc_node_tuple"},
     {"node/var/perm/role", "sc_node_role_relation"},
     {"node/var/perm/attribute", "sc_node_role_relation"},
-    {"node/var/perm/relation", "sc_node_norole_relation"},
+    {"node/var/perm/relation", "sc_node_non_role_relation"},
     {"node/var/perm/group", "sc_node_class"},
     {"node/var/perm/super_group", "sc_node_superclass"},
 
@@ -101,7 +101,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_uns
     {"node/var/temp/tuple", "sc_node_tuple"},
     {"node/var/temp/role", "sc_node_role_relation"},
     {"node/var/temp/attribute", "sc_node_role_relation"},
-    {"node/var/temp/relation", "sc_node_norole_relation"},
+    {"node/var/temp/relation", "sc_node_non_role_relation"},
     {"node/var/temp/group", "sc_node_class"},
     {"node/var/temp/super_group", "sc_node_superclass"},
 
@@ -112,7 +112,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_uns
     {"node/meta/perm/tuple", "sc_node_tuple"},
     {"node/meta/perm/role", "sc_node_role_relation"},
     {"node/meta/perm/attribute", "sc_node_role_relation"},
-    {"node/meta/perm/relation", "sc_node_norole_relation"},
+    {"node/meta/perm/relation", "sc_node_non_role_relation"},
     {"node/meta/perm/group", "sc_node_class"},
     {"node/meta/perm/super_group", "sc_node_super_group"},
 
@@ -123,7 +123,7 @@ std::unordered_map<std::string, std::string> const SCgToSCsTypesConverter::m_uns
     {"node/meta/temp/tuple", "sc_node_tuple"},
     {"node/meta/temp/role", "sc_node_role_relation"},
     {"node/meta/temp/attribute", "sc_node_role_relation"},
-    {"node/meta/temp/relation", "sc_node_norole_relation"},
+    {"node/meta/temp/relation", "sc_node_non_role_relation"},
     {"node/meta/temp/group", "sc_node_class"},
     {"node/meta/temp/super_group", "sc_node_super_group"},
 };

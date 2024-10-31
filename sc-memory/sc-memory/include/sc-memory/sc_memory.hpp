@@ -82,7 +82,6 @@ public:
 class ScMemoryContext
 {
   friend class ScMemory;
-  friend class ScServerMessageAction;
   friend class ScAction;
   friend class ScTemplateKeynode;
 

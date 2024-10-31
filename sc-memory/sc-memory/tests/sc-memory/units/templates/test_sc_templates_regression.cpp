@@ -101,10 +101,10 @@ TEST_F(ScTemplateRegressionTest, Issue224)
       ScAddr const genElStr3Addr = testGenerateNodeIdtf(ScType::ConstNodeClass, "geElStr3");
       ScAddr const returnAddr = testGenerateNodeIdtf(ScType::ConstNodeClass, "return");
       ScAddr const nrel_decompoisition_of_actionAddr =
-          testGenerateNodeIdtf(ScType::VarNodeNoRole, "nrel_decomposition_of_action");
-      ScAddr const nrel_thenAddr = testGenerateNodeIdtf(ScType::ConstNodeNoRole, "nrel_then");
-      ScAddr const nrel_elseAddr = testGenerateNodeIdtf(ScType::ConstNodeNoRole, "nrel_else");
-      ScAddr const nrel_gotoAddr = testGenerateNodeIdtf(ScType::ConstNodeNoRole, "nrel_goto");
+          testGenerateNodeIdtf(ScType::VarNodeNonRole, "nrel_decomposition_of_action");
+      ScAddr const nrel_thenAddr = testGenerateNodeIdtf(ScType::ConstNodeNonRole, "nrel_then");
+      ScAddr const nrel_elseAddr = testGenerateNodeIdtf(ScType::ConstNodeNonRole, "nrel_else");
+      ScAddr const nrel_gotoAddr = testGenerateNodeIdtf(ScType::ConstNodeNonRole, "nrel_goto");
 
       {
         // scp_process _-> ..process_instance;;
@@ -303,7 +303,7 @@ TEST_F(ScTemplateRegressionTest, Issue295)
   // input data
   std::string const inData =
       "device_switch_multilevel <- sc_node_class;;"
-      "nrel_value <- sc_node_norole_relation;;"
+      "nrel_value <- sc_node_non_role_relation;;"
       "device_switch_multilevel -> ..x;;"
       "..x => nrel_value:"
       "  [67] (* <= ..range;; *);;";
@@ -332,5 +332,5 @@ TEST_F(ScTemplateRegressionTest, Issue295)
   EXPECT_TRUE(item["_range"].IsValid());
 
   EXPECT_EQ(m_ctx->GetElementType(item["device_switch_multilevel"]), ScType::ConstNodeClass);
-  EXPECT_EQ(m_ctx->GetElementType(item["nrel_value"]), ScType::ConstNodeNoRole);
+  EXPECT_EQ(m_ctx->GetElementType(item["nrel_value"]), ScType::ConstNodeNonRole);
 }

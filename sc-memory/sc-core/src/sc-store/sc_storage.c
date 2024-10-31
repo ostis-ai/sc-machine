@@ -1187,7 +1187,7 @@ error:
     subtype != sc_type_unknown && subtype != new_subtype; \
   })
 
-sc_bool sc_storage_is_type_expendable_to(sc_type type, sc_type new_type)
+sc_bool sc_storage_is_type_extendable_to(sc_type type, sc_type new_type)
 {
   if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_element_mask))
     return SC_FALSE;
@@ -1257,6 +1257,9 @@ sc_bool sc_storage_is_type_expendable_to(sc_type type, sc_type new_type)
 
     if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_positivity_mask))
       return SC_FALSE;
+
+    if (_sc_types_have_not_compatible_mask(type, new_type, sc_type_fuz_arc))
+      return SC_FALSE;
   }
 
   return SC_TRUE;
@@ -1275,7 +1278,7 @@ sc_result sc_storage_change_element_subtype(sc_memory_context const * ctx, sc_ad
   if (result != SC_RESULT_OK)
     goto error;
 
-  if (!sc_storage_is_type_expendable_to(el->flags.type, type))
+  if (!sc_storage_is_type_extendable_to(el->flags.type, type))
   {
     result = SC_RESULT_ERROR_INVALID_PARAMS;
     goto error;

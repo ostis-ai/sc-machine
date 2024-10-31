@@ -822,10 +822,10 @@ TEST_F(ScServerTest, SearchTemplate)
 {
   ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScAddr const & link = m_ctx->GenerateLink();
-  ScAddr const & noroleAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const & nonRoleAddr = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   ScAddr const & connectorAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, addr, link);
-  m_ctx->GenerateConnector(ScType::ConstPermPosArc, noroleAddr, connectorAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, nonRoleAddr, connectorAddr);
 
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -854,7 +854,7 @@ TEST_F(ScServerTest, SearchTemplate)
       {
           {
               {"type", "addr"},
-              {"value", noroleAddr.Hash()},
+              {"value", nonRoleAddr.Hash()},
           },
           {
               {"type", "type"},
@@ -883,7 +883,7 @@ TEST_F(ScServerTest, SearchTemplate)
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]) == addr);
   EXPECT_TRUE(ScAddr(addrs[2]) == link);
-  EXPECT_TRUE(ScAddr(addrs[3]) == noroleAddr);
+  EXPECT_TRUE(ScAddr(addrs[3]) == nonRoleAddr);
 
   client.Stop();
 }
@@ -892,17 +892,17 @@ TEST_F(ScServerTest, SearchStringTemplate)
 {
   ScAddr const & addr1 = m_ctx->ResolveElementSystemIdentifier("node1", ScType::ConstNode);
   ScAddr const & addr2 = m_ctx->ResolveElementSystemIdentifier("node2", ScType::ConstNode);
-  ScAddr const & noroleAddr = m_ctx->ResolveElementSystemIdentifier("norole1", ScType::ConstNodeNoRole);
+  ScAddr const & nonRoleAddr = m_ctx->ResolveElementSystemIdentifier("nonRole1", ScType::ConstNodeNonRole);
 
   ScAddr const & connectorAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, addr1, addr2);
-  m_ctx->GenerateConnector(ScType::ConstPermPosArc, noroleAddr, connectorAddr);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, nonRoleAddr, connectorAddr);
 
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
 
   ScMemoryJsonPayload payload;
-  payload["templ"] = "@alias = (_node1 _=> _node2);; norole1 _-> @alias;;";
+  payload["templ"] = "@alias = (_node1 _=> _node2);; nonRole1 _-> @alias;;";
   std::string const payloadString = ScMemoryJsonConverter::From(0, "search_template", payload);
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -917,7 +917,7 @@ TEST_F(ScServerTest, SearchStringTemplate)
   EXPECT_FALSE(addrs.empty());
   EXPECT_TRUE(ScAddr(addrs[0]) == addr1);
   EXPECT_TRUE(ScAddr(addrs[2]) == addr2);
-  EXPECT_TRUE(ScAddr(addrs[3]) == noroleAddr);
+  EXPECT_TRUE(ScAddr(addrs[3]) == nonRoleAddr);
 
   client.Stop();
 }
@@ -982,7 +982,7 @@ TEST_F(ScServerTest, GenerateTemplate)
 {
   ScAddr const & addr = m_ctx->GenerateNode(ScType::ConstNode);
   ScAddr const & link = m_ctx->GenerateLink();
-  ScAddr const & noroleAddr = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const & nonRoleAddr = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -1011,7 +1011,7 @@ TEST_F(ScServerTest, GenerateTemplate)
       {
           {
               {"type", "addr"},
-              {"value", noroleAddr.Hash()},
+              {"value", nonRoleAddr.Hash()},
           },
           {
               {"type", "type"},
@@ -1041,7 +1041,7 @@ TEST_F(ScServerTest, GenerateTemplate)
   EXPECT_TRUE(ScAddr(addrs[0]) == addr);
   EXPECT_TRUE(ScAddr(addrs[1]).IsValid());
   EXPECT_TRUE(ScAddr(addrs[2]) == link);
-  EXPECT_TRUE(ScAddr(addrs[3]) == noroleAddr);
+  EXPECT_TRUE(ScAddr(addrs[3]) == nonRoleAddr);
 
   client.Stop();
 }

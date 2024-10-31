@@ -5,7 +5,7 @@ concept_message
   <- sc_node_class;;
 
 nrel_x_triples
-  <- sc_node_norole_relation;;
+  <- sc_node_non_role_relation;;
 
 .._el_93913945952240
   <- sc_node;;
@@ -29,7 +29,7 @@ _triple
   <- sc_node;;
 
 nrel_inclusion
-  <- sc_node_norole_relation;;
+  <- sc_node_non_role_relation;;
 
 rrel_x_part
   <- sc_node_role_relation;;

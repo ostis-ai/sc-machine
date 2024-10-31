@@ -73,35 +73,37 @@ sc_result sc_keynodes_resolve_keynode(
 
 sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_memory_generated_structure)
 {
-  SC_RESOLVE_KEYNODE(ctx, sc_event_unknown_addr, sc_type_const_node_norole, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, sc_event_unknown_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_after_generate_connector_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_after_generate_connector_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_after_generate_incoming_arc_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_after_generate_incoming_arc_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_after_generate_outgoing_arc_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_after_generate_outgoing_arc_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_after_generate_edge_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_after_generate_edge_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_before_erase_connector_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_before_erase_connector_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_before_erase_incoming_arc_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_before_erase_incoming_arc_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_before_erase_outgoing_arc_addr, sc_type_const_node_norole, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, sc_event_before_erase_edge_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_before_erase_outgoing_arc_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_before_erase_element_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_before_erase_edge_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, sc_event_before_change_link_content_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx, sc_event_before_erase_element_addr, sc_type_const_node_non_role, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(
+      ctx, sc_event_before_change_link_content_addr, sc_type_const_node_non_role, init_memory_generated_structure);
 
   SC_RESOLVE_KEYNODE(ctx, myself_addr, sc_type_const_node, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, concept_guest_user_addr, sc_type_const_node_class, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, nrel_identified_user_addr, sc_type_const_node_norole, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, nrel_identified_user_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
       ctx, concept_authentication_request_user_addr, sc_type_const_node_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, concept_authenticated_user_addr, sc_type_const_node_class, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, nrel_user_action_class_addr, sc_type_const_node_norole, init_memory_generated_structure);
-  SC_RESOLVE_KEYNODE(ctx, nrel_users_set_action_class_addr, sc_type_const_node_norole, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(ctx, nrel_user_action_class_addr, sc_type_const_node_non_role, init_memory_generated_structure);
+  SC_RESOLVE_KEYNODE(
+      ctx, nrel_users_set_action_class_addr, sc_type_const_node_non_role, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_read_from_sc_memory_addr, sc_type_const_node_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_generate_in_sc_memory_addr, sc_type_const_node_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(ctx, action_erase_from_sc_memory_addr, sc_type_const_node_class, init_memory_generated_structure);
@@ -112,11 +114,14 @@ sc_result sc_keynodes_initialize(sc_memory_context * ctx, sc_addr const init_mem
   SC_RESOLVE_KEYNODE(
       ctx, action_erase_permissions_from_sc_memory_addr, sc_type_const_node_class, init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
-      ctx, nrel_user_action_class_within_sc_structure_addr, sc_type_const_node_norole, init_memory_generated_structure);
+      ctx,
+      nrel_user_action_class_within_sc_structure_addr,
+      sc_type_const_node_non_role,
+      init_memory_generated_structure);
   SC_RESOLVE_KEYNODE(
       ctx,
       nrel_users_set_action_class_within_sc_structure_addr,
-      sc_type_const_node_norole,
+      sc_type_const_node_non_role,
       init_memory_generated_structure);
 
   return SC_RESULT_OK;

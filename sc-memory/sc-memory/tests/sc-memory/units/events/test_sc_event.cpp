@@ -1205,7 +1205,7 @@ TEST_F(ScEventTest, PendEvents)
    * Every time, when event emits, we should check, that whole construction exist
    */
   ScAddr const set1 = m_ctx->GenerateNode(ScType::ConstNodeClass);
-  ScAddr const rel = m_ctx->GenerateNode(ScType::ConstNodeNoRole);
+  ScAddr const rel = m_ctx->GenerateNode(ScType::ConstNodeNonRole);
 
   static size_t const el_num = 1 << 10;
   std::vector<ScAddr> elements(el_num);

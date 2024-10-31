@@ -305,7 +305,7 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_keynodesToTypes = {
     {"sc_node_structure", ScType::NodeStructure},
     {"sc_node_class", ScType::NodeClass},
     {"sc_node_role_relation", ScType::NodeRole},
-    {"sc_node_norole_relation", ScType::NodeNoRole},
+    {"sc_node_non_role_relation", ScType::NodeNonRole},
     {"sc_node_superclass", ScType::NodeSuperclass},
     {"sc_node_material", ScType::NodeMaterial},
 };
@@ -326,6 +326,7 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedKeynodesToType
     {"sc_node_not_binary_tuple", ScType::NodeTuple},
     {"sc_node_struct", ScType::NodeStructure},
     {"sc_node_not_relation", ScType::NodeClass},
+    {"sc_node_norole_relation", ScType::NodeNonRole},
 };
 
 TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToKeynodes = {
@@ -341,7 +342,7 @@ TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToKeynodes = {
     {ScType::NodeStructure, "sc_node_structure"},
     {ScType::NodeClass, "sc_node_class"},
     {ScType::NodeRole, "sc_node_role_relation"},
-    {ScType::NodeNoRole, "sc_node_norole_relation"},
+    {ScType::NodeNonRole, "sc_node_non_role_relation"},
     {ScType::NodeSuperclass, "sc_node_superclass"},
     {ScType::NodeMaterial, "sc_node_material"},
 };

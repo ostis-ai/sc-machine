@@ -6,6 +6,8 @@
 
 #include "sc_memory_json_events_handler.hpp"
 
+#include <sc-memory/sc_agent_context.hpp>
+
 std::unordered_map<std::string, std::string> const
     ScMemoryJsonEventsHandler::m_deprecatedEventsIdtfsToSystemEventsIdtfs = {
         {"add_ingoing_edge", "sc_event_after_generate_incoming_arc"},
@@ -16,7 +18,7 @@ std::unordered_map<std::string, std::string> const
         {"content_change", "sc_event_before_change_link_content"},
 };
 
-ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScMemoryContext * processCtx)
+ScMemoryJsonEventsHandler::ScMemoryJsonEventsHandler(ScServer * server, ScAgentContext * processCtx)
   : ScMemoryJsonHandler(server)
   , m_context(processCtx)
   , m_manager(ScMemoryJsonEventsManager::GetInstance())
@@ -81,25 +83,12 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleGenerate(
     ScAddr const & subscriptionElementAddr = ScAddr(atom["addr"].get<size_t>());
 
     auto const & it = m_deprecatedEventsIdtfsToSystemEventsIdtfs.find(eventClass);
-    if (it == m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
-    {
-      errorsPayload = "Unknown sc-event type with system identifier `" + eventClass + "`.";
-      return responsePayload;
-    }
-    eventClass = it->second;
+    if (it != m_deprecatedEventsIdtfsToSystemEventsIdtfs.cend())
+      eventClass = it->second;
 
     ScAddr const & eventClassAddr = m_context->SearchElementBySystemIdentifier(eventClass);
-    if (!eventClassAddr.IsValid())
-    {
-      errorsPayload = "Invalid sc-event type with system identifier `" + eventClass + "`.";
-      return responsePayload;
-    }
-
-    ScEventSubscription * subscription = new ScElementaryEventSubscription<>(
-        *m_context,
-        eventClassAddr,
-        subscriptionElementAddr,
-        bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
+    auto const & subscription = m_context->CreateElementaryEventSubscription(
+        eventClassAddr, subscriptionElementAddr, bind(onEmitEvent, m_server, m_manager->Next(), sessionId, ::_1));
     responsePayload.push_back(m_manager->Add(subscription));
   }
 
@@ -112,7 +101,7 @@ ScMemoryJsonPayload ScMemoryJsonEventsHandler::HandleDelete(
     ScMemoryJsonPayload &)
 {
   for (auto & atom : message)
-    delete m_manager->Remove(atom.get<size_t>());
+    m_manager->Remove(atom.get<size_t>());
 
   return message;
 }

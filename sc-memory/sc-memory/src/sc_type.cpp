@@ -173,7 +173,7 @@ std::string ScType::GetSCsElementKeynode() const
 
 bool ScType::CanExtendTo(ScType const & extType) const
 {
-  return sc_memory_is_type_expendable_to(*this, extType);
+  return sc_memory_is_type_extendable_to(*this, extType);
 }
 
 std::set<ScType> ScType::GetConnectorTypes()
@@ -287,7 +287,7 @@ ScType const ScType::NodeLinkClass(sc_type_node_link | sc_type_node_class);
 ScType const ScType::NodeTuple(sc_type_node_tuple);
 ScType const ScType::NodeStructure(sc_type_node_structure);
 ScType const ScType::NodeRole(sc_type_node_role);
-ScType const ScType::NodeNoRole(sc_type_node_norole);
+ScType const ScType::NodeNonRole(sc_type_node_non_role);
 ScType const ScType::NodeClass(sc_type_node_class);
 ScType const ScType::NodeSuperclass(sc_type_node_superclass);
 ScType const ScType::NodeMaterial(sc_type_node_material);
@@ -297,7 +297,7 @@ ScType const ScType::ConstNodeLinkClass(sc_type_const | sc_type_node_link | sc_t
 ScType const ScType::ConstNodeTuple(sc_type_const | sc_type_node_tuple);
 ScType const ScType::ConstNodeStructure(sc_type_const | sc_type_node_structure);
 ScType const ScType::ConstNodeRole(sc_type_const | sc_type_node_role);
-ScType const ScType::ConstNodeNoRole(sc_type_const | sc_type_node_norole);
+ScType const ScType::ConstNodeNonRole(sc_type_const | sc_type_node_non_role);
 ScType const ScType::ConstNodeClass(sc_type_const | sc_type_node_class);
 ScType const ScType::ConstNodeSuperclass(sc_type_const | sc_type_node_superclass);
 ScType const ScType::ConstNodeMaterial(sc_type_const | sc_type_node_material);
@@ -307,11 +307,12 @@ ScType const ScType::VarNodeLinkClass(sc_type_var | sc_type_node_link | sc_type_
 ScType const ScType::VarNodeTuple(sc_type_var | sc_type_node_tuple);
 ScType const ScType::VarNodeStructure(sc_type_var | sc_type_node_structure);
 ScType const ScType::VarNodeRole(sc_type_var | sc_type_node_role);
-ScType const ScType::VarNodeNoRole(sc_type_var | sc_type_node_norole);
+ScType const ScType::VarNodeNonRole(sc_type_var | sc_type_node_non_role);
 ScType const ScType::VarNodeClass(sc_type_var | sc_type_node_class);
 ScType const ScType::VarNodeSuperclass(sc_type_var | sc_type_node_superclass);
 ScType const ScType::VarNodeMaterial(sc_type_var | sc_type_node_material);
 
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
 ScType const ScType::EdgeUCommon(ScType::CommonEdge);
 ScType const ScType::EdgeDCommon(ScType::CommonArc);
 
@@ -347,7 +348,7 @@ ScType const ScType::LinkConstClass(ScType::ConstNodeLinkClass);
 ScType const ScType::NodeConstTuple(ScType::ConstNodeTuple);
 ScType const ScType::NodeConstStruct(ScType::ConstNodeStructure);
 ScType const ScType::NodeConstRole(ScType::ConstNodeRole);
-ScType const ScType::NodeConstNoRole(ScType::ConstNodeNoRole);
+ScType const ScType::NodeConstNoRole(ScType::ConstNodeNonRole);
 ScType const ScType::NodeConstClass(ScType::ConstNodeClass);
 ScType const ScType::NodeConstMaterial(ScType::ConstNodeMaterial);
 
@@ -356,9 +357,10 @@ ScType const ScType::LinkVarClass(ScType::VarNodeLinkClass);
 ScType const ScType::NodeVarStruct(ScType::VarNodeStructure);
 ScType const ScType::NodeVarTuple(ScType::VarNodeTuple);
 ScType const ScType::NodeVarRole(ScType::VarNodeRole);
-ScType const ScType::NodeVarNoRole(ScType::VarNodeNoRole);
+ScType const ScType::NodeVarNoRole(ScType::VarNodeNonRole);
 ScType const ScType::NodeVarClass(ScType::VarNodeClass);
 ScType const ScType::NodeVarMaterial(ScType::VarNodeMaterial);
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
 
 std::unordered_map<ScType, std::string, ScType::ScTypeHashFunc> const ScType::m_typesToNames = {
     {ScType::Unknown, "Unknown"},
@@ -432,7 +434,7 @@ std::unordered_map<ScType, std::string, ScType::ScTypeHashFunc> const ScType::m_
     {ScType::NodeTuple, "NodeTuple"},
     {ScType::NodeStructure, "NodeStructure"},
     {ScType::NodeRole, "NodeRole"},
-    {ScType::NodeNoRole, "NodeNoRole"},
+    {ScType::NodeNonRole, "NodeNonRole"},
     {ScType::NodeClass, "NodeClass"},
     {ScType::NodeSuperclass, "NodeSuperclass"},
     {ScType::NodeMaterial, "NodeMaterial"},
@@ -441,7 +443,7 @@ std::unordered_map<ScType, std::string, ScType::ScTypeHashFunc> const ScType::m_
     {ScType::ConstNodeTuple, "ConstNodeTuple"},
     {ScType::ConstNodeStructure, "ConstNodeStructure"},
     {ScType::ConstNodeRole, "ConstNodeRole"},
-    {ScType::ConstNodeNoRole, "ConstNodeNoRole"},
+    {ScType::ConstNodeNonRole, "ConstNodeNonRole"},
     {ScType::ConstNodeClass, "ConstNodeClass"},
     {ScType::ConstNodeSuperclass, "ConstNodeSuperclass"},
     {ScType::ConstNodeMaterial, "ConstNodeMaterial"},
@@ -450,7 +452,7 @@ std::unordered_map<ScType, std::string, ScType::ScTypeHashFunc> const ScType::m_
     {ScType::VarNodeTuple, "VarNodeTuple"},
     {ScType::VarNodeStructure, "VarNodeStructure"},
     {ScType::VarNodeRole, "VarNodeRole"},
-    {ScType::VarNodeNoRole, "VarNodeNoRole"},
+    {ScType::VarNodeNonRole, "VarNodeNonRole"},
     {ScType::VarNodeClass, "VarNodeClass"},
     {ScType::VarNodeSuperclass, "VarNodeSuperclass"},
     {ScType::VarNodeMaterial, "VarNodeMaterial"}};

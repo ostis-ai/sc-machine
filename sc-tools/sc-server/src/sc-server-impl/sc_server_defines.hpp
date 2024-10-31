@@ -13,11 +13,10 @@
 #include <set>
 
 #include "sc-memory/utils/sc_console.hpp"
-#include "sc-memory/sc_memory.hpp"
 
 using ScServerPort = size_t;
 using ScServerSessionId = websocketpp::connection_hdl;
-using ScServerSessionContexts = std::map<ScServerSessionId, ScMemoryContext *, std::owner_less<ScServerSessionId>>;
+using ScServerSessionContexts = std::map<ScServerSessionId, class ScAgentContext *, std::owner_less<ScServerSessionId>>;
 
 using ScServerLogLevel = websocketpp::log::level;
 using ScServerDefaultErrorLogLevel = websocketpp::log::elevel;

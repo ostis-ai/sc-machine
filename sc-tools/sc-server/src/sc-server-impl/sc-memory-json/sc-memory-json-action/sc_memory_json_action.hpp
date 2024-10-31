@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include <sc-memory/sc_memory.hpp>
-
 #include "sc-server-impl/sc-memory-json/sc_memory_json_payload.hpp"
+
+class ScAgentContext;
 
 class ScMemoryJsonAction
 {
 public:
   virtual ScMemoryJsonPayload Complete(
-      ScMemoryContext * context,
+      ScAgentContext * context,
       ScMemoryJsonPayload requestPayload,
       ScMemoryJsonPayload & errorsPayload) = 0;
 

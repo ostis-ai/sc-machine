@@ -138,7 +138,7 @@ typedef sc_uint16 sc_type;
 
 // sc-arc permanence
 #  define sc_type_temp_arc (sc_type)(sc_type_membership_arc | (sc_type)0x400)
-#  define sc_type_perm_arc (sc_type)(sc_type_membership_arc | sc_type_actual_arc | (sc_type)0x800)
+#  define sc_type_perm_arc (sc_type)(sc_type_membership_arc | (sc_type)0x800)
 
 // sc-arc positivity
 #  define sc_type_pos_arc (sc_type)(sc_type_membership_arc | (sc_type)0x80)
@@ -150,7 +150,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_node_tuple (sc_type)(sc_type_node | (sc_type)0x80)
 #  define sc_type_node_structure (sc_type)(sc_type_node | (sc_type)0x100)
 #  define sc_type_node_role (sc_type)(sc_type_node | (sc_type)0x200)
-#  define sc_type_node_norole (sc_type)(sc_type_node | (sc_type)0x400)
+#  define sc_type_node_non_role (sc_type)(sc_type_node | (sc_type)0x400)
 #  define sc_type_node_class (sc_type)(sc_type_node | (sc_type)0x800)
 #  define sc_type_node_superclass (sc_type)(sc_type_node | (sc_type)0x1000)
 #  define sc_type_node_material (sc_type)(sc_type_node | (sc_type)0x2000)
@@ -178,7 +178,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_const_node (sc_type)(sc_type_const | sc_type_node)
 #  define sc_type_const_node_link (sc_type)(sc_type_const | sc_type_node | sc_type_node_link)
 #  define sc_type_const_node_class (sc_type)(sc_type_const | sc_type_node | sc_type_node_class)
-#  define sc_type_const_node_norole (sc_type)(sc_type_const | sc_type_node | sc_type_node_norole)
+#  define sc_type_const_node_non_role (sc_type)(sc_type_const | sc_type_node | sc_type_node_non_role)
 
 #  define sc_type_const_common_arc (sc_type)(sc_type_const | sc_type_common_arc)
 #  define sc_type_var_common_arc (sc_type)(sc_type_var | sc_type_common_arc)
@@ -193,7 +193,7 @@ typedef sc_uint16 sc_type;
 #  define sc_type_constancy_mask (sc_type)(sc_type_const | sc_type_var)
 #  define sc_type_actuality_mask (sc_type)(sc_type_actual_arc | sc_type_inactual_arc)
 #  define sc_type_permanency_mask (sc_type)(sc_type_perm_arc | sc_type_temp_arc)
-#  define sc_type_positivity_mask (sc_type)(sc_type_pos_arc | sc_type_neg_arc | sc_type_fuz_arc)
+#  define sc_type_positivity_mask (sc_type)(sc_type_pos_arc | sc_type_neg_arc)
 
 #  define sc_type_membership_arc_mask \
     (sc_type)(sc_type_actuality_mask | sc_type_permanency_mask | sc_type_positivity_mask)
@@ -202,7 +202,7 @@ typedef sc_uint16 sc_type;
 
 #  define sc_type_node_mask \
     (sc_type)( \
-        sc_type_node_link | sc_type_node_tuple | sc_type_node_structure | sc_type_node_role | sc_type_node_norole \
+        sc_type_node_link | sc_type_node_tuple | sc_type_node_structure | sc_type_node_role | sc_type_node_non_role \
         | sc_type_node_class | sc_type_node_superclass | sc_type_node_material)
 #  define sc_type_node_link_mask (sc_type)(sc_type_node | sc_type_node_link | sc_type_node_class)
 

@@ -15,7 +15,7 @@
 class ScMemoryHandleLinkContentJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(ScMemoryContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
+  ScMemoryJsonPayload Complete(ScAgentContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
       override
   {
     ScMemoryJsonPayload responsePayload;
@@ -48,7 +48,7 @@ public:
   }
 
 private:
-  sc_bool SetContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  sc_bool SetContent(ScAgentContext * context, ScMemoryJsonPayload const & atom)
   {
     ScAddr const & linkAddr = ScAddr(atom["addr"].get<size_t>());
     std::string const & contentType = atom["type"].get<std::string>();
@@ -66,7 +66,7 @@ private:
     return SC_FALSE;
   }
 
-  ScMemoryJsonPayload GetContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  ScMemoryJsonPayload GetContent(ScAgentContext * context, ScMemoryJsonPayload const & atom)
   {
     ScAddr const & linkAddr = ScAddr(atom["addr"].get<size_t>());
     ScLink link{*context, linkAddr};
@@ -80,7 +80,7 @@ private:
       return {{"value", link.Get<std::string>()}, {"type", "string"}};
   }
 
-  std::vector<size_t> SearchLinksByContent(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  std::vector<size_t> SearchLinksByContent(ScAgentContext * context, ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
     ScAddrSet linkSet;
@@ -103,7 +103,7 @@ private:
     return hashes;
   }
 
-  std::vector<size_t> SearchLinksByContentSubstring(ScMemoryContext * context, ScMemoryJsonPayload const & atom)
+  std::vector<size_t> SearchLinksByContentSubstring(ScAgentContext * context, ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
     ScAddrSet linkSet;
@@ -127,7 +127,7 @@ private:
   }
 
   std::vector<std::string> SearchLinksContentsByContentSubstring(
-      ScMemoryContext * context,
+      ScAgentContext * context,
       ScMemoryJsonPayload const & atom)
   {
     auto const & data = atom["data"];
