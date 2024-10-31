@@ -18,7 +18,7 @@ public:
     ScAddr const attr = m_ctx->GenerateNode(ScType::ConstNodeRole);
     for (size_t i = 0; i < constrCount; ++i)
     {
-      ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConst);
+      ScAddr const trg = m_ctx->GenerateNode(ScType::ConstNode);
       ScAddr const arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, node, trg);
       m_ctx->GenerateConnector(ScType::ConstPermPosArc, attr, arcAddr);
     }
@@ -53,7 +53,7 @@ public:
 
     for (size_t i = 0; i < constrCount; ++i)
     {
-      ScAddr const trg = m_ctx->GenerateNode(ScType::NodeConst);
+      ScAddr const trg = m_ctx->GenerateNode(ScType::ConstNode);
       m_ctx->GenerateConnector(ScType::ConstPermPosArc, kAbstract, trg);
       m_ctx->GenerateConnector(ScType::ConstPermPosArc, kConst, trg);
 

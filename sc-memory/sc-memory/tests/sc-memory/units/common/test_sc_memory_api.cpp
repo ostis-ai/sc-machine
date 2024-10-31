@@ -53,7 +53,7 @@ TEST_F(ScMemoryAPITest, GenerateElements)
 TEST_F(ScMemoryAPITest, GenerateElementsWithInvalidTypes)
 {
   EXPECT_THROW(m_ctx->GenerateNode(ScType::MembershipArc), utils::ExceptionInvalidParams);
-  EXPECT_THROW(m_ctx->GenerateLink(ScType::NodeConst), utils::ExceptionInvalidParams);
+  EXPECT_THROW(m_ctx->GenerateLink(ScType::ConstNode), utils::ExceptionInvalidParams);
   EXPECT_THROW(m_ctx->GenerateLink(ScType::MembershipArc), utils::ExceptionInvalidParams);
 
   ScAddr const & nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
