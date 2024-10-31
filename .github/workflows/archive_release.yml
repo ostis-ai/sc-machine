@@ -1,0 +1,79 @@
+name: Release archive
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { cc: "gcc", cxx: "g++" }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Restore ccache caches
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}
+
+      - name: Conan cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan/data
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.py') }}
+
+      - name: apt cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/cache/apt/
+            /var/lib/apt/
+          key: apt-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/install_deps_ubuntu.sh') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Set up pipx
+        run: |
+          python -m pip install --user pipx
+          python -m pipx ensurepath
+
+      - name: Set up Conan
+        run: |
+          pipx install conan
+
+      - name: Install compilers
+        run: sudo apt install build-essential ninja-build ccache cmake
+
+      - name: Build sc-machine
+        id: run_cmake
+        run: |
+          cmake --preset release-conan
+          cmake --build --preset release
+
+      - name: Create archive
+        run: |
+          tar -czf sc-machine_${{ github.event.ref }}.tar.gz build/Release/bin build/Release/lib
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.ref }}
+          files: ${{ github.workspace }}/sc-machine_${{ github.event.ref }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
