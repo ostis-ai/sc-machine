@@ -312,6 +312,7 @@ ScType const ScType::VarNodeClass(sc_type_var | sc_type_node_class);
 ScType const ScType::VarNodeSuperclass(sc_type_var | sc_type_node_superclass);
 ScType const ScType::VarNodeMaterial(sc_type_var | sc_type_node_material);
 
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_BEGIN
 ScType const ScType::EdgeUCommon(ScType::CommonEdge);
 ScType const ScType::EdgeDCommon(ScType::CommonArc);
 
@@ -359,6 +360,7 @@ ScType const ScType::NodeVarRole(ScType::VarNodeRole);
 ScType const ScType::NodeVarNoRole(ScType::VarNodeNonRole);
 ScType const ScType::NodeVarClass(ScType::VarNodeClass);
 ScType const ScType::NodeVarMaterial(ScType::VarNodeMaterial);
+SC_PRAGMA_DISABLE_DEPRECATION_WARNINGS_END
 
 std::unordered_map<ScType, std::string, ScType::ScTypeHashFunc> const ScType::m_typesToNames = {
     {ScType::Unknown, "Unknown"},
