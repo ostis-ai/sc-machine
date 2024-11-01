@@ -25,3 +25,7 @@ target_include_directories(sc-config
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-config)
 endif()
+
+if(${SC_BUILD_TESTS})
+    add_subdirectory(tests)
+endif()
