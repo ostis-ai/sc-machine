@@ -8,6 +8,4 @@
 
 #include <sc-memory/sc_type.hpp>
 
-void PrintStartMessage();
-
-sc_int BuildAndRunMachine(sc_int argc, sc_char * argv[]);
+sc_int RunMachine(sc_int argc, sc_char * argv[]);

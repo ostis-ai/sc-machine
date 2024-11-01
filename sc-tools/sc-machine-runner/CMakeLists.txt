@@ -7,7 +7,8 @@ target_link_libraries(sc-machine-runner
     LINK_PUBLIC sc-config
 )
 target_include_directories(sc-machine-runner
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 add_executable(sc-machine "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
