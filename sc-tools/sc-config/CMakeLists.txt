@@ -2,7 +2,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "src/*.cpp" "src/*.c"
     "src/*/*.cpp" "src/*/*.c"
     "include/sc-config/*.h" "include/sc-config/*.hpp"
-    "include/sc-config/*/*.h" "include/sc-config/*/*.hpp"
+    "include/sc-config/*/*.h" "include/sc-config/*/*.hpp" "include/sc-config/*/*.tpp"
 )
 
 find_package(PkgConfig REQUIRED)

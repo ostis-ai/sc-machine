@@ -16,66 +16,147 @@ extern "C"
 #include "sc_config.h"
 }
 
+/*!
+ * @class ScConfigGroup
+ * @brief A class representing a group of configuration settings.
+ *
+ * The ScConfigGroup class is responsible for managing a specific group of configuration
+ * settings within a larger configuration context. It allows retrieval of values associated
+ * with keys that belong to the specified group.
+ */
 class ScConfigGroup
 {
 public:
-  explicit ScConfigGroup(
+  /*!
+   * @brief Constructs an ScConfigGroup object.
+   *
+   * This constructor initializes the ScConfigGroup by extracting keys from the provided
+   * configuration that belong to the specified group. It filters out unused keys and stores
+   * valid keys for later access.
+   *
+   * @param config A pointer to the configuration instance.
+   * @param configPath A base path for configuration values.
+   * @param pathKeys A set of keys that are expected to represent paths.
+   * @param notUsedKeys A set of keys that should be ignored.
+   * @param group A name of the configuration group to manage.
+   */
+  ScConfigGroup(
       sc_config * config,
       std::string configPath,
       std::unordered_set<std::string> const & pathKeys,
       std::unordered_set<std::string> const & notUsedKeys,
       std::string group);
 
+  /*!
+   * @brief Retrieves the value associated with a specified key in this configuration group.
+   *
+   * This operator allows access to configuration values using a key. If the value is a path
+   * and does not start with a '/', it is prefixed with the configuration path.
+   *
+   * @param key A key for which to retrieve the associated value.
+   * @return A value associated with the specified key, or an empty string if not found.
+   */
   std::string operator[](std::string const & key) const;
 
+  /*!
+   * @brief Retrieves all valid keys in this configuration group.
+   *
+   * This operator returns a set of keys that are valid for this configuration group, excluding
+   * any keys marked as unused.
+   *
+   * @return An unordered set containing all valid keys in this group.
+   */
   std::unordered_set<std::string> operator*() const;
 
-  ~ScConfigGroup() = default;
-
 private:
-  sc_config * m_config;
-  std::string m_configPath;
-  std::unordered_set<std::string> m_pathKeys;
-  std::unordered_set<std::string> m_notUsedKeys;
-
-  std::string m_group;
-  std::unordered_set<std::string> m_keys;
+  sc_config * m_config;                           ///< Pointer to the underlying configuration instance.
+  std::string m_configPath;                       ///< Base path for resolving relative paths.
+  std::unordered_set<std::string> m_pathKeys;     ///< Set of keys representing paths.
+  std::unordered_set<std::string> m_notUsedKeys;  ///< Set of keys that are not used.
+  std::unordered_set<std::string> m_keys;         ///< Set of valid keys in this group.
+  std::string m_group;                            ///< Name of this configuration group.
 };
 
+/*!
+ * @class ScConfig
+ * @brief A class for managing overall configuration settings.
+ *
+ * The ScConfig class is responsible for initializing and managing a complete set of
+ * configuration settings. It allows access to specific groups of settings and checks
+ * the validity of the configuration instance.
+ */
 class ScConfig
 {
 public:
-  explicit ScConfig(
+  /*!
+   * @brief Constructs an ScConfig object.
+   *
+   * This constructor initializes the ScConfig instance by loading settings from a specified
+   * path and filtering out unused keys. It prepares the instance for further access to
+   * configuration groups.
+   *
+   * @param path A file path to the configuration settings.
+   * @param pathKeys A set of keys that are expected to represent paths.
+   * @param notUsedKeys A set of keys that should be ignored during initialization.
+   */
+  ScConfig(
       std::string path,
       std::unordered_set<std::string> const & pathKeys = {},
       std::unordered_set<std::string> const & notUsedKeys = {});
 
+  /*!
+   * @brief Checks if the configuration instance is valid.
+   *
+   * This method returns true if the configuration was successfully initialized; otherwise, false.
+   *
+   * @return True if valid, false otherwise.
+   */
   sc_bool IsValid() const;
 
-  template <class Type>
-  Type Get(std::string const & group, std::string const & key) const
-  {
-    sc_char * value = sc_config_get_value_string(m_instance, group.c_str(), key.c_str());
-    std::stringstream stream;
-    stream << std::string(value);
-
-    Type targetValue;
-    stream >> targetValue;
-    return targetValue;
-  }
-
+  /*!
+   * @brief Retrieves a specific configuration group by name.
+   *
+   * This operator allows access to a specific ScConfigGroup based on its name, providing
+   * methods to retrieve values associated with keys in that group.
+   *
+   * @param group A name of the desired configuration group.
+   * @return A ScConfigGroup object representing the specified group.
+   */
   ScConfigGroup operator[](std::string const & group) const;
 
+  /*!
+   * @brief Retrieves a value associated with a specified key in a given configuration group.
+   *
+   * This template method allows for the retrieval of configuration values as a specific type.
+   * It reads the value associated with the provided group and key, converting it to the desired
+   * type using a stringstream.
+   *
+   * @tparam Type A type to which the parameter value should be converted.
+   * @param group A name of the configuration group containing the desired key.
+   * @param key A key for which to retrieve the associated value.
+   * @return A value associated with the specified group and key, converted to type Type.
+   */
+  template <class Type>
+  Type Get(std::string const & group, std::string const & key) const;
+
+  /*!
+   * @brief Retrieves the directory portion of the configuration file path.
+   *
+   * @return A string representing the directory where the configuration file is located.
+   */
   std::string GetDirectory() const;
 
+  /*!
+   * @brief Destructor for ScConfig, cleaning up resources.
+   */
   ~ScConfig();
 
 private:
-  std::string m_path;
-  std::unordered_set<std::string> m_pathKeys;
-  std::unordered_set<std::string> m_notUsedKeys;
-
-  sc_config * m_instance{};
-
-  sc_bool m_result;
+  sc_config * m_instance;                         ///< Pointer to the underlying sc_config instance managing settings.
+  std::string m_path;                             ///< Path to the configuration file.
+  std::unordered_set<std::string> m_pathKeys;     ///< Set of keys representing paths in config values.
+  std::unordered_set<std::string> m_notUsedKeys;  ///< Set of keys that are ignored during initialization.
+  sc_bool m_result;                               ///< Result indicating if initialization was successful.
 };
+
+#include "sc-config/_template/sc_config.tpp"
