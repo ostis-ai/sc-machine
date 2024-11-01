@@ -36,14 +36,19 @@ class sc_machineRecipe(ConanFile):
     @property
     def _run_tests(self):
         return tools.get_env("CONAN_RUN_TESTS", False)
+    
+    def requirements(self):
+        self.requires("websocketpp/0.8.2", options={"asio": "standalone"})
+        self.requires("nlohmann_json/3.11.3")
+        self.requires("libxml2/2.13.4")
+        if self.settings.os == "Linux":
+            self.requires("glib/2.72.4")
+        elif self.settings.os == "Macos":
+            self.requires("glib/2.76.3")
+        # TODO: use this instead of thirdparty/antlr4 
+        # self.requires("antlr4-cppruntime/4.9.3")
 
     def build_requirements(self):
-        self.build_requires("websocketpp/0.8.2", options={"asio": "standalone"})
-        self.build_requires("nlohmann_json/3.11.3")
-        self.build_requires("glib/2.78.3")
-        # TODO: use this instead of thirdparty/antlr4 
-        # self.build_requires("antlr4-cppruntime/4.9.3")
-        self.build_requires("libxml2/2.13.4")
         self.test_requires("gtest/1.14.0")
         self.test_requires("benchmark/1.9.0")
 
