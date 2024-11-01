@@ -53,7 +53,8 @@ _SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * par
  * in the given list. Additionally, it resolves the identifier for the initial
  * memory generated structure.
  *
- * @param extensions Path to the directory containing sc-memory extensions.
+ * @param extension_directories Array of directories containing sc-memory extensions.
+ * @param extension_directories_count Number of directories in array.
  * @param enabled_list Array of enabled extensions.
  * @param init_memory_generated_structure Identifier for the initial memory generated structure.
  *
@@ -63,8 +64,9 @@ _SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * par
  * @note The caller is responsible for handling any errors and ensuring proper shutdown
  *       of the initialized extensions.
  */
-_SC_EXTERN sc_result sc_memory_init_ext(
-    sc_char const * extensions,
+_SC_EXTERN sc_result sc_memory_initialize_extensions(
+    sc_char const ** extension_directories,
+    sc_uint32 const extension_directories_count,
     sc_char const ** enabled_list,
     sc_addr const init_memory_generated_structure);
 
@@ -93,7 +95,7 @@ _SC_EXTERN sc_result sc_memory_shutdown(sc_bool save_state);
  * @note The caller is responsible for ensuring that this function is called
  *       before shutting down the sc-memory subsystem.
  */
-_SC_EXTERN void sc_memory_shutdown_ext();
+_SC_EXTERN void sc_memory_shutdown_extensions();
 
 /*!
  * Generates a new sc-memory context for a specified user.

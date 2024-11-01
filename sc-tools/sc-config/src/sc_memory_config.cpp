@@ -58,6 +58,45 @@ ScMemoryConfig::ScMemoryConfig(ScConfig const & config, ScParams const & params,
   }
 }
 
+ScMemoryConfig::~ScMemoryConfig()
+{
+  for (sc_uint32 i = 0; i < m_memoryParams.extensions_directories_count; ++i)
+    delete m_memoryParams.extensions_directories[i];
+
+  delete m_memoryParams.extensions_directories;
+}
+
+void ScMemoryConfig::GetStringListByKey(std::string const & key, sc_char *** list, sc_uint32 * list_size)
+{
+  if (!m_params.Has(key))
+  {
+    *list = nullptr;
+    *list_size = 0;
+    return;
+  }
+
+  std::string const & value = m_params.Get<std::string>(key);
+
+  std::stringstream valueStream(value);
+  std::string path;
+  std::set<std::string> paths;
+
+  while (std::getline(valueStream, path, ';'))
+    paths.insert(path);
+
+  *list_size = static_cast<sc_uint32>(paths.size());
+  if (*list_size == 0)
+  {
+    *list = nullptr;
+    *list_size = 0;
+  }
+
+  *list = new sc_char *[*list_size];
+  sc_uint32 i = 0;
+  for (std::string const & path : paths)
+    (*list)[i++] = strdup(path.c_str());
+}
+
 sc_char const * ScMemoryConfig::GetStringByKey(std::string const & key, sc_char const * defaultValue)
 {
   return m_params.Has(key) ? m_params.Get<std::string>(key).c_str() : defaultValue;
@@ -86,6 +125,7 @@ sc_memory_params ScMemoryConfig::GetParams()
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   m_memoryParams.clear = HasKey("clear");
+<<<<<<< HEAD
 
   if (HasKey("repo_path"))
   {
@@ -102,10 +142,17 @@ sc_memory_params ScMemoryConfig::GetParams()
     SC_LOG_WARNING(
         "Option `extensions_path` in `[sc-memory]` group is deprecated since sc-machine 0.10.0. Use option "
         "`extensions` instead.");
-    m_memoryParams.extensions = GetStringByKey("extensions_path");
+    GetStringListByKey(
+      "extensions_path", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
   }
+  else if (HasKey("extensions"))
+    GetStringListByKey(
+      "extensions", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
   else
-    m_memoryParams.extensions = HasKey("extensions") ? GetStringByKey("extensions") : nullptr;
+  {
+    m_memoryParams.extensions_directories = nullptr;
+    m_memoryParams.extensions_directories_count = 0;
+  }
 
   m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
 
