@@ -28,7 +28,7 @@ dump_memory_statistics_period = 1800
 dump_memory_statistics = true
 
 # Path to compiled knowledge base folder (kb.bin should be inside this folder). By default, it is empty.
-repo_path = /path/to/kb.bin
+binaries = /path/to/kb.bin
 # Path to sc-memory shared library extensions.
 extensions_path = /path/to/sc-machine/bin/extensions
 

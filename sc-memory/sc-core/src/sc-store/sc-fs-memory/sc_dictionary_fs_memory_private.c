@@ -81,7 +81,7 @@ void _sc_dictionary_fs_memory_string_node_clear(sc_dictionary_node * node)
 sc_memory_params * _sc_dictionary_fs_memory_get_default_params(sc_char const * path, sc_bool clear)
 {
   sc_memory_params * params = sc_mem_new(sc_memory_params, 1);
-  params->repo_path = path;
+  params->binaries = path;
   params->clear = clear;
   params->max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
   params->max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;

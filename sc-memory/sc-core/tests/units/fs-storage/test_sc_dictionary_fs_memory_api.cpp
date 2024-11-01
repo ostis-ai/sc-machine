@@ -1403,7 +1403,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_unite_link_hashes_by_term
 TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings)
 {
   sc_memory_params params;
-  params.repo_path = SC_DICTIONARY_FS_MEMORY_PATH;
+  params.binaries = SC_DICTIONARY_FS_MEMORY_PATH;
   params.clear = SC_TRUE;
   params.max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
   params.max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;
@@ -1443,7 +1443,7 @@ TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings)
 TEST(ScDictionaryFSMemoryTest, sc_dictionary_fs_memory_mutiple_link_strings_with_optimized_config)
 {
   sc_memory_params params;
-  params.repo_path = SC_DICTIONARY_FS_MEMORY_PATH;
+  params.binaries = SC_DICTIONARY_FS_MEMORY_PATH;
   params.clear = SC_TRUE;
   params.max_strings_channels = DEFAULT_MAX_STRINGS_CHANNELS;
   params.max_strings_channel_size = DEFAULT_MAX_STRINGS_CHANNEL_SIZE;

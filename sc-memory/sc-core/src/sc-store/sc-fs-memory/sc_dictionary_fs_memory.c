@@ -105,7 +105,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
     sc_dictionary_fs_memory ** memory,
     sc_memory_params const * params)
 {
-  sc_char const * path = params->repo_path;
+  sc_char const * path = params->binaries;
   sc_fs_memory_info("Initialize");
   if (path == null_ptr)
   {
@@ -129,7 +129,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
   *memory = sc_mem_new(sc_dictionary_fs_memory, 1);
   {
     {
-      sc_str_cpy((*memory)->path, params->repo_path, sc_str_len(path));
+      sc_str_cpy((*memory)->path, params->binaries, sc_str_len(path));
       (*memory)->clear = params->clear;
     }
     {

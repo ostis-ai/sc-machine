@@ -86,7 +86,7 @@ sc_memory_params ScMemoryConfig::GetParams()
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   m_memoryParams.clear = HasKey("clear");
-  m_memoryParams.repo_path = GetStringByKey("binaries");
+  m_memoryParams.binaries = GetStringByKey("binaries");
   m_memoryParams.ext_path = HasKey("extensions") ? GetStringByKey("extensions") : nullptr;
   m_memoryParams.enabled_exts = nullptr;
 
@@ -150,6 +150,6 @@ std::string ScMemoryConfig::GetVersion()
   std::string suffix = SC_MACHINE_VERSION_SUFFIX;
   if (!suffix.empty())
     stream << "-" << suffix;
-  
+
   return stream.str();
 }

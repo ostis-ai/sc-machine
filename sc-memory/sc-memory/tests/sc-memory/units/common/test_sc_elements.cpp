@@ -458,7 +458,7 @@ TEST(SmallScMemoryTest, FullMemory)
   sc_memory_params_clear(&params);
 
   params.clear = SC_TRUE;
-  params.repo_path = "repo";
+  params.binaries = "repo";
   params.log_level = "Debug";
 
   params.max_loaded_segments = 1;
@@ -523,7 +523,7 @@ TEST(SmallScMemoryTest, FullMemory2)
   sc_memory_params_clear(&params);
 
   params.clear = SC_TRUE;
-  params.repo_path = "repo";
+  params.binaries = "repo";
   params.log_level = "Debug";
 
   params.max_loaded_segments = 2;
@@ -627,7 +627,7 @@ TEST(SmallScMemoryTest, EmptyMemory)
   sc_memory_params_clear(&params);
 
   params.clear = SC_TRUE;
-  params.repo_path = "repo";
+  params.binaries = "repo";
   params.log_level = "Debug";
 
   params.max_loaded_segments = 0;
@@ -655,7 +655,7 @@ TEST(SmallScMemoryTest, DistributedMemory)
   sc_memory_params_clear(&params);
 
   params.clear = SC_TRUE;
-  params.repo_path = "repo";
+  params.binaries = "repo";
   params.log_level = "Debug";
 
   params.max_loaded_segments = 1;
@@ -696,7 +696,7 @@ TEST(ScMemoryDumper, DumpMemory)
   sc_memory_params_clear(&params);
 
   params.clear = SC_TRUE;
-  params.repo_path = "repo";
+  params.binaries = "repo";
   params.log_level = "Debug";
 
   params.dump_memory = SC_TRUE;
@@ -737,7 +737,7 @@ TEST(ScMemoryDumper, DumpMemoryStatistics)
   sc_memory_params_clear(&params);
 
   params.clear = SC_TRUE;
-  params.repo_path = "repo";
+  params.binaries = "repo";
   params.log_level = "Debug";
 
   params.dump_memory = SC_FALSE;

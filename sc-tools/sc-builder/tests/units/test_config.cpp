@@ -57,9 +57,9 @@ TEST(ScBuilder, RunStopBuilder)
   std::string config = SC_BUILDER_INI;
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"repo_path", SC_BUILDER_KB_BIN});
+  memoryParams.Insert({"binaries", SC_BUILDER_KB_BIN});
 
-  ScConfig configFile{config, {"repo_path"}};
+  ScConfig configFile{config, {"binaries"}};
   std::string memoryGroupName = "sc-memory";
 
   ScMemoryConfig memoryConfig{configFile, memoryParams};
@@ -118,10 +118,10 @@ TEST(ScBuilder, BuilderConfig)
   builderParams.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
-  ScConfig configFile{config, {"repo_path"}};
+  ScConfig configFile{config, {"binaries"}};
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"repo_path", SC_BUILDER_KB_BIN});
+  memoryParams.Insert({"binaries", SC_BUILDER_KB_BIN});
   memoryParams.Insert({"clear", {}});
   ScMemoryConfig memoryConfig{configFile, memoryParams};
 
