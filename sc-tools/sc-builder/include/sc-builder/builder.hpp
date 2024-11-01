@@ -19,10 +19,6 @@ struct BuilderParams
   std::string m_inputPath;
   //! Output directory path
   std::string m_outputPath;
-  //! Path to file with a list of enabled extensions
-  std::string m_enabledExtPath;
-  //! Flag to generate format information based on file extensions
-  bool m_autoFormatInfo : 1;
   //! Result structure system identifier
   std::string m_resultStructureSystemIdtf;
   //! Flag to create result structure

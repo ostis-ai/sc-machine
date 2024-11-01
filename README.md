@@ -94,7 +94,7 @@ Semantic network storage is a core of any ostis-system, so you can use a referen
 
   ```sh
   # build kb
-  ./bin/sc-builder -f --clear -c ./sc-machine.ini -i <path to kb folder with SCs and SCg sources (or path to repo.path file)> -o <output path>
+  ./bin/sc-builder --clear -c ./sc-machine.ini -i <path to kb folder with SCs and SCg sources (or path to repo.path file)> -o <output path>
   # launch sc-machine
   ./bin/sc-machine -c ./sc-machine.ini
   ```

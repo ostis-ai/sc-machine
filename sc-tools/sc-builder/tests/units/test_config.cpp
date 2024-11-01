@@ -43,7 +43,6 @@ TEST(ScBuilder, RunStopBuilder)
   BuilderParams params;
   params.m_inputPath = SC_BUILDER_REPO_PATH;
   params.m_outputPath = SC_BUILDER_KB_BIN;
-  params.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
 
@@ -106,7 +105,6 @@ TEST(ScBuilder, BuilderConfig)
   BuilderParams builderParams;
   builderParams.m_inputPath = SC_BUILDER_REPO_PATH;
   builderParams.m_outputPath = SC_BUILDER_KB_BIN;
-  builderParams.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
   ScConfig configFile{config, {"binaries"}};
