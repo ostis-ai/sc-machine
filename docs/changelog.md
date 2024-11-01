@@ -147,6 +147,7 @@ See documentation, to learn more about using new API.
 
 ### Added
 
+- Allow multiple extension directories for sc-memory
 - Handling required options for sc-machine and sc-builder
 - Display versions for sc-machine and sc-builder
 - Doc strings for sc-config classes
