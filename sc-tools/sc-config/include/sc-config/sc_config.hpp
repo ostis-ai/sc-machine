@@ -152,7 +152,7 @@ public:
   ~ScConfig();
 
 private:
-  sc_config * m_instance;                         ///< Pointer to the underlying sc_config instance managing settings.
+  sc_config * m_instance = nullptr;               ///< Pointer to the underlying sc_config instance managing settings.
   std::string m_path;                             ///< Path to the configuration file.
   std::unordered_set<std::string> m_pathKeys;     ///< Set of keys representing paths in config values.
   std::unordered_set<std::string> m_notUsedKeys;  ///< Set of keys that are ignored during initialization.

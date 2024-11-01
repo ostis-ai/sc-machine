@@ -11,4 +11,4 @@ extern "C"
 #include <sc-core/sc_types.h>
 }
 
-sc_int BuildAndRunBuilder(sc_int argc, sc_char * argv[]);
+sc_int RunBuilder(sc_int argc, sc_char * argv[]);

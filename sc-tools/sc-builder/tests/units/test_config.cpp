@@ -12,37 +12,28 @@
 #include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
-#include "sc_builder_setup.hpp"
+#include "sc_builder_runner.hpp"
 
 TEST(ScBuilder, RunMain)
 {
-  sc_uint32 const argsNumber = 10;
+  sc_uint32 const argsNumber = 9;
   sc_char const * args[argsNumber] = {
-      "sc-builder",
-      "-c",
-      SC_BUILDER_INI,
-      "-i",
-      SC_BUILDER_REPO_PATH,
-      "-o",
-      SC_BUILDER_KB_BIN,
-      "--enabled_ext",
-      "",
-      "--clear"};
-  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+      "sc-builder", "-c", SC_BUILDER_INI, "-i", SC_BUILDER_REPO_PATH, "-o", SC_BUILDER_KB_BIN, "", "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
 TEST(ScBuilder, InvalidRunMain)
 {
   sc_uint32 const argsNumber = 1;
   sc_char const * args[argsNumber] = {"sc-builder"};
-  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
 }
 
 TEST(ScBuilder, RunMainHelp)
 {
   sc_uint32 const argsNumber = 2;
   sc_char const * args[argsNumber] = {"sc-builder", "--help"};
-  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
 TEST(ScBuilder, RunStopBuilder)

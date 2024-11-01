@@ -1,24 +1,27 @@
 # sc-builder
 
-Sc-builder tool allows to build knowledge base from sources. You can find it in a `bin` directory.
-There are options of this tool:
+Sc-builder tool allows to translate knowledge base sources into binaries. You can find it in a `bin` directory.
 
 <pre>
-./bin/sc-builder --help
+Usage:
+  ./bin/sc-builder -i <kb-directory or repo-path> -o <binary-path> [options]
 
-Sc-builder usage:
+Required options:
+  --input|-i                              Provide a path to directory with knowledge base sources (.scs, .gwf) or to <repo-name>.path file.
+                                          This file can contain knowledge base directories (or sources) that should/shouldn't be translated to binaries.
+  --output|-o                             Provide a path to directory where the knowledge base binaries will be generated.
 
-  --config|-c arg           Path to configuration .ini file
-  --input_path|-i arg       Path to directory with sources
-  --output_path|-o arg      Path to output directory (repository)
-  --auto_formats|-f         Enable automatic formats info generation
-  --clear                   Flag to clear sc-memory on start
-  --help                    Display this message
+Options:
+  --config|-c <config-name>.ini           Provide a path to configuration file.
+                                          Configuration file can be used to set additional (optional) options for ./bin/sc-builder.
+  --clear                                 Run sc-builder in the mode when it overwrites existing knowledge base binaries.
+  --version                               Display version of ./bin/sc-builder.
+  --help                                  Display this help message.
 </pre>
 
 Example of usage:
 
 ```sh
 cd sc-machine
-./bin/sc-builder -c ./sc-machine.ini -i ./kb -o ./kb.bin -f --clear
+./bin/sc-builder -i ./kb -o ./kb.bin --clear -c
 ```
