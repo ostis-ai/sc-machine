@@ -26,6 +26,13 @@ TEST(ScMachine, RunMainWithExtensions)
   EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
+TEST(ScMachine, RunMainWithBinaries)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-b", SC_MACHINE_REPO_PATH, "-t"};
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
 TEST(ScMachine, InvalidRunMain)
 {
   sc_uint32 const argsNumber = 1;
@@ -44,5 +51,12 @@ TEST(ScMachine, RunMainHelp)
 {
   sc_uint32 const argsNumber = 2;
   sc_char const * args[argsNumber] = {"sc-machine", "--help"};
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScMachine, RunMainVersion)
+{
+  sc_uint32 const argsNumber = 2;
+  sc_char const * args[argsNumber] = {"sc-machine", "--version"};
   EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }

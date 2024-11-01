@@ -92,6 +92,9 @@ public:
    */
   sc_memory_params GetParams();
 
+  //! Returns current sc-machine version.
+  static std::string GetVersion();
+
 private:
   ScParams m_params;                ///< Parameters associated with this memory configuration instance
   std::string m_groupName;          ///< Name of the configuration group

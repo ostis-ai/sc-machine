@@ -80,11 +80,13 @@ bool ScMemoryConfig::HasKey(std::string const & key)
 
 sc_memory_params ScMemoryConfig::GetParams()
 {
+  sc_memory_params_clear(&m_memoryParams);
+
   m_memoryParams.version = {
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   m_memoryParams.clear = HasKey("clear");
-  m_memoryParams.repo_path = GetStringByKey("kb_binaries");
+  m_memoryParams.repo_path = GetStringByKey("binaries");
   m_memoryParams.ext_path = HasKey("extensions") ? GetStringByKey("extensions") : nullptr;
   m_memoryParams.enabled_exts = nullptr;
 
@@ -138,4 +140,16 @@ sc_memory_params ScMemoryConfig::GetParams()
   m_memoryParams.search_by_substring = GetBoolByKey("search_by_substring", DEFAULT_SEARCH_BY_SUBSTRING);
 
   return m_memoryParams;
+}
+
+std::string ScMemoryConfig::GetVersion()
+{
+  std::stringstream stream;
+  stream << SC_MACHINE_VERSION_MAJOR << "." << SC_MACHINE_VERSION_MINOR << "." << SC_MACHINE_VERSION_PATCH;
+
+  std::string suffix = SC_MACHINE_VERSION_SUFFIX;
+  if (!suffix.empty())
+    stream << "-" << suffix;
+  
+  return stream.str();
 }
