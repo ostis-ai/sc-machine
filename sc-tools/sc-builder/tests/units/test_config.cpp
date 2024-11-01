@@ -14,25 +14,53 @@
 
 #include "sc_builder_runner.hpp"
 
-TEST(ScBuilder, RunMain)
+TEST(ScBuilder, Run)
 {
-  sc_uint32 const argsNumber = 9;
+  sc_uint32 const argsNumber = 8;
   sc_char const * args[argsNumber] = {
-      "sc-builder", "-c", SC_BUILDER_INI, "-i", SC_BUILDER_REPO_PATH, "-o", SC_BUILDER_KB_BIN, "", "--clear"};
+      "sc-builder", "-c", SC_BUILDER_INI, "-i", SC_BUILDER_REPO_PATH, "-o", SC_BUILDER_KB_BIN, "--clear"};
   EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
-TEST(ScBuilder, InvalidRunMain)
+TEST(ScBuilder, RunWithoutConfig)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {"sc-builder", "-i", SC_BUILDER_REPO_PATH, "-o", SC_BUILDER_KB_BIN, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunWithoutInput)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-builder", "-o", SC_BUILDER_KB_BIN, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, RunWithoutOutput)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-builder", "-i", SC_BUILDER_REPO_PATH, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, InvalidRun)
 {
   sc_uint32 const argsNumber = 1;
   sc_char const * args[argsNumber] = {"sc-builder"};
   EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
 }
 
-TEST(ScBuilder, RunMainHelp)
+TEST(ScBuilder, PrintHelp)
 {
   sc_uint32 const argsNumber = 2;
   sc_char const * args[argsNumber] = {"sc-builder", "--help"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, PrintVersion)
+{
+  sc_uint32 const argsNumber = 2;
+  sc_char const * args[argsNumber] = {"sc-builder", "--version"};
   EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
