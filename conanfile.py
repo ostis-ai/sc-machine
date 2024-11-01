@@ -38,10 +38,11 @@ class sc_machineRecipe(ConanFile):
         return tools.get_env("CONAN_RUN_TESTS", False)
 
     def build_requirements(self):
-        self.build_requires("websocketpp/0.8.2")
+        self.build_requires("websocketpp/0.8.2", options={"asio": "standalone"})
         self.build_requires("nlohmann_json/3.11.3")
         self.build_requires("glib/2.78.3")
-        self.build_requires("antlr4-cppruntime/4.9.3")
+        # TODO: use this instead of thirdparty/antlr4 
+        # self.build_requires("antlr4-cppruntime/4.9.3")
         self.build_requires("libxml2/2.13.4")
         self.test_requires("gtest/1.14.0")
         self.test_requires("benchmark/1.9.0")
@@ -59,7 +60,6 @@ class sc_machineRecipe(ConanFile):
         deps.generate()
         tc = CMakeToolchain(self)
         tc.user_presets_path = "ConanPresets.json"
-        tc.variables["CMAKE_CXX_STANDARD"] = 17
         tc.generate()
 
     def package(self):
