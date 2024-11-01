@@ -1,15 +1,16 @@
-name: Release archive
+name: Tests (Conan)
 
 on:
-  push:
-    tags:
-      - '*.*.*'
+  pull_request:
+    branches: [main]
+  workflow_call:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  build:
+  run_tests:
+    name: Conan build
     runs-on: ubuntu-24.04
 
     strategy:
@@ -60,20 +61,20 @@ jobs:
       - name: Install compilers
         run: sudo apt install build-essential ninja-build ccache cmake
 
-      - name: Build sc-machine
+      - name: Build sc-machine with tests
         id: run_cmake
         run: |
-          cmake --preset release-conan
+          cmake --preset release-with-tests-conan
           cmake --build --preset release
 
-      - name: Create archive
-        run: |
-          tar -czf sc-machine_${{ github.event.ref }}.tar.gz build/Release/bin build/Release/lib
+      - name: Run sc-machine tests
+        id: run_tests
+        run: cd build/Release && ctest -C Release -V
 
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.event.ref }}
-          files: ${{ github.workspace }}/sc-machine_${{ github.event.ref }}.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run sc-machine
+        id: run_sc_machine
+        run: |
+          mkdir kb
+          build/Release/bin/sc-builder -i kb -o kb.bin --clear -f
+          build/Release/bin/sc-server -c sc-machine.ini -e build/Release/lib/extensions -r kb.bin -t
+          build/Release/bin/sc-machine -c sc-machine.ini -e -e build/Release/lib/extensions -r kb.bin -t
