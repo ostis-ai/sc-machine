@@ -15,6 +15,7 @@
 #include <sc-memory/utils/sc_signal_handler.hpp>
 
 #include <sc-config/sc_options.hpp>
+#include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
 void PrintStartMessage(std::string const & binaryName)

@@ -4,7 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <sc-config/sc_memory_config.hpp>
+#include "sc-config/sc_memory_config.hpp"
 
 #include <sc-memory/sc_memory.hpp>
 
@@ -12,6 +12,9 @@ extern "C"
 {
 #include <sc-core/sc_memory_version.h>
 }
+
+#include "sc-config/sc_options.hpp"
+#include "sc-config/sc_config.hpp"
 
 ScParams::ScParams(ScOptions const & options, std::vector<std::vector<std::string>> const & keysSet)
 {
@@ -81,8 +84,8 @@ sc_memory_params ScMemoryConfig::GetParams()
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   m_memoryParams.clear = HasKey("clear");
-  m_memoryParams.repo_path = GetStringByKey("repo_path");
-  m_memoryParams.ext_path = HasKey("extensions_path") ? GetStringByKey("extensions_path") : nullptr;
+  m_memoryParams.repo_path = GetStringByKey("kb_binaries");
+  m_memoryParams.ext_path = HasKey("extensions") ? GetStringByKey("extensions") : nullptr;
   m_memoryParams.enabled_exts = nullptr;
 
   m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);

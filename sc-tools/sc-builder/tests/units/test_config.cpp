@@ -9,6 +9,7 @@
 #include <sc-builder/builder.hpp>
 
 #include <sc-config/sc_options.hpp>
+#include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
 #include "sc_builder_setup.hpp"

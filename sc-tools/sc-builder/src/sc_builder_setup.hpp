@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include <sc-config/sc_memory_config.hpp>
-
-void PrintStartMessage();
+extern "C"
+{
+#include <sc-core/sc_types.h>
+}
 
 sc_int BuildAndRunBuilder(sc_int argc, sc_char * argv[]);

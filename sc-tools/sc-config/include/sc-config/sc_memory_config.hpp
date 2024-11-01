@@ -6,76 +6,17 @@
 
 #pragma once
 
-#include <utility>
 #include <string>
-#include <vector>
-#include <map>
-#include <unordered_set>
 
-#include <sc-memory/sc_debug.hpp>
-
-#include "sc_options.hpp"
-#include "sc-core/sc_memory_params.h"
-#include "sc-config/sc_config.hpp"
-
-class ScMemoryConfig;
-
-class ScParams
+extern "C"
 {
-public:
-  friend class ScMemoryConfig;
+#include <sc-core/sc_memory_params.h>
+}
 
-  explicit ScParams(ScOptions const & options, std::vector<std::vector<std::string>> const & keysSet);
+#include "sc-config/sc_params.hpp"
 
-  ScParams();
-
-  ScParams(ScParams const & object) = default;
-  ScParams & operator=(ScParams const & other) = default;
-
-  void Insert(std::pair<std::string, std::string> const & pair);
-
-  template <typename TContentType>
-  TContentType const & Get(std::string const & key) const
-  {
-    if constexpr (std::is_same_v<TContentType, std::string>)
-    {
-      if (m_params.count(key) == SC_FALSE)
-        SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Parameter value not found by `" << key << "`");
-
-      return m_params.at(key);
-    }
-
-    std::stringstream streamString;
-    if (m_params.count(key))
-      streamString << m_params.at(key);
-
-    static TContentType value;
-    streamString >> value;
-    return value;
-  }
-
-  template <typename TContentType>
-  TContentType const & Get(std::string const & key, TContentType const & defaultValue) const
-  {
-    if constexpr (std::is_same_v<TContentType, std::string>)
-      return m_params.count(key) ? m_params.at(key) : defaultValue;
-
-    std::stringstream streamString;
-    if (m_params.count(key))
-      streamString << m_params.at(key);
-    else
-      streamString << defaultValue;
-
-    static TContentType value;
-    streamString >> value;
-    return value;
-  }
-
-  sc_bool Has(std::string const & key) const;
-
-private:
-  std::map<std::string, std::string> m_params;
-};
+class ScOptions;
+class ScConfig;
 
 class ScMemoryConfig
 {
@@ -98,3 +39,5 @@ private:
 
   sc_bool GetBoolByKey(std::string const & key, sc_bool const defaultValue = SC_FALSE);
 };
+
+#include "sc-config/_template/sc_memory_config.tpp"
