@@ -13,16 +13,10 @@ limit_max_threads_by_max_physical_cores = true
 max_events_and_agents_threads = 32
 
 # Period (in seconds) to save sc-memory statistics. By default, it is 3600.
-# !!! It is deprecated option in sc-machine 0.9.0.
-save_period = 3600 
-# It is equal to `save_period`. By default, it is 3600.
 dump_memory_period = 3600
 # Boolean indicating to enable sc-memory dump.
 dump_memory = true
 # Period (in seconds) to update sc-memory statistics. By default, it is 1800.
-# !!! It is deprecated option in sc-machine 0.9.0.
-update_period = 1800
-# It is equal to `update_period`. By default, it is 1800.
 dump_memory_statistics_period = 1800
 # Boolean indicating to enable sc-memory statistics dump.
 dump_memory_statistics = true
@@ -30,7 +24,7 @@ dump_memory_statistics = true
 # Path to compiled knowledge base folder (kb.bin should be inside this folder). By default, it is empty.
 binaries = /path/to/kb.bin
 # Path to sc-memory shared library extensions.
-extensions_path = /path/to/sc-machine/bin/extensions
+extensions = /path/to/sc-machine/bin/extensions
 
 # Sc-memory log type. It can be `File` or `Console`.
 log_type = File

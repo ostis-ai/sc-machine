@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv` or use `scripts/healthcheck.sh` 
 encapsulated this logic;
   - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
+- `sc-server` binary and `run_sc_server.sh` script were removed. Use `sc-machine` binary instead.
 - All questions was renamed to actions.
 - ScAddrHashFunc with template argument was removed. Use non-template ScAddrHashFunc without arguments. It is more safe in use.
 - Constructors for ScMemoryContext with string and int parameters were removed. Use the one without parameters instead.
@@ -145,6 +146,9 @@ See documentation, to learn more about using new API.
 
 ### Added
 
+- Handling required options for sc-machine and sc-builder
+- Display versions for sc-machine and sc-builder
+- Doc strings for sc-config classes
 - Implement gwf2scs-translator in cpp
 - `GetSCsElementKeynode` method for sc-types to get their sc.s-keynode system identifiers
 - `GetDirectSCsConnector` and `GetReverseSCsConnector` for sc-types to get their designations in SCs-code
@@ -208,6 +212,8 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- Help messages for sc-machine and sc-builder
+- Clarify sc-machine and sc-builder options
 - Specify dependencies near targets, not in overall file
 - Make glib dependencies private
 - Replace public sc-base defines with methods
@@ -254,14 +260,18 @@ See documentation, to learn more about using new API.
 
 ### Deprecated
 
+- Config option `repo_path` in `[sc-memory]`, add option `binaries` instead of
+- Config option `extensions_path` in `[sc-memory]`, add option `extensions` instead of
 - Incorrect designations of sc.s-connectors: `>`, `<`, `<>`, `_<=`, `_<-`, `_<|-`, `_<~`, `_<|~`
 - Incorrect sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`, `sc_node_norole_relation`
 - C++ sc-types: `ScType::EdgeUCommon`, `ScType::EdgeDCommon`, `ScType::EdgeUCommonConst`, `ScType::EdgeDCommonConst`, `ScType::EdgeAccess`, `ScType::EdgeAccessConstPosPerm`, `ScType::EdgeAccessConstNegPerm`, `ScType::EdgeAccessConstFuzPerm`, `ScType::EdgeAccessConstPosTemp`, `ScType::EdgeAccessConstNegTemp`, `ScType::EdgeAccessConstFuzTemp`, `ScType::EdgeUCommonVar`, `ScType::EdgeDCommonVar`, `ScType::EdgeAccessVarPosPerm`, `ScType::EdgeAccessVarNegPerm`, `ScType::EdgeAccessVarFuzPerm`, `ScType::EdgeAccessVarPosTemp`, `ScType::EdgeAccessVarNegTemp`, `ScType::EdgeAccessVarFuzTemp`, `ScType::NodeConst`, `ScType::NodeVar`, `ScType::Link`, `ScType::LinkClass`, `ScType::NodeStruct`, `ScType::LinkConst`, `ScType::LinkConstClass`, `ScType::NodeConstTuple`, `ScType::NodeConstStruct`, `ScType::NodeConstRole`, `ScType::NodeConstNoRole`, `ScType::NodeConstClass`, `ScType::NodeConstMaterial`, `ScType::LinkVar`, `ScType::LinkVarClass`, `ScType::NodeVarStruct`, `ScType::NodeVarTuple`, `ScType::NodeVarRole`, `ScType::NodeVarNoRole`, `ScType::NodeVarClass`, `ScType::NodeVarMaterial`
 - Methods of `ScMemoryContext`: CreateNode, CreateLink, CreateEdge,GetElementOutputArcsCount, GetElementInputArcsCount, GetEdgeSource, GetEdgeTarget, GetEdgeInfo, Iterator3, Iterator5, ForEachIter3, ForEachIter5, HelperCheckEdge, FindLinksByContent, FindLinksByContentSubstring, FindLinksContentsByContentSubstring, HelperSetSystemIdtf, HelperGetSystemIdtf, HelperResolveSystemIdtf, HelperFindBySystemIdtf, HelperGenTemplate, HelperSearchTemplate, HelperSmartSearchTemplate, HelperBuildTemplate, CalculateStat
-- Binary `sc-server`, script `run_sc_server.sh` and docker entrypoint command serve
 
 ### Removed
 
+- Config option `update_period` in `[sc-memory]`
+- Config option `save_period` in `[sc-memory]`
+- `sc-server` binary, `run_sc_server.sh` script and docker entrypoint command `serve`
 - gwf2scs-translator in python
 - Designations of fuzzy sc.s-arcs: ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_```
 - Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract`
