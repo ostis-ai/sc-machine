@@ -13,7 +13,7 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->clear = SC_FALSE;
   params->binaries = (sc_char const *)null_ptr;
-  params->ext_path = (sc_char const *)null_ptr;
+  params->extensions = (sc_char const *)null_ptr;
   params->enabled_exts = (sc_char const **)null_ptr;
 
   params->max_loaded_segments = DEFAULT_MAX_LOADED_SEGMENTS;
@@ -21,9 +21,9 @@ void sc_memory_params_clear(sc_memory_params * params)
   params->max_events_and_agents_threads = DEFAULT_MAX_EVENTS_AND_AGENTS_THREADS;
 
   params->dump_memory = SC_TRUE;
-  params->save_period = params->dump_memory_period = DEFAULT_DUMP_MEMORY_PERIOD;  // seconds
+  params->dump_memory_period = DEFAULT_DUMP_MEMORY_PERIOD;  // seconds
   params->dump_memory_statistics = SC_TRUE;
-  params->update_period = params->dump_memory_statistics_period = DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD;  // seconds
+  params->dump_memory_statistics_period = DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD;  // seconds
 
   params->log_type = DEFAULT_LOG_TYPE;
   params->log_file = DEFAULT_LOG_FILE;

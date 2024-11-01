@@ -86,9 +86,26 @@ sc_memory_params ScMemoryConfig::GetParams()
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   m_memoryParams.clear = HasKey("clear");
-  m_memoryParams.binaries = GetStringByKey("binaries");
-  m_memoryParams.ext_path = HasKey("extensions") ? GetStringByKey("extensions") : nullptr;
-  m_memoryParams.enabled_exts = nullptr;
+
+  if (HasKey("repo_path"))
+  {
+    SC_LOG_WARNING(
+        "Option `repo_path` in `[sc-memory]` group is deprecated since sc-machine 0.10.0. Use option "
+        "`binaries` instead.");
+    m_memoryParams.binaries = GetStringByKey("repo_path");
+  }
+  else
+    m_memoryParams.binaries = GetStringByKey("binaries");
+
+  if (HasKey("extensions_path"))
+  {
+    SC_LOG_WARNING(
+        "Option `extensions_path` in `[sc-memory]` group is deprecated since sc-machine 0.10.0. Use option "
+        "`extensions` instead.");
+    m_memoryParams.extensions = GetStringByKey("extensions_path");
+  }
+  else
+    m_memoryParams.extensions = HasKey("extensions") ? GetStringByKey("extensions") : nullptr;
 
   m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
 
@@ -100,28 +117,23 @@ sc_memory_params ScMemoryConfig::GetParams()
   m_memoryParams.dump_memory = GetBoolByKey("dump_memory", DEFAULT_DUMP_MEMORY);
   if (HasKey("save_period"))
   {
-    SC_LOG_WARNING(
-        "Option `save_period` is deprecated in sc-machine 0.9.0. It will be removed in sc-machine 0.10.0. Use option "
-        "`dump_memory_period` instead of.");
-    m_memoryParams.save_period = m_memoryParams.dump_memory_period =
-        GetIntByKey("save_period", DEFAULT_DUMP_MEMORY_PERIOD);
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Error: Option `save_period` in `[sc-memory]` group is removed in sc-machine 0.10.0. Use option "
+        "`dump_memory_period` instead.");
   }
-  if (HasKey("dump_memory_period"))
-    m_memoryParams.save_period = m_memoryParams.dump_memory_period =
-        GetIntByKey("dump_memory_period", DEFAULT_DUMP_MEMORY_PERIOD);
+  m_memoryParams.dump_memory_period = GetIntByKey("dump_memory_period", DEFAULT_DUMP_MEMORY_PERIOD);
 
-  m_memoryParams.dump_memory_statistics = GetBoolByKey("dump_memory", DEFAULT_DUMP_MEMORY_STATISTICS);
+  m_memoryParams.dump_memory_statistics = GetBoolByKey("dump_memory_statistics", DEFAULT_DUMP_MEMORY_STATISTICS);
   if (HasKey("update_period"))
   {
-    SC_LOG_WARNING(
-        "Option `update_period` is deprecated in sc-machine 0.9.0. It will be removed in sc-machine 0.10.0. Use "
-        "option `dump_memory_statistics_period` instead of.");
-    m_memoryParams.update_period = m_memoryParams.dump_memory_statistics_period =
-        GetIntByKey("update_period", DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD);
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Error: Option `update_period` in `[sc-memory]` group is removed in sc-machine 0.10.0. Use "
+        "option `dump_memory_statistics_period` instead.");
   }
-  if (HasKey("dump_memory_statistics_period"))
-    m_memoryParams.update_period = m_memoryParams.dump_memory_statistics_period =
-        GetIntByKey("dump_memory_statistics_period", DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD);
+  m_memoryParams.dump_memory_statistics_period =
+      GetIntByKey("dump_memory_statistics_period", DEFAULT_DUMP_MEMORY_STATISTICS_PERIOD);
 
   m_memoryParams.log_type = GetStringByKey("log_type", DEFAULT_LOG_TYPE);
   m_memoryParams.log_file = GetStringByKey("log_file", DEFAULT_LOG_FILE);

@@ -79,9 +79,10 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_mem
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
   sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
-  sc_message("\tExtensions path: %s", params->ext_path);
+  sc_message("\tExtensions path: %s", params->extensions);
 
-  if (sc_memory_init_ext(params->ext_path, params->enabled_exts, init_memory_generated_structure_addr) != SC_RESULT_OK)
+  if (sc_memory_init_ext(params->extensions, params->enabled_exts, init_memory_generated_structure_addr)
+      != SC_RESULT_OK)
   {
     sc_memory_error("Error while initialize extensions");
     goto error;
@@ -98,13 +99,13 @@ error:
 }
 
 sc_result sc_memory_init_ext(
-    sc_char const * ext_path,
+    sc_char const * extensions,
     sc_char const ** enabled_list,
     sc_addr const init_memory_generated_structure_addr)
 {
   sc_memory_info("Initialize extensions");
 
-  sc_result const ext_res = sc_ext_initialize(ext_path, enabled_list, init_memory_generated_structure_addr);
+  sc_result const ext_res = sc_ext_initialize(extensions, enabled_list, init_memory_generated_structure_addr);
 
   switch (ext_res)
   {
@@ -113,7 +114,7 @@ sc_result sc_memory_init_ext(
     break;
 
   case SC_RESULT_ERROR_INVALID_PARAMS:
-    sc_memory_warning("Extensions directory `%s` doesn't exist", ext_path);
+    sc_memory_warning("Extensions directory `%s` doesn't exist", extensions);
     break;
 
   default:

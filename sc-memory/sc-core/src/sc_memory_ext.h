@@ -19,7 +19,7 @@
  * there are any other errors to load extensions, then return SC_ERROR
  */
 sc_result sc_ext_initialize(
-    sc_char const * ext_path,
+    sc_char const * extensions,
     sc_char const ** enabled_list,
     sc_addr init_memory_generated_structure);
 

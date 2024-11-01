@@ -78,11 +78,11 @@ try
 
   ScMemory::ms_configPath = configPath;
 
-  ScConfig config{configPath, {"extensions", "binaries", "log_file"}};
+  ScConfig config{configPath, {"extensions", "repo_path", "binaries", "log_file"}};
   ScParams memoryParams{options, {{"extensions", "e"}, {"binaries", "b"}, {"clear"}}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
-  if (!memoryConfig.HasKey("binaries"))
+  if (!memoryConfig.HasKey("binaries") && !memoryConfig.HasKey("repo_path"))
   {
     std::cout << "Error: Knowledge base binaries directory is required. Use --binaries|-b to specify the path.\n";
     std::cout << "For more information, run with --help.\n";
@@ -115,7 +115,7 @@ error:
 // LCOV_EXCL_START
 catch (utils::ScException const & e)
 {
-  SC_LOG_ERROR(e.Description());
+  std::cout << e.Message();
   return EXIT_FAILURE;
 }
 

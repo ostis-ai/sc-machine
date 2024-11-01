@@ -70,10 +70,6 @@ TEST(ScBuilder, RunStopBuilder)
   EXPECT_EQ(scParams.Get<sc_uint32>("max_loaded_segments"), scMemoryParams.max_loaded_segments);
   EXPECT_EQ(scParams.Get<sc_uint32>("dump_memory_period"), scMemoryParams.dump_memory_period);
   EXPECT_EQ(scParams.Get<sc_uint32>("dump_memory_statistics_period"), scMemoryParams.dump_memory_statistics_period);
-  EXPECT_EQ(scParams.Get<sc_uint32>("save_period"), scMemoryParams.dump_memory_period);
-  EXPECT_EQ(scParams.Get<sc_uint32>("update_period"), scMemoryParams.dump_memory_statistics_period);
-  EXPECT_EQ(scMemoryParams.dump_memory_period, scMemoryParams.save_period);
-  EXPECT_EQ(scMemoryParams.dump_memory_statistics_period, scMemoryParams.update_period);
   EXPECT_EQ(scParams.Get<std::string>("log_type"), scMemoryParams.log_type);
   EXPECT_EQ(scParams.Get<std::string>("log_file"), scMemoryParams.log_file);
   EXPECT_EQ(scParams.Get<std::string>("log_level"), scMemoryParams.log_level);

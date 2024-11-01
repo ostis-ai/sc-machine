@@ -53,7 +53,7 @@ _SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * par
  * in the given list. Additionally, it resolves the identifier for the initial
  * memory generated structure.
  *
- * @param ext_path Path to the directory containing sc-memory extensions.
+ * @param extensions Path to the directory containing sc-memory extensions.
  * @param enabled_list Array of enabled extensions.
  * @param init_memory_generated_structure Identifier for the initial memory generated structure.
  *
@@ -64,7 +64,7 @@ _SC_EXTERN sc_memory_context * sc_memory_initialize(sc_memory_params const * par
  *       of the initialized extensions.
  */
 _SC_EXTERN sc_result sc_memory_init_ext(
-    sc_char const * ext_path,
+    sc_char const * extensions,
     sc_char const ** enabled_list,
     sc_addr const init_memory_generated_structure);
 
