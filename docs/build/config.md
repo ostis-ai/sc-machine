@@ -23,8 +23,8 @@ dump_memory_statistics = true
 
 # Path to folder with compiled knowledge base binaries. By default, it is empty.
 storage = /path/to/kb.bin
-# Path to sc-memory shared library extensions.
-extensions = /path/to/sc-machine/bin/extensions
+# List of paths to directories with sc-memory shared library extensions separated by semicolon.
+extensions = /path/to/sc-machine/bin/extensions_1;/path/to/sc-machine/bin/extensions_2;...
 
 # Sc-memory log type. It can be `File` or `Console`.
 log_type = File

@@ -83,7 +83,7 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_mem
   if (sc_memory_initialize_extensions(
           params->extensions_directories,
           params->extensions_directories_count,
-          params->enabled_exts,
+          params->enabled_extensions,
           init_memory_generated_structure_addr)
       != SC_RESULT_OK)
     goto error;
