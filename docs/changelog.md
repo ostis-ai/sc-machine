@@ -260,8 +260,8 @@ See documentation, to learn more about using new API.
 
 ### Deprecated
 
-- Config option `repo_path` in `[sc-memory]`, add option `binaries` instead of
-- Config option `extensions_path` in `[sc-memory]`, add option `extensions` instead of
+- Config option `repo_path` in `[sc-memory]`, add option `binaries` instead
+- Config option `extensions_path` in `[sc-memory]`, add option `extensions` instead
 - Incorrect designations of sc.s-connectors: `>`, `<`, `<>`, `_<=`, `_<-`, `_<|-`, `_<~`, `_<|~`
 - Incorrect sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`, `sc_node_norole_relation`
 - C++ sc-types: `ScType::EdgeUCommon`, `ScType::EdgeDCommon`, `ScType::EdgeUCommonConst`, `ScType::EdgeDCommonConst`, `ScType::EdgeAccess`, `ScType::EdgeAccessConstPosPerm`, `ScType::EdgeAccessConstNegPerm`, `ScType::EdgeAccessConstFuzPerm`, `ScType::EdgeAccessConstPosTemp`, `ScType::EdgeAccessConstNegTemp`, `ScType::EdgeAccessConstFuzTemp`, `ScType::EdgeUCommonVar`, `ScType::EdgeDCommonVar`, `ScType::EdgeAccessVarPosPerm`, `ScType::EdgeAccessVarNegPerm`, `ScType::EdgeAccessVarFuzPerm`, `ScType::EdgeAccessVarPosTemp`, `ScType::EdgeAccessVarNegTemp`, `ScType::EdgeAccessVarFuzTemp`, `ScType::NodeConst`, `ScType::NodeVar`, `ScType::Link`, `ScType::LinkClass`, `ScType::NodeStruct`, `ScType::LinkConst`, `ScType::LinkConstClass`, `ScType::NodeConstTuple`, `ScType::NodeConstStruct`, `ScType::NodeConstRole`, `ScType::NodeConstNoRole`, `ScType::NodeConstClass`, `ScType::NodeConstMaterial`, `ScType::LinkVar`, `ScType::LinkVarClass`, `ScType::NodeVarStruct`, `ScType::NodeVarTuple`, `ScType::NodeVarRole`, `ScType::NodeVarNoRole`, `ScType::NodeVarClass`, `ScType::NodeVarMaterial`

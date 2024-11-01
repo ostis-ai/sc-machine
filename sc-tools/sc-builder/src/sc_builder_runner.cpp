@@ -104,6 +104,6 @@ try
 
 catch (utils::ScException const & ex)
 {
-  SC_LOG_ERROR(ex.Message());
+  std::cout << ex.Message() << std::endl;
   return EXIT_FAILURE;
 }

@@ -115,7 +115,7 @@ error:
 // LCOV_EXCL_START
 catch (utils::ScException const & e)
 {
-  std::cout << e.Message();
+  std::cout << e.Message() << std::endl;
   return EXIT_FAILURE;
 }
 
