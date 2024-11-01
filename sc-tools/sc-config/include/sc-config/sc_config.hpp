@@ -88,6 +88,8 @@ private:
 class ScConfig
 {
 public:
+  static inline sc_char const PATHS_SEPARATOR = ';';
+
   /*!
    * @brief Constructs an ScConfig object.
    *

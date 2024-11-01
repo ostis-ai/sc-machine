@@ -13,10 +13,10 @@ void sc_memory_params_clear(sc_memory_params * params)
 
   params->clear = SC_FALSE;
 
-  params->repo_path = (sc_char const *)null_ptr;
+  params->storage = (sc_char const *)null_ptr;
   params->extensions_directories = (sc_char **)null_ptr;
   params->extensions_directories_count = 0;
-  params->enabled_exts = (sc_char const **)null_ptr;
+  params->enabled_extensions = (sc_char const **)null_ptr;
 
   params->max_loaded_segments = DEFAULT_MAX_LOADED_SEGMENTS;
   params->limit_max_threads_by_max_physical_cores = DEFAULT_LIMIT_MAX_THREADS_BY_MAX_PHYSICAL_CORES;

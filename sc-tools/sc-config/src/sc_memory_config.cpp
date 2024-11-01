@@ -81,7 +81,7 @@ void ScMemoryConfig::GetStringListByKey(std::string const & key, sc_char *** lis
   std::string path;
   std::set<std::string> paths;
 
-  while (std::getline(valueStream, path, ';'))
+  while (std::getline(valueStream, path, ScConfig::PATHS_SEPARATOR))
     paths.insert(path);
 
   *list_size = static_cast<sc_uint32>(paths.size());
@@ -125,7 +125,6 @@ sc_memory_params ScMemoryConfig::GetParams()
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   m_memoryParams.clear = HasKey("clear");
-<<<<<<< HEAD
 
   if (HasKey("repo_path"))
   {
@@ -143,16 +142,18 @@ sc_memory_params ScMemoryConfig::GetParams()
         "Option `extensions_path` in `[sc-memory]` group is deprecated since sc-machine 0.10.0. Use option "
         "`extensions` instead.");
     GetStringListByKey(
-      "extensions_path", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
+        "extensions_path", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
   }
   else if (HasKey("extensions"))
     GetStringListByKey(
-      "extensions", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
+        "extensions", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
   else
   {
     m_memoryParams.extensions_directories = nullptr;
     m_memoryParams.extensions_directories_count = 0;
   }
+
+  m_memoryParams.enabled_extensions = nullptr;
 
   m_memoryParams.max_loaded_segments = GetIntByKey("max_loaded_segments", DEFAULT_MAX_LOADED_SEGMENTS);
 

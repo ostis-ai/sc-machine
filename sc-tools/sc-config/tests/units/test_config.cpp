@@ -27,7 +27,7 @@ TEST(ScConfig, ValidConfig)
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
   EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
-  EXPECT_EQ(std::string(params.extensions), "bin/extensions");
+  EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
 
 TEST(ScConfig, RemoveSavePeriod)
@@ -64,7 +64,7 @@ TEST(ScConfig, DeprecatedRepoPath)
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
   EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
-  EXPECT_EQ(std::string(params.extensions), "bin/extensions");
+  EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
 
 TEST(ScConfig, DeprecatedExtensionsPath)
@@ -83,5 +83,5 @@ TEST(ScConfig, DeprecatedExtensionsPath)
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
   EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
-  EXPECT_EQ(std::string(params.extensions), "bin/extensions");
+  EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
