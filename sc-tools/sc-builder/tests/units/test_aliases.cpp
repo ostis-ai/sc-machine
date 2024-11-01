@@ -19,3 +19,4 @@ TEST_F(ScBuilderTest, Aliases)
   EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
   EXPECT_EQ(result.Size(), 1u);
 }
+
