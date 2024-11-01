@@ -36,9 +36,10 @@ typedef struct
 
   ///< Boolean indicating whether to clear existing data during initialization. By default, it is SC_FALSE.
   sc_bool clear;
-  sc_char const * storage;        ///< Path to the knowledge base storage directory.
-  sc_char const * extensions;     ///< Path to the extensions directory.
-  sc_char const ** enabled_exts;  ///< Array of enabled extensions.
+  sc_char const * repo_path;               ///< Path to the binaries directory.
+  sc_char ** extensions_directories;       ///< Extensions directories list.
+  sc_uint32 extensions_directories_count;  ///< Extensions directories list size.
+  sc_char const ** enabled_exts;           ///< Array of enabled extensions.
 
   sc_uint32 max_loaded_segments;  ///< Maximum number of loaded segments.
 

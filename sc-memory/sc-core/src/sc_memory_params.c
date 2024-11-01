@@ -12,8 +12,10 @@ void sc_memory_params_clear(sc_memory_params * params)
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
   params->clear = SC_FALSE;
-  params->storage = (sc_char const *)null_ptr;
-  params->extensions = (sc_char const *)null_ptr;
+
+  params->repo_path = (sc_char const *)null_ptr;
+  params->extensions_directories = (sc_char **)null_ptr;
+  params->extensions_directories_count = 0;
   params->enabled_exts = (sc_char const **)null_ptr;
 
   params->max_loaded_segments = DEFAULT_MAX_LOADED_SEGMENTS;

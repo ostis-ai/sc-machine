@@ -79,14 +79,14 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_mem
   sc_memory_info("Build configuration:");
   sc_message("\tResult structure upload: %s", params->init_memory_generated_upload ? "On" : "Off");
   sc_message("\tInit memory generated structure: %s", params->init_memory_generated_structure);
-  sc_message("\tExtensions path: %s", params->extensions);
 
-  if (sc_memory_init_ext(params->extensions, params->enabled_exts, init_memory_generated_structure_addr)
+  if (sc_memory_initialize_extensions(
+          params->extensions_directories,
+          params->extensions_directories_count,
+          params->enabled_exts,
+          init_memory_generated_structure_addr)
       != SC_RESULT_OK)
-  {
-    sc_memory_error("Error while initialize extensions");
     goto error;
-  }
 
   sc_storage_end_new_process();
   sc_memory_info("Successfully initialized");
@@ -98,31 +98,17 @@ error:
   return null_ptr;
 }
 
-sc_result sc_memory_init_ext(
-    sc_char const * extensions,
+sc_result sc_memory_initialize_extensions(
+    sc_char const ** extension_directories,
+    sc_uint32 const extensions_directories_count,
     sc_char const ** enabled_list,
     sc_addr const init_memory_generated_structure_addr)
 {
   sc_memory_info("Initialize extensions");
-
-  sc_result const ext_res = sc_ext_initialize(extensions, enabled_list, init_memory_generated_structure_addr);
-
-  switch (ext_res)
-  {
-  case SC_RESULT_OK:
-    sc_memory_info("Extensions initialized");
-    break;
-
-  case SC_RESULT_ERROR_INVALID_PARAMS:
-    sc_memory_warning("Extensions directory `%s` doesn't exist", extensions);
-    break;
-
-  default:
-    sc_memory_warning("Unknown error while extensions initializing");
-    break;
-  }
-
-  return ext_res;
+  sc_result const result = sc_ext_initialize(
+      extension_directories, extensions_directories_count, enabled_list, init_memory_generated_structure_addr);
+  sc_memory_info("Extensions initialized");
+  return result;
 }
 
 sc_result sc_memory_shutdown(sc_bool save_state)
@@ -132,7 +118,7 @@ sc_result sc_memory_shutdown(sc_bool save_state)
   if (memory == null_ptr)
     goto error;
 
-  sc_memory_shutdown_ext();
+  sc_memory_shutdown_extensions();
   sc_helper_shutdown();
 
   _sc_memory_context_manager_unregister_user_events(memory->context_manager);
@@ -155,9 +141,11 @@ error:
   return SC_RESULT_OK;
 }
 
-void sc_memory_shutdown_ext()
+void sc_memory_shutdown_extensions()
 {
+  sc_memory_info("Shutdown extensions");
   sc_ext_shutdown();
+  sc_memory_info("Extensions shutdown");
 }
 
 void * sc_memory_get_context_manager()

@@ -66,10 +66,28 @@ std::string ScConfigGroup::operator[](std::string const & key) const
   if (it == m_pathKeys.cend())
     return value;
 
-  if (value[0] == '/')
-    stream << value;
-  else
-    stream << m_configPath << value;
+  std::string valueStr(value);
+  std::string::size_type start = 0;
+  sc_char const separator = ';';
+
+  while (true)
+  {
+    std::string::size_type end = valueStr.find(separator, start);
+    std::string path = valueStr.substr(start, end - start);
+
+    path.erase(std::remove_if(path.begin(), path.end(), ::isspace), path.end());
+
+    if (!path.empty())
+    {
+      stream << (path[0] == '/' ? path : m_configPath + path);
+      stream << (end == std::string::npos ? "" : std::string(1, separator));
+    }
+
+    if (end == std::string::npos)
+      break;
+
+    start = end + 1;
+  }
 
   return stream.str();
 }

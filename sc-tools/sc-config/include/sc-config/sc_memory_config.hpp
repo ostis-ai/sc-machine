@@ -41,6 +41,8 @@ public:
    */
   ScMemoryConfig(ScConfig const & config, ScParams const & params, std::string groupName = "sc-memory");
 
+  ~ScMemoryConfig();
+
   /*!
    * @brief Retrieves a string value associated with a specified key.
    *
@@ -51,6 +53,8 @@ public:
    * @return An associated string value or defaultValue if not found.
    */
   sc_char const * GetStringByKey(std::string const & key, sc_char const * defaultValue = nullptr);
+
+  void GetStringListByKey(std::string const & key, sc_char *** list, sc_uint32 * list_size);
 
   /*!
    * @brief Retrieves an integer value associated with a specified key.
