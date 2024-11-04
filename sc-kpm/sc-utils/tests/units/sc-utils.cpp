@@ -2,6 +2,8 @@
 
 extern "C"
 {
+#include <sc-common/sc_keynodes.h>
+
 #include "utils.h"
 #include "utils_keynodes.h"
 #include "utils_erase_elements.h"

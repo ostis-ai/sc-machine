@@ -7,6 +7,8 @@
 #ifndef _sc_common_defines_h_
 #define _sc_common_defines_h_
 
+#include "sc-common/sc_keynodes.h"
+
 #define SYSTEM_ELEMENT(context, el) \
   if (sc_helper_check_arc(context, keynode_system_element, el, sc_type_const_perm_pos_arc) == SC_FALSE) \
     sc_memory_arc_new(context, sc_type_const_perm_pos_arc, keynode_system_element, el);
