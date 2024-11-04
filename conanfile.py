@@ -41,10 +41,7 @@ class sc_machineRecipe(ConanFile):
         self.requires("websocketpp/0.8.2", options={"asio": "standalone"})
         self.requires("nlohmann_json/3.11.3")
         self.requires("libxml2/2.13.4")
-        if self.settings.os == "Linux":
-            self.requires("glib/2.72.4")
-        elif self.settings.os == "Macos":
-            self.requires("glib/2.76.3")
+        self.requires("glib/2.76.3")
         # TODO: use this instead of thirdparty/antlr4 
         # self.requires("antlr4-cppruntime/4.9.3")
 
