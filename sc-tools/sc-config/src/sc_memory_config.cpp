@@ -70,7 +70,7 @@ sc_int32 ScMemoryConfig::GetIntByKey(std::string const & key, sc_int32 const def
 
 bool ScMemoryConfig::GetBoolByKey(std::string const & key, bool const defaultValue)
 {
-  return m_params.Has(key) ? (m_params.Get<std::string>(key) == "true" ? true : false) : defaultValue;
+  return m_params.Has(key) ? (m_params.Get<std::string>(key) == "true") : defaultValue;
 }
 
 bool ScMemoryConfig::HasKey(std::string const & key)
