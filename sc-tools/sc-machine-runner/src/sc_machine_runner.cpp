@@ -18,7 +18,7 @@
 #include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
-void PrintStartMessage(std::string const & binaryName)
+void PrintHelpMessage(std::string const & binaryName)
 {
   std::cout
       << "Usage:\n"
@@ -53,7 +53,7 @@ try
   ScOptions options{argc, argv};
   if (options.Has({"help"}))
   {
-    PrintStartMessage(binaryName);
+    PrintHelpMessage(binaryName);
     return EXIT_SUCCESS;
   }
 

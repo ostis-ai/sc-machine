@@ -8,7 +8,7 @@ Usage:
 
 Required options:
   --input|-i                              Provide a path to directory with knowledge base sources (.scs, .gwf) or to <repo-name>.path file.
-                                          This file can contain knowledge base directories (or sources) that should/shouldn't be translated to binaries.
+                                          This file contains knowledge base directories (or sources) that should/shouldn't be translated to binaries.
   --output|-o                             Provide a path to directory where the knowledge base binaries will be generated.
 
 Options:
@@ -23,5 +23,5 @@ Example of usage:
 
 ```sh
 cd sc-machine
-./bin/sc-builder -i ./kb -o ./kb.bin --clear -c
+./bin/sc-builder -i ./kb -o ./kb.bin --clear -c ./sc-machine.ini
 ```

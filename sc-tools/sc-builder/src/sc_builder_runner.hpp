@@ -27,7 +27,7 @@ extern "C"
  *
  * The function performs the following steps:
  * 1. Parses command-line options using the `ScOptions` class.
- * 2. Displays help information if the `--help` or `-h` option is specified.
+ * 2. Displays help information if the `--help` option is specified.
  * 3. Displays version information if the `--version` option is specified.
  * 4. Checks for required input and output paths specified by `--input` or `-i` and `--output` or `-o`.
  * 5. Optionally reads a configuration file specified by `--config` or `-c`.
