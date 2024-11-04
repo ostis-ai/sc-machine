@@ -63,12 +63,5 @@ log_type = File
 log_file = /path/to/sc-machine/log/sc-server.log
 # Sc-server log level. # It can be `Debug`, `Info`, `Warning` or `Error` also.
 log_level = Info
-
-[sc-builder]
-# Path with kb sources for building into sc-memory.
-input_path = kb
-
-# File to dump sc-builder errors.
-log_file = /path/to/sc-machine/log/sc_builder.log
 ```
 **Note: If you use relative paths they will be resolved based on config file location.**

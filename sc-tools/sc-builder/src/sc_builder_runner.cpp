@@ -82,12 +82,10 @@ try
   if (!params.m_outputPath.empty())
     memoryParams.Insert({"binaries", params.m_outputPath});
 
-  ScConfig config{configPath, {"binaries", "log_file", "input"}, {"extensions"}};
+  ScConfig config{configPath, {"binaries", "log_file"}, {"extensions"}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
   sc_memory_params formedMemoryParams = memoryConfig.GetParams();
-  if (params.m_inputPath.empty())
-    params.m_inputPath = config["sc-builder"]["input"];
 
   params.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
   if (formedMemoryParams.init_memory_generated_structure != nullptr)
