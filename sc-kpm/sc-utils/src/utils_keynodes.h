@@ -7,9 +7,7 @@
 #ifndef _utils_keynodes_h_
 #define _utils_keynodes_h_
 
-#include "sc-core/sc_memory.h"
-
-#include <sc-common/sc_keynodes.h>
+#include <sc-core/sc_memory.h>
 
 extern sc_addr keynode_action_erase_elements;
 extern sc_addr keynode_init_memory_generated_structure;

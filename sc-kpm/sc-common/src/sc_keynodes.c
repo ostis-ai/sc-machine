@@ -6,6 +6,7 @@
 
 #include "sc-common/sc_keynodes.h"
 
+#include <sc-core/sc_types.h>
 #include <sc-core/sc_iterator3.h>
 
 sc_addr keynode_action;
