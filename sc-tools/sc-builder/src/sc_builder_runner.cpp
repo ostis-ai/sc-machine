@@ -82,10 +82,15 @@ try
   if (!params.m_outputPath.empty())
     memoryParams.Insert({"binaries", params.m_outputPath});
 
-  ScConfig config{configPath, {"binaries", "log_file"}, {"extensions"}};
+  ScConfig config{configPath, {"binaries", "log_file", "input_path"}, {"extensions"}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
   sc_memory_params formedMemoryParams = memoryConfig.GetParams();
+  if (!config["sc-builder"]["input_path"].empty())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Config group `[sc-builder]` was removed since sc-machine 0.10.0. Use sc-builder options instead. For more "
+        "information, run with --help.");
 
   params.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
   if (formedMemoryParams.init_memory_generated_structure != nullptr)

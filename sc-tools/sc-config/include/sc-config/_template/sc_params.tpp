@@ -11,16 +11,11 @@
 template <typename TContentType>
 TContentType const & ScParams::Get(std::string const & key) const
 {
-  if constexpr (std::is_same_v<TContentType, std::string>)
-  {
-    if (!m_params.count(key))
-      SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Parameter value not found by `" << key << "`");
-
-    return m_params.at(key);
-  }
-
   if (!m_params.count(key))
-    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Parameter value not found by `" << key << "`");
+    SC_THROW_EXCEPTION(utils::ExceptionItemNotFound, "Parameter value not found by `" << key << "`.");
+
+  if constexpr (std::is_same_v<TContentType, std::string>)
+    return m_params.at(key);
 
   std::stringstream streamString;
   streamString << m_params.at(key);

@@ -55,12 +55,12 @@ public:
    * @brief Retrieves a parameter value associated with a specified key.
    *
    * This template method allows retrieval of parameter values as a specific type.
-   * If the key does not exist and the type is `std::string`, an exception is thrown.
+   * If the key does not exist, an exception is thrown.
    *
    * @tparam TContentType The type to which the parameter value should be converted.
    * @param key A key for which to retrieve the parameter value.
    * @return A constant reference to the parameter value of type TContentType.
-   * @throws utils::ExceptionItemNotFound if the key is not found when TContentType is std::string.
+   * @throws utils::ExceptionItemNotFound if the key is not found.
    */
   template <typename TContentType>
   TContentType const & Get(std::string const & key) const;

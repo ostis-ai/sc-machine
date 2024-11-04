@@ -22,6 +22,21 @@ TEST(ScBuilder, Run)
   EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
+TEST(ScBuilder, RunWithConfigWithRemovedBuilderGroup)
+{
+  sc_uint32 const argsNumber = 8;
+  sc_char const * args[argsNumber] = {
+      "sc-builder",
+      "-c",
+      SC_BUILDER_CONFIGS "/removed-builder-group.ini",
+      "-i",
+      SC_BUILDER_REPO_PATH,
+      "-o",
+      SC_BUILDER_KB_BIN,
+      "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
 TEST(ScBuilder, RunWithoutConfig)
 {
   sc_uint32 const argsNumber = 6;
