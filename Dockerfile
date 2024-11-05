@@ -1,4 +1,4 @@
-FROM ubuntu:noble as base
+FROM ubuntu:noble AS base
 
 ENV CCACHE_DIR=/ccache
 USER root
@@ -10,16 +10,16 @@ COPY requirements.txt /tmp/sc-machine/requirements.txt
 RUN apt update && apt install -y --no-install-recommends sudo tini && /tmp/sc-machine/scripts/install_deps_ubuntu.sh
 
 #build using ccache
-FROM base as devdeps
+FROM base AS devdeps
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 --mount=type=cache,target=/var/lib/apt,sharing=locked \
 /tmp/sc-machine/scripts/install_deps_ubuntu.sh --dev
 
-FROM devdeps as devcontainer
+FROM devdeps AS devcontainer
 RUN apt install -y --no-install-recommends git cppcheck valgrind gdb bash-completion curl
 ENTRYPOINT ["/bin/bash"]
 
-FROM devdeps as builder
+FROM devdeps AS builder
 WORKDIR /sc-machine
 COPY . .
 RUN --mount=type=cache,target=/ccache/ cmake --preset release . && cmake --build --preset release
