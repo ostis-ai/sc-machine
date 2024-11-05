@@ -92,6 +92,7 @@ void ScMemoryConfig::GetStringListByKey(std::string const & key, sc_char *** lis
   {
     *list = nullptr;
     *list_size = 0;
+    return;
   }
 
   *list = new sc_char *[*list_size];
