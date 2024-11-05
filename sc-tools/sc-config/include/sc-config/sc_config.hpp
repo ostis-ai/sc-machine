@@ -67,6 +67,8 @@ public:
    */
   std::string operator[](std::string const & key) const;
 
+  std::string NormalizePath(std::string const & path) const;
+
   /*!
    * @brief Retrieves all valid keys in this configuration group.
    *
@@ -98,6 +100,7 @@ class ScConfig
 {
 public:
   static inline sc_char const PATHS_SEPARATOR = ';';
+  static inline sc_char const SLASH = '/';
 
   /*!
    * @brief Constructs an ScConfig object.

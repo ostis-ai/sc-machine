@@ -10,6 +10,7 @@
 #include <utility>
 #include <algorithm>
 #include <unordered_set>
+#include <filesystem>
 
 extern "C"
 {
@@ -78,7 +79,7 @@ std::string ScConfigGroup::operator[](std::string const & key) const
 
     if (!path.empty())
     {
-      stream << (path[0] == '/' ? path : m_configPath + path);
+      stream << NormalizePath(path);
       stream << (end == std::string::npos ? "" : std::string(1, ScConfig::PATHS_SEPARATOR));
     }
 
@@ -89,6 +90,43 @@ std::string ScConfigGroup::operator[](std::string const & key) const
   }
 
   return stream.str();
+}
+
+std::string ScConfigGroup::NormalizePath(std::string const & path) const
+{
+  if (path.empty())
+    return "";
+
+  std::filesystem::path const & currentDir = std::filesystem::current_path();
+  std::string const & currentDirStr = currentDir.string();
+
+  std::filesystem::path relativeConfigDir =
+      (currentDir / std::filesystem::path(m_configPath).lexically_normal()).string().erase(0, currentDirStr.size() + 1);
+
+  std::filesystem::path fullPath =
+      (path[0] == ScConfig::SLASH) ? std::filesystem::path(path) : currentDir / relativeConfigDir / path;
+
+  fullPath = fullPath.lexically_normal();
+  std::string fullPathStr = fullPath.string();
+
+  if (fullPathStr.find(currentDirStr) == 0)
+    return fullPathStr.substr(currentDirStr.length() + 1);  // Remove the current directory prefix
+
+  if (!fullPathStr.empty() && fullPathStr[0] == ScConfig::SLASH)
+    fullPathStr = fullPathStr.erase(0, 1);  // Remove the leading slash
+
+  // If not starting with current directory, attempt to remove parts of current directory
+  for (auto const & part : currentDir)
+  {
+    if (fullPathStr.find(part) == 0)
+    {
+      // Remove the part from fullPath
+      std::string const & partStr = part.string();
+      fullPath = fullPathStr.erase(0, partStr.length() + 1);
+    }
+  }
+
+  return relativeConfigDir / fullPathStr;
 }
 
 std::unordered_set<std::string> ScConfigGroup::operator*() const
@@ -119,7 +157,7 @@ ScConfigGroup ScConfig::operator[](std::string const & group) const
 
 std::string ScConfig::GetDirectory() const
 {
-  return m_path.substr(0, m_path.rfind('/') + 1);
+  return m_path.substr(0, m_path.rfind(ScConfig::SLASH) + 1);
 }
 
 ScConfig::~ScConfig()

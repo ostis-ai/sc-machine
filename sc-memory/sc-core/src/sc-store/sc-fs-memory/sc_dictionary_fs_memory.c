@@ -160,7 +160,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_initialize_ext(
   sc_message("\tSc-dictionary node size: %zd", sizeof(sc_dictionary_node));
   sc_message("\tSc-dictionary size: %zd", sizeof(sc_dictionary));
   sc_message("\tSc-fs-memory size: %zd", sizeof(sc_dictionary_fs_memory));
-  sc_message("\tRepo path: %s", (*memory)->path);
+  sc_message("\tStorage: %s", (*memory)->path);
   sc_message("\tClean on initialize: %s", (*memory)->clear ? "On" : "Off");
 
   sc_fs_memory_info("Index configuration:");
