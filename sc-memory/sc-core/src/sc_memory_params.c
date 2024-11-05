@@ -14,7 +14,7 @@ void sc_memory_params_clear(sc_memory_params * params)
   params->clear = SC_FALSE;
 
   params->storage = (sc_char const *)null_ptr;
-  params->extensions_directories = (sc_char **)null_ptr;
+  params->extensions_directories = (sc_char const **)null_ptr;
   params->extensions_directories_count = 0;
   params->enabled_extensions = (sc_char const **)null_ptr;
 
