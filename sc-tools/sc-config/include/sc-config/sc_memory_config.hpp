@@ -54,6 +54,23 @@ public:
    */
   sc_char const * GetStringByKey(std::string const & key, sc_char const * defaultValue = nullptr);
 
+  /*!
+   * @brief Retrieves a list of strings associated with a given key from the configuration parameters.
+   *
+   * This function checks if the specified key exists in the configuration parameters. If it does,
+   * it parses the associated string value into a list of unique paths, which are separated by a
+   * defined separator. The resulting list and its size are returned through the provided pointers.
+   *
+   * @param key A constant reference to a string that represents the key for which to retrieve the
+   *            associated list of paths.
+   * @param list A pointer to a pointer where the resulting array of paths will be stored.
+   *             The caller is not responsible for freeing this memory after use. Destructor does it.
+   * @param list_size A pointer to an unsigned integer where the size of the resulting list will
+   *                  be stored. If no paths are found, this will be set to 0.
+   *
+   * @note If the specified key does not exist in the configuration parameters, both `list` and
+   *       `list_size` will be set to nullptr and 0, respectively.
+   */
   void GetStringListByKey(std::string const & key, sc_char *** list, sc_uint32 * list_size);
 
   /*!

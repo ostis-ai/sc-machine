@@ -48,13 +48,22 @@ public:
       std::string group);
 
   /*!
-   * @brief Retrieves the value associated with a specified key in this configuration group.
+   * @brief Retrieves the value associated with a given key from the configuration group.
    *
-   * This operator allows access to configuration values using a key. If the value is a path
-   * and does not start with a '/', it is prefixed with the configuration path.
+   * This operator overload allows access to configuration values using the subscript operator `[]`.
+   * It retrieves the string value for the specified key from the configuration group. If the key
+   * does not exist or if its associated value is null, an empty string is returned. If the key is
+   * found in config, it processes the value to ensure that paths are correctly formatted,
+   * prepending the configuration path if necessary.
    *
-   * @param key A key for which to retrieve the associated value.
-   * @return A value associated with the specified key, or an empty string if not found.
+   * @param key A constant reference to a string representing the key for which to retrieve the
+   *            associated value.
+   *
+   * @return A string containing the value associated with the specified key. If the key is not found
+   *         or if its value is null, an empty string is returned.
+   *
+   * @note The function handles path separators and trims whitespace from the paths. If a path does
+   *       not start with a '/', it prepends path to current config to ensure correct path resolution.
    */
   std::string operator[](std::string const & key) const;
 
