@@ -67,6 +67,20 @@ public:
    */
   std::string operator[](std::string const & key) const;
 
+  /*!
+   * @brief Normalizes a given file path relative to the current working directory.
+   *
+   * This method takes a file path as input and normalizes it by resolving any
+   * relative components, removing unnecessary parts, and ensuring that it is
+   * represented in a consistent format. If the path is empty, an empty string is
+   * returned.
+   *
+   * @param path A file path to normalize. This should be a string that may
+   *              represent either an absolute or relative path.
+   * @return A normalized string representation of the file path. This will be
+   *         relative to the configuration directory and will not include
+   *         unnecessary components or prefixes.
+   */
   std::string NormalizePath(std::string const & path) const;
 
   /*!
