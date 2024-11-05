@@ -418,7 +418,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 add_library(set-agents SHARED ${SOURCES})
-target_link_libraries(set-agents LINK_PUBLIC sc-memory)
+target_link_libraries(set-agents LINK_PUBLIC sc-machine::sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 +file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
@@ -432,7 +432,10 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 +    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 +)
 
-+add_test(NAME set-agents-tests COMMAND set-agents-tests)
++gtest_discover_tests(set-agents-tests
++    TEST_LIST ${TEST_SOURCES}
++    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests
++)
 ```
 
 **test_sc_agent_calculate_set_power.cpp**
