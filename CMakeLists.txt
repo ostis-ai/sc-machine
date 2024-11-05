@@ -109,13 +109,13 @@ message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, path:
 # Set up dynamic linking paths for our own libraries
 # For macOS, use @loader_path instead of $ORIGIN
 if(APPLE)
-    set(CMAKE_INSTALL_RPATH "@loader_path/../lib;${SC_EXTENSIONS_DIRECTORY}")
+    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib;")
 else()
-    set(CMAKE_INSTALL_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY};${SC_EXTENSIONS_DIRECTORY}")
+    set(CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib;")
 endif()
 
 # Always use full RPATH
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 include(${CMAKE_MODULE_PATH}/FindGLIB.cmake)
