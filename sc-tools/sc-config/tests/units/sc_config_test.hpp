@@ -15,11 +15,7 @@ public:
   static inline std::string const & SC_CONFIGS = "../configs";
 
 protected:
-  void SetUp() override
-  {
-  }
+  void SetUp() override {}
 
-  void TearDown() override
-  {
-  }
+  void TearDown() override {}
 };

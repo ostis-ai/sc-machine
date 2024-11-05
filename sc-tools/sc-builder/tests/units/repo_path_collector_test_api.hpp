@@ -19,7 +19,8 @@ public:
   static inline std::string const & SC_BUILDER_TEST_REPEATED_REPOS = SC_BUILDER_TEST_REPOS + "/repeated_repos.path";
   static inline std::string const & SC_BUILDER_TEST_EXCLUDED_REPOS = SC_BUILDER_TEST_REPOS + "/excluded_repos.path";
   static inline std::string const & SC_BUILDER_TEST_NON_TRIM_REPOS = SC_BUILDER_TEST_REPOS + "/non_trim_repos.path";
-  static inline std::string const & SC_BUILDER_TEST_INVALID_REPO_PATH = SC_BUILDER_TEST_REPOS + "/invalid_repo_path.path";
+  static inline std::string const & SC_BUILDER_TEST_INVALID_REPO_PATH =
+      SC_BUILDER_TEST_REPOS + "/invalid_repo_path.path";
 
 protected:
   ScRepoPathCollector collector;

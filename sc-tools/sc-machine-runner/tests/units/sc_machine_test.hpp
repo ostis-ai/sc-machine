@@ -18,9 +18,7 @@ public:
   static inline std::string const & SC_MACHINE_EXTENSIONS = "/extensions";
 
 protected:
-  void SetUp() override
-  {
-  }
+  void SetUp() override {}
 
   void TearDown() override
   {

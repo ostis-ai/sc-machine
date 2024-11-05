@@ -17,9 +17,7 @@ public:
   static inline sc_char SC_FS_MEMORY_SEGMENTS_PATH[24] = "fs-memory/segments.scdb";
 
 protected:
-  void SetUp() override
-  {
-  }
+  void SetUp() override {}
 
   void TearDown() override
   {

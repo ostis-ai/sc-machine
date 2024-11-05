@@ -17,9 +17,7 @@ public:
   static inline sc_char SC_DICTIONARY_FS_MEMORY_STRINGS_PATH[24] = "fs-memory/strings1.scdb";
 
 protected:
-  void SetUp() override
-  {
-  }
+  void SetUp() override {}
 
   void TearDown() override
   {

@@ -20,14 +20,16 @@ TEST_F(ScMachineTest, Run)
 TEST_F(ScMachineTest, RunWithExtensions)
 {
   sc_uint32 const argsNumber = 6;
-  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI.c_str(), "-e", SC_MACHINE_EXTENSIONS.c_str(), "-t"};
+  sc_char const * args[argsNumber] = {
+      "sc-machine", "-c", SC_MACHINE_INI.c_str(), "-e", SC_MACHINE_EXTENSIONS.c_str(), "-t"};
   EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
 TEST_F(ScMachineTest, RunWithStorage)
 {
   sc_uint32 const argsNumber = 6;
-  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI.c_str(), "-s", SC_MACHINE_KB_BIN.c_str(), "-t"};
+  sc_char const * args[argsNumber] = {
+      "sc-machine", "-c", SC_MACHINE_INI.c_str(), "-s", SC_MACHINE_KB_BIN.c_str(), "-t"};
   EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
