@@ -27,6 +27,7 @@ TEST(ScConfig, ValidConfig)
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
   EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
 
@@ -64,6 +65,7 @@ TEST(ScConfig, DeprecatedRepoPath)
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
   EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
 
@@ -83,5 +85,27 @@ TEST(ScConfig, DeprecatedExtensionsPath)
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
   EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
+}
+
+TEST(ScConfig, Multiextensions)
+{
+  ScConfig config{SC_CONFIGS "/multiextensions.ini"};
+
+  ScMemoryConfig memoryConfig{config, {}};
+
+  sc_memory_params const params = memoryConfig.GetParams();
+  EXPECT_EQ(params.max_loaded_segments, 1000u);
+  EXPECT_EQ(params.dump_memory, SC_TRUE);
+  EXPECT_EQ(params.dump_memory_period, 4u);
+  EXPECT_EQ(params.dump_memory_statistics, SC_TRUE);
+  EXPECT_EQ(params.dump_memory_statistics_period, 4u);
+  EXPECT_EQ(std::string(params.log_type), "Console");
+  EXPECT_EQ(std::string(params.log_file), "");
+  EXPECT_EQ(std::string(params.log_level), "Debug");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(params.extensions_directories_count, 2u);
+  EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions_1");
+  EXPECT_EQ(std::string(params.extensions_directories[1]), "bin/extensions_2");
 }
