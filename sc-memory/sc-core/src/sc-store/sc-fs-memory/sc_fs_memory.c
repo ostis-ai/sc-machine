@@ -21,7 +21,7 @@ sc_fs_memory_status sc_fs_memory_initialize_ext(sc_memory_params const * params)
 {
   manager = sc_fs_memory_build();
   manager->version = params->version;
-  manager->path = params->binaries;
+  manager->path = params->storage;
 
   if (manager->path == null_ptr)
   {

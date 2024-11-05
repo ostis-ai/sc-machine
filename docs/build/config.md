@@ -21,8 +21,8 @@ dump_memory_statistics_period = 1800
 # Boolean indicating to enable sc-memory statistics dump.
 dump_memory_statistics = true
 
-# Path to compiled knowledge base folder (kb.bin should be inside this folder). By default, it is empty.
-binaries = /path/to/kb.bin
+# Path to folder with compiled knowledge base binaries. By default, it is empty.
+storage = /path/to/kb.bin
 # Path to sc-memory shared library extensions.
 extensions = /path/to/sc-machine/bin/extensions
 

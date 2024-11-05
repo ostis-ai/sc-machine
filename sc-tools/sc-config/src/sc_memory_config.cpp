@@ -91,11 +91,11 @@ sc_memory_params ScMemoryConfig::GetParams()
   {
     SC_LOG_WARNING(
         "Option `repo_path` in `[sc-memory]` group is deprecated since sc-machine 0.10.0. Use option "
-        "`binaries` instead.");
-    m_memoryParams.binaries = GetStringByKey("repo_path");
+        "`storage` instead.");
+    m_memoryParams.storage = GetStringByKey("repo_path");
   }
   else
-    m_memoryParams.binaries = GetStringByKey("binaries");
+    m_memoryParams.storage = GetStringByKey("storage");
 
   if (HasKey("extensions_path"))
   {

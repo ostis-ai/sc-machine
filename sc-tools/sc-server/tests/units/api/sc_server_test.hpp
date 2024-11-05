@@ -43,7 +43,7 @@ protected:
     params.dump_memory_statistics = SC_FALSE;
 
     params.clear = SC_FALSE;
-    params.binaries = SC_SERVER_REPO_PATH;
+    params.storage = SC_SERVER_REPO_PATH;
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);

@@ -26,14 +26,14 @@ TEST(ScMachine, RunWithExtensions)
   EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
-TEST(ScMachine, RunWithBinaries)
+TEST(ScMachine, RunWithStorage)
 {
   sc_uint32 const argsNumber = 6;
-  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-b", SC_MACHINE_REPO_PATH, "-t"};
+  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-s", SC_MACHINE_REPO_PATH, "-t"};
   EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
-TEST(ScMachine, RunWithoutBinaries)
+TEST(ScMachine, RunWithoutStorage)
 {
   sc_uint32 const argsNumber = 4;
   sc_char const * args[argsNumber] = {"sc-machine", "-c", "", "-t"};

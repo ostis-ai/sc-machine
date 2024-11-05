@@ -36,7 +36,7 @@ typedef struct
 
   ///< Boolean indicating whether to clear existing data during initialization. By default, it is SC_FALSE.
   sc_bool clear;
-  sc_char const * binaries;       ///< Path to the binaries directory.
+  sc_char const * storage;        ///< Path to the knowledge base storage directory.
   sc_char const * extensions;     ///< Path to the extensions directory.
   sc_char const ** enabled_exts;  ///< Array of enabled extensions.
 

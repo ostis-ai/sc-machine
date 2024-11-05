@@ -90,9 +90,9 @@ TEST(ScBuilder, RunStopBuilder)
   std::string config = SC_BUILDER_INI;
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"binaries", SC_BUILDER_KB_BIN});
+  memoryParams.Insert({"storage", SC_BUILDER_KB_BIN});
 
-  ScConfig configFile{config, {"binaries"}};
+  ScConfig configFile{config, {"storage"}};
   std::string memoryGroupName = "sc-memory";
 
   ScMemoryConfig memoryConfig{configFile, memoryParams};
@@ -146,10 +146,10 @@ TEST(ScBuilder, BuilderConfig)
   builderParams.m_outputPath = SC_BUILDER_KB_BIN;
 
   std::string config = SC_BUILDER_INI;
-  ScConfig configFile{config, {"binaries"}};
+  ScConfig configFile{config, {"storage"}};
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"binaries", SC_BUILDER_KB_BIN});
+  memoryParams.Insert({"storage", SC_BUILDER_KB_BIN});
   memoryParams.Insert({"clear", {}});
   ScMemoryConfig memoryConfig{configFile, memoryParams};
 

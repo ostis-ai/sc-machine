@@ -261,7 +261,7 @@ See documentation, to learn more about using new API.
 
 ### Deprecated
 
-- Config option `repo_path` in `[sc-memory]`, add option `binaries` instead
+- Config option `repo_path` in `[sc-memory]`, add option `storage` instead
 - Config option `extensions_path` in `[sc-memory]`, add option `extensions` instead
 - Incorrect designations of sc.s-connectors: `>`, `<`, `<>`, `_<=`, `_<-`, `_<|-`, `_<~`, `_<|~`
 - Incorrect sc.s-keynodes: `sc_edge`, `sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_arc_access`, `sc_edge_access`, `sc_arc_main`, `sc_edge_main`, `sc_node_struct`, `sc_node_norole_relation`

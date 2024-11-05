@@ -54,4 +54,4 @@ jobs:
         run: |
           mkdir kb
           bin/sc-builder -i kb -o kb.bin --clear
-          bin/sc-machine -t -c sc-machine.ini -b kb.bin
+          bin/sc-machine -t -c sc-machine.ini -s kb.bin

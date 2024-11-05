@@ -26,7 +26,7 @@ TEST(ScServer, RunStopServer)
     serverParams.Insert({key, serverConfig[key]});
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"binaries", SC_SERVER_REPO_PATH});
+  memoryParams.Insert({"storage", SC_SERVER_REPO_PATH});
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 

@@ -80,9 +80,9 @@ try
 
   ScParams memoryParams{options, {{"verbose", "v"}, {"clear"}}};
   if (!params.m_outputPath.empty())
-    memoryParams.Insert({"binaries", params.m_outputPath});
+    memoryParams.Insert({"storage", params.m_outputPath});
 
-  ScConfig config{configPath, {"binaries", "log_file", "input_path"}, {"extensions"}};
+  ScConfig config{configPath, {"storage", "log_file", "input_path"}, {"extensions"}};
   ScMemoryConfig memoryConfig{config, memoryParams};
 
   sc_memory_params formedMemoryParams = memoryConfig.GetParams();
