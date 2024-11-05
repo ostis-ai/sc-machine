@@ -71,7 +71,7 @@ jobs:
         run: scripts/ci/export_coverage.sh
 
       - name: Upload coverage report to CodeCov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v4.6.0
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           directory: ${{github.workspace}}/build/Debug
