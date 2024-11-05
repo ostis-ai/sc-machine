@@ -20,7 +20,7 @@ extern "C"
 class TestScServer
 {
 public:
-  static inline std::string const & SC_SERVER_KB_BIN = "sc-server-test-bin";
+  static inline std::string const & SC_SERVER_KB_BIN = "sc-server-test-kb-bin";
 
   void Initialize(size_t objectsNum = 0)
   {

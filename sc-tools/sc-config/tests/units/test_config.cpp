@@ -24,7 +24,7 @@ TEST_F(ScConfigTest, ValidConfig)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
@@ -62,7 +62,7 @@ TEST_F(ScConfigTest, DeprecatedRepoPath)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
@@ -82,7 +82,7 @@ TEST_F(ScConfigTest, DeprecatedExtensionsPath)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
@@ -102,7 +102,7 @@ TEST_F(ScConfigTest, Multiextensions)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 3u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions_1");
   EXPECT_EQ(std::string(params.extensions_directories[1]), "bin/extensions_2");
@@ -124,7 +124,7 @@ TEST_F(ScConfigTest, EmptyMultiextensions)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 0u);
   EXPECT_EQ(params.extensions_directories, nullptr);
 }
@@ -144,7 +144,7 @@ TEST_F(ScConfigTest, MultiextensionsWithSpaces)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 3u);
 
   EXPECT_EQ(std::string(params.extensions_directories[0]), "../configs/bin/extensions 2");
@@ -167,7 +167,7 @@ TEST_F(ScConfigTest, NotNormalizedMultiextensions)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 3u);
 
   EXPECT_EQ(std::string(params.extensions_directories[0]), "../configs/bin/extensions_1");

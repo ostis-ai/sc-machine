@@ -22,7 +22,7 @@ class ScBuilderTest : public testing::Test
 {
 public:
   static inline std::string const & SC_BUILDER_INI = "../sc-builder-test.ini";
-  static inline std::string const & SC_BUILDER_KB_BIN = "sc-builder-test-bin";
+  static inline std::string const & SC_BUILDER_KB_BIN = "sc-builder-test-kb-bin";
   static inline std::string const & SC_BUILDER_REPO_PATH = "../repo.path";
   static inline std::string const & SC_BUILDER_KB = "../kb";
   static inline std::string const & SC_BUILDER_TEST_REPOS = "../repos";

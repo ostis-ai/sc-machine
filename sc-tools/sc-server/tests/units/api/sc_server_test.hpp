@@ -23,7 +23,7 @@ class ScServerTest : public testing::Test
 {
 public:
   static inline std::string const & SC_SERVER_INI = "../../sc-server-test.ini";
-  static inline std::string const & SC_SERVER_KB_BIN = "sc-server-test-bin";
+  static inline std::string const & SC_SERVER_KB_BIN = "sc-server-test-kb-bin";
   static inline std::string const & SC_SERVER_EXTENSIONS = "/extensions";
   static inline std::string const & SC_SERVER_KB = "../../kb";
 
