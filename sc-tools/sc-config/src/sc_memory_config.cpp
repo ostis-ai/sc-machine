@@ -45,6 +45,8 @@ ScMemoryConfig::ScMemoryConfig(ScConfig const & config, ScParams const & params,
   : m_params(params)
   , m_groupName(std::move(groupName))
 {
+  sc_memory_params_clear(&m_memoryParams);
+
   if (!config.IsValid())
     return;
 
@@ -61,9 +63,9 @@ ScMemoryConfig::ScMemoryConfig(ScConfig const & config, ScParams const & params,
 ScMemoryConfig::~ScMemoryConfig()
 {
   for (sc_uint32 i = 0; i < m_memoryParams.extensions_directories_count; ++i)
-    delete m_memoryParams.extensions_directories[i];
+    free((void *)m_memoryParams.extensions_directories[i]);
 
-  delete m_memoryParams.extensions_directories;
+  delete[] m_memoryParams.extensions_directories;
 }
 
 void ScMemoryConfig::GetStringListByKey(std::string const & key, sc_char *** list, sc_uint32 * list_size)
@@ -78,11 +80,12 @@ void ScMemoryConfig::GetStringListByKey(std::string const & key, sc_char *** lis
   std::string const & value = m_params.Get<std::string>(key);
 
   std::stringstream valueStream(value);
-  std::string path;
   std::set<std::string> paths;
-
-  while (std::getline(valueStream, path, ScConfig::PATHS_SEPARATOR))
-    paths.insert(path);
+  {
+    std::string path;
+    while (std::getline(valueStream, path, ScConfig::PATHS_SEPARATOR))
+      paths.insert(path);
+  }
 
   *list_size = static_cast<sc_uint32>(paths.size());
   if (*list_size == 0)
@@ -119,8 +122,6 @@ bool ScMemoryConfig::HasKey(std::string const & key)
 
 sc_memory_params ScMemoryConfig::GetParams()
 {
-  sc_memory_params_clear(&m_memoryParams);
-
   m_memoryParams.version = {
       SC_MACHINE_VERSION_MAJOR, SC_MACHINE_VERSION_MINOR, SC_MACHINE_VERSION_PATCH, SC_MACHINE_VERSION_SUFFIX};
 
@@ -142,11 +143,15 @@ sc_memory_params ScMemoryConfig::GetParams()
         "Option `extensions_path` in `[sc-memory]` group is deprecated since sc-machine 0.10.0. Use option "
         "`extensions` instead.");
     GetStringListByKey(
-        "extensions_path", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
+        "extensions_path",
+        (sc_char ***)&m_memoryParams.extensions_directories,
+        &m_memoryParams.extensions_directories_count);
   }
   else if (HasKey("extensions"))
     GetStringListByKey(
-        "extensions", &m_memoryParams.extensions_directories, &m_memoryParams.extensions_directories_count);
+        "extensions",
+        (sc_char ***)&m_memoryParams.extensions_directories,
+        &m_memoryParams.extensions_directories_count);
   else
   {
     m_memoryParams.extensions_directories = nullptr;
