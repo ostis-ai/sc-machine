@@ -4,12 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_builder_setup.hpp"
+#include "sc_builder_runner.hpp"
 
 // LCOV_EXCL_START
 sc_int main(sc_int argc, sc_char * argv[])
 {
-  return BuildAndRunBuilder(argc, argv);
+  return RunBuilder(argc, argv);
 }
 
 // LCOV_EXCL_STOP

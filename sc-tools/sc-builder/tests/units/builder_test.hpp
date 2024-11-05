@@ -42,7 +42,7 @@ protected:
     params.dump_memory_statistics = SC_FALSE;
 
     params.clear = SC_FALSE;
-    params.repo_path = SC_BUILDER_KB_BIN;
+    params.storage = SC_BUILDER_KB_BIN;
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
@@ -58,7 +58,7 @@ protected:
     params.dump_memory_statistics = SC_FALSE;
 
     params.clear = SC_FALSE;
-    params.repo_path = SC_BUILDER_KB_BIN;
+    params.storage = SC_BUILDER_KB_BIN;
 
     params.user_mode = SC_TRUE;
 

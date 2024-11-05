@@ -8,41 +8,62 @@
 
 #include "test_defines.hpp"
 
-#include "sc_machine_setup.hpp"
+#include <sc-machine-runner/sc_machine_runner.hpp>
 
 #include <sc-config/sc_options.hpp>
 
-TEST(ScMachine, RunMain)
+TEST(ScMachine, Run)
 {
   sc_uint32 const argsNumber = 4;
   sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-t"};
-  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
-TEST(ScMachine, RunMainWithExtensions)
+TEST(ScMachine, RunWithExtensions)
 {
   sc_uint32 const argsNumber = 6;
   sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-e", SC_MACHINE_EXTENSIONS, "-t"};
-  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
-TEST(ScMachine, InvalidRunMain)
+TEST(ScMachine, RunWithStorage)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-s", SC_MACHINE_REPO_PATH, "-t"};
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScMachine, RunWithoutStorage)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-machine", "-c", "", "-t"};
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScMachine, InvalidRun)
 {
   sc_uint32 const argsNumber = 1;
   sc_char const * args[argsNumber] = {"sc-machine"};
-  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_FAILURE);
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_FAILURE);
 }
 
-TEST(ScMachine, RunMainVerbose)
+TEST(ScMachine, RunWithVerbose)
 {
   sc_uint32 const argsNumber = 5;
   sc_char const * args[argsNumber] = {"sc-machine", "-c", SC_MACHINE_INI, "-t", "-v"};
-  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
-TEST(ScMachine, RunMainHelp)
+TEST(ScMachine, PrintHelp)
 {
   sc_uint32 const argsNumber = 2;
   sc_char const * args[argsNumber] = {"sc-machine", "--help"};
-  EXPECT_EQ(BuildAndRunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScMachine, PrintVersion)
+{
+  sc_uint32 const argsNumber = 2;
+  sc_char const * args[argsNumber] = {"sc-machine", "--version"};
+  EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }

@@ -2,7 +2,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "src/*.cpp" "src/*.c"
     "src/*/*.cpp" "src/*/*.c"
     "include/sc-config/*.h" "include/sc-config/*.hpp"
-    "include/sc-config/*/*.h" "include/sc-config/*/*.hpp"
+    "include/sc-config/*/*.h" "include/sc-config/*/*.hpp" "include/sc-config/*/*.tpp"
 )
 
 find_package(PkgConfig REQUIRED)
@@ -24,4 +24,8 @@ target_include_directories(sc-config
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-config)
+endif()
+
+if(${SC_BUILD_TESTS})
+    add_subdirectory(tests)
 endif()

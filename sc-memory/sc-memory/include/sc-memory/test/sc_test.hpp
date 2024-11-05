@@ -38,7 +38,7 @@ protected:
     params.dump_memory_statistics = SC_FALSE;
 
     params.clear = SC_TRUE;
-    params.repo_path = "repo";
+    params.storage = "repo";
     params.log_level = "Debug";
 
     params.init_memory_generated_upload = !result_structure.empty();
@@ -58,7 +58,7 @@ protected:
     params.dump_memory_statistics = SC_FALSE;
 
     params.clear = SC_TRUE;
-    params.repo_path = "repo";
+    params.storage = "repo";
     params.log_level = "Debug";
 
     params.user_mode = SC_TRUE;

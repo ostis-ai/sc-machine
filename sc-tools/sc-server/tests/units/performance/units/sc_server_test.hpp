@@ -25,7 +25,7 @@ public:
   {
     sc_memory_params params;
     sc_memory_params_clear(&params);
-    params.repo_path = SC_SERVER_REPO_PATH;
+    params.storage = SC_SERVER_REPO_PATH;
 
     params.clear = SC_FALSE;
 

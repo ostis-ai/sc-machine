@@ -36,8 +36,8 @@ typedef struct
 
   ///< Boolean indicating whether to clear existing data during initialization. By default, it is SC_FALSE.
   sc_bool clear;
-  sc_char const * repo_path;      ///< Path to the binaries directory.
-  sc_char const * ext_path;       ///< Path to the extensions directory.
+  sc_char const * storage;        ///< Path to the knowledge base storage directory.
+  sc_char const * extensions;     ///< Path to the extensions directory.
   sc_char const ** enabled_exts;  ///< Array of enabled extensions.
 
   sc_uint32 max_loaded_segments;  ///< Maximum number of loaded segments.
@@ -45,9 +45,6 @@ typedef struct
   ///< Boolean indicating whether sc-memory limit `max_events_and_agents_threads` by maximum physical core number.
   sc_bool limit_max_threads_by_max_physical_cores;
   sc_uint32 max_events_and_agents_threads;  ///< Maximum number of threads for events and agents processing.
-
-  sc_uint32 save_period;    ///< Period (in seconds) for automatic saving of sc-memory state (deprecated in 0.9.0).
-  sc_uint32 update_period;  ///< Period (in seconds) for dumping statistics of sc-memory state (deprecated in 0.9.0).
 
   ///< Boolean indicating whether automatic saving of sc-memory state. By default, it is SC_TRUE.
   sc_bool dump_memory;

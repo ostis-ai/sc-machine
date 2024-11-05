@@ -18,7 +18,7 @@ public:
     sc_memory_params params;
     sc_memory_params_clear(&params);
     params.clear = SC_TRUE;
-    params.repo_path = "test_repo";
+    params.storage = "test_repo";
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);

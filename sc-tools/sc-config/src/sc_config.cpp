@@ -100,6 +100,11 @@ ScConfigGroup ScConfig::operator[](std::string const & group) const
   return ScConfigGroup(this->m_instance, this->GetDirectory(), this->m_pathKeys, this->m_notUsedKeys, group);
 }
 
+std::string ScConfig::GetDirectory() const
+{
+  return m_path.substr(0, m_path.rfind('/') + 1);
+}
+
 ScConfig::~ScConfig()
 {
   sc_config_shutdown(m_instance);

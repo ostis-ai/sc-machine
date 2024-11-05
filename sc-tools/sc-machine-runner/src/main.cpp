@@ -4,12 +4,12 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc_machine_setup.hpp"
+#include "sc-machine-runner/sc_machine_runner.hpp"
 
 // LCOV_EXCL_START
 sc_int main(sc_int argc, sc_char * argv[])
 {
-  BuildAndRunMachine(argc, argv);
+  return RunMachine(argc, argv);
 }
 
 // LCOV_EXCL_STOP

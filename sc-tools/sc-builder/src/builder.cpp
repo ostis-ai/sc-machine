@@ -108,7 +108,6 @@ bool Builder::ProcessFile(std::string const & fileName, ScAddr const & outputStr
 {
   Translator::Params translateParams;
   translateParams.m_fileName = fileName;
-  translateParams.m_autoFormatInfo = m_params.m_autoFormatInfo;
   translateParams.m_outputStructure = outputStructure;
 
   std::string const & fileExt = m_collector.GetFileExtension(fileName);

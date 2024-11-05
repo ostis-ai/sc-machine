@@ -9,39 +9,74 @@
 #include <sc-builder/builder.hpp>
 
 #include <sc-config/sc_options.hpp>
+#include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
-#include "sc_builder_setup.hpp"
+#include "sc_builder_runner.hpp"
 
-TEST(ScBuilder, RunMain)
+TEST(ScBuilder, Run)
 {
-  sc_uint32 const argsNumber = 10;
+  sc_uint32 const argsNumber = 8;
+  sc_char const * args[argsNumber] = {
+      "sc-builder", "-c", SC_BUILDER_INI, "-i", SC_BUILDER_REPO_PATH, "-o", SC_BUILDER_KB_BIN, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunWithConfigWithRemovedBuilderGroup)
+{
+  sc_uint32 const argsNumber = 8;
   sc_char const * args[argsNumber] = {
       "sc-builder",
       "-c",
-      SC_BUILDER_INI,
+      SC_BUILDER_CONFIGS "/removed-builder-group.ini",
       "-i",
       SC_BUILDER_REPO_PATH,
       "-o",
       SC_BUILDER_KB_BIN,
-      "--enabled_ext",
-      "",
       "--clear"};
-  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
 }
 
-TEST(ScBuilder, InvalidRunMain)
+TEST(ScBuilder, RunWithoutConfig)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {"sc-builder", "-i", SC_BUILDER_REPO_PATH, "-o", SC_BUILDER_KB_BIN, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunWithoutInput)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-builder", "-o", SC_BUILDER_KB_BIN, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, RunWithoutOutput)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-builder", "-i", SC_BUILDER_REPO_PATH, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, InvalidRun)
 {
   sc_uint32 const argsNumber = 1;
   sc_char const * args[argsNumber] = {"sc-builder"};
-  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
 }
 
-TEST(ScBuilder, RunMainHelp)
+TEST(ScBuilder, PrintHelp)
 {
   sc_uint32 const argsNumber = 2;
   sc_char const * args[argsNumber] = {"sc-builder", "--help"};
-  EXPECT_EQ(BuildAndRunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, PrintVersion)
+{
+  sc_uint32 const argsNumber = 2;
+  sc_char const * args[argsNumber] = {"sc-builder", "--version"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
 TEST(ScBuilder, RunStopBuilder)
@@ -51,14 +86,13 @@ TEST(ScBuilder, RunStopBuilder)
   BuilderParams params;
   params.m_inputPath = SC_BUILDER_REPO_PATH;
   params.m_outputPath = SC_BUILDER_KB_BIN;
-  params.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"repo_path", SC_BUILDER_KB_BIN});
+  memoryParams.Insert({"storage", SC_BUILDER_KB_BIN});
 
-  ScConfig configFile{config, {"repo_path"}};
+  ScConfig configFile{config, {"storage"}};
   std::string memoryGroupName = "sc-memory";
 
   ScMemoryConfig memoryConfig{configFile, memoryParams};
@@ -79,10 +113,6 @@ TEST(ScBuilder, RunStopBuilder)
   EXPECT_EQ(scParams.Get<sc_uint32>("max_loaded_segments"), scMemoryParams.max_loaded_segments);
   EXPECT_EQ(scParams.Get<sc_uint32>("dump_memory_period"), scMemoryParams.dump_memory_period);
   EXPECT_EQ(scParams.Get<sc_uint32>("dump_memory_statistics_period"), scMemoryParams.dump_memory_statistics_period);
-  EXPECT_EQ(scParams.Get<sc_uint32>("save_period"), scMemoryParams.dump_memory_period);
-  EXPECT_EQ(scParams.Get<sc_uint32>("update_period"), scMemoryParams.dump_memory_statistics_period);
-  EXPECT_EQ(scMemoryParams.dump_memory_period, scMemoryParams.save_period);
-  EXPECT_EQ(scMemoryParams.dump_memory_statistics_period, scMemoryParams.update_period);
   EXPECT_EQ(scParams.Get<std::string>("log_type"), scMemoryParams.log_type);
   EXPECT_EQ(scParams.Get<std::string>("log_file"), scMemoryParams.log_file);
   EXPECT_EQ(scParams.Get<std::string>("log_level"), scMemoryParams.log_level);
@@ -114,13 +144,12 @@ TEST(ScBuilder, BuilderConfig)
   BuilderParams builderParams;
   builderParams.m_inputPath = SC_BUILDER_REPO_PATH;
   builderParams.m_outputPath = SC_BUILDER_KB_BIN;
-  builderParams.m_autoFormatInfo = SC_TRUE;
 
   std::string config = SC_BUILDER_INI;
-  ScConfig configFile{config, {"repo_path"}};
+  ScConfig configFile{config, {"storage"}};
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"repo_path", SC_BUILDER_KB_BIN});
+  memoryParams.Insert({"storage", SC_BUILDER_KB_BIN});
   memoryParams.Insert({"clear", {}});
   ScMemoryConfig memoryConfig{configFile, memoryParams};
 

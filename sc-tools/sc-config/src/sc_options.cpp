@@ -18,7 +18,7 @@ std::pair<std::string, std::string> ScOptions::operator[](std::vector<std::strin
 {
   for (auto const & item : options)
   {
-    std::string const & option = Upstream(item);
+    std::string const & option = ScOptions::Upstream(item);
 
     auto it = std::find(m_tokens.begin(), m_tokens.end(), option);
     if (it != m_tokens.end() && ++it != m_tokens.end())
@@ -32,13 +32,13 @@ bool ScOptions::Has(std::vector<std::string> const & options) const
 {
   for (auto const & item : options)
   {
-    std::string const & option = Upstream(item);
+    std::string const & option = ScOptions::Upstream(item);
 
     if (std::find(m_tokens.begin(), m_tokens.end(), option) != m_tokens.end())
-      return SC_TRUE;
+      return true;
   }
 
-  return SC_FALSE;
+  return false;
 }
 
 std::string ScOptions::Upstream(std::string const & option)

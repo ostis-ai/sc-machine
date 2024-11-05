@@ -11,35 +11,6 @@
 #include <sc-config/sc_memory_config.hpp>
 
 #include "sc-client/sc_client.hpp"
-#include "sc_server_setup.hpp"
-
-TEST(ScServer, RunMain)
-{
-  sc_uint32 const argsNumber = 4;
-  sc_char const * args[argsNumber] = {"sc-server", "-c", SC_SERVER_INI, "-t"};
-  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_SUCCESS);
-}
-
-TEST(ScServer, RunMainWithExtensions)
-{
-  sc_uint32 const argsNumber = 6;
-  sc_char const * args[argsNumber] = {"sc-server", "-c", SC_SERVER_INI, "-e", SC_SERVER_EXTENSIONS, "-t"};
-  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_SUCCESS);
-}
-
-TEST(ScServer, InvalidRunMain)
-{
-  sc_uint32 const argsNumber = 1;
-  sc_char const * args[argsNumber] = {"sc-server"};
-  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_FAILURE);
-}
-
-TEST(ScServer, RunMainHelp)
-{
-  sc_uint32 const argsNumber = 2;
-  sc_char const * args[argsNumber] = {"sc-server", "--help"};
-  EXPECT_EQ(BuildAndRunServer(argsNumber, (sc_char **)args), EXIT_SUCCESS);
-}
 
 TEST(ScServer, RunStopServer)
 {
@@ -55,7 +26,7 @@ TEST(ScServer, RunStopServer)
     serverParams.Insert({key, serverConfig[key]});
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"repo_path", SC_SERVER_REPO_PATH});
+  memoryParams.Insert({"storage", SC_SERVER_REPO_PATH});
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 

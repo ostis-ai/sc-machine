@@ -11,10 +11,6 @@
 #include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
-void PrintStartMessage();
-
 sc_bool RunServer(ScParams const & serverParams, std::shared_ptr<ScServer> & server);
 
 sc_bool StopServer(std::shared_ptr<ScServer> const & server);
-
-sc_int BuildAndRunServer(sc_int argc, sc_char * argv[]);

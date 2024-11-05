@@ -21,7 +21,7 @@ TEST(ScEventQueueTest, EventsQueueDestroy)
   sc_memory_params params;
   sc_memory_params_clear(&params);
   params.clear = SC_TRUE;
-  params.repo_path = "repo";
+  params.storage = "repo";
   params.log_level = "Debug";
 
   ScMemory::Initialize(params);
