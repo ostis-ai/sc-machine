@@ -98,35 +98,15 @@ std::string ScConfigGroup::NormalizePath(std::string const & path) const
     return "";
 
   std::filesystem::path const & currentDir = std::filesystem::current_path();
-  std::string const & currentDirStr = currentDir.string();
 
-  std::filesystem::path relativeConfigDir =
-      (currentDir / std::filesystem::path(m_configPath).lexically_normal()).string().erase(0, currentDirStr.size() + 1);
+  if (path[0] == ScConfig::SLASH)
+    return std::filesystem::path(path).lexically_relative(currentDir);
 
-  std::filesystem::path fullPath =
-      (path[0] == ScConfig::SLASH) ? std::filesystem::path(path) : currentDir / relativeConfigDir / path;
+  std::filesystem::path configPath = std::filesystem::path(m_configPath);
+  configPath = (currentDir / configPath).lexically_normal();
 
-  fullPath = fullPath.lexically_normal();
-  std::string fullPathStr = fullPath.string();
-
-  if (fullPathStr.find(currentDirStr) == 0)
-    return fullPathStr.substr(currentDirStr.length() + 1);  // Remove the current directory prefix
-
-  if (!fullPathStr.empty() && fullPathStr[0] == ScConfig::SLASH)
-    fullPathStr = fullPathStr.erase(0, 1);  // Remove the leading slash
-
-  // If not starting with current directory, attempt to remove parts of current directory
-  for (auto const & part : currentDir)
-  {
-    if (fullPathStr.find(part) == 0)
-    {
-      // Remove the part from fullPath
-      std::string const & partStr = part.string();
-      fullPath = fullPathStr.erase(0, partStr.length() + 1);
-    }
-  }
-
-  return relativeConfigDir / fullPathStr;
+  std::filesystem::path fullPath = (configPath / path).lexically_normal();
+  return fullPath.lexically_relative(currentDir);
 }
 
 std::unordered_set<std::string> ScConfigGroup::operator*() const
