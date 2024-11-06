@@ -56,7 +56,7 @@ jobs:
           BUILD_TYPE: ${{ matrix.config.build_type }}
           COVERAGE: ON
           SANITIZER_TYPE: none
-        run: cmake --preset debug -DSC_COVERAGE=ON && cmake --build --preset debug
+        run: cmake --preset debug -DSC_COVERAGE=ON -DSC_BUILD_BENCH=OFF && cmake --build --preset debug
 
       - name: Prepare coverage
         id: prepare_coverage
