@@ -148,7 +148,11 @@ TEST(ScConfig, NotNormalizedMultiextensions)
   EXPECT_EQ(std::string(params.log_level), "Debug");
   EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
   EXPECT_EQ(params.extensions_directories_count, 3u);
-  EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions_1");
-  EXPECT_EQ(std::string(params.extensions_directories[1]), "bin/extensions_2");
-  EXPECT_EQ(std::string(params.extensions_directories[2]), "bin/extensions_3");
+
+  std::string const & prefix = "../../../../sc-tools/sc-config/tests/";
+  // this prefix should be removed after changing current directory for
+  // gtests that should be done in new build system
+  EXPECT_EQ(std::string(params.extensions_directories[0]), prefix + "bin/extensions_1");
+  EXPECT_EQ(std::string(params.extensions_directories[1]), prefix + "bin/extensions_2");
+  EXPECT_EQ(std::string(params.extensions_directories[2]), prefix + "bin/extensions_3");
 }
