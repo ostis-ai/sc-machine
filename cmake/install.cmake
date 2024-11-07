@@ -1,6 +1,5 @@
 install(TARGETS 
     sc-machine sc-builder sc-machine-runner
-    sc-kpm-common
     sc-core sc-memory sc-agents-common sc-builder-lib sc-config
     EXPORT sc-machineExport
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -12,9 +11,9 @@ install(TARGETS
 
 # a target set for things we don't want to export to the consumers
 install(TARGETS
-    sc-kpm-search sc-kpm-utils sc-kpm-ui sc-server-lib
+    sc-kpm-common sc-kpm-search sc-kpm-utils sc-kpm-ui sc-server-lib
     EXPORT privateExport
-    LIBRARY DESTINATION ${SC_EXTENSIONS_DIRECTORY}
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/extensions"
 )
 
 export(EXPORT sc-machineExport 
