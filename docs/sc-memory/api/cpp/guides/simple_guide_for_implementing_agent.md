@@ -82,6 +82,11 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 add_library(set-agents SHARED ${SOURCES})
 target_link_libraries(set-agents LINK_PUBLIC sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# Set output path for your extension `set-agents.so`. 
+# Make sure that variable `SC_EXTENSIONS_DIRECTORY` has value.
+set_target_properties(set-agents 
+    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY}
+)
 ```
 
 ---
@@ -420,6 +425,9 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 add_library(set-agents SHARED ${SOURCES})
 target_link_libraries(set-agents LINK_PUBLIC sc-machine::sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+set_target_properties(set-agents 
+    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY}
+)
 
 +file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
 +    "tests/*.cpp"
@@ -515,6 +523,8 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
     A good code is a code covered by tests.
 
 `ScMemoryTest` class includes `m_ctx` that is object of `ScAgentContext` class. You can use it to work with sc-memory. See [**C++ Core API**](../core/api.md) and [**C++ Agent context API**](../extended/agents/agents.md) to learn more about available methods for working with sc-memory.
+
+By default, the sc-machine repository contains configuration for launching tests in vscode. If you're developing on vscode, you can use this configuration and extension [C++ TestMate](https://marketplace.visualstudio.com/items?itemName=matepek.vscode-catch2-test-adapter) for debugging code.
 
 --- 
 

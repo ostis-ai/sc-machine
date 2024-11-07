@@ -154,6 +154,8 @@ If your IDE doesn't integrate well with this solution, try exporting compile com
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 ```
 
+By default, the sc-machine repository contains configuration for launching tests in vscode. If you're developing on vscode, you can use this configuration and extension [C++ TestMate](https://marketplace.visualstudio.com/items?itemName=matepek.vscode-catch2-test-adapter) for debugging code.
+
 ## Advanced Usage
 
 ### Cross-Compilation
