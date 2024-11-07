@@ -12,6 +12,10 @@
 
 #include "sc-client/sc_client.hpp"
 
+#include "sc_server_module.hpp"
+
+using ScServerModuleTest = ScMemoryTest;
+
 TEST(ScServer, RunStopServer)
 {
   ScOptions options{1, nullptr};
@@ -40,6 +44,15 @@ TEST(ScServer, RunStopServer)
   server->Run();
   server->Stop();
   ScMemory::Shutdown();
+}
+
+TEST_F(ScServerModuleTest, RunStopServerModule)
+{
+  ScMemory::ms_configPath = ScServerTest::SC_SERVER_INI;
+
+  ScServerModule serverModule;
+  serverModule.Initialize(m_ctx.get());
+  serverModule.Shutdown(m_ctx.get());
 }
 
 TEST_F(ScServerTest, Connect)
