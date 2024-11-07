@@ -18,7 +18,7 @@ target_include_directories(sc-agents-common
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 if(${SC_CLANG_FORMAT_CODE})

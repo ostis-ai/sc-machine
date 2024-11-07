@@ -6,7 +6,6 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 
 add_library(sc-kpm-common SHARED ${SOURCES})
 target_link_libraries(sc-kpm-common LINK_PUBLIC sc-core)
-
 set_target_properties(sc-kpm-common PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY})
 
 target_include_directories(sc-kpm-common
