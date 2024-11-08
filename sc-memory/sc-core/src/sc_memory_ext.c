@@ -74,12 +74,18 @@ sc_result _sc_ext_collect_extensions_from_directory(sc_char const * extension_di
 
   // check if specified directory exist
   if (sc_fs_is_directory(extension_directory_path) == SC_FALSE)
+  {
+    sc_warning("Specified extensions directory %s doesn't exist", extension_directory_path);
     return SC_RESULT_ERROR_INVALID_PARAMS;
+  }
 
   // get list of files in extension directory
   extension_directory = g_dir_open(extension_directory_path, 0, null_ptr);
   if (extension_directory == null_ptr)
+  {
+    sc_warning("Specified extensions directory %s can't be opened", extension_directory_path);
     return SC_RESULT_ERROR;
+  }
 
   // list all files in directory and try to load them
   file_name = g_dir_read_name(extension_directory);
