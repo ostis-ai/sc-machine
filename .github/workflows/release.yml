@@ -1,4 +1,4 @@
-name: Release Docker container
+name: Release
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       matrix:
         config:
           - { os: ubuntu-22.04, cc: "gcc", cxx: "g++" }
-          - { os: macos-13, cc: "clang", cxx: "clang++" }
+          - { os: macos-14, cc: "clang", cxx: "clang++" }
 
     runs-on: ${{ matrix.config.os }}
 
