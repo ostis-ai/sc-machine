@@ -43,7 +43,6 @@ nav:
   - Tools:
       - Knowledge Base Builder: sc-tools/sc_builder.md
       - Knowledge Base repo file: sc-tools/kb_repo_file.md
-      - Websocket Server: sc-tools/sc_server.md
       - Sc-machine Runner: sc-tools/sc_machine.md
       - Migrate to new agent api: sc-tools/migrate_to_new_agent_api.md
   - Development:
