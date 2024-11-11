@@ -54,7 +54,7 @@ search_by_substring = true
 host = 127.0.0.1
 port = 8090
 
-# Sc-server mode to call parallely all input actions. By default, it is true.
+# Sc-server mode to call parallel all input actions. By default, it is true.
 parallel_actions = true
 
 # Sc-server log type. It can be `File` or `Console`.
@@ -63,5 +63,11 @@ log_type = File
 log_file = /path/to/sc-machine/log/sc-server.log
 # Sc-server log level. # It can be `Debug`, `Info`, `Warning` or `Error` also.
 log_level = Info
+
+[sc-builder]
+# Path to directory with knowledge base sources (.scs, .gwf) or to <repo-name>.path file
+input = kb
+# Path to folder with compiled knowledge base binaries. By default, it is empty.
+output = kb.bin
 ```
 **Note: If you use relative paths they will be resolved based on config file location.**

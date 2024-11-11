@@ -2,7 +2,7 @@
 
 Sc-builder tool allows to translate knowledge base sources into binaries. You can find it in a `bin` directory.
 
-<pre>
+```sh
 Usage:
   ./bin/sc-builder -i <kb-directory or repo-path> -o <binary-path> [options]
 
@@ -17,7 +17,7 @@ Options:
   --clear                                 Run sc-builder in the mode when it overwrites existing knowledge base binaries.
   --version                               Display version of ./bin/sc-builder.
   --help                                  Display this help message.
-</pre>
+```
 
 Example of usage:
 

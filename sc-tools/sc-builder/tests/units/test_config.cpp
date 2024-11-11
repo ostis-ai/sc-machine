@@ -22,19 +22,71 @@ TEST(ScBuilder, Run)
   EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
-TEST(ScBuilder, RunWithConfigWithRemovedBuilderGroup)
+TEST(ScBuilder, RunWithOptionsFromBuilderGroup)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-builder", "-c", SC_BUILDER_CONFIGS "/used-builder-group.ini", "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunWithOptionsFromBuilderGroupAndWithOptionsFromCommandLine)
 {
   sc_uint32 const argsNumber = 8;
   sc_char const * args[argsNumber] = {
       "sc-builder",
       "-c",
-      SC_BUILDER_CONFIGS "/removed-builder-group.ini",
+      SC_BUILDER_CONFIGS "/unused-builder-group.ini",
       "-i",
       SC_BUILDER_REPO_PATH,
       "-o",
       SC_BUILDER_KB_BIN,
       "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunWithoutBuilderGroupAndWithOptionsFromCommandLine)
+{
+  sc_uint32 const argsNumber = 8;
+  sc_char const * args[argsNumber] = {
+      "sc-builder",
+      "-c",
+      SC_BUILDER_CONFIGS "/without-builder-group.ini",
+      "-i",
+      SC_BUILDER_REPO_PATH,
+      "-o",
+      SC_BUILDER_KB_BIN,
+      "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunWithoutBuilderGroupAndWithoutInputOption)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {
+      "sc-builder", "-c", SC_BUILDER_CONFIGS "/without-builder-group.ini", "-o", SC_BUILDER_KB_BIN, "--clear"};
   EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, RunWithoutBuilderGroupAndWithoutOutputOption)
+{
+  sc_uint32 const argsNumber = 6;
+  sc_char const * args[argsNumber] = {
+      "sc-builder", "-c", SC_BUILDER_CONFIGS "/without-builder-group.ini", "-i", SC_BUILDER_KB, "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_FAILURE);
+}
+
+TEST(ScBuilder, RunWithDeprecatedInputPathOption)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-builder", "-c", SC_BUILDER_CONFIGS "/deprecated-input-path.ini", "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
+}
+
+TEST(ScBuilder, RunWithOutputPathAsMemoryStorage)
+{
+  sc_uint32 const argsNumber = 4;
+  sc_char const * args[argsNumber] = {"sc-builder", "-c", SC_BUILDER_CONFIGS "/output-path-as-storage.ini", "--clear"};
+  EXPECT_EQ(RunBuilder(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
 
 TEST(ScBuilder, RunWithoutConfig)
