@@ -21,7 +21,7 @@ TEST(scs_common, ElementHandle)
   EXPECT_TRUE(handle_ok.IsValid());
   EXPECT_FALSE(handle_ok.IsLocal());
 
-  scs::ElementHandle handle_local(0, true);
+  scs::ElementHandle handle_local(0, scs::Visibility::Local);
   EXPECT_TRUE(handle_local.IsValid());
   EXPECT_TRUE(handle_local.IsLocal());
 }
