@@ -124,14 +124,12 @@ ParsedElement::ParsedElement(
   , m_value(value)
   , m_isURL(isURL)
 {
+  m_isMetaElement = scs::TypeResolver::IsKeynodeType(m_idtf);
+
   if (!m_value.empty())
-  {
-    SC_ASSERT(m_type.IsNode() || m_type.IsLink(), ("This constructor should be used for contour/link elements"));
     m_visibility = Visibility::Local;
-  }
   else
   {
-    SC_ASSERT(!isReversed || (isReversed && type.IsConnector()), ("Trying to set isReversed flag for non connector element"));
     ResolveVisibility();
 
     // all connectors has a local visibility
@@ -148,6 +146,11 @@ std::string const & ParsedElement::GetIdtf() const
 Visibility ParsedElement::GetVisibility() const
 {
   return m_visibility;
+}
+
+bool ParsedElement::IsMetaElement() const
+{
+  return m_isMetaElement;
 }
 
 ScType const & ParsedElement::GetType() const
@@ -187,35 +190,28 @@ void ParsedElement::ResolveVisibility()
   if (m_idtf[0] == '.')
   {
     if (m_idtf.size() > 1 && m_idtf[1] == '.')
-    {
       m_visibility = Visibility::Local;
-    }
     else
-    {
       m_visibility = Visibility::Global;
-    }
   }
   else
-  {
     m_visibility = Visibility::System;
-  }
 }
 
 ElementHandle::ElementHandle(ElementID id)
-  : m_id(id)
-  , m_isLocal(false)
+  : ElementHandle(id, Visibility::Global)
 {
 }
 
 ElementHandle::ElementHandle()
-  : m_id(INVALID_ID)
-  , m_isLocal(false)
+  : ElementHandle(INVALID_ID)
 {
 }
 
-ElementHandle::ElementHandle(ElementID id, bool isLocal)
+ElementHandle::ElementHandle(ElementID id, Visibility visibility, bool isMetaElement)
   : m_id(id)
-  , m_isLocal(isLocal)
+  , m_visibility(visibility)
+  , m_isMetaElement(isMetaElement)
 {
 }
 
@@ -224,9 +220,19 @@ ElementID ElementHandle::operator*() const
   return m_id;
 }
 
+Visibility ElementHandle::GetVisibility() const
+{
+  return m_visibility;
+}
+
 bool ElementHandle::IsLocal() const
 {
-  return m_isLocal;
+  return m_visibility == Visibility::Local;
+}
+
+bool ElementHandle::IsMetaElement() const
+{
+  return m_isMetaElement;
 }
 
 bool ElementHandle::IsValid() const
@@ -236,7 +242,7 @@ bool ElementHandle::IsValid() const
 
 bool ElementHandle::operator==(ElementHandle const & other) const
 {
-  return (m_id == other.m_id) && (m_isLocal == other.m_isLocal);
+  return (m_id == other.m_id) && (m_visibility == other.m_visibility);
 }
 
 bool ElementHandle::operator!=(ElementHandle const & other) const
@@ -247,14 +253,15 @@ bool ElementHandle::operator!=(ElementHandle const & other) const
 ElementHandle & ElementHandle::operator=(ElementHandle const & other)
 {
   m_id = other.m_id;
-  m_isLocal = other.m_isLocal;
+  m_visibility = other.m_visibility;
+  m_isMetaElement = other.m_isMetaElement;
   return *this;
 }
 
 bool ElementHandle::operator<(ElementHandle const & other) const
 {
   if (m_id == other.m_id)
-    return m_isLocal < other.m_isLocal;
+    return m_visibility < other.m_visibility;
 
   return m_id < other.m_id;
 }
@@ -302,32 +309,28 @@ bool Parser::Parse(std::string const & str)
   return result;
 }
 
-ParsedElement & Parser::GetParsedElementRef(ElementHandle const & elID)
+ParsedElement & Parser::GetParsedElementRef(ElementHandle const & handle)
 {
-  auto & container = (elID.IsLocal() ? m_parsedElementsLocal : m_parsedElements);
+  ParsedElementVector & container = GetContainerByElementVisibilityRef(handle.GetVisibility());
 
-  if (*elID >= container.size())
-  {
+  if (*handle >= container.size())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
-  }
+        "ElementId{" << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}");
 
-  return container[*elID];
+  return container[*handle];
 }
 
-ParsedElement const & Parser::GetParsedElement(ElementHandle const & elID) const
+ParsedElement const & Parser::GetParsedElement(ElementHandle const & handle) const
 {
-  auto & container = (elID.IsLocal() ? m_parsedElementsLocal : m_parsedElements);
+  ParsedElementVector const & container = GetContainerByElementVisibility(handle.GetVisibility());
 
-  if (*elID >= container.size())
-  {
+  if (*handle >= container.size())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
-  }
+        "ElementId{" << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}");
 
-  return container[*elID];
+  return container[*handle];
 }
 
 Parser::TripleVector const & Parser::GetParsedTriples() const
@@ -365,6 +368,22 @@ std::string Parser::GenerateContourIdtf()
   return std::string("..contour_") + std::to_string(m_idtfCounter++);
 }
 
+Parser::ParsedElementVector & Parser::GetContainerByElementVisibilityRef(Visibility visibility)
+{
+  if (visibility == Visibility::Local)
+    return m_parsedElementsLocal;
+
+  return m_parsedElements;
+}
+
+Parser::ParsedElementVector const & Parser::GetContainerByElementVisibility(Visibility visibility) const
+{
+  if (visibility == Visibility::Local)
+    return m_parsedElementsLocal;
+
+  return m_parsedElements;
+}
+
 ElementHandle Parser::AppendElement(
     std::string idtf,
     ScType const & type,
@@ -372,32 +391,29 @@ ElementHandle Parser::AppendElement(
     std::string const & value /* = "" */,
     bool isURL /* = false */)
 {
-  SC_CHECK_GREAT(idtf.size(), 0, "Element identifier is empty");
   if (TypeResolver::IsUnnamed(idtf))
     idtf = GenerateNodeIdtf();
 
-  ElementHandle elId;
+  ElementHandle elementHandle;
 
   // try to find element
   auto const it = m_idtfToParsedElement.find(idtf);
-  if (it != m_idtfToParsedElement.end())
-  {
-    elId = it->second;
-  }
+  if (it != m_idtfToParsedElement.cend())
+    elementHandle = it->second;
   else
   {
     // append element
-    ParsedElement el(idtf, type, isConnectorReversed, value, isURL);
+    ParsedElement element(idtf, type, isConnectorReversed, value, isURL);
+    Visibility elementVisibility = element.GetVisibility();
 
-    bool const isLocal = (el.GetVisibility() == Visibility::Local);
-    auto & container = isLocal ? m_parsedElementsLocal : m_parsedElements;
+    ParsedElementVector & container = GetContainerByElementVisibilityRef(elementVisibility);
+    elementHandle = ElementHandle(ElementID(container.size()), elementVisibility, element.IsMetaElement());
+    container.emplace_back(std::move(element));
 
-    elId = ElementHandle(ElementID(container.size()), isLocal);
-    container.emplace_back(std::move(el));
-    m_idtfToParsedElement[idtf] = elId;
+    m_idtfToParsedElement[idtf] = elementHandle;
   }
 
-  return elId;
+  return elementHandle;
 }
 
 ElementHandle Parser::ResolveAlias(std::string const & name)
@@ -413,44 +429,55 @@ ElementHandle Parser::ProcessIdentifier(std::string const & name)
   return AppendElement(name, type);
 }
 
-ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::string const & name)
+ElementHandle Parser::ProcessIdentifierLevel1(std::string const & scsType, std::string const & name)
 {
-  ScType elType = scs::TypeResolver::GetKeynodeType(type);
-  elType |= scs::TypeResolver::IsConst(name) ? ScType::Const : ScType::Var;
-
-  return AppendElement(name, elType);
+  ScType type = scs::TypeResolver::GetKeynodeType(scsType);
+  type |= scs::TypeResolver::IsConst(name) ? ScType::Const : ScType::Var;
+  return AppendElement(name, type);
 }
 
-void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & connector, ElementHandle const & target)
+void Parser::ProcessTriple(
+    ElementHandle const & sourceHandle,
+    ElementHandle const & connectorHandle,
+    ElementHandle const & targetHandle)
 {
-  ParsedElement const & connectorEl = GetParsedElement(connector);
+  ParsedElement & connector = GetParsedElementRef(connectorHandle);
 
-  auto AddConnector = [this, &connectorEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
-    ParsedElement const & srcEl = GetParsedElement(src);
-    std::string const & idtf = srcEl.GetIdtf();
-    if (connectorEl.GetType() == ScType::ConstPermPosArc && scs::TypeResolver::IsKeynodeType(idtf))
+  auto AddConnector =
+      [this, &connector](
+          ElementHandle const & sourceHdl, ElementHandle const & connectorHdl, ElementHandle const & targetHdl)
+  {
+    if (((connector.GetType() == ScType::ConstPermPosArc) || (connector.GetType() == ScType::ConstActualTempPosArc))
+        && sourceHdl.IsMetaElement())
     {
-      ParsedElement & targetEl = GetParsedElementRef(trg);
-      ScType const newType = targetEl.m_type | scs::TypeResolver::GetKeynodeType(idtf);
+      ParsedElement const & source = GetParsedElement(sourceHdl);
+      ParsedElement & target = GetParsedElementRef(targetHdl);
 
-      if (targetEl.m_type.CanExtendTo(newType))
-        targetEl.m_type = newType;
+      std::string const & sourceIdtf = source.GetIdtf();
+      ScType const newType = target.m_type | scs::TypeResolver::GetKeynodeType(sourceIdtf);
+
+      if (target.m_type.CanExtendTo(newType))
+        target.m_type = newType;
       else
-        SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't merge types for element " + targetEl.GetIdtf());
+        SC_THROW_EXCEPTION(
+            utils::ExceptionParseError,
+            "Can't extend type `" << std::string(target.m_type) << "` to type `" << std::string(newType)
+                                  << "` for element `" << target.GetIdtf() << "`.");
 
-      if (!m_contourTriplesStack.empty())
-        m_parsedTriples.emplace_back(src, e, trg);
+      // TODO(NikitaZotov): Unfortunately, parser collects all sc.s-elements, and only then form sc.s-triples based on
+      // the parsed sc.s-elements. Due to this, it is difficult to handle cases when it is necessary not to generate a
+      // sc-arc from a type of sc-elements to sc-element. Therefore, now the parser marks this arcs after that they were
+      // parsed.
+      connector.m_isMetaElement = true;
     }
     else
-    {
-      m_parsedTriples.emplace_back(src, e, trg);
-    }
+      m_parsedTriples.emplace_back(sourceHdl, connectorHdl, targetHdl);
   };
 
-  if (connectorEl.IsReversed())
-    AddConnector(target, connector, source);
+  if (connector.IsReversed())
+    AddConnector(targetHandle, connectorHandle, sourceHandle);
   else
-    AddConnector(source, connector, target);
+    AddConnector(sourceHandle, connectorHandle, targetHandle);
 }
 
 void Parser::ProcessAssign(std::string const & alias, ElementHandle const & value)
@@ -480,7 +507,6 @@ ElementHandle Parser::ProcessContent(std::string content, bool isVar)
 {
   ScType const type = DefineLinkType(content, isVar);
   ParseLinkContent(content, type);
-
   return AppendElement(GenerateLinkIdtf(), type, false, content);
 }
 
@@ -501,7 +527,6 @@ ElementHandle Parser::ProcessFileURL(std::string fileURL)
 {
   ScType const type = DefineLinkType(fileURL, false);
   ParseLinkContent(fileURL, type);
-
   return AppendElement(GenerateLinkIdtf(), type, false, fileURL, true);
 }
 
@@ -529,10 +554,12 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 
   // append all new elements into contour
   for (size_t i = ind.first; i < last; ++i)
-    newElements.insert(ElementHandle(ElementID(i), false));
+    newElements.insert(ElementHandle(
+      ElementID(i), m_parsedElements[i].GetVisibility(), m_parsedElements[i].IsMetaElement()));
 
   for (size_t i = ind.second; i < lastLocal; ++i)
-    newElements.insert(ElementHandle(ElementID(i), true));
+    newElements.insert(ElementHandle(
+      ElementID(i), m_parsedElementsLocal[i].GetVisibility(), m_parsedElementsLocal[i].IsMetaElement()));
 
   size_t const tripleFirst = m_contourTriplesStack.top();
   m_contourTriplesStack.pop();
@@ -546,14 +573,17 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
     newElements.insert(t.m_target);
   }
 
-  for (auto const & el : newElements)
+  for (auto const & elementHandle : newElements)
   {
-    ElementHandle const connector = ProcessConnector("->");
-    ProcessTriple(contourHandle, connector, el);
+    if (elementHandle.IsMetaElement())
+      continue;
+
+    ElementHandle const connectorHandle = ProcessConnector("->");
+    ProcessTriple(contourHandle, connectorHandle, elementHandle);
   }
 
-  ParsedElement & srcEl = GetParsedElementRef(contourHandle);
-  srcEl.m_type = ScType::ConstNodeStructure;
+  ParsedElement & contour = GetParsedElementRef(contourHandle);
+  contour.m_type = ScType::ConstNodeStructure;
 }
 
 }  // namespace scs

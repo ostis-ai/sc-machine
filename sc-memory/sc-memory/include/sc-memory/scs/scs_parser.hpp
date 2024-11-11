@@ -44,6 +44,7 @@ public:
   _SC_EXTERN ScType const & GetType() const;
 
   _SC_EXTERN Visibility GetVisibility() const;
+  _SC_EXTERN bool IsMetaElement() const;
 
   _SC_EXTERN std::string const & GetValue() const;
 
@@ -60,6 +61,7 @@ protected:
   bool m_isReversed : 1;    // flag used just for an connectors
   std::string m_value;      // string representation of content/link value
   bool m_isURL : 1;         // flag used to determine if ScLink value is an URL
+  bool m_isMetaElement;
 };
 
 class ElementHandle
@@ -67,11 +69,13 @@ class ElementHandle
 public:
   _SC_EXTERN explicit ElementHandle(ElementID id);
   _SC_EXTERN ElementHandle();
-  _SC_EXTERN ElementHandle(ElementID id, bool isLocal);
+  _SC_EXTERN ElementHandle(ElementID id, Visibility visibility, bool isMetaElement = false);
   _SC_EXTERN ElementHandle(ElementHandle const & other) = default;
 
   _SC_EXTERN ElementID operator*() const;
+  _SC_EXTERN Visibility GetVisibility() const;
   _SC_EXTERN bool IsLocal() const;
+  _SC_EXTERN bool IsMetaElement() const;
   _SC_EXTERN bool IsValid() const;
   _SC_EXTERN bool operator==(ElementHandle const & other) const;
   _SC_EXTERN bool operator!=(ElementHandle const & other) const;
@@ -82,7 +86,8 @@ private:
   static const ElementID INVALID_ID = std::numeric_limits<ElementID>::max();
 
   ElementID m_id;
-  bool m_isLocal;
+  Visibility m_visibility;
+  bool m_isMetaElement;
 };
 
 struct ParsedTriple
@@ -115,7 +120,7 @@ public:
   _SC_EXTERN Parser();
 
   _SC_EXTERN bool Parse(std::string const & str);
-  _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & elID) const;
+  _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & handle) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
   _SC_EXTERN std::string const & GetParseError() const;
   _SC_EXTERN AliasHandles const & GetAliases() const;
@@ -124,13 +129,21 @@ public:
   void ForEachParsedElement(TFunc && fn) const
   {
     for (auto const & el : m_parsedElementsLocal)
+    {
+      if (el.IsMetaElement())
+        continue;
       fn(el);
+    }
     for (auto const & el : m_parsedElements)
+    {
+      if (el.IsMetaElement())
+        continue;
       fn(el);
+    }
   }
 
 protected:
-  ParsedElement & GetParsedElementRef(ElementHandle const & elID);
+  ParsedElement & GetParsedElementRef(ElementHandle const & handle);
 
   ElementHandle ResolveAlias(std::string const & name);
   ElementHandle ProcessIdentifier(std::string const & name);
@@ -144,10 +157,12 @@ protected:
   void ProcessContourBegin();
   void ProcessContourEnd(ElementHandle const & contourHandle);
 
-  void ProcessTriple(ElementHandle const & source, ElementHandle const & connector, ElementHandle const & target);
+  void ProcessTriple(ElementHandle const & sourceHandle, ElementHandle const & connectorHandle, ElementHandle const & targetHandle);
   void ProcessAssign(std::string const & alias, ElementHandle const & value);
 
 private:
+  ParsedElementVector & GetContainerByElementVisibilityRef(Visibility visibility);
+  ParsedElementVector const & GetContainerByElementVisibility(Visibility visibility) const;
   ElementHandle AppendElement(
       std::string idtf,
       ScType const & type = ScType::Unknown,

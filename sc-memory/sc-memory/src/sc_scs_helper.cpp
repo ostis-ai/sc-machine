@@ -44,34 +44,39 @@ protected:
 
     // generate triples
     auto const & triples = parser.GetParsedTriples();
+    std::unordered_set<std::string> typeArcsCache;
     for (auto const & t : triples)
     {
-      auto const & src = parser.GetParsedElement(t.m_source);
+      auto const & source = parser.GetParsedElement(t.m_source);
       auto const & connector = parser.GetParsedElement(t.m_connector);
-      auto const & trg = parser.GetParsedElement(t.m_target);
+      auto const & target = parser.GetParsedElement(t.m_target);
 
-      auto const & srcAddrResult = ResolveElement(src);
-      auto const & trgAddrResult = ResolveElement(trg);
+      auto const & sourceResult = ResolveElement(source);
+      auto const & targetResult = ResolveElement(target);
 
-      if (!connector.GetType().IsConnector())
-        SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Specified sc-connector in triple has incorrect type.");
+      ScType const & connectorType = connector.GetType();
+      std::string const & connectorIdtf = connector.GetIdtf();
+      if (!connectorType.IsConnector())
+        SC_THROW_EXCEPTION(
+            utils::ExceptionInvalidType,
+            "Specified in triple sc-connector `" << connectorIdtf << "` has incorrect type `"
+                                                 << std::string(connectorType) << "`.");
 
-      ScAddr const arcAddr = m_ctx.GenerateConnector(connector.GetType(), srcAddrResult.first, trgAddrResult.first);
-      m_idtfCache.insert({connector.GetIdtf(), arcAddr});
+      ScAddr const arcAddr = m_ctx.GenerateConnector(connectorType, sourceResult.first, targetResult.first);
+      m_idtfCache.insert({connectorIdtf, arcAddr});
 
       if (m_outputStructure.IsValid())
       {
-        AppendToOutputStructure(srcAddrResult.first, arcAddr, trgAddrResult.first);
-        AppendToOutputStructure(srcAddrResult.second);
-        AppendToOutputStructure(trgAddrResult.second);
+        AppendToOutputStructure(sourceResult.first, arcAddr, targetResult.first);
+        AppendToOutputStructure(sourceResult.second);
+        AppendToOutputStructure(targetResult.second);
       }
     }
 
     parser.ForEachParsedElement(
         [this](scs::ParsedElement const & el)
         {
-          if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.end() && !el.GetType().IsConnector()
-              && !scs::TypeResolver::IsKeynodeType(el.GetIdtf()))
+          if (m_idtfCache.find(el.GetIdtf()) == m_idtfCache.cend() && !el.GetType().IsConnector())
             ResolveElement(el);
         });
   }
@@ -167,7 +172,9 @@ private:
             resultAddr = m_ctx.GenerateNode(type);
         }
         else
-          SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Incorrect element type at this state.");
+          SC_THROW_EXCEPTION(
+              utils::ExceptionInvalidState,
+              "Incorrect element type `" << std::string(type) << "` for element `" << el.GetIdtf() << "`.");
 
         // setup system identifier
         if (el.GetVisibility() == scs::Visibility::System)
@@ -177,9 +184,7 @@ private:
           result = {quintuple.addr2, quintuple.addr3, quintuple.addr4, quintuple.addr5};
         }
         else if (el.GetVisibility() == scs::Visibility::Global)
-        {
           result = SetSCsGlobalIdtf(el.GetIdtf(), resultAddr);
-        }
       }
       else
       {
@@ -190,12 +195,15 @@ private:
           if (oldType.CanExtendTo(newType))
             m_ctx.SetElementSubtype(resultAddr, newType);
           else if (!newType.CanExtendTo(oldType))
-            SC_THROW_EXCEPTION(utils::ExceptionInvalidType, "Duplicate element type for " + el.GetIdtf());
+            SC_THROW_EXCEPTION(
+                utils::ExceptionInvalidType,
+                "Can't extend type `" << std::string(oldType) << "` to type `" << std::string(newType)
+                                      << "` for element `" << el.GetIdtf() << "`.");
         }
       }
 
       // anyway save in cache
-      m_idtfCache.insert(std::make_pair(idtf, resultAddr));
+      m_idtfCache.insert({idtf, resultAddr});
     }
 
     return {resultAddr, result};
