@@ -213,6 +213,7 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- SCsParser no longer generates sc-arcs from types of sc-elements to sc-elements
 - Help messages for sc-machine and sc-builder
 - Clarify sc-machine and sc-builder options
 - Specify dependencies near targets, not in overall file
