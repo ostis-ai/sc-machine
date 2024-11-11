@@ -192,6 +192,9 @@ TEST_F(SCsHelperTest, GenerateBySCs_SingleNode)
   ScAddr const node = m_ctx->SearchElementBySystemIdentifier("node");
   EXPECT_TRUE(node.IsValid());
   EXPECT_EQ(m_ctx->GetElementType(node), ScType::ConstNodeClass);
+
+  ScAddr const nodeClass = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  EXPECT_FALSE(m_ctx->CheckConnector(nodeClass, node, ScType::ConstPermPosArc));
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)
