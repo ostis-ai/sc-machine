@@ -16,24 +16,26 @@
 
 void PrintHelpMessage(std::string const & binaryName)
 {
-  std::cout << "Usage:\n"
-            << "  " << binaryName << " -i <kb-directory or repo-path> -o <binary-path> [options]\n\n"
-            << "Required options:\n"
-            << "  --input|-i                              Provide a path to directory with knowledge base sources "
-               "(.scs, .gwf) or to <repo-name>.path file.\n"
-            << "                                          This file contains knowledge base directories (or sources) "
-               "that should/shouldn't be translated to binaries.\n"
-            << "  --output|-o                             Provide a path to directory where the knowledge base "
-               "binaries will be generated.\n\n"
-            << "Options:\n"
-            << "  --config|-c <config-name>.ini           Provide a path to configuration file.\n"
-               "                                          Configuration file can be used to set additional (optional) "
-               "options for "
-            << binaryName << ".\n"
-            << "  --clear                                 Run sc-builder in the mode when it overwrites "
-               "existing knowledge base binaries.\n"
-            << "  --version                               Display version of " << binaryName << ".\n"
-            << "  --help                                  Display this help message.\n";
+  std::cout
+      << "Usage:\n"
+      << "  " << binaryName << " -i <kb-directory or repo-path> -o <binary-path> [options]\n\n"
+      << "Required options:\n"
+      << "  --input|-i                              Provide a path to directory with knowledge base sources "
+         "(.scs, .gwf) or to <repo-name>.path file.\n"
+      << "                                          This file contains knowledge base directories (or sources) "
+         "that should/shouldn't be translated to binaries.\n"
+      << "  --output|-o                             Provide a path to directory where the knowledge base "
+         "binaries will be generated.\n"
+      << "  --config|-c <config-name>.ini           Provide a path to configuration file that can set both input and "
+         "output paths.\n"
+      << "                                          Use the `input` option in the [sc-builder] group for input path, "
+         "and the `output` option for output path for "
+      << binaryName << ".\n\n"
+      << "Options:\n"
+      << "  --clear                                 Run sc-builder in the mode when it overwrites "
+         "existing knowledge base binaries.\n"
+      << "  --version                               Display version of " << binaryName << ".\n"
+      << "  --help                                  Display this help message.\n";
 }
 
 sc_int RunBuilder(sc_int argc, sc_char * argv[])
