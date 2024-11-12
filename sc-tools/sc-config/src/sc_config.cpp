@@ -12,6 +12,8 @@
 #include <unordered_set>
 #include <filesystem>
 
+#include <sc-memory/sc_utils.hpp>
+
 extern "C"
 {
 #include <glib.h>
@@ -74,8 +76,7 @@ std::string ScConfigGroup::operator[](std::string const & key) const
   {
     std::string::size_type end = valueStr.find(ScConfig::PATHS_SEPARATOR, start);
     std::string path = valueStr.substr(start, end - start);
-
-    path.erase(std::remove_if(path.begin(), path.end(), ::isspace), path.end());
+    utils::StringUtils::Trim(path);
 
     if (!path.empty())
     {

@@ -131,6 +131,32 @@ TEST(ScConfig, EmptyMultiextensions)
   EXPECT_EQ(params.extensions_directories, nullptr);
 }
 
+TEST(ScConfig, MultiextensionsWithSpaces)
+{
+  ScConfig config{SC_CONFIGS "/multiextensions-with-spaces.ini", {"extensions"}};
+
+  ScMemoryConfig memoryConfig{config, {}};
+
+  sc_memory_params const params = memoryConfig.GetParams();
+  EXPECT_EQ(params.max_loaded_segments, 1000u);
+  EXPECT_EQ(params.dump_memory, SC_TRUE);
+  EXPECT_EQ(params.dump_memory_period, 4u);
+  EXPECT_EQ(params.dump_memory_statistics, SC_TRUE);
+  EXPECT_EQ(params.dump_memory_statistics_period, 4u);
+  EXPECT_EQ(std::string(params.log_type), "Console");
+  EXPECT_EQ(std::string(params.log_file), "");
+  EXPECT_EQ(std::string(params.log_level), "Debug");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(params.extensions_directories_count, 3u);
+
+  std::string const & prefix = "../../../../sc-tools/sc-config/tests/";
+  // this prefix should be removed after changing current directory for
+  // gtests that should be done in new build system
+  EXPECT_EQ(std::string(params.extensions_directories[0]), prefix + "bin/extensions 2");
+  EXPECT_EQ(std::string(params.extensions_directories[1]), prefix + "bin/extensions_1");
+  EXPECT_EQ(std::string(params.extensions_directories[2]), prefix + "bin/extensions_3");
+}
+
 TEST(ScConfig, NotNormalizedMultiextensions)
 {
   ScConfig config{SC_CONFIGS "/../tests/not-normalized-multiextensions.ini", {"extensions"}};
