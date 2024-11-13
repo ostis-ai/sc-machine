@@ -1,6 +1,3 @@
-set(SC_CONFIG_SRC ${SC_TOOLS_SRC}/sc-config)
-set(SC_BUILDER_SRC ${SC_TOOLS_SRC}/sc-builder)
-
 add_subdirectory(sc-config)
 add_subdirectory(sc-builder)
 add_subdirectory(sc-machine-runner)

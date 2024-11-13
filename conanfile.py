@@ -15,7 +15,7 @@ def get_version():
 class sc_machineRecipe(ConanFile):
     name = "sc-machine"
     package_type = "library"
-    version = "0.10.0"
+    version = get_version()
     author = "OSTIS AI"
     license = "https://github.com/ostis-ai/sc-machine/blob/master/LICENSE"
     url = "https://github.com/ostis-ai/sc-machine"
@@ -41,7 +41,7 @@ class sc_machineRecipe(ConanFile):
         self.requires("websocketpp/0.8.2", options={"asio": "standalone"})
         self.requires("nlohmann_json/3.11.3")
         self.requires("glib/2.76.3")
-        # TODO: use this instead of thirdparty/antlr4 
+        # TODO(FallenChromium): use this instead of thirdparty/antlr4 
         # self.requires("antlr4-cppruntime/4.9.3")
 
     def build_requirements(self):
