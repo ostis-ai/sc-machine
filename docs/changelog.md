@@ -20,19 +20,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - binaries -- `build/<Debug|Release>/bin`, 
         - libraries -- `build/<Debug|Release>/lib`,
         - extensions -- `build/<Debug|Release>/lib/extensions`.
-    - Now using sc-machine as a library is much more optimized: adding it to the CMake tree is no longer necessary. You can install sc-machine packages and import sc-machine targets into your cmake using `find_package(sc-machine REQUIRED)`. But if you include sc-machine into CMake tree of your project, remember that the minimum version of cmake for the machine is 3.24.
-    - Now each release sc-machine binaries are compiled for supported OS and formed as an archives on Github. Minimum required version of macOS is macOS-14 (arm), of ubuntu is ubuntu-22.04. The sc-machine doesn't support ubuntu-20.04 anymore. You can use them to work with sc-memory or you can use `RunMachine` method from `sc-machine-runner.so` to create your own entry point to initialize sc-memory instead of using compiled `sc-machine` binary.
+    - Using sc-machine as a library is much more optimized: adding it to the CMake tree is no longer necessary. You can install sc-machine packages and import sc-machine targets into your cmake using `find_package(sc-machine REQUIRED)`. But if you include sc-machine into CMake tree of your project, remember that the minimum version of cmake for the machine is 3.24.
+    - Each release sc-machine binaries are being compiled for supported OS and formed as an archives on Github. Minimum required version of macOS is macOS-14 (arm), of ubuntu is ubuntu-22.04. The sc-machine doesn't support ubuntu-20.04 anymore. You can use them to work with sc-memory or you can use `RunMachine` method from `sc-machine-runner.so` to create your own entry point to initialize sc-memory instead of using compiled `sc-machine` binary.
     - Script for the project build (`build_sc_machine.sh`), scripts for running binaries (`run_sc_server.sh`, `build_kb.sh`) were removed from the sc-machine repository scripts. You should use sc-machine binaries directly.
-    - Now sc-server is not entry point of the sc-machine, it is an extension (`sc-server-lib.so`), that is loaded dynamically when the machine is started. So, `sc-server` binary was removed, `sc-machine` binary was added instead.
+    - sc-server is no longer entry point of the sc-machine, it is an extension (`sc-server-lib.so`), that is loaded dynamically when the machine is started. So, `sc-server` binary was removed, `sc-machine` binary was added instead.
 - Config was changed:
     - `repo_path` option in `[sc-memory]` group was deprecated, `storage` option was added instead;
     - `extensions_path` option in `[sc-memory]` group was deprecated, `extensions` option was added instead;
     - `[sc-builder]` group was removed.
 - Sources of the sc-machine were separated into public and private ones. Public sources of targets are located in `include` directory, private ones - in `src` directory, tests for code - in `tests` directory. Private sources can't be included into project's code directly. Besides that there are changes of location of some API classes of the sc-machine:
-    - Now `ScTest` class is part of `sc-memory` target. Use `#include <sc-memory/test/sc_test.hpp>` to include it into code.
+    - `ScTest` class was made a part of `sc-memory` target. Use `#include <sc-memory/test/sc_test.hpp>` to include it into code.
     - To include `ScsLoader` class into code, use `#include <sc-builder/sc_loader.hpp>`.
 - Configuration of sc-machine tests was changed:
-    - Now paths to test sources of the knowledge base, test configs, etc. are configured at the pre-run stage, not at the stage of compiling tests.
+    - Paths to test sources of the knowledge base, test configs, etc. are being configured at the pre-run stage, not at the stage of compiling tests.
     - Working directory for tests was changed to a directory where tests are located. To run the tests, please use `ctest` rather than the test binaries themselves.
     - Scripts for running tests (`run_tests.sh`) was removed. Go to `build/<Debug|Release>` and use `ctest` instead.
 - All questions was renamed to actions.
@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
 - Questions were renamed to actions, answers were renamed to results.
 - `m_memoryCtx` in ScAgent renamed to `m_context`.
-- Now we don't use code generation as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API. We have
+- Сode generation is no longer used as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API. We have
     - completely moved from code generation to template programming;
     - improved the API and aligned with our description of how it should be;
     - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
@@ -141,7 +141,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   | ```_<~```  | ```<~_```    |
   | ```_<|~``` | ```<|~_```   |
 
-- Now it is not possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
+- It is no longer possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
 
 - Incorrect system identifiers of sc.s-keynodes were also replaced by correct ones.
 
@@ -233,7 +233,7 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
-- Now working directory for tests is a directory where tests are located
+- Working directory for tests was changed to a directory where tests are located
 - Install `gtest` and `benchmark` via Conan or OS package managers instead of using them as submodules
 - Location of the sc-machine build tree, binaries, libraries and extensions
 - Up minimum required cmake version to 3.24.0
