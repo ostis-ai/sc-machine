@@ -18,24 +18,33 @@ void PrintHelpMessage(std::string const & binaryName)
 {
   std::cout
       << "Usage:\n"
-      << "  " << binaryName << " -i <kb-directory or repo-path> -o <binary-path> [options]\n\n"
+      << "  " << binaryName << " [options]\n\n"
       << "Required options:\n"
-      << "  --input|-i                              Provide a path to directory with knowledge base sources "
-         "(.scs, .gwf) or to <repo-name>.path file.\n"
-      << "                                          This file contains knowledge base directories (or sources) "
-         "that should/shouldn't be translated to binaries.\n"
-      << "  --output|-o                             Provide a path to directory where the knowledge base "
+      << "  --input|-i <directory>|<repo>.path       Specify the path to a directory containing knowledge base sources "
+         "(.scs, .gwf) or a <repo-name>.path file.\n"
+         "                                           The specified file should contain knowledge base directories (or "
+         "sources) that should or shouldn't be translated into binaries.\n"
+         "                                           This path can also be provided via the `input` option in the "
+         "[sc-builder] group of the configuration file specified with --config|-c.\n"
+         "                                           If both options are provided, the value from --input|-i takes "
+         "precedence.\n"
+      << "  --output|-o <directory>                  Specify the path to the directory where the knowledge base "
          "binaries will be generated.\n"
-      << "  --config|-c <config-name>.ini           Provide a path to configuration file that can set both input and "
+         "                                           This path can also be provided via the `output` option in the "
+         "[sc-builder] "
+         "group of the configuration file provided via --config|-c.\n"
+         "                                           If both options are provided, the value from --output|-o takes "
+         "precedence.\n"
+      << "  --config|-c <config-name>.ini            Specify the path to a configuration file that can set input and "
          "output paths.\n"
-      << "                                          Use the `input` option in the [sc-builder] group for input path, "
-         "and the `output` option for output path for "
+         "                                           Use the `input` option in the [sc-builder] group for the input "
+         "path, and the `output` option for the output path for "
       << binaryName << ".\n\n"
-      << "Options:\n"
-      << "  --clear                                 Run sc-builder in the mode when it overwrites "
-         "existing knowledge base binaries.\n"
-      << "  --version                               Display version of " << binaryName << ".\n"
-      << "  --help                                  Display this help message.\n";
+      << "Additional Options:\n"
+      << "  --clear                                  Run sc-builder in a mode that overwrites existing knowledge base "
+         "binaries.\n"
+      << "  --version                                Display the version of " << binaryName << ".\n"
+      << "  --help                                   Display this help message.\n";
 }
 
 sc_int RunBuilder(sc_int argc, sc_char * argv[])
@@ -108,7 +117,7 @@ try
     {
       SC_LOG_WARNING(
           "Option `input_path` in `[sc-builder]` group is deprecated since sc-machine 0.10.0. Use option "
-          "`repo_path` instead.");
+          "`input` instead.");
       params.m_inputPath = inputPath;
     }
   }
