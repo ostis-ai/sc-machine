@@ -37,24 +37,6 @@ function rebuild_kb() {
     fi
 }
 
-function start_server() {
-    if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ];
-    then
-        # this expands to $KB_PATH if it's non-null and expands to "/kb" otherwise.
-        rebuild_kb "${KB_PATH:-"/kb"}"
-    fi
-
-    # if arguments were provided, use them instead of the default ones.
-    if [ $# -eq 0 ];
-    then
-        # you should provide the config file path and host settings yourself in case you want to use custom options!
-        echo "Using default arguments."
-        "$BINARY_PATH"/sc-server -c "$CONFIG_PATH" -h 0.0.0.0 -e "$EXTENSIONS_PATH"
-    else
-        "$BINARY_PATH"/sc-server "$@"
-    fi
-}
-
 function start_machine {
     if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ];
     then

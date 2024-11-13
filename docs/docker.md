@@ -17,7 +17,7 @@ Note: By default we expect you to place a [repo.path](sc-tools/kb_repo_file.md) 
 +KB_PATH="/kb"
 ```
 
-If you want to auto-rebuild the knowledge base on sc-server restart, you can also configure this behavior in the `.env` file:
+If you want to auto-rebuild the knowledge base on sc-machine restart, you can also configure this behavior in the `.env` file:
 
 ```diff
 +REBUILD_KB=1
@@ -25,7 +25,7 @@ If you want to auto-rebuild the knowledge base on sc-server restart, you can als
 
 ## docker_entrypoint.sh
 
-Our Docker entrypoint script has two commands: `build` and `serve`. The former is used to build or update knowledge base, and the latter is used to launch `sc-server`. You can use it in your own projects that use sc-server as the entrypoint. Don't forget to configure custom binary and knowledge base paths. Consult with the `docker-entrypoint.sh --help` for the full list of available flags.
+Our Docker entrypoint script has two commands: `build` and `run`. The former is used to build or update knowledge base, and the latter is used to launch `sc-machine`. You can use it in your own projects that use sc-machine as the entrypoint. Don't forget to configure custom binary and knowledge base paths. Consult with the `docker-entrypoint.sh --help` for the full list of available flags.
 
 ## Rebuild image
 
