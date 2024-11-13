@@ -16,6 +16,9 @@ If you wish to use CLI instead, you can list all the available configurations in
 cmake --list-presets
 ```
 
+!!! warning
+    By default, the standard repositories for Ubuntu 22.04 provide CMake version 3.22, which does not support certain features required for working with CMakePresets.json. To avoid issues during the build process, you need to manually install CMake version 3.24 or higher.
+
 For example, this is how to build sc-machine in debug mode using dependencies from Conan:
 
 ```sh
@@ -176,7 +179,7 @@ cmake --preset debug-conan
 cmake --build --preset debug
 ```
 
-The same is true for installations that have used GitHub Releases artifacts. Download the sc-machine repo, configure it, run `cmake --build --preset <preset> --target install` and add `sc-machine/build/<Debug|Release>/install` to `CMAKE_PREFIX_PATH` of your project. Re-running `cmake --build --preset <preset> --target install` is enough to propagate changes to the consumer.
+The same is true for installations that have used GitHub Releases artifacts. Download the sc-machine repo, configure it, run `cmake --build --preset <preset> --target install`. It will copy the built artifacts from their build location to the designated install location. After that, add `sc-machine/build/<Debug|Release>/install` to `CMAKE_PREFIX_PATH` of your project. Re-running `cmake --build --preset <preset> --target install` is enough to propagate changes to the consumer. By these steps, you can seamlessly integrate sc-machine into your project, ensuring that you have access to all necessary components without unnecessary rebuilds.
 
 Relaunch the compilation steps in your project and you should be good to go!
 
@@ -188,6 +191,7 @@ If Conan is not used, the build system will attempt to find system-installed dep
 
 Currently, we require the following packages to be available to CMake at build-time:
 
+- `java`
 - `glib2`
 - `websocketpp`
   - [`asio`](https://think-async.com/Asio/) as the transitive dependency
@@ -206,4 +210,4 @@ It is possible to write tests for the Conan packaging using [local package devel
 - For CMake configuration issues, check the CMakeCache.txt file in your build directory
 - Ensure that your CMake version is compatible with the project requirements
 
-For further assistance, please consult the project's issue tracker or contact the maintainers.
+For further assistance, please consult the [project's issue tracker](https://github.com/ostis-ai/sc-machine/issues) or contact the maintainers.
