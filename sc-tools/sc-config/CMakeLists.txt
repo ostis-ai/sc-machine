@@ -17,7 +17,7 @@ target_include_directories(sc-config
     PUBLIC $<INSTALL_INTERFACE:include>
 )
 
-# TODO: CMake 3.23+ supports FILE_SET (https://discourse.cmake.org/t/installing-headers-the-modern-way-regurgitated-and-revisited/3238/3) which is a more stable and portable solution. 
+# TODO(FallenChromium): CMake 3.23+ supports FILE_SET (https://discourse.cmake.org/t/installing-headers-the-modern-way-regurgitated-and-revisited/3238/3) which is a more stable and portable solution. 
 # For compatibility reasons we're exporting the whole folder, should be replaced in the future (Ubuntu LTS should have cmake 3.23 oob by that time)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
