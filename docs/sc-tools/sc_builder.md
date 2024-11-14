@@ -4,19 +4,23 @@ Sc-builder tool allows to translate knowledge base sources into binaries. You ca
 
 ```sh
 Usage:
-  ./bin/sc-builder -i <kb-directory or repo-path> -o <binary-path> [options]
+  ./bin/sc-builder [options]
 
 Required options:
-  --input|-i                              Provide a path to directory with knowledge base sources (.scs, .gwf) or to <repo-name>.path file.
-                                          This file contains knowledge base directories (or sources) that should/shouldn't be translated to binaries.
-  --output|-o                             Provide a path to directory where the knowledge base binaries will be generated.
+  --input|-i <directory>|<repo>.path       Specify the path to a directory containing knowledge base sources (.scs, .gwf) or a <repo-name>.path file.
+                                           The specified file should contain knowledge base directories (or sources) that should or shouldn't be translated into binaries.
+                                           This path can also be provided via the `input` option in the [sc-builder] group of the configuration file specified with --config|-c.
+                                           If both options are provided, the value from --input|-i takes precedence.
+  --output|-o <directory>                  Specify the path to the directory where the knowledge base binaries will be generated.
+                                           This path can also be provided via the `output` option in the [sc-builder] group of the configuration file provided via --config|-c.
+                                           If both options are provided, the value from --output|-o takes precedence.
+  --config|-c <config-name>.ini            Specify the path to a configuration file that can set input and output paths.
+                                           Use the `input` option in the [sc-builder] group for the input path, and the `output` option for the output path for ./bin/sc-builder.
 
-Options:
-  --config|-c <config-name>.ini           Provide a path to configuration file.
-                                          Configuration file can be used to set additional (optional) options for ./bin/sc-builder.
-  --clear                                 Run sc-builder in the mode when it overwrites existing knowledge base binaries.
-  --version                               Display version of ./bin/sc-builder.
-  --help                                  Display this help message.
+Additional Options:
+  --clear                                  Run sc-builder in a mode that overwrites existing knowledge base binaries.
+  --version                                Display the version of ./bin/sc-builder.
+  --help                                   Display this help message.
 ```
 
 Example of usage:
