@@ -132,7 +132,7 @@ ParsedElement::ParsedElement(
   {
     ResolveVisibility();
 
-    // all connectors has a local visibility
+    // all connectors have a local visibility
     if (type.IsConnector())
       m_visibility = Visibility::Local;
   }
@@ -316,7 +316,10 @@ ParsedElement & Parser::GetParsedElementRef(ElementHandle const & handle)
   if (*handle >= container.size())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        "ElementId{" << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}");
+        "Parsed element not found. "
+        "ElementId: {"
+            << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}. Valid range: [0, "
+            << container.size() - 1 << "].");
 
   return container[*handle];
 }
@@ -328,7 +331,10 @@ ParsedElement const & Parser::GetParsedElement(ElementHandle const & handle) con
   if (*handle >= container.size())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        "ElementId{" << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}");
+        "Error: Parsed element not found. "
+        "ElementId: {"
+            << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}. Valid range: [0, "
+            << container.size() - 1 << "].");
 
   return container[*handle];
 }
@@ -336,6 +342,23 @@ ParsedElement const & Parser::GetParsedElement(ElementHandle const & handle) con
 Parser::TripleVector const & Parser::GetParsedTriples() const
 {
   return m_parsedTriples;
+}
+
+void Parser::ForEachParsedTriple(
+    std::function<void(ParsedElement const &, ParsedElement const &, ParsedElement const &)> const & callback) const
+{
+  for (auto const & triple : m_parsedTriples)
+  {
+    auto const & source = GetParsedElement(triple.m_source);
+    auto const & connector = GetParsedElement(triple.m_connector);
+    auto const & target = GetParsedElement(triple.m_target);
+
+    if ((source.IsMetaElement() && (connector.GetType() == ScType::ConstPermPosArc))
+        || (target.IsMetaElement() && (target.GetType() == ScType::ConstPermPosArc)))
+      continue;
+
+    callback(source, connector, target);
+  }
 }
 
 std::string const & Parser::GetParseError() const
@@ -447,8 +470,7 @@ void Parser::ProcessTriple(
       [this, &connector](
           ElementHandle const & sourceHdl, ElementHandle const & connectorHdl, ElementHandle const & targetHdl)
   {
-    if (((connector.GetType() == ScType::ConstPermPosArc) || (connector.GetType() == ScType::ConstActualTempPosArc))
-        && sourceHdl.IsMetaElement())
+    if (sourceHdl.IsMetaElement() && (connector.GetType() == ScType::ConstPermPosArc))
     {
       ParsedElement const & source = GetParsedElement(sourceHdl);
       ParsedElement & target = GetParsedElementRef(targetHdl);
@@ -464,14 +486,14 @@ void Parser::ProcessTriple(
             "Can't extend type `" << std::string(target.m_type) << "` to type `" << std::string(newType)
                                   << "` for element `" << target.GetIdtf() << "`.");
 
-      // TODO(NikitaZotov): Unfortunately, parser collects all sc.s-elements, and only then form sc.s-triples based on
+      // TODO(NikitaZotov): Unfortunately, parser collects all sc.s-elements, and only then forms sc.s-triples based on
       // the parsed sc.s-elements. Due to this, it is difficult to handle cases when it is necessary not to generate a
       // sc-arc from a type of sc-elements to sc-element. Therefore, now the parser marks this arcs after that they were
       // parsed.
       connector.m_isMetaElement = true;
     }
-    else
-      m_parsedTriples.emplace_back(sourceHdl, connectorHdl, targetHdl);
+
+    m_parsedTriples.emplace_back(sourceHdl, connectorHdl, targetHdl);
   };
 
   if (connector.IsReversed())
@@ -554,12 +576,12 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 
   // append all new elements into contour
   for (size_t i = ind.first; i < last; ++i)
-    newElements.insert(ElementHandle(
-      ElementID(i), m_parsedElements[i].GetVisibility(), m_parsedElements[i].IsMetaElement()));
+    newElements.insert(
+        ElementHandle(ElementID(i), m_parsedElements[i].GetVisibility(), m_parsedElements[i].IsMetaElement()));
 
   for (size_t i = ind.second; i < lastLocal; ++i)
     newElements.insert(ElementHandle(
-      ElementID(i), m_parsedElementsLocal[i].GetVisibility(), m_parsedElementsLocal[i].IsMetaElement()));
+        ElementID(i), m_parsedElementsLocal[i].GetVisibility(), m_parsedElementsLocal[i].IsMetaElement()));
 
   size_t const tripleFirst = m_contourTriplesStack.top();
   m_contourTriplesStack.pop();

@@ -45,9 +45,9 @@ TEST(scs_alias, recursive_assigns)
   EXPECT_TRUE(parser.Parse(data));
 
   auto const & triples = parser.GetParsedTriples();
-  EXPECT_EQ(triples.size(), 1u);
+  EXPECT_EQ(triples.size(), 2u);
 
-  auto const t = triples.front();
+  auto const t = triples.back();
   auto const & src = parser.GetParsedElement(t.m_source);
   auto const & arcAddr = parser.GetParsedElement(t.m_connector);
   auto const & trg = parser.GetParsedElement(t.m_target);
@@ -71,10 +71,10 @@ TEST(scs_alias, reassign)
   EXPECT_TRUE(parser.Parse(data));
 
   auto const & triples = parser.GetParsedTriples();
-  EXPECT_EQ(triples.size(), 2u);
+  EXPECT_EQ(triples.size(), 3u);
 
   {
-    auto const & t = triples[0];
+    auto const & t = triples[1];
 
     auto const & src = parser.GetParsedElement(t.m_source);
     auto const & arcAddr = parser.GetParsedElement(t.m_connector);
@@ -90,7 +90,7 @@ TEST(scs_alias, reassign)
   }
 
   {
-    auto const & t = triples[1];
+    auto const & t = triples[2];
 
     auto const & src = parser.GetParsedElement(t.m_source);
     auto const & arcAddr = parser.GetParsedElement(t.m_connector);

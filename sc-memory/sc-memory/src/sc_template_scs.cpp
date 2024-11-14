@@ -36,56 +36,45 @@ protected:
     utils::ScKeynodeCache keynodes(m_ctx);
     std::unordered_set<std::string> passed;
 
-    auto const MakeTemplItem = [&passed, &keynodes](scs::ParsedElement const & el, ScTemplateItem & outValue) -> bool
+    auto const MakeTemplItem = [&passed, &keynodes](scs::ParsedElement const & el, ScTemplateItem & outValue) -> void
     {
       std::string const & idtf = el.GetIdtf();
       bool const isUnnamed = scs::TypeResolver::IsUnnamed(idtf);
       bool const isPassed = passed.find(idtf) != passed.cend();
 
       if (!isUnnamed && isPassed)
-      {
         outValue.SetReplacement(idtf.c_str());
-      }
       else
       {
         sc_char const * alias = (isUnnamed ? nullptr : idtf.c_str());
         ScAddr const addr = keynodes.GetKeynode(idtf);
         if (addr.IsValid())
-        {
           outValue.SetAddr(addr, alias);
-        }
         else
         {
           if (el.GetType().IsVar())
-          {
             outValue.SetType(el.GetType(), alias);
-          }
           else
-          {
             SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't find element " << idtf);
-            return false;
-          }
         }
       }
 
       passed.insert(idtf);
-
-      return true;
     };
 
-    for (scs::ParsedTriple const & t : m_parser.GetParsedTriples())
-    {
-      scs::ParsedElement const & src = m_parser.GetParsedElement(t.m_source);
-      scs::ParsedElement const & connector = m_parser.GetParsedElement(t.m_connector);
-      scs::ParsedElement const & trg = m_parser.GetParsedElement(t.m_target);
+    m_parser.ForEachParsedTriple(
+        [&](scs::ParsedElement const & source,
+            scs::ParsedElement const & connector,
+            scs::ParsedElement const & target) -> void
+        {
+          ScTemplateItem sourceItem, connectorItem, targetItem;
 
-      ScTemplateItem srcItem, connectorItem, trgItem;
+          MakeTemplItem(source, sourceItem);
+          MakeTemplItem(connector, connectorItem);
+          MakeTemplItem(target, targetItem);
 
-      if (!MakeTemplItem(src, srcItem) || !MakeTemplItem(connector, connectorItem) || !MakeTemplItem(trg, trgItem))
-        break;
-
-      templ->Triple(srcItem, connectorItem, trgItem);
-    }
+          templ->Triple(sourceItem, connectorItem, targetItem);
+        });
   }
 
 private:

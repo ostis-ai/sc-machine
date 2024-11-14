@@ -177,9 +177,9 @@ public:
 TEST(scs_common, SCsNodeKeynodes)
 {
   std::vector<ScType> const & nodeTypes = {
-    ScType::NodeRole,
     ScType::Node,
     ScType::NodeClass,
+    ScType::NodeRole,
     ScType::NodeNonRole,
     ScType::NodeTuple,
     ScType::NodeStructure,
@@ -200,11 +200,12 @@ TEST(scs_common, SCsNodeKeynodes)
   EXPECT_TRUE(parser.Parse(stream.str()));
 
   auto const & triples = parser.GetParsedTriples();
-  EXPECT_EQ(triples.size(), nodeTypes.size());
+  EXPECT_EQ(triples.size(), nodeTypes.size() * 3);
 
   auto const GetSourceNodeType = [&triples, &parser](size_t index) -> ScType
   {
     EXPECT_TRUE(index < triples.size());
+    std::cout << std::string(parser.GetParsedElement(triples[index].m_source).GetType()) << std::endl;
     return parser.GetParsedElement(triples[index].m_source).GetType();
   };
 
@@ -214,10 +215,10 @@ TEST(scs_common, SCsNodeKeynodes)
     return parser.GetParsedElement(triples[index].m_target).GetType();
   };
 
-  for (size_t i = 0; i < nodeTypes.size(); ++i)
+  for (size_t i = 0, j = 0; i < nodeTypes.size(); i += 3, ++j)
   {
-    EXPECT_EQ(GetSourceNodeType(i), TestScType(nodeTypes[i]).BitOr(ScType::Var));
-    EXPECT_EQ(GetTargetNodeType(i), TestScType(nodeTypes[i]).BitOr(ScType::Const));
+    EXPECT_EQ(GetSourceNodeType(i), TestScType(nodeTypes[j]).BitOr(ScType::Var));
+    EXPECT_EQ(GetTargetNodeType(i), TestScType(nodeTypes[j]).BitOr(ScType::Const));
   }
 }
 
@@ -296,13 +297,13 @@ TEST(scs_common, DeprecatedSCsKeynodes)
   EXPECT_TRUE(parser.Parse(data));
 
   auto const & triples = parser.GetParsedTriples();
-  EXPECT_EQ(triples.size(), 3u);
+  EXPECT_EQ(triples.size(), 7u);
 
   EXPECT_EQ(parser.GetParsedElement(triples[0].m_source).GetType(), ScType::ConstNodeStructure);
   EXPECT_EQ(parser.GetParsedElement(triples[0].m_target).GetType(), ScType::ConstNodeClass);
-  EXPECT_EQ(parser.GetParsedElement(triples[1].m_source).GetType(), ScType::ConstNodeStructure);
-  EXPECT_EQ(parser.GetParsedElement(triples[1].m_target).GetType(), ScType::ConstNodeTuple);
-  EXPECT_EQ(parser.GetParsedElement(triples[2].m_source).GetType(), ScType::ConstNodeNonRole);
+  EXPECT_EQ(parser.GetParsedElement(triples[2].m_source).GetType(), ScType::ConstNodeStructure);
+  EXPECT_EQ(parser.GetParsedElement(triples[2].m_target).GetType(), ScType::ConstNodeTuple);
+  EXPECT_EQ(parser.GetParsedElement(triples[5].m_source).GetType(), ScType::ConstNodeNonRole);
 }
 
 TEST(scs_common, DirectConnectors)

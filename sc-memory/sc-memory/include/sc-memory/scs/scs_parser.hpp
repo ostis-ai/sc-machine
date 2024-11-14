@@ -15,6 +15,7 @@
 #include <stack>
 #include <map>
 #include <string>
+#include <functional>
 
 namespace scs
 {
@@ -83,7 +84,7 @@ public:
   _SC_EXTERN bool operator<(ElementHandle const & other) const;
 
 private:
-  static const ElementID INVALID_ID = std::numeric_limits<ElementID>::max();
+  static ElementID const INVALID_ID = std::numeric_limits<ElementID>::max();
 
   ElementID m_id;
   Visibility m_visibility;
@@ -109,7 +110,7 @@ class Parser
   friend class scsParser;
 
   // Number of parsed elements, to preallocate container
-  static const size_t PARSED_PREALLOC_NUM = 1024;
+  static size_t const PARSED_PREALLOC_NUM = 1024;
 
 public:
   using TripleVector = std::vector<ParsedTriple>;
@@ -122,6 +123,8 @@ public:
   _SC_EXTERN bool Parse(std::string const & str);
   _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & handle) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
+  _SC_EXTERN void ForEachParsedTriple(
+      std::function<void(ParsedElement const &, ParsedElement const &, ParsedElement const &)> const & callback) const;
   _SC_EXTERN std::string const & GetParseError() const;
   _SC_EXTERN AliasHandles const & GetAliases() const;
 
@@ -129,17 +132,9 @@ public:
   void ForEachParsedElement(TFunc && fn) const
   {
     for (auto const & el : m_parsedElementsLocal)
-    {
-      if (el.IsMetaElement())
-        continue;
       fn(el);
-    }
     for (auto const & el : m_parsedElements)
-    {
-      if (el.IsMetaElement())
-        continue;
       fn(el);
-    }
   }
 
 protected:
@@ -157,7 +152,10 @@ protected:
   void ProcessContourBegin();
   void ProcessContourEnd(ElementHandle const & contourHandle);
 
-  void ProcessTriple(ElementHandle const & sourceHandle, ElementHandle const & connectorHandle, ElementHandle const & targetHandle);
+  void ProcessTriple(
+      ElementHandle const & sourceHandle,
+      ElementHandle const & connectorHandle,
+      ElementHandle const & targetHandle);
   void ProcessAssign(std::string const & alias, ElementHandle const & value);
 
 private:
