@@ -43,35 +43,33 @@ protected:
     }
 
     // generate triples
-    auto const & triples = parser.GetParsedTriples();
     std::unordered_set<std::string> typeArcsCache;
-    for (auto const & t : triples)
-    {
-      auto const & source = parser.GetParsedElement(t.m_source);
-      auto const & connector = parser.GetParsedElement(t.m_connector);
-      auto const & target = parser.GetParsedElement(t.m_target);
+    parser.ForEachParsedTriple(
+        [&](scs::ParsedElement const & source,
+            scs::ParsedElement const & connector,
+            scs::ParsedElement const & target) -> void
+        {
+          auto const & sourceResult = ResolveElement(source);
+          auto const & targetResult = ResolveElement(target);
 
-      auto const & sourceResult = ResolveElement(source);
-      auto const & targetResult = ResolveElement(target);
+          ScType const & connectorType = connector.GetType();
+          std::string const & connectorIdtf = connector.GetIdtf();
+          if (!connectorType.IsConnector())
+            SC_THROW_EXCEPTION(
+                utils::ExceptionInvalidType,
+                "Specified in triple sc-connector `" << connectorIdtf << "` has incorrect type `"
+                                                     << std::string(connectorType) << "`.");
 
-      ScType const & connectorType = connector.GetType();
-      std::string const & connectorIdtf = connector.GetIdtf();
-      if (!connectorType.IsConnector())
-        SC_THROW_EXCEPTION(
-            utils::ExceptionInvalidType,
-            "Specified in triple sc-connector `" << connectorIdtf << "` has incorrect type `"
-                                                 << std::string(connectorType) << "`.");
+          ScAddr const connectorAddr = m_ctx.GenerateConnector(connectorType, sourceResult.first, targetResult.first);
+          m_idtfCache.insert({connectorIdtf, connectorAddr});
 
-      ScAddr const arcAddr = m_ctx.GenerateConnector(connectorType, sourceResult.first, targetResult.first);
-      m_idtfCache.insert({connectorIdtf, arcAddr});
-
-      if (m_outputStructure.IsValid())
-      {
-        AppendToOutputStructure(sourceResult.first, arcAddr, targetResult.first);
-        AppendToOutputStructure(sourceResult.second);
-        AppendToOutputStructure(targetResult.second);
-      }
-    }
+          if (m_outputStructure.IsValid())
+          {
+            AppendToOutputStructure(sourceResult.first, connectorAddr, targetResult.first);
+            AppendToOutputStructure(sourceResult.second);
+            AppendToOutputStructure(targetResult.second);
+          }
+        });
 
     parser.ForEachParsedElement(
         [this](scs::ParsedElement const & el)
@@ -174,7 +172,8 @@ private:
         else
           SC_THROW_EXCEPTION(
               utils::ExceptionInvalidState,
-              "Incorrect element type `" << std::string(type) << "` for element `" << el.GetIdtf() << "`.");
+              "Element `" << el.GetIdtf() << "` can't be resolved, because it has not sc-node type `"
+                          << std::string(type) << "`.");
 
         // setup system identifier
         if (el.GetVisibility() == scs::Visibility::System)
