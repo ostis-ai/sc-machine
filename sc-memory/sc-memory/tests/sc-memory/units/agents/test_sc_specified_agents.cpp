@@ -1941,9 +1941,9 @@ TEST_F(ScSpecifiedAgentTest, ATestSpecifiedAgentGeneratingIncomingArcHasFullSpec
   ScAddr const & testOtherSetAddr = m_ctx->SearchElementBySystemIdentifier("test_other_set");
   ScAddr const & testRelation = m_ctx->SearchElementBySystemIdentifier("test_relation");
   {
-    ScMemoryContextEventsPendingGuard guard(* m_ctx);
-    ScAddr const & edgeAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, testOtherSetAddr, testSetAddr);
-    m_ctx->GenerateConnector(ScType::ConstPermPosArc, testRelation, edgeAddr);
+    ScMemoryContextEventsPendingGuard guard(*m_ctx);
+    ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstPermPosArc, testOtherSetAddr, testSetAddr);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, testRelation, arcAddr);
   }
 
   EXPECT_TRUE(ATestSpecifiedAgent::msWaiter.Wait());
