@@ -41,7 +41,7 @@ cmake --build --preset release
 
 The build artifacts will be located in the `build/<Release|Debug>/bin` folder.
 
-Default installation folder location (used for package consumption) is `build/<Release|Debug>/install`, installation process can be fired by appending `--target install` to the `cmake --build --preset <preset>` command.
+We also define `INSTALL` instructions in our CMake. This routine can be launched by appending `--target install` to the `cmake --build --preset <preset>` folder. The result of this command will reside in `build/<Release|Debug>/install` (our default install folder). Install folder is basically a pack of portable executable files and shared libraries required to get sc-machine up and running, this command is intended to create clutter-free archives/folders with our code which you can then use in your own projects.
 
 ## Consuming the package
 
