@@ -47,19 +47,37 @@ TEST(scs_alias, recursive_assigns)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 2u);
 
-  auto const t = triples.back();
-  auto const & src = parser.GetParsedElement(t.m_source);
-  auto const & arcAddr = parser.GetParsedElement(t.m_connector);
-  auto const & trg = parser.GetParsedElement(t.m_target);
+  {
+    auto const t = triples.front();
+    auto source = parser.GetParsedElement(t.m_source);
+    auto connector = parser.GetParsedElement(t.m_connector);
+    auto target = parser.GetParsedElement(t.m_target);
 
-  EXPECT_EQ(src.GetIdtf(), "_y");
-  EXPECT_TRUE(src.GetType().IsNode());
-  EXPECT_TRUE(src.GetType().IsVar());
+    EXPECT_EQ(source.GetIdtf(), "sc_node_tuple");
+    EXPECT_TRUE(source.GetType().IsNode());
+    EXPECT_TRUE(source.GetType().IsConst());
 
-  EXPECT_EQ(arcAddr.GetType(), ScType::ConstPermNegArc);
+    EXPECT_EQ(connector.GetType(), ScType::ConstPermPosArc);
 
-  EXPECT_EQ(trg.GetIdtf(), "x");
-  EXPECT_EQ(trg.GetType(), ScType::ConstNodeTuple);
+    EXPECT_EQ(target.GetIdtf(), "x");
+    EXPECT_EQ(target.GetType(), ScType::ConstNodeTuple);
+  }
+
+  {
+    auto const t = triples.back();
+    auto source = parser.GetParsedElement(t.m_source);
+    auto connector = parser.GetParsedElement(t.m_connector);
+    auto target = parser.GetParsedElement(t.m_target);
+
+    EXPECT_EQ(source.GetIdtf(), "_y");
+    EXPECT_TRUE(source.GetType().IsNode());
+    EXPECT_TRUE(source.GetType().IsVar());
+
+    EXPECT_EQ(connector.GetType(), ScType::ConstPermNegArc);
+
+    EXPECT_EQ(target.GetIdtf(), "x");
+    EXPECT_EQ(target.GetType(), ScType::ConstNodeTuple);
+  }
 }
 
 TEST(scs_alias, reassign)
@@ -74,34 +92,50 @@ TEST(scs_alias, reassign)
   EXPECT_EQ(triples.size(), 3u);
 
   {
+    auto const & t = triples[0];
+
+    auto const & source = parser.GetParsedElement(t.m_source);
+    auto const & connector = parser.GetParsedElement(t.m_connector);
+    auto const & target = parser.GetParsedElement(t.m_target);
+
+    EXPECT_EQ(source.GetIdtf(), "sc_node_struct");
+    EXPECT_EQ(source.GetType(), ScType::ConstNode);
+
+    EXPECT_EQ(connector.GetType(), ScType::ConstPermPosArc);
+
+    EXPECT_EQ(target.GetIdtf(), "_x");
+    EXPECT_EQ(target.GetType(), ScType::VarNodeStructure);
+  }
+
+  {
     auto const & t = triples[1];
 
-    auto const & src = parser.GetParsedElement(t.m_source);
-    auto const & arcAddr = parser.GetParsedElement(t.m_connector);
-    auto const & trg = parser.GetParsedElement(t.m_target);
+    auto const & source = parser.GetParsedElement(t.m_source);
+    auto const & connector = parser.GetParsedElement(t.m_connector);
+    auto const & target = parser.GetParsedElement(t.m_target);
 
-    EXPECT_EQ(src.GetIdtf(), "y");
-    EXPECT_EQ(src.GetType(), ScType::ConstNode);
+    EXPECT_EQ(source.GetIdtf(), "y");
+    EXPECT_EQ(source.GetType(), ScType::ConstNode);
 
-    EXPECT_EQ(arcAddr.GetType(), ScType::VarFuzArc);
+    EXPECT_EQ(connector.GetType(), ScType::VarFuzArc);
 
-    EXPECT_EQ(trg.GetIdtf(), "_x");
-    EXPECT_EQ(trg.GetType(), ScType::VarNodeStructure);
+    EXPECT_EQ(target.GetIdtf(), "_x");
+    EXPECT_EQ(target.GetType(), ScType::VarNodeStructure);
   }
 
   {
     auto const & t = triples[2];
 
-    auto const & src = parser.GetParsedElement(t.m_source);
-    auto const & arcAddr = parser.GetParsedElement(t.m_connector);
-    auto const & trg = parser.GetParsedElement(t.m_target);
+    auto const & source = parser.GetParsedElement(t.m_source);
+    auto const & connector = parser.GetParsedElement(t.m_connector);
+    auto const & target = parser.GetParsedElement(t.m_target);
 
-    EXPECT_EQ(src.GetIdtf(), "z");
-    EXPECT_EQ(src.GetType(), ScType::ConstNode);
+    EXPECT_EQ(source.GetIdtf(), "z");
+    EXPECT_EQ(source.GetType(), ScType::ConstNode);
 
-    EXPECT_EQ(arcAddr.GetType(), ScType::VarActualTempPosArc);
+    EXPECT_EQ(connector.GetType(), ScType::VarActualTempPosArc);
 
-    EXPECT_EQ(trg.GetType(), ScType::VarNodeLink);
+    EXPECT_EQ(target.GetType(), ScType::VarNodeLink);
   }
 }
 

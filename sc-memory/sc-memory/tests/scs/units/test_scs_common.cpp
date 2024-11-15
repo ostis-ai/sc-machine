@@ -205,7 +205,6 @@ TEST(scs_common, SCsNodeKeynodes)
   auto const GetSourceNodeType = [&triples, &parser](size_t index) -> ScType
   {
     EXPECT_TRUE(index < triples.size());
-    std::cout << std::string(parser.GetParsedElement(triples[index].m_source).GetType()) << std::endl;
     return parser.GetParsedElement(triples[index].m_source).GetType();
   };
 
@@ -215,7 +214,7 @@ TEST(scs_common, SCsNodeKeynodes)
     return parser.GetParsedElement(triples[index].m_target).GetType();
   };
 
-  for (size_t i = 0, j = 0; i < nodeTypes.size(); i += 3, ++j)
+  for (size_t i = 0, j = 0; j < nodeTypes.size(); i += 3, ++j)
   {
     EXPECT_EQ(GetSourceNodeType(i), TestScType(nodeTypes[j]).BitOr(ScType::Var));
     EXPECT_EQ(GetTargetNodeType(i), TestScType(nodeTypes[j]).BitOr(ScType::Const));

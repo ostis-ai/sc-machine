@@ -45,7 +45,7 @@ public:
   _SC_EXTERN ScType const & GetType() const;
 
   _SC_EXTERN Visibility GetVisibility() const;
-  _SC_EXTERN bool IsMetaElement() const;
+  _SC_EXTERN bool IsElementType() const;
 
   _SC_EXTERN std::string const & GetValue() const;
 
@@ -62,7 +62,7 @@ protected:
   bool m_isReversed : 1;    // flag used just for an connectors
   std::string m_value;      // string representation of content/link value
   bool m_isURL : 1;         // flag used to determine if ScLink value is an URL
-  bool m_isMetaElement;
+  bool m_isElementType;     // flag denoting whether the element is an sc-element, denoting the type of sc-elements
 };
 
 class ElementHandle
@@ -70,13 +70,13 @@ class ElementHandle
 public:
   _SC_EXTERN explicit ElementHandle(ElementID id);
   _SC_EXTERN ElementHandle();
-  _SC_EXTERN ElementHandle(ElementID id, Visibility visibility, bool isMetaElement = false);
+  _SC_EXTERN ElementHandle(ElementID id, Visibility visibility, bool IsElementType = false);
   _SC_EXTERN ElementHandle(ElementHandle const & other) = default;
 
   _SC_EXTERN ElementID operator*() const;
   _SC_EXTERN Visibility GetVisibility() const;
   _SC_EXTERN bool IsLocal() const;
-  _SC_EXTERN bool IsMetaElement() const;
+  _SC_EXTERN bool IsElementType() const;
   _SC_EXTERN bool IsValid() const;
   _SC_EXTERN bool operator==(ElementHandle const & other) const;
   _SC_EXTERN bool operator!=(ElementHandle const & other) const;
@@ -88,7 +88,7 @@ private:
 
   ElementID m_id;
   Visibility m_visibility;
-  bool m_isMetaElement;
+  bool m_isElementType;
 };
 
 struct ParsedTriple
@@ -123,7 +123,7 @@ public:
   _SC_EXTERN bool Parse(std::string const & str);
   _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & handle) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
-  _SC_EXTERN void ForEachParsedTriple(
+  _SC_EXTERN void ForEachGeneratableTriple(
       std::function<void(ParsedElement const &, ParsedElement const &, ParsedElement const &)> const & callback) const;
   _SC_EXTERN std::string const & GetParseError() const;
   _SC_EXTERN AliasHandles const & GetAliases() const;
@@ -140,6 +140,7 @@ public:
 protected:
   ParsedElement & GetParsedElementRef(ElementHandle const & handle);
 
+  bool IsMetaElement(ParsedElement const & element) const;
   ElementHandle ResolveAlias(std::string const & name);
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
@@ -182,6 +183,7 @@ private:
   TripleVector m_parsedTriples;
   IdtfToParsedElementMap m_idtfToParsedElement;
   AliasHandles m_aliasHandles;
+  std::set<std::string> m_elementTypeArcs;
 
   std::string m_lastError;
 
