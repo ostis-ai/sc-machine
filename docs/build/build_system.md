@@ -19,11 +19,49 @@ If you wish to use CLI instead, you can list all the available configurations in
 cmake --list-presets
 ```
 
+### Configure Presets
+
+These presets define how the project is configured before building.
+
+| **Name**                     | **Description**                                                  | **Purpose**                                                     |
+|------------------------------|------------------------------------------------------------------|-----------------------------------------------------------------|
+| `debug`                      | Debug config with tests and benchmarks                           | Use for debugging and testing during development.               |
+| `debug-conan`                | Debug config with tests and benchmarks (Conan dependencies used) | Use if you are utilizing Conan for dependency management.       |
+| `release`                    | Release config                                                   | Use for production-ready builds.                                |
+| `release-conan`              | Release config (Conan dependencies used)                         | Use if you are utilizing Conan for dependency management.       |
+| `release-with-tests`         | Release config with tests                                        | Use for production builds that require testing.                 |
+| `release-with-tests-conan`   | Release config with tests (Conan dependencies used)              | Use if you want to run tests in a production build using Conan. |
+
+### Build Presets
+
+These presets are linked to the configure presets and define how the build process is executed.
+
+| **Name**   | **Configure Preset**  |
+|------------|-----------------------|
+| `debug`    | debug                 |
+| `release`  | release               |
+
+### Package Presets
+
+These presets are used for packaging the built project.
+
+| **Name**         | **Configure Preset**   |
+|------------------|------------------------|
+| `release-conan`  | release-conan          |
+| `release`        | release                |
+
+### Recommendations
+
+- For development and debugging, use the **Debug config** (`debug`) preset. This configuration includes options for testing and benchmarking, making it ideal for development environments where you need to troubleshoot and test your code.
+- For production builds, choose the **Release config** (`release`) preset to create optimized builds without debugging information. This is suitable for deploying applications.
+- If your project relies on Conan, select either the **Debug config (Conan)** (`debug-conan`) or the **Release config (Conan)** (`release-conan`) presets, depending on whether you are debugging or preparing a release.
+- Choose the **Release config with tests** (`release-with-tests`) or its Conan variant (`release-with-tests-conan`) if you want to ensure that your production build has been tested thoroughly before deployment.
+
 For example, this is how to build sc-machine in debug mode using dependencies from Conan:
 
 ```sh
-# use pipx to install Conan if not already installed
-# Install pipx first using this guide: https://pipx.pypa.io/stable/installation/ 
+# Use pipx to install Conan if not already installed
+# Install pipx first using guide: https://pipx.pypa.io/stable/installation/ 
 pipx install conan
 # Use preset with Conan-provided dependencies and debug build type
 cmake --preset debug-conan
@@ -52,11 +90,14 @@ We also define `INSTALL` instructions in our CMake. This routine can be launched
 The package artifacts are available [here](https://github.com/ostis-ai/sc-machine/releases). To use these in your CMake project, download and extract the release for your platform to any convenient location. Then make it available to CMake by appending folder path to `CMAKE_PREFIX_PATH`:
 
 ```cmake
-# import sc-machine from the Releases archive
-# you can override this variable via -D<proj_name>_PATH_SC_MACHINE_PATH or CMakeUserPreset.json / CMakePreset.json files
-set(<proj_name>_SC_MACHINE_PATH "/location/to/sc-machine-<version>-<platform>" CACHE PATH "sc-machine installation path")
+# Import sc-machine from the Releases archive.
+# You can override this variable via -D<proj_name>_PATH_SC_MACHINE_PATH 
+# or CMakeUserPreset.json / CMakePreset.json files.
+set(<proj_name>_SC_MACHINE_PATH "/location/to/sc-machine-<version>-<platform>" 
+  CACHE PATH "sc-machine installation path"
+)
 
-# can be overriden using env variables as well
+# It can be overriden using env variables as well.
 if(DEFINED ENV{<proj_name>_SC_MACHINE_PATH})
   set(<proj_name>_SC_MACHINE_PATH "$ENV{<proj_name>_SC_MACHINE_PATH}")
 endif()
@@ -175,7 +216,8 @@ conan editable list
 # sc-machine of the corresponding version should be in the output
 # make changes in the project and run a rebuild
 cmake --preset debug-conan
-# using a debug build since that would allow us to step into the library's code while debugging
+# using a debug build since that would allow us to step 
+# into the library's code while debugging
 cmake --build --preset debug
 ```
 
