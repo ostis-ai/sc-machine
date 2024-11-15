@@ -44,7 +44,7 @@ protected:
 
     // generate triples
     std::unordered_set<std::string> typeArcsCache;
-    parser.ForEachParsedTriple(
+    parser.ForEachGeneratableTriple(
         [&](scs::ParsedElement const & source,
             scs::ParsedElement const & connector,
             scs::ParsedElement const & target) -> void
@@ -239,7 +239,8 @@ private:
     {
       // check if it's a number format
       std::regex const rNumber(
-          "^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)\"$");
+          "^\\^\"(int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|double)\\s*:\\s*([0-9]+|[0-9]+[.][0-9]+)"
+          "\"$");
       std::smatch result;
       if (std::regex_match(el.GetValue(), result, rNumber))
       {
@@ -296,6 +297,7 @@ private:
 SCsHelper::SCsHelper(ScMemoryContext & ctx, SCsFileInterfacePtr fileInterface)
   : m_ctx(ctx)
   , m_fileInterface(std::move(fileInterface))
+
 {
 }
 
