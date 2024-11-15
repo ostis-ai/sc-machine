@@ -106,8 +106,8 @@ bool TestEventSubscriptionGenerateConnector(ScAgentContext * ctx)
     nodeAddr2 = ctx->GenerateNode(ScType::ConstNode);
     EXPECT_TRUE(nodeAddr2.IsValid());
     {
-      //sometimes OnEvent is called before arcAddr is assigned to generated connector, so pending is used to assure that
-      // arcAddr is assigned before it is used in OnEvent
+      // sometimes OnEvent is called before arcAddr is assigned to generated connector, so pending is used to assure
+      // that arcAddr is assigned before it is used in OnEvent
       ScMemoryContextEventsPendingGuard guard(*ctx);
       arcAddr = ctx->GenerateConnector(eventConnectorType, nodeAddr2, nodeAddr1);
       EXPECT_TRUE(arcAddr.IsValid());
@@ -1374,6 +1374,7 @@ TEST_F(ScEventTest, BlockEventsGuardAndEmitAfter)
 
 TEST_F(ScEventTest, TwoSubscriptionsForOneArcErasure)
 {
+  int const sleepTime = 20;
   ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
   bool isLongExecutedSubscriptionCalled = false;
   auto longExecutedSubscription =
@@ -1383,21 +1384,21 @@ TEST_F(ScEventTest, TwoSubscriptionsForOneArcErasure)
           {
             EXPECT_FALSE(isLongExecutedSubscriptionCalled);
             isLongExecutedSubscriptionCalled = true;
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 2));
             EXPECT_TRUE(m_ctx->IsElement(event.GetArc()));
             auto const & [sourceAddr, targetAddr] = m_ctx->GetConnectorIncidentElements(event.GetArc());
             EXPECT_TRUE(m_ctx->IsElement(sourceAddr));
             EXPECT_TRUE(m_ctx->IsElement(targetAddr));
-            auto const & [source2Addr, target2Addr] = m_ctx->GetConnectorIncidentElements(targetAddr);
-            EXPECT_TRUE(m_ctx->IsElement(source2Addr));
-            EXPECT_TRUE(m_ctx->IsElement(target2Addr));
-            auto const & [source3Addr, target3Addr] = m_ctx->GetConnectorIncidentElements(target2Addr);
-            EXPECT_TRUE(m_ctx->IsElement(source3Addr));
-            EXPECT_TRUE(m_ctx->IsElement(target3Addr));
-            auto const & [source4Addr, target4Addr] = m_ctx->GetConnectorIncidentElements(target3Addr);
-            EXPECT_TRUE(m_ctx->IsElement(source4Addr));
-            EXPECT_TRUE(m_ctx->IsElement(target4Addr));
-            EXPECT_TRUE(m_ctx->GetElementType(target4Addr).IsNode());
+            auto const & [sourceAddr2, targetAddr2] = m_ctx->GetConnectorIncidentElements(targetAddr);
+            EXPECT_TRUE(m_ctx->IsElement(sourceAddr2));
+            EXPECT_TRUE(m_ctx->IsElement(targetAddr2));
+            auto const & [sourceAddr3, targetAddr3] = m_ctx->GetConnectorIncidentElements(targetAddr2);
+            EXPECT_TRUE(m_ctx->IsElement(sourceAddr3));
+            EXPECT_TRUE(m_ctx->IsElement(targetAddr3));
+            auto const & [sourceAddr4, targetAddr4] = m_ctx->GetConnectorIncidentElements(targetAddr3);
+            EXPECT_TRUE(m_ctx->IsElement(sourceAddr4));
+            EXPECT_TRUE(m_ctx->IsElement(targetAddr4));
+            EXPECT_TRUE(m_ctx->GetElementType(targetAddr4).IsNode());
           });
   bool isShortExecutedSubscriptionCalled = false;
   auto shortExecutedSubscription =
@@ -1417,8 +1418,274 @@ TEST_F(ScEventTest, TwoSubscriptionsForOneArcErasure)
   ScAddr const & arcAddr2 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr4, arcAddr1);
   ScAddr const & arcAddr3 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr5, arcAddr2);
   m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr1, arcAddr3);
+
   m_ctx->EraseElement(nodeAddr2);
-  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
   EXPECT_TRUE(isShortExecutedSubscriptionCalled);
+  EXPECT_TRUE(isLongExecutedSubscriptionCalled);
+}
+
+TEST_F(ScEventTest, TwoSubscriptionsForNodeErasure)
+{
+  int const sleepTime = 20;
+  ScAddr nodeWithoutSubscriptionsAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeWithTwoSubscriptionsAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  bool isShortExecutedSubscriptionCalled = false;
+  auto shortExecutedSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
+      nodeWithTwoSubscriptionsAddr,
+      [&isShortExecutedSubscriptionCalled](auto const &)
+      {
+        EXPECT_FALSE(isShortExecutedSubscriptionCalled);
+        isShortExecutedSubscriptionCalled = true;
+      });
+  bool isLongExecutedSubscriptionCalled = false;
+  auto longExecutedSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
+      nodeWithTwoSubscriptionsAddr,
+      [&isLongExecutedSubscriptionCalled, &sleepTime](auto const & event)
+      {
+        EXPECT_FALSE(isLongExecutedSubscriptionCalled);
+        isLongExecutedSubscriptionCalled = true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+      });
+
+  m_ctx->EraseElement(nodeWithTwoSubscriptionsAddr);
+  m_ctx->EraseElement(nodeWithoutSubscriptionsAddr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 2));
+  SC_LOG_INFO("checking nodeWithoutSubscriptionsAddr first");
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  SC_LOG_INFO("checking nodeWithTwoSubscriptionsAddr first");
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithTwoSubscriptionsAddr));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+  SC_LOG_INFO("checking nodeWithTwoSubscriptionsAddr second");
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithTwoSubscriptionsAddr));
+  EXPECT_TRUE(isShortExecutedSubscriptionCalled);
+  EXPECT_TRUE(isLongExecutedSubscriptionCalled);
+}
+
+TEST_F(ScEventTest, SubscriptionForNodeAndConnectorsErasureWithSubscribedNodeErasingFirstAndNodeFinishEarlier)
+{
+  int const sleepTime = 20;
+  ScAddr nodeWithoutSubscriptionsAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeWithSubscriptionAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeWithSubscriptionAddr, nodeWithoutSubscriptionsAddr);
+  bool isShortExecutedSubscriptionCalled = false;
+  auto shortExecutedSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
+      nodeWithSubscriptionAddr,
+      [&isShortExecutedSubscriptionCalled](auto const &)
+      {
+        EXPECT_FALSE(isShortExecutedSubscriptionCalled);
+        isShortExecutedSubscriptionCalled = true;
+      });
+  bool isLongExecutedSubscriptionCalled = false;
+  auto longExecutedSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeWithSubscriptionAddr,
+          [&isLongExecutedSubscriptionCalled, &sleepTime](auto const & event)
+          {
+            EXPECT_FALSE(isLongExecutedSubscriptionCalled);
+            isLongExecutedSubscriptionCalled = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+          });
+
+  m_ctx->EraseElement(nodeWithSubscriptionAddr);
+  m_ctx->EraseElement(nodeWithoutSubscriptionsAddr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 4));
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  EXPECT_TRUE(isShortExecutedSubscriptionCalled);
+  EXPECT_TRUE(isLongExecutedSubscriptionCalled);
+}
+
+TEST_F(ScEventTest, SubscriptionForNodeAndConnectorsErasureWithSubscribedNodeErasingFirstAndNodeFinishLater)
+{
+  int const sleepTime = 20;
+  ScAddr nodeWithoutSubscriptionsAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeWithSubscriptionAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeWithSubscriptionAddr, nodeWithoutSubscriptionsAddr);
+  bool isShortExecutedSubscriptionCalled = false;
+  auto shortExecutedSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeWithSubscriptionAddr,
+          [&isShortExecutedSubscriptionCalled](auto const &)
+          {
+            EXPECT_FALSE(isShortExecutedSubscriptionCalled);
+            isShortExecutedSubscriptionCalled = true;
+          });
+  bool isLongExecutedSubscriptionCalled = false;
+  auto longExecutedSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
+      nodeWithSubscriptionAddr,
+      [&isLongExecutedSubscriptionCalled, &sleepTime](auto const & event)
+      {
+        EXPECT_FALSE(isLongExecutedSubscriptionCalled);
+        isLongExecutedSubscriptionCalled = true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+      });
+
+  m_ctx->EraseElement(nodeWithSubscriptionAddr);
+  m_ctx->EraseElement(nodeWithoutSubscriptionsAddr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 2));
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  EXPECT_TRUE(isShortExecutedSubscriptionCalled);
+  EXPECT_TRUE(isLongExecutedSubscriptionCalled);
+}
+
+TEST_F(ScEventTest, SubscriptionForNodeAndConnectorsErasureWithSubscribedNodeErasingSecondAndNodeFinishEarlier)
+{
+  int const sleepTime = 20;
+  ScAddr nodeWithoutSubscriptionsAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeWithSubscriptionAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeWithSubscriptionAddr, nodeWithoutSubscriptionsAddr);
+  bool isShortExecutedSubscriptionCalled = false;
+  auto shortExecutedSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
+      nodeWithSubscriptionAddr,
+      [&isShortExecutedSubscriptionCalled](auto const &)
+      {
+        EXPECT_FALSE(isShortExecutedSubscriptionCalled);
+        isShortExecutedSubscriptionCalled = true;
+      });
+  bool isLongExecutedSubscriptionCalled = false;
+  auto longExecutedSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeWithSubscriptionAddr,
+          [&isLongExecutedSubscriptionCalled, &sleepTime](auto const & event)
+          {
+            EXPECT_FALSE(isLongExecutedSubscriptionCalled);
+            isLongExecutedSubscriptionCalled = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+          });
+
+  m_ctx->EraseElement(nodeWithoutSubscriptionsAddr);
+  m_ctx->EraseElement(nodeWithSubscriptionAddr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 4));
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  EXPECT_TRUE(isShortExecutedSubscriptionCalled);
+  EXPECT_TRUE(isLongExecutedSubscriptionCalled);
+}
+
+TEST_F(ScEventTest, SubscriptionForNodeAndConnectorsErasureWithSubscribedNodeErasingSecondAndNodeFinishLater)
+{
+  int const sleepTime = 20;
+  ScAddr nodeWithoutSubscriptionsAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeWithSubscriptionAddr = m_ctx->GenerateNode(ScType::ConstNode);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeWithSubscriptionAddr, nodeWithoutSubscriptionsAddr);
+  bool isShortExecutedSubscriptionCalled = false;
+  auto shortExecutedSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeWithSubscriptionAddr,
+          [&isShortExecutedSubscriptionCalled](auto const &)
+          {
+            EXPECT_FALSE(isShortExecutedSubscriptionCalled);
+            isShortExecutedSubscriptionCalled = true;
+          });
+  bool isLongExecutedSubscriptionCalled = false;
+  auto longExecutedSubscription = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
+      nodeWithSubscriptionAddr,
+      [&isLongExecutedSubscriptionCalled, &sleepTime](auto const & event)
+      {
+        EXPECT_FALSE(isLongExecutedSubscriptionCalled);
+        isLongExecutedSubscriptionCalled = true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+      });
+
+  m_ctx->EraseElement(nodeWithoutSubscriptionsAddr);
+  m_ctx->EraseElement(nodeWithSubscriptionAddr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 4));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
+  EXPECT_TRUE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+  EXPECT_FALSE(m_ctx->IsElement(nodeWithSubscriptionAddr));
+  EXPECT_TRUE(isShortExecutedSubscriptionCalled);
+  EXPECT_TRUE(isLongExecutedSubscriptionCalled);
+}
+
+TEST_F(ScEventTest, SubscriptionForNodeAndTwoConnectorsErasureWithNodeFinishEarlier)
+{
+  int const sleepTime = 20;
+  ScAddr nodeAddr1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeAddr2 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeAddr3 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeAddr4 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr nodeAddr5 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr arc1 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr1, nodeAddr2);
+  ScAddr arc2 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr3, nodeAddr4);
+  ScAddr arc3 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, arc2, arc1);
+  ScAddr arc4 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, nodeAddr5, arc2);
+
+  bool isShortExecutedSubscriptionForArc1Called = false;
+  auto shortExecutedSubscriptionForArc1 = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
+      nodeAddr1,
+      [&isShortExecutedSubscriptionForArc1Called](auto const &)
+      {
+        EXPECT_FALSE(isShortExecutedSubscriptionForArc1Called);
+        isShortExecutedSubscriptionForArc1Called = true;
+      });
+  bool isMediumExecutedSubscriptionForArc4Called = false;
+  auto mediumExecutedSubscriptionForArc4 =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeAddr5,
+          [&isMediumExecutedSubscriptionForArc4Called, &sleepTime](auto const &)
+          {
+            EXPECT_FALSE(isMediumExecutedSubscriptionForArc4Called);
+            isMediumExecutedSubscriptionForArc4Called = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 2));
+          });
+  bool isLongExecutedSubscriptionCalled = false;
+  auto longExecutedSubscription =
+      m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
+          nodeAddr1,
+          [&isLongExecutedSubscriptionCalled, &sleepTime](auto const & event)
+          {
+            EXPECT_FALSE(isLongExecutedSubscriptionCalled);
+            isLongExecutedSubscriptionCalled = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+          });
+
+  m_ctx->EraseElement(nodeAddr1);
+  m_ctx->EraseElement(nodeAddr2);
+  m_ctx->EraseElement(nodeAddr4);
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 4));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr2));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr3));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr4));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr5));
+  EXPECT_TRUE(m_ctx->IsElement(arc1));
+  EXPECT_TRUE(m_ctx->IsElement(arc2));
+  EXPECT_FALSE(m_ctx->IsElement(arc3));
+  EXPECT_TRUE(m_ctx->IsElement(arc4));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 3));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr2));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr3));
+  EXPECT_FALSE(m_ctx->IsElement(nodeAddr4));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr5));
+  EXPECT_TRUE(m_ctx->IsElement(arc1));
+  EXPECT_FALSE(m_ctx->IsElement(arc2));
+  EXPECT_FALSE(m_ctx->IsElement(arc3));
+  EXPECT_FALSE(m_ctx->IsElement(arc4));
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+  EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
+  EXPECT_FALSE(m_ctx->IsElement(nodeAddr2));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr3));
+  EXPECT_FALSE(m_ctx->IsElement(nodeAddr4));
+  EXPECT_TRUE(m_ctx->IsElement(nodeAddr5));
+  EXPECT_FALSE(m_ctx->IsElement(arc1));
+  EXPECT_FALSE(m_ctx->IsElement(arc2));
+  EXPECT_FALSE(m_ctx->IsElement(arc3));
+  EXPECT_FALSE(m_ctx->IsElement(arc4));
+
+  EXPECT_TRUE(isShortExecutedSubscriptionForArc1Called);
+  EXPECT_TRUE(isMediumExecutedSubscriptionForArc4Called);
   EXPECT_TRUE(isLongExecutedSubscriptionCalled);
 }

@@ -103,20 +103,19 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
       || SC_ADDR_IS_EQUAL(event_subscription->event_type_addr, sc_event_before_erase_element_addr))
   {
     sc_monitor_acquire_write(&queue->pool_monitor);
-    sc_uint32 * count = (sc_uint32 *)sc_hash_table_get(
-        queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(event->connector_addr)));
-    if (count != null_ptr)
+    sc_addr key = SC_ADDR_IS_EQUAL(event_subscription->event_type_addr, sc_event_before_erase_element_addr)
+                      ? event->event_addr
+                      : event->connector_addr;
+    sc_uint32 count = (sc_uint32)(sc_uint64)sc_hash_table_get(
+        queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)));
+    if (count != 0)
     {
-      --(*count);
-      if (*count == 0)
-      {
-        sc_hash_table_remove(
-            queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(event->connector_addr)));
-        sc_mem_free(count);
-      }
+      --count;
+      if (count == 0)
+        sc_hash_table_remove(queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)));
       else
         sc_hash_table_insert(
-            queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(event->connector_addr)), count);
+            queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)), GUINT_TO_POINTER(count));
     }
     sc_monitor_release_write(&queue->pool_monitor);
   }
@@ -250,15 +249,14 @@ void _sc_event_emission_manager_add(
       || SC_ADDR_IS_EQUAL(event_subscription->event_type_addr, sc_event_before_erase_edge_addr)
       || SC_ADDR_IS_EQUAL(event_subscription->event_type_addr, sc_event_before_erase_element_addr))
   {
-    sc_uint32 * count = (sc_uint32 *)sc_hash_table_get(
-        manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(connector_addr)));
-    if (count == null_ptr)
-    {
-      count = sc_mem_new(sc_uint32, 1);
-      *count = 0;
-    }
-    ++(*count);
-    sc_hash_table_insert(manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(connector_addr)), count);
+    sc_addr key = SC_ADDR_IS_EQUAL(event_subscription->event_type_addr, sc_event_before_erase_element_addr)
+                      ? event_subscription->subscription_addr
+                      : connector_addr;
+    sc_uint32 count = (sc_uint32)(sc_uint64)sc_hash_table_get(
+        manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)));
+    ++count;
+    sc_hash_table_insert(
+        manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)), GUINT_TO_POINTER(count));
   }
 
   g_thread_pool_push(manager->thread_pool, event, null_ptr);
