@@ -21,11 +21,18 @@ TEST_F(ScTemplateSCsTest, BuildSuccessful)
   m_ctx->BuildTemplate(templ, data);
 }
 
-TEST_F(ScTemplateSCsTest, BuildFail)
+TEST_F(ScTemplateSCsTest, InvalidSCs)
 {
   ScTemplate templ;
   sc_char const * data = "_a _-> b";
   EXPECT_THROW(m_ctx->BuildTemplate(templ, data), utils::ExceptionParseError);
+}
+
+TEST_F(ScTemplateSCsTest, ElementNotFound)
+{
+  ScTemplate templ;
+  sc_char const * data = "_a _-> b;;";
+  EXPECT_THROW(m_ctx->BuildTemplate(templ, data), utils::ExceptionInvalidState);
 }
 
 TEST_F(ScTemplateSCsTest, GenBuildSearch)
