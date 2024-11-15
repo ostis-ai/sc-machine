@@ -229,7 +229,7 @@ You can find more info in [Conan docs](https://docs.conan.io/2/tutorial/developi
 
 ### Falling Back to System Dependencies
 
-If Conan is not used, the build system will attempt to find system-installed dependencies. Ensure that the necessary development packages are installed on your system.
+If Conan is not used, the CMake will attempt to find system-installed dependencies. Ensure that the necessary development packages are installed on your system.
 
 Currently, we require the following packages to be available to CMake at build-time:
 

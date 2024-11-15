@@ -18,6 +18,7 @@ function usage() {
 
         Setting REBUILD_KB environment variable inside the container will trigger a KB rebuild. Setting custom starting point for sc-builder can be done using KB_PATH environment variable, "/kb" is used as a default KB_PATH.
         CONFIG_PATH and BINARY_PATH environment variables can provide the respective settings if the use of flags is undesirable.
+        EXTENSIONS_PATH can be set to specify the path for extensions used by sc-machine.
 
 USAGE
     exit 1
