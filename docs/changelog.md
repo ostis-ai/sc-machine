@@ -141,7 +141,6 @@ encapsulated this logic;
 - Sources of the sc-machine were separated into public and private ones. Public sources of targets are located in `include` directory, private ones - in `src` directory, tests for code - in `tests` directory. Private sources can't be included into project's code directly. Besides that there are changes of location of some API classes of the sc-machine:
     - Now `ScTest` class is part of `sc-memory` target. Use `#include <sc-memory/test/sc_test.hpp>` to include it into code.
     - To include `ScsLoader` class into code, use `#include <sc-builder/sc_loader.hpp>`.
-- `[sc-builder]` group was removed from config.
 
 See documentation, to learn more about using new API.
 
@@ -270,7 +269,6 @@ See documentation, to learn more about using new API.
 
 ### Removed
 
-- Config group `[sc-builder]`
 - Config option `update_period` in `[sc-memory]`
 - Config option `save_period` in `[sc-memory]`
 - `sc-server` binary, `run_sc_server.sh` script and docker entrypoint command `serve`
