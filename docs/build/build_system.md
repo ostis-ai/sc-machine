@@ -8,6 +8,9 @@ The project uses CMake as the build system generator. CMake allows for cross-pla
 
 ## Compilation steps
 
+!!! warning
+    Our build system settings require using CMake 3.24 or newer. Make sure your version is compatible by running `cmake --version` and use the [CMake installation guide](https://cliutils.gitlab.io/modern-cmake/chapters/intro/installing.html) to upgrade to latest version if yours is older than 3.24. The universal method is to use `pipx install cmake` (don't forget to run `pipx ensurepath` and relaunching your shell after installation), but you may choose reconfiguring your OS's package manager instead.
+
 Typical configurations of the project are provided in the `CMakePresets.json` file – this means that if you use a modern IDE, **no additional configuration is needed**. Just pick one of the configurations provided by this file and use controls in your IDE to recompile and run tests (should work with VSCode + CMake Tools extension, JetBrains CLion and probably many others).
 
 If you wish to use CLI instead, you can list all the available configurations in the `CMakePresets.json` file and pick one of the presets:
@@ -15,9 +18,6 @@ If you wish to use CLI instead, you can list all the available configurations in
 ```sh
 cmake --list-presets
 ```
-
-!!! warning
-    By default, the standard repositories for Ubuntu 22.04 provide CMake version 3.22, which does not support certain features required for working with CMakePresets.json. To avoid issues during the build process, you need to manually install CMake version 3.24 or higher.
 
 For example, this is how to build sc-machine in debug mode using dependencies from Conan:
 
