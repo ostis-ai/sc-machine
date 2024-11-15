@@ -46,17 +46,16 @@ protected:
         outValue.SetReplacement(idtf.c_str());
       else
       {
-        sc_char const * alias = (isUnnamed ? nullptr : idtf.c_str());
+        sc_char const * alias = isUnnamed ? nullptr : idtf.c_str();
         ScAddr const addr = keynodes.GetKeynode(idtf);
         if (addr.IsValid())
           outValue.SetAddr(addr, alias);
+        else if (el.GetType().IsVar())
+          outValue.SetType(el.GetType(), alias);
         else
-        {
-          if (el.GetType().IsVar())
-            outValue.SetType(el.GetType(), alias);
-          else
-            SC_THROW_EXCEPTION(utils::ExceptionInvalidState, "Can't find element " << idtf);
-        }
+          SC_THROW_EXCEPTION(
+              utils::ExceptionInvalidState,
+              "Specified element with system identifier `" << idtf << "` can't be found.");
       }
 
       passed.insert(idtf);
