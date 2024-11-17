@@ -342,7 +342,7 @@ TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasNotSpecifiedAbstractAgent)
   TestModule module;
   module.AgentBuilder<ATestSpecifiedAgent>()->FinishBuild();
   EXPECT_THROW(module.Register(&*m_ctx), utils::ExceptionInvalidState);
-  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionInvalidState);
+  EXPECT_THROW(module.Unregister(&*m_ctx), utils::ExceptionItemNotFound);
 }
 
 TEST_F(ScAgentBuilderTest, ProgrammlySpecifiedAgentHasInvalidAbstractAgent)
