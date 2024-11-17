@@ -61,6 +61,12 @@ TEST(StringUtils, EndsWith)
   EXPECT_FALSE(utils::StringUtils::EndsWith(testString, "st 1234567895645", false));
 }
 
+TEST(StringUtils, GetFileExtension)
+{
+  EXPECT_EQ(utils::StringUtils::GetFileExtension("./path/to/repo.path"), "path");
+  EXPECT_EQ(utils::StringUtils::GetFileExtension("repo.path"), "path");
+}
+
 TEST(StringUtils, ReplaceAll)
 {
   std::string testString = "stringstr string string";

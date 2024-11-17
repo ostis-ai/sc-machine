@@ -52,17 +52,14 @@ bool StringUtils::EndsWith(std::string const & str, std::string const & pattern,
   return (endOfThis == pattern);
 }
 
-std::string StringUtils::GetFileExtension(std::string const & filename)
+std::string StringUtils::GetFileExtension(std::string const & filePath)
 {
-  // get file extension
-  std::string path = filename;
-  std::replace(path.begin(), path.end(), '\\', '/');
-  size_t start = path.find_last_of('/');
-  size_t n = path.find('.', start);
+  size_t start = filePath.find_last_of('/');
+  size_t n = filePath.find('.', start == std::string::npos ? 0 : start);
   if (n == std::string::npos)
     return {};
 
-  return path.substr(n + 1, std::string::npos);
+  return filePath.substr(n + 1, std::string::npos);
 }
 
 void StringUtils::SplitString(std::string const & str, char delim, std::vector<std::string> & outList)

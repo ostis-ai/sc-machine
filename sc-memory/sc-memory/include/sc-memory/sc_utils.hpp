@@ -235,7 +235,7 @@ public:
   _SC_EXTERN static void TrimRight(std::string & str);
   _SC_EXTERN static void Trim(std::string & str);
 
-  _SC_EXTERN static std::string GetFileExtension(std::string const & filename);
+  _SC_EXTERN static std::string GetFileExtension(std::string const & filePath);
   _SC_EXTERN static std::string NormalizeFilePath(std::string const & init, bool makeLowerCase);
 
   _SC_EXTERN static std::string ReplaceAll(
