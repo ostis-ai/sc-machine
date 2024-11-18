@@ -12,7 +12,7 @@ add_library(sc-builder-lib SHARED ${SOURCES})
 target_link_libraries(sc-builder-lib
     LINK_PUBLIC sc-memory
     LINK_PUBLIC sc-config
-    LINK_PUBLIC LibXml2::LibXml2
+    LINK_PRIVATE LibXml2::LibXml2
 )
 target_include_directories(sc-builder-lib
     PRIVATE ${glib_INCLUDE_DIRS}

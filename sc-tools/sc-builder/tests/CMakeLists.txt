@@ -1,6 +1,6 @@
 make_tests_from_folder(${CMAKE_CURRENT_SOURCE_DIR}/units
     NAME sc-builder-tests
-    DEPENDS sc-builder-lib
+    DEPENDS sc-builder-lib LibXml2::LibXml2
     INCLUDES ${SC_BUILDER_SRC}
 )
 
