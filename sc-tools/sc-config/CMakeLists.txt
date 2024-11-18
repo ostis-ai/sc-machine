@@ -3,7 +3,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "include/sc-config/*.h" "include/sc-config/*.hpp" "include/sc-config/*/*.tpp"
 )
 
-FindGLIB()
+find_glib()
 
 add_library(sc-config SHARED ${SOURCES})
 target_link_libraries(sc-config

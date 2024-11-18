@@ -5,7 +5,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "include/sc-core/*.h"
 )
 
-FindGLIB()
+find_glib()
 
 add_library(sc-core SHARED ${SOURCES})
 target_link_libraries(sc-core LINK_PRIVATE ${glib_LIBRARIES})

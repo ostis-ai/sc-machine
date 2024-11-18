@@ -118,7 +118,7 @@ endif()
 set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-include(${CMAKE_MODULE_PATH}/FindGLIB.cmake)
+include(${CMAKE_MODULE_PATH}/find_glib.cmake)
 
 add_subdirectory(${SC_MACHINE_ROOT}/thirdparty)
 add_subdirectory(${SC_MACHINE_ROOT}/sc-memory)

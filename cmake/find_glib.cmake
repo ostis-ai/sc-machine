@@ -1,4 +1,4 @@
-macro(FindGLIB)
+macro(find_glib)
     if (glib_CACHED)
     endif()
 

@@ -1,4 +1,4 @@
-FindGLIB()
+find_glib()
 
 make_tests_from_folder(${CMAKE_CURRENT_SOURCE_DIR}/units/common
     NAME sc-core-common-tests

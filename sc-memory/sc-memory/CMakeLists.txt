@@ -31,7 +31,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "include/sc-memory/*/*.tpp"
 )
 
-FindGLIB()
+find_glib()
 
 add_library(sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 target_link_libraries(sc-memory
