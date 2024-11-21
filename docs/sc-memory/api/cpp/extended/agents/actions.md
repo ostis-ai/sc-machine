@@ -327,6 +327,9 @@ ScResult const & result = action.FinishSuccessfully();
 <scg src="../images/actions/action_finished_successfully.gwf"></scg>
 
 !!! warning
+    If you finish action successfully that already has result, then this method will throw `utils::ExceptionInvalidState`.
+
+!!! warning
     If you finish action successfully that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
 
 #### **IsFinishedUnsuccessfully**
@@ -358,6 +361,9 @@ ScResult const & result = action.FinishUnsuccessfully();
 <scg src="../images/actions/action_finished_unsuccessfully.gwf"></scg>
 
 !!! warning
+    If you finish action unsuccessfully that already has result, then this method will throw `utils::ExceptionInvalidState`.
+
+!!! warning
     If you finish action unsuccessfully that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
 
 #### **IsFinishedWithError**
@@ -384,6 +390,9 @@ ScResult const & result = action.FinishWithError();
 ```
 
 <scg src="../images/actions/action_finished_with_error.gwf"></scg>
+
+!!! warning
+    If you finish action with error that already has result, then this method will throw `utils::ExceptionInvalidState`.
 
 !!! warning
     If you finish action with error that is finished or not initiated, then this method will throw `utils::ExceptionInvalidState`.
