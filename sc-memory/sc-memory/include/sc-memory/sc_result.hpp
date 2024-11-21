@@ -19,7 +19,7 @@ class ScResult : public ScObject
   friend class ScAgent;
   friend class ScAction;
 
-private:
+protected:
   sc_result m_code;
 
   _SC_EXTERN ScResult();
