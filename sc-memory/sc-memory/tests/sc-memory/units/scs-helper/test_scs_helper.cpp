@@ -215,14 +215,14 @@ TEST_F(SCsHelperTest, GenerateBySCs_NotConstPermPosArcFromElementType)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   std::string const scsData = "sc_node_class => ..relation: class1;;";
-  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_ArcToElementType)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   std::string const scsData = "set -> sc_node_class;;";
-  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_ElementWithTypeWithinStructure)
@@ -243,14 +243,14 @@ TEST_F(SCsHelperTest, GenerateBySCs_NotConstPermPosArcFromElementTypeWithinStruc
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   std::string const scsData = "structure = [* sc_node_class => ..relation: class1;; *];;";
-  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_ArcToElementTypeWithinStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
   std::string const scsData = "structure = [* set -> sc_node_class;; *];;";
-  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)

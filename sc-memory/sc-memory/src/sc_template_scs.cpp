@@ -61,7 +61,7 @@ protected:
       passed.insert(idtf);
     };
 
-    m_parser.ForEachGeneratableTriple(
+    m_parser.ForEachTripleForGeneration(
         [&](scs::ParsedElement const & source,
             scs::ParsedElement const & connector,
             scs::ParsedElement const & target) -> void

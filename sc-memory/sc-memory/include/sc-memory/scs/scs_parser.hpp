@@ -123,7 +123,7 @@ public:
   _SC_EXTERN bool Parse(std::string const & str);
   _SC_EXTERN ParsedElement const & GetParsedElement(ElementHandle const & handle) const;
   _SC_EXTERN TripleVector const & GetParsedTriples() const;
-  _SC_EXTERN void ForEachGeneratableTriple(
+  _SC_EXTERN void ForEachTripleForGeneration(
       std::function<void(ParsedElement const &, ParsedElement const &, ParsedElement const &)> const & callback) const;
   _SC_EXTERN std::string const & GetParseError() const;
   _SC_EXTERN AliasHandles const & GetAliases() const;
