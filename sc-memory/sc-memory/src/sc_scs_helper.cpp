@@ -44,7 +44,7 @@ protected:
 
     // generate triples
     std::unordered_set<std::string> typeArcsCache;
-    parser.ForEachGeneratableTriple(
+    parser.ForEachTripleForGeneration(
         [&](scs::ParsedElement const & source,
             scs::ParsedElement const & connector,
             scs::ParsedElement const & target) -> void
