@@ -231,6 +231,25 @@ TEST_F(ScActionTest, GenerateActionAndSetResultIfOtherResultExists)
   EXPECT_THROW(action.FinishSuccessfully(), utils::ExceptionInvalidState);
 }
 
+TEST_F(ScActionTest, GenerateActionAndSetResultIfSameResultExists)
+{
+  ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAction action = m_ctx->GenerateAction(testClassAddr);
+
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
+  EXPECT_FALSE(action.InitiateAndWait(1));
+
+  EXPECT_THROW(action.GetResult(), utils::ExceptionInvalidState);
+
+  ScAddr const & structureAddr1 = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+  ScAddr const & arcAddr = m_ctx->GenerateConnector(ScType::ConstCommonArc, action, structureAddr1);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_result, arcAddr);
+
+  action.SetResult(structureAddr1);
+  EXPECT_NO_THROW(action.FinishSuccessfully());
+  EXPECT_EQ(action.GetResult(), structureAddr1);
+}
+
 TEST_F(ScActionTest, GenerateActionAndDontSetResultIfOtherResultExists)
 {
   ScAddr const & testClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
