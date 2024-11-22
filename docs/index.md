@@ -1,5 +1,7 @@
 # Documentation
 
+- [Quick start](quick_start.md)
+- [Docker](docker.md)
 - **Build system**
     * [Build system](build/build_system.md) - *how to build the project and use it as a library*
     * [CMake Flags](build/cmake_flags.md) - *description of CMake flags used to configure sc-machine*

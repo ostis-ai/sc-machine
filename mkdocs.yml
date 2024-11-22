@@ -8,7 +8,8 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Installation with Docker: docker.md
+  - Quick Start: quick_start.md
+  - Docker: docker.md
   - Build:
       - Build system: build/build_system.md
       - CMake flags: build/cmake_flags.md
