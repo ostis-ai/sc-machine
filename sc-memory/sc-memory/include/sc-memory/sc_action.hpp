@@ -172,6 +172,7 @@ public:
    * @brief Marks the action as finished successfully.
    * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
+   * @throws utils::ExceptionInvalidState if the action already has result.
    */
   _SC_EXTERN ScResult FinishSuccessfully() noexcept(false);
 
@@ -185,6 +186,7 @@ public:
    * @brief Marks the action as finished unsuccessfully.
    * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
+   * @throws utils::ExceptionInvalidState if the action already has result.
    */
   _SC_EXTERN ScResult FinishUnsuccessfully() noexcept(false);
 
@@ -198,6 +200,7 @@ public:
    * @brief Marks the action as finished with an error.
    * @return Result of the operation.
    * @throws utils::ExceptionInvalidState if the action is not initiated or already finished.
+   * @throws utils::ExceptionInvalidState if the action already has result.
    */
   _SC_EXTERN ScResult FinishWithError() noexcept(false);
 
