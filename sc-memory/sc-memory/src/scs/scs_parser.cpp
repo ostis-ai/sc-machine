@@ -353,7 +353,7 @@ void Parser::ForEachTripleForGeneration(
     auto const & connector = GetParsedElement(triple.m_connector);
     auto const & target = GetParsedElement(triple.m_target);
 
-    if (IsMetaElement(connector))
+    if (IsElementTypeOutgoingBaseArc(connector))
       continue;
 
     callback(source, connector, target);
@@ -438,9 +438,9 @@ ElementHandle Parser::AppendElement(
   return elementHandle;
 }
 
-bool Parser::IsMetaElement(ParsedElement const & element) const
+bool Parser::IsElementTypeOutgoingBaseArc(ParsedElement const & element) const
 {
-  return element.IsElementType() || m_elementTypeArcs.count(element.GetIdtf()) > 0;
+  return m_elementTypeOutgoingBaseArcs.count(element.GetIdtf());
 }
 
 ElementHandle Parser::ResolveAlias(std::string const & name)
@@ -462,6 +462,7 @@ ElementHandle Parser::ProcessIdentifierLevel1(std::string const & scsType, std::
   type |= scs::TypeResolver::IsConst(name) ? ScType::Const : ScType::Var;
   return AppendElement(name, type);
 }
+
 void Parser::ProcessTriple(
     ElementHandle const & sourceHandle,
     ElementHandle const & connectorHandle,
@@ -493,33 +494,46 @@ void Parser::ProcessTriple(
       // the parsed sc.s-elements. Due to this, it is difficult to handle cases when it is necessary not to generate a
       // sc-arc from a type of sc-elements to sc-element. Therefore, now the parser memorizes these arcs after they were
       // parsed.
-      m_elementTypeArcs.insert(connector.GetIdtf());
+      m_elementTypeOutgoingBaseArcs.insert(connector.GetIdtf());
+    }
+    else if (source.IsElementType() || target.IsElementType())
+    {
+      ElementHandle const & handle = source.IsElementType() ? sourceHdl : targetHdl;
+      m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), handle});
     }
     else
     {
-      bool const isSourceMembershipArcFromElementsType = IsMetaElement(source) && source.GetType().IsMembershipArc();
-      bool const isTargetMembershipArcFromElementsType = IsMetaElement(target) && target.GetType().IsMembershipArc();
+      bool const isSourceMembershipArcFromElementsType = IsElementTypeOutgoingBaseArc(source);
+      bool const isTargetMembershipArcFromElementsType = IsElementTypeOutgoingBaseArc(target);
 
       if (isSourceMembershipArcFromElementsType || isTargetMembershipArcFromElementsType)
       {
+        std::stringstream elementInfo;
+        if (isSourceMembershipArcFromElementsType && target.GetType().BitAnd(ScType::Node))
+          elementInfo << "with target element `" << target.GetIdtf() << "` ";
+        else if (isTargetMembershipArcFromElementsType && source.GetType().BitAnd(ScType::Node))
+          elementInfo << "with source element `" << source.GetIdtf() << "` ";
+
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError,
-            "Some sc.s-triple with can't be generated. Outgoing constant permanent positive membership arcs denoting "
-            "the belonging of elements to sc-elements type cannot have outgoing and incoming sc-arcs.\n\n"
-            "There are several of these classes:\n"
-            "`sc_common_edge`, `sc_common_arc`, `sc_membership_arc`, `sc_main_arc`, `sc_node`, `sc_link`, "
-            "`sc_link_class`, `sc_node_tuple`, `sc_node_structure`, `sc_node_class`, `sc_node_role_relation`, "
-            "`sc_node_non_role_relation`, `sc_node_superclass`, `sc_node_material`, `sc_edge`, \n"
-            "`sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_edge_dcommon`, `sc_arc_main`, "
-            "`sc_edge_main`, `sc_arc_access`, `sc_edge_access`, `sc_node_not_binary_tuple`, `sc_node_struct`, "
-            "`sc_node_not_relation`, `sc_node_norole_relation`.\n\n"
-            "Correct usage examples:\n"
-            "\tsc_node_class -> ..set;;\n"
-            "\tsc_node_class => ..relation: ..set;;\n"
-            "\t..set => ..relation: sc_node_class;;\n"
-            "\t..node -> sc_node_class;;\n"
-            "Incorrect usage example:\n"
-            "\tsc_node_class -> rrel_1: ..set;;\n");
+            "Some sc.s-triple "
+                << elementInfo.str()
+                << "can't be generated. Outgoing constant permanent positive membership arcs denoting "
+                   "the belonging of elements to sc-elements type cannot have outgoing and incoming sc-arcs.\n\n"
+                   "There are several of these sc-elements types:\n"
+                   "`sc_common_edge`, `sc_common_arc`, `sc_membership_arc`, `sc_main_arc`, `sc_node`, `sc_link`, "
+                   "`sc_link_class`, `sc_node_tuple`, `sc_node_structure`, `sc_node_class`, `sc_node_role_relation`, "
+                   "`sc_node_non_role_relation`, `sc_node_superclass`, `sc_node_material`, `sc_edge`, \n"
+                   "`sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_edge_dcommon`, `sc_arc_main`, "
+                   "`sc_edge_main`, `sc_arc_access`, `sc_edge_access`, `sc_node_not_binary_tuple`, `sc_node_struct`, "
+                   "`sc_node_not_relation`, `sc_node_norole_relation`.\n\n"
+                   "Correct usage examples:\n"
+                   "\tsc_node_class -> ..set;;\n"
+                   "\tsc_node_class => ..relation: ..set;;\n"
+                   "\t..set => ..relation: sc_node_class;;\n"
+                   "\t..node -> sc_node_class;;\n"
+                   "Incorrect usage example:\n"
+                   "\tsc_node_class -> rrel_1: ..set;;\n");
       }
     }
 
@@ -627,8 +641,18 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 
   for (auto const & elementHandle : newElements)
   {
-    if (IsMetaElement(GetParsedElement(elementHandle)))
+    auto const & element = GetParsedElement(elementHandle);
+
+    if (elementHandle.IsElementType() || IsElementTypeOutgoingBaseArc(element))
       continue;
+
+    // Add sc-arc from structure to element type if element type has not only outgoing base sc-arcs 
+    auto const & elementTypeHandleIt = m_elementTypeNotOutgoingBaseArcsToElementTypes.find(element.GetIdtf());
+    if (elementTypeHandleIt != m_elementTypeNotOutgoingBaseArcsToElementTypes.cend())
+    {
+      ElementHandle const connectorHandle = ProcessConnector("->");
+      ProcessTriple(contourHandle, connectorHandle, elementTypeHandleIt->second); 
+    }
 
     ElementHandle const connectorHandle = ProcessConnector("->");
     ProcessTriple(contourHandle, connectorHandle, elementHandle);

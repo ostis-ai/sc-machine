@@ -16,6 +16,7 @@
 #include <map>
 #include <string>
 #include <functional>
+#include <unordered_set>
 
 namespace scs
 {
@@ -140,7 +141,7 @@ public:
 protected:
   ParsedElement & GetParsedElementRef(ElementHandle const & handle);
 
-  bool IsMetaElement(ParsedElement const & element) const;
+  bool IsElementTypeOutgoingBaseArc(ParsedElement const & element) const;
   ElementHandle ResolveAlias(std::string const & name);
   ElementHandle ProcessIdentifier(std::string const & name);
   ElementHandle ProcessIdentifierLevel1(std::string const & type, std::string const & name);
@@ -183,7 +184,8 @@ private:
   TripleVector m_parsedTriples;
   IdtfToParsedElementMap m_idtfToParsedElement;
   AliasHandles m_aliasHandles;
-  std::set<std::string> m_elementTypeArcs;
+  std::unordered_set<std::string> m_elementTypeOutgoingBaseArcs;
+  std::unordered_map<std::string, ElementHandle> m_elementTypeNotOutgoingBaseArcsToElementTypes;
 
   std::string m_lastError;
 
