@@ -34,12 +34,12 @@ These presets define how the project is configured before building.
 
 ### Build Presets
 
-These presets are linked to the configure presets and define how the build process is executed.
+These presets are linked to the configure presets and are used by CMake to determine the build folder (`build/Debug` or `build/Release` by default).
 
 | **Name**   | **Configure Preset**  |
 |------------|-----------------------|
-| `debug`    | debug                 |
-| `release`  | release               |
+| `debug`    | debug, debug-conan                 |
+| `release`  | release, release-conan, release-with-tests, release-with-tests-conan               |
 
 ### Package Presets
 
