@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking changes
 
 - Python dependencies are set up locally in `.venv` environment. Therefore, you should make the following changes: 
-    - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv` or use `scripts/healthcheck.sh` encapsulated this logic;
+    - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv` or use `scripts/healthcheck.sh` that encapsulates this logic;
     - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
 - Build system of the sc-machine was upgraded:
     - The way to manage build dependencies was changed to [Conan](https://conan.io). You can install sc-machine and its dependencies with Conan. You don't have to worry about installing sc-machine dependencies on your OS anymore. See how to do it -- [Build System](build/build_system.md).
@@ -20,8 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - binaries -- `build/<Debug|Release>/bin`, 
         - libraries -- `build/<Debug|Release>/lib`,
         - extensions -- `build/<Debug|Release>/lib/extensions`.
-    - Using sc-machine as a library is much more optimized: adding it to the CMake tree is no longer necessary. You can install sc-machine packages and import sc-machine targets into your cmake using `find_package(sc-machine REQUIRED)`. But if you include sc-machine into CMake tree of your project, remember that the minimum version of cmake for the machine is 3.24.
-    - Each release sc-machine binaries are being compiled for supported OS and formed as an archives on Github. Minimum required version of macOS is macOS-14 (arm), of ubuntu is ubuntu-22.04. The sc-machine doesn't support ubuntu-20.04 anymore. You can use them to work with sc-memory or you can use `RunMachine` method from `sc-machine-runner.so` to create your own entry point to initialize sc-memory instead of using compiled `sc-machine` binary.
+    - Using sc-machine as a library is much more optimized: adding it to the CMake tree is no longer necessary. You can install sc-machine packages and import sc-machine targets into your cmake using `find_package(sc-machine REQUIRED)`. See how to do it -- [Build System](build/build_system.md)
+    - Each release sc-machine binaries are being compiled for supported OS and formed as an archives on Github. Minimum required version of macOS is macOS-14 (arm), of ubuntu is ubuntu-22.04. The sc-machine doesn't support ubuntu-20.04 anymore. You can use sc-machine binaries to work with sc-memory or you can use `RunMachine` method from `sc-machine-runner.so` to create your own entry point to initialize sc-memory instead of using compiled `sc-machine` binary.
     - Script for the project build (`build_sc_machine.sh`), scripts for running binaries (`run_sc_server.sh`, `build_kb.sh`) were removed from the sc-machine repository scripts. You should use sc-machine binaries directly.
     - sc-server is no longer entry point of the sc-machine, it is an extension (`sc-server-lib.so`), that is loaded dynamically when the machine is started. So, `sc-server` binary was removed, `sc-machine` binary was added instead.
 - Config was changed:
@@ -233,10 +233,10 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
-- Working directory for tests was changed to a directory where tests are located
-- Install `gtest` and `benchmark` via Conan or OS package managers instead of using them as submodules
+- Working directory for each test has been changed to the test's source dir
+- `gtest` and `benchmark` are installed via Conan or OS package managers instead of using them as git submodules
 - Location of the sc-machine build tree, binaries, libraries and extensions
-- Up minimum required cmake version to 3.24.0
+- Bumped minimum required cmake version to 3.24.0
 - Help messages for sc-machine and sc-builder
 - Clarify sc-machine and sc-builder options
 - Specify dependencies near targets, not in overall file
