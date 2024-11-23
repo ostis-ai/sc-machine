@@ -18,7 +18,9 @@
       "name": "debug-conan",
       "displayName": "Debug config (Conan)",
       "description": "Debug config with tests and benchmarks (Conan dependencies used)",
-      "inherits": ["debug"],
+      "inherits": [
+        "debug"
+      ],
       "cacheVariables": {
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "./cmake/conan_provider.cmake"
       }
@@ -67,7 +69,6 @@
     {
       "name": "debug",
       "configurePreset": "debug"
-
     },
     {
       "name": "release",
@@ -78,12 +79,16 @@
     {
       "name": "release-conan",
       "configurePreset": "release-conan",
-      "generators": ["TGZ"]
+      "generators": [
+        "TGZ"
+      ]
     },
     {
       "name": "release",
       "configurePreset": "release",
-      "generators": ["TGZ"]
+      "generators": [
+        "TGZ"
+      ]
     }
   ]
 }
