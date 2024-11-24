@@ -89,6 +89,15 @@ set_target_properties(set-agents
 )
 ```
 
+!!! note
+    `LIBRARY_OUTPUT_DIRECTORY` property should be set only for libraries that represent modules with agents.
+
+!!! note
+    You can set `CMAKE_OUTPUT_LIBRARY_DIRECTORY` instead of setting `LIBRARY_OUTPUT_DIRECTORY` property for each extension.
+
+!!! note
+    `SC_EXTENSIONS_DIRECTORY` variable should have path to the directory with extensions for the sc-machine. After building module with agent this directory path should be specified via `--extensions` when starting the sc-machine to load implemented module with agent.
+
 ---
 
 ### **4. Define a class in C++ for this agent and specifies class of actions that this agent performs and its program.**
