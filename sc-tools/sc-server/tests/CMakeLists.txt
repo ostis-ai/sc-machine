@@ -9,5 +9,5 @@ if(${SC_CLANG_FORMAT_CODE})
 endif()
 
 if(${SC_BUILD_BENCH})
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/units/performance)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/units/benchmark)
 endif()
