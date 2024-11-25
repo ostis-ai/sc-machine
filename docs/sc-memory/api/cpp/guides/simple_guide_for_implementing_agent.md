@@ -80,7 +80,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 
 # Generate and link your library with using libraries.
 add_library(set-agents SHARED ${SOURCES})
-target_link_libraries(set-agents LINK_PUBLIC sc-memory)
+target_link_libraries(set-agents LINK_PUBLIC sc-machine::sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 # Set output path for your extension `set-agents.so`. 
 # Make sure that variable `SC_EXTENSIONS_DIRECTORY` has value.

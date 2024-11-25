@@ -93,7 +93,7 @@ The package artifacts are available [here](https://github.com/ostis-ai/sc-machin
 # Import sc-machine from the Releases archive.
 # You can override this variable via -D<proj_name>_PATH_SC_MACHINE_PATH 
 # or CMakeUserPreset.json / CMakePreset.json files.
-set(<proj_name>_SC_MACHINE_PATH "/location/to/sc-machine-<version>-<platform>" 
+set(<proj_name>_SC_MACHINE_PATH "/path/to/sc-machine-<version>-<platform>" 
   CACHE PATH "sc-machine installation path"
 )
 
