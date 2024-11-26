@@ -495,11 +495,17 @@ void Parser::ProcessTriple(
       // sc-arc from a type of sc-elements to sc-element. Therefore, now the parser memorizes these arcs after they were
       // parsed.
       m_elementTypeOutgoingBaseArcs.insert(connector.GetIdtf());
+
+      if (target.IsElementType())
+        m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), targetHdl});
     }
     else if (source.IsElementType() || target.IsElementType())
     {
-      ElementHandle const & handle = source.IsElementType() ? sourceHdl : targetHdl;
-      m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), handle});
+      if (source.IsElementType())
+        m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), sourceHdl});
+
+      if (target.IsElementType())
+        m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), targetHdl});
     }
     else
     {
@@ -639,20 +645,25 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
     newElements.insert(t.m_target);
   }
 
+  std::unordered_set<ElementID> addedElementTypesIntoStructure;
   for (auto const & elementHandle : newElements)
   {
     auto const & element = GetParsedElement(elementHandle);
 
+    // Add sc-arc from structure to element type if element type has not only outgoing base sc-arcs 
+    auto const & range = m_elementTypeNotOutgoingBaseArcsToElementTypes.equal_range(element.GetIdtf());
+    for (auto it = range.first; it != range.second; ++it)
+    {
+      if (addedElementTypesIntoStructure.count(*it->second))
+        continue;
+
+      ElementHandle const connectorHandle = ProcessConnector("->");
+      ProcessTriple(contourHandle, connectorHandle, it->second);
+      addedElementTypesIntoStructure.insert(*it->second);
+    }
+
     if (elementHandle.IsElementType() || IsElementTypeOutgoingBaseArc(element))
       continue;
-
-    // Add sc-arc from structure to element type if element type has not only outgoing base sc-arcs 
-    auto const & elementTypeHandleIt = m_elementTypeNotOutgoingBaseArcsToElementTypes.find(element.GetIdtf());
-    if (elementTypeHandleIt != m_elementTypeNotOutgoingBaseArcsToElementTypes.cend())
-    {
-      ElementHandle const connectorHandle = ProcessConnector("->");
-      ProcessTriple(contourHandle, connectorHandle, elementTypeHandleIt->second); 
-    }
 
     ElementHandle const connectorHandle = ProcessConnector("->");
     ProcessTriple(contourHandle, connectorHandle, elementHandle);
