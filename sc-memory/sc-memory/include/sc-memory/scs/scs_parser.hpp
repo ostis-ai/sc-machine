@@ -185,7 +185,7 @@ private:
   IdtfToParsedElementMap m_idtfToParsedElement;
   AliasHandles m_aliasHandles;
   std::unordered_set<std::string> m_elementTypeOutgoingBaseArcs;
-  std::unordered_map<std::string, ElementHandle> m_elementTypeNotOutgoingBaseArcsToElementTypes;
+  std::unordered_multimap<std::string, ElementHandle> m_elementTypeNotOutgoingBaseArcsToElementTypes;
 
   std::string m_lastError;
 
