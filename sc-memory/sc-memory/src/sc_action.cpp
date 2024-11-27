@@ -214,11 +214,26 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
         "Not able to finish action " << GetActionPrettyString() << GetActionClassPrettyString()
                                      << " because it had already been finished.");
 
-  if (!m_context->IsElement(m_resultAddr))
-    m_resultAddr = m_context->GenerateNode(ScType::ConstNodeStructure);
+  ScIterator5Ptr const resultIt = m_context->CreateIterator5(
+      *this, ScType::ConstCommonArc, ScType::Unknown, ScType::ConstPermPosArc, ScKeynodes::nrel_result);
+  if (resultIt->Next())
+  {
+    ScAddr const & foundResultAddr = resultIt->Get(2);
+    if (m_context->IsElement(m_resultAddr) && foundResultAddr != m_resultAddr)
+      SC_THROW_EXCEPTION(
+          utils::ExceptionInvalidState,
+          "Not able to set result `" << m_resultAddr.Hash() << "` for action " << GetActionPrettyString()
+                                     << GetActionClassPrettyString() << " because it already has result `"
+                                     << foundResultAddr.Hash() << "`.");
+  }
+  else
+  {
+    if (!m_context->IsElement(m_resultAddr))
+      m_resultAddr = m_context->GenerateNode(ScType::ConstNodeStructure);
 
-  ScAddr const & arcAddr = m_context->GenerateConnector(ScType::ConstCommonArc, *this, m_resultAddr);
-  m_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_result, arcAddr);
+    ScAddr const & arcAddr = m_context->GenerateConnector(ScType::ConstCommonArc, *this, m_resultAddr);
+    m_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_result, arcAddr);
+  }
 
   m_context->GenerateConnector(ScType::ConstPermPosArc, actionStateAddr, *this);
   m_context->GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::action_finished, *this);

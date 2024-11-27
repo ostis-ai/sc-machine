@@ -292,9 +292,10 @@ private:
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
             "Template item " << (templateItem.HasName() ? (templateItem.GetPrettyName() + " ") : "") << "has type `"
-                             << templateItemType << "`. This item can't be replaced by template parameter `"
+                             << std::string(templateItemType)
+                             << "`. This item can't be replaced by template parameter `"
                              << std::to_string(templateParamAddr.Hash()) << "`, because it has type `"
-                             << templateParamType
+                             << std::string(templateParamType)
                              << "` and up-constant template item type can't be extended to template parameter type.");
     };
 

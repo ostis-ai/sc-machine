@@ -31,7 +31,9 @@ void ScAgentManager<TScAgent>::Subscribe(
   agent.SetInitiator(context->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
-  std::string const & agentClassName = agent.GetName();
+  std::string const & agentClassName = GetAgentClassName(context, agent);
+  std::string const & agentImplementationInfo = GetAgentImplementationInfo(context, agent, agentImplementationAddr);
+
   auto agentImplementationsToSubscriptions = ResolveAgentClassAgentImplementationSubscriptions(agentClassName);
 
   auto subscriptions =
@@ -42,8 +44,7 @@ void ScAgentManager<TScAgent>::Subscribe(
   else if (context->IsElement(agentImplementationAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Agent `" << agentClassName << "` with implementation `" << agentImplementationAddr.Hash()
-                  << "` has already been subscribed to event.");
+        "Specified " << agentImplementationInfo << " has already been subscribed to event.");
 
   // If agent is specified in knowledge base, then subscriptionAddrs will be empty and subscriptionVector will contain
   // only subscription sc-element from knowledge base, otherwise (when agent is not specified in knowledge base)
@@ -52,26 +53,28 @@ void ScAgentManager<TScAgent>::Subscribe(
   if (agent.MayBeSpecified() || subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
-  std::string const & eventClassName = ScEvent::GetName<TScEvent>();
+  std::string const & eventClassName = GetEventClassName(context, agent);
   for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
+    std::string const & subscriptionElementName = GetSubscriptionElementName(context, subscriptionElementAddr);
+
     if (!context->IsElement(subscriptionElementAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Not able to subscribe agent `" << agentClassName << "` to event `" << eventClassName
-                                          << "because subscription sc-element with address hash `"
-                                          << subscriptionElementAddr.Hash() << "` is not valid.");
+          "Not able to subscribe " << agentImplementationInfo << " to event `" << eventClassName
+                                   << " because subscription sc-element `" << subscriptionElementName
+                                   << "` is not valid.");
 
     auto const & subscription = GetSubscription(subscriptionElementAddr, *subscriptions);
     if (subscription)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent `" << agentClassName << "` has already been subscribed to event `" << eventClassName << "("
-                    << subscriptionElementAddr.Hash() << ")`.");
+          "Specified " << agentImplementationInfo << " has already been subscribed to event `" << eventClassName
+                       << "` with subscription sc-element `" << subscriptionElementName << "`.");
 
     SC_LOG_INFO(
-        "Subscribe agent `" << agentClassName << "` to event `" << eventClassName << "("
-                            << subscriptionElementAddr.Hash() << ")`.");
+        "Subscribe " << agentImplementationInfo << " to event `" << eventClassName << "` with subscription sc-element `"
+                     << subscriptionElementName << "`.");
 
     std::function<void(void)> postEraseEventCallback;
     if constexpr (std::is_same<ScElementaryEvent, TScEvent>::value)
@@ -125,27 +128,28 @@ void ScAgentManager<TScAgent>::Unsubscribe(
   agent.SetInitiator(context->GetUser());
   agent.SetImplementation(agentImplementationAddr);
 
-  std::string const & agentClassName = agent.GetName();
+  std::string const & agentClassName = GetAgentClassName(context, agent);
+  std::string const & agentImplementationInfo = GetAgentImplementationInfo(context, agent, agentImplementationAddr);
+
   if (WasAgentSubscribedToEventOfErasedElementErasing(context, agentClassName))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Agent `" << agentClassName
-                  << "` has been subscribed to event of erasing sc-element. It does not need to be unsubscribed, the "
-                     "sc-machine unsubscribes such an agent on its own.");
+        "Specified " << agentImplementationInfo
+                     << " has been subscribed to event of erasing sc-element. It does not need to be unsubscribed, the "
+                        "sc-machine unsubscribes such an agent on its own.");
 
   auto agentImplementationsToSubscriptions = GetAgentClassAgentImplementationSubscriptions(agentClassName);
   if (!agentImplementationsToSubscriptions)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Agent `" << agentClassName << "` does not have been subscribed to any events yet.");
+        "Specified " << agentImplementationInfo << " hasn't been subscribed to any events yet.");
 
   auto subscriptions =
       GetAgentImplementationSubscriptions(agentImplementationAddr, *agentImplementationsToSubscriptions);
   if (!subscriptions)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidState,
-        "Agent `" << agentClassName << "` with implementation `" << agentImplementationAddr.Hash()
-                  << "` does not have been subscribed to any events yet.");
+        "Specified " << agentImplementationInfo << " hasn't been subscribed to any events yet.");
 
   // If agent is specified in knowledge base, then subscriptionAddrs will be empty and subscriptionVector will contain
   // only subscription sc-element from knowledge base, otherwise (when agent is not specified in knowledge base)
@@ -154,26 +158,28 @@ void ScAgentManager<TScAgent>::Unsubscribe(
   if (agent.MayBeSpecified() || subscriptionVector.empty())
     subscriptionVector.emplace_back(agent.GetEventSubscriptionElement());
 
-  std::string const & eventClassName = ScEvent::GetName<TScEvent>();
+  std::string const & eventClassName = GetEventClassName(context, agent);
   for (ScAddr const & subscriptionElementAddr : subscriptionVector)
   {
+    std::string const & subscriptionElementName = GetSubscriptionElementName(context, subscriptionElementAddr);
+
     if (!context->IsElement(subscriptionElementAddr))
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Not able to unsubscribe agent `" << agentClassName << "` from event `" << eventClassName
-                                            << "because subscription sc-element with address hash `"
-                                            << subscriptionElementAddr.Hash() << "` is not valid.");
+          "Not able to unsubscribe " << agentImplementationInfo << " from event `" << eventClassName
+                                     << " because subscription sc-element `" << subscriptionElementName
+                                     << "` is not valid.");
 
     auto const & subscription = GetSubscription(subscriptionElementAddr, *subscriptions);
     if (!subscription)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Agent `" << agentClassName << "` does not have been subscribed to event `" << eventClassName << "("
-                    << subscriptionElementAddr.Hash() << ")` yet.");
+          "Specified " << agentImplementationInfo << " hasn't have been subscribed to event `" << eventClassName
+                       << "` with subscription sc-element `" << subscriptionElementName << "` yet.");
 
     SC_LOG_INFO(
-        "Unsubscribe agent `" << agentClassName << "` from event `" << eventClassName << "("
-                              << subscriptionElementAddr.Hash() << ")`.");
+        "Unsubscribe " << agentImplementationInfo << " from event `" << eventClassName
+                       << "` with subscription sc-element `" << subscriptionElementName << "`.");
 
     delete subscription;
     EraseSubscription(subscriptionElementAddr, *subscriptions);
@@ -181,6 +187,81 @@ void ScAgentManager<TScAgent>::Unsubscribe(
 
   ClearEmptyAgentImplementationSubscriptions(
       agentClassName, agentImplementationAddr, agentImplementationsToSubscriptions, subscriptions);
+}
+
+template <class TScAgent>
+std::string ScAgentManager<TScAgent>::GetAgentClassName(ScMemoryContext * context, TScAgent & agent)
+{
+  std::string agentClassName;
+  if (agent.MayBeSpecified())
+  {
+    ScAddr const & abstractAgentAddr = agent.GetAbstractAgent();
+    agentClassName = context->GetElementSystemIdentifier(abstractAgentAddr);
+  }
+
+  if (agentClassName.empty())
+    agentClassName = agent.GetName();
+
+  return agentClassName;
+}
+
+template <class TScAgent>
+std::string ScAgentManager<TScAgent>::GetAgentImplementationName(
+    ScMemoryContext * context,
+    ScAddr const & agentImplementationAddr)
+{
+  std::string agentImplementationName = context->GetElementSystemIdentifier(agentImplementationAddr);
+
+  if (agentImplementationName.empty())
+    agentImplementationName = std::to_string(agentImplementationAddr.Hash());
+
+  return agentImplementationName;
+}
+
+template <class TScAgent>
+std::string ScAgentManager<TScAgent>::GetAgentImplementationInfo(
+    ScMemoryContext * context,
+    TScAgent & agent,
+    ScAddr const & agentImplementationAddr)
+{
+  std::string const & agentClassName = GetAgentClassName(context, agent);
+
+  std::stringstream agentImplementationInfo;
+  if (context->IsElement(agentImplementationAddr))
+    agentImplementationInfo << "agent implementation `" << GetAgentImplementationName(context, agentImplementationAddr)
+                            << "` with abstract agent `" << agentClassName << "`";
+  else
+    agentImplementationInfo << "agent implementation `" << agentClassName << "`";
+
+  return agentImplementationInfo.str();
+}
+
+template <class TScAgent>
+std::string ScAgentManager<TScAgent>::GetSubscriptionElementName(
+    ScMemoryContext * context,
+    ScAddr const & subscriptionElementAddr)
+{
+  std::string subscriptionElementName = context->GetElementSystemIdentifier(subscriptionElementAddr);
+  if (subscriptionElementName.empty())
+    subscriptionElementName = std::to_string(subscriptionElementAddr.Hash());
+
+  return subscriptionElementName;
+}
+
+template <class TScAgent>
+std::string ScAgentManager<TScAgent>::GetEventClassName(ScMemoryContext * context, TScAgent & agent)
+{
+  ScAddr eventClassAddr;
+  if constexpr (std::is_same<ScElementaryEvent, TScEvent>::value)
+    eventClassAddr = agent.GetEventClass();
+  else
+    return ScEvent::GetName<TScEvent>();
+
+  std::string eventClassName = context->GetElementSystemIdentifier(eventClassAddr);
+  if (eventClassName.empty())
+    eventClassName = std::to_string(eventClassAddr.Hash());
+
+  return eventClassName;
 }
 
 template <class TScAgent>
@@ -300,8 +381,8 @@ std::function<void(void)> ScAgentManager<TScAgent>::GetPostEraseEventCallback(
     }
 
     SC_LOG_INFO(
-        "Unsubscribe agent `" << agentClassName << "` from event `" << eventClassName << "("
-                              << subscriptionElementAddr.Hash() << ")`.");
+        "Unsubscribe agent `" << agentClassName << "` from event `" << eventClassName
+                              << "` with subscription sc-element `" << subscriptionElementAddr.Hash() << "`.");
 
     EraseSubscription(subscriptionElementAddr, *subscriptions);
     ClearEmptyAgentImplementationSubscriptions(
@@ -354,11 +435,11 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     };
 
     TScAgent agent;
-    std::string const & agentName = agent.GetName();
-    // SC_LOG_INFO("Agent `" << agentName << "` reacted to primary initiation condition.");
-
     agent.SetInitiator(event.GetUser());
     agent.SetImplementation(agentImplementationAddr);
+
+    std::string const & agentName = GetAgentClassName(&agent.m_context, agent);
+    // SC_LOG_INFO("Agent `" << agentName << "` reacted to primary initiation condition.");
 
     if (agent.IsActionClassDeactivated())
     {

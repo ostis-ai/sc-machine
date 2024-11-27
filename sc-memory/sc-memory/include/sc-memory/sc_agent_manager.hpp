@@ -329,6 +329,76 @@ protected:
   using ScSubscriptionsOptionalRef = OptionalRef<ScSubscriptions>;
 
   /*!
+   * @brief Retrieves the class name of a specified agent.
+   *
+   * If specified agent has abstract agent class then this method returns its system identifier. Otherwise, it returns
+   * agent class name.
+   *
+   * @param context A pointer to the ScMemoryContext used for accessing
+   *                system identifiers.
+   * @param agent A reference to the agent whose class name is to be retrieved.
+   * @return A string representing the class name of the agent.
+   */
+  static std::string GetAgentClassName(ScMemoryContext * context, TScAgent & agent);
+
+  /*!
+   * @brief Retrieves the name of the agent implementation.
+   *
+   * If the identifier of agent implementation is not found, it returns its hash as a string.
+   *
+   * @param context A pointer to the ScMemoryContext used for accessing
+   *                system identifiers.
+   * @param agentImplementationAddr An address of the agent implementation in the memory context.
+   * @return A string representing the name of the agent implementation. If no name is found,
+   *         it returns the hash of the address as a string.
+   */
+  static std::string GetAgentImplementationName(ScMemoryContext * context, ScAddr const & agentImplementationAddr);
+
+  /*!
+   * @brief Retrieves detailed information about an agent's implementation.
+   *
+   * This function constructs a string that describes the agent implementation, including its relationship to an
+   * abstract agent class. If the provided agent implementation is valid, it includes both the implementation name and
+   * the abstract agent class name; otherwise, it only includes the class name.
+   *
+   * @param context A pointer to the ScMemoryContext used for checking element validity and retrieving names.
+   * @param agent A reference to an instance of TScAgent whose class name is used in the output.
+   * @param agentImplementationAddr An address of the agent implementation in memory context.
+   * @return A string containing information about the agent implementation and its associated abstract agent.
+   */
+  static std::string GetAgentImplementationInfo(
+      ScMemoryContext * context,
+      TScAgent & agent,
+      ScAddr const & agentImplementationAddr);
+
+  /*!
+   * @brief Retrieves the name of a subscription element.
+   *
+   * This method obtains the system identifier for a given subscription element. If the identifier is not found, it
+   * falls back to returning a hash of its address.
+   *
+   * @param context A pointer to the ScMemoryContext used for accessing
+   *                system identifiers.
+   * @param subscriptionElementAddr An address of the subscription element
+   *                                whose name is to be retrieved.
+   * @return A string representing the name of the subscription element.
+   */
+  static std::string GetSubscriptionElementName(ScMemoryContext * context, ScAddr const & eventSubscriptionAddr);
+
+  /*!
+   * @brief Retrieves the event class name associated with an agent.
+   *
+   * This method checks if the template type TScEvent is an instance of ScElementaryEvent. If so, it retrieves the event
+   * class from the agent and returns system identifier of this event class. Otherwise, it returns event class name.
+   *
+   * @param context A pointer to the ScMemoryContext used for accessing
+   *                system identifiers.
+   * @param agent A reference to the agent whose event class name is to be retrieved.
+   * @return A string representing the event class name associated with the agent.
+   */
+  static std::string GetEventClassName(ScMemoryContext * context, TScAgent & agent);
+
+  /*!
    * @brief Checks if an agent of a specified class is subscribed to the event of an element being erased.
    *
    * This method looks up the provided agent class name in the internal map of agent event classes.

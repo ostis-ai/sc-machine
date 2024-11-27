@@ -297,7 +297,8 @@ void ScAgentBuilder<TScAgent>::ResolveAbstractAgent(
         utils::ExceptionInvalidState,
         "Found sc-element by relation `nrel_inclusion` is not abstract sc-agent for agent implementation `"
             << agentImplementationName
-            << "`, because sc-element does not have sc-type `ScType::ConstNode`, it has sc-type `" << type << "`.");
+            << "`, because sc-element does not have sc-type `ScType::ConstNode`, it has sc-type `" << std::string(type)
+            << "`.");
 
   ScIterator3Ptr const it3 =
       context->CreateIterator3(ScKeynodes::abstract_sc_agent, ScType::ConstPermPosArc, m_abstractAgentAddr);
@@ -577,8 +578,8 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
         "Found sc-element by relation `nrel_initiation_condition_and_result` is initiation condition and result for "
         "abstract sc-agent `"
             << abstractAgentName
-            << "`, because sc-element does not have sc-type `ScType::ConstCommonArc`, it has sc-type `" << type
-            << "`.");
+            << "`, because sc-element does not have sc-type `ScType::ConstCommonArc`, it has sc-type `"
+            << std::string(type) << "`.");
 
   auto const [m_initiationConditionAddr, m_resultConditionAddr] =
       context->GetConnectorIncidentElements(initiationConditionAndResultAddr);
@@ -589,7 +590,7 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
         "Initiation condition for abstract sc-agent `"
             << abstractAgentName
             << "` is not sc-template, because it does not have sc-type `ScType::ConstNodeStructure`, it has sc-type `"
-            << type << "`.");
+            << std::string(type) << "`.");
 
   type = context->GetElementType(m_resultConditionAddr);
   if (type.BitAnd(ScType::ConstNodeStructure) != ScType::ConstNodeStructure)
@@ -598,7 +599,7 @@ void ScAgentBuilder<TScAgent>::ResolveInitiationConditionAndResultCondition(
         "Result condition for abstract sc-agent `"
             << abstractAgentName
             << "` is not sc-template, because it does not have sc-type `ScType::ConstNodeStructure`, it has sc-type `"
-            << type << "`.");
+            << std::string(type) << "`.");
 
   SC_LOG_DEBUG("Initiation condition and result for agent class `" << agentClassName << "` was found.");
 }

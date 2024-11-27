@@ -80,7 +80,10 @@ try
   if (!params.m_outputPath.empty())
     memoryParams.Insert({"storage", params.m_outputPath});
 
-  ScConfig config{configPath, {"storage", "log_file", "input_path", "input", "output"}, {"extensions"}};
+  ScConfig config{
+      configPath,
+      {"repo_path", "storage", "log_file", "input_path", "input", "output"},
+      {"extensions", "extensions_path"}};
   ScMemoryConfig memoryConfig{config, memoryParams};
   sc_memory_params formedMemoryParams = memoryConfig.GetParams();
 
