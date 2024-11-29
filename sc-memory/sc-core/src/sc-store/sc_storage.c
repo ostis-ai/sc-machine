@@ -892,6 +892,7 @@ sc_result _sc_storage_element_erase_with_incoming_outgoing_connectors(
 
     connector_addr = connector->arc.next_end_in_arc;
   }
+  sc_monitor_release_read(monitor);
 
   // if addr is connector and its source/target is node that is under erasure and does not have emitted erase events
   // then cache source/target to try to erase them with their incoming/outgoing connectors
@@ -904,7 +905,6 @@ sc_result _sc_storage_element_erase_with_incoming_outgoing_connectors(
       _sc_storage_cache_elements_under_erasure_without_erase_events(
           end_addr, incident_nodes_under_erasure, processed_connectors);
   }
-  sc_monitor_release_read(monitor);
 
   if (!*does_branch_have_emitted_events)
     sc_list_push_back(elements_that_can_be_erased, (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(addr));
