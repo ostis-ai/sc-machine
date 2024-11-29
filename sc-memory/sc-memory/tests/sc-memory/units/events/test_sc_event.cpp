@@ -1451,12 +1451,9 @@ TEST_F(ScEventTest, TwoSubscriptionsForNodeErasure)
   m_ctx->EraseElement(nodeWithTwoSubscriptionsAddr);
   m_ctx->EraseElement(nodeWithoutSubscriptionsAddr);
   std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 2));
-  SC_LOG_INFO("checking nodeWithoutSubscriptionsAddr first");
   EXPECT_FALSE(m_ctx->IsElement(nodeWithoutSubscriptionsAddr));
-  SC_LOG_INFO("checking nodeWithTwoSubscriptionsAddr first");
   EXPECT_TRUE(m_ctx->IsElement(nodeWithTwoSubscriptionsAddr));
   std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-  SC_LOG_INFO("checking nodeWithTwoSubscriptionsAddr second");
   EXPECT_FALSE(m_ctx->IsElement(nodeWithTwoSubscriptionsAddr));
   EXPECT_TRUE(isShortExecutedSubscriptionCalled);
   EXPECT_TRUE(isLongExecutedSubscriptionCalled);
