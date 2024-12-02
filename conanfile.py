@@ -17,9 +17,9 @@ class sc_machineRecipe(ConanFile):
     package_type = "library"
     version = get_version()
     author = "OSTIS AI"
-    license = "https://github.com/ostis-ai/sc-machine/blob/master/LICENSE"
+    license = "https://github.com/ostis-ai/sc-machine/blob/master/COPYING.MIT"
     url = "https://github.com/ostis-ai/sc-machine"
-    description = "Software implementation of semantic network storage"
+    description = "Software implementation of semantic memory and its APIs"
     exports = ["LICENSE.md"]
     exports_sources = "*", "!.venv", "!build", "!.cache", "!kb", "!kb.bin", "!.env", "!ConanPresets.json", "!docs", "!.git"
     settings = "os", "compiler", "build_type", "arch"
