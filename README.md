@@ -11,15 +11,11 @@
 
 Short version: **sc-machine** is a software package that emulates **semantic computer behavior** by storing and processing knowledge in a semantic network. It uses **agent-based approach** to process knowledge graphs.
 
-or, if you'll look at it from an angle of databases...
-
-sc-machine is a **platform-independent graph database management system** that can store / retrieve knowledge graphs and run tasks (agents) on them.
-
+From the perspective of graph databases, sc-machine is a **graph database management system** designed to store / retrieve knowledge graphs and run tasks (agents) on them.
 
 sc-machine stores and processes knowledge graphs represented in the SC-code (language of the universal knowledge representation). Theoretical basis of sc-machine is provided by the [**OSTIS Technology**](https://github.com/ostis-ai).
 
-Both declarative (data, data structures, documentation, tasks specification, etc.) and procedural
-(programs, modules, systems, communication between systems) knowledge is represented using that same language.
+Both declarative (data, data structures, documentation, problems specification, etc.) and procedural (agents, programs, modules, systems, communication between systems) knowledge is represented using that same language.
 
 Semantic network storage allows integrating problem solutions from different subject domains **by using the same**:
 
@@ -60,6 +56,7 @@ To get started, check out our [quick start guide](https://ostis-ai.github.io/sc-
   - rationale behind the sc-machine
   - system design
   - software interfaces
+  - more rigorous theoretical calculations
 
   is redistributed in a form of the SCn-TeX document [compiled in PDF format](https://github.com/ostis-ai/ostis-web-platform/blob/develop/docs/main.pdf).
 

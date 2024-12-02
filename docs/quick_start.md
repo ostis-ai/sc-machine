@@ -4,28 +4,39 @@
 
 ### Conan
 
-You can use Conan to install sc-machine, here's what you'll need to add to `conanfile.txt`:
+You can use Conan to install sc-machine. To do this you need to create `conanfile.txt` in the root of the project and add to it:
+
 ```ini
 [requires]
 sc-machine/<version>
 ```
 
-You will be able to use `find_package(sc-machine REQUIRED)` to import sc-machine targets into your CMake project after you'll execute `conan install .`.
+Then run the following command in the project root:
+
+```sh
+conan install .
+```
+
+Import sc-machine targets into your CMake project by using:
+
+```cmake
+find_package(sc-machine REQUIRED)
+```
+
+Start building! Refer to our [C++ Guide](https://ostis-ai.github.io/sc-machine/sc-memory/api/cpp/guides/simple_guide_for_implementing_agent/) on how to quickly develop an sc-machine agent in C++ from scratch.
 
 ### GitHub Releases
 You can download pre-built artifacts from [GitHub Releases](https://github.com/ostis-ai/sc-machine/releases). Extract it to any location, then make it available to CMake by appending folder path to `CMAKE_PREFIX_PATH`:
 
 ```cmake
-set(FABULOUS_PROJECT_SC_MACHINE_PATH "/some/path/to/sc-machine-<version>" 
-CACHE PATH "sc-machine installation path"
+set(FABULOUS_PROJECT_SC_MACHINE_PATH "/path/to/extracted/sc-machine" 
+    CACHE PATH "sc-machine installation path"
 )
 
 list(APPEND CMAKE_PREFIX_PATH ${FABULOUS_PROJECT_SC_MACHINE_PATH})
 ```
 
 Find more info on installation methods on the [build system page](https://ostis-ai.github.io/sc-machine/build/build_system/) (including some more advanced snippets for CMake).
-
-Start building! Refer to our [C++ Guide](https://ostis-ai.github.io/sc-machine/sc-memory/api/cpp/guides/simple_guide_for_implementing_agent/) on how to quickly develop an sc-machine agent in C++ from scratch.
 
 ## Install sc-machine as a service
 
@@ -58,8 +69,16 @@ Note: currently, running sc-machine natively on Windows isn't supported.
 Download the [sc-machine release](https://github.com/ostis-ai/sc-machine/releases) for your platform and run it on your system:
 
 ```sh
+# create empty knowledge base sources folder
+mkdir kb && cat "." > kb/repo.path
+# note: at this stage you can move your KB sources to the ./kb folder
+
 cd sc-machine-<version>-<platform>
-./bin/sc-machine -r ../kb.bin # kb.bin will become your KB persistence folder
+# build knowledge base
+./bin/sc-builder -i kb/repo.path -o ../kb.bin --clear
+# run sc-machine
+./bin/sc-machine -e lib/extensions -s ../kb.bin 
+# kb.bin will become your KB persistence folder
 ```
 
 In case you want to make changes to the project sources, please refer to the [build system docs](https://ostis-ai.github.io/sc-machine/build/build_system/).
