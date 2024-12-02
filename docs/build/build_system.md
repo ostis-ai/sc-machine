@@ -67,6 +67,9 @@ For example, this is how to build sc-machine in debug mode using dependencies fr
 # Use pipx to install Conan if not already installed
 # Install pipx first using guide: https://pipx.pypa.io/stable/installation/ 
 pipx install conan
+```
+
+```sh
 # Use preset with Conan-provided dependencies and debug build type
 cmake --preset debug-conan
 # Use debug build preset since we've used a debug configure preset
@@ -81,7 +84,7 @@ cmake --preset release-with-tests
 cmake --build --preset release
 ```
 
-We also define `INSTALL` instructions in our CMake. This routine can be launched by appending `--target install` to the `cmake --build --preset <preset>` folder. The result of this command will reside in `build/<Release|Debug>/install` (our default install folder). Install folder is basically a pack of portable executable files and shared libraries required to get sc-machine up and running, this command is intended to create clutter-free archives/folders with our code which you can then use in your own projects.
+We also define `INSTALL` instructions in our CMake. This routine can be launched by appending `--target install` to the `cmake --build --preset <preset>` command. The result of this command will reside in `build/<Release|Debug>/install` (our default install folder). Install folder is basically a pack of portable executable files and shared libraries required to get sc-machine up and running, this command is intended to create clutter-free archives/folders with our code which you can then use in your own projects.
 
 ## Consuming the package
 
@@ -153,7 +156,7 @@ list(APPEND CMAKE_PREFIX_PATH ${<proj_name>_SC_MACHINE_PATH})
   ```ini
   [requires]
   # git commit is also the revision
-  sc-machine/0.10.0#0c1889bc6a34450c7728b4b12af9083910cebb36
+  sc-machine/<version>#<commit>
 
   [generators]
   CMakeDeps
