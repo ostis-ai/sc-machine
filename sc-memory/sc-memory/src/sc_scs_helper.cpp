@@ -163,6 +163,10 @@ private:
         {
           if (type.IsLink())
           {
+            // TODO(NikitaZotov): Throw exception if this sc-link is a sc-link with system identifier of sc-element
+            // denoting sc-elements type, and type of sc-element, for which this sc-link is specified as a system
+            // identifier, can't be extended to ScType::ConstNodeClass. See
+            // SCsHelperTest.GenerateBySCs_ContourWithExplicitlySpecifiedElementTypeSystemIdentifier.
             resultAddr = m_ctx.GenerateLink(type);
             SetupLinkContent(resultAddr, el);
           }

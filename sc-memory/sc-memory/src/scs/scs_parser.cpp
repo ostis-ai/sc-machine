@@ -482,13 +482,20 @@ void Parser::ProcessTriple(
       std::string const & sourceIdtf = source.GetIdtf();
       ScType const newType = target.m_type | scs::TypeResolver::GetKeynodeType(sourceIdtf);
 
-      if (target.m_type.CanExtendTo(newType))
+      if (target.IsElementType() && !newType.CanExtendTo(ScType::ConstNodeClass))
+        SC_THROW_EXCEPTION(
+            utils::ExceptionParseError,
+            "Can't extend type `" << std::string(target.m_type) << "` to type `" << std::string(newType)
+                                  << "` for element `" << target.GetIdtf() << "`, because element `" << target.GetIdtf()
+                                  << "` is element denoting type of sc-elements.");
+      else if (target.m_type.CanExtendTo(newType))
         target.m_type = newType;
       else
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError,
             "Can't extend type `" << std::string(target.m_type) << "` to type `" << std::string(newType)
-                                  << "` for element `" << target.GetIdtf() << "`.");
+                                  << "` for element `" << target.GetIdtf() << "`, because `" << std::string(newType) 
+                                  << "` is not subtype of `" << std::string(target.m_type) << "`.");
 
       // TODO(NikitaZotov): Unfortunately, parser collects all sc.s-elements, and only then forms sc.s-triples based on
       // the parsed sc.s-elements. Due to this, it is difficult to handle cases when it is necessary not to generate a
@@ -615,6 +622,14 @@ void Parser::ProcessContourBegin()
 
 void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 {
+  ParsedElement & contour = GetParsedElementRef(contourHandle);
+  if (contour.IsElementType())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError,
+        "Element denoting sc-elements type `" << contour.GetIdtf() << "` can't be sc.s-contour.");
+
+  contour.m_type = ScType::ConstNodeStructure;
+
   size_t const last = m_parsedElements.size();
   size_t const lastLocal = m_parsedElementsLocal.size();
   size_t const lastTriple = m_parsedTriples.size();
@@ -668,9 +683,6 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
     ElementHandle const connectorHandle = ProcessConnector("->");
     ProcessTriple(contourHandle, connectorHandle, elementHandle);
   }
-
-  ParsedElement & contour = GetParsedElementRef(contourHandle);
-  contour.m_type = ScType::ConstNodeStructure;
 }
 
 }  // namespace scs

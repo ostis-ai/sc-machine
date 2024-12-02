@@ -313,7 +313,7 @@ TEST_F(SCsHelperTest, GenerateBySCs_ArcToElementTypeWithinStructure)
 TEST_F(SCsHelperTest, GenerateBySCs_BaseArcBetweenElementTypesWithinStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
-  std::string const scsData = "structure = [* sc_node_tuple -> sc_node_class;; *];;";
+  std::string const scsData = "structure = [* sc_node -> sc_node_class;; *];;";
   EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 
   ScAddr const nodeTupleAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_tuple");
@@ -325,6 +325,29 @@ TEST_F(SCsHelperTest, GenerateBySCs_BaseArcBetweenElementTypesWithinStructure)
 
   EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 2u);
   EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, nodeClassAddr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ArcToElementTypeFromIncomtableElementTypesWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_node_tuple -> sc_node_class;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ContourWithImplicitlySpecifiedElementTypeSystemIdentifier)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "sc_node_class = [* sc_node -> sc_node_class;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, DISABLED_GenerateBySCs_ContourWithExplicitlySpecifiedElementTypeSystemIdentifier)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = 
+    "..contour = [* sc_node -> sc_node_class;; *];;"
+    "..contour => nrel_system_identifier: [sc_node_class];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_NotBaseArcBetweenElementTypesWithinStructure)
