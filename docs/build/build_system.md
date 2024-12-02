@@ -19,7 +19,7 @@ If you wish to use CLI instead, you can list all the available configurations in
 cmake --list-presets
 ```
 
-### Configure Presets
+### Configure presets
 
 These presets define how the project is configured before building.
 
@@ -32,16 +32,18 @@ These presets define how the project is configured before building.
 | `release-with-tests`         | Release config with tests                                        | Use for production builds that require testing.                 |
 | `release-with-tests-conan`   | Release config with tests (Conan dependencies used)              | Use if you want to run tests in a production build using Conan. |
 
-### Build Presets
+### Build presets
 
 These presets are linked to the configure presets and are used by CMake to determine the build folder (`build/Debug` or `build/Release` by default).
 
-| **Name**   | **Configure Preset**  |
-|------------|-----------------------|
-| `debug`    | debug, debug-conan                 |
-| `release`  | release, release-conan, release-with-tests, release-with-tests-conan               |
+| **Name**   | **Configure Preset**                                                 |
+|------------|----------------------------------------------------------------------|
+| `debug`    | debug, debug-conan                                                   |
+| `release`  | release, release-conan, release-with-tests, release-with-tests-conan |
 
-### Package Presets
+The build artifacts will be located in the `build/<Release|Debug>/bin` folder.
+
+### Package presets
 
 These presets are used for packaging the built project.
 
@@ -56,6 +58,8 @@ These presets are used for packaging the built project.
 - For production builds, choose the **Release config** (`release`) preset to create optimized builds without debugging information. This is suitable for deploying applications.
 - If your project relies on Conan, select either the **Debug config (Conan)** (`debug-conan`) or the **Release config (Conan)** (`release-conan`) presets, depending on whether you are debugging or preparing a release.
 - Choose the **Release config with tests** (`release-with-tests`) or its Conan variant (`release-with-tests-conan`) if you want to ensure that your production build has been tested thoroughly before deployment.
+
+### Example usage
 
 For example, this is how to build sc-machine in debug mode using dependencies from Conan:
 
@@ -76,8 +80,6 @@ This is how you would build sc-machine in release mode using system-provided dep
 cmake --preset release-with-tests
 cmake --build --preset release
 ```
-
-The build artifacts will be located in the `build/<Release|Debug>/bin` folder.
 
 We also define `INSTALL` instructions in our CMake. This routine can be launched by appending `--target install` to the `cmake --build --preset <preset>` folder. The result of this command will reside in `build/<Release|Debug>/install` (our default install folder). Install folder is basically a pack of portable executable files and shared libraries required to get sc-machine up and running, this command is intended to create clutter-free archives/folders with our code which you can then use in your own projects.
 
