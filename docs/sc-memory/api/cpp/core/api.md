@@ -126,7 +126,7 @@ syntactic sc-type for sc-element.
 // Generate sc-node and get sc-address in sc-memory of it.
 ScAddr const & nodeAddr = context.GenerateNode(ScType::Node);
 bool const isSubtypeElementChanged 
-    = context.SetElementSubtype(node, ScType::ConstNode);
+    = context.SetElementSubtype(nodeAddr, ScType::ConstNode);
 // The value of `isSubtypeElementChanged` must be equal to `true`.
 ```
 
@@ -323,11 +323,11 @@ You can find sc-links by its content. For this use the method `SearchLinksByCont
 ...
 // Find sc-links with specified string content.
 ScAddrSet const & linkAddrs1 = context.SearchLinksByContent("my content");
-// The vector `linkAddrs1` must contain sc-address `linkAddr1`.
+// The set `linkAddrs1` must contain sc-address `linkAddr1`.
 
 // Find sc-links with specified numeric content.
 ScAddrSet const & linkAddrs2 = context.SearchLinksByContent(10f);
-// The vector `linkAddrs2` must contain sc-address `linkAddr2`.
+// The set `linkAddrs2` must contain sc-address `linkAddr2`.
 ```
 
 ### **SearchLinksByContentSubstring**
@@ -339,7 +339,7 @@ And you can find sc-links by its content substring. For this use the method `Sea
 // Find sc-links with specified string content substring.
 ScAddrSet const & linkAddrs1 
   = context.SearchLinksByContentSubstring("my cont");
-// The vector `linkAddrs1` must contain sc-address `linkAddr1`.
+// The set `linkAddrs1` must contain sc-address `linkAddr1`.
 ```
 
 ### **ScException**
@@ -350,8 +350,8 @@ To declare your own exceptions inherit from class `ScException`.
 class MyException final : public ScException
 {
 public:
-  explicit MyException(std::string const & msg) 
-    : ScException("MyException: " + msg)
+  explicit MyException(std::string const & description, std::string const & message) 
+    : ScException("MyException: " + description, message)
   {}
 };
 ```
