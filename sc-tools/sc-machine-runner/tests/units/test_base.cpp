@@ -67,3 +67,14 @@ TEST_F(ScMachineTest, PrintVersion)
   sc_char const * args[argsNumber] = {"sc-machine", "--version"};
   EXPECT_EQ(RunMachine(argsNumber, (sc_char **)args), EXIT_SUCCESS);
 }
+
+sc_int main(sc_int argc, sc_char ** argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+
+  std::filesystem::path binaryPath = argv[0];
+  std::filesystem::path binaryDirectory = binaryPath.parent_path().parent_path();
+  ScMachineTest::SC_MACHINE_EXTENSIONS = binaryDirectory / "lib/extensions";
+
+  return RUN_ALL_TESTS();
+}

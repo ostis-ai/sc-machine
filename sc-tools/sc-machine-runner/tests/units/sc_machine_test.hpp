@@ -15,7 +15,7 @@ class ScMachineTest : public testing::Test
 public:
   static inline std::string const & SC_MACHINE_INI = "../sc-machine-test.ini";
   static inline std::string const & SC_MACHINE_KB_BIN = "../sc-machine-test-kb-bin";
-  static inline std::string const & SC_MACHINE_EXTENSIONS = "/extensions";
+  static inline std::string SC_MACHINE_EXTENSIONS;
 
 protected:
   void SetUp() override {}
