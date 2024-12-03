@@ -74,13 +74,6 @@ try
   std::string configPath;
   if (options.Has({"config", "c"}))
     configPath = options[{"config", "c"}].second;
-  else
-  {
-    std::cout << "Error: Configuration file is required, but it is missing. Use --config|-c to specify the path to the "
-                 "configuration file.\n";
-    std::cout << "For more information, run with --help.\n";
-    return EXIT_FAILURE;
-  }
 
   sc_bool saveOnShutdown = !options.Has({"verbose", "v"});
 
