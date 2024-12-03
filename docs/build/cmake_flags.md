@@ -11,7 +11,7 @@ cmake --build --preset <build-preset>
 
 Additionally you can use `-DSC_BUILD_BENCH=ON` flag to build performance tests
 
-## Building with sanitizers
+## Building sc-machine with sanitizers
 
 Use `cmake` with `-DSC_USE_SANITIZER=memory` or `-DSC_USE_SANITIZER=address` option to run build with memory or address sanitizer. 
 
