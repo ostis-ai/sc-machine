@@ -1,29 +1,35 @@
-## Build cache:
-This project uses ccache automatically if it's available in the system. To disable this, use flag `-DAUTO_CCACHE=OFF`
+## Build cache
 
-## Building tests:
+This project uses ccache automatically if it's available in the system. To disable this, use flag `-DAUTO_CCACHE=OFF`.
+
+## Building tests
+
 ```sh
-cmake -B build -DSC_BUILD_TESTS=ON
-cmake --build build -j$(nproc)
+cmake --preset <configure-preset> -DSC_BUILD_TESTS=ON
+cmake --build --preset <build-preset>
 ```
 
 Additionally you can use `-DSC_BUILD_BENCH=ON` flag to build performance tests
 
-
 ## Building with sanitizers
+
 Use `cmake` with `-DSC_USE_SANITIZER=memory` or `-DSC_USE_SANITIZER=address` option to run build with memory or address sanitizer. 
+
 **Note: sanitizers are only supported by `clang` compiler** 
-### Example:
+
+### Example
+
 ```sh
-cmake -B build -DSC_USE_SANITIZER=memory -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
-cmake --build build
+cmake --preset <configure-preset> -DSC_USE_SANITIZER=memory -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+cmake --build --preset <build-preset>
 ```
-## Code formatting with CLangFormat:
+
+## Code formatting with CLangFormat
 
 To check code with CLangFormat run:
 ```sh
-cmake -B build -DSC_CLANG_FORMAT_CODE=ON
-cmake --build build --target clangformat_check
+cmake --preset release-with-tests -DSC_CLANG_FORMAT_CODE=ON
+cmake --build --preset release --target clangformat_check
 ```
 
 or
@@ -33,8 +39,8 @@ or
 
 To format code with CLangFormat run:
 ```sh
-cmake -B build -DSC_CLANG_FORMAT_CODE=ON
-cmake --build build --target clangformat
+cmake --preset release-with-tests -DSC_CLANG_FORMAT_CODE=ON
+cmake --build --preset release --target clangformat
 ```
 
 or
