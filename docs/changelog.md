@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
 - Questions were renamed to actions, answers were renamed to results.
 - `m_memoryCtx` in ScAgent renamed to `m_context`.
-- Сode generation is no longer used as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API. We have
+- Сode generation is no longer used as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API -- [C++ Agent Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md.md). We have
     - completely moved from code generation to template programming;
     - improved the API and aligned with our description of how it should be;
     - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
@@ -164,6 +164,7 @@ See documentation, to learn more about using new API.
 
 ### Added
 
+- Quick start section in docs
 - Allow multiple extension directories for sc-memory
 - CD for publishing sc-machine binaries as archive on Github 
 - CI for checking sc-machine tests build with Conan dependencies
