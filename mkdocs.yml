@@ -8,12 +8,12 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Quick Start: quick_start.md
+  - Quick start: quick_start.md
   - Docker: docker.md
-  - Build:
-      - Build system: build/build_system.md
-      - CMake flags: build/cmake_flags.md
-      - Configuration file: build/config.md
+  - User guides:
+      - C++ Guides:
+          - C++ Simple guide for implementing agent: sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md
+      - Migrate to new agent API: sc-tools/migrate_to_new_agent_api.md
   - API:
       - C++ API:
           - C++ Core API: sc-memory/api/cpp/core/api.md
@@ -29,29 +29,29 @@ nav:
                   - C++ Actions API: sc-memory/api/cpp/extended/agents/actions.md
                   - C++ Agent context API: sc-memory/api/cpp/extended/agents/agent_context.md
                   - C++ Modules API: sc-memory/api/cpp/extended/agents/modules.md
-          - C++ Guides:
-              - C++ Simple guide for implementing agent: sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md
       - Python API:
           - Python Core API: https://github.com/ostis-ai/py-sc-client
           - Python Extended API: https://github.com/ostis-ai/py-sc-kpm
       - TypeScript API:
           - TypeScript Core API: https://github.com/ostis-ai/ts-sc-client
-      - Sc-element types: scs/sc_element_types.md
+      - sc-element types: scs/sc_element_types.md
       - SCs-code: scs/scs.md
-  - Utils:
-      - Agents: sc-kpm/kpm.md
   - Tools:
       - Knowledge Base Builder: sc-tools/sc_builder.md
       - Knowledge Base repo file: sc-tools/kb_repo_file.md
-      - Sc-machine Runner: sc-tools/sc_machine.md
-      - Migrate to new agent api: sc-tools/migrate_to_new_agent_api.md
+      - sc-machine Runner: sc-tools/sc_machine.md
+  - Developer guides:
+      - Build system: build/build_system.md
+      - CMake flags: build/cmake_flags.md
+      - Configuration file: build/config.md
+      - Architecture:
+          - Core agents: sc-kpm/kpm.md
   - Development:
       - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
       - Codestyle Guide: dev/codestyle.md
       - Dev Container: dev/devcontainer.md
   - License: license.md
   - Changelog: changelog.md
-  - Thirdparty: thirdparty.md
 
 theme: material
 

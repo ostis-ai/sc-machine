@@ -4,7 +4,7 @@
     This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement waiters on C++.
+The **C++ Waiters API** provides functionality for implementing wait conditions within agent workflows. This section covers how to create waiters that pause agent execution until specified conditions are met or events are triggered. It is particularly useful for synchronizing actions across multiple agents or ensuring that certain prerequisites are fulfilled before proceeding with tasks.
 
 !!! note
     To include this API provide `#include <sc-memory/sc_waiter.hpp>` in your hpp source.

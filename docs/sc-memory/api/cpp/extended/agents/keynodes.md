@@ -4,7 +4,7 @@
     This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to define keynodes on C++.
+The **C++ Keynodes API** allows developers to work with key nodes in the knowledge graph that represent significant concepts or entities. This documentation describes how to create, retrieve, and manipulate keynodes within the sc-machine, enabling efficient management of critical data points in semantic networks.
 
 A keynode is a key sc-element used by some program (agent) during its operation. Typically, keynodes can be classes and relations, which are sc-elements that program (agent) uses to find constructions in sc-memory or generate new ones. However, keynodes can be any sc-elements (incl. connectors between sc-elements).
 

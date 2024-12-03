@@ -4,7 +4,7 @@
     This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API describes how to work with sc-events.
+The **C++ Events API** is designed to handle event-driven programming within the sc-machine. This section details how to create, manage, and respond to events triggered by agents. It includes mechanisms for defining custom events, subscribing to them, and executing event handlers, allowing developers to implement responsive and interactive applications.
 
 !!! note
     To include this API provide `#include <sc-memory/sc_event.hpp>` in your hpp source.
