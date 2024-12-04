@@ -1,10 +1,10 @@
 # Documentation
 
-Welcome to the sc-machine documentation! This comprehensive guide is designed to help you navigate the features, functionalities, and applications of sc-machine, a C++ software package that emulates semantic computer behavior through the storage and processing of knowledge in a semantic network.
+Welcome to the [sc-machine](https://github.com/ostis-ai/sc-machine) documentation! This comprehensive guide is designed to help you navigate the features, functionalities, and applications of sc-machine, a C++ software package that emulates semantic computer behavior through the storage and processing of knowledge in a semantic network.
 
 ## What is sc-machine?  
 
-At its core, sc-machine operates as a **graph database management system**, enabling users to efficiently store, retrieve, and manipulate *knowledge graphs* in common shared memory known as *sc-memory*. By leveraging an agent-based approach, it processes these graphs to facilitate complex tasks and workflows. The underlying technology is grounded in **OSTIS Technology**, which allows for the representation of both declarative and procedural knowledge using a unified language known as *SC-code*.
+At its core, sc-machine operates as a **graph database management system**, enabling users to efficiently store, retrieve, and manipulate *knowledge graphs* in common shared memory known as *sc-memory*. By leveraging an agent-based approach, it processes these graphs to facilitate complex tasks and workflows. The underlying technology is grounded in the [**OSTIS Technology**](https://github.com/ostis-ai), which allows for the representation of both declarative and procedural knowledge using a unified language known as *SC-code (Semantic Computer code)*.
 
 Table of contents:
 
@@ -51,5 +51,5 @@ Table of contents:
     * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
     * [Codestyle Guide](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
     * [Dev Container](dev/devcontainer.md) - *guide for those who wants to develop sc-machine via docker*
-- [License](license.md)
+- [License](https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT)
 - [Changelog](changelog.md)

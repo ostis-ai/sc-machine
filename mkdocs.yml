@@ -51,7 +51,7 @@ nav:
       - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
       - Codestyle Guide: dev/codestyle.md
       - Dev Container: dev/devcontainer.md
-  - License: license.md
+  - License: https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT
   - Changelog: changelog.md
 
 theme: material
