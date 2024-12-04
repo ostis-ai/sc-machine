@@ -49,7 +49,7 @@ After that, you can go to `build/Debug` and run tests via `ctest`:
 
 ```sh
 cd build/Debug
-ctest -V Debug
+ctest -C Debug -V
 ```
 
 #### Run sc-machine in Debug
@@ -91,7 +91,7 @@ After that, you can run tests:
 
 ```sh
 cd build/Release
-ctest -V Release
+ctest -C Release -V
 ```
 
 #### Run sc-machine in Release
@@ -162,7 +162,7 @@ After that, you can go to `build/Debug` and run tests via `ctest`:
 
 ```sh
 cd build/Debug
-ctest -V Debug
+ctest -C Debug -V
 ```
 
 #### Run sc-machine in Debug
@@ -204,7 +204,7 @@ After that, you can run tests:
 
 ```sh
 cd build/Release
-ctest -V Release
+ctest -C Release -V
 ```
 
 #### Run sc-machine in Release
