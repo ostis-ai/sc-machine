@@ -40,7 +40,7 @@ nav:
       - Knowledge Base Builder: sc-tools/sc_builder.md
       - Knowledge Base repo file: sc-tools/kb_repo_file.md
       - sc-machine Runner: sc-tools/sc_machine.md
-  - Developer guides:
+  - Build instructions:
       - Quick start: build/quick_start.md
       - Build system: build/build_system.md
       - CMake flags: build/cmake_flags.md

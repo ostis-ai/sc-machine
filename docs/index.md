@@ -40,7 +40,7 @@ Table of contents:
     * [Knowledge Base builder](sc-tools/sc_builder.md) - *description of options of sc-builder for knowledge base sources*
     * [Knowledge Base repo file](sc-tools/kb_repo_file.md) - *description of configuration of knowledge base sources*
     * [sc-machine Runner](sc-tools/sc_machine.md) - *description of options of sc-machine runner*
-- **Developer instructions** - *guidelines for building the project, configuring settings*
+- **Build instructions** - *guidelines for building the project, configuring settings*
     * [Quick start](build/quick_start.md) - *get up and start developing sc-machine quickly*
     * [Build system](build/build_system.md) - *how to build the project and use it as a library*
     * [CMake Flags](build/cmake_flags.md) - *description of CMake flags used to configure sc-machine*
