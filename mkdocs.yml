@@ -45,8 +45,8 @@ nav:
       - Build system: build/build_system.md
       - CMake flags: build/cmake_flags.md
       - Configuration file: build/config.md
-      - Architecture:
-          - Core agents: sc-kpm/kpm.md
+  - Architecture:
+      - Core agents: sc-kpm/kpm.md
   - Development:
       - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
       - Codestyle Guide: dev/codestyle.md

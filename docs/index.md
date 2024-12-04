@@ -45,8 +45,8 @@ Table of contents:
     * [Build system](build/build_system.md) - *how to build the project and use it as a library*
     * [CMake Flags](build/cmake_flags.md) - *description of CMake flags used to configure sc-machine*
     * [Configuration File](build/config.md) - *description of a configuration file of sc-machine*
-    * Architecture
-        * [Core agents](sc-kpm/kpm.md) - *detailed description of core agents*
+- **Architecture** - *description of project components*
+    * [Core agents](sc-kpm/kpm.md) - *detailed description of core agents*
 - **Development** - *guidelines for contributing to development*
     * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
     * [Codestyle Guide](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
