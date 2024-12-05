@@ -559,10 +559,14 @@ All sc-arcs from permissions classes (relations) must be permanent or temporary.
     In the sc-machine there is a global system context -- `ScMemory::ms_globalContext`, that has all permissions. You can use it to update permissions that can be used to read, update or erase permissions for other users.
 
 !!! warning
-    Erasing a positive membership sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically creates a negative membership sc-arc between the given relation and the sc-arc between the user and the action class.
+    Erasing a positive membership sc-arc between relation and sc-arc between the user and an action class, that the user can perform (pair with sc-structure and action class), automatically creates a negative membership sc-arc between the given relation and the sc-arc between the user and the action class (the pair with sc-structure and action class).
+
+<scg src="../images/permissions/erase_local_read_permissions_for_user.gwf"></scg>
 
 !!! warning
-    Creating a positive membership sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically erases all negative membership sc-arcs between the given relation and the sc-arc between the user and the action class.
+    Creating a positive membership sc-arc between relation and sc-arc between the user and an action class, that the user can perform (pair with sc-structure and action class), automatically erases all negative membership sc-arcs between the given relation and the sc-arc between the user and the action class (the pair with sc-structure and action class).
+
+<scg src="../images/permissions/generate_local_read_permissions_for_user.gwf"></scg>
 
 ---
 
