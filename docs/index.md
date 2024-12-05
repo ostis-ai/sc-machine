@@ -22,10 +22,10 @@ Table of contents:
             * [C++ ScTemplate API](sc-memory/api/cpp/extended/template_api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)* 
             * C++ Agents API - *documentation of C++ Agents API for creating agents*
                 * [C++ Events API](sc-memory/api/cpp/extended/agents/events.md) - *enables developers to create and manage events within the sc-machine, allowing agents to respond dynamically to various triggers*
-                * [C++ Event subscriptions API](sc-memory/api/cpp/extended/agents/event_subscriptions.md) - *details how agents can subscribe to specific events, manage their subscriptions, and receive notifications when those events occur*
+                * [C++ Event subscriptions API](sc-memory/api/cpp/extended/agents/event_subscriptions.md) - *details how agents can subscribe to specific events and receive notifications when those events occur*
                 * [C++ Waiters API](sc-memory/api/cpp/extended/agents/waiters.md) - *allows developers to implement wait conditions that pause agent execution until specified conditions are met or events are triggered*
                 * [C++ Keynodes API](sc-memory/api/cpp/extended/agents/keynodes.md) - *provides functionality for creating, retrieving, and manipulating keynodes, which represent significant concepts within the knowledge graph*
-                * [C++ Actions API](sc-memory/api/cpp/extended/agents/actions.md) - *outlines how to define and execute actions that agents can perform, detailing their parameters and expected outcomes*
+                * [C++ Actions API](sc-memory/api/cpp/extended/agents/actions.md) - *outlines how to define and initiate actions that agents can perform, detailing their arguments and results*
                 * [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md) - *focuses on agent creation and management*
                 * [C++ Agent context API](sc-memory/api/cpp/extended/agents/agent_context.md) - *explains how to manage the context in which agents operate, encapsulating their state and environment during execution*
                 * [C++ Modules API](sc-memory/api/cpp/extended/agents/modules.md) - *describes how to create and manage modular components that extend the functionality of agents*
@@ -45,8 +45,6 @@ Table of contents:
     * [Build system](build/build_system.md) - *how to build the project and use it as a library*
     * [CMake Flags](build/cmake_flags.md) - *description of CMake flags used to configure sc-machine*
     * [Configuration File](build/config.md) - *description of a configuration file of sc-machine*
-- **Architecture** - *description of project components*
-    * [Core agents](sc-kpm/kpm.md) - *detailed description of core agents*
 - **Development** - *guidelines for contributing to development*
     * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
     * [Codestyle Guide](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*

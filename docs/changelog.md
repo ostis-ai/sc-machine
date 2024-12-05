@@ -141,7 +141,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   | ```_<~```  | ```<~_```    |
   | ```_<|~``` | ```<|~_```   |
 
-- It is no longer possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
+- It is no longer possible to specify permanency for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
 
 - Incorrect system identifiers of sc.s-keynodes were also replaced by correct ones.
 

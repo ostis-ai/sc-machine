@@ -4,7 +4,7 @@
     This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-The **C++ Event Subscriptions API** focuses on managing subscriptions to various events within the system. This documentation explains how agents can subscribe to specific events, manage their subscriptions, and receive notifications when these events occur. It is essential for building systems that require real-time updates and interactions based on event occurrences.
+The **C++ Event Subscriptions API** focuses on managing subscriptions to various events within the system. This documentation explains how agents can subscribe to specific events and receive notifications when these events occur. It is essential for building systems that require real-time updates and interactions based on event occurrences.
 
 !!! note
     To include this API provide `#include <sc-memory/sc_event_subscription.hpp>` in your hpp source.

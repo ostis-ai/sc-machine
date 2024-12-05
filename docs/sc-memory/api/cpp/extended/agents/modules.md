@@ -4,7 +4,7 @@
     This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-The **C++ Modules API** outlines how to create and manage modules that extend the functionality of agents within sc-machine. This section describes how to develop modular components that can be reused across different agents, promoting code efficiency and organization.
+The **C++ Modules API** outlines how to create and manage modules that group agents within sc-machine. This section describes how to register agents in an application.
 
 !!! note
     To include this API provide `#include <sc-memory/sc_module.hpp>` in your hpp source.

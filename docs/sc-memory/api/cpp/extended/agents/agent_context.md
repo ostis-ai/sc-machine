@@ -4,7 +4,7 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
-The **C++ Agent context API** provides tools for managing the context in which agents operate. This API provides additional sc-memory methods that simplify working with it and provide additional methods to work with sc-events and agents. This documentation explains how to set up and utilize agent contexts, which encapsulate the state and environment of an agent during its execution.
+The **C++ Agent context API** provides tools for managing the context in which agents operate. This API provides additional sc-memory methods that simplify working with it and provide additional methods to work with sc-events and agents.
 
 ## **ScAgentContext**
 

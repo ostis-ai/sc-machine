@@ -23,7 +23,7 @@ Import sc-machine targets into your CMake project by using:
 find_package(sc-machine REQUIRED)
 ```
 
-Start building! Refer to our [C++ Guide](https://ostis-ai.github.io/sc-machine/sc-memory/api/cpp/guides/simple_guide_for_implementing_agent/) on how to quickly develop an sc-machine agent in C++ from scratch.
+Start building! Refer to our [C++ Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md) on how to quickly develop an sc-machine agent in C++ from scratch.
 
 ### GitHub Releases
 You can download pre-built artifacts from [GitHub Releases](https://github.com/ostis-ai/sc-machine/releases). Extract it to any location, then make it available to CMake by appending folder path to `CMAKE_PREFIX_PATH`:
@@ -36,7 +36,7 @@ set(FABULOUS_PROJECT_SC_MACHINE_PATH "/path/to/extracted/sc-machine"
 list(APPEND CMAKE_PREFIX_PATH ${FABULOUS_PROJECT_SC_MACHINE_PATH})
 ```
 
-Find more info on installation methods on the [build system page](https://ostis-ai.github.io/sc-machine/build/build_system/) (including some more advanced snippets for CMake).
+Find more info on installation methods on the [build system page](build/build_system.md) (including some more advanced snippets for CMake).
 
 ## Install sc-machine as a service
 
@@ -70,19 +70,19 @@ Download the [sc-machine release](https://github.com/ostis-ai/sc-machine/release
 
 ```sh
 # create empty knowledge base sources folder
-mkdir kb && cat "." > kb/repo.path
+mkdir kb
 # note: at this stage you can move your KB sources to the ./kb folder
 
 cd sc-machine-<version>-<platform>
 # build knowledge base
-./bin/sc-builder -i kb/repo.path -o ../kb.bin --clear
+./bin/sc-builder -i ../kb -o ../kb.bin --clear
 # run sc-machine
 ./bin/sc-machine -e lib/extensions -s ../kb.bin 
 # kb.bin will become your KB persistence folder
 ```
 
-In case you want to make changes to the project sources, please refer to the [build system docs](https://ostis-ai.github.io/sc-machine/build/build_system/).
+In case you want to make changes to the project sources, please refer to the [build system docs](build/build_system.md).
 
 ## Config
 
-This repository provides a default configuration for the sc-machine. To customize the _sc-machine_ to suit your needs you can [create your own config file](https://ostis-ai.github.io/sc-machine/build/config).
+This repository provides a default configuration for the sc-machine. To customize the _sc-machine_ to suit your needs you can [create your own config file](build/config.md).
