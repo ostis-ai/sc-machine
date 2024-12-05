@@ -65,6 +65,23 @@ ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
 }
 
 template <typename TContentType>
+ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
+    TContentType const & value,
+    size_t maxLengthToSearchAsPrefix,
+    ScLinkFilter const & linkFilter) noexcept(false)
+{
+  return SearchLinksByContentSubstring(ScStreamMakeRead(value), maxLengthToSearchAsPrefix, linkFilter);
+}
+
+template <typename TContentType>
+ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
+    TContentType const & value,
+    ScLinkFilter const & linkFilter) noexcept(false)
+{
+  return SearchLinksByContentSubstring(ScStreamMakeRead(value), 0, linkFilter);
+}
+
+template <typename TContentType>
 std::set<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
     TContentType const & linkContentSubstring,
     size_t maxLengthToSearchAsPrefix) noexcept(false)

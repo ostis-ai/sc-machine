@@ -15,6 +15,8 @@
 #include "sc_addr.hpp"
 #include "sc_type.hpp"
 
+#include "sc_link_filter.hpp"
+
 #include "sc_iterator.hpp"
 
 #include "sc_template.hpp"
@@ -958,6 +960,20 @@ public:
   _SC_EXTERN ScAddrVector FindLinksByContentSubstring(
       ScStreamPtr const & linkContentSubstringStream,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
+
+  _SC_EXTERN template <typename TContentType>
+  ScAddrSet SearchLinksByContentSubstring(
+      TContentType const & value,
+      size_t maxLengthToSearchAsPrefix,
+      ScLinkFilter const & linkFilter) noexcept(false);
+
+  _SC_EXTERN template <typename TContentType>
+  ScAddrSet SearchLinksByContentSubstring(TContentType const & value, ScLinkFilter const & linkFilter) noexcept(false);
+
+  _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
+      ScStreamPtr const & stream,
+      size_t maxLengthToSearchAsPrefix,
+      ScLinkFilter const & linkFilter) noexcept(false);
 
   /*!
    * @brief Searches sc-links contents by content substring using a stream.

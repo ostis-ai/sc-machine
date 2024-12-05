@@ -276,6 +276,20 @@ struct _sc_stat
   sc_uint64 link_count;       // amount of all sc-links stored in memory
 };
 
+typedef struct _sc_addr sc_addr;
+
+typedef struct
+{
+  sc_bool (*check_link_callback)(void * data, sc_addr link_addr);
+  void * check_link_callback_data;
+  sc_uint8 (*request_link_callback)(void * data, sc_addr link_addr);
+  void * request_link_callback_data;
+  void (*push_link_callback)(void * data, sc_addr const link_addr);
+  void * push_link_callback_data;
+  void (*push_link_content_callback)(void * data, sc_addr const link_addr, sc_char const * link_content);
+  void * push_link_content_callback_data;
+} sc_link_filter;
+
 #endif
 
 typedef struct _sc_arc sc_arc;
