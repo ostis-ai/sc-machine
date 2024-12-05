@@ -51,7 +51,7 @@ We provide a Docker image for this project. Here's a quick snippet on how to lau
 git clone https://github.com/ostis-ai/sc-machine
 cd sc-machine
 # create empty knowledge base sources folder
-mkdir kb && cat "." > kb/repo.path
+mkdir kb
 # note: at this stage you can move your KB sources to the ./kb folder
 
 # build knowledge base

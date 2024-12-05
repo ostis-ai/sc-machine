@@ -19,7 +19,7 @@ services:
     environment:
       # Use the commented env variable if you need to rebuild KB every startup.
       - "REBUILD_KB=${REBUILD_KB:-0}"
-      - "KB_PATH=${KB_PATH:-/kb/repo.path}"
+      - "KB_PATH=${KB_PATH:-/kb}"
       - "BINARY_PATH=/sc-machine/build/Release/bin"
       - "EXTENSIONS_PATH=/sc-machine/build/Release/lib/extensions"
       - "CONFIG_PATH=/sc-machine/sc-machine.ini"
