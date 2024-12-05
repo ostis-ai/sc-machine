@@ -3,19 +3,10 @@ from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
 import re
 
 
-def get_version():
-    try:
-        content = tools.load("CMakeLists.txt")
-        version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content).group(1)
-        return version.strip()
-    except Exception:
-        return None
-
-
 class sc_machineRecipe(ConanFile):
     name = "sc-machine"
     package_type = "library"
-    version = get_version()
+    version = None
     author = "OSTIS AI"
     license = "https://github.com/ostis-ai/sc-machine/blob/master/COPYING.MIT"
     url = "https://github.com/ostis-ai/sc-machine"
@@ -72,6 +63,9 @@ class sc_machineRecipe(ConanFile):
         del self.info.settings.os
         del self.info.settings.compiler
         del self.info.settings.build_type
+
+    def set_version(self):
+        self.version = self.parse_version()
 
     def parse_version(self):
         content = tools.files.load(self, self.recipe_folder + "/CMakeLists.txt")
