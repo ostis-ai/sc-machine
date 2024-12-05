@@ -350,6 +350,55 @@ TEST_F(SCsHelperTest, DISABLED_GenerateBySCs_ContourWithExplicitlySpecifiedEleme
   EXPECT_FALSE(helper.GenerateBySCsText(scsData));
 }
 
+TEST_F(SCsHelperTest, GenerateBySCs_ConnectorBelongsToNodeType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_node_tuple -> (sc_node_class => sc_node_tuple);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_NodeBelongsToConnectorsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_main_arc -> ..node;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_NodeBelongsToTwoIncompatibleType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_node_class -> ..node;; sc_node_tuple -> ..node;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_MembershipArcBelongsToCommonArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_common_arc -> (... -> ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_MembershipArcBelongsToCommonEdgesType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_common_edge -> (... -> ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_CommonArcBelongsToMembershipArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_main_arc -> (... => ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_CommonEdgeBelongsToMembershipArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_main_arc -> (... <=> ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
 TEST_F(SCsHelperTest, GenerateBySCs_NotBaseArcBetweenElementTypesWithinStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());

@@ -124,7 +124,7 @@ ParsedElement::ParsedElement(
   , m_value(value)
   , m_isURL(isURL)
 {
-  m_isElementType = scs::TypeResolver::IsKeynodeType(m_idtf);
+  m_isElementType = scs::TypeResolver::IsElementType(m_idtf);
 
   if (!m_value.empty())
     m_visibility = Visibility::Local;
@@ -458,7 +458,7 @@ ElementHandle Parser::ProcessIdentifier(std::string const & name)
 
 ElementHandle Parser::ProcessIdentifierLevel1(std::string const & scsType, std::string const & name)
 {
-  ScType type = scs::TypeResolver::GetKeynodeType(scsType);
+  ScType type = scs::TypeResolver::GetElementType(scsType);
   type |= scs::TypeResolver::IsConst(name) ? ScType::Const : ScType::Var;
   return AppendElement(name, type);
 }
@@ -480,22 +480,24 @@ void Parser::ProcessTriple(
     if (source.IsElementType() && (connector.GetType() == ScType::ConstPermPosArc))
     {
       std::string const & sourceIdtf = source.GetIdtf();
-      ScType const newType = target.m_type | scs::TypeResolver::GetKeynodeType(sourceIdtf);
+      ScType const sourceType = scs::TypeResolver::GetElementType(sourceIdtf);
+      ScType const targetType = target.m_type;
+      ScType const newTargetType = targetType | sourceType;
 
-      if (target.IsElementType() && !newType.CanExtendTo(ScType::ConstNodeClass))
+      if (target.IsElementType() && !newTargetType.CanExtendTo(ScType::ConstNodeClass))
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError,
-            "Can't extend type `" << std::string(target.m_type) << "` to type `" << std::string(newType)
-                                  << "` for element `" << target.GetIdtf() << "`, because element `" << target.GetIdtf()
-                                  << "` is element denoting type of sc-elements.");
-      else if (target.m_type.CanExtendTo(newType))
-        target.m_type = newType;
+            "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
+                                  << "` for specified sc-element, because sc-element `" << target.GetIdtf()
+                                  << "` is sc-element denoting type of sc-elements.");
+      else if (ScType(targetType.BitAnd(~(ScType::Const | ScType::Var))).CanExtendTo(sourceType))
+        target.m_type = newTargetType;
       else
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError,
-            "Can't extend type `" << std::string(target.m_type) << "` to type `" << std::string(newType)
-                                  << "` for element `" << target.GetIdtf() << "`, because `" << std::string(newType) 
-                                  << "` is not subtype of `" << std::string(target.m_type) << "`.");
+            "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
+                                  << "` for specified sc-element, because `" << std::string(sourceType) 
+                                  << "` is not subtype of `" << std::string(targetType) << "`.");
 
       // TODO(NikitaZotov): Unfortunately, parser collects all sc.s-elements, and only then forms sc.s-triples based on
       // the parsed sc.s-elements. Due to this, it is difficult to handle cases when it is necessary not to generate a
