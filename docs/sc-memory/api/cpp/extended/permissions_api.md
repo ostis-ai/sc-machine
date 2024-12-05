@@ -1,6 +1,6 @@
 # **User permissions API**
 
-!!! warning
+!!! note
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
@@ -95,12 +95,12 @@ ScAddr const & guestUserAddr = context.GetUser();
 // Identify guest user.
 // Find a user, which was identified. You can provide your own logic of user
 // identification before.
-ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+ScAddr const & userAddr1 = context.SearchElementBySystemIdentifier("user_1");
 
-ScAddr const & arcAddr = ScMemory::ms_globalContext->CreateEdge(
-  ScType::EdgeDCommonConst, guestUserAddr, userAddr1);
-ScMemory::ms_globalContext->CreateEdge(
-  ScType::EdgeAccessConstPosPerm, ScKeynodes::nrel_identified_user, arcAddr);
+ScAddr const & arcAddr = ScMemory::ms_globalContext->GenerateConnector(
+  ScType::ConstCommonArc, guestUserAddr, userAddr1);
+ScMemory::ms_globalContext->GenerateConnector(
+  ScType::ConstPermPosArc, ScKeynodes::nrel_identified_user, arcAddr);
 // Only `ScMemory::ms_globalContext` can identify users.
 ```
 
@@ -113,15 +113,15 @@ To do this programly you can create waiter to wait sc-event of adding outgoing s
 ```cpp
 ...
 // Find a user, which you want to authenticate.
-ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+ScAddr const & userAddr1 = context.SearchElementBySystemIdentifier("user_1");
 
 // Before user authentication, specify that user isn't authenticated. 
 // This way, you can subscribe to sc-event of erasing negative sc-arc, 
 // because when you authenticate user, all existing negative sc-arcs 
 // between `concept_authenticated_user` and user are erased. This logic will 
 // help you to wait for user to be authenticated.
-ScMemory::ms_globalContext->CreateEdge(
-  ScType::EdgeAccessConstNegTemp, 
+ScMemory::ms_globalContext->GenerateConnector(
+  ScType::ConstTempNegArc, 
   ScKeynodes::concept_authenticated_user,
   userAddr1);
 
@@ -130,19 +130,19 @@ ScMemory::ms_globalContext->CreateEdge(
 // user.
 auto eventWaiter 
   = ScMemory::ms_globalContext->CreateConditionWaiter<
-    ScEventEraseIncomingArc<ScType::EdgeAccessConstNegTemp>>(
+    ScEventEraseIncomingArc<ScType::ConstTempNegArc>>(
   userAddr1,
   [&]() -> void
   {
-    ScMemory::ms_globalContext->CreateEdge(
-      ScType::EdgeAccessConstPosPerm, 
+    ScMemory::ms_globalContext->GenerateConnector(
+      ScType::ConstPermPosArc, 
       ScKeynodes::concept_authentication_request, 
       userAddr1);
 
     // Only `ScMemory::ms_globalContext` can authenticate users.
   },
-  [&](ScEventAddIncomingArc<ScType::EdgeAccessConstNegTemp> const & event) 
-    -> sc_bool
+  [&](ScEventAfterGenerateIncomingArc<ScType::ConstTempNegArc> const & event) 
+    -> bool
   {
     // Check that sc-arc from `concept_authenticated_user` is erased.
     return event.GetArcSourceElement() 
@@ -165,7 +165,7 @@ To unauthenticate user, you must erase sc-arc between `concept_authenticated_use
 ```cpp
 ...
 // Find a user, which you want to unauthenticate.
-ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+ScAddr const & userAddr1 = context.SearchElementBySystemIdentifier("user_1");
 
 // Create sc-event waiter to wait user to be unauthenticated.
 // You should subscribe to sc-event of adding negative sc-arc incoming to
@@ -173,7 +173,7 @@ ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
 // `concept_authenticated_user` and user.
 auto eventWaiter 
   = ScMemory::ms_globalContext->CreateConditionWaiter<
-    ScEventAddIncomingArc<ScType::EdgeAccessConstNegTemp>>(
+    ScEventAfterGenerateIncomingArc<ScType::ConstTempNegArc>>(
   userAddr1,
   [&]() -> void
   {
@@ -191,8 +191,8 @@ auto eventWaiter
 
     // Only `ScMemory::ms_globalContext` can unauthenticate users.
   },
-  [&](ScEventAddIncomingArc<ScType::EdgeAccessConstNegTemp> const & event) 
-    -> sc_bool
+  [&](ScEventAfterGenerateIncomingArc<ScType::ConstTempNegArc> const & event) 
+    -> bool
   {
     // Check that sc-arc from `concept_authenticated_user` is added.
     return event.GetArcSourceElement() 
@@ -277,18 +277,18 @@ Each core method of [**C++ Core API**](../core/api.md) checks user permissions. 
   </thead>
   <tbody>
     <tr>
-      <td>CreateNode, CreateLink</td>
+      <td>GenerateNode, GenerateLink</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>These methods don't require any permissions for users.</td>
     </tr>
     <tr>
-      <td>CreateEdge</td>
+      <td>GenerateConnector</td>
       <td>-</td>
       <td>+</td>
       <td>-</td>
-      <td>If user hasn't permissions to add sc-connector from specified begin sc-element or to specified end sc-element, then method will throw <code>utils::ExceptionInvalidState</code>.</td>
+      <td>If user hasn't permissions to add sc-connector from specified source sc-element or to specified target sc-element, then method will throw <code>utils::ExceptionInvalidState</code>.</td>
     </tr>
     <tr>
       <td>IsElement</td>
@@ -312,25 +312,25 @@ Each core method of [**C++ Core API**](../core/api.md) checks user permissions. 
       <td>If user hasn't permissions to update specified sc-element sc-type, then method will throw <code>utils::ExceptionInvalidState</code>.</td>
     </tr>
     <tr>
-      <td>GetEdgeInfo, GetEdgeSource, GetEdgeTarget</td>
+      <td>GetConnectorIncidentElements, GetArcSourceElement, GetArcTargetElement</td>
       <td>+</td>
       <td>-</td>
       <td>-</td>
       <td>If user hasn't permissions to read specified sc-connector or its incident sc-elements, then method will throw <code>utils::ExceptionInvalidState</code>.</td>
     </tr>
     <tr>
-      <td>ScIterator3, ScIterator5, ForEachIter3, ForEachIter5</td>
+      <td>CreateIterator3, CreateIterator5, ForEach, ForEach</td>
       <td>+</td>
       <td>-</td>
       <td>-</td>
-      <td>If user hasn't permissions to read some sc-connectors from or to specified sc-element, then method won't return these sc-connectors to user: method <code>ScIterator::Next</code> will skip these sc-connectors. If user has permissions to read sc-connector from or to specified sc-element, but he hasn't permissions to read other incident sc-elements, then method <code>ScIterator::Get</code> will throw <code>utils::ExceptionInvalidState</code> if user tries to get such permitted sc-element by index in found sc-construction. Methods <code>ForEachIter3</code> and <code>ForEachIter5</code> will return empty sc-address in such case.</td>
+      <td>If user hasn't permissions to read some sc-connectors from or to specified sc-element, then method won't return these sc-connectors to user: method <code>ScIterator::Next</code> will skip these sc-connectors. If user has permissions to read sc-connector from or to specified sc-element, but he hasn't permissions to read other incident sc-elements, then method <code>ScIterator::Get</code> will throw <code>utils::ExceptionInvalidState</code> if user tries to get such permitted sc-element by index in found sc-construction. Methods <code>ForEach</code> will return empty sc-address in such case.</td>
     </tr>
     <tr>
       <td>EraseElement</td>
       <td>-</td>
       <td>-</td>
       <td>+</td>
-      <td>If user hasn't permissions to erase specified sc-element, then method will return <code>SC_FALSE</code>.</td>
+      <td>If user hasn't permissions to erase specified sc-element, then method will return <code>false</code>.</td>
     </tr>
     <tr>
       <td>SetLinkContent</td>
@@ -347,7 +347,7 @@ Each core method of [**C++ Core API**](../core/api.md) checks user permissions. 
       <td>If user hasn't permissions to read specified sc-link by specified content, then method will throw <code>utils::ExceptionInvalidState</code>.</td>
     </tr>
     <tr>
-      <td>FindLinksByContent, FindLinksByContentSubstring</td>
+      <td>SearchLinksByContent, SearchLinksByContentSubstring</td>
       <td>+</td>
       <td>-</td>
       <td>-</td>
@@ -553,16 +553,16 @@ All sc-arcs from permissions classes (relations) must be permanent or temporary.
     If the knowledge base does not explicitly specify permissions for a user, it is equivalent to saying that this user does not have them.
 
 !!! note
-    In order to erase permissions for a user it is enough to erase an access sc-arc from the relation that indicated permissions.
+    In order to erase permissions for a user it is enough to erase an membership sc-arc from the relation that indicated permissions.
   
 !!! note
     In the sc-machine there is a global system context -- `ScMemory::ms_globalContext`, that has all permissions. You can use it to update permissions that can be used to read, update or erase permissions for other users.
 
 !!! warning
-    Erasing a positive access sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically creates a negative access sc-arc between the given relation and the sc-arc between the user and the action class.
+    Erasing a positive membership sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically creates a negative membership sc-arc between the given relation and the sc-arc between the user and the action class.
 
 !!! warning
-    Creating a positive access sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically erases all negative access sc-arcs between the given relation and the sc-arc between the user and the action class.
+    Creating a positive membership sc-arc between relation and sc-arc between the user and an action class, that the user can perform, automatically erases all negative membership sc-arcs between the given relation and the sc-arc between the user and the action class.
 
 ---
 
@@ -641,25 +641,26 @@ To do this programly you can create waiter to wait sc-event of adding outgoing s
 ```cpp
 ...
 // Find a user, for whom you need to add new permissions.
-ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+ScAddr const & userAddr1 = context.SearchElementBySystemIdentifier("user_1");
 // Find a structure, within which the user should have permissions.
-ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
+ScAddr const & structureAddr 
+  = context.SearchElementBySystemIdentifier("my_structure");
 
 // Before adding new user permissions, specify that user doesn't have these
 // permissions. This way, you can subscribe to sc-event of erasing negative 
 // sc-arc, because when you add new permissions for user, all existing 
 // negative sc-arcs to permissions are erased. This logic will help you to 
 // wait for user's permissions to be changed.
-ScAddr const & _actionClassArcAddr = context.CreateEdge(
-  ScType::EdgeDCommonConst, 
+ScAddr const & _actionClassArcAddr = context.GenerateConnector(
+  ScType::ConstCommonArc, 
   ScKeynodes::action_generate_in_sc_memory, 
   structureAddr);
-ScAddr const & _userArcAddr = context.CreateEdge(
-  ScType::EdgeDCommonConst, 
+ScAddr const & _userArcAddr = context.GenerateConnector(
+  ScType::ConstCommonArc, 
   userAddr1, 
   _actionClassArcAddr);
-context.CreateEdge(
-  ScType::EdgeAccessConstNegTemp, 
+context.GenerateConnector(
+  ScType::ConstTempNegArc, 
   ScKeynodes::nrel_user_action_class_within_sc_structure, 
   _userArcAddr);
 
@@ -668,20 +669,20 @@ context.CreateEdge(
 // Negative sc-arc is erased when you added new permissions for user. 
 auto eventWaiter 
   = context.CreateConditionWaiter<
-    ScEventEraseOutgoingArc<ScType::EdgeAccessConstNegTemp>>(
+    ScEventEraseOutgoingArc<ScType::ConstTempNegArc>>(
   ScKeynodes::nrel_user_action_class_within_sc_structure,
   [&]() -> void
   {
     // Update user permissions here.
-    ScAddr const & actionClassArcAddr = context.CreateEdge(
-      ScType::EdgeDCommonConst, 
+    ScAddr const & actionClassArcAddr = context.GenerateConnector(
+      ScType::ConstCommonArc, 
       ScKeynodes::action_generate_in_sc_memory, 
       structureAddr);
-    ScAddr const & userArcAddr = context.CreateEdge(
-      ScType::EdgeDCommonConst, 
+    ScAddr const & userArcAddr = context.GenerateConnector(
+      ScType::ConstCommonArc, 
       userAddr1, 
       actionClassArcAddr);
-    context.CreateEdge(
+    context.GenerateConnector(
       ScType::EdgeAccessConstPosTemp, 
       ScKeynodes::nrel_user_action_class_within_sc_structure, 
       userArcAddr);
@@ -693,18 +694,17 @@ auto eventWaiter
     // permissions for user of `context` or use `ScMemory::ms_globalContext` 
     // that has all permissions, by default.
   },
-  [&](ScEventAddOutgoingArc<ScType::EdgeAccessConstNegTemp> const & event)
-    -> sc_bool
+  [&](ScEventAfterGenerateOutgoingArc<ScType::ConstTempNegArc> const & event)
+    -> bool
   {
     // Check that permissions for specified are updated.
     ScAddr targetElementAddr = event.GetArcTargetElement();
-    if (context.GetElementType(event.GetArcTargetElement()) 
-        != ScType::EdgeDCommonConst)
-      return SC_FALSE;
+    if (context.GetElementType(targetElementAddr) 
+        != ScType::ConstCommonArc)
+      return false;
 
-    ScAddr userAddr;
-    ScAddr permissionsAddr;
-    context.GetEdgeInfo(targetElementAddr, userAddr, permissionsAddr);
+    auto [userAddr, permissionsAddr]
+      = context.GetConnectorIncidentElements(targetElementAddr);
 
     return userAddr == userAddr1;
   });
@@ -725,15 +725,16 @@ To erase permissions for a user, you must erase sc-arc from permissions class.
 ```cpp
 ...
 // Find a user, for whom you need to erase permissions.
-ScAddr const & userAddr1 = context.HelperFindBySystemIdtf("user_1");
+ScAddr const & userAddr1 = context.SearchElementBySystemIdentifier("user_1");
 // Find a structure, within which the user should no longer have rights
-ScAddr const & structureAddr = context.HelperFindBySystemIdtf("my_structure");
+ScAddr const & structureAddr 
+  = context.SearchElementBySystemIdentifier("my_structure");
 // Create sc-event waiter to wait erasing permissions for specified user. 
 // You should subscribe to sc-event of adding negative sc-arc. 
 // Negative sc-arc is added when you erases user permissions. 
 auto eventWaiter 
   = context.CreateConditionWaiter<
-    ScEventAddOutgoingArc<ScType::EdgeAccessConstNegTemp>>(
+    ScEventAfterGenerateOutgoingArc<ScType::ConstTempNegArc>>(
   ScKeynodes::nrel_user_action_class_within_sc_structure,
   [&]() -> void
   {
@@ -741,18 +742,18 @@ auto eventWaiter
     ScTemplate permissionsTemplate;
     permissionsTemplate.Triple(
       ScKeynodes::action_generate_in_sc_memory,
-      ScType::EdgeDCommonVar >> "_action_class_arc",  
+      ScType::VarCommonArc >> "_action_class_arc",  
       structureAddr
     );
     permissionsTemplate.Quintuple(
       userAddr1, 
-      ScType::EdgeDCommonVar,
+      ScType::VarCommonArc,
       "_action_class_arc",
-      ScType::EdgeAccessVarPosTemp >> "_permissions_arc",
+      ScType::VarTempPosArc >> "_permissions_arc",
       ScKeynodes::nrel_user_action_class_within_sc_structure 
     );
     ScTemplateSearchResult result;
-    if (context.HelperSearchTemplate(permissionsTemplate, result))
+    if (context.SearchByTemplate(permissionsTemplate, result))
     {
       context.EraseElement(result[0]["_permissions_arc"]);
       // You should erase sc-arc from permissions class at 
@@ -764,18 +765,17 @@ auto eventWaiter
     // permissions for user of `context` or use `ScMemory::ms_globalContext` 
     // that has all permissions, by default.
   },
-  [&](ScEventAddOutgoingArc<ScType::EdgeAccessConstNegTemp> const & event)
-    -> sc_bool
+  [&](ScEventAfterGenerateOutgoingArc<ScType::ConstTempNegArc> const & event)
+    -> bool
   {
     // Check that permissions for specified are erased.
     ScAddr targetElementAddr = event.GetArcTargetElement();
-    if (context.GetElementType(event.GetArcTargetElement()) 
-        != ScType::EdgeDCommonConst)
-      return SC_FALSE;
+    if (context.GetElementType(targetElementAddr) 
+        != ScType::ConstCommonArc)
+      return false;
 
-    ScAddr userAddr;
-    ScAddr permissionsAddr;
-    context.GetEdgeInfo(targetElementAddr, userAddr, permissionsAddr);
+    auto [userAddr, permissionsAddr]
+      = context.GetConnectorIncidentElements(targetElementAddr);
 
     return userAddr == userAddr1;
   });
