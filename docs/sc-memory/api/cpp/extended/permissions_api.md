@@ -792,7 +792,7 @@ These examples can be reused for any of permissions classes described above.
 ## **Frequently Asked Questions**
 
 - [How to specify role for users in knowledge base and set permissions for this role?](#how-to-specify-role-for-users-in-knowledge-base-and-set-permissions-for-this-role)
-- [How to specify permissions to structures that are not exist during KB build?]
+- [How to specify permissions to structures that are not described in knowledge base sources?](#how-to-specify-permissions-to-structures-that-are-not-described-in-knowledge-base-sources)
 
 ### **How to specify role for users in knowledge base and set permissions for this role?**
 
@@ -818,4 +818,6 @@ nrel_users_set_action_class_within_sc_structure
 
 This example shows that all users from `concept_users_class_1` can view the entire knowledge base besides the structure describing users from `concept_users_class_2`.
 
-### How to specify permissions to structures that are not exist during KB build?
+### **How to specify permissions to structures that are not described in knowledge base sources?**
+
+You can generate and update structures in knowledge base while system is running. You can also generate and modify permissions to structures in knowledge base while system is running. To do this, you should use all available API methods.
