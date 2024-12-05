@@ -62,11 +62,12 @@ jobs:
 
       - name: Set up Conan
         run: |
+          pipx install cmake
           pipx install conan
 
       - name: Install compilers (Ubuntu)
         if: runner.os == 'Linux'
-        run: sudo apt install build-essential ninja-build ccache cmake
+        run: sudo apt install build-essential ninja-build ccache
 
       - name: Install compilers (macOS)
         if: runner.os == 'macOS'
