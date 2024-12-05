@@ -32,7 +32,7 @@ user_mode = true
 
 You can only work with memory through methods provided in `ScMemoryContext`. Each object of this class can be considered as an object that handles information about a user (including his permissions) when that user invokes methods through that object.
 
-You can't create object of `ScMemoryContext` with providing user. This happens automatically. When some user initiates a sc-event, an object of `ScMemoryContext` with this user is created for the agent that reacted to this sc-event. After this agent uses this context to call sc-memory methods.
+You can't create object of `ScMemoryContext` providing user. This happens automatically. When some user initiates a sc-event, an object of `ScMemoryContext` with this user is created for the agent that reacted to this sc-event. After this agent uses this context to call sc-memory methods.
 
 You can get user from object of context, if you need to handle this user.
 
