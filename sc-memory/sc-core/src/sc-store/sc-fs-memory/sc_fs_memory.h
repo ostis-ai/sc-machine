@@ -49,22 +49,19 @@ typedef struct _sc_fs_memory_manager
       sc_fs_memory * memory,
       sc_char const * string,
       sc_uint64 const string_size,
-      void * data,
-      void (*callback)(void * data, sc_addr const link_addr));
+      sc_link_filter * filter);
   sc_fs_memory_status (*get_link_hashes_by_substring)(
       sc_fs_memory * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
       sc_uint32 const max_length_to_search_as_prefix,
-      void * data,
-      void (*callback)(void * data, sc_addr const link_addr));
+      sc_link_filter * filter);
   sc_fs_memory_status (*get_strings_by_substring)(
       sc_fs_memory * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
       sc_uint32 const max_length_to_search_as_prefix,
-      void * data,
-      void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content));
+      sc_link_filter * filter);
   sc_fs_memory_status (*unlink_string)(sc_fs_memory * memory, sc_addr_hash const link_hash);
 } sc_fs_memory_manager;
 
@@ -133,8 +130,7 @@ sc_fs_memory_status sc_fs_memory_get_string_by_link_hash(
 sc_fs_memory_status sc_fs_memory_get_link_hashes_by_string(
     sc_char const * string,
     sc_uint32 string_size,
-    void * result,
-    void (*callback)(void * result, sc_addr const addr));
+    sc_link_filter * filter);
 
 /*! Gets sc-link hashes from file system memory by its substring content.
  * @param substring A sc-links content substring
@@ -147,8 +143,7 @@ sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
     sc_char const * substring,
     sc_uint32 substring_size,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_filter * filter);
 
 /*! Gets sc-strings from file system memory by its substring content.
  * @param substring A sc-strings content substring
@@ -161,8 +156,7 @@ sc_fs_memory_status sc_fs_memory_get_strings_by_substring(
     sc_char const * substring,
     sc_uint32 string_size,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content));
+    sc_link_filter * filter);
 
 /*! Load file system memory from file system
  * @returns SC_TRUE, if file system loaded.

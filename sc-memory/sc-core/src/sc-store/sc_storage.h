@@ -556,8 +556,7 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
 sc_result sc_storage_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_filter * filter);
 
 /*!
  * @brief Finds sc-links with content containing the specified substring.
@@ -585,8 +584,7 @@ sc_result sc_storage_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_filter * filter);
 
 /*!
  * @brief Finds sc-link contents containing the specified substring.
@@ -615,8 +613,7 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content));
+    sc_link_filter * filter);
 
 /*!
  * @brief Retrieves statistics for sc-storage elements.
