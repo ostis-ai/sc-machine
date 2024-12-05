@@ -8,7 +8,16 @@ This API allows to handle users and their permissions in knowledge base.
 
 ## **Who are users of ostis-systems?**
 
-Users interact with ostis-systems. Users can be other systems, agents or people. All users of an ostis-system can perform actions on its knowledge base. There are six classes of user actions in knowledge base. Before a user action is  performed, it is checked whether the user has permissions to perform actions of the specified class.
+Users interact with ostis-systems. Users can be other systems, agents or people. All users of an ostis-system can perform actions on its knowledge base. There are six classes of user actions in knowledge base:
+
+* action_read_from_sc_memory;
+* action_generate_in_sc_memory;
+* action_erase_from_sc_memory;
+* action_read_permissions_from_sc_memory;
+* action_generate_permissions_in_sc_memory;
+* action_erase_permissions_from_sc_memory.
+
+Before a user action is  performed, it is checked whether the user has permissions to perform actions of the specified class.
 
 By default, user permissions are not handled by sc-machine. This is configured via the sc-machine config (`<config-name>.ini`). To enable user permissions handling in the sc-machine, go to the group `[sc-memory]` and set `user_mode` as `true`.
 
@@ -23,7 +32,7 @@ user_mode = true
 
 You can only work with memory through methods provided in `ScMemoryContext`. Each object of this class can be considered as an object that handles information about a user (including his permissions) when that user invokes methods through that object.
 
-You can't create object of `ScMemoryContext` with providing user. This happens automatically. When some user initiates a sc-event, an object of `ScMemoryContext` with this user is created for the agent that reacted to this sc-event. After your agent uses this context to call sc-memory methods.
+You can't create object of `ScMemoryContext` with providing user. This happens automatically. When some user initiates a sc-event, an object of `ScMemoryContext` with this user is created for the agent that reacted to this sc-event. After this agent uses this context to call sc-memory methods.
 
 You can get user from object of context, if you need to handle this user.
 
@@ -41,7 +50,7 @@ ScAddr const & guestUserAddr = context.GetUser();
 
 ## **How does the sc-machine identifies users?**
 
-You can identify user. User identification refers to the process of identifying a user on ostis-system, i.e., that the specified guest user is some user that is on the system.
+You can identify user. User identification refers to the process of identifying a user on ostis-system, i.e., that the specified guest user is some user that is on the knowledge base.
 
 It is useful when your ostis-system implements functionality to work with guest users. The sc-machine provides users identification. You can identify some guest user as user that had been already registered in the system. Users identification allows you to implement your own agent to register/authorize users by password, token or something else.
 
@@ -77,7 +86,7 @@ If you remove this sc-arc between `concept_authenticated_user` and the user, the
 
 ### **Example of user identification**
 
-You should identify guest user before authentication of user that will be identified. 
+You should identify guest user as user that should be authenticated. 
 
 ```cpp
 ScMemoryContext context; // Some context with guest user.
@@ -783,6 +792,7 @@ These examples can be reused for any of permissions classes described above.
 ## **Frequently Asked Questions**
 
 - [How to specify role for users in knowledge base and set permissions for this role?](#how-to-specify-role-for-users-in-knowledge-base-and-set-permissions-for-this-role)
+- [How to specify permissions to structures that are not exist during KB build?]
 
 ### **How to specify role for users in knowledge base and set permissions for this role?**
 
@@ -807,3 +817,5 @@ nrel_users_set_action_class_within_sc_structure
 ```
 
 This example shows that all users from `concept_users_class_1` can view the entire knowledge base besides the structure describing users from `concept_users_class_2`.
+
+### How to specify permissions to structures that are not exist during KB build?
