@@ -293,11 +293,6 @@ TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToReverseConnectors
 };
 
 TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_keynodesToTypes = {
-    {"sc_common_edge", ScType::CommonEdge},
-    {"sc_common_arc", ScType::CommonArc},
-    {"sc_membership_arc", ScType::MembershipArc},
-    {"sc_main_arc", ScType::ConstPermPosArc},
-
     {"sc_node", ScType::Node},
     {"sc_link", ScType::NodeLink},
     {"sc_link_class", ScType::NodeLinkClass},
@@ -308,9 +303,19 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_keynodesToTypes = {
     {"sc_node_non_role_relation", ScType::NodeNonRole},
     {"sc_node_superclass", ScType::NodeSuperclass},
     {"sc_node_material", ScType::NodeMaterial},
+
+    {"sc_common_edge", ScType::CommonEdge},
+    {"sc_common_arc", ScType::CommonArc},
+    {"sc_membership_arc", ScType::MembershipArc},
+    {"sc_main_arc", ScType::ConstPermPosArc},
 };
 
 TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedKeynodesToTypes = {
+    {"sc_node_not_binary_tuple", ScType::NodeTuple},
+    {"sc_node_struct", ScType::NodeStructure},
+    {"sc_node_not_relation", ScType::NodeClass},
+    {"sc_node_norole_relation", ScType::NodeNonRole},
+
     {"sc_edge", ScType::CommonEdge},
     {"sc_edge_ucommon", ScType::CommonEdge},
 
@@ -322,11 +327,6 @@ TypeResolver::SCsDesignationsToScTypes TypeResolver::ms_deprecatedKeynodesToType
 
     {"sc_arc_access", ScType::MembershipArc},
     {"sc_edge_access", ScType::MembershipArc},
-
-    {"sc_node_not_binary_tuple", ScType::NodeTuple},
-    {"sc_node_struct", ScType::NodeStructure},
-    {"sc_node_not_relation", ScType::NodeClass},
-    {"sc_node_norole_relation", ScType::NodeNonRole},
 };
 
 TypeResolver::ScTypesToSCsDesignations TypeResolver::ms_typesToKeynodes = {
@@ -379,8 +379,8 @@ std::string TypeResolver::GetReverseSCsConnector(ScType const & type)
 
 std::string TypeResolver::GetSCsElementKeynode(ScType const & type)
 {
-  auto const it = ms_typesToKeynodes.find(type);
-  if (it == ms_typesToKeynodes.cend())
+   auto const it = ms_typesToKeynodes.find(type);
+   if (it == ms_typesToKeynodes.cend())
     return "";
 
   return it->second;
@@ -412,7 +412,7 @@ ScType const & TypeResolver::GetConnectorType(std::string const & connectorAlias
   return it->second;
 }
 
-ScType const & TypeResolver::GetKeynodeType(std::string const & keynodeAlias)
+ScType const & TypeResolver::GetElementType(std::string const & keynodeAlias)
 {
   auto const it = ms_keynodesToTypes.find(keynodeAlias);
   if (it == ms_keynodesToTypes.cend())
@@ -454,10 +454,10 @@ bool TypeResolver::IsConnectorAttrConst(std::string const & attr)
   return attr == ":";
 }
 
-bool TypeResolver::IsKeynodeType(std::string const & alias)
+bool TypeResolver::IsElementType(std::string const & alias)
 {
   return ms_keynodesToTypes.find(alias) != ms_keynodesToTypes.cend() 
-    || ms_deprecatedKeynodesToTypes.find(alias) != ms_deprecatedKeynodesToTypes.cend();
+     || ms_deprecatedKeynodesToTypes.find(alias) != ms_deprecatedKeynodesToTypes.cend();
 }
 
 bool TypeResolver::IsUnnamed(std::string const & alias)
