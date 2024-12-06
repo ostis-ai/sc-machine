@@ -685,7 +685,7 @@ void _sc_storage_cache_elements_under_erasure_without_erase_events(
   sc_element * element;
   sc_result result = sc_storage_get_element_by_addr(addr, &element);
   if (result == SC_RESULT_OK && (element->flags.states & SC_STATE_IS_UNDER_ERASURE) == SC_STATE_IS_UNDER_ERASURE
-      && (element->flags.states & SC_STATE_REQUEST_ERASURE) == 0)
+      && (element->flags.states & SC_STATE_REQUEST_ERASURE) != SC_STATE_REQUEST_ERASURE)
   {
     sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
     if (emission_manager != null_ptr)
@@ -896,7 +896,7 @@ sc_result _sc_storage_element_erase_with_incoming_outgoing_connectors(
 
   // if addr is connector and its source/target is node that is under erasure and does not have emitted erase events
   // then cache source/target to try to erase them with their incoming/outgoing connectors
-  if (sc_type_is_connector(type))
+  if (sc_type_is_connector(type) && !*does_branch_have_emitted_events)
   {
     if (SC_ADDR_IS_NOT_EQUAL(connector_chain_begin_addr, begin_addr))
       _sc_storage_cache_elements_under_erasure_without_erase_events(
