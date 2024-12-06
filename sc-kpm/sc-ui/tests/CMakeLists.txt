@@ -1,7 +1,7 @@
 make_tests_from_folder(${CMAKE_CURRENT_SOURCE_DIR}/units
     NAME sc-kpm-ui-translators-tests
     DEPENDS sc-memory sc-kpm-ui
-    INCLUDES ${SC_KPM_SRC}/sc-ui/src
+    INCLUDES ${SC_KPM_UI_SRC}
 )
 
 if(${SC_CLANG_FORMAT_CODE})

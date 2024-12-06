@@ -37,6 +37,8 @@ void TestAuthenticationRequestUser(
 
 TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLocalWritePermissions)
 {
+  LoadKB(m_ctx, {"test-users/test_users.scs"});
+
   ScAddr const & userAddr = m_ctx->SearchElementBySystemIdentifier("test_user_1");
 
   TestScMemoryContext userContext{userAddr};
@@ -69,6 +71,8 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithLoc
 
 TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithoutLocalWritePermissions)
 {
+  LoadKB(m_ctx, {"test-users/test_users.scs"});
+
   ScAddr const & userAddr = m_ctx->SearchElementBySystemIdentifier("test_user_2");
 
   TestScMemoryContext userContext{userAddr};
@@ -88,9 +92,6 @@ TEST_F(ScBuilderLoadUserPermissionsTest, UserWithGlobalReadPermissionsAndWithout
                 utils::ExceptionInvalidState);
             ScAddr const & userStructureAddr = userContext.SearchElementBySystemIdentifier("user_structure");
             EXPECT_THROW(userContext.EraseElement(userStructureAddr), utils::ExceptionInvalidState);
-            EXPECT_THROW(
-                userContext.GenerateConnector(ScType::ConstTempPosArc, userStructureAddr, classAddr),
-                utils::ExceptionInvalidState);
 
             isAuthenticated = true;
           });

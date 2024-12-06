@@ -90,6 +90,7 @@ TEST(ScFileSystemTest, sc_file_system_read_binary_file)
   sc_fs_get_file_content(path, &content, &content_size);
   EXPECT_TRUE(sc_str_cmp(content, "$\u0010"));
   sc_mem_free(content);
+  EXPECT_TRUE(sc_fs_remove_file(path));
 }
 
 TEST(ScFileSystemTest, sc_file_system_read_invalid_file)

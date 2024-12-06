@@ -1,0 +1,94 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug config",
+      "description": "Debug config with tests and benchmarks",
+      "binaryDir": "${sourceDir}/build/Debug",
+      "generator": "Ninja",
+      "installDir": "${sourceDir}/build/Debug/install",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "SC_BUILD_TESTS": true,
+        "SC_BUILD_BENCH": true
+      }
+    },
+    {
+      "name": "debug-conan",
+      "displayName": "Debug config (Conan)",
+      "description": "Debug config with tests and benchmarks (Conan dependencies used)",
+      "inherits": [
+        "debug"
+      ],
+      "cacheVariables": {
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "./cmake/conan_provider.cmake"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release config",
+      "description": "Release config",
+      "binaryDir": "${sourceDir}/build/Release",
+      "generator": "Ninja",
+      "installDir": "${sourceDir}/build/Release/install",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "release-conan",
+      "displayName": "Release config (Conan)",
+      "description": "Release config (Conan dependencies used)",
+      "inherits": "release",
+      "cacheVariables": {
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "./cmake/conan_provider.cmake"
+      }
+    },
+    {
+      "name": "release-with-tests",
+      "displayName": "Release config with tests",
+      "description": "Release config with tests",
+      "inherits": "release",
+      "cacheVariables": {
+        "SC_BUILD_TESTS": true,
+        "SC_BUILD_BENCH": true
+      }
+    },
+    {
+      "name": "release-with-tests-conan",
+      "displayName": "Release config with tests (Conan)",
+      "description": "Release config with tests (Conan dependencies used)",
+      "inherits": "release-with-tests",
+      "cacheVariables": {
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "./cmake/conan_provider.cmake"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "release-conan",
+      "configurePreset": "release-conan",
+      "generators": [
+        "TGZ"
+      ]
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "generators": [
+        "TGZ"
+      ]
+    }
+  ]
+}

@@ -8,7 +8,7 @@
 
 TEST_F(ScBuilderTest, Smoke)
 {
-  ScMemoryContext ctx;
+  LoadKB(m_ctx, {"base.scs"});
 
   std::string const scsData =
       "base"
@@ -18,14 +18,16 @@ TEST_F(ScBuilderTest, Smoke)
       "    (* _<- lang_en;; *);;";
 
   ScTemplate templ;
-  ctx.BuildTemplate(templ, scsData);
+  m_ctx->BuildTemplate(templ, scsData);
 
   ScTemplateSearchResult res;
-  EXPECT_TRUE(ctx.SearchByTemplate(templ, res));
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, res));
 }
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
 {
+  LoadKB(m_ctx, {"test-templates/template_1.scs"});
+
   ScAddr checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_big");
 
   ScTemplate checkTemplate;
@@ -45,6 +47,8 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesBig)
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)
 {
+  LoadKB(m_ctx, {"test-templates/template_2.scs"});
+
   ScAddr checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplate checkTemplate;
@@ -56,6 +60,8 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall)
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
 {
+  LoadKB(m_ctx, {"test-templates/template_2.scs"});
+
   ScAddr const & checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplateParams params;
@@ -75,6 +81,8 @@ TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall2)
 
 TEST_F(ScBuilderTest, SearchTemplateWithVarAddrSubstituteInParams)
 {
+  LoadKB(m_ctx, {"test-templates/template_2.scs"});
+
   ScAddr const & checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplateParams params;
@@ -94,6 +102,8 @@ TEST_F(ScBuilderTest, SearchTemplateWithVarAddrSubstituteInParams)
 
 TEST_F(ScBuilderTest, TemplateWithVarTriplesSmall3)
 {
+  LoadKB(m_ctx, {"test-templates/template_2.scs"});
+
   ScAddr const & checkTemplateStructure = m_ctx->SearchElementBySystemIdentifier("test_template_small");
 
   ScTemplateParams params;

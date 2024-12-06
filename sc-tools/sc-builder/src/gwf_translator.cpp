@@ -10,8 +10,6 @@
 
 #include <sc-memory/utils/sc_exec.hpp>
 
-#include "builder_defines.hpp"
-
 #include "gwf_parser.hpp"
 #include "sc_scs_writer.hpp"
 #include "gwf_translator_constants.hpp"
