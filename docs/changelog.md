@@ -26,8 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - sc-server is no longer entry point of the sc-machine, it is an extension (`sc-server-lib.so`), that is loaded dynamically when the machine is started. So, `sc-server` binary was removed, `sc-machine` binary was added instead.
 - Config was changed:
     - `repo_path` option in `[sc-memory]` group was deprecated, `storage` option was added instead;
-    - `extensions_path` option in `[sc-memory]` group was deprecated, `extensions` option was added instead;
-    - `[sc-builder]` group was removed.
+    - `extensions_path` option in `[sc-memory]` group was deprecated, `extensions` option was added instead.
 - Sources of the sc-machine were separated into public and private ones. Public sources of targets are located in `include` directory, private ones - in `src` directory, tests for code - in `tests` directory. Private sources can't be included into project's code directly. Besides that there are changes of location of some API classes of the sc-machine:
     - `ScTest` class was made a part of `sc-memory` target. Use `#include <sc-memory/test/sc_test.hpp>` to include it into code.
     - To include `ScsLoader` class into code, use `#include <sc-builder/sc_loader.hpp>`.
@@ -293,7 +292,6 @@ See documentation, to learn more about using new API.
 ### Removed
 
 - Support for ubuntu-20.04
-- Config group `[sc-builder]`
 - Config options `update_period` and `save_period` in `[sc-memory]` deprecated in 0.9.0
 - Config option `sync_actions` in `[sc-server]` deprecated in 0.9.0
 - Scripts: `build_sc_machine.sh`, `build_kb.sh`, `run_sc_server.sh`, `set_vars.sh` and `run_tests.sh`

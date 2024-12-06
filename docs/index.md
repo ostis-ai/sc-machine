@@ -27,8 +27,8 @@ Table of contents:
                 * [C++ Keynodes API](sc-memory/api/cpp/extended/agents/keynodes.md) - *provides functionality for creating, retrieving, and manipulating keynodes, which represent significant concepts within the knowledge graph*
                 * [C++ Actions API](sc-memory/api/cpp/extended/agents/actions.md) - *outlines how to define and initiate actions that agents can perform, detailing their arguments and results*
                 * [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md) - *focuses on agent creation and management*
-                * [C++ Agent context API](sc-memory/api/cpp/extended/agents/agent_context.md) - *explains how to manage the context in which agents operate, encapsulating their state and environment during execution*
-                * [C++ Modules API](sc-memory/api/cpp/extended/agents/modules.md) - *describes how to create and manage modular components that extend the functionality of agents*
+                * [C++ Agent context API](sc-memory/api/cpp/extended/agents/agent_context.md) - *explains how to manage the context in which agents operate*
+                * [C++ Modules API](sc-memory/api/cpp/extended/agents/modules.md) - *describes how to register agents in an application*
     * Python API - *information on using the Python client for interacting with sc-memory*
         * [Python Core API](https://github.com/ostis-ai/py-sc-client) - *documentation of Python core API for creating, retrieving and erasing sc-elements and sc-events in sc-memory*
         * [Python Extended API](https://github.com/ostis-ai/py-sc-kpm) - *documentation of Python extended API for manipulating with large graphs*
