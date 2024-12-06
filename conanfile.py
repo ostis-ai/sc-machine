@@ -37,7 +37,7 @@ class sc_machineRecipe(ConanFile):
 
     def build_requirements(self):
         self.build_requires("libxml2/2.13.4")
-        self.test_requires("gtest/1.14.0")
+        self.build_requires("gtest/1.14.0")
         self.test_requires("benchmark/1.9.0")
 
     def layout(self):
