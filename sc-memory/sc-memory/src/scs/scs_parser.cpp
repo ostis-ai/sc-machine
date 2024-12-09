@@ -487,7 +487,7 @@ void Parser::ProcessTriple(
       if (target.IsElementType() && !newTargetType.CanExtendTo(ScType::ConstNodeClass))
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError,
-            "Can't extend type `" << std::string(targetType) << "` to type `" << std::string(sourceType)
+            "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
                                   << "` for specified sc-element, because sc-element `" << target.GetIdtf()
                                   << "` is sc-element denoting type of sc-elements.");
       else if (ScType(targetType.BitAnd(~(ScType::Const | ScType::Var))).CanExtendTo(sourceType))
@@ -495,7 +495,7 @@ void Parser::ProcessTriple(
       else
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError,
-            "Can't extend type `" << std::string(targetType) << "` to type `" << std::string(sourceType)
+            "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
                                   << "` for specified sc-element, because `" << std::string(sourceType) 
                                   << "` is not subtype of `" << std::string(targetType) << "`.");
 
