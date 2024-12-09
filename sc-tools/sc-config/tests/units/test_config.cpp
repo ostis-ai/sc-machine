@@ -4,16 +4,14 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include <gtest/gtest.h>
-
-#include "test_defines.hpp"
+#include "sc_config_test.hpp"
 
 #include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
-TEST(ScConfig, ValidConfig)
+TEST_F(ScConfigTest, ValidConfig)
 {
-  ScConfig config{SC_MACHINE_INI};
+  ScConfig config{SC_CONFIG_INI};
 
   ScMemoryConfig memoryConfig{config, {}};
 
@@ -26,32 +24,32 @@ TEST(ScConfig, ValidConfig)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
 
-TEST(ScConfig, RemoveSavePeriod)
+TEST_F(ScConfigTest, RemoveSavePeriod)
 {
-  ScConfig config{SC_CONFIGS "/removed-save-period.ini"};
+  ScConfig config{SC_CONFIGS + "/removed-save-period.ini"};
 
   ScMemoryConfig memoryConfig{config, {}};
 
   EXPECT_THROW(memoryConfig.GetParams(), utils::ExceptionInvalidParams);
 }
 
-TEST(ScConfig, RemoveUpdatePeriod)
+TEST_F(ScConfigTest, RemoveUpdatePeriod)
 {
-  ScConfig config{SC_CONFIGS "/removed-update-period.ini"};
+  ScConfig config{SC_CONFIGS + "/removed-update-period.ini"};
 
   ScMemoryConfig memoryConfig{config, {}};
 
   EXPECT_THROW(memoryConfig.GetParams(), utils::ExceptionInvalidParams);
 }
 
-TEST(ScConfig, DeprecatedRepoPath)
+TEST_F(ScConfigTest, DeprecatedRepoPath)
 {
-  ScConfig config{SC_CONFIGS "/deprecated-repo-path.ini"};
+  ScConfig config{SC_CONFIGS + "/deprecated-repo-path.ini"};
 
   ScMemoryConfig memoryConfig{config, {}};
 
@@ -64,14 +62,14 @@ TEST(ScConfig, DeprecatedRepoPath)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
 
-TEST(ScConfig, DeprecatedExtensionsPath)
+TEST_F(ScConfigTest, DeprecatedExtensionsPath)
 {
-  ScConfig config{SC_CONFIGS "/deprecated-extensions-path.ini"};
+  ScConfig config{SC_CONFIGS + "/deprecated-extensions-path.ini"};
 
   ScMemoryConfig memoryConfig{config, {}};
 
@@ -84,14 +82,14 @@ TEST(ScConfig, DeprecatedExtensionsPath)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 1u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions");
 }
 
-TEST(ScConfig, Multiextensions)
+TEST_F(ScConfigTest, Multiextensions)
 {
-  ScConfig config{SC_CONFIGS "/multiextensions.ini"};
+  ScConfig config{SC_CONFIGS + "/multiextensions.ini"};
 
   ScMemoryConfig memoryConfig{config, {}};
 
@@ -104,16 +102,16 @@ TEST(ScConfig, Multiextensions)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 3u);
   EXPECT_EQ(std::string(params.extensions_directories[0]), "bin/extensions_1");
   EXPECT_EQ(std::string(params.extensions_directories[1]), "bin/extensions_2");
   EXPECT_EQ(std::string(params.extensions_directories[2]), "bin/extensions_3");
 }
 
-TEST(ScConfig, EmptyMultiextensions)
+TEST_F(ScConfigTest, EmptyMultiextensions)
 {
-  ScConfig config{SC_CONFIGS "/empty-multiextensions.ini"};
+  ScConfig config{SC_CONFIGS + "/empty-multiextensions.ini"};
 
   ScMemoryConfig memoryConfig{config, {}};
 
@@ -126,14 +124,14 @@ TEST(ScConfig, EmptyMultiextensions)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 0u);
   EXPECT_EQ(params.extensions_directories, nullptr);
 }
 
-TEST(ScConfig, MultiextensionsWithSpaces)
+TEST_F(ScConfigTest, MultiextensionsWithSpaces)
 {
-  ScConfig config{SC_CONFIGS "/multiextensions-with-spaces.ini", {"extensions"}};
+  ScConfig config{SC_CONFIGS + "/multiextensions-with-spaces.ini", {"extensions"}};
 
   ScMemoryConfig memoryConfig{config, {}};
 
@@ -146,20 +144,17 @@ TEST(ScConfig, MultiextensionsWithSpaces)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 3u);
 
-  std::string const & prefix = "../../../../sc-tools/sc-config/tests/";
-  // this prefix should be removed after changing current directory for
-  // gtests that should be done in new build system
-  EXPECT_EQ(std::string(params.extensions_directories[0]), prefix + "bin/extensions 2");
-  EXPECT_EQ(std::string(params.extensions_directories[1]), prefix + "bin/extensions_1");
-  EXPECT_EQ(std::string(params.extensions_directories[2]), prefix + "bin/extensions_3");
+  EXPECT_EQ(std::string(params.extensions_directories[0]), "../configs/bin/extensions 2");
+  EXPECT_EQ(std::string(params.extensions_directories[1]), "../configs/bin/extensions_1");
+  EXPECT_EQ(std::string(params.extensions_directories[2]), "../configs/bin/extensions_3");
 }
 
-TEST(ScConfig, NotNormalizedMultiextensions)
+TEST_F(ScConfigTest, NotNormalizedMultiextensions)
 {
-  ScConfig config{SC_CONFIGS "/../tests/not-normalized-multiextensions.ini", {"extensions"}};
+  ScConfig config{SC_CONFIGS + "/not-normalized-multiextensions.ini", {"extensions"}};
 
   ScMemoryConfig memoryConfig{config, {}};
 
@@ -172,13 +167,10 @@ TEST(ScConfig, NotNormalizedMultiextensions)
   EXPECT_EQ(std::string(params.log_type), "Console");
   EXPECT_EQ(std::string(params.log_file), "");
   EXPECT_EQ(std::string(params.log_level), "Debug");
-  EXPECT_EQ(std::string(params.storage), "sc-machine-test-repo");
+  EXPECT_EQ(std::string(params.storage), "sc-machine-test-kb-bin");
   EXPECT_EQ(params.extensions_directories_count, 3u);
 
-  std::string const & prefix = "../../../../sc-tools/sc-config/tests/";
-  // this prefix should be removed after changing current directory for
-  // gtests that should be done in new build system
-  EXPECT_EQ(std::string(params.extensions_directories[0]), prefix + "bin/extensions_1");
-  EXPECT_EQ(std::string(params.extensions_directories[1]), prefix + "bin/extensions_2");
-  EXPECT_EQ(std::string(params.extensions_directories[2]), prefix + "bin/extensions_3");
+  EXPECT_EQ(std::string(params.extensions_directories[0]), "../configs/bin/extensions_1");
+  EXPECT_EQ(std::string(params.extensions_directories[1]), "../configs/bin/extensions_2");
+  EXPECT_EQ(std::string(params.extensions_directories[2]), "../configs/bin/extensions_3");
 }

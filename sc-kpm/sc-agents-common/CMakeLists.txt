@@ -13,7 +13,12 @@ target_link_libraries(sc-agents-common
 )
 target_include_directories(sc-agents-common
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC $<INSTALL_INTERFACE:include>
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 if(${SC_CLANG_FORMAT_CODE})

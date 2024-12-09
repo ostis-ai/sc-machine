@@ -12,11 +12,13 @@ target_link_libraries(sc-kpm-ui
     LINK_PUBLIC nlohmann_json::nlohmann_json
 )
 target_include_directories(sc-kpm-ui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set_target_properties(sc-kpm-ui PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY})
 
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-kpm-ui)
 endif()
 
 if(${SC_BUILD_TESTS})
+    set(SC_KPM_UI_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
     add_subdirectory(tests)
 endif()

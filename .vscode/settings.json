@@ -1,0 +1,109 @@
+{
+    "cmake.ctest.testExplorerIntegrationEnabled": false,
+    // Debug configuration for TestMate
+    "testMate.cpp.debug.configTemplate": {
+        "type": "cppvsdbg",
+        "linux": {
+            "type": "cppdbg",
+            "MIMode": "gdb"
+        },
+        "darwin": {
+            "type": "cppdbg",
+            "MIMode": "lldb"
+        },
+        "program": "${exec}",
+        "args": "${argsArray}",
+        "cwd": "${cwd}",
+        "env": "${envObj}",
+        "environment": "${envObjArray}",
+        "sourceFileMap": "${sourceFileMapObj}",
+        "testMate.cpp.debug.setEnv": {
+            "GTEST_CATCH_EXCEPTIONS": "0",
+        }
+    },
+    // Test executables configuration for TestMate
+    "testMate.cpp.test.advancedExecutables": [
+        // Unittests configuration
+        {
+            "pattern": "build/**/bin/{sc-core,sc-memory,scs,sc-kpm}*-tests",
+            "gtest": {
+                "testGrouping": {
+                    "groupByLabel": {
+                        "label": "unittests",
+                        "groupByExecutable": {
+                            "description": "${relDirpath}/"
+                        }
+                    }
+                }
+            },
+        },
+        {
+            "pattern": "build/**/bin/sc-builder-tests",
+            "cwd": "${workspaceFolder}/sc-tools/sc-builder/tests/units",
+            "gtest": {
+                "testGrouping": {
+                    "groupByLabel": {
+                        "label": "unittests",
+                        "groupByExecutable": {
+                            "description": "${relDirpath}/"
+                        }
+                    }
+                }
+            },
+        },
+        {
+            "pattern": "build/**/bin/sc-config-tests",
+            "cwd": "${workspaceFolder}/sc-tools/sc-config/tests/units",
+            "gtest": {
+                "testGrouping": {
+                    "groupByLabel": {
+                        "label": "unittests",
+                        "groupByExecutable": {
+                            "description": "${relDirpath}/"
+                        }
+                    }
+                }
+            },
+        },
+        {
+            "pattern": "build/**/bin/sc-machine-tests",
+            "cwd": "${workspaceFolder}/sc-tools/sc-machine-runner/tests/units",
+            "gtest": {
+                "testGrouping": {
+                    "groupByLabel": {
+                        "label": "unittests",
+                        "groupByExecutable": {
+                            "description": "${relDirpath}/"
+                        }
+                    }
+                }
+            },
+        },
+        {
+            "pattern": "build/**/bin/sc-server-tests",
+            "cwd": "${workspaceFolder}/sc-tools/sc-server/tests/units/api",
+            "gtest": {
+                "testGrouping": {
+                    "groupByLabel": {
+                        "label": "unittests",
+                        "groupByExecutable": {
+                            "description": "${relDirpath}/"
+                        }
+                    }
+                }
+            },
+        },
+        // Benchmarks configuration
+        {
+            "pattern": "build/**/bin/sc-{memory,server}-benchmarks",
+            "testGrouping": {
+                "groupByLabel": {
+                    "label": "benchmarks",
+                    "groupByExecutable": {
+                        "description": "${relDirpath}/"
+                    }
+                }
+            }
+        },
+    ]
+}

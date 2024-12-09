@@ -924,6 +924,8 @@ TEST_F(ScServerTest, SearchStringTemplate)
 
 TEST_F(ScServerTest, SearchTemplateByIdtf)
 {
+  LoadKB(m_ctx, {"templates.scs", "user.scs"});
+
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
@@ -952,6 +954,8 @@ TEST_F(ScServerTest, SearchTemplateByIdtf)
 
 TEST_F(ScServerTest, SearchTemplateByAddr)
 {
+  LoadKB(m_ctx, {"templates.scs", "user.scs"});
+
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
@@ -1075,6 +1079,8 @@ TEST_F(ScServerTest, GenerateStringTemplate)
 
 TEST_F(ScServerTest, GenerateTemplateByIdtf)
 {
+  LoadKB(m_ctx, {"templates.scs"});
+
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
@@ -1103,6 +1109,8 @@ TEST_F(ScServerTest, GenerateTemplateByIdtf)
 
 TEST_F(ScServerTest, GenerateTemplateByAddr)
 {
+  LoadKB(m_ctx, {"templates.scs"});
+
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
   client.Run();
