@@ -379,8 +379,8 @@ std::string TypeResolver::GetReverseSCsConnector(ScType const & type)
 
 std::string TypeResolver::GetSCsElementKeynode(ScType const & type)
 {
-   auto const it = ms_typesToKeynodes.find(type);
-   if (it == ms_typesToKeynodes.cend())
+  auto const it = ms_typesToKeynodes.find(type);
+  if (it == ms_typesToKeynodes.cend())
     return "";
 
   return it->second;

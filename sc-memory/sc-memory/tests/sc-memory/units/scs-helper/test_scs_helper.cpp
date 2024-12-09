@@ -399,6 +399,30 @@ TEST_F(SCsHelperTest, GenerateBySCs_CommonEdgeBelongsToMembershipArcsType)
   EXPECT_FALSE(helper.GenerateBySCsText(scsData));
 }
 
+TEST_F(SCsHelperTest, GenerateBySCs_VarPermPosArcBelongsToMembershipArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_membership_arc -> (node1 _-> node2);; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const membershipArcAddr = m_ctx->SearchElementBySystemIdentifier("sc_membership_arc");
+  ScAddr const node1Addr = m_ctx->SearchElementBySystemIdentifier("node1");
+  ScAddr const node2Addr = m_ctx->SearchElementBySystemIdentifier("node2");
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(node1Addr, ScType::VarPermPosArc, node2Addr);
+  EXPECT_TRUE(it3->Next());
+  ScAddr const arcAddr = it3->Get(1);
+  it3 = m_ctx->CreateIterator3(membershipArcAddr, ScType::ConstPermPosArc, arcAddr);
+  EXPECT_FALSE(it3->Next());
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 4);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, node1Addr, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, arcAddr, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, node2Addr, ScType::ConstPermPosArc));
+}
+
 TEST_F(SCsHelperTest, GenerateBySCs_NotBaseArcBetweenElementTypesWithinStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
