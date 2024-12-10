@@ -29,10 +29,10 @@ Table of contents:
                 * [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md) - *focuses on agent creation and management*
                 * [C++ Agent context API](sc-memory/api/cpp/extended/agents/agent_context.md) - *explains how to manage the context in which agents operate*
                 * [C++ Modules API](sc-memory/api/cpp/extended/agents/modules.md) - *describes how to register agents in an application*
-    * Python API - *information on using the Python client for interacting with sc-memory*
+    * Python API - *documentation on using the Python client for interacting with sc-memory*
         * [Python Core API](https://github.com/ostis-ai/py-sc-client) - *documentation of Python core API for creating, retrieving and erasing sc-elements and sc-events in sc-memory*
         * [Python Extended API](https://github.com/ostis-ai/py-sc-kpm) - *documentation of Python extended API for manipulating with large graphs*
-    * TypeScript API - *documentation of TypeScript API provided by ts-sc-client*
+    * TypeScript API - *documentation on using the TypeScript client for interacting with sc-memory*
         * [TypeScript Core API](https://github.com/ostis-ai/ts-sc-client) - *documentation of TypeScript core API for creating, retrieving and erasing sc-elements and sc-events in sc-memory*
     * [sc-element types](scs/sc_element_types.md) - *detailed description of supported element types*
     * [SCs-code](scs/scs.md) - *documentation on SCs Language with examples*
