@@ -7,11 +7,13 @@ All our releases are automatically uploaded to Docker Hub, so to start using our
 To pull the sc-machine image from DockerHub and run it, follow these steps:
 
 ```sh
-docker compose run --rm machine build # build knowledge base (see below for details)
-docker compose up # launch server
+# build knowledge base (see below for details)
+docker compose run --rm machine build
+# launch machine
+docker compose up
 ```
 
-Generally you would want to use a KB source folder alongside sc-machine. To do that, create a "kb" folder in the root of the project and place the KB sources in it. After that build it using the command described above (or enable autorebuild as shown below).
+Generally you would want to use a knowledge base source folder alongside sc-machine. To do that, create a "kb" folder in the root of the project and place the KB sources in it. After that build it using the command described above (or enable autorebuild as shown below).
 
 Note: By default we expect you to place a [repo.path](sc-tools/kb_repo_file.md) file inside the `./kb` folder, but in case you don't have one you can configure to build the folder itself by modifying the `.env` file:
 
