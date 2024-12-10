@@ -6,8 +6,10 @@
 
 #include "builder_test.hpp"
 
-TEST_F(ScBuilderTest, aliases)
+TEST_F(ScBuilderTest, Aliases)
 {
+  LoadKB(m_ctx, {"aliases.scs"});
+
   std::string const scsTempl = "test_element _-> _[] (* _<- alias_content;; *);;";
 
   ScTemplate templ;

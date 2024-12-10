@@ -18,6 +18,7 @@ function usage() {
 
         Setting REBUILD_KB environment variable inside the container will trigger a KB rebuild. Setting custom starting point for sc-builder can be done using KB_PATH environment variable, "/kb" is used as a default KB_PATH.
         CONFIG_PATH and BINARY_PATH environment variables can provide the respective settings if the use of flags is undesirable.
+        EXTENSIONS_PATH can be set to specify the path for extensions used by sc-machine.
 
 USAGE
     exit 1
@@ -37,24 +38,6 @@ function rebuild_kb() {
     fi
 }
 
-function start_server() {
-    if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ];
-    then
-        # this expands to $KB_PATH if it's non-null and expands to "/kb" otherwise.
-        rebuild_kb "${KB_PATH:-"/kb"}"
-    fi
-
-    # if arguments were provided, use them instead of the default ones.
-    if [ $# -eq 0 ];
-    then
-        # you should provide the config file path and host settings yourself in case you want to use custom options!
-        echo "Using default arguments."
-        "$BINARY_PATH"/sc-server -c "$CONFIG_PATH" -h 0.0.0.0 -e "$BINARY_PATH/extensions"
-    else
-        "$BINARY_PATH"/sc-server "$@"
-    fi
-}
-
 function start_machine {
     if [ -n "$REBUILD_KB" ] && [ "$REBUILD_KB" -eq 1 ];
     then
@@ -67,7 +50,7 @@ function start_machine {
     then
         # you should provide the config file path and host settings yourself in case you want to use custom options!
         echo "Using default arguments."
-        "$BINARY_PATH"/sc-machine -c "$CONFIG_PATH" -e "$BINARY_PATH/extensions"
+        "$BINARY_PATH"/sc-machine -c "$CONFIG_PATH" -e "$EXTENSIONS_PATH"
     else
         "$BINARY_PATH"/sc-machine "$@"
     fi

@@ -2,5 +2,5 @@
 
 set -eo pipefail
 
-cmake -B build -DSC_CLANG_FORMAT_CODE=ON
-cmake --build build --target clangformat_check
+cmake --preset release-with-tests -DSC_CLANG_FORMAT_CODE=ON
+cmake --build --preset release --target clangformat_check

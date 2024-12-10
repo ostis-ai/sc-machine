@@ -12,11 +12,15 @@
 
 #include "sc-client/sc_client.hpp"
 
+#include "sc_server_module.hpp"
+
+using ScServerModuleTest = ScMemoryTest;
+
 TEST(ScServer, RunStopServer)
 {
   ScOptions options{1, nullptr};
 
-  std::string configFile = SC_SERVER_INI;
+  std::string configFile = ScServerTest::SC_SERVER_INI.c_str();
 
   ScParams serverParams{options, {}};
 
@@ -26,7 +30,7 @@ TEST(ScServer, RunStopServer)
     serverParams.Insert({key, serverConfig[key]});
 
   ScParams memoryParams{options, {}};
-  memoryParams.Insert({"storage", SC_SERVER_REPO_PATH});
+  memoryParams.Insert({"storage", ScServerTest::SC_SERVER_KB_BIN.c_str()});
 
   ScMemoryConfig memoryConfig{config, memoryParams};
 
@@ -40,6 +44,15 @@ TEST(ScServer, RunStopServer)
   server->Run();
   server->Stop();
   ScMemory::Shutdown();
+}
+
+TEST_F(ScServerModuleTest, RunStopServerModule)
+{
+  ScMemory::ms_configPath = ScServerTest::SC_SERVER_INI;
+
+  ScServerModule serverModule;
+  serverModule.Initialize(m_ctx.get());
+  serverModule.Shutdown(m_ctx.get());
 }
 
 TEST_F(ScServerTest, Connect)
