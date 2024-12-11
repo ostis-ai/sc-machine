@@ -772,14 +772,14 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
     sc_uint64 string_offset_str_size;
     sc_int_to_str_int(string_offset, string_offset_str, string_offset_str_size);
 
-    sc_list * _data;
+    sc_list * link_hashes_list;
     if (is_substring)
-      _data = pair->second;
+      link_hashes_list = pair->second;
     else
-      _data = sc_dictionary_get_by_key(
+      link_hashes_list = sc_dictionary_get_by_key(
           memory->string_offsets_link_hashes_dictionary, string_offset_str, string_offset_str_size);
 
-    sc_iterator * data_it = sc_list_iterator(_data);
+    sc_iterator * data_it = sc_list_iterator(link_hashes_list);
     while (sc_iterator_next(data_it))
     {
       sc_addr_hash link_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(data_it);
@@ -789,11 +789,6 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
         link_filter->push_link_callback(link_filter->push_link_callback_data, link_addr);
     }
     sc_iterator_destroy(data_it);
-    if (is_substring)
-    {
-      sc_list_destroy(_data);
-      sc_mem_free(pair);
-    }
   }
   sc_iterator_destroy(string_offset_it);
 
@@ -842,10 +837,10 @@ sc_bool _sc_dictionary_fs_memory_visit_string_offsets_by_term_prefix(sc_dictiona
     sc_list_init(&filtered_link_hashes);
     if (link_filter != null_ptr && link_filter->check_link_callback != null_ptr)
     {
-      sc_iterator * it = sc_list_iterator(link_hashes);
-      while (sc_iterator_next(it))
+      sc_iterator * link_hashes_it = sc_list_iterator(link_hashes);
+      while (sc_iterator_next(link_hashes_it))
       {
-        sc_addr_hash link_addr_hash = (sc_addr_hash)sc_iterator_get(it);
+        sc_addr_hash link_addr_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(link_hashes_it);
         sc_addr link_addr;
         SC_ADDR_LOCAL_FROM_INT(link_addr_hash, link_addr);
 
@@ -857,22 +852,22 @@ sc_bool _sc_dictionary_fs_memory_visit_string_offsets_by_term_prefix(sc_dictiona
                    == SC_LINK_FILTER_REQUEST_STOP)
           is_stopped_to_search_link = SC_TRUE;
 
-        sc_list_push_back(filtered_link_hashes, (void *)link_addr_hash);
+        sc_list_push_back(filtered_link_hashes, (sc_addr_hash_to_sc_pointer)link_addr_hash);
 
         if (is_stopped_to_search_link)
           break;
       }
-      sc_iterator_destroy(it);
+      sc_iterator_destroy(link_hashes_it);
     }
     else
     {
-      sc_iterator * it = sc_list_iterator(link_hashes);
-      while (sc_iterator_next(it))
+      sc_iterator * link_hashes_it = sc_list_iterator(link_hashes);
+      while (sc_iterator_next(link_hashes_it))
       {
-        sc_addr_hash const link_addr_hash = (sc_addr_hash)sc_iterator_get(it);
-        sc_list_push_back(filtered_link_hashes, (void *)link_addr_hash);
+        void * link_addr_hash = sc_iterator_get(link_hashes_it);
+        sc_list_push_back(filtered_link_hashes, link_addr_hash);
       }
-      sc_iterator_destroy(it);
+      sc_iterator_destroy(link_hashes_it);
     }
     if (filtered_link_hashes->size == 0)
     {
@@ -939,7 +934,21 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
       memory, string, string_size, is_substring, to_search_as_prefix, string_offsets, link_filter);
 
   if (is_substring)
+  {
+    sc_iterator * it = sc_list_iterator(string_offsets);
+    while (sc_iterator_next(it))
+    {
+      sc_pair * value = (sc_pair *)sc_iterator_get(it);
+      if (value == null_ptr)
+        continue;
+
+      sc_list_destroy(value->second);
+      sc_mem_free(value);
+    }
+    sc_iterator_destroy(it);
+
     sc_list_destroy(string_offsets);
+  }
 
   return status;
 }
@@ -1079,6 +1088,18 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
 
   sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_strings_by_substring_term(
       memory, string, string_size, to_search_as_prefix, string_offsets, link_filter);
+
+  sc_iterator * it = sc_list_iterator(string_offsets);
+  while (sc_iterator_next(it))
+  {
+    sc_pair * value = (sc_pair *)sc_iterator_get(it);
+    if (value == null_ptr)
+      continue;
+
+    sc_list_destroy(value->second);
+    sc_mem_free(value);
+  }
+  sc_iterator_destroy(it);
   sc_list_destroy(string_offsets);
 
   return status;
