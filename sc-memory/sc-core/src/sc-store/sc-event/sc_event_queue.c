@@ -4,6 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <stdio.h>
 #include "sc_event_queue.h"
 
 #include "sc-core/sc_event_subscription.h"
@@ -112,10 +113,16 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
     {
       --count;
       if (count == 0)
+      {
+        printf("___worker remove %d for %d/%d\n", count, key.seg, key.offset);
         sc_hash_table_remove(queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)));
+      }
       else
+      {
+        printf("___worker putting %d for %d/%d\n", count, key.seg, key.offset);
         sc_hash_table_insert(
             queue->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)), GUINT_TO_POINTER(count));
+      }
     }
     sc_monitor_release_write(&queue->pool_monitor);
   }
@@ -255,6 +262,7 @@ void _sc_event_emission_manager_add(
     sc_uint32 count = (sc_uint32)(sc_uint64)sc_hash_table_get(
         manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)));
     ++count;
+    printf("___add putting %d for %d/%d\n", count, key.seg, key.offset);
     sc_hash_table_insert(
         manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(key)), GUINT_TO_POINTER(count));
   }

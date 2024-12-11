@@ -4,6 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <stdio.h>
 #include "sc-core/sc_event_subscription.h"
 
 #include "sc-core/sc-base/sc_allocator.h"
@@ -198,6 +199,7 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
 {
   if (event_subscription == null_ptr)
     return SC_RESULT_NO;
+  printf("destroying event for %d/%d\n", event_subscription->subscription_addr.seg, event_subscription->subscription_addr.offset);
 
   sc_event_subscription_manager * subscription_manager = sc_storage_get_event_subscription_manager();
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
