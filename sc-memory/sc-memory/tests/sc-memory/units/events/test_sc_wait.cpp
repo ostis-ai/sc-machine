@@ -239,7 +239,7 @@ TEST_F(ScWaiterTest, InvalidWaitersWithCondition)
       m_ctx->CreateConditionWaiter<ScEventBeforeChangeLinkContent>(nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScWaiterTest, InvalidEventsFotWaiters)
+TEST_F(ScWaiterTest, InvalidEventsForWaiters)
 {
   ScAddr nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   ScAddr eventClassAddr;
@@ -256,7 +256,7 @@ TEST_F(ScWaiterTest, InvalidEventsFotWaiters)
   EXPECT_THROW(m_ctx->CreateEventWaiter(eventClassAddr, nodeAddr, {}), utils::ExceptionInvalidParams);
 }
 
-TEST_F(ScWaiterTest, InvalidEventsFotWaitersWithConditions)
+TEST_F(ScWaiterTest, InvalidEventsForWaitersWithConditions)
 {
   ScAddr nodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
   ScAddr eventClassAddr;
