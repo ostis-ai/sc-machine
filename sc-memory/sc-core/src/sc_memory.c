@@ -522,27 +522,27 @@ sc_result sc_memory_find_links_with_content_string(
     sc_list ** result_hashes)
 {
   sc_list_init(result_hashes);
-  sc_link_filter link_filter;
-  link_filter.check_link_callback = null_ptr;
-  link_filter.check_link_callback_data = null_ptr;
-  link_filter.request_link_callback = null_ptr;
-  link_filter.request_link_callback_data = null_ptr;
-  link_filter.push_link_callback = _push_link_hash;
-  link_filter.push_link_callback_data = *result_hashes;
-  link_filter.push_link_content_callback = null_ptr;
-  link_filter.push_link_content_callback_data = null_ptr;
-  return sc_memory_find_links_with_content_string_ext(ctx, stream, &link_filter);
+  sc_link_handler link_handler;
+  link_handler.check_link_callback = null_ptr;
+  link_handler.check_link_callback_data = null_ptr;
+  link_handler.request_link_callback = null_ptr;
+  link_handler.request_link_callback_data = null_ptr;
+  link_handler.push_link_callback = _push_link_hash;
+  link_handler.push_link_callback_data = *result_hashes;
+  link_handler.push_link_content_callback = null_ptr;
+  link_handler.push_link_content_callback_data = null_ptr;
+  return sc_memory_find_links_with_content_string_ext(ctx, stream, &link_handler);
 }
 
 sc_result sc_memory_find_links_with_content_string_ext(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_link_filter * link_filter)
+    sc_link_handler * link_handler)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  return sc_storage_find_links_with_content_string(ctx, stream, link_filter);
+  return sc_storage_find_links_with_content_string(ctx, stream, link_handler);
 }
 
 sc_result sc_memory_find_links_by_content_substring(
@@ -552,28 +552,28 @@ sc_result sc_memory_find_links_by_content_substring(
     sc_list ** result_hashes)
 {
   sc_list_init(&*result_hashes);
-  sc_link_filter link_filter;
-  link_filter.check_link_callback = null_ptr;
-  link_filter.check_link_callback_data = null_ptr;
-  link_filter.request_link_callback = null_ptr;
-  link_filter.request_link_callback_data = null_ptr;
-  link_filter.push_link_callback = _push_link_hash;
-  link_filter.push_link_callback_data = *result_hashes;
-  link_filter.push_link_content_callback = null_ptr;
-  link_filter.push_link_content_callback_data = null_ptr;
-  return sc_memory_find_links_by_content_substring_ext(ctx, stream, max_length_to_search_as_prefix, &link_filter);
+  sc_link_handler link_handler;
+  link_handler.check_link_callback = null_ptr;
+  link_handler.check_link_callback_data = null_ptr;
+  link_handler.request_link_callback = null_ptr;
+  link_handler.request_link_callback_data = null_ptr;
+  link_handler.push_link_callback = _push_link_hash;
+  link_handler.push_link_callback_data = *result_hashes;
+  link_handler.push_link_content_callback = null_ptr;
+  link_handler.push_link_content_callback_data = null_ptr;
+  return sc_memory_find_links_by_content_substring_ext(ctx, stream, max_length_to_search_as_prefix, &link_handler);
 }
 
 sc_result sc_memory_find_links_by_content_substring_ext(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * link_filter)
+    sc_link_handler * link_handler)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
 
-  return sc_storage_find_links_by_content_substring(ctx, stream, max_length_to_search_as_prefix, link_filter);
+  return sc_storage_find_links_by_content_substring(ctx, stream, max_length_to_search_as_prefix, link_handler);
 }
 
 void _push_link_content(void * data, sc_addr const link_addr, sc_char const * link_content)
@@ -594,25 +594,25 @@ sc_result sc_memory_find_links_contents_by_content_substring(
     sc_list ** strings)
 {
   sc_list_init(&*strings);
-  sc_link_filter link_filter;
+  sc_link_handler link_handler;
   sc_list_init(&*strings);
-  link_filter.check_link_callback = null_ptr;
-  link_filter.check_link_callback_data = null_ptr;
-  link_filter.request_link_callback = null_ptr;
-  link_filter.request_link_callback_data = null_ptr;
-  link_filter.push_link_callback = null_ptr;
-  link_filter.push_link_callback_data = null_ptr;
-  link_filter.push_link_content_callback = _push_link_content;
-  link_filter.push_link_content_callback_data = *strings;
+  link_handler.check_link_callback = null_ptr;
+  link_handler.check_link_callback_data = null_ptr;
+  link_handler.request_link_callback = null_ptr;
+  link_handler.request_link_callback_data = null_ptr;
+  link_handler.push_link_callback = null_ptr;
+  link_handler.push_link_callback_data = null_ptr;
+  link_handler.push_link_content_callback = _push_link_content;
+  link_handler.push_link_content_callback_data = *strings;
   return sc_memory_find_links_contents_by_content_substring_ext(
-      ctx, stream, max_length_to_search_as_prefix, &link_filter);
+      ctx, stream, max_length_to_search_as_prefix, &link_handler);
 }
 
 sc_result sc_memory_find_links_contents_by_content_substring_ext(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * link_filter)
+    sc_link_handler * link_handler)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
@@ -621,7 +621,7 @@ sc_result sc_memory_find_links_contents_by_content_substring_ext(
       == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
-  return sc_storage_find_links_contents_by_content_substring(ctx, stream, max_length_to_search_as_prefix, link_filter);
+  return sc_storage_find_links_contents_by_content_substring(ctx, stream, max_length_to_search_as_prefix, link_handler);
 }
 
 sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * statistics)

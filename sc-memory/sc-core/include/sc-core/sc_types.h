@@ -288,7 +288,7 @@ typedef struct
   void * push_link_callback_data;
   void (*push_link_content_callback)(void * data, sc_addr const link_addr, sc_char const * link_content);
   void * push_link_content_callback_data;
-} sc_link_filter;
+} sc_link_handler;
 
 #endif
 

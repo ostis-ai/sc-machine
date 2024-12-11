@@ -759,7 +759,7 @@ ScAddrSet ScMemoryContext::SearchLinksByContent(ScStreamPtr const & linkContentS
 
   ScAddrSet linkSet;
   void ** pushLinkData = _MAKE_DATA(&*m_context, &linkSet);
-  sc_link_filter filter;
+  sc_link_handler filter;
   filter.check_link_callback = nullptr;
   filter.check_link_callback_data = nullptr;
   filter.request_link_callback = nullptr;
@@ -817,7 +817,7 @@ ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
   void * checkLinkCallbackData = (void *)&linkFilter;
   ScAddrSet linkSet;
   void ** pushLinkCallbackData = _MAKE_DATA(&*m_context, &linkSet);
-  sc_link_filter filter;
+  sc_link_handler filter;
   filter.check_link_callback = _CheckLinkCallback;
   filter.check_link_callback_data = (void *)&linkFilter;
   filter.request_link_callback = _RequestLinkCallback;
@@ -865,7 +865,7 @@ ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
 
   ScAddrSet linkSet;
   void ** pushLinkCallbackData = _MAKE_DATA(&*m_context, &linkSet);
-  sc_link_filter filter;
+  sc_link_handler filter;
   filter.check_link_callback = nullptr;
   filter.check_link_callback_data = nullptr;
   filter.request_link_callback = nullptr;
@@ -926,7 +926,7 @@ std::set<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
 
   std::set<std::string> linkContentSet;
 
-  sc_link_filter filter;
+  sc_link_handler filter;
   filter.check_link_callback = nullptr;
   filter.check_link_callback_data = nullptr;
   filter.request_link_callback = nullptr;

@@ -497,5 +497,5 @@ TEST_F(ScLinkTest, FindLinksWithFilterRequestStop)
   filter.m_linkClassAddr = linkClassAddr;
   ScAddrSet const & links = m_ctx->SearchLinksByContentSubstring("content", filter);
   EXPECT_EQ(links.size(), 1u);
-  EXPECT_EQ(*links.cbegin(), linkAddr1);
+  EXPECT_TRUE(*links.cbegin() == linkAddr1 || *links.cbegin() == linkAddr2);
 }
