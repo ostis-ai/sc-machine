@@ -624,7 +624,7 @@ sc_result sc_memory_find_links_contents_by_content_substring_ext(
   return sc_storage_find_links_contents_by_content_substring(ctx, stream, max_length_to_search_as_prefix, link_filter);
 }
 
-sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)
+sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * statistics)
 {
   if (_sc_memory_context_is_authenticated(memory->context_manager, ctx) == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED;
@@ -633,7 +633,7 @@ sc_result sc_memory_stat(sc_memory_context const * ctx, sc_stat * stat)
       == SC_FALSE)
     return SC_RESULT_ERROR_SC_MEMORY_CONTEXT_HAS_NO_READ_PERMISSIONS;
 
-  return sc_storage_get_elements_stat(stat);
+  return sc_storage_get_elements_stat(statistics);
 }
 
 sc_result sc_memory_save(sc_memory_context const * ctx)

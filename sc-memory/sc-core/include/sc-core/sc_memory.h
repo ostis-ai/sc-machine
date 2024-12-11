@@ -776,10 +776,10 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content_string(
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search substring.
- * @param result_addrs The list containing the hash values of sc-links with content
- *                      containing the specified substring.
  * @param max_length_to_search_as_prefix The maximum length of the substring to search
  *                                       as a prefix. Set to 0 for a standard substring search.
+ * @param result_hashes The list containing the hash values of sc-links with content
+ *                      containing the specified substring.
  * @note The caller is responsible for handling any errors indicated by the result value.
  * @note This function is thread-safe.
  *
@@ -805,10 +805,10 @@ _SC_EXTERN sc_result sc_memory_find_links_by_content_substring(
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search substring.
- * @param result_strings The list containing the content strings of sc-links with content
- *                      containing the specified substring.
  * @param max_length_to_search_as_prefix The maximum length of the substring to search
  *                                       as a prefix. Set to 0 for a standard substring search.
+ * @param result_strings The list containing the content strings of sc-links with content
+ *                      containing the specified substring.
  * @note The caller is responsible for handling any errors indicated by the result value.
  * @note This function is thread-safe.
  *
@@ -832,8 +832,7 @@ _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring(
  * @param ctx Pointer to the sc-memory context.
  * @param stream Pointer to the stream containing the string to search for.
  * @param data Pointer to user-specific data.
- * @param callback Callback function to be invoked for each matching link address found.
- *                The callback function must have the signature: void callback(void * data, sc_addr const link_addr).
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  * @return Returns SC_RESULT_OK if the operation was successful; otherwise, returns an error code.
  */
 _SC_EXTERN sc_result sc_memory_find_links_with_content_string_ext(
@@ -845,7 +844,7 @@ _SC_EXTERN sc_result sc_memory_find_links_with_content_string_ext(
  * @param ctx Pointer to the sc-memory context.
  * @param stream Pointer to the stream containing the substring to search for.
  * @param max_length_to_search_as_prefix Maximum length to consider the search as a prefix search.
- * @param result_hashes Pointer to a list where link hashes will be stored.
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  * @return Returns SC_RESULT_OK if the operation was successful; otherwise, returns an error code.
  */
 _SC_EXTERN sc_result sc_memory_find_links_by_content_substring_ext(
@@ -858,9 +857,7 @@ _SC_EXTERN sc_result sc_memory_find_links_by_content_substring_ext(
  * @param ctx Pointer to the sc-memory context.
  * @param stream Pointer to the stream containing the substring to search for.
  * @param max_length_to_search_as_prefix Maximum length to consider the search as a prefix search.
- * @param data Pointer to user-specific data.
- * @param callback Callback function to be invoked for each matching link address found.
- *                The callback function must have the signature: void callback(void * data, sc_addr const link_addr).
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  * @return Returns SC_RESULT_OK if the operation was successful; otherwise, returns an error code.
  */
 _SC_EXTERN sc_result sc_memory_find_links_contents_by_content_substring_ext(

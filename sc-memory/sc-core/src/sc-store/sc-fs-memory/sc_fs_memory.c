@@ -93,29 +93,29 @@ sc_fs_memory_status sc_fs_memory_get_string_by_link_hash(
 sc_fs_memory_status sc_fs_memory_get_link_hashes_by_string(
     sc_char const * string,
     sc_uint32 const string_size,
-    sc_link_filter * filter)
+    sc_link_filter * link_filter)
 {
-  return manager->get_link_hashes_by_string(manager->fs_memory, string, string_size, filter);
+  return manager->get_link_hashes_by_string(manager->fs_memory, string, string_size, link_filter);
 }
 
 sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
     sc_char const * substring,
     sc_uint32 const substring_size,
     sc_uint32 const max_length_to_search_as_prefix,
-    sc_link_filter * filter)
+    sc_link_filter * link_filter)
 {
   return manager->get_link_hashes_by_substring(
-      manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, filter);
+      manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, link_filter);
 }
 
 sc_fs_memory_status sc_fs_memory_get_strings_by_substring(
     sc_char const * substring,
     sc_uint32 const substring_size,
     sc_uint32 const max_length_to_search_as_prefix,
-    sc_link_filter * filter)
+    sc_link_filter * link_filter)
 {
   return manager->get_strings_by_substring(
-      manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, filter);
+      manager->fs_memory, substring, substring_size, max_length_to_search_as_prefix, link_filter);
 }
 
 sc_fs_memory_status sc_fs_memory_unlink_string(sc_addr_hash link_hash)

@@ -785,7 +785,8 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_link_hashes_by_strin
       sc_addr_hash link_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(data_it);
       sc_addr link_addr;
       SC_ADDR_LOCAL_FROM_INT(link_hash, link_addr);
-      link_filter->push_link_callback(link_filter->push_link_callback_data, link_addr);
+      if (link_filter->push_link_callback != null_ptr)
+        link_filter->push_link_callback(link_filter->push_link_callback_data, link_addr);
     }
     sc_iterator_destroy(data_it);
     if (is_substring)
@@ -1043,8 +1044,9 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
       if (go_to_next)
         continue;
 
-      link_filter->push_link_content_callback(
-          link_filter->push_link_content_callback_data, SC_ADDR_EMPTY, other_string);
+      if (link_filter->push_link_content_callback != null_ptr)
+        link_filter->push_link_content_callback(
+            link_filter->push_link_content_callback_data, SC_ADDR_EMPTY, other_string);
       sc_mem_free(other_string);
     }
   }
