@@ -541,8 +541,7 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search string.
- * @param result_addrs The list containing the hash values of sc-links with content
- *                      matching the specified string.
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  *
  * @return Returns an sc_result indicating the success or failure of the operation.
  * Possible result values:
@@ -556,7 +555,7 @@ sc_result sc_storage_get_link_content(sc_memory_context const * ctx, sc_addr add
 sc_result sc_storage_find_links_with_content_string(
     sc_memory_context const * ctx,
     sc_stream const * stream,
-    sc_link_filter * filter);
+    sc_link_filter * link_filter);
 
 /*!
  * @brief Finds sc-links with content containing the specified substring.
@@ -567,10 +566,9 @@ sc_result sc_storage_find_links_with_content_string(
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search substring.
- * @param result_addrs The list containing the hash values of sc-links with content
- *                      containing the specified substring.
  * @param max_length_to_search_as_prefix The maximum length of the substring to search
  *                                       as a prefix. Set to 0 for a standard substring search.
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  *
  * @return Returns an sc_result indicating the success or failure of the operation.
  * Possible result values:
@@ -584,7 +582,7 @@ sc_result sc_storage_find_links_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * filter);
+    sc_link_filter * link_filter);
 
 /*!
  * @brief Finds sc-link contents containing the specified substring.
@@ -595,10 +593,9 @@ sc_result sc_storage_find_links_by_content_substring(
  *
  * @param ctx A pointer to the sc-memory context that manages the operation.
  * @param stream The stream containing the search substring.
- * @param result_strings The list containing the content strings of sc-links with content
- *                      containing the specified substring.
  * @param max_length_to_search_as_prefix The maximum length of the substring to search
  *                                       as a prefix. Set to 0 for a standard substring search.
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  *
  * @return Returns an sc_result indicating the success or failure of the operation.
  * Possible result values:
@@ -613,7 +610,7 @@ sc_result sc_storage_find_links_contents_by_content_substring(
     sc_memory_context const * ctx,
     sc_stream const * stream,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * filter);
+    sc_link_filter * link_filter);
 
 /*!
  * @brief Retrieves statistics for sc-storage elements.

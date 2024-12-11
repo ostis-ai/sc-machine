@@ -49,19 +49,19 @@ typedef struct _sc_fs_memory_manager
       sc_fs_memory * memory,
       sc_char const * string,
       sc_uint64 const string_size,
-      sc_link_filter * filter);
+      sc_link_filter * link_filter);
   sc_fs_memory_status (*get_link_hashes_by_substring)(
       sc_fs_memory * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
       sc_uint32 const max_length_to_search_as_prefix,
-      sc_link_filter * filter);
+      sc_link_filter * link_filter);
   sc_fs_memory_status (*get_strings_by_substring)(
       sc_fs_memory * memory,
       sc_char const * substring,
       sc_uint64 const substring_size,
       sc_uint32 const max_length_to_search_as_prefix,
-      sc_link_filter * filter);
+      sc_link_filter * link_filter);
   sc_fs_memory_status (*unlink_string)(sc_fs_memory * memory, sc_addr_hash const link_hash);
 } sc_fs_memory_manager;
 
@@ -124,39 +124,39 @@ sc_fs_memory_status sc_fs_memory_get_string_by_link_hash(
 /*! Gets sc-link hashes from file system memory by its string content.
  * @param string A sc-links content string
  * @param string_size A sc-links content string size
- * @param[out] link_hashes A pointer to sc-link hashes list
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  * @returns SC_TRUE, if sc-link hashes exist.
  */
 sc_fs_memory_status sc_fs_memory_get_link_hashes_by_string(
     sc_char const * string,
     sc_uint32 string_size,
-    sc_link_filter * filter);
+    sc_link_filter * link_filter);
 
 /*! Gets sc-link hashes from file system memory by its substring content.
  * @param substring A sc-links content substring
- * @param string_size A sc-links content substring size
+ * @param substring_size A sc-links content substring size
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @param[out] link_hashes A pointer to sc-link hashes list
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  * @returns SC_TRUE, if such sc-link hashes exist.
  */
 sc_fs_memory_status sc_fs_memory_get_link_hashes_by_substring(
     sc_char const * substring,
     sc_uint32 substring_size,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * filter);
+    sc_link_filter * link_filter);
 
 /*! Gets sc-strings from file system memory by its substring content.
  * @param substring A sc-strings content substring
- * @param string_size A sc-strings content substring size
+ * @param substring_size A sc-strings content substring size
  * @param max_length_to_search_as_prefix Search by prefix as substring length <= max_length_to_search_as_prefix
- * @param[out] strings A pointer to sc-strings list
+ * @param link_filter Pointer to object with callbacks for filtering sc-links.
  * @returns SC_TRUE, if such sc-strings exist.
  */
 sc_fs_memory_status sc_fs_memory_get_strings_by_substring(
     sc_char const * substring,
-    sc_uint32 string_size,
+    sc_uint32 substring_size,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * filter);
+    sc_link_filter * link_filter);
 
 /*! Load file system memory from file system
  * @returns SC_TRUE, if file system loaded.
