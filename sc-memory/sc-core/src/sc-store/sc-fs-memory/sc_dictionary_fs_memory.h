@@ -99,7 +99,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
  * @param memory Pointer to the file memory.
  * @param string Pointer to the full string term.
  * @param string_size Size of the full string term.
- * @param link_filter Pointer to object with callbacks for filtering sc-links.
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for sc_dictionary_fs_memory_get_link_hashes_by_string_ext with is_substring set to
  * SC_FALSE.
@@ -108,14 +108,14 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
     sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
-    sc_link_filter * link_filter);
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link hashes by a substring term extension from the file memory.
  * @param memory Pointer to the memory memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
  * @param max_length_to_search_as_prefix Maximum length to consider the search as a prefix search.
- * @param link_filter Pointer to object with callbacks for filtering sc-links.
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for sc_dictionary_fs_memory_get_link_hashes_by_string_ext with is_substring set to
  * SC_TRUE.
@@ -125,13 +125,13 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * link_filter);
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link hashes by a substring term from the file memory.
  * @param memory Pointer to the file memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
- * @param link_filter Pointer to object with callbacks for filtering sc-links.
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for sc_dictionary_fs_memory_get_link_hashes_by_substring_ext with
  * max_length_to_search_as_prefix set to 0.
@@ -140,14 +140,14 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
-    sc_link_filter * link_filter);
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link strings by a substring term extension from the file memory.
  * @param memory Pointer to the file memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
  * @param max_length_to_search_as_prefix Maximum length to consider the search as a prefix search.
- * @param link_filter Pointer to object with callbacks for filtering sc-links.
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for _sc_dictionary_fs_memory_get_strings_by_substring_ext with
  * to_search_as_prefix set based on the max_length_to_search_as_prefix parameter. It uses the appropriate function to
@@ -159,13 +159,13 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring_
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
-    sc_link_filter * link_filter);
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link strings by a substring term from the file memory.
  * @param memory Pointer to the file memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
- * @param link_filter Pointer to object with callbacks for filtering sc-links.
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for _sc_dictionary_fs_memory_get_strings_by_substring_ext with to_search_as_prefix
  * set to SC_FALSE.
@@ -174,7 +174,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring(
     sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
-    sc_link_filter * link_filter);
+    sc_link_handler * link_handler);
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_intersect_link_hashes_by_terms(
     sc_dictionary_fs_memory const * memory,
