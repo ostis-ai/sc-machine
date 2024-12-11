@@ -7,7 +7,6 @@
 #include "sc-core/sc-base/sc_allocator.h"
 
 #include <glib.h>
-#include <memory.h>
 
 sc_pointer _sc_mem_new(sc_uint32 size)
 {
