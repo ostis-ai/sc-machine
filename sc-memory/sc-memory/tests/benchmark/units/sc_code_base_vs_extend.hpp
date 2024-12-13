@@ -26,7 +26,7 @@ public:
     m_templ.Quintuple(
           node,
           ScType::VarCommonArc,
-          ScType::NodeVar,
+          ScType::VarNode,
           ScType::VarPermPosArc,
           attr);
   }
@@ -66,7 +66,7 @@ public:
     m_templ.Quintuple(
           node >> "_node",
           ScType::VarCommonArc >> "_arc",
-          ScType::NodeVar >> "_trg",
+          ScType::VarNode >> "_trg",
           ScType::VarPermPosArc,
           attr >> "_attr");
     m_templ.Triple(
