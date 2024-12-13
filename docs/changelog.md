@@ -163,7 +163,9 @@ See documentation, to learn more about using new API.
 
 ### Added
 
-- Quick start section in docs
+- Intro for documentation
+- Quick start section for developers in docs
+- Quick start section for users in docs
 - Allow multiple extension directories for sc-memory
 - CD for publishing sc-machine binaries as archive on Github 
 - CI for checking sc-machine tests build with Conan dependencies
@@ -233,6 +235,7 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- Description of project in Readme
 - Working directory for each test has been changed to the test's source dir
 - `gtest` and `benchmark` are installed via Conan or OS package managers instead of using them as git submodules
 - Location of the sc-machine build tree, binaries, libraries and extensions
