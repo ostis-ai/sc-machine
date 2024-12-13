@@ -18,7 +18,7 @@
  * @param argc A number of command-line arguments.
  * @param argv An array of command-line argument strings.
  *
- * @return Returns EXIT_SUCCESS (0) if the operation completes successfully, 
+ * @return Returns EXIT_SUCCESS (0) if the operation completes successfully,
  *         or EXIT_FAILURE (1) if there is an error in processing the command-line options
  *         or during initialization.
  *
@@ -34,7 +34,8 @@
  *
  * Error Handling:
  * - If required options are missing, appropriate error messages are printed to standard output.
- * - The function will return EXIT_FAILURE if any critical errors occur during initialization or if required options are not provided.
+ * - The function will return EXIT_FAILURE if any critical errors occur during initialization or if required options are
+ * not provided.
  * - Exceptions thrown by utility functions are caught, logged, and result in an EXIT_FAILURE return value.
  */
 sc_int RunMachine(sc_int argc, sc_char * argv[]);

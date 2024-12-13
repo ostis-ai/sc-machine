@@ -1,10 +1,5 @@
 set(SC_BUILDER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/builder_defines.hpp.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/builder_defines.hpp"
-)
-
 file(GLOB SOURCES CONFIGURE_DEPENDS
     "src/*.cpp" "src/*.hpp"
     "include/sc-builder/*.hpp"
@@ -17,11 +12,17 @@ add_library(sc-builder-lib SHARED ${SOURCES})
 target_link_libraries(sc-builder-lib
     LINK_PUBLIC sc-memory
     LINK_PUBLIC sc-config
-    LINK_PUBLIC LibXml2::LibXml2
+    LINK_PRIVATE LibXml2::LibXml2
 )
 target_include_directories(sc-builder-lib
+    PRIVATE ${glib_INCLUDE_DIRS}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC $<INSTALL_INTERFACE:include>
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 add_executable(sc-builder "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")

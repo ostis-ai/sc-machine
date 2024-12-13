@@ -23,8 +23,6 @@
 
 using GWFTranslatorTest = ScBuilderTest;
 
-#define BASE_TEST_PATH SC_BUILDER_KB "/tests-gwf-to-scs/"
-
 std::vector<char> ReadFileToBytes(std::string const & filePath)
 {
   std::ifstream file(filePath, std::ios::binary | std::ios::ate);
@@ -52,7 +50,7 @@ std::string ReadFileToString(std::string const & filePath)
 
 Differences CheckGWFToSCSTranslation(std::string const & fileName)
 {
-  std::string const & testGWFFilePath = BASE_TEST_PATH + fileName;
+  std::string const & testGWFFilePath = ScBuilderTest::SC_BUILDER_KB_GWF + fileName;
   std::string const & correctSCsFilePath = testGWFFilePath + ".scs";
 
   std::string const & testSCsText = GWFTranslator::TranslateXMLFileContentToSCs(testGWFFilePath);
@@ -70,7 +68,7 @@ TEST_F(GWFTranslatorTest, InvalidPath)
 {
   GWFTranslator translator(*m_ctx);
 
-  std::string const filePath = BASE_TEST_PATH "invalid_path.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/invalid_path.gwf";
   EXPECT_THROW(translator.TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
@@ -78,60 +76,60 @@ TEST_F(GWFTranslatorTest, EmptyFile)
 {
   GWFTranslator translator(*m_ctx);
 
-  std::string const filePath = BASE_TEST_PATH "empty_file.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/empty_file.gwf";
   EXPECT_THROW(translator.TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, EmptyStatic)
 {
-  std::string const & filePath = BASE_TEST_PATH "empty_static.gwf";
+  std::string const & filePath = SC_BUILDER_KB_GWF + "/empty_static.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, NoStatic)
 {
-  std::string const & filePath = BASE_TEST_PATH "no_static_sector.gwf";
+  std::string const & filePath = SC_BUILDER_KB_GWF + "/no_static_sector.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, EmptyGWF)
 {
-  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(BASE_TEST_PATH), utils::ExceptionParseError);
+  EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(SC_BUILDER_KB_GWF), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, UnknownTag)
 {
-  std::string const filePath = BASE_TEST_PATH "unknown_tag.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/unknown_tag.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, UnknownLinkContent)
 {
-  std::string const filePath = BASE_TEST_PATH "unknown_link_content.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/unknown_link_content.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, ContourWithUnknownParent)
 {
-  std::string const filePath = BASE_TEST_PATH "contour_with_unknown_parent.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/contour_with_unknown_parent.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, NodeWithUnknownId)
 {
-  std::string const filePath = BASE_TEST_PATH "node_with_unknown_id.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/node_with_unknown_id.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionParseError);
 }
 
 TEST_F(GWFTranslatorTest, NodeWithUnknownType)
 {
-  std::string const filePath = BASE_TEST_PATH "element_with_unknown_type.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/element_with_unknown_type.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionItemNotFound);
 }
 
 TEST_F(GWFTranslatorTest, ConnectorLoopedOnItself)
 {
-  std::string const filePath = BASE_TEST_PATH "connector_from_itself_to_itself.gwf";
+  std::string const filePath = SC_BUILDER_KB_GWF + "/connector_from_itself_to_itself.gwf";
   EXPECT_THROW(GWFTranslator::TranslateXMLFileContentToSCs(filePath), utils::ExceptionInvalidState);
 }
 
@@ -164,14 +162,14 @@ TEST_F(GWFTranslatorTest, ContentTypes)
   Differences const & differences = CheckGWFToSCSTranslation("content_types.gwf");
   EXPECT_TRUE(differences->empty()) << differencesToString(differences);
 
-  EXPECT_TRUE(CompareFiles(BASE_TEST_PATH "ostis.png", BASE_TEST_PATH "ostis_ref.png"));
-  std::filesystem::remove(BASE_TEST_PATH "ostis.png");
+  EXPECT_TRUE(CompareFiles(SC_BUILDER_KB_GWF + "/ostis.png", SC_BUILDER_KB_GWF + "/ostis_ref.png"));
+  std::filesystem::remove(SC_BUILDER_KB_GWF + "/ostis.png");
 }
 
 TEST_F(GWFTranslatorTest, SCsTree)
 {
-  std::string const & emptyContourGWFFilePath = BASE_TEST_PATH "empty_contour.gwf";
-  std::string const & lotOfContoursGWFFilePath = BASE_TEST_PATH "lot_of_contours.gwf";
+  std::string const & emptyContourGWFFilePath = SC_BUILDER_KB_GWF + "/empty_contour.gwf";
+  std::string const & lotOfContoursGWFFilePath = SC_BUILDER_KB_GWF + "/lot_of_contours.gwf";
   std::string const & lotOfContoursSCsFilePath = lotOfContoursGWFFilePath + ".scs";
 
   std::string const & emptyContourSCsText = GWFTranslator::TranslateXMLFileContentToSCs(emptyContourGWFFilePath);

@@ -4,7 +4,7 @@
     This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to handle sc-actions.
+The **C++ Actions API** is dedicated to defining and initiating actions that agents can perform within the sc-machine environment. This section provides guidelines on how to implement various actions, including their arguments and results.
 
 !!! note
     To include this API provide `#include <sc-memory/sc_action.hpp>` in your hpp source.

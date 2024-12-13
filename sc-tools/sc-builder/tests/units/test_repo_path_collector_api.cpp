@@ -8,15 +8,9 @@
 
 #include <sc-memory/sc_utils.hpp>
 
-#define TEST_SIMPLE_REPO SC_BUILDER_TEST_REPOS "/simple_repo.path"
-#define TEST_REPEATED_REPOS SC_BUILDER_TEST_REPOS "/repeated_repos.path"
-#define TEST_EXCLUDED_REPOS SC_BUILDER_TEST_REPOS "/excluded_repos.path"
-#define TEST_NON_TRIM_REPOS SC_BUILDER_TEST_REPOS "/non_trim_repos.path"
-#define TEST_INVALID_REPO_PATH SC_BUILDER_TEST_REPOS "/invalid_repo_path"
-
 TEST_F(ScRepoPathCollectorTestAPI, IsSources)
 {
-  std::string const & directory = TEST_REPOS_KB;
+  std::string const & directory = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPOS_KB;
 
   EXPECT_TRUE(collector.IsSourceFile(directory + "/child_repos/child_kb/samples/sample1.scs"));
   EXPECT_TRUE(collector.IsSourceFile(directory + "/child_repos/child_kb/samples/sample2.scs"));
@@ -42,13 +36,13 @@ TEST_F(ScRepoPathCollectorTestAPI, IsExcludedPath)
 
 TEST_F(ScRepoPathCollectorTestAPI, IsRepoPath)
 {
-  EXPECT_TRUE(collector.IsRepoPathFile(TEST_SIMPLE_REPO));
-  EXPECT_FALSE(collector.IsRepoPathFile(TEST_INVALID_REPO_PATH));
+  EXPECT_TRUE(collector.IsRepoPathFile(ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_SIMPLE_REPO_PATH));
+  EXPECT_FALSE(collector.IsRepoPathFile(ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_INVALID_REPO_PATH));
 }
 
 TEST_F(ScRepoPathCollectorTestAPI, SimpleRepo)
 {
-  std::string const & repoPath = TEST_SIMPLE_REPO;
+  std::string const & repoPath = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_SIMPLE_REPO_PATH;
 
   ScRepoPathCollector::Sources excludedSources, checkSources;
   EXPECT_TRUE(collector.IsRepoPathFile(repoPath));
@@ -58,7 +52,7 @@ TEST_F(ScRepoPathCollectorTestAPI, SimpleRepo)
   EXPECT_TRUE(excludedSources.empty());
 
   EXPECT_EQ(checkSources.size(), 1u);
-  std::string const & directory = TEST_REPOS_KB;
+  std::string const & directory = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPOS_KB;
   EXPECT_EQ(checkSources.count(directory), 1u);
 
   ScRepoPathCollector::Sources buildSources;
@@ -82,7 +76,7 @@ TEST_F(ScRepoPathCollectorTestAPI, SimpleRepo)
 
 TEST_F(ScRepoPathCollectorTestAPI, RepeatedRepos)
 {
-  std::string const & repoPath = TEST_REPEATED_REPOS;
+  std::string const & repoPath = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPEATED_REPOS;
 
   ScRepoPathCollector::Sources excludedSources, checkSources;
   EXPECT_TRUE(collector.IsRepoPathFile(repoPath));
@@ -92,7 +86,7 @@ TEST_F(ScRepoPathCollectorTestAPI, RepeatedRepos)
   EXPECT_TRUE(excludedSources.empty());
 
   EXPECT_EQ(checkSources.size(), 1u);
-  std::string const & directory = TEST_REPOS_KB;
+  std::string const & directory = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPOS_KB;
   EXPECT_EQ(checkSources.count(directory), 1u);
 
   ScRepoPathCollector::Sources buildSources;
@@ -116,7 +110,7 @@ TEST_F(ScRepoPathCollectorTestAPI, RepeatedRepos)
 
 TEST_F(ScRepoPathCollectorTestAPI, ExcludedRepos)
 {
-  std::string const & repoPath = TEST_EXCLUDED_REPOS;
+  std::string const & repoPath = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_EXCLUDED_REPOS;
 
   ScRepoPathCollector::Sources excludedSources, checkSources;
   EXPECT_TRUE(collector.IsRepoPathFile(repoPath));
@@ -124,11 +118,11 @@ TEST_F(ScRepoPathCollectorTestAPI, ExcludedRepos)
   collector.ParseRepoPath(repoPath, excludedSources, checkSources);
 
   EXPECT_EQ(excludedSources.size(), 1u);
-  std::string const & excludedDirectory = TEST_REPOS_KB "/templates";
+  std::string const & excludedDirectory = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPOS_KB + "/templates";
   EXPECT_EQ(excludedSources.count(excludedDirectory), 1u);
 
   EXPECT_EQ(checkSources.size(), 1u);
-  std::string const & directory = TEST_REPOS_KB;
+  std::string const & directory = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPOS_KB;
   EXPECT_EQ(checkSources.count(directory), 1u);
 
   ScRepoPathCollector::Sources buildSources;
@@ -149,7 +143,7 @@ TEST_F(ScRepoPathCollectorTestAPI, ExcludedRepos)
 
 TEST_F(ScRepoPathCollectorTestAPI, NonTrimRepos)
 {
-  std::string const & repoPath = TEST_NON_TRIM_REPOS;
+  std::string const & repoPath = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_NON_TRIM_REPOS;
 
   ScRepoPathCollector::Sources excludedSources, checkSources;
   EXPECT_TRUE(collector.IsRepoPathFile(repoPath));
@@ -157,11 +151,11 @@ TEST_F(ScRepoPathCollectorTestAPI, NonTrimRepos)
   collector.ParseRepoPath(repoPath, excludedSources, checkSources);
 
   EXPECT_EQ(excludedSources.size(), 1u);
-  std::string const & excludedDirectory = TEST_REPOS_KB "/templates";
+  std::string const & excludedDirectory = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPOS_KB + "/templates";
   EXPECT_EQ(excludedSources.count(excludedDirectory), 1u);
 
   EXPECT_EQ(checkSources.size(), 1u);
-  std::string const & directory = TEST_REPOS_KB;
+  std::string const & directory = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_REPOS_KB;
   EXPECT_EQ(checkSources.count(directory), 1u);
 
   ScRepoPathCollector::Sources buildSources;
@@ -182,7 +176,7 @@ TEST_F(ScRepoPathCollectorTestAPI, NonTrimRepos)
 
 TEST_F(ScRepoPathCollectorTestAPI, InvalidRepoPath)
 {
-  std::string const & repoPath = TEST_INVALID_REPO_PATH;
+  std::string const & repoPath = ScRepoPathCollectorTestAPI::SC_BUILDER_TEST_INVALID_REPO_PATH;
 
   ScRepoPathCollector::Sources excludedSources, checkSources;
   EXPECT_FALSE(collector.IsRepoPathFile(repoPath));

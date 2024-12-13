@@ -8,12 +8,14 @@
 
 #include <sc-memory/sc_link.hpp>
 
-TEST_F(ScBuilderTest, file_relative)
+TEST_F(ScBuilderTest, RelativeFile)
 {
   /*
     "file://file.txt" => nrel_system_identifier:
       [test_content_file];;
    */
+
+  LoadKB(m_ctx, {"contents.scs"});
 
   ScAddr const linkAddr = m_ctx->ResolveElementSystemIdentifier("test_content_file");
   EXPECT_TRUE(linkAddr.IsValid());
@@ -23,8 +25,10 @@ TEST_F(ScBuilderTest, file_relative)
   EXPECT_EQ(content, "file");
 }
 
-TEST_F(ScBuilderTest, file_relative_folder)
+TEST_F(ScBuilderTest, RelativeFolder)
 {
+  LoadKB(m_ctx, {"contents.scs"});
+
   ScAddr const linkAddr = m_ctx->ResolveElementSystemIdentifier("test_content_file_2");
   EXPECT_TRUE(linkAddr.IsValid());
 
@@ -33,8 +37,10 @@ TEST_F(ScBuilderTest, file_relative_folder)
   EXPECT_EQ(content, "contents/file");
 }
 
-TEST_F(ScBuilderTest, file_relative_folder_scs_level_1)
+TEST_F(ScBuilderTest, RelativeFolderSCsLevel1)
 {
+  LoadKB(m_ctx, {"contents.scs"});
+
   ScAddr const linkAddr = m_ctx->ResolveElementSystemIdentifier("test_content_file_3");
   EXPECT_TRUE(linkAddr.IsValid());
 
@@ -55,8 +61,10 @@ void CheckBinaryContent(ScMemoryContext & ctx, std::string const & sysIdtf, Valu
   EXPECT_EQ(link.Get<ValueT>(), value);
 }
 
-TEST_F(ScBuilderTest, binary_contents)
+TEST_F(ScBuilderTest, BinaryContents)
 {
+  LoadKB(m_ctx, {"contents.scs"});
+
   CheckBinaryContent<std::string>(*m_ctx, "test_content_string", "string");
   CheckBinaryContent<float>(*m_ctx, "test_content_float", 43.567f);
   CheckBinaryContent<double>(*m_ctx, "test_content_double", 543.345);

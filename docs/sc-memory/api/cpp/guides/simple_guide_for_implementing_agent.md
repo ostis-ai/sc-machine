@@ -80,9 +80,23 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 
 # Generate and link your library with using libraries.
 add_library(set-agents SHARED ${SOURCES})
-target_link_libraries(set-agents LINK_PUBLIC sc-memory)
+target_link_libraries(set-agents LINK_PUBLIC sc-machine::sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# Set output path for your extension `set-agents.so`. 
+# Make sure that variable `SC_EXTENSIONS_DIRECTORY` has value.
+set_target_properties(set-agents 
+    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY}
+)
 ```
+
+!!! note
+    `LIBRARY_OUTPUT_DIRECTORY` property should be set only for libraries that represent modules with agents.
+
+!!! note
+    You can set `CMAKE_OUTPUT_LIBRARY_DIRECTORY` instead of setting `LIBRARY_OUTPUT_DIRECTORY` property for each extension.
+
+!!! note
+    `SC_EXTENSIONS_DIRECTORY` variable should have path to the directory with extensions for the sc-machine. After building module with agent this directory path should be specified via `--extensions` when starting the sc-machine to load implemented module with agent.
 
 ---
 
@@ -418,8 +432,11 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 add_library(set-agents SHARED ${SOURCES})
-target_link_libraries(set-agents LINK_PUBLIC sc-memory)
+target_link_libraries(set-agents LINK_PUBLIC sc-machine::sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+set_target_properties(set-agents 
+    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY}
+)
 
 +file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
 +    "tests/*.cpp"
@@ -432,7 +449,10 @@ target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 +    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 +)
 
-+add_test(NAME set-agents-tests COMMAND set-agents-tests)
++gtest_discover_tests(set-agents-tests
++    TEST_LIST ${TEST_SOURCES}
++    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests
++)
 ```
 
 **test_sc_agent_calculate_set_power.cpp**
@@ -512,6 +532,8 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
     A good code is a code covered by tests.
 
 `ScMemoryTest` class includes `m_ctx` that is object of `ScAgentContext` class. You can use it to work with sc-memory. See [**C++ Core API**](../core/api.md) and [**C++ Agent context API**](../extended/agents/agents.md) to learn more about available methods for working with sc-memory.
+
+By default, the sc-machine repository contains configuration for launching tests in vscode. If you're developing on vscode, you can use this configuration and extension [C++ TestMate](https://marketplace.visualstudio.com/items?itemName=matepek.vscode-catch2-test-adapter) for debugging code.
 
 --- 
 

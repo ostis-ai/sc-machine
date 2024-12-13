@@ -4,7 +4,7 @@
     This is correct for only versions of sc-machine that >= 0.10.0.
 --- 
 
-This API provides functionality to implement agents on C++.
+This section contains detailed documentation on the core functionalities of the **C++ Agents API**, which encompasses agent creation and management. It covers how to specify and instantiate agents and integrate them into systems.
 
 !!! note
     To include this API provide `#include <sc-memory/sc_agent.hpp>` in your hpp source.

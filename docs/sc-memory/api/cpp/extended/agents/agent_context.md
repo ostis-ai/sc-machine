@@ -4,7 +4,7 @@
     This documentation is correct for only versions of sc-machine that >= 0.10.0.
 ---
 
-This API provides additional sc-memory methods that simplify working with it and provide additional methods to work with sc-events and agents.
+The **C++ Agent context API** provides tools for managing the context in which agents operate. This API provides additional sc-memory methods that simplify working with it and provide additional methods to work with sc-events and agents.
 
 ## **ScAgentContext**
 

@@ -31,23 +31,24 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "include/sc-memory/*/*.tpp"
 )
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(GLIB2 REQUIRED glib-2.0)
-pkg_search_module(GLIB2_MODULE REQUIRED gmodule-2.0)
-
-set(GLIB2_LIBRARIES ${GLIB_LDFLAGS} ${GLIB2_MODULE_LDFLAGS})
+find_glib()
 
 add_library(sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 target_link_libraries(sc-memory
-    LINK_PRIVATE ${GLIB2_LIBRARIES}
+    LINK_PRIVATE ${glib_LIBRARIES}
     LINK_PUBLIC sc-core
     LINK_PRIVATE antlr4_static
 )
 target_include_directories(sc-memory
-    PRIVATE ${GLIB2_INCLUDE_DIRS}
+    PRIVATE ${glib_INCLUDE_DIRS}
     PRIVATE ${SC_MACHINE_ANTRL_DIR}/runtime/src
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC $<INSTALL_INTERFACE:include>
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 add_dependencies(sc-memory 

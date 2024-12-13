@@ -10,10 +10,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking changes
 
 - Python dependencies are set up locally in `.venv` environment. Therefore, you should make the following changes: 
-  - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv` or use `scripts/healthcheck.sh` 
-encapsulated this logic;
-  - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
-- `sc-server` binary and `run_sc_server.sh` script were removed. Use `sc-machine` binary instead.
+    - fix `docker-compose.yml` file to run `healthcheck.py` for sc-server in `.venv` or use `scripts/healthcheck.sh` that encapsulates this logic;
+    - and use `.venv` to launch your python scripts if they use sc-machine python dependencies.
+- Build system of the sc-machine was upgraded:
+    - The way to manage build dependencies was changed to [Conan](https://conan.io). You can install sc-machine and its dependencies with Conan. You don't have to worry about installing sc-machine dependencies on your OS anymore. See how to do it -- [Build System](build/build_system.md).
+    - CMake presets should be used to build the sc-machine. They are located in `CMakePresets.json`.
+    - Location of the sc-machine build was changed. The following new locations are:
+        - build tree -- `build/<Debug|Release>`, 
+        - binaries -- `build/<Debug|Release>/bin`, 
+        - libraries -- `build/<Debug|Release>/lib`,
+        - extensions -- `build/<Debug|Release>/lib/extensions`.
+    - Using sc-machine as a library is much more optimized: adding it to the CMake tree is no longer necessary. You can install sc-machine packages and import sc-machine targets into your cmake using `find_package(sc-machine REQUIRED)`. See how to do it -- [Build System](build/build_system.md)
+    - Each release sc-machine binaries are being compiled for supported OS and formed as an archives on Github. Minimum required version of macOS is macOS-14 (arm), of ubuntu is ubuntu-22.04. The sc-machine doesn't support ubuntu-20.04 anymore. You can use sc-machine binaries to work with sc-memory or you can use `RunMachine` method from `sc-machine-runner.so` to create your own entry point to initialize sc-memory instead of using compiled `sc-machine` binary.
+    - Script for the project build (`build_sc_machine.sh`), scripts for running binaries (`run_sc_server.sh`, `build_kb.sh`) were removed from the sc-machine repository scripts. You should use sc-machine binaries directly.
+    - sc-server is no longer entry point of the sc-machine, it is an extension (`sc-server-lib.so`), that is loaded dynamically when the machine is started. So, `sc-server` binary was removed, `sc-machine` binary was added instead.
+- Config was changed:
+    - `repo_path` option in `[sc-memory]` group was deprecated, `storage` option was added instead;
+    - `extensions_path` option in `[sc-memory]` group was deprecated, `extensions` option was added instead.
+- Sources of the sc-machine were separated into public and private ones. Public sources of targets are located in `include` directory, private ones - in `src` directory, tests for code - in `tests` directory. Private sources can't be included into project's code directly. Besides that there are changes of location of some API classes of the sc-machine:
+    - `ScTest` class was made a part of `sc-memory` target. Use `#include <sc-memory/test/sc_test.hpp>` to include it into code.
+    - To include `ScsLoader` class into code, use `#include <sc-builder/sc_loader.hpp>`.
+- Configuration of sc-machine tests was changed:
+    - Paths to test sources of the knowledge base, test configs, etc. are being configured at the pre-run stage, not at the stage of compiling tests.
+    - Working directory for tests was changed to a directory where tests are located. To run the tests, please use `ctest` rather than the test binaries themselves.
+    - Scripts for running tests (`run_tests.sh`) was removed. Go to `build/<Debug|Release>` and use `ctest` instead.
 - All questions was renamed to actions.
 - ScAddrHashFunc with template argument was removed. Use non-template ScAddrHashFunc without arguments. It is more safe in use.
 - Constructors for ScMemoryContext with string and int parameters were removed. Use the one without parameters instead.
@@ -21,7 +41,7 @@ encapsulated this logic;
 - Deprecated sc-utils in 0.9.0 were removed from sc-kpm.
 - Questions were renamed to actions, answers were renamed to results.
 - `m_memoryCtx` in ScAgent renamed to `m_context`.
-- Now we don't use code generation as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API. We have
+- Сode generation is no longer used as metaprogramming. The API for agents has been completely redesigned. See the documentation section on how to implement an agent with the new API -- [C++ Agent Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md). We have
     - completely moved from code generation to template programming;
     - improved the API and aligned with our description of how it should be;
     - simplified the API. Now it will be much easier to create agents, go right now and see how to work with the new API -- [C++ Agents API](sc-memory/api/cpp/extended/agents/agents.md).
@@ -120,7 +140,7 @@ encapsulated this logic;
   | ```_<~```  | ```<~_```    |
   | ```_<|~``` | ```<|~_```   |
 
-- Now it is not possible to specify constancy for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
+- It is no longer possible to specify permanency for fuzzy arcs, because it may lead to misunderstanding of the non-factor denoted by this sc-arc. So, designations ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_``` were removed. Use ```/>```, ```</```, ```_/>```, ```</_``` instead.
 
 - Incorrect system identifiers of sc.s-keynodes were also replaced by correct ones.
 
@@ -138,15 +158,19 @@ encapsulated this logic;
   | sc_node_norole_relation | sc_node_non_role_relation |
 
 - Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract` were removed.
-- Sources of the sc-machine were separated into public and private ones. Public sources of targets are located in `include` directory, private ones - in `src` directory, tests for code - in `tests` directory. Private sources can't be included into project's code directly. Besides that there are changes of location of some API classes of the sc-machine:
-    - Now `ScTest` class is part of `sc-memory` target. Use `#include <sc-memory/test/sc_test.hpp>` to include it into code.
-    - To include `ScsLoader` class into code, use `#include <sc-builder/sc_loader.hpp>`.
 
 See documentation, to learn more about using new API.
 
 ### Added
 
+- Intro for documentation
+- Quick start section for developers in docs
+- Quick start section for users in docs
 - Allow multiple extension directories for sc-memory
+- CD for publishing sc-machine binaries as archive on Github 
+- CI for checking sc-machine tests build with Conan dependencies
+- Install target to prepare consuming sc-machine targets
+- Conan support for managing sc-machine dependencies
 - Handling required options for sc-machine and sc-builder
 - Display versions for sc-machine and sc-builder
 - Doc strings for sc-config classes
@@ -195,9 +219,7 @@ See documentation, to learn more about using new API.
 - Create guest users during creating sc-memory context
 - Get user address for sc-server session and sc-memory context
 - Docker entrypoint run to launch binary `sc-machine` in docker
-- Script `run_sc_machine.sh` to launch binary `sc-machine`
 - Binary `sc-machine` instead of binary `sc-server` that loads extension sc-server
-- Generalized build_cxx_project.sh
 - Collect user permissions during sc-memory initialize
 - Throw exceptions in get values methods of iterators if sc-element is not accessed
 - Callback to get and collect sc-links by its contents from fs-memory
@@ -213,6 +235,11 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- Description of project in Readme
+- Working directory for each test has been changed to the test's source dir
+- `gtest` and `benchmark` are installed via Conan or OS package managers instead of using them as git submodules
+- Location of the sc-machine build tree, binaries, libraries and extensions
+- Bumped minimum required cmake version to 3.24.0
 - Help messages for sc-machine and sc-builder
 - Clarify sc-machine and sc-builder options
 - Specify dependencies near targets, not in overall file
@@ -232,9 +259,6 @@ See documentation, to learn more about using new API.
 - Don't check extensions when loading dynamic modules (`g_open_module` does it automatically)
 - Use venv for python dependencies in scripts and docker
 - Don't emit events after kb build
-- Build codegen target first
-- Up minimum required cmake version to 3.11.0
-- Configure SC_BIN_PATH from scripts
 - Allows assigns sc-link to its system identifier
 
 ### Fixed
@@ -270,9 +294,11 @@ See documentation, to learn more about using new API.
 
 ### Removed
 
-- Config option `update_period` in `[sc-memory]`
-- Config option `save_period` in `[sc-memory]`
-- `sc-server` binary, `run_sc_server.sh` script and docker entrypoint command `serve`
+- Support for ubuntu-20.04
+- Config options `update_period` and `save_period` in `[sc-memory]` deprecated in 0.9.0
+- Config option `sync_actions` in `[sc-server]` deprecated in 0.9.0
+- Scripts: `build_sc_machine.sh`, `build_kb.sh`, `run_sc_server.sh`, `set_vars.sh` and `run_tests.sh`
+- `sc-server` binary and docker entrypoint command `serve`
 - gwf2scs-translator in python
 - Designations of fuzzy sc.s-arcs: ```-/>```, ```</-```, ```_-/>```, ```_</-```, ```</-_```, ```~/>```, ```</~```, ```_~/>```, ```_</~```, ```</~_```
 - Type `ScType::NodeAbstract` and sc.s-keynode `sc_node_abstract`
@@ -284,7 +310,6 @@ See documentation, to learn more about using new API.
 - Template argument for `ScAddrHashFunc`
 - Throw `utils::ExceptionInvalidParams` if template params have sc-connectors substitution for generating by sc-template
 - GetDecompositionAgent
-- Config option `sync_actions` in `[sc-server]` deprecated in 0.9.0
 - Sc-links lists translation from C API to C++ API
 
 ## [0.9.0-Unlock] - 22.01.2024

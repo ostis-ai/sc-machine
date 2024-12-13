@@ -9,21 +9,36 @@
 #include <sc-memory/test/sc_test.hpp>
 
 #include <memory>
+#include <unordered_set>
+#include <filesystem>
 
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/sc_keynodes.hpp>
 
-#include "test_defines.hpp"
+#include <sc-builder/scs_loader.hpp>
 
 #include "sc-server-impl/sc_server_impl.hpp"
 
 class ScServerTest : public testing::Test
 {
+public:
+  static inline std::string const & SC_SERVER_INI = "../../sc-server-test.ini";
+  static inline std::string const & SC_SERVER_KB_BIN = "sc-server-test-kb-bin";
+  static inline std::string const & SC_SERVER_EXTENSIONS = "/extensions";
+  static inline std::string const & SC_SERVER_KB = "../../kb";
+
 protected:
+  void LoadKB(std::unique_ptr<ScAgentContext> const & m_context, std::unordered_set<std::string> const & sources)
+  {
+    ScsLoader loader;
+    for (std::string const & source : sources)
+      loader.loadScsFile(*m_context, ScServerTest::SC_SERVER_KB + "/" + source);
+  }
+
   void SetUp() override
   {
-    Initialize(SC_TRUE);
-    m_ctx = std::make_unique<ScMemoryContext>();
+    ScServerTest::Initialize(SC_TRUE);
+    m_ctx = std::make_unique<ScAgentContext>();
   }
 
   void TearDown() override
@@ -31,7 +46,9 @@ protected:
     if (m_ctx != nullptr)
       m_ctx->Destroy();
 
-    Shutdown();
+    ScServerTest::Shutdown();
+
+    std::filesystem::remove_all(SC_SERVER_KB_BIN);
   }
 
   void Initialize(sc_bool parallel_actions)
@@ -42,8 +59,8 @@ protected:
     params.dump_memory = SC_FALSE;
     params.dump_memory_statistics = SC_FALSE;
 
-    params.clear = SC_FALSE;
-    params.storage = SC_SERVER_REPO_PATH;
+    params.clear = SC_TRUE;
+    params.storage = SC_SERVER_KB_BIN.c_str();
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
@@ -63,7 +80,7 @@ protected:
   }
 
 protected:
-  std::unique_ptr<ScMemoryContext> m_ctx;
+  std::unique_ptr<ScAgentContext> m_ctx;
   std::unique_ptr<ScServer> m_server;
 };
 
@@ -73,6 +90,6 @@ protected:
   void SetUp() override
   {
     Initialize(SC_FALSE);
-    m_ctx = std::make_unique<ScMemoryContext>();
+    m_ctx = std::make_unique<ScAgentContext>();
   }
 };

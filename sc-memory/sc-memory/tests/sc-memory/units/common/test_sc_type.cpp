@@ -6,6 +6,7 @@
 
 #include <sc-memory/test/sc_test.hpp>
 
+#include <algorithm>
 #include <bitset>
 #include <iomanip>
 
@@ -399,10 +400,12 @@ TEST(ScTypeTest, PrintTypesToBitValues)
 
   for (auto const & [type, _] : typeVector)
   {
+    // clang-format off
     std::cout << "| " << PrintTabulatedString(firstColumnLength, "ScType::" + std::string(type)) << " | "
               << PrintTabulatedString(secondColumnLength, std::to_string(type)) << " | "
               << "0x" << std::left << std::setw(thirdColumnLength - 2) << std::hex << std::uppercase << type << std::dec
               << " |\n";
+    // clang-format on
   }
 }
 

@@ -1,0 +1,78 @@
+name: Tests (Conan)
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_call:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run_tests:
+    name: Conan build
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { cc: "gcc", cxx: "g++" }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore ccache caches
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}
+
+      - name: Conan cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan/data
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.py') }}
+
+      - name: apt cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/cache/apt/
+            /var/lib/apt/
+          key: apt-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/install_deps_ubuntu.sh') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Set up pipx
+        run: |
+          python -m pip install --user pipx
+          python -m pipx ensurepath
+
+      - name: Set up Conan
+        run: |
+          pipx install cmake
+          pipx install conan
+
+      - name: Install compilers
+        run: sudo apt install build-essential ninja-build ccache
+
+      - name: Build sc-machine with tests
+        id: run_cmake
+        run: |
+          cmake --preset release-with-tests-conan
+          cmake --build --preset release
+
+      - name: Run sc-machine tests
+        id: run_tests
+        run: cd build/Release && ctest -C Release -V
+
+      - name: Run sc-machine
+        id: run_sc_machine
+        run: |
+          mkdir kb
+          build/Release/bin/sc-builder -i kb -o kb.bin --clear
+          build/Release/bin/sc-machine -c sc-machine.ini -e build/Release/lib/extensions -s kb.bin -t
