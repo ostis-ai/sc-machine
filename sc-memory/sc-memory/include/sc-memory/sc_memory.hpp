@@ -2705,6 +2705,11 @@ public:
 protected:
   _SC_EXTERN explicit ScMemoryContext(ScAddr const & userAddr) noexcept;
 
+  _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
+      ScStreamPtr const & linkContentSubstringStream,
+      size_t maxLengthToSearchAsPrefix,
+      ScLinkFilter const * linkFilter);
+
 protected:
   sc_memory_context * m_context;
   ScAddr m_contextStructureAddr;

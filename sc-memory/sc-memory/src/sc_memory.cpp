@@ -805,48 +805,6 @@ sc_link_filter_request _RequestLinkCallback(void * data, sc_addr link_addr)
   return (sc_link_filter_request)filter->RequestLink(link_addr);
 }
 
-ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
-    ScStreamPtr const & linkContentStream,
-    size_t maxLengthToSearchAsPrefix,
-    ScLinkFilter const & linkFilter)
-{
-  CHECK_CONTEXT;
-  if (!linkContentStream || !linkContentStream->IsValid())
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified stream is invalid to find sc-links by content substring");
-  void * checkLinkCallbackData = (void *)&linkFilter;
-  ScAddrSet linkSet;
-  void ** pushLinkCallbackData = _MAKE_DATA(&*m_context, &linkSet);
-  sc_link_handler filter = {
-      .check_link_callback = _CheckLinkCallback,
-      .check_link_callback_data = (void *)&linkFilter,
-      .request_link_callback = _RequestLinkCallback,
-      .request_link_callback_data = (void *)&linkFilter,
-      .push_link_callback = _PushLinkAddr,
-      .push_link_callback_data = pushLinkCallbackData,
-      .push_link_content_callback = nullptr,
-      .push_link_content_callback_data = nullptr};
-  sc_result const result = sc_memory_find_links_by_content_substring_ext(
-      m_context, linkContentStream->m_stream, maxLengthToSearchAsPrefix, &filter);
-  _ERASE_DATA(pushLinkCallbackData);
-  switch (result)
-  {
-  case SC_RESULT_ERROR_STREAM_IO:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidParams, "Specified sc-stream data is invalid to find sc-links by content substring");
-  case SC_RESULT_ERROR_FILE_MEMORY_IO:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState, "File memory state is invalid to find sc-links by content substring");
-  case SC_RESULT_ERROR_SC_MEMORY_CONTEXT_IS_NOT_AUTHENTICATED:
-    SC_THROW_EXCEPTION(
-        utils::ExceptionInvalidState,
-        "Not able to find sc-links by content substring due sc-memory context is not authorized");
-  default:
-    break;
-  }
-  return linkSet;
-}
-
 ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContentStream)
 {
   ScAddrSet const & linkSet = SearchLinksByContent(linkContentStream);
@@ -855,7 +813,8 @@ ScAddrVector ScMemoryContext::FindLinksByContent(ScStreamPtr const & linkContent
 
 ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
     ScStreamPtr const & linkContentSubstringStream,
-    size_t maxLengthToSearchAsPrefix)
+    size_t maxLengthToSearchAsPrefix,
+    ScLinkFilter const * linkFilter)
 {
   CHECK_CONTEXT;
 
@@ -866,10 +825,10 @@ ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
   ScAddrSet linkSet;
   void ** pushLinkCallbackData = _MAKE_DATA(&*m_context, &linkSet);
   sc_link_handler filter = {
-      .check_link_callback = nullptr,
-      .check_link_callback_data = nullptr,
-      .request_link_callback = nullptr,
-      .request_link_callback_data = nullptr,
+      .check_link_callback = linkFilter ? _CheckLinkCallback : nullptr,
+      .check_link_callback_data = (void *)linkFilter,
+      .request_link_callback = linkFilter ? _RequestLinkCallback : nullptr,
+      .request_link_callback_data = (void *)linkFilter,
       .push_link_callback = _PushLinkAddr,
       .push_link_callback_data = pushLinkCallbackData,
       .push_link_content_callback = nullptr,
@@ -899,6 +858,21 @@ ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
   }
 
   return linkSet;
+}
+
+ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix)
+{
+  return SearchLinksByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix, nullptr);
+}
+
+ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
+    ScStreamPtr const & linkContentSubstringStream,
+    size_t maxLengthToSearchAsPrefix,
+    ScLinkFilter const & linkFilter)
+{
+  return SearchLinksByContentSubstring(linkContentSubstringStream, maxLengthToSearchAsPrefix, &linkFilter);
 }
 
 ScAddrVector ScMemoryContext::FindLinksByContentSubstring(
