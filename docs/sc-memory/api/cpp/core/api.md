@@ -330,6 +330,18 @@ ScAddrSet const & linkAddrs2 = context.SearchLinksByContent(10f);
 // The set `linkAddrs2` must contain sc-address `linkAddr2`.
 ```
 
+### **SearchLinksByContentSubstring**
+
+And you can find sc-links by its content substring. For this use the method `SearchLinksByContentSubstring`.
+
+```cpp
+...
+// Find sc-links with specified string content substring.
+ScAddrSet const & linkAddrs1 
+  = context.SearchLinksByContentSubstring("my cont");
+// The set `linkAddrs1` must contain sc-address `linkAddr1`.
+```
+
 Also, you can provide a filter to search sc-links to define criteria for which links should be included in the search results. This allows for customization of which links are considered based on user-defined conditions. The filter must be an instance of a class derived from `ScLinkFilter`, which implements the `CheckLink` and `RequestLink` methods.
 
 ```cpp
@@ -384,19 +396,19 @@ ScAddrSet const & links
 ...
 ```
 
-### **SearchLinksByContentSubstring**
+### **SearchLinksContentsByContentSubstring**
 
-And you can find sc-links by its content substring. For this use the method `SearchLinksByContentSubstring`.
+Also, you can find contents of sc-links by its content substring. For this use the method `SearchLinksContentsByContentSubstring`.
 
 ```cpp
 ...
-// Find sc-links with specified string content substring.
-ScAddrSet const & linkAddrs1 
-  = context.SearchLinksByContentSubstring("my cont");
-// The set `linkAddrs1` must contain sc-address `linkAddr1`.
+// Find contents of sc-links with specified string content substring.
+std::set<std::string> const & linkContents 
+  = context.SearchLinksContentsByContentSubstring("my cont");
+// The set `linkContents` must contain string `my content`.
 ```
 
-Just like for the `SearchLinksByContent` method, when calling method `SearchLinksByContentSubstring`, you can specify filter for sc-links to be searched.
+Just like for the `SearchLinksByContentSubstring` method, when calling method `SearchLinksContentsByContentSubstring`, you can specify filter for sc-links to be searched.
 
 ### **ScException**
 
