@@ -927,7 +927,8 @@ void _sc_storage_make_elements_incident_to_arc(
     sc_element * beg_el,
     sc_addr end_addr,
     sc_element * end_el,
-    sc_bool is_reverse)
+    sc_bool is_reverse,
+    sc_bool is_loop)
 {
   sc_element *first_out_arc = null_ptr, *first_in_arc = null_ptr;
 
@@ -964,6 +965,12 @@ void _sc_storage_make_elements_incident_to_arc(
   {
     arc_el->arc.next_begin_out_arc = first_out_connector_addr;
     arc_el->arc.next_end_in_arc = first_in_connector_addr;
+
+    if (is_loop)
+    {
+      arc_el->arc.next_end_out_arc = first_out_connector_addr;
+      arc_el->arc.next_begin_in_arc = first_in_connector_addr;
+    }
 
     if (first_out_arc)
       first_out_arc->arc.prev_begin_out_arc = connector_addr;
@@ -1072,9 +1079,11 @@ sc_addr sc_storage_arc_new_ext(
     goto error;
 
   // lock arcs to change output/input list
-  _sc_storage_make_elements_incident_to_arc(connector_addr, arc_el, beg_addr, beg_el, end_addr, end_el, SC_FALSE);
+  _sc_storage_make_elements_incident_to_arc(
+      connector_addr, arc_el, beg_addr, beg_el, end_addr, end_el, SC_FALSE, !is_not_loop);
   if (is_edge && is_not_loop)
-    _sc_storage_make_elements_incident_to_arc(connector_addr, arc_el, end_addr, end_el, beg_addr, beg_el, SC_TRUE);
+    _sc_storage_make_elements_incident_to_arc(
+        connector_addr, arc_el, end_addr, end_el, beg_addr, beg_el, SC_TRUE, SC_FALSE);
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   if (sc_type_is_structure_and_arc(beg_el->flags.type, type))
