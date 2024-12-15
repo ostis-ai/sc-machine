@@ -9,6 +9,12 @@
 
 #include "sc-core/sc_types.h"
 
+typedef enum
+{
+  SC_LINK_FILTER_REQUEST_CONTINUE = 0,  // Continue processing links.
+  SC_LINK_FILTER_REQUEST_STOP,          // Stop processing links
+} sc_link_filter_request;
+
 /*!
  * @struct sc_link_handler
  * @brief A structure with callbacks for handling sc-links.

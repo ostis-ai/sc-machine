@@ -276,14 +276,6 @@ struct _sc_stat
   sc_uint64 link_count;       // amount of all sc-links stored in memory
 };
 
-typedef struct _sc_addr sc_addr;
-
-typedef enum
-{
-  SC_LINK_FILTER_REQUEST_CONTINUE = 0,
-  SC_LINK_FILTER_REQUEST_STOP,
-} sc_link_filter_request;
-
 #endif
 
 typedef struct _sc_arc sc_arc;
