@@ -6,15 +6,39 @@
 
 #include "sc-memory/sc_addr.hpp"
 
+/*!
+ * @class ScLinkFilter
+ * @brief An abstract base class for filtering links in a graph.
+ *
+ * This class defines an interface for link filtering, allowing derived classes
+ * to implement specific criteria for checking and requesting links.
+ */
 class ScLinkFilter
 {
 public:
+  /*!
+   * @enum ScLinkFilterRequest
+   * @brief Enumeration for link filter requests.
+   *
+   * This enumeration defines the possible responses when a link is requested.
+   */
   enum class ScLinkFilterRequest : sc_uint8
   {
-    CONTINUE,
-    STOP
+    CONTINUE,  ///< Continue processing links.
+    STOP       ///< Stop processing links.
   };
 
+  /*!
+   * @brief Checks if a given link address meets the filter criteria.
+   * @param linkAddr A address of the link to check.
+   * @return True if the link meets the criteria; otherwise, false.
+   */
   virtual bool CheckLink(ScAddr const & linkAddr) = 0;
+
+  /*!
+   * @brief Requests a decision on how to handle a given link address.
+   * @param linkAddr A sc-address of the link to request action for.
+   * @return A ScLinkFilterRequest indicating whether to continue or stop processing.
+   */
   virtual ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) = 0;
 };
