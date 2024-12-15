@@ -800,9 +800,6 @@ error:
   return SC_FS_MEMORY_READ_ERROR;
 }
 
-#  define SC_LINK_FILTER_REQUEST_CONTINUE 0
-#  define SC_LINK_FILTER_REQUEST_STOP 1
-
 sc_bool _sc_dictionary_fs_memory_visit_string_offsets_by_term_prefix(sc_dictionary_node * node, void ** arguments)
 {
   if (node->data == null_ptr)
@@ -847,10 +844,15 @@ sc_bool _sc_dictionary_fs_memory_visit_string_offsets_by_term_prefix(sc_dictiona
         if (link_handler->check_link_callback(link_handler->check_link_callback_data, link_addr) == SC_FALSE)
           continue;
 
-        if (link_handler->request_link_callback != null_ptr
-            && link_handler->request_link_callback(link_handler->request_link_callback_data, link_addr)
-                   == SC_LINK_FILTER_REQUEST_STOP)
-          is_stopped_to_search_link = SC_TRUE;
+        if (link_handler->request_link_callback != null_ptr)
+        {
+          sc_bool const link_filter_request_status =
+              link_handler->request_link_callback(link_handler->request_link_callback_data, link_addr);
+          if (link_filter_request_status == SC_LINK_FILTER_REQUEST_CONTINUE)
+            is_stopped_to_search_link = SC_FALSE;
+          else if (link_filter_request_status == SC_LINK_FILTER_REQUEST_STOP)
+            is_stopped_to_search_link = SC_TRUE;
+        }
 
         sc_list_push_back(filtered_link_hashes, (sc_addr_hash_to_sc_pointer)link_addr_hash);
 

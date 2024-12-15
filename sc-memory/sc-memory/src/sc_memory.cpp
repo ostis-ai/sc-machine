@@ -799,10 +799,10 @@ sc_bool _CheckLinkCallback(void * data, sc_addr link_addr)
   return filter->CheckLink(link_addr);
 }
 
-sc_uint8 _RequestLinkCallback(void * data, sc_addr link_addr)
+sc_link_filter_request _RequestLinkCallback(void * data, sc_addr link_addr)
 {
   ScLinkFilter * filter = (ScLinkFilter *)(data);
-  return (sc_uint8)filter->RequestLink(link_addr);
+  return (sc_link_filter_request)filter->RequestLink(link_addr);
 }
 
 ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
@@ -817,15 +817,15 @@ ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
   void * checkLinkCallbackData = (void *)&linkFilter;
   ScAddrSet linkSet;
   void ** pushLinkCallbackData = _MAKE_DATA(&*m_context, &linkSet);
-  sc_link_handler filter;
-  filter.check_link_callback = _CheckLinkCallback;
-  filter.check_link_callback_data = (void *)&linkFilter;
-  filter.request_link_callback = _RequestLinkCallback;
-  filter.request_link_callback_data = (void *)&linkFilter;
-  filter.push_link_callback = _PushLinkAddr;
-  filter.push_link_callback_data = pushLinkCallbackData;
-  filter.push_link_content_callback = nullptr;
-  filter.push_link_content_callback_data = nullptr;
+  sc_link_handler filter = {
+      .check_link_callback = _CheckLinkCallback,
+      .check_link_callback_data = (void *)&linkFilter,
+      .request_link_callback = _RequestLinkCallback,
+      .request_link_callback_data = (void *)&linkFilter,
+      .push_link_callback = _PushLinkAddr,
+      .push_link_callback_data = pushLinkCallbackData,
+      .push_link_content_callback = nullptr,
+      .push_link_content_callback_data = nullptr};
   sc_result const result = sc_memory_find_links_by_content_substring_ext(
       m_context, linkContentStream->m_stream, maxLengthToSearchAsPrefix, &filter);
   _ERASE_DATA(pushLinkCallbackData);
@@ -865,15 +865,16 @@ ScAddrSet ScMemoryContext::SearchLinksByContentSubstring(
 
   ScAddrSet linkSet;
   void ** pushLinkCallbackData = _MAKE_DATA(&*m_context, &linkSet);
-  sc_link_handler filter;
-  filter.check_link_callback = nullptr;
-  filter.check_link_callback_data = nullptr;
-  filter.request_link_callback = nullptr;
-  filter.request_link_callback_data = nullptr;
-  filter.push_link_callback = _PushLinkAddr;
-  filter.push_link_callback_data = pushLinkCallbackData;
-  filter.push_link_content_callback = nullptr;
-  filter.push_link_content_callback_data = nullptr;
+  sc_link_handler filter = {
+      .check_link_callback = nullptr,
+      .check_link_callback_data = nullptr,
+      .request_link_callback = nullptr,
+      .request_link_callback_data = nullptr,
+      .push_link_callback = _PushLinkAddr,
+      .push_link_callback_data = pushLinkCallbackData,
+      .push_link_content_callback = nullptr,
+      .push_link_content_callback_data = nullptr,
+  };
   sc_result const result = sc_memory_find_links_by_content_substring_ext(
       m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, &filter);
   _ERASE_DATA(pushLinkCallbackData);
@@ -926,15 +927,15 @@ std::set<std::string> ScMemoryContext::SearchLinksContentsByContentSubstring(
 
   std::set<std::string> linkContentSet;
 
-  sc_link_handler filter;
-  filter.check_link_callback = nullptr;
-  filter.check_link_callback_data = nullptr;
-  filter.request_link_callback = nullptr;
-  filter.request_link_callback_data = nullptr;
-  filter.push_link_callback = nullptr;
-  filter.push_link_callback_data = nullptr;
-  filter.push_link_content_callback = _PushLinkContent;
-  filter.push_link_content_callback_data = &linkContentSet;
+  sc_link_handler filter = {
+      .check_link_callback = nullptr,
+      .check_link_callback_data = nullptr,
+      .request_link_callback = nullptr,
+      .request_link_callback_data = nullptr,
+      .push_link_callback = nullptr,
+      .push_link_callback_data = nullptr,
+      .push_link_content_callback = _PushLinkContent,
+      .push_link_content_callback_data = &linkContentSet};
   sc_result const result = sc_memory_find_links_contents_by_content_substring_ext(
       m_context, linkContentSubstringStream->m_stream, maxLengthToSearchAsPrefix, &filter);
 

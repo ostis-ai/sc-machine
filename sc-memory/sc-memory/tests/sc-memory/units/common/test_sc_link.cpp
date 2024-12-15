@@ -445,6 +445,7 @@ public:
   }
 
   ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+
   {
     return ScLinkFilterRequest::CONTINUE;
   }
@@ -470,9 +471,6 @@ TEST_F(ScLinkTest, FindLinksWithFilter)
 class TestScLinkFilterWithRequestStop : public ScLinkFilter
 {
 public:
-  ScMemoryContext * m_context;
-  ScAddr m_linkClassAddr;
-
   bool CheckLink(ScAddr const & linkAddr) override
   {
     return true;
@@ -488,14 +486,12 @@ TEST_F(ScLinkTest, FindLinksWithFilterRequestStop)
 {
   ScAddr const & linkClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
   ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
-  m_ctx->SetLinkContent(linkAddr1, "content 1");
+  m_ctx->SetLinkContent(linkAddr1, "example 1");
   ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
-  m_ctx->SetLinkContent(linkAddr2, "content 2");
+  m_ctx->SetLinkContent(linkAddr2, "example 2");
 
   TestScLinkFilterWithRequestStop filter;
-  filter.m_context = &*m_ctx;
-  filter.m_linkClassAddr = linkClassAddr;
-  ScAddrSet const & links = m_ctx->SearchLinksByContentSubstring("content", filter);
+  ScAddrSet const & links = m_ctx->SearchLinksByContentSubstring("example", filter);
   EXPECT_EQ(links.size(), 1u);
-  EXPECT_TRUE(*links.cbegin() == linkAddr1 || *links.cbegin() == linkAddr2);
+  EXPECT_TRUE(links.count(linkAddr1) || links.count(linkAddr2));
 }

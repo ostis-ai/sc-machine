@@ -49,7 +49,8 @@ public:
    * It sets up the global sc-memory context, initializes keynodes, and sets up logging.
    *
    * @param params The parameters for initializing the sc-memory system.
-   * @return Returns true if the initialization is successful; otherwise, returns false.
+   *
+   * @return bool true if the initialization is successful; otherwise, returns false.
    */
   _SC_EXTERN static bool Initialize(sc_memory_params const & params);
 
@@ -59,7 +60,7 @@ public:
    * This function checks whether the sc-memory system is initialized.
    * It returns true if the system is initialized; otherwise, it returns false.
    *
-   * @return Returns true if the sc-memory system is initialized; otherwise, returns false.
+   * @return bool true if the sc-memory system is initialized; otherwise, returns false.
    */
   _SC_EXTERN static bool IsInitialized();
 
@@ -70,7 +71,8 @@ public:
    * It optionally saves the state of the system before shutting down.
    *
    * @param saveState If true, the current state of the sc-memory system is saved before shutting down.
-   * @return Returns true if the shutdown is successful; otherwise, returns false.
+   *
+   * @return bool true if the shutdown is successful; otherwise, returns false.
    */
   _SC_EXTERN static bool Shutdown(bool saveState = true);
 
@@ -80,7 +82,7 @@ public:
   static ScMemoryContext * ms_globalContext;
 };
 
-//! Class used to work with memory. It provides functions to create/retrieve/erase sc-elements
+//! Class used to work with memory. It provides functions to create/retrieve/erase sc-elements.
 class ScMemoryContext
 {
   friend class ScMemory;
@@ -138,7 +140,7 @@ public:
    *
    * This method checks whether the sc-memory context is valid.
    *
-   * @return Returns true if the sc-memory context is valid; otherwise, returns false.
+   * @return bool true if the sc-memory context is valid; otherwise, returns false.
    *
    * @code
    * ScMemoryContext context;
@@ -160,7 +162,8 @@ public:
    * This method checks whether an sc-element with the specified sc-address exists in the sc-memory.
    *
    * @param elementAddr A sc-address to check for existence.
-   * @return Returns true if the sc-element exists; otherwise, returns false.
+   *
+   * @return bool true if the sc-element exists; otherwise, returns false.
    *
    * @code
    * ScMemoryContext context;
@@ -178,15 +181,18 @@ public:
   _SC_EXTERN bool IsElement(ScAddr const & elementAddr) const;
 
   /*!
-   * @brief Returns the count of sc-edges and outgoing sc-arcs for a specified sc-element.
+   * @brief Gets the count of sc-edges and outgoing sc-arcs for a specified sc-element.
    *
    * This method retrieves the count of sc-edges and outgoing sc-arcs for the sc-element identified by the given
    * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of sc-edges and outgoing sc-arcs for the specified sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return size_t Count of sc-edges and outgoing sc-arcs for the specified sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -198,15 +204,18 @@ public:
   _SC_EXTERN size_t GetElementEdgesAndOutgoingArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of sc-edges and outgoing sc-arcs for a specified sc-element.
+   * @brief Gets the count of sc-edges and outgoing sc-arcs for a specified sc-element.
    *
    * This method retrieves the count of sc-edges and outgoing sc-arcs for the sc-element identified by the given
    * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of sc-edges and outgoing sc-arcs for the specified sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return size_t Count of sc-edges and outgoing sc-arcs for the specified sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -226,15 +235,18 @@ public:
   _SC_EXTERN size_t GetElementOutputArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of sc-edges and incoming sc-arcs for a specified sc-element.
+   * @brief Gets the count of sc-edges and incoming sc-arcs for a specified sc-element.
    *
    * This method retrieves the count of sc-edges and incoming sc-arcs for the sc-element identified by the given
    * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of sc-edges and incoming sc-arcs for the specified sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return size_t Count of sc-edges and incoming sc-arcs for the specified sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -246,15 +258,18 @@ public:
   _SC_EXTERN size_t GetElementEdgesAndIncomingArcsCount(ScAddr const & elementAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the count of sc-edges and incoming sc-arcs for a specified sc-element.
+   * @brief Gets the count of sc-edges and incoming sc-arcs for a specified sc-element.
    *
    * This method retrieves the count of sc-edges and incoming sc-arcs for the sc-element identified by the given
    * sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the count of sc-edges and incoming sc-arcs for the specified sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return size_t Count of sc-edges and incoming sc-arcs for the specified sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -279,8 +294,11 @@ public:
    * This method erases the sc-element identified by the given sc-address from the sc-memory.
    *
    * @param elementAddr A sc-address of the sc-element to erase.
-   * @return Returns true if the sc-element was successfully erased; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase permissions.
+   *
+   * @return bool true if the sc-element was successfully erased; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -303,9 +321,12 @@ public:
    * This method creates a new sc-node with the specified type and returns its sc-address.
    *
    * @param nodeType A sc-type of the sc-node to create.
-   * @return Returns the sc-address of the newly created sc-node.
-   * @throws ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @return ScAddr A sc-address of the newly created sc-node.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -320,9 +341,12 @@ public:
    * This method creates a new sc-node with the specified type and returns its sc-address.
    *
    * @param nodeType A sc-type of the sc-node to create.
-   * @return Returns the sc-address of the newly created sc-node.
-   * @throws ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @return ScAddr A sc-address of the newly created sc-node.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -343,9 +367,12 @@ public:
    * This method creates a new sc-link with the specified type and returns its sc-address.
    *
    * @param linkType A sc-type of the sc-link to create (default is ScType::ConstNodeLink).
-   * @return Returns the sc-address of the newly created sc-link.
-   * @throws ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @return ScAddr A sc-address of the newly created sc-link.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -360,9 +387,12 @@ public:
    * This method creates a new sc-link with the specified type and returns its sc-address.
    *
    * @param linkType A sc-type of the sc-link to create (default is ScType::ConstNodeLink).
-   * @return Returns the sc-address of the newly created sc-link.
-   * @throws ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @return ScAddr A sc-address of the newly created sc-link.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -385,9 +415,13 @@ public:
    * @param connectorType A sc-type of the sc-connector to create.
    * @param sourceElementAddr A sc-address of the source sc-element.
    * @param targetElementAddr A sc-address of the target sc-element.
-   * @return Returns the sc-address of the newly created sc-connector.
-   * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @return ScAddr A sc-address of the newly created sc-connector.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is
+   * full.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -409,9 +443,13 @@ public:
    * @param connectorType A sc-type of the sc-connector to create.
    * @param sourceElementAddr A sc-address of the source sc-element.
    * @param targetElementAddr A sc-address of the target sc-element.
-   * @return Returns the sc-address of the newly created sc-connector.
-   * @throws ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is full.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @return ScAddr A sc-address of the newly created sc-connector.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is
+   * full.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -432,14 +470,17 @@ public:
       ScAddr const & targetElementAddr) noexcept(false);
 
   /*!
-   * @brief Returns the type of the specified sc-element.
+   * @brief Gets the type of the specified sc-element.
    *
    * This method retrieves the type of the sc-element identified by the given sc-address.
    *
    * @param elementAddr A sc-address of the sc-element to query.
-   * @return Returns the type of the specified sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScType A type of the specified sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -457,9 +498,12 @@ public:
    *
    * @param elementAddr A sc-address of the sc-element to modify.
    * @param newSubtype A new subtype to set.
-   * @return Returns true if the subtype was successfully changed; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   *
+   * @return bool true if the subtype was successfully changed; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -482,9 +526,12 @@ public:
    * This method retrieves the source sc-element of the sc-connector identified by the given sc-address.
    *
    * @param arcAddr A sc-address of the sc-connector.
-   * @return Returns the sc-address of the source sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScAddr A sc-address of the source sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -502,9 +549,12 @@ public:
    * This method retrieves the source sc-element of the sc-connector identified by the given sc-address.
    *
    * @param arcAddr A sc-address of the sc-connector.
-   * @return Returns the sc-address of the source sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScAddr A sc-address of the source sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -528,9 +578,12 @@ public:
    * This method retrieves the target sc-element of the sc-connector identified by the given sc-address.
    *
    * @param arcAddr A sc-address of the sc-connector.
-   * @return Returns the sc-address of the target sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScAddr A sc-address of the target sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -548,9 +601,12 @@ public:
    * This method retrieves the target sc-element of the sc-connector identified by the given sc-address.
    *
    * @param arcAddr A sc-address of the sc-connector.
-   * @return Returns the sc-address of the target sc-element.
-   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScAddr A sc-address of the target sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -569,14 +625,17 @@ public:
   _SC_EXTERN ScAddr GetEdgeTarget(ScAddr const & arcAddr) const noexcept(false);
 
   /*!
-   * @brief Returns the source and target sc-elements of a sc-connector.
+   * @brief Gets the source and target sc-elements of a sc-connector.
    *
    * This method retrieves the source and target sc-elements of the sc-connector identified by the given sc-address.
    *
    * @param connectorAddr A sc-address of the sc-connector.
-   * @return Returns a tuple of sc-connector incident sc-elements sc-addresses.
-   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return std::tuple<ScAddr, ScAddr> A tuple of sc-connector incident sc-elements sc-addresses.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -590,16 +649,19 @@ public:
       noexcept(false);
 
   /*!
-   * @brief Returns the source and target sc-elements of a sc-connector.
+   * @brief Gets the source and target sc-elements of a sc-connector.
    *
    * This method retrieves the source and target sc-elements of the sc-connector identified by the given sc-address.
    *
    * @param connectorAddr A sc-address of the sc-connector.
    * @param outFirstIncidentElementAddr Reference to store the sc-address of the source sc-element.
    * @param outSecondIncidentElementAddr Reference to store the sc-address of the target sc-element.
-   * @return Returns true if the information was successfully retrieved; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified sc-connector address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return bool true if the information was successfully retrieved; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -630,17 +692,19 @@ public:
       ScAddr & outSecondIncidentElementAddr) const noexcept(false);
 
   /*!
-   * @brief Sets the content of an sc-link with a stream.
+   * @brief Sets specified content stream for specified sc-link.
    *
-   * This method sets the content of an sc-link identified by the given sc-address using the provided stream.
+   * This method sets the content stream for an sc-link.
    *
    * @param linkAddr A sc-address of the sc-link.
    * @param contentStream A stream containing the content.
    * @param isSearchableString Flag indicating whether the content is searchable as a string (default is true).
-   * @return Returns true if the content was successfully set; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase and write
+   *
+   * @return bool true if the content was successfully set; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address or stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase and write
    * permissions.
    */
   _SC_EXTERN bool SetLinkContent(
@@ -649,17 +713,23 @@ public:
       bool isSearchableString = true) noexcept(false);
 
   /*!
-   * @brief Sets the content of an sc-link with a typed string.
+   * @brief Sets specified content for specified sc-link.
    *
-   * This method sets the content of an sc-link identified by the given sc-address using the provided typed string.
+   * This method sets the content for an sc-link.
+   *
+   * @tparam TContentType A type of the content being set for specified sc-link.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
    *
    * @param linkAddr A sc-address of the sc-link.
    * @param linkContent The content of the sc-link.
    * @param isSearchableLinkContent Flag indicating whether the content is searchable as a string (default is true).
-   * @return Returns true if the content was successfully set; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified sc-address or stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase and write
+   *
+   * @return bool true if the content was successfully set; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address or stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase and write
    * permissions.
    *
    * @code
@@ -695,15 +765,18 @@ public:
       bool isSearchableLinkContent = true) noexcept(false);
 
   /*!
-   * @brief Gets the content of an sc-link as a string.
+   * @brief Gets a content of specified sc-link.
    *
-   * This method retrieves the content of an sc-link identified by the given sc-address as a string.
+   * This method retrieves a content of an sc-link.
    *
    * @param elementAddr A sc-address of the sc-link.
    * @param outLinkContent[out] A sc-typed content retrieved from the sc-link.
-   * @return Returns true if the content was successfully retrieved; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return bool true if the content was successfully retrieved; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -722,29 +795,39 @@ public:
   _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, std::string & outLinkContent) noexcept(false);
 
   /*!
-   * @brief Gets the content of an sc-link as a stream.
+   * @brief Gets the content stream of specified sc-link.
    *
    * This method retrieves the content of an sc-link identified by the given sc-address as a stream.
    *
    * @param linkAddr A sc-address of the sc-link.
-   * @return Returns a shared pointer to the stream containing the content.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScStreamPtr A shared pointer to the stream containing the content.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    */
   _SC_EXTERN ScStreamPtr GetLinkContent(ScAddr const & linkAddr) noexcept(false);
 
   /*!
-   * @brief Gets the content of an sc-link as a typed string.
+   * @brief Gets the content of specified sc-link.
    *
    * This method retrieves the content of an sc-link identified by the given sc-address as a typed string.
    *
+   * @tparam TContentType A type of the content being gotten from specified sc-link.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
    * @param linkAddr A sc-address of the sc-link.
    * @param outLinkContent A sc-link content to get.
-   * @return Returns true if sc-link has content; otherwise, it returns false.
-   * @throws ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return bool true if sc-link has content; otherwise, it returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -752,11 +835,11 @@ public:
    * std::string linkContent;
    * if (context.GetLinkContent(linkAddr, linkContent))
    * {
-   *   // Content get successfully.
+   *   // Specified sc-link has content.
    * }
    * else
    * {
-   *   // Content get failed.
+   *   // Specified sc-link hasn't content.
    * }
    * @endcode
    *
@@ -766,11 +849,11 @@ public:
    * size_t linkContent;
    * if (context.GetLinkContent(linkAddr, linkContent))
    * {
-   *   // Content get successfully.
+   *   // Specified sc-link has content.
    * }
    * else
    * {
-   *   // Content get failed.
+   *   // Specified sc-link hasn't content.
    * }
    * @endcode
    */
@@ -778,28 +861,32 @@ public:
   _SC_EXTERN bool GetLinkContent(ScAddr const & linkAddr, TContentType & outLinkContent) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content using a stream.
+   * @brief Searches for sc-links by specified content stream.
    *
-   * This method finds sc-links by matching the content with the provided stream.
+   * This method searches for sc-links by matching the content with the provided content stream.
    *
-   * @param linkContentStream A stream to use for content matching.
-   * @return Returns a set of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @param linkContentStream A stream with content to use for content matching.
+   *
+   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN ScAddrSet SearchLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content using a stream.
+   * @brief Searches for sc-links by specified content stream.
    *
-   * This method finds sc-links by matching the content with the provided stream.
+   * This method searches for sc-links by matching the content with the provided content stream.
    *
-   * @param linkContentStream A stream to use for content matching.
-   * @return Returns a vector of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @param linkContentStream A stream with content to use for content matching.
+   *
+   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContent` instead for better readability
    * and standards compliance.
@@ -811,15 +898,21 @@ public:
   _SC_EXTERN ScAddrVector FindLinksByContent(ScStreamPtr const & linkContentStream) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content using a typed string.
+   * @brief Searches for sc-links by specified content.
    *
-   * This method finds sc-links by matching the content with the provided typed string.
+   * This method searches for sc-links by matching the content with the provided typed string.
    *
-   * @param linkContent A sc-link content to search.
-   * @return Returns a set of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @tparam TContentType A type of the content being used to search sc-links.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
+   * @param linkContent A sc-link contentto use for content matching.
+   *
+   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -834,15 +927,21 @@ public:
   _SC_EXTERN ScAddrSet SearchLinksByContent(TContentType const & linkContent) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content using a typed string.
+   * @brief Searches for sc-links by specified content.
    *
-   * This method finds sc-links by matching the content with the provided typed string.
+   * This method searches for sc-links by matching the content with the provided typed string.
    *
-   * @param linkContent A sc-link content to search.
-   * @return Returns a vector of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @tparam TContentType A type of the content being used to search sc-links.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
+   * @param linkContent A sc-link content to use for content matching.
+   *
+   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -864,16 +963,22 @@ public:
   _SC_EXTERN ScAddrVector FindLinksByContent(TContentType const & linkContent) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content substring using a stream.
+   * @brief Searches for sc-links by specified content substring.
    *
-   * This method finds sc-links by matching the content substring with the provided stream.
+   * This method searches for sc-links whose content contains the given substring.
    *
-   * @param linkContentSubstring A stream to use for content matching.
+   * @tparam TContentType A type of the content being used to search sc-links.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
+   * @param linkContentSubstring A content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a set of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -890,16 +995,18 @@ public:
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content substring using a stream.
+   * @brief Searches for sc-links by specified content substring.
    *
-   * This method finds sc-links by matching the content substring with the provided stream.
+   * This method searches for sc-links whose content contains the given substring.
    *
-   * @param linkContentSubstring A stream to use for content matching.
+   * @param linkContentSubstring A content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -923,32 +1030,36 @@ public:
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content substring using a typed string.
+   * @brief Searches for sc-links by specified content substring stream.
    *
-   * This method finds sc-links by matching the content substring with the provided typed string.
+   * This method searches for sc-links whose content contains the given substring stream.
    *
-   * @param linkContentSubstringStream A stream to use for content matching.
+   * @param linkContentSubstringStream A stream  with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a set of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
       ScStreamPtr const & linkContentSubstringStream,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
-   * @brief Searches sc-links by content substring using a typed string.
+   * @brief Searches for sc-links by cspecified content substring stream.
    *
-   * This method finds sc-links by matching the content substring with the provided typed string.
+   * This method searches for sc-links whose content contains the given substring stream.
    *
-   * @param linkContentSubstringStream A stream to use for content matching.
+   * @param linkContentSubstringStream A stream with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of sc-addresses representing the found sc-links.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
    * and standards compliance.
@@ -961,31 +1072,123 @@ public:
       ScStreamPtr const & linkContentSubstringStream,
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
+  /*!
+   * @brief Searches for sc-links containing a specified substring in their content.
+   *
+   * This method searches for sc-links whose content contains the given
+   * substring. The results are filtered based on the provided
+   * link filter criteria.
+   *
+   * @tparam TContentType A type of the content being used to search sc-links.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
+   * @param linkContentSubstring A substring to search for within the content of sc-links.
+   *              This value is used to match against link contents.
+   * @param linkFilter A filter that defines criteria for which links should
+   *                   be included in the search results. This allows for
+   *                   customization of which links are considered based on
+   *                   user-defined conditions.
+   *
+   * @return ScAddrSet A set of sc-addresses representing the found links.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @code
+   *
+   * class CustomScLinkFilter : public ScLinkFilter
+   * {
+   * public:
+   *   ScMemoryContext * m_context;
+   *   ScAddr m_linkClassAddr;
+   *
+   *   bool CheckLink(ScAddr const & linkAddr) override
+   *   {
+   *     // Don't push sc-link into result, if it doesn't belong to `m_linkClassAddr`.
+   *     return m_context->CheckConnector(m_linkClassAddr, linkAddr, ScType::ConstPermPosArc);
+   *   }
+   *
+   *   ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+   *   {
+   *     // Iterate over all sc-links.
+   *     return ScLinkFilterRequest::CONTINUE;
+   *   }
+   * };
+   *
+   * ScMemoryContext context;
+   * ScAddr const & linkClassAddr = context.SearchElementBySystemIdentifier("link_class");
+   *
+   * CustomScLinkFilter filter;
+   * filter.m_context = &context;
+   * filter.m_linkClassAddr = linkClassAddr;
+   *
+   * ScAddrSet const & linkSet = context.SearchLinksByContentSubstring("my", filter);
+   * for (auto const & linkAddr : linkSet)
+   * {
+   *   // Process sc-links.
+   * }
+   * @endcode
+   */
   _SC_EXTERN template <typename TContentType>
   ScAddrSet SearchLinksByContentSubstring(
-      TContentType const & value,
-      size_t maxLengthToSearchAsPrefix,
+      TContentType const & linkContentSubstring,
       ScLinkFilter const & linkFilter) noexcept(false);
 
-  _SC_EXTERN template <typename TContentType>
-  ScAddrSet SearchLinksByContentSubstring(TContentType const & value, ScLinkFilter const & linkFilter) noexcept(false);
-
+  /*!
+   * @brief Searches for sc-links containing a specified substring stream in their content.
+   *
+   * This method searches for sc-links whose content contains the given
+   * substring. The search can be limited to a maximum length when considering
+   * the substring as a prefix. The results are filtered based on the provided
+   * link filter criteria.
+   *
+   * @tparam TContentType A type of the content being used to search sc-links.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
+   * @param linkContentSubstringStream A stream with substring to use for content matching.
+   * @param maxLengthToSearchAsPrefix A maximum length of the substring
+   *                                   to consider as a prefix during the search.
+   *                                   If set to 0, no prefix limitation is applied.
+   * @param linkFilter A filter that defines criteria for which links should
+   *                   be included in the search results. This allows for
+   *                   customization of which links are considered based on
+   *                   user-defined conditions.
+   *
+   * @return ScAddrSet A set of sc-addresses representing the links that match
+   *                   the search criteria. If no matches are found, an empty set is returned.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
+   */
   _SC_EXTERN ScAddrSet SearchLinksByContentSubstring(
-      ScStreamPtr const & stream,
+      ScStreamPtr const & linkContentSubstringStream,
       size_t maxLengthToSearchAsPrefix,
       ScLinkFilter const & linkFilter) noexcept(false);
 
   /*!
-   * @brief Searches sc-links contents by content substring using a stream.
+   * @brief Searches for contents of sc-links containing a specified substring stream in their contents.
    *
-   * This method finds sc-links contents by matching the content substring with the provided stream.
+   * This method searches for contents of sc-links whose content contains the given substring stream.
+   * The search can be limited to a maximum length when considering the substring as a prefix.
    *
-   * @param linkContent A stream to use for content matching.
+   * @tparam TContentType A type of the content being used to search sc-links contents.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
+   * @param linkContent A substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a set of strings representing the found sc-links contents.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScAddrSet A set of sc-addresses representing the links that match
+   *                   the search criteria. If no matches are found, an empty set is returned.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -1002,16 +1205,24 @@ public:
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
-   * @brief Searches sc-links contents by content substring using a stream.
+   * @brief Searches for contents of sc-links containing a specified substring in their contents.
    *
-   * This method finds sc-links contents by matching the content substring with the provided stream.
+   * This method searches for contents of sc-links whose content contains the given substring.
+   * The search can be limited to a maximum length when considering the substring as a prefix.
    *
-   * @param linkContent A stream to use for content matching.
+   * @tparam TContentType A type of the content being used to search sc-links contents.
+   *                      This can be a string or any other type that can
+   *                      be compared with the link content.
+   *
+   * @param linkContent A substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of strings representing the found sc-links contents.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return std::vector<std::string> A vector of strings representing the found sc-links contents.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -1035,16 +1246,20 @@ public:
       size_t maxLengthToSearchAsPrefix = 0) noexcept(false);
 
   /*!
-   * @brief Searches sc-links contents by content substring using a typed string.
+   * @brief Searches for contents of sc-links containing a specified substring stream in their contents.
    *
-   * This method finds sc-links contents by matching the content substring with the provided typed string.
+   * This method searches for contents of sc-links whose content contains the given substring stream.
+   * The search can be limited to a maximum length when considering the substring as a prefix.
    *
-   * @param linkContentStream A stream to use for content matching.
+   * @param linkContentStream A stream with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a set of strings representing the found sc-links contents.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return std::set<std::string> A set of strings representing the found sc-links contents.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    */
   _SC_EXTERN std::set<std::string> SearchLinksContentsByContentSubstring(
       ScStreamPtr const & linkContentStreamSubstring,
@@ -1055,12 +1270,15 @@ public:
    *
    * This method finds sc-links contents by matching the content substring with the provided typed string.
    *
-   * @param linkContentStream A stream to use for content matching.
+   * @param linkContentStream A substring with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
-   * @return Returns a vector of strings representing the found sc-links contents.
-   * @throws ExceptionInvalidParams if the specified stream is invalid.
-   * @throws ExceptionInvalidState if the file memory state is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return std::vector<std::string> A vector of strings representing the found sc-links contents.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
+   * @throws utils::ExceptionInvalidState if the file memory state is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @warning This method is deprecated since 0.10.0. Use `SearchLinksByContentSubstring` instead for better readability
    * and standards compliance.
@@ -1082,7 +1300,9 @@ public:
    * @param param2 A sc-address or sc-type of the second parameter for the iterator.
    * @param param3 A sc-address or sc-type of the third parameter for the iterator.
    *
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @returns A shared pointer to iterator for iterating over triples.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   template <typename ParamType1, typename ParamType2, typename ParamType3>
   _SC_EXTERN std::shared_ptr<ScIterator3<ParamType1, ParamType2, ParamType3>> CreateIterator3(
@@ -1099,7 +1319,9 @@ public:
    * @param param2 A sc-address or sc-type of the second parameter for the iterator.
    * @param param3 A sc-address or sc-type of the third parameter for the iterator.
    *
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @returns A shared pointer to iterator for iterating over triples.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @warning This method is deprecated since 0.10.0. Use `Iterator3` instead for better readability
    * and standards compliance.
@@ -1125,7 +1347,9 @@ public:
    * @param param4 A sc-address or sc-type of the fourth parameter for the iterator.
    * @param param5 A sc-address or sc-type of the fifth parameter for the iterator.
    *
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @returns A shared pointer to iterator for iterating over quintuples.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   template <typename ParamType1, typename ParamType2, typename ParamType3, typename ParamType4, typename ParamType5>
   _SC_EXTERN std::shared_ptr<ScIterator5<ParamType1, ParamType2, ParamType3, ParamType4, ParamType5>> CreateIterator5(
@@ -1146,7 +1370,9 @@ public:
    * @param param4 A sc-address or sc-type of the fourth parameter for the iterator.
    * @param param5 A sc-address or sc-type of the fifth parameter for the iterator.
    *
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @returns A shared pointer to iterator for iterating over quintuples.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @warning This method is deprecated since 0.10.0. Use `CreateIterator5` instead for better readability
    * and standards compliance.
@@ -1171,11 +1397,11 @@ public:
    * @param param1 A sc-address or sc-type of the first parameter for the iterator.
    * @param param2 A sc-address or sc-type of the second parameter for the iterator.
    * @param param3 A sc-address or sc-type of the third parameter for the iterator.
-   * @param callback The function to be called for each result.
+   * @param callback A function to be called for each result.
    *
    * @note callback function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
    * ScAddr const & target).
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   template <typename ParamType1, typename ParamType2, typename ParamType3, typename TripleCallback>
   _SC_EXTERN void ForEach(
@@ -1192,11 +1418,11 @@ public:
    * @param param1 A sc-address or sc-type of the first parameter for the iterator.
    * @param param2 A sc-address or sc-type of the second parameter for the iterator.
    * @param param3 A sc-address or sc-type of the third parameter for the iterator.
-   * @param callback The function to be called for each result.
+   * @param callback A function to be called for each result.
    *
    * @note callback function should have 3 parameters (ScAddr const & source, ScAddr const & connector,
    * ScAddr const & target).
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @warning This method is deprecated since 0.10.0. Use `ForEach` instead for better readability
    * and standards compliance.
@@ -1222,11 +1448,11 @@ public:
    * @param param3 A sc-type of the third parameter for the iterator.
    * @param param4 A sc-type of the fourth parameter for the iterator.
    * @param param5 A sc-type of the fifth parameter for the iterator.
-   * @param callback The function to be called for each result.
+   * @param callback A function to be called for each result.
    *
    * @note callback function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
    * ScAddr const & target, ScAddr const & attrConnector, ScAddr const & attr)
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    */
   template <
       typename ParamType1,
@@ -1253,11 +1479,11 @@ public:
    * @param param3 A sc-type of the third parameter for the iterator.
    * @param param4 A sc-type of the fourth parameter for the iterator.
    * @param param5 A sc-type of the fifth parameter for the iterator.
-   * @param callback The function to be called for each result.
+   * @param callback A function to be called for each result.
    *
    * @note callback function should have 5 parameters (ScAddr const & source, ScAddr const & connector,
    * ScAddr const & target, ScAddr const & attrConnector, ScAddr const & attr)
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @warning This method is deprecated since 0.10.0. Use `ForEach` instead for better readability
    * and standards compliance.
@@ -1290,9 +1516,12 @@ public:
    * @param sourceElementAddr A sc-address of the beginning sc-element.
    * @param targetElementAddr A sc-address of the ending sc-element.
    * @param connectorType A sc-type of the sc-connector to check.
-   * @return Returns true if the specified sc-connector exists; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return bool true if the specified sc-connector exists; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -1317,9 +1546,12 @@ public:
    * @param sourceElementAddr A sc-address of the beginning sc-element.
    * @param targetElementAddr A sc-address of the ending sc-element.
    * @param connectorType A sc-type of the sc-connector to check.
-   * @return Returns true if the specified sc-connector exists; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return bool true if the specified sc-connector exists; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -1348,13 +1580,15 @@ public:
    * This function resolves the sc-address of an sc-element with the specified system identifier.
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
    *
-   * @param systemIdentifier The system identifier of the sc-element to resolve.
+   * @param systemIdentifier A system identifier of the sc-element to resolve.
    * @param elementType A sc-type of the sc-node to create if the element is not found.
-   * @return Returns the sc-address of the resolved or created sc-element.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
-   * or resolving sc-element type is not ScType::Node subtype
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   *
+   * @return ScAddr A sc-address of the resolved or created sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
+   * invalid or resolving sc-element type is not ScType::Node subtype
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
    *
    * @code
@@ -1372,13 +1606,15 @@ public:
    * This function resolves the sc-address of an sc-element with the specified system identifier.
    * If the element is not found, it creates a new sc-node with the specified type and system identifier.
    *
-   * @param systemIdentifier The system identifier of the sc-element to resolve.
+   * @param systemIdentifier A system identifier of the sc-element to resolve.
    * @param elementType A sc-type of the sc-node to create if the element is not found.
-   * @return Returns the sc-address of the resolved or created sc-element.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
-   * or resolving sc-element type is not ScType::Node subtype
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   *
+   * @return ScAddr A sc-address of the resolved or created sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
+   * invalid or resolving sc-element type is not ScType::Node subtype
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
    *
    * @code
@@ -1416,11 +1652,13 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @return Returns true if the sc-element is successfully resolved or created; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
+   * @return bool true if the sc-element is successfully resolved or created; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
+   invalid
    *          or resolving sc-element type is not ScType::Node subtype.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    permissions.
    *
    * @code
@@ -1454,11 +1692,11 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @return Returns true if the sc-element is successfully resolved or created; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is invalid
-   *            or resolving sc-element type is not ScType::Node subtype.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * @return bool true if the sc-element is successfully resolved or created; otherwise, returns false.
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
+   * invalid or resolving sc-element type is not ScType::Node subtype.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
    *
    * @code
@@ -1482,12 +1720,15 @@ public:
 
   /*!
    * @brief Tries to set system identifier for sc-element `elementAddr`.
+
    * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
-   * @returns false if `systemIdentifier` set for other sc-element address.
+   *
+   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
    *
    * @code
@@ -1501,12 +1742,15 @@ public:
 
   /*!
    * @brief Tries to set system identifier for sc-element `elementAddr`.
+
    * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
-   * @returns false if `systemIdentifier` set for other sc-element address.
+   *
+   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
    *
    * @code
@@ -1526,6 +1770,7 @@ public:
 
   /*!
    * @brief Tries to set system identifier for sc-element `elementAddr`.
+
    * @param systemIdentifier A system sc-identifier to set for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
    * @param outQuintuple[out] The 1st, 2d, 3d, 4th, 5th sc-element addresses of system identifier quintuple of
@@ -1539,10 +1784,11 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @returns false if `systemIdentifier` set for other sc-element address.
+   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
    *
    * @code
@@ -1572,10 +1818,11 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @returns false if `systemIdentifier` set for other sc-element address.
+   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write and erase
    * permissions.
    *
    * @code
@@ -1600,10 +1847,12 @@ public:
   /*!
    * @brief Tries to get system identifier for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to get it system identifier.
-   * @returns "" if system identifier doesn't exist for `elementAddr`.
-   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   * @returns std::string "" if system identifier doesn't exist for `elementAddr`.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -1616,10 +1865,11 @@ public:
   /*!
    * @brief Tries to get system identifier for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to get it system identifier.
-   * @returns "" if system identifier doesn't exist for `elementAddr`.
+   * @returns std::string "" if system identifier doesn't exist for `elementAddr`.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @code
    * ScMemoryContext context;
@@ -1645,10 +1895,12 @@ public:
    *
    * @param systemIdentifier A system identifier of the sc-element to find.
    * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
-   * @return Returns true if the sc-element is found; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return bool true if the sc-element is found; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -1669,10 +1921,12 @@ public:
    *
    * @param systemIdentifier A system identifier of the sc-element to find.
    * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
-   * @return Returns true if the sc-element is found; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return bool true if the sc-element is found; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -1696,10 +1950,12 @@ public:
    * If the element is found, the function returns its sc-address; otherwise, it throws an exception.
    *
    * @param systemIdentifier A system identifier of the sc-element to find.
-   * @return Returns the sc-address of the found sc-element.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return ScAddr A sc-address of the found sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -1714,11 +1970,13 @@ public:
    * This function searches for an sc-element with the specified system identifier and returns its sc-address.
    * If the element is found, the function returns its sc-address; otherwise, it throws an exception.
    *
-   * @param systemIdentifier A system identifier of the sc-element to find.
-   * @return Returns the sc-address of the found sc-element.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   * @param systemIdentifier A system identifier of the sc-element to search.
+   *
+   * @return ScAddr A sc-address of the found sc-element.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -1743,10 +2001,12 @@ public:
    *
    * @param systemIdentifier The system identifier of the sc-element to find.
    * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
-   * @return Returns true if the sc-element is found; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return bool true if the sc-element is found; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -1767,10 +2027,12 @@ public:
    *
    * @param systemIdentifier The system identifier of the sc-element to find.
    * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
-   * @return Returns true if the sc-element is found; otherwise, returns false.
-   * @throws ExceptionInvalidParams if the specified system identifier is invalid.
-   * @throws ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated.
+   *
+   * @return bool true if the sc-element is found; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated.
    *
    * @code
    * ScMemoryContext context;
@@ -1828,7 +2090,9 @@ public:
    * @param result A generated sc-construction.
    * @param params A map of specified sc-template sc-variables to user replacements.
    * @param resultCode A pointer to status of method completion.
-   * @return Returns true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
+   *
+   * @return bool true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
@@ -1866,7 +2130,9 @@ public:
    * Searches sc-constructions by object of `ScTemplate` and accumulates found sc-constructions into `result`.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
    * @param result A result vector of found sc-constructions.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use the
@@ -1903,7 +2169,9 @@ public:
    * Searches sc-constructions by object of `ScTemplate` and accumulates found sc-constructions into `result`.
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
    * @param result A result vector of found sc-constructions.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @note Use this method if expected searchable sc-constructions vector is not big. If it is very big, please, use the
@@ -1951,7 +2219,9 @@ public:
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
@@ -1995,7 +2265,9 @@ public:
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
@@ -2044,7 +2316,9 @@ public:
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param checkCallback A lambda-function, that filters all found elements.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
@@ -2081,7 +2355,9 @@ public:
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param checkCallback A lambda-function, that filters all found elements.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
@@ -2135,7 +2411,9 @@ public:
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
@@ -2188,7 +2466,9 @@ public:
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
-   * @return Returns true if the sc-constructions are found; otherwise, returns false.
+   *
+   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
    * @code
@@ -2277,8 +2557,10 @@ public:
    * @param resultTemplate An object of `ScTemplate` to be gotten.
    * @param translatableTemplateAddr A sc-address of sc-template structure to be translated.
    * @param params A map of specified sc-template sc-variables to their replacements.
-   * @return Returns true if the sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`;
+   *
+   * @return bool true if the sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`;
    * otherwise, throws exceptions.
+   *
    * @throws utils::ExceptionInvalidState if sc-template represented in sc-memory is not valid.
    *
    * @code
@@ -2328,8 +2610,10 @@ public:
    * `GenerateByTemplate` correspondingly.
    * @param resultTemplate An object of `ScTemplate` to be gotten.
    * @param translatableSCsTemplate A sc.s-representation of sc-template to be translated.
-   * @return Returns true if the sc-template represented in SCs-code into object of `ScTemplate`; otherwise, throws
+   *
+   * @return bool true if the sc-template represented in SCs-code into object of `ScTemplate`; otherwise, throws
    * exceptions.
+   *
    * @throws utils::ExceptionInvalidState if sc-template represented in SCs-code is not valid.
    *
    * @code
@@ -2381,14 +2665,20 @@ protected:
 
 public:
   /*! Calculates sc-element counts.
-   * @return Returns sc-nodes, sc-connectors and sc-links counts.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScMemoryStatistics sc-nodes, sc-connectors and sc-links counts.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    */
   _SC_EXTERN ScMemoryStatistics CalculateStatistics() const;
 
   /*! Calculates sc-element counts.
-   * @return Returns sc-nodes, sc-connectors and sc-links counts.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have read permissions.
+   *
+   * @return ScMemoryStatistics sc-nodes, sc-connectors and sc-links counts.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
+   * permissions.
    *
    * @warning This method is deprecated since 0.10.0. Use `CalculateStatistics` instead for better
    * readability and standards compliance.
@@ -2404,8 +2694,10 @@ public:
    *
    * This method saves the state of the sc-memory.
    *
-   * @return Returns true if the memory state was successfully saved; otherwise, returns false.
-   * @throws ExceptionInvalidState if the sc-memory context is not authenticated or does not have write permissions.
+   * @return bool true if the memory state was successfully saved; otherwise, returns false.
+   *
+   * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
+   * permissions.
    */
   _SC_EXTERN bool Save();
 
