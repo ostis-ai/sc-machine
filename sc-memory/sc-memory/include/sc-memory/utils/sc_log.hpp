@@ -3,6 +3,7 @@
  * Distributed under the MIT License
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
+
 #pragma once
 
 #include "sc_console.hpp"
@@ -13,75 +14,92 @@
 
 namespace utils
 {
-class ScLog final
+class ScLogLevel
 {
-protected:
-  _SC_EXTERN ScLog();
-
-  _SC_EXTERN explicit ScLog(std::string const & logType, std::string const & logFile, std::string const & logLevel);
-
-  _SC_EXTERN ~ScLog();
-
 public:
-  // should be synced with kTypeToStr in cpp
-  enum class Type : uint8_t
+  enum Level
   {
-    Debug = 0,
-    Info,
-    Warning,
     Error,
-    Off
+    Warning,
+    Info,
+    Debug,
+    Unknown
   };
 
-  enum class OutputType : uint8_t
+  ScLogLevel(Level level);
+  ScLogLevel();
+  std::string ToString() const;
+  ScLogLevel & FromString(std::string const & levelStr);
+  bool operator<=(ScLogLevel const & other) const;
+
+protected:
+  Level m_level;
+};
+
+class ScLog
+{
+public:
+  enum class ScLogType : uint8_t
   {
     Console = 0,
     File
   };
 
-  _SC_EXTERN static ScLog * SetUp(
-      std::string const & logType,
-      std::string const & logFile,
-      std::string const & logLevel);
+  explicit ScLog();
+  explicit ScLog(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel);
+  explicit ScLog(ScLog const & other);
 
-  _SC_EXTERN void Shutdown();
+  ScLog & operator=(ScLog const & other);
 
-  _SC_EXTERN void SetFileName(std::string const & file_name);
+  ~ScLog();
 
-  /// TODO: thread safe
-  _SC_EXTERN void Message(Type type, std::string const & msg, ScConsole::Color color = ScConsole::Color::White);
+  void Clear();
+  void SetMuted(bool value);
+  void SetLogFile(std::string const & file_name);
 
-  _SC_EXTERN void SetMuted(bool value);
+  static ScLogType DefineLogType(std::string const & logType);
 
-  _SC_EXTERN static ScLog * GetInstance();
+  void Message(ScLogLevel level, std::string const & message, ScConsole::Color color = ScConsole::Color::White);
 
-private:
-  std::ofstream m_fileStream;
-  Type m_mode;
-  OutputType m_output_mode;
+  template <typename T, typename... ARGS>
+  std::string Error(T const & t, ARGS const &... others);
+
+  template <typename T, typename... ARGS>
+  std::string Warning(T const & t, ARGS const &... others);
+
+  template <typename T, typename... ARGS>
+  std::string Info(T const & t, ARGS const &... others);
+
+  template <typename T, typename... ARGS>
+  std::string Debug(T const & t, ARGS const &... others);
+
+protected:
   bool m_isMuted;
-
-  static ScLog * ms_instance;
-
-  bool Initialize(std::string const & logFile);
-
-  template <size_t N>
-  static int FindEnumElement(std::string const (&elements)[N], std::string const & externalValue);
+  ScLogType m_logType;
+  std::string m_logFile;
+  std::ofstream m_logFileStream;
+  ScLogLevel m_logLevel;
 };
 
-#define SC_LOG_COLOR(__type, __msg, __color) \
+}  // namespace utils
+
+#include "sc-memory/_template/utils/sc_log.tpp"
+
+static utils::ScLog ms_globalLogger;
+
+#define SC_LOG_COLOR(__type, __message, __color) \
   { \
     std::stringstream ss; \
-    ss << __msg; \
-    ::utils::ScLog::GetInstance()->Message(__type, ss.str(), __color); \
+    ss << __message; \
+    ms_globalLogger.Message(__type, ss.str(), __color); \
   }
 
-#define SC_LOG(__type, __msg) SC_LOG_COLOR(__type, __msg, ScConsole::Color::White)
+#define SC_LOG(__type, __message) SC_LOG_COLOR(__type, __message, ScConsole::Color::White)
 
-#define SC_LOG_DEBUG(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Debug, __msg, ScConsole::Color::LightBlue)})
-#define SC_LOG_INFO(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, ScConsole::Color::Grey)})
-#define SC_LOG_WARNING(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Warning, __msg, ScConsole::Color::Yellow)})
-#define SC_LOG_ERROR(__msg) ({SC_LOG_COLOR(::utils::ScLog::Type::Error, __msg, ScConsole::Color::Red)})
-#define SC_LOG_INFO_COLOR(__msg, __color) ({SC_LOG_COLOR(::utils::ScLog::Type::Info, __msg, __color)})
-
-}  // namespace utils
+#define SC_LOG_ERROR(__message) ({SC_LOG_COLOR(utils::ScLogLevel::Level::Error, __message, ScConsole::Color::Red)})
+#define SC_LOG_WARNING(__message) \
+  ({SC_LOG_COLOR(utils::ScLogLevel::Level::Warning, __message, ScConsole::Color::Yellow)})
+#define SC_LOG_INFO(__message) ({SC_LOG_COLOR(utils::ScLogLevel::Level::Info, __message, ScConsole::Color::Grey)})
+#define SC_LOG_DEBUG(__message) \
+  ({SC_LOG_COLOR(utils::ScLogLevel::Level::Debug, __message, ScConsole::Color::LightBlue)})
+#define SC_LOG_INFO_COLOR(__message, __color) ({SC_LOG_COLOR(::utils::ScLogType::Info, __message, __color)})

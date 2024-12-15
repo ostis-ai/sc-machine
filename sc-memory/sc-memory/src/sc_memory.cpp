@@ -79,7 +79,8 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   ScKeynodes::Initialize(ms_globalContext);
 
-  utils::ScLog::SetUp(params.log_type, params.log_file, params.log_level);
+  ms_globalLogger = utils::ScLog(
+      utils::ScLog::DefineLogType(params.log_type), params.log_file, utils::ScLogLevel().FromString(params.log_level));
 
   return ms_globalContext != nullptr;
 }
@@ -91,10 +92,9 @@ bool ScMemory::IsInitialized()
 
 bool ScMemory::Shutdown(bool saveState /* = true */)
 {
+  ms_globalLogger = utils::ScLog();
+
   ScKeynodes::Shutdown(ms_globalContext);
-
-  utils::ScLog::SetUp("Console", "", "Info");
-
   bool result = sc_memory_shutdown(saveState);
 
   delete ms_globalContext;
@@ -107,13 +107,13 @@ bool ScMemory::Shutdown(bool saveState /* = true */)
 void ScMemory::LogMute()
 {
   isLogMuted = true;
-  utils::ScLog::GetInstance()->SetMuted(true);
+  ms_globalLogger.SetMuted(true);
 }
 
 void ScMemory::LogUnmute()
 {
   isLogMuted = false;
-  utils::ScLog::GetInstance()->SetMuted(false);
+  ms_globalLogger.SetMuted(false);
 }
 
 // ---------------

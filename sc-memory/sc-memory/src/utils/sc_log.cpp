@@ -11,119 +11,102 @@
 #include <iomanip>
 #include <iostream>
 
-namespace
-{
-// should be synced with ScLog::Type
-std::string const kTypeToStr[] = {"Debug", "Info", "Warning", "Error"};
-
-// should be synced with ScLog::OutputType
-std::string const kOutputTypeToStr[] = {"Console", "File"};
-
-}  // namespace
-
 namespace utils
 {
 ScLock gLock;
-ScLog * ScLog::ms_instance = nullptr;
 
-ScLog * ScLog::SetUp(std::string const & logType, std::string const & logFile, std::string const & logLevel)
+ScLogLevel::ScLogLevel(ScLogLevel::Level level)
+  : m_level(level)
 {
-  delete ms_instance;
-  return new ScLog(logType, logFile, logLevel);
 }
 
-ScLog * ScLog::GetInstance()
+ScLogLevel::ScLogLevel()
+  : ScLogLevel(ScLogLevel::Unknown)
 {
-  if (!ms_instance)
-    return new ScLog();
+}
 
-  return ms_instance;
+std::string ScLogLevel::ToString() const
+{
+  switch (m_level)
+  {
+  case ScLogLevel::Error:
+    return "Error";
+  case ScLogLevel::Warning:
+    return "Warning";
+  case ScLogLevel::Info:
+    return "Info";
+  case ScLogLevel::Debug:
+    return "Debug";
+  default:
+    return "Unknown";
+  }
+}
+
+ScLogLevel & ScLogLevel::FromString(std::string const & levelStr)
+{
+  if (levelStr == "Error")
+    m_level = ScLogLevel::Error;
+  else if (levelStr == "Warning")
+    m_level = ScLogLevel::Warning;
+  else if (levelStr == "Info")
+    m_level = ScLogLevel::Info;
+  else if (levelStr == "Debug")
+    m_level = ScLogLevel::Debug;
+  else
+    m_level = ScLogLevel::Unknown;
+
+  return *this;
+}
+
+bool ScLogLevel::operator<=(ScLogLevel const & other) const
+{
+  return static_cast<int>(m_level) <= static_cast<int>(other.m_level);
 }
 
 ScLog::ScLog()
+  : ScLog(ScLogType::Console, "", ScLogLevel::Level::Info)
 {
-  m_isMuted = false;
-
-  m_mode = Type::Info;
-  m_output_mode = OutputType::Console;
-
-  ms_instance = this;
 }
 
-ScLog::ScLog(std::string const & logType, std::string const & logFile, std::string const & logLevel)
+ScLog::ScLog(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel)
+  : m_isMuted(false)
+  , m_logType(logType)
+  , m_logFile(logFile)
+  , m_logLevel(logLevel)
 {
-  m_isMuted = false;
-
-  int modeIndex = FindEnumElement(kTypeToStr, logLevel);
-  m_mode = modeIndex != -1 ? Type(modeIndex) : Type::Info;
-
-  int outputTypeIndex = FindEnumElement(kOutputTypeToStr, logType);
-  m_output_mode = outputTypeIndex != -1 ? OutputType(outputTypeIndex) : OutputType::Console;
-
-  if (m_output_mode == OutputType::File)
-  {
-    Initialize(logFile);
-  }
-
-  ms_instance = this;
+  if (m_logType == ScLogType::File)
+    SetLogFile(m_logFile);
 }
 
 ScLog::~ScLog()
 {
-  Shutdown();
-  ms_instance = nullptr;
+  Clear();
 }
 
-bool ScLog::Initialize(std::string const & logFile)
+ScLog::ScLog(ScLog const & other)
 {
-  if (m_output_mode == OutputType::File)
-    m_fileStream.open(logFile, std::ofstream::out | std::ofstream::trunc);
-
-  return m_fileStream.is_open();
+  *this = other;
 }
 
-void ScLog::Shutdown()
+ScLog & ScLog::operator=(ScLog const & other)
 {
-  if (m_fileStream.is_open())
+  if (this != &other)
   {
-    m_fileStream.flush();
-    m_fileStream.close();
+    m_isMuted = other.m_isMuted;
+    m_logType = other.m_logType;
+    if (m_logType == ScLogType::File)
+      SetLogFile(other.m_logFile);
+    m_logLevel = other.m_logLevel;
   }
+  return *this;
 }
 
-void ScLog::Message(ScLog::Type type, std::string const & msg, ScConsole::Color color /*= ScConsole::Color::White*/)
+void ScLog::Clear()
 {
-  if (m_isMuted && type != Type::Error)
-    return;  // do nothing on mute
-
-  utils::ScLockScope lock(gLock);
-  if (m_mode <= type)
+  if (m_logFileStream.is_open())
   {
-    // get time
-    std::time_t t = std::time(nullptr);
-    std::tm tm = *std::localtime(&t);
-
-    std::stringstream ss;
-    ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour << ":" << std::setw(2) << std::setfill('0')
-       << tm.tm_min << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "][" << kTypeToStr[int(type)] << "]: ";
-
-    if (m_output_mode == OutputType::Console)
-    {
-      ScConsole::SetColor(ScConsole::Color::White);
-      std::cout << ss.str();
-      ScConsole::SetColor(color);
-      std::cout << msg << std::endl;
-
-      ScConsole::ResetColor();
-    }
-    else
-    {
-      if (m_fileStream.is_open())
-      {
-        m_fileStream << ss.str() << msg << std::endl;
-        m_fileStream.flush();
-      }
-    }
+    m_logFileStream.flush();
+    m_logFileStream.close();
   }
 }
 
@@ -132,27 +115,53 @@ void ScLog::SetMuted(bool value)
   m_isMuted = value;
 }
 
-void ScLog::SetFileName(std::string const & file_name)
+void ScLog::SetLogFile(std::string const & logFile)
 {
-  Shutdown();
-  Initialize(file_name);
+  Clear();
+  m_logType = ScLog::ScLogType::File;
+  m_logFileStream.open(logFile, std::ofstream::out | std::ofstream::trunc);
 }
 
-template <size_t N>
-int ScLog::FindEnumElement(std::string const (&elements)[N], std::string const & externalValue)
+ScLog::ScLogType ScLog::DefineLogType(std::string const & logType)
 {
-  size_t size = N;
-  int index = -1;
-  for (size_t i = 0; i < size; i++)
+  return logType == "Console" ? ScLog::ScLogType::Console : ScLog::ScLogType::File;
+}
+
+void ScLog::Message(
+    ScLogLevel logLevel,
+    std::string const & message,
+    ScConsole::Color color /*= ScConsole::Color::White*/)
+{
+  // Do nothing on mute
+  if (m_isMuted)
+    return;
+
+  if (!(m_logLevel <= logLevel))
+    return;
+
+  utils::ScLockScope lock(gLock);
+  // Get time
+  std::time_t t = std::time(nullptr);
+  std::tm tm = *std::localtime(&t);
+
+  std::stringstream ss;
+  ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
+     << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "][" << logLevel.ToString() << "]: ";
+
+  if (m_logType == ScLog::ScLogType::Console)
   {
-    std::string mode = elements[i];
-    if (externalValue == mode)
-    {
-      index = (int)i;
-      break;
-    }
+    ScConsole::SetColor(ScConsole::Color::White);
+    std::cout << ss.str();
+    ScConsole::SetColor(color);
+    std::cout << message << std::endl;
+
+    ScConsole::ResetColor();
   }
-  return index;
+  else if (m_logFileStream.is_open())
+  {
+    m_logFileStream << ss.str() << message << std::endl;
+    m_logFileStream.flush();
+  }
 }
 
 }  // namespace utils
