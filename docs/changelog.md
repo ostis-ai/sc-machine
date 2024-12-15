@@ -263,6 +263,7 @@ See documentation, to learn more about using new API.
 
 ### Fixed
 
+- Validate parameters in handle link content sc-json-command in sc-server
 - Iterating sc-connectors with sc-edge loop
 - Checking of all syntactic and semantic subtypes for types in `ScMemoryContext::SetElementSubtype` and `ScType::CanExtendTo` methods.
 - Now sc-link is sc-node
