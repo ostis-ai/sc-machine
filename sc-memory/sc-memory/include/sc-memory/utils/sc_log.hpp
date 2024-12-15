@@ -55,26 +55,28 @@ public:
 
   void Clear();
   void SetMuted(bool value);
-  void SetLogFile(std::string const & file_name);
+  void SetPrefix(std::string const & prefix);
+  void SetLogFile(std::string const & logFile);
 
   static ScLogType DefineLogType(std::string const & logType);
 
   void Message(ScLogLevel level, std::string const & message, ScConsole::Color color = ScConsole::Color::White);
 
   template <typename T, typename... ARGS>
-  std::string Error(T const & t, ARGS const &... others);
+  void Error(T const & t, ARGS const &... others);
 
   template <typename T, typename... ARGS>
-  std::string Warning(T const & t, ARGS const &... others);
+  void Warning(T const & t, ARGS const &... others);
 
   template <typename T, typename... ARGS>
-  std::string Info(T const & t, ARGS const &... others);
+  void Info(T const & t, ARGS const &... others);
 
   template <typename T, typename... ARGS>
-  std::string Debug(T const & t, ARGS const &... others);
+  void Debug(T const & t, ARGS const &... others);
 
 protected:
   bool m_isMuted;
+  std::string m_prefix;
   ScLogType m_logType;
   std::string m_logFile;
   std::ofstream m_logFileStream;

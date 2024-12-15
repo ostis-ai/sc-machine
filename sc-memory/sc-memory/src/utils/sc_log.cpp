@@ -115,6 +115,11 @@ void ScLog::SetMuted(bool value)
   m_isMuted = value;
 }
 
+void ScLog::SetPrefix(std::string const & prefix)
+{
+  m_prefix = prefix;
+}
+
 void ScLog::SetLogFile(std::string const & logFile)
 {
   Clear();
@@ -147,6 +152,9 @@ void ScLog::Message(
   std::stringstream ss;
   ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
      << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "][" << logLevel.ToString() << "]: ";
+
+  if (!m_prefix.empty())
+    ss << m_prefix << ": ";
 
   if (m_logType == ScLog::ScLogType::Console)
   {

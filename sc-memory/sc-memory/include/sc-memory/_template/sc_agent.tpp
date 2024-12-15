@@ -249,7 +249,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateInitiationCondition(TScEvent const &
   }
   catch (utils::ScException const & exception)
   {
-    SC_LOG_ERROR("Initiation condition template is not valid. " << exception.Message());
+    m_logger.Error("Initiation condition template is not valid. ", exception.Message());
   }
   return isFound;
 }
@@ -299,7 +299,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
   }
   catch (utils::ScException const & exception)
   {
-    SC_LOG_ERROR("Result condition template is not valid. " << exception.Message());
+    m_logger.Error("Result condition template is not valid. ", exception.Message());
   }
   return isFound;
 }
@@ -353,9 +353,10 @@ ScTemplate ScAgent<TScEvent, TScContext>::BuildInitiationConditionTemplate(
   auto const & iteratorIt = eventToEventTripleIterators.find(eventClassAddr);
   if (iteratorIt == eventToEventTripleIterators.cend())
   {
-    SC_LOG_WARNING(
-        "Event class for agent class `" << this->GetName()
-                                        << "` is unknown. It is impossible to check initiation condition template.");
+    m_logger.Warning(
+        "Event class for agent class `",
+        this->GetName(),
+        "` is unknown. It is impossible to check initiation condition template.");
     return ScTemplate();
   }
 
@@ -443,44 +444,44 @@ bool ScAgent<TScEvent, TScContext>::GenerateCheckTemplateParams(
         checkTemplateParams.Add(connectorVarAddr, connectorAddr);
       else
       {
-        SC_LOG_WARNING(
-            "Initiation condition template of agent class `"
-            << this->GetName()
-            << "` checks initiated sc-event incorrectly. Maybe initiation condition template has triple with incorrect "
-               "sc-element types to "
-               "substitute sc-elements involved in initiated sc-event.");
+        m_logger.Warning(
+            "Initiation condition template of agent class `",
+            this->GetName(),
+            "` checks initiated sc-event incorrectly. Maybe initiation condition template has triple with incorrect "
+            "sc-element types to "
+            "substitute sc-elements involved in initiated sc-event.");
         checkTemplateParams = ScTemplateParams();
         return false;
       }
     }
     else
     {
-      SC_LOG_WARNING(
-          "Initiation condition template of agent class `"
-          << this->GetName()
-          << "` checks initiated sc-event incorrectly. Maybe initiation condition template does not have triple to "
-             "substitute sc-elements involved in initiated sc-event.");
+      m_logger.Warning(
+          "Initiation condition template of agent class `",
+          this->GetName(),
+          "` checks initiated sc-event incorrectly. Maybe initiation condition template does not have triple to "
+          "substitute sc-elements involved in initiated sc-event.");
       return false;
     }
 
     if (eventTripleIterator->Next())
     {
-      SC_LOG_WARNING(
-          "Initiation condition template of agent class `"
-          << this->GetName()
-          << "` checks initiated sc-event incorrectly. Maybe initiation condition template has triple to "
-             "substitute sc-elements involved in initiated sc-event twice.");
+      m_logger.Warning(
+          "Initiation condition template of agent class `",
+          this->GetName(),
+          "` checks initiated sc-event incorrectly. Maybe initiation condition template has triple to "
+          "substitute sc-elements involved in initiated sc-event twice.");
       checkTemplateParams = ScTemplateParams();
       return false;
     }
   }
   else
   {
-    SC_LOG_WARNING(
-        "Initiation condition template of agent class `"
-        << this->GetName()
-        << "` doesn't check initiated sc-event. Maybe agent initiation condition template does not have sc-event "
-           "subscription sc-element.");
+    m_logger.Warning(
+        "Initiation condition template of agent class `",
+        this->GetName(),
+        "` doesn't check initiated sc-event. Maybe agent initiation condition template does not have sc-event "
+        "subscription sc-element.");
     return false;
   }
 

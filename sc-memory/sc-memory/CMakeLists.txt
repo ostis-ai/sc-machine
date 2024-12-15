@@ -29,6 +29,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
     "include/sc-memory/*.hpp"
     "include/sc-memory/*/*.hpp"
     "include/sc-memory/*/*.tpp"
+    "include/sc-memory/*/*/*.tpp"
 )
 
 find_glib()

@@ -13,10 +13,10 @@
 #include "utils/sc_log.hpp"
 
 //! Log functions to be used in agent class methods.
-#define SC_AGENT_LOG_DEBUG(__message__) SC_LOG_DEBUG(GetName() << ": " << __message__)
-#define SC_AGENT_LOG_INFO(__message__) SC_LOG_INFO(GetName() << ": " << __message__)
-#define SC_AGENT_LOG_WARNING(__message__) SC_LOG_WARNING(GetName() << ": " << __message__)
-#define SC_AGENT_LOG_ERROR(__message__) SC_LOG_ERROR(GetName() << ": " << __message__)
+#define SC_AGENT_LOG_DEBUG(__message__) m_logger.Debug(__message__)
+#define SC_AGENT_LOG_INFO(__message__) m_logger.Info(__message__)
+#define SC_AGENT_LOG_WARNING(__message__) m_logger.Warning(__message__)
+#define SC_AGENT_LOG_ERROR(__message__) m_logger.Error(__message__)
 
 template <class TScEvent>
 class ScElementaryEventSubscription;
@@ -244,6 +244,7 @@ public:
 
 protected:
   mutable TScContext m_context;
+  mutable utils::ScLog m_logger;
   ScAddr m_agentImplementationAddr;
 
   _SC_EXTERN ScAgent() noexcept;
