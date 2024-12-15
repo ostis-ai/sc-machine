@@ -217,7 +217,7 @@ public:
    * @brief Determines whether this sc-type can be extended to another sc-type based on semantic and subtype
    * compatibility.
    * @param extType Type A sc-type that may extend this one.
-   * @return True if extension is possible based on semantic and subtype checks; false otherwise.
+   * @return true if extension is possible based on semantic and subtype checks; false otherwise.
    */
   bool CanExtendTo(ScType const & extType) const;
 

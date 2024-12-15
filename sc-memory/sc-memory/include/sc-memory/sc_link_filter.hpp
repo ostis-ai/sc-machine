@@ -31,7 +31,7 @@ public:
   /*!
    * @brief Checks if a given link address meets the filter criteria.
    * @param linkAddr A address of the link to check.
-   * @return True if the link meets the criteria; otherwise, false.
+   * @return true if the link meets the criteria; otherwise, false.
    */
   virtual bool CheckLink(ScAddr const & linkAddr) = 0;
 

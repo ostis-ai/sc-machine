@@ -50,7 +50,7 @@ public:
    *
    * @param params The parameters for initializing the sc-memory system.
    *
-   * @return bool true if the initialization is successful; otherwise, returns false.
+   * @return true if the initialization is successful; otherwise, returns false.
    */
   _SC_EXTERN static bool Initialize(sc_memory_params const & params);
 
@@ -60,7 +60,7 @@ public:
    * This function checks whether the sc-memory system is initialized.
    * It returns true if the system is initialized; otherwise, it returns false.
    *
-   * @return bool true if the sc-memory system is initialized; otherwise, returns false.
+   * @return true if the sc-memory system is initialized; otherwise, returns false.
    */
   _SC_EXTERN static bool IsInitialized();
 
@@ -72,7 +72,7 @@ public:
    *
    * @param saveState If true, the current state of the sc-memory system is saved before shutting down.
    *
-   * @return bool true if the shutdown is successful; otherwise, returns false.
+   * @return true if the shutdown is successful; otherwise, returns false.
    */
   _SC_EXTERN static bool Shutdown(bool saveState = true);
 
@@ -140,7 +140,7 @@ public:
    *
    * This method checks whether the sc-memory context is valid.
    *
-   * @return bool true if the sc-memory context is valid; otherwise, returns false.
+   * @return true if the sc-memory context is valid; otherwise, returns false.
    *
    * @code
    * ScMemoryContext context;
@@ -163,7 +163,7 @@ public:
    *
    * @param elementAddr A sc-address to check for existence.
    *
-   * @return bool true if the sc-element exists; otherwise, returns false.
+   * @return true if the sc-element exists; otherwise, returns false.
    *
    * @code
    * ScMemoryContext context;
@@ -188,7 +188,7 @@ public:
    *
    * @param elementAddr A sc-address of the sc-element to query.
    *
-   * @return size_t Count of sc-edges and outgoing sc-arcs for the specified sc-element.
+   * @return Count of sc-edges and outgoing sc-arcs for the specified sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -211,7 +211,7 @@ public:
    *
    * @param elementAddr A sc-address of the sc-element to query.
    *
-   * @return size_t Count of sc-edges and outgoing sc-arcs for the specified sc-element.
+   * @return Count of sc-edges and outgoing sc-arcs for the specified sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -265,7 +265,7 @@ public:
    *
    * @param elementAddr A sc-address of the sc-element to query.
    *
-   * @return size_t Count of sc-edges and incoming sc-arcs for the specified sc-element.
+   * @return Count of sc-edges and incoming sc-arcs for the specified sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -295,7 +295,7 @@ public:
    *
    * @param elementAddr A sc-address of the sc-element to erase.
    *
-   * @return bool true if the sc-element was successfully erased; otherwise, returns false.
+   * @return true if the sc-element was successfully erased; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have erase
    * permissions.
@@ -322,7 +322,7 @@ public:
    *
    * @param nodeType A sc-type of the sc-node to create.
    *
-   * @return ScAddr A sc-address of the newly created sc-node.
+   * @return A sc-address of the newly created sc-node.
    *
    * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
@@ -342,7 +342,7 @@ public:
    *
    * @param nodeType A sc-type of the sc-node to create.
    *
-   * @return ScAddr A sc-address of the newly created sc-node.
+   * @return A sc-address of the newly created sc-node.
    *
    * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-node type or if sc-memory is full.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
@@ -368,7 +368,7 @@ public:
    *
    * @param linkType A sc-type of the sc-link to create (default is ScType::ConstNodeLink).
    *
-   * @return ScAddr A sc-address of the newly created sc-link.
+   * @return A sc-address of the newly created sc-link.
    *
    * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
@@ -388,7 +388,7 @@ public:
    *
    * @param linkType A sc-type of the sc-link to create (default is ScType::ConstNodeLink).
    *
-   * @return ScAddr A sc-address of the newly created sc-link.
+   * @return A sc-address of the newly created sc-link.
    *
    * @throws utils::ExceptionInvalidParams if the specified type is not a valid sc-link type or if sc-memory is full.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
@@ -416,7 +416,7 @@ public:
    * @param sourceElementAddr A sc-address of the source sc-element.
    * @param targetElementAddr A sc-address of the target sc-element.
    *
-   * @return ScAddr A sc-address of the newly created sc-connector.
+   * @return A sc-address of the newly created sc-connector.
    *
    * @throws utils::ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is
    * full.
@@ -444,7 +444,7 @@ public:
    * @param sourceElementAddr A sc-address of the source sc-element.
    * @param targetElementAddr A sc-address of the target sc-element.
    *
-   * @return ScAddr A sc-address of the newly created sc-connector.
+   * @return A sc-address of the newly created sc-connector.
    *
    * @throws utils::ExceptionInvalidParams if the specified source or target sc-address is invalid or if sc-memory is
    * full.
@@ -476,7 +476,7 @@ public:
    *
    * @param elementAddr A sc-address of the sc-element to query.
    *
-   * @return ScType A type of the specified sc-element.
+   * @return A type of the specified sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -499,7 +499,7 @@ public:
    * @param elementAddr A sc-address of the sc-element to modify.
    * @param newSubtype A new subtype to set.
    *
-   * @return bool true if the subtype was successfully changed; otherwise, returns false.
+   * @return true if the subtype was successfully changed; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
@@ -527,7 +527,7 @@ public:
    *
    * @param arcAddr A sc-address of the sc-connector.
    *
-   * @return ScAddr A sc-address of the source sc-element.
+   * @return A sc-address of the source sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -550,7 +550,7 @@ public:
    *
    * @param arcAddr A sc-address of the sc-connector.
    *
-   * @return ScAddr A sc-address of the source sc-element.
+   * @return A sc-address of the source sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -579,7 +579,7 @@ public:
    *
    * @param arcAddr A sc-address of the sc-connector.
    *
-   * @return ScAddr A sc-address of the target sc-element.
+   * @return A sc-address of the target sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -602,7 +602,7 @@ public:
    *
    * @param arcAddr A sc-address of the sc-connector.
    *
-   * @return ScAddr A sc-address of the target sc-element.
+   * @return A sc-address of the target sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -631,7 +631,7 @@ public:
    *
    * @param connectorAddr A sc-address of the sc-connector.
    *
-   * @return std::tuple<ScAddr, ScAddr> A tuple of sc-connector incident sc-elements sc-addresses.
+   * @return A tuple of sc-connector incident sc-elements sc-addresses.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -657,7 +657,7 @@ public:
    * @param outFirstIncidentElementAddr Reference to store the sc-address of the source sc-element.
    * @param outSecondIncidentElementAddr Reference to store the sc-address of the target sc-element.
    *
-   * @return bool true if the information was successfully retrieved; otherwise, returns false.
+   * @return true if the information was successfully retrieved; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-connector address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -700,7 +700,7 @@ public:
    * @param contentStream A stream containing the content.
    * @param isSearchableString Flag indicating whether the content is searchable as a string (default is true).
    *
-   * @return bool true if the content was successfully set; otherwise, returns false.
+   * @return true if the content was successfully set; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address or stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -725,7 +725,7 @@ public:
    * @param linkContent The content of the sc-link.
    * @param isSearchableLinkContent Flag indicating whether the content is searchable as a string (default is true).
    *
-   * @return bool true if the content was successfully set; otherwise, returns false.
+   * @return true if the content was successfully set; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address or stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -772,7 +772,7 @@ public:
    * @param elementAddr A sc-address of the sc-link.
    * @param outLinkContent[out] A sc-typed content retrieved from the sc-link.
    *
-   * @return bool true if the content was successfully retrieved; otherwise, returns false.
+   * @return true if the content was successfully retrieved; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -801,7 +801,7 @@ public:
    *
    * @param linkAddr A sc-address of the sc-link.
    *
-   * @return ScStreamPtr A shared pointer to the stream containing the content.
+   * @return A shared pointer to the stream containing the content.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -822,7 +822,7 @@ public:
    * @param linkAddr A sc-address of the sc-link.
    * @param outLinkContent A sc-link content to get.
    *
-   * @return bool true if sc-link has content; otherwise, it returns false.
+   * @return true if sc-link has content; otherwise, it returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -867,7 +867,7 @@ public:
    *
    * @param linkContentStream A stream with content to use for content matching.
    *
-   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   * @return A set of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -882,7 +882,7 @@ public:
    *
    * @param linkContentStream A stream with content to use for content matching.
    *
-   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   * @return A vector of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -908,7 +908,7 @@ public:
    *
    * @param linkContent A sc-link contentto use for content matching.
    *
-   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   * @return A set of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -937,7 +937,7 @@ public:
    *
    * @param linkContent A sc-link content to use for content matching.
    *
-   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   * @return A vector of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -974,7 +974,7 @@ public:
    * @param linkContentSubstring A content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   * @return A set of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1002,7 +1002,7 @@ public:
    * @param linkContentSubstring A content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   * @return A vector of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1037,7 +1037,7 @@ public:
    * @param linkContentSubstringStream A stream  with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return ScAddrSet A set of sc-addresses representing the found sc-links.
+   * @return A set of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1055,7 +1055,7 @@ public:
    * @param linkContentSubstringStream A stream with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return ScAddrVector A vector of sc-addresses representing the found sc-links.
+   * @return A vector of sc-addresses representing the found sc-links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1090,7 +1090,7 @@ public:
    *                   customization of which links are considered based on
    *                   user-defined conditions.
    *
-   * @return ScAddrSet A set of sc-addresses representing the found links.
+   * @return A set of sc-addresses representing the found links.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1157,7 +1157,7 @@ public:
    *                   customization of which links are considered based on
    *                   user-defined conditions.
    *
-   * @return ScAddrSet A set of sc-addresses representing the links that match
+   * @return A set of sc-addresses representing the links that match
    *                   the search criteria. If no matches are found, an empty set is returned.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
@@ -1182,7 +1182,7 @@ public:
    * @param linkContent A substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return ScAddrSet A set of sc-addresses representing the links that match
+   * @return A set of sc-addresses representing the links that match
    *                   the search criteria. If no matches are found, an empty set is returned.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
@@ -1217,7 +1217,7 @@ public:
    * @param linkContent A substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return std::vector<std::string> A vector of strings representing the found sc-links contents.
+   * @return A vector of strings representing the found sc-links contents.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1254,7 +1254,7 @@ public:
    * @param linkContentStream A stream with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return std::set<std::string> A set of strings representing the found sc-links contents.
+   * @return A set of strings representing the found sc-links contents.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1273,7 +1273,7 @@ public:
    * @param linkContentStream A substring with content substring to use for content matching.
    * @param maxLengthToSearchAsPrefix The maximum length to search as a prefix (default is 0).
    *
-   * @return std::vector<std::string> A vector of strings representing the found sc-links contents.
+   * @return A vector of strings representing the found sc-links contents.
    *
    * @throws utils::ExceptionInvalidParams if the specified stream is invalid.
    * @throws utils::ExceptionInvalidState if the file memory state is invalid.
@@ -1517,7 +1517,7 @@ public:
    * @param targetElementAddr A sc-address of the ending sc-element.
    * @param connectorType A sc-type of the sc-connector to check.
    *
-   * @return bool true if the specified sc-connector exists; otherwise, returns false.
+   * @return true if the specified sc-connector exists; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -1547,7 +1547,7 @@ public:
    * @param targetElementAddr A sc-address of the ending sc-element.
    * @param connectorType A sc-type of the sc-connector to check.
    *
-   * @return bool true if the specified sc-connector exists; otherwise, returns false.
+   * @return true if the specified sc-connector exists; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -1583,7 +1583,7 @@ public:
    * @param systemIdentifier A system identifier of the sc-element to resolve.
    * @param elementType A sc-type of the sc-node to create if the element is not found.
    *
-   * @return ScAddr A sc-address of the resolved or created sc-element.
+   * @return A sc-address of the resolved or created sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
    * invalid or resolving sc-element type is not ScType::Node subtype
@@ -1609,7 +1609,7 @@ public:
    * @param systemIdentifier A system identifier of the sc-element to resolve.
    * @param elementType A sc-type of the sc-node to create if the element is not found.
    *
-   * @return ScAddr A sc-address of the resolved or created sc-element.
+   * @return A sc-address of the resolved or created sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
    * invalid or resolving sc-element type is not ScType::Node subtype
@@ -1652,7 +1652,7 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @return bool true if the sc-element is successfully resolved or created; otherwise, returns false.
+   * @returns true if the sc-element is successfully resolved or created; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
    invalid
@@ -1692,7 +1692,8 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @return bool true if the sc-element is successfully resolved or created; otherwise, returns false.
+   * @return true if the sc-element is successfully resolved or created; otherwise, returns false.
+   *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid or the specified sc-address is
    * invalid or resolving sc-element type is not ScType::Node subtype.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1724,7 +1725,7 @@ public:
    * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
    *
-   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1746,7 +1747,7 @@ public:
    * @param systemIdentifier A system identifier to set for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to set `systemIdentifier` for it.
    *
-   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1784,7 +1785,7 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1818,7 +1819,7 @@ public:
    *                              addr3 (system identifier sc-link)
    * @endcode
    *
-   * @returns bool false if `systemIdentifier` set for other sc-element address.
+   * @returns false if `systemIdentifier` set for other sc-element address.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1847,7 +1848,7 @@ public:
   /*!
    * @brief Tries to get system identifier for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to get it system identifier.
-   * @returns std::string "" if system identifier doesn't exist for `elementAddr`.
+   * @returns "" if system identifier doesn't exist for `elementAddr`.
    *
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1865,7 +1866,7 @@ public:
   /*!
    * @brief Tries to get system identifier for sc-element `elementAddr`.
    * @param elementAddr A sc-element sc-address to get it system identifier.
-   * @returns std::string "" if system identifier doesn't exist for `elementAddr`.
+   * @returns "" if system identifier doesn't exist for `elementAddr`.
    * @throws utils::ExceptionInvalidParams if the specified sc-address is invalid
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
@@ -1896,7 +1897,7 @@ public:
    * @param systemIdentifier A system identifier of the sc-element to find.
    * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
    *
-   * @return bool true if the sc-element is found; otherwise, returns false.
+   * @return true if the sc-element is found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1922,7 +1923,7 @@ public:
    * @param systemIdentifier A system identifier of the sc-element to find.
    * @param outElementAddr A reference to store the sc-address of the found sc-element (if any).
    *
-   * @return bool true if the sc-element is found; otherwise, returns false.
+   * @return true if the sc-element is found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1951,7 +1952,7 @@ public:
    *
    * @param systemIdentifier A system identifier of the sc-element to find.
    *
-   * @return ScAddr A sc-address of the found sc-element.
+   * @return A sc-address of the found sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -1972,7 +1973,7 @@ public:
    *
    * @param systemIdentifier A system identifier of the sc-element to search.
    *
-   * @return ScAddr A sc-address of the found sc-element.
+   * @return A sc-address of the found sc-element.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -2002,7 +2003,7 @@ public:
    * @param systemIdentifier The system identifier of the sc-element to find.
    * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
    *
-   * @return bool true if the sc-element is found; otherwise, returns false.
+   * @return true if the sc-element is found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -2028,7 +2029,7 @@ public:
    * @param systemIdentifier The system identifier of the sc-element to find.
    * @param outQuintuple A reference to store the system identifier quintuple of the found sc-element.
    *
-   * @return bool true if the sc-element is found; otherwise, returns false.
+   * @return true if the sc-element is found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidParams if the specified system identifier is invalid.
    * @throws utils::ExceptionInvalidState if the sc-memory context is not valid or in an invalid state.
@@ -2091,7 +2092,7 @@ public:
    * @param params A map of specified sc-template sc-variables to user replacements.
    * @param resultCode A pointer to status of method completion.
    *
-   * @return bool true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
+   * @return true if the construction is generated; otherwise, returns false. It is the same as `resultCode`.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2131,7 +2132,7 @@ public:
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
    * @param result A result vector of found sc-constructions.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2170,7 +2171,7 @@ public:
    * @param templateToFind An object of `ScTemplate` to find sc-constructions by it.
    * @param result A result vector of found sc-constructions.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2220,7 +2221,7 @@ public:
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2266,7 +2267,7 @@ public:
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2317,7 +2318,7 @@ public:
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param checkCallback A lambda-function, that filters all found elements.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2356,7 +2357,7 @@ public:
    * @param callback A lambda-function, callable when all sc-construction triples were found.
    * @param checkCallback A lambda-function, that filters all found elements.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2412,7 +2413,7 @@ public:
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2467,7 +2468,7 @@ public:
    * @param filterCallback A lambda-function, that filters all found sc-constructions triples.
    * @param checkCallback A lambda-function, that filters all found elements.
    *
-   * @return bool true if the sc-constructions are found; otherwise, returns false.
+   * @return true if the sc-constructions are found; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the object of `ScTemplate` is not valid.
    *
@@ -2558,7 +2559,7 @@ public:
    * @param translatableTemplateAddr A sc-address of sc-template structure to be translated.
    * @param params A map of specified sc-template sc-variables to their replacements.
    *
-   * @return bool true if the sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`;
+   * @return true if the sc-template represented in sc-memory (sc-structure) into object of `ScTemplate`;
    * otherwise, throws exceptions.
    *
    * @throws utils::ExceptionInvalidState if sc-template represented in sc-memory is not valid.
@@ -2611,7 +2612,7 @@ public:
    * @param resultTemplate An object of `ScTemplate` to be gotten.
    * @param translatableSCsTemplate A sc.s-representation of sc-template to be translated.
    *
-   * @return bool true if the sc-template represented in SCs-code into object of `ScTemplate`; otherwise, throws
+   * @return true if the sc-template represented in SCs-code into object of `ScTemplate`; otherwise, throws
    * exceptions.
    *
    * @throws utils::ExceptionInvalidState if sc-template represented in SCs-code is not valid.
@@ -2666,7 +2667,7 @@ protected:
 public:
   /*! Calculates sc-element counts.
    *
-   * @return ScMemoryStatistics sc-nodes, sc-connectors and sc-links counts.
+   * @return sc-nodes, sc-connectors and sc-links counts.
    *
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
    * permissions.
@@ -2675,7 +2676,7 @@ public:
 
   /*! Calculates sc-element counts.
    *
-   * @return ScMemoryStatistics sc-nodes, sc-connectors and sc-links counts.
+   * @return sc-nodes, sc-connectors and sc-links counts.
    *
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have read
    * permissions.
@@ -2694,7 +2695,7 @@ public:
    *
    * This method saves the state of the sc-memory.
    *
-   * @return bool true if the memory state was successfully saved; otherwise, returns false.
+   * @return true if the memory state was successfully saved; otherwise, returns false.
    *
    * @throws utils::ExceptionInvalidState if the sc-memory context is not authenticated or does not have write
    * permissions.
