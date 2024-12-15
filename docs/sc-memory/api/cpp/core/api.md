@@ -330,6 +330,60 @@ ScAddrSet const & linkAddrs2 = context.SearchLinksByContent(10f);
 // The set `linkAddrs2` must contain sc-address `linkAddr2`.
 ```
 
+Also, you can provide a filter to search sc-links to define criteria for which links should be included in the search results. This allows for customization of which links are considered based on user-defined conditions. The filter must be an instance of a class derived from `ScLinkFilter`, which implements the `CheckLink` and `RequestLink` methods.
+
+```cpp
+class TestScLinkFilter final : public ScLinkFilter
+{
+public:
+  // You can specify custom fields and methods.
+  ScMemoryContext * m_context;
+  ScAddr m_linkClassAddr;
+
+  bool CheckLink(ScAddr const & linkAddr) override
+  {
+    // Don't include sc-link in result if it doesn't belong 
+    // to `m_linkClassAddr`.
+    return m_context->CheckConnector(
+      m_linkClassAddr, linkAddr, ScType::ConstPermPosArc);
+  }
+
+  ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+  {
+    // Iterate over all sc-links.
+    return ScLinkFilterRequest::CONTINUE;
+  }
+};
+
+
+// Some method A
+...
+// For example, generate sc-links, set contents for them and add only 
+// one of them to some set or class.
+ScAddr const & linkClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
+ScAddr const & linkAddr2 = m_ctx->CreateLink(ScType::ConstNodeLink);
+
+m_ctx->SetLinkContent(linkAddr1, "content 1");
+m_ctx->SetLinkContent(linkAddr2, "content 2");
+
+m_ctx->GenerateConnector(ScType::ConstPermPosArc, linkClassAddr, linkAddr1);
+...
+
+// Some method B
+...
+// Create object of custom sc-link filter class and search sc-links 
+// with this filter.
+CustomScLinkFilter filter;
+filter.m_context = &*m_ctx;
+filter.m_linkClassAddr = linkClassAddr;
+
+ScAddrSet const & links 
+  = m_ctx->SearchLinksByContentSubstring("content", filter);
+// The `links` must have only one sc-link sc-address `linkAddr1`.
+...
+```
+
 ### **SearchLinksByContentSubstring**
 
 And you can find sc-links by its content substring. For this use the method `SearchLinksByContentSubstring`.
@@ -341,6 +395,8 @@ ScAddrSet const & linkAddrs1
   = context.SearchLinksByContentSubstring("my cont");
 // The set `linkAddrs1` must contain sc-address `linkAddr1`.
 ```
+
+Just like for the `SearchLinksByContent` method, when calling method `SearchLinksByContentSubstring`, you can specify filter for sc-links to be searched.
 
 ### **ScException**
 
