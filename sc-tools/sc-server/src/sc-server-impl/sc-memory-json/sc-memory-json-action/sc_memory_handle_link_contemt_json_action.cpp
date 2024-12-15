@@ -101,7 +101,7 @@ ScMemoryJsonPayload ScMemoryHandleLinkContentJsonAction::SetLinkContent(
     return result;
   }
 
-  ScAddr linkAddr{parameters[LINK_ADDRESS].get<size_t>()};
+  ScAddr linkAddr(parameters[LINK_ADDRESS].get<size_t>());
   ScLink link{*context, linkAddr};
 
   if (!parameters.contains(LINK_CONTENT_TYPE))
@@ -205,7 +205,7 @@ ScMemoryJsonPayload ScMemoryHandleLinkContentJsonAction::GetLinkContent(
     return result;
   }
 
-  ScAddr linkAddr{parameters[LINK_ADDRESS].get<size_t>()};
+  ScAddr linkAddr(parameters[LINK_ADDRESS].get<size_t>());
   ScLink link{*context, linkAddr};
 
   if (link.DetermineType() >= ScLink::Type::Int8 && link.DetermineType() <= ScLink::Type::UInt64)
