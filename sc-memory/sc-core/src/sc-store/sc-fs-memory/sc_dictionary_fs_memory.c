@@ -1085,7 +1085,7 @@ sc_dictionary_fs_memory_status _sc_dictionary_fs_memory_get_strings_by_substring
   }
 
   sc_char * term = _sc_dictionary_fs_memory_get_first_term(string, memory->term_separators);
-  sc_list * string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(memory, term, null_ptr);
+  sc_list * string_offsets = _sc_dictionary_fs_memory_get_string_offsets_by_term_prefix(memory, term, link_handler);
   sc_mem_free(term);
 
   sc_dictionary_fs_memory_status const status = _sc_dictionary_fs_memory_get_strings_by_substring_term(
