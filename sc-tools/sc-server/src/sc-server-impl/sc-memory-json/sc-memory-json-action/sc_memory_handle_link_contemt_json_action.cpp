@@ -87,8 +87,7 @@ ScMemoryJsonPayload ScMemoryHandleLinkContentJsonAction::SetLinkContent(
   if (!parameters.contains(LINK_ADDRESS))
   {
     error = {
-        "Not able to set content for sc-link because its sc-address hash is not specified in command. Payload with "
-        "`"
+        "Not able to set content for sc-link because its sc-address hash is not specified in command. Payload with `"
         + SET_LINK_CONTENT + "` command must have `" + LINK_ADDRESS + "` parameter."};
     return result;
   }
