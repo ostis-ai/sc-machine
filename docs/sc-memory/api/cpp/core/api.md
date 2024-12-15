@@ -408,8 +408,6 @@ std::set<std::string> const & linkContents
 // The set `linkContents` must contain string `my content`.
 ```
 
-Just like for the `SearchLinksByContentSubstring` method, when calling method `SearchLinksContentsByContentSubstring`, you can specify filter for sc-links to be searched.
-
 ### **ScException**
 
 To declare your own exceptions inherit from class `ScException`.
