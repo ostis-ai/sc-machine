@@ -263,6 +263,7 @@ See documentation, to learn more about using new API.
 
 ### Fixed
 
+- Iterating sc-connectors with sc-edge loop
 - Checking of all syntactic and semantic subtypes for types in `ScMemoryContext::SetElementSubtype` and `ScType::CanExtendTo` methods.
 - Now sc-link is sc-node
 - sc-arcs and sc-elements are removed after agents have worked with them
