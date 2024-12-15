@@ -55,7 +55,7 @@ public:
    * in the stored tokens.
    *
    * @param options A vector of option strings to check for presence.
-   * @return True if any option is found; otherwise, false.
+   * @return true if any option is found; otherwise, false.
    */
   bool Has(std::vector<std::string> const & options) const;
 

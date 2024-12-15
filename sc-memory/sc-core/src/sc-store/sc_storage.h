@@ -23,6 +23,7 @@
 
 #include "sc-core/sc_memory_params.h"
 
+#include "sc-core/sc_link_filter.h"
 #include "sc-core/sc_stream.h"
 #include "sc-core/sc-container/sc_list.h"
 

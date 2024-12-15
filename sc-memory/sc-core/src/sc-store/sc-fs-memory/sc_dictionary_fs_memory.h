@@ -13,6 +13,7 @@
 
 #include "sc-core/sc_types.h"
 #include "sc-core/sc_defines.h"
+#include "sc-core/sc_link_filter.h"
 #include "sc-core/sc_stream.h"
 
 #include "sc-core/sc-container/sc_dictionary.h"
