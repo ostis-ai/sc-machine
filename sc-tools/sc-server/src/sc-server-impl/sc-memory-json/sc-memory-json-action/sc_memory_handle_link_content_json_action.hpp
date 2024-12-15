@@ -15,75 +15,218 @@
 class ScMemoryHandleLinkContentJsonAction : public ScMemoryJsonAction
 {
 public:
-  ScMemoryJsonPayload Complete(ScAgentContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload &)
-      override
+  ScMemoryJsonPayload Complete(
+      ScAgentContext * context,
+      ScMemoryJsonPayload requestPayload,
+      ScMemoryJsonPayload & errorsPayload) override
   {
     ScMemoryJsonPayload responsePayload;
 
-    auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & atom)
+    auto const & process = [&context, &responsePayload, this](ScMemoryJsonPayload const & parameters)
     {
-      std::string const & type = atom["command"].get<std::string>();
+      ScMemoryJsonPayload error;
+      if (!parameters.contains("command"))
+      {
+        error = {
+            "Not able to handle command for sc-links because type of command to be completed is not specified. Command "
+            "`content` must have payload with `command` parameter."};
+        return error;
+      }
 
-      if (type == "set")
-        responsePayload.push_back(SetContent(context, atom));
-      else if (type == "get")
-        responsePayload.push_back(GetContent(context, atom));
-      else if (type == "find")
-        responsePayload.push_back(SearchLinksByContent(context, atom));
-      else if (type == "find_by_substr" || type == "find_links_by_substr")
-        responsePayload.push_back(SearchLinksByContentSubstring(context, atom));
-      else if (type == "find_strings_by_substr")
-        responsePayload.push_back(SearchLinksContentsByContentSubstring(context, atom));
+      if (!parameters["command"].is_string())
+      {
+        error = {
+            "Not able to handle command for sc-links because type of command to be completed is specified incorrectly. "
+            "Command `set` must have payload with `command` parameter having string value."};
+        return error;
+      }
+
+      std::string const & commandType = parameters["command"].get<std::string>();
+      ScMemoryJsonPayload result;
+      if (commandType == "set")
+        result = SetLinkContent(context, parameters, error);
+      else if (commandType == "get")
+        result = GetLinkContent(context, parameters, error);
+      else if (commandType == "find")
+        result = SearchLinksByContent(context, parameters, error);
+      else if (commandType == "find_by_substr" || commandType == "find_links_by_substr")
+        result = SearchLinksByContentSubstring(context, parameters, error);
+      else if (commandType == "find_strings_by_substr")
+        result = SearchLinksContentsByContentSubstring(context, parameters, error);
+      else
+        error = {
+            "Not able to handle command for sc-links because type of command to be completed is specified incorrectly. "
+            "Command `set` must have payload with `command` parameter having one of string values: `set`, `get`, "
+            "`find`, `find_links_by_substr` or `find_strings_by_substr`."};
+
+      if (error.is_null())
+        responsePayload.push_back(result);
+
+      return error;
     };
 
     if (requestPayload.is_array())
     {
-      for (auto & atom : requestPayload)
-        process(atom);
+      for (size_t i = 0; i < requestPayload.size(); ++i)
+      {
+        ScMemoryJsonPayload const & error = process(requestPayload[i]);
+        if (!error.is_null())
+          errorsPayload.push_back({i, error});
+      }
     }
     else
-      process(requestPayload);
+      errorsPayload = process(requestPayload);
 
     return responsePayload;
   }
 
 private:
-  sc_bool SetContent(ScAgentContext * context, ScMemoryJsonPayload const & atom)
+  bool SetLinkContent(ScAgentContext * context, ScMemoryJsonPayload const & parameters, ScMemoryJsonPayload & error)
   {
-    ScAddr const & linkAddr = ScAddr(atom["addr"].get<size_t>());
-    std::string const & contentType = atom["type"].get<std::string>();
-    auto const & data = atom["data"];
+    bool result = false;
+    if (!parameters.contains("addr"))
+    {
+      error = {
+          "Not able to set content for sc-link because its sc-address hash is not specified in command. Payload with "
+          "`set` command must have `addr` parameter."};
+      return result;
+    }
 
+    if (!parameters["addr"].is_number_integer())
+    {
+      error = {
+          "Not able to set content for sc-link because its sc-address hash is specified incorrectly. Payload with "
+          "`set` command must have `addr` parameter with integer value."};
+      return result;
+    }
+
+    ScAddr linkAddr{parameters["addr"].get<size_t>()};
     ScLink link{*context, linkAddr};
 
+    if (!parameters.contains("type"))
+    {
+      error = {
+          "Not able to set content for sc-link because type of content to be set is not specified. Payload with `set` "
+          "command must have `type` parameter."};
+      return result;
+    }
+
+    if (!parameters["type"].is_string())
+    {
+      error = {
+          "Not able to set content for sc-link because type of content to be set is specified incorrectly. Payload "
+          "with `set` command must have `type` parameter with string value."};
+      return result;
+    }
+
+    std::string const & contentType = parameters["type"].get<std::string>();
+
+    if (!parameters.contains("data"))
+    {
+      error = {
+          "Not able to set content for sc-link because content to be set is not specified. Payload with `set` command "
+          "must have `data` parameter."};
+      return result;
+    }
+
+    auto const & data = parameters["data"];
     if (contentType == "string" || contentType == "binary")
-      return link.Set(data.get<std::string>());
-    else if (contentType == "int")
-      return link.Set(data.get<sc_int>());
-    else if (contentType == "float")
-      return link.Set(data.get<float>());
+    {
+      if (!data.is_string())
+      {
+        error = {
+            "Not able to set content for sc-link because content to be set is specified incorrectly. Payload with "
+            "`set` command has `data` parameter with not string value, but `type` parameter is specified as `string`."};
+        return result;
+      }
 
-    return SC_FALSE;
+      result = link.Set(data.get<std::string>());
+    }
+    else if (contentType == "int")
+    {
+      if (!data.is_number_integer())
+      {
+        error = {
+            "Not able to set content for sc-link because content to be set is specified incorrectly. Payload with "
+            "`set` command has `data` parameter with not integer value, but `type` parameter is specified as `int`."};
+        return result;
+      }
+
+      result = link.Set(data.get<sc_int>());
+    }
+    else if (contentType == "float")
+    {
+      if (!data.is_number_float())
+      {
+        error = {
+            "Not able to set content for sc-link because content to be set is specified incorrectly. Payload with "
+            "`set` command has `data` parameter with not float value, but `type` parameter is specified as `float`."};
+        return result;
+      }
+
+      result = link.Set(data.get<sc_float>());
+    }
+    else
+    {
+      error = {
+          "Not able to set content for sc-link because type of content to be set is specified incorrectly. Payload "
+          "with "
+          "`set` command must have `type` parameter with one of the following values: `string`, `int` or `float`"};
+    }
+
+    return result;
   }
 
-  ScMemoryJsonPayload GetContent(ScAgentContext * context, ScMemoryJsonPayload const & atom)
+  ScMemoryJsonPayload GetLinkContent(
+      ScAgentContext * context,
+      ScMemoryJsonPayload const & parameters,
+      ScMemoryJsonPayload & error)
   {
-    ScAddr const & linkAddr = ScAddr(atom["addr"].get<size_t>());
+    ScMemoryJsonPayload result;
+    if (!parameters.contains("addr"))
+    {
+      error = {
+          "Not able to get content of sc-link because its sc-address hash is not specified in command. Payload with "
+          "`get` command must have `addr` parameter."};
+      return result;
+    }
+
+    if (!parameters["addr"].is_number_integer())
+    {
+      error = {
+          "Not able to get content of sc-link because its sc-address hash is specified incorrectly. Payload with "
+          "`get` command must have `addr` parameter with integer value."};
+      return result;
+    }
+
+    ScAddr linkAddr{parameters["addr"].get<size_t>()};
     ScLink link{*context, linkAddr};
 
-    ScMemoryJsonPayload answer;
     if (link.DetermineType() >= ScLink::Type::Int8 && link.DetermineType() <= ScLink::Type::UInt64)
-      return {{"value", link.Get<sc_int>()}, {"type", "int"}};
+      result = {{"value", link.Get<sc_int>()}, {"type", "int"}};
     else if (link.IsType<double>() || link.IsType<float>())
-      return {{"value", link.Get<float>()}, {"type", "float"}};
+      result = {{"value", link.Get<float>()}, {"type", "float"}};
     else
-      return {{"value", link.Get<std::string>()}, {"type", "string"}};
+      result = {{"value", link.Get<std::string>()}, {"type", "string"}};
+    return result;
   }
 
-  std::vector<size_t> SearchLinksByContent(ScAgentContext * context, ScMemoryJsonPayload const & atom)
+  std::vector<size_t> SearchLinksByContent(
+      ScAgentContext * context,
+      ScMemoryJsonPayload const & parameters,
+      ScMemoryJsonPayload & error)
   {
-    auto const & data = atom["data"];
+    std::vector<size_t> hashes;
+    if (!parameters.contains("data"))
+    {
+      error = {
+          "Not able to search sc-links by content because content to be search is not specified. Payload with `find` "
+          "command must have `data` parameter."};
+      return hashes;
+    }
+
     ScAddrSet linkSet;
+    auto const & data = parameters["data"];
     if (data.is_string())
       linkSet = context->SearchLinksByContent(data.get<std::string>());
     else if (data.is_number_integer())
@@ -94,8 +237,14 @@ private:
       stream << data.get<float>();
       linkSet = context->SearchLinksByContent(stream.str());
     }
+    else
+    {
+      error = {
+          "Not able to search sc-links by content because content to be search is specified incorrectly. Payload with "
+          "`find` "
+          "command must have `data` parameter with `string`, `integer` or `float` value."};
+    }
 
-    std::vector<size_t> hashes;
     hashes.reserve(linkSet.size());
     for (auto const & linkAddr : linkSet)
       hashes.push_back(linkAddr.Hash());
@@ -103,10 +252,23 @@ private:
     return hashes;
   }
 
-  std::vector<size_t> SearchLinksByContentSubstring(ScAgentContext * context, ScMemoryJsonPayload const & atom)
+  std::vector<size_t> SearchLinksByContentSubstring(
+      ScAgentContext * context,
+      ScMemoryJsonPayload const & parameters,
+      ScMemoryJsonPayload & error)
   {
-    auto const & data = atom["data"];
+    std::vector<size_t> hashes;
+    if (!parameters.contains("data"))
+    {
+      error = {
+          "Not able to search sc-links by content substring because content substring to be search is not specified. "
+          "Payload with "
+          "`find_links_by_substr` command must have `data` parameter."};
+      return hashes;
+    }
+
     ScAddrSet linkSet;
+    auto const & data = parameters["data"];
     if (data.is_string())
       linkSet = context->SearchLinksByContentSubstring(data.get<std::string>(), maxLengthToSearchAsPrefix);
     else if (data.is_number_integer())
@@ -117,8 +279,14 @@ private:
       stream << data.get<float>();
       linkSet = context->SearchLinksByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
     }
+    else
+    {
+      error = {
+          "Not able to search sc-links by content substring because content substring to be searched is specified "
+          "incorrectly. Payload with `find_links_by_substr` "
+          "command must have `data` parameter with `string`, `integer` or `float` value."};
+    }
 
-    std::vector<size_t> hashes;
     hashes.reserve(linkSet.size());
     for (auto const & linkAddr : linkSet)
       hashes.push_back(linkAddr.Hash());
@@ -128,9 +296,19 @@ private:
 
   std::vector<std::string> SearchLinksContentsByContentSubstring(
       ScAgentContext * context,
-      ScMemoryJsonPayload const & atom)
+      ScMemoryJsonPayload const & parameters,
+      ScMemoryJsonPayload & error)
   {
-    auto const & data = atom["data"];
+    if (!parameters.contains("data"))
+    {
+      error = {
+          "Not able to search contents of sc-links by content substring because content substring to be searched is "
+          "not specified. "
+          "Payload with `find_strings_by_substr` command must have `data` parameter."};
+      return {};
+    }
+
+    auto const & data = parameters["data"];
     std::set<std::string> linkContentSet;
     if (data.is_string())
       linkContentSet =
@@ -143,6 +321,13 @@ private:
       std::stringstream stream;
       stream << data.get<float>();
       linkContentSet = context->SearchLinksContentsByContentSubstring(stream.str(), maxLengthToSearchAsPrefix);
+    }
+    else
+    {
+      error = {
+          "Not able to search contents of sc-links by content substring because content substring to be searched is "
+          "specified incorrectly. Payload with `find_strings_by_substr` "
+          "command must have `data` parameter with `string`, `integer` or `float` value."};
     }
 
     return {linkContentSet.cbegin(), linkContentSet.cend()};
