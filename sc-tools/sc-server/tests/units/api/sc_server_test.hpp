@@ -64,7 +64,7 @@ protected:
 
     ScMemory::LogMute();
     ScMemory::Initialize(params);
-    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8865, parallel_actions);
+    m_server = std::make_unique<ScServerImpl>("127.0.0.1", 8898, parallel_actions);
     m_server->ClearChannels();
     m_server->Run();
     ScMemory::LogUnmute();
