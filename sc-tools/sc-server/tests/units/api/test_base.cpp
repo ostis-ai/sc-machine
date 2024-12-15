@@ -990,7 +990,7 @@ TEST_F(ScServerTest, SetContentWithoutInvalidContentType)
       {
           {"command", "set"},
           {"addr", link.Hash()},
-          {"type", "invalid"},
+          {"type", {}},
       });
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -1034,7 +1034,7 @@ TEST_F(ScServerTest, SetContentWithoutSpecifiedContent)
   client.Stop();
 }
 
-TEST_F(ScServerTest, SetContentWithInvalidContent)
+TEST_F(ScServerTest, SetContentWithInvalidStringContent)
 {
   ScClient client;
   EXPECT_TRUE(client.Connect(m_server->GetUri()));
@@ -1049,7 +1049,97 @@ TEST_F(ScServerTest, SetContentWithInvalidContent)
           {"command", "set"},
           {"addr", link.Hash()},
           {"type", "string"},
-          {"content", 100},
+          {"data", {}},
+      });
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+  EXPECT_TRUE(response["errors"][0].is_string());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SetContentWithInvalidIntContent)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const & link = m_ctx->GenerateLink();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      {
+          {"command", "set"},
+          {"addr", link.Hash()},
+          {"type", "int"},
+          {"data", {}},
+      });
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+  EXPECT_TRUE(response["errors"][0].is_string());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SetContentWithInvalidFloatContent)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const & link = m_ctx->GenerateLink();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      {
+          {"command", "set"},
+          {"addr", link.Hash()},
+          {"type", "float"},
+          {"data", {}},
+      });
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+  EXPECT_TRUE(response["errors"][0].is_string());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, SetContentWithUnknownContentType)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const & link = m_ctx->GenerateLink();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      {
+          {"command", "set"},
+          {"addr", link.Hash()},
+          {"type", "unknown"},
+          {"data", {}},
       });
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -1077,6 +1167,34 @@ TEST_F(ScServerTest, GetContentWithoutSpecifiedAddr)
       "content",
       {
           {"command", "get"},
+      });
+  EXPECT_TRUE(client.Send(payloadString));
+
+  auto const response = client.GetResponseMessage();
+  EXPECT_FALSE(response.is_null());
+  auto const & responsePayload = response["payload"];
+  EXPECT_TRUE(responsePayload.is_null());
+  EXPECT_FALSE(response["status"].get<sc_bool>());
+  EXPECT_FALSE(response["errors"].empty());
+  EXPECT_TRUE(response["errors"][0].is_string());
+
+  client.Stop();
+}
+
+TEST_F(ScServerTest, GetContentWithInvalidAddr)
+{
+  ScClient client;
+  EXPECT_TRUE(client.Connect(m_server->GetUri()));
+  client.Run();
+
+  ScAddr const & link = m_ctx->GenerateLink();
+
+  std::string const payloadString = ScMemoryJsonConverter::From(
+      0,
+      "content",
+      {
+          {"command", "get"},
+          {"addr", "invalid"},
       });
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -1202,7 +1320,7 @@ TEST_F(ScServerTest, SearchLinksContentsWithoutSpecifiedContentSubstring)
       0,
       "content",
       {
-          {"command", "find_links_by_substr"},
+          {"command", "find_strings_by_substr"},
       });
   EXPECT_TRUE(client.Send(payloadString));
 
@@ -1229,7 +1347,7 @@ TEST_F(ScServerTest, SearchLinksContentsWithInvalidContentSubstring)
       0,
       "content",
       {
-          {"command", "find_links_by_substr"},
+          {"command", "find_strings_by_substr"},
           {"data", {}},
       });
   EXPECT_TRUE(client.Send(payloadString));
