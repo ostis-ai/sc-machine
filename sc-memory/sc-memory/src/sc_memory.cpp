@@ -109,13 +109,13 @@ bool ScMemory::Shutdown(bool saveState /* = true */)
 void ScMemory::LogMute()
 {
   isLogMuted = true;
-  ms_globalLogger.SetMuted(true);
+  ms_globalLogger.Mute();
 }
 
 void ScMemory::LogUnmute()
 {
   isLogMuted = false;
-  ms_globalLogger.SetMuted(false);
+  ms_globalLogger.Unmute();
 }
 
 // ---------------

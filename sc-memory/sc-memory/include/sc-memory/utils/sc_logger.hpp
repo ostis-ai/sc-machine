@@ -122,12 +122,11 @@ public:
    */
   void Clear();
 
-  /*!
-   * @brief Mutes or unmutes logging output based on the provided value.
-   *
-   * @param value True to mute logging; false to enable it again.
-   */
-  void SetMuted(bool value);
+  //! Mutes logging output.
+  void Mute();
+
+  //! Unmute logging output.
+  void Unmute();
 
   /*!
    * @brief Sets a prefix for all logged messages.
@@ -142,6 +141,12 @@ public:
    * @param logFile A name of the file where logs should be written.
    */
   void SetLogFile(std::string const & logFile);
+
+  /*!
+   * @brief Changes severity level of the message being logged.
+   * @param level New severity level of the message being logged (e.g., Error, Warning).
+   */
+  void SetLogLevel(ScLogLevel const & logLevel);
 
   /*!
    * @brief Defines the type of logging based on a string input ("Console" or "File").

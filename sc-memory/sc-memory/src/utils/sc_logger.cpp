@@ -111,9 +111,14 @@ void ScLogger::Clear()
   }
 }
 
-void ScLogger::SetMuted(bool value)
+void ScLogger::Mute()
 {
-  m_isMuted = value;
+  m_isMuted = true;
+}
+
+void ScLogger::Unmute()
+{
+  m_isMuted = false;
 }
 
 void ScLogger::SetPrefix(std::string const & prefix)
@@ -126,6 +131,11 @@ void ScLogger::SetLogFile(std::string const & logFile)
   Clear();
   m_logType = ScLogger::ScLogType::File;
   m_logFileStream.open(logFile, std::ofstream::out | std::ofstream::trunc);
+}
+
+void ScLogger::SetLogLevel(ScLogLevel const & logLevel)
+{
+  m_logLevel = logLevel;
 }
 
 ScLogger::ScLogType ScLogger::DefineLogType(std::string const & logType)

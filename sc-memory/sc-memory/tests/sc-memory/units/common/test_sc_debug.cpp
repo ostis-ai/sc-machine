@@ -216,26 +216,35 @@ TEST_F(ScLoggerTest, DebugPrint)
   EXPECT_NE(result.find(expectedStream.str()), std::string::npos);
 }
 
+TEST_F(ScLoggerTest, ChangeSeverityLogLevel)
+{
+  m_logger.SetLogLevel(utils::ScLogLevel::Error);
+
+  m_logger.Info("This message should not be logged.");
+
+  EXPECT_TRUE(m_loggerResult.str().empty());
+}
+
 TEST_F(ScLoggerTest, MutePreventsLogging)
 {
-  m_logger.SetMuted(true);
+  m_logger.Mute();
 
   m_logger.Info("This message should not be logged.");
 
   EXPECT_TRUE(m_loggerResult.str().empty());
 
-  m_logger.SetMuted(false);
+  m_logger.Unmute();
 }
 
 TEST_F(ScLoggerTest, MuteAndUnmuteLogging)
 {
-  m_logger.SetMuted(true);
+  m_logger.Mute();
 
   m_logger.Info("This message should not be logged.");
 
   EXPECT_TRUE(m_loggerResult.str().empty());
 
-  m_logger.SetMuted(false);
+  m_logger.Unmute();
 
   m_logger.Info("This message should be logged.");
 
