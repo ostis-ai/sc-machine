@@ -350,7 +350,8 @@ To declare your own exceptions inherit from class `ScException`.
 class MyException final : public ScException
 {
 public:
-  explicit MyException(std::string const & description, std::string const & message) 
+  explicit MyException(
+    std::string const & description, std::string const & message) 
     : ScException("MyException: " + description, message)
   {}
 };
@@ -370,22 +371,81 @@ SC_NOT_IMPLEMENTED("This code is not implemented.");
 
 ### **ScLogger**
 
-There are some standard macros which you can use for logging your code. They are encapsulate the class `ScLogger` to
-prevent unappropriated access to it and provide metaprogramming during message logging.
+The `ScLogger` class provides a robust logging mechanism for your code.
 
-| Macro                  | Message prefix | Message color                 | Log levels                  |
-|------------------------|----------------|-------------------------------|-----------------------------|
-| `SC_LOG_DEBUG(msg);`   | `[Debug]`      | `ScConsole::Color::Grey`      | Debug                       |
-| `SC_LOG_INFO(msg);`    | `[Info]`       | `ScConsole::Color::LightBlue` | Debug, Info                 |
-| `SC_LOG_WARNING(msg);` | `[Warning]`    | `ScConsole::Color::Yellow`    | Debug, Info, Warning        |
-| `SC_LOG_ERROR(msg);`   | `[Error]`      | `ScConsole::Color::Red`       | Debug, Info, Warning, Error |
+To create an instance of ScLogger, you can use the constructor that specifies the logging type (console or file), the log file name (if applicable), and the initial log level. Here’s how to do it:
 
-Now you can not add log levels. But if you want to use another prefixes or colors in logging you can use
-`SC_LOG_INFO_COLOR(msg, color);`. It prints colored info message. Look color constants in `ScConsole::Color`.
+```cpp
+// Create a logger that logs to the console with Info level
+utils::ScLogger logger(
+  utils::ScLogger::ScLogType::Console, "", utils::ScLogLevel::Info);
 
-Log level can be configured in config file `sc-machine.ini`. Change parameter `log_level` in group `[sc-memory]` by one
-from the list `[Debug, Info, Warning, Error]`. See [Config file example](../../../../build/config.md) to
-learn more about groups and their parameters.
+// Create a logger that logs to a file with Debug level
+utils::ScLogger fileLogger(
+  utils::ScLogger::ScLogType::File, "log_file.txt", utils::ScLogLevel::Debug);
+```
+
+Once you have created an instance of ScLogger, you can call its various methods to manage logging.
+
+#### **Message** (**Error**, **Warning**, **Info**, **Debug**)
+
+Use the `Message` method to log messages at different severity levels:
+
+```cpp
+logger.Info("This is an informational message.");
+// or 
+// logger.Message(
+//   utils::ScLogLevel::Info, 
+//   "This is an informational message.",
+//   ScConsole::Color::Grey);
+
+fileLogger.Error("An error occurred while processing.");
+// or
+// fileLogger.Message(
+//    utils::ScLogLevel::Error,
+//    "An error occurred while processing.",
+//    ScConsole::Color::Red);
+```
+
+It prints colored info message. Look color constants in `ScConsole::Color`.
+
+#### **SetLogLevel**
+
+You can change the log level dynamically:
+
+```cpp
+logger.SetLogLevel(utils::ScLogLevel::Warning);
+```
+
+#### **Mute** and **Unmute**
+
+Control whether logs are outputted:
+
+```cpp
+logger.Mute();   // Mute logging
+logger.Unmute(); // Unmute logging
+```
+
+#### **Clear**
+
+Clear any open file streams or flush logs if necessary:
+
+```cpp
+logger.Clear();
+```
+
+#### **Log levels**
+
+The following macros are available for logging messages at different severity levels:
+
+| Method    | Message prefix | Message color                 | Log levels                  |
+|-----------|----------------|-------------------------------|-----------------------------|
+| `Debug`   | `[Debug]`      | `ScConsole::Color::Grey`      | Debug                       |
+| `Info`    | `[Info]`       | `ScConsole::Color::LightBlue` | Debug, Info                 |
+| `Warning` | `[Warning]`    | `ScConsole::Color::Yellow`    | Debug, Info, Warning        |
+| `Error`   | `[Error]`      | `ScConsole::Color::Red`       | Debug, Info, Warning, Error |
+
+These macros simplify the process of logging messages by automatically formatting them with appropriate prefixes and colors based on their severity levels.
 
 ## **Extended API**
 
