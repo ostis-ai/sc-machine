@@ -115,11 +115,6 @@ void ScLog::SetMuted(bool value)
   m_isMuted = value;
 }
 
-void ScLog::SetPrefix(std::string const & prefix)
-{
-  m_prefix = prefix;
-}
-
 void ScLog::SetLogFile(std::string const & logFile)
 {
   Clear();
@@ -141,20 +136,17 @@ void ScLog::Message(
   if (m_isMuted)
     return;
 
-  if (!(m_logLevel <= logLevel))
+  if (!(logLevel <= m_logLevel))
     return;
 
   utils::ScLockScope lock(gLock);
-  // Get time
+
   std::time_t t = std::time(nullptr);
   std::tm tm = *std::localtime(&t);
 
   std::stringstream ss;
   ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
      << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "][" << logLevel.ToString() << "]: ";
-
-  if (!m_prefix.empty())
-    ss << m_prefix << ": ";
 
   if (m_logType == ScLog::ScLogType::Console)
   {

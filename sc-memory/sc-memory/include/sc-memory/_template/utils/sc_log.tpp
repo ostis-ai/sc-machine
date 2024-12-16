@@ -32,7 +32,7 @@ void ScLog::Info(T const & t, ARGS const &... others)
 template <typename T, typename... ARGS>
 void ScLog::Debug(T const & t, ARGS const &... others)
 {
-  Message(ScLogLevel::Level::Info, utils::impl::Message(t, others...), ScConsole::Color::LightBlue);
+  Message(ScLogLevel::Level::Debug, utils::impl::Message(t, others...), ScConsole::Color::LightBlue);
 }
 
 }  // namespace utils
