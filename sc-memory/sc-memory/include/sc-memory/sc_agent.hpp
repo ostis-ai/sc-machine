@@ -10,7 +10,7 @@
 
 #include "sc_agent_context.hpp"
 
-#include "utils/sc_log.hpp"
+#include "utils/sc_logger.hpp"
 
 //! Log functions to be used in agent class methods.
 #define SC_AGENT_LOG_DEBUG(__message__) m_logger.Debug(__message__)
@@ -244,7 +244,7 @@ public:
 
 protected:
   mutable TScContext m_context;
-  mutable utils::ScLog m_logger;
+  mutable utils::ScLogger m_logger;
   ScAddr m_agentImplementationAddr;
 
   _SC_EXTERN ScAgent() noexcept;

@@ -4,7 +4,8 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "sc-memory/utils/sc_log.hpp"
+#include "sc-memory/utils/sc_logger.hpp"
+
 #include "sc-memory/utils/sc_lock.hpp"
 
 #include <ctime>
@@ -63,12 +64,12 @@ bool ScLogLevel::operator<=(ScLogLevel const & other) const
   return static_cast<int>(m_level) <= static_cast<int>(other.m_level);
 }
 
-ScLog::ScLog()
-  : ScLog(ScLogType::Console, "", ScLogLevel::Level::Info)
+ScLogger::ScLogger()
+  : ScLogger(ScLogType::Console, "", ScLogLevel::Level::Info)
 {
 }
 
-ScLog::ScLog(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel)
+ScLogger::ScLogger(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel)
   : m_isMuted(false)
   , m_logType(logType)
   , m_logFile(logFile)
@@ -78,17 +79,17 @@ ScLog::ScLog(ScLogType const & logType, std::string const & logFile, ScLogLevel 
     SetLogFile(m_logFile);
 }
 
-ScLog::~ScLog()
+ScLogger::~ScLogger()
 {
   Clear();
 }
 
-ScLog::ScLog(ScLog const & other)
+ScLogger::ScLogger(ScLogger const & other)
 {
   *this = other;
 }
 
-ScLog & ScLog::operator=(ScLog const & other)
+ScLogger & ScLogger::operator=(ScLogger const & other)
 {
   if (this != &other)
   {
@@ -101,7 +102,7 @@ ScLog & ScLog::operator=(ScLog const & other)
   return *this;
 }
 
-void ScLog::Clear()
+void ScLogger::Clear()
 {
   if (m_logFileStream.is_open())
   {
@@ -110,24 +111,24 @@ void ScLog::Clear()
   }
 }
 
-void ScLog::SetMuted(bool value)
+void ScLogger::SetMuted(bool value)
 {
   m_isMuted = value;
 }
 
-void ScLog::SetLogFile(std::string const & logFile)
+void ScLogger::SetLogFile(std::string const & logFile)
 {
   Clear();
-  m_logType = ScLog::ScLogType::File;
+  m_logType = ScLogger::ScLogType::File;
   m_logFileStream.open(logFile, std::ofstream::out | std::ofstream::trunc);
 }
 
-ScLog::ScLogType ScLog::DefineLogType(std::string const & logType)
+ScLogger::ScLogType ScLogger::DefineLogType(std::string const & logType)
 {
-  return logType == "Console" ? ScLog::ScLogType::Console : ScLog::ScLogType::File;
+  return logType == "Console" ? ScLogger::ScLogType::Console : ScLogger::ScLogType::File;
 }
 
-void ScLog::Message(
+void ScLogger::Message(
     ScLogLevel logLevel,
     std::string const & message,
     ScConsole::Color color /*= ScConsole::Color::White*/)
@@ -148,7 +149,7 @@ void ScLog::Message(
   ss << "[" << std::setw(2) << std::setfill('0') << tm.tm_hour << ":" << std::setw(2) << std::setfill('0') << tm.tm_min
      << ":" << std::setw(2) << std::setfill('0') << tm.tm_sec << "][" << logLevel.ToString() << "]: ";
 
-  if (m_logType == ScLog::ScLogType::Console)
+  if (m_logType == ScLogger::ScLogType::Console)
   {
     ScConsole::SetColor(ScConsole::Color::White);
     std::cout << ss.str();

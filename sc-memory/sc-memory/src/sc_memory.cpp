@@ -10,7 +10,7 @@
 #include "sc-memory/sc_utils.hpp"
 #include "sc-memory/sc_stream.hpp"
 
-#include "sc-memory/utils/sc_log.hpp"
+#include "sc-memory/utils/sc_logger.hpp"
 
 extern "C"
 {
@@ -79,8 +79,10 @@ bool ScMemory::Initialize(sc_memory_params const & params)
 
   ScKeynodes::Initialize(ms_globalContext);
 
-  ms_globalLogger = utils::ScLog(
-      utils::ScLog::DefineLogType(params.log_type), params.log_file, utils::ScLogLevel().FromString(params.log_level));
+  ms_globalLogger = utils::ScLogger(
+      utils::ScLogger::DefineLogType(params.log_type),
+      params.log_file,
+      utils::ScLogLevel().FromString(params.log_level));
 
   return ms_globalContext != nullptr;
 }
@@ -92,7 +94,7 @@ bool ScMemory::IsInitialized()
 
 bool ScMemory::Shutdown(bool saveState /* = true */)
 {
-  ms_globalLogger = utils::ScLog();
+  ms_globalLogger = utils::ScLogger();
 
   ScKeynodes::Shutdown(ms_globalContext);
   bool result = sc_memory_shutdown(saveState);

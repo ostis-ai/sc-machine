@@ -158,7 +158,7 @@ protected:
   {
     m_savedBuffer = std::cout.rdbuf();
     std::cout.rdbuf(m_loggerResult.rdbuf());
-    m_logger = utils::ScLog(utils::ScLog::ScLogType::Console, "", utils::ScLogLevel::Level::Debug);
+    m_logger = utils::ScLogger(utils::ScLogger::ScLogType::Console, "", utils::ScLogLevel::Level::Debug);
   }
 
   virtual void TearDown()
@@ -167,7 +167,7 @@ protected:
   }
 
 protected:
-  utils::ScLog m_logger;
+  utils::ScLogger m_logger;
   std::stringstream m_loggerResult;
   std::streambuf * m_savedBuffer;
 };

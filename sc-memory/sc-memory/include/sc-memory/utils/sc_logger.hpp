@@ -73,7 +73,7 @@ protected:
 /*!
  * @brief Manages logging functionality, allowing messages to be logged to console or file.
  */
-class ScLog
+class ScLogger
 {
 public:
   //! Enum class representing the type of logging.
@@ -84,38 +84,38 @@ public:
   };
 
   /*!
-   * @brief Default constructor for ScLog that initializes with default parameters.
+   * @brief Default constructor for ScLogger that initializes with default parameters.
    */
-  explicit ScLog();
+  explicit ScLogger();
 
   /*!
-   * @brief Constructs a ScLog object with specified parameters for log type, file, and level.
+   * @brief Constructs a ScLogger object with specified parameters for log type, file, and level.
    *
    * @param logType A type of logging (Console or File).
    * @param logFile A filename to log messages if logType is File.
    * @param logLevel An initial logging level.
    */
-  explicit ScLog(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel);
+  explicit ScLogger(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel);
 
   /*!
-   * @brief Copy constructor for the ScLog class.
+   * @brief Copy constructor for the ScLogger class.
    *
-   * @param other Another instance of ScLog to copy from.
+   * @param other Another instance of ScLogger to copy from.
    */
-  explicit ScLog(ScLog const & other);
+  explicit ScLogger(ScLogger const & other);
 
   /*!
-   * @brief Assignment operator for the ScLog class.
+   * @brief Assignment operator for the ScLogger class.
    *
    * @param other The source object to copy from.
    * @return A reference to this object after assignment.
    */
-  ScLog & operator=(ScLog const & other);
+  ScLogger & operator=(ScLogger const & other);
 
   /*!
-   * @brief Destructor for the ScLog class that ensures resources are cleaned up properly.
+   * @brief Destructor for the ScLogger class that ensures resources are cleaned up properly.
    */
-  ~ScLog();
+  ~ScLogger();
 
   /*!
    * @brief Clears any open file streams and flushes logs if necessary.
@@ -221,7 +221,7 @@ private:
 
 #include "sc-memory/_template/utils/sc_log.tpp"
 
-static utils::ScLog ms_globalLogger;
+static utils::ScLogger ms_globalLogger;
 
 /*!
  * Macro for logging messages with color support in console output
