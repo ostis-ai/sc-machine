@@ -12,12 +12,6 @@
 
 #include "utils/sc_logger.hpp"
 
-//! Log functions to be used in agent class methods.
-#define SC_AGENT_LOG_DEBUG(__message__) m_logger.Debug(__message__)
-#define SC_AGENT_LOG_INFO(__message__) m_logger.Info(__message__)
-#define SC_AGENT_LOG_WARNING(__message__) m_logger.Warning(__message__)
-#define SC_AGENT_LOG_ERROR(__message__) m_logger.Error(__message__)
-
 template <class TScEvent>
 class ScElementaryEventSubscription;
 class ScAction;

@@ -116,6 +116,11 @@ void ScLogger::SetMuted(bool value)
   m_isMuted = value;
 }
 
+void ScLogger::SetPrefix(std::string const & prefix)
+{
+  m_prefix = prefix;
+}
+
 void ScLogger::SetLogFile(std::string const & logFile)
 {
   Clear();
@@ -154,8 +159,7 @@ void ScLogger::Message(
     ScConsole::SetColor(ScConsole::Color::White);
     std::cout << ss.str();
     ScConsole::SetColor(color);
-    std::cout << message << std::endl;
-
+    std::cout << m_prefix << message << std::endl;
     ScConsole::ResetColor();
   }
   else if (m_logFileStream.is_open())

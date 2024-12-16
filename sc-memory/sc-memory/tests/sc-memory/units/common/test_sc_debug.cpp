@@ -242,6 +242,15 @@ TEST_F(ScLoggerTest, MuteAndUnmuteLogging)
   EXPECT_NE(m_loggerResult.str().find("This message should be logged."), std::string::npos);
 }
 
+TEST_F(ScLoggerTest, PrefixForMessages)
+{
+  m_logger.SetPrefix("Prefix: ");
+
+  m_logger.Info("This message should be logged.");
+
+  EXPECT_NE(m_loggerResult.str().find("Prefix: This message should be logged."), std::string::npos);
+}
+
 TEST_F(ScLoggerTest, FileLoggingWritesCorrectMessage)
 {
   std::string const testFile = "test_log.txt";

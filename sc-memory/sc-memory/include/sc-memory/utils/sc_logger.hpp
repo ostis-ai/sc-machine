@@ -130,6 +130,13 @@ public:
   void SetMuted(bool value);
 
   /*!
+   * @brief Sets a prefix for all logged messages.
+   *
+   * @param prefix A string that will be prepended to each log message.
+   */
+  void SetPrefix(std::string const & prefix);
+
+  /*!
    * @brief Opens a specified file for logging and sets it as the current log file.
    *
    * @param logFile A name of the file where logs should be written.
@@ -208,8 +215,9 @@ public:
   void Debug(T const & t, ARGS const &... others);
 
 protected:
-  bool m_isMuted;       //< Indicates whether logging is muted.
-  ScLogType m_logType;  //< Current type of logging (Console or File).
+  bool m_isMuted;        //< Indicates whether logging is muted.
+  std::string m_prefix;  //< Prefix added to each logged message.
+  ScLogType m_logType;   //< Current type of logging (Console or File).
   std::string m_logFile;
 
 private:

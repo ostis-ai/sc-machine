@@ -435,6 +435,7 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     };
 
     TScAgent agent;
+    agent.m_logger.SetPrefix(agent.GetName() + ": ");
     agent.SetInitiator(event.GetUser());
     agent.SetImplementation(agentImplementationAddr);
 
