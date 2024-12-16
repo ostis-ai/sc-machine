@@ -621,3 +621,14 @@ TEST_F(ScAgentTest, AgentHasNoSpecificationInKb)
   EXPECT_THROW(agent.GetResultCondition(), utils::ExceptionItemNotFound);
   EXPECT_EQ(agent.GetName(), "ATestCheckResult");
 }
+
+TEST_F(ScAgentTest, Logging)
+{
+  m_ctx->SubscribeAgent<ATestLogger>();
+
+  m_ctx->GenerateAction(ATestGenerateOutgoingArc::generate_outgoing_arc_action).SetArguments().Initiate();
+
+  EXPECT_TRUE(ATestLogger::msWaiter.Wait(1));
+
+  m_ctx->UnsubscribeAgent<ATestLogger>();
+}

@@ -8,6 +8,7 @@
 
 #include <string>
 #include <utility>
+#include <ostream>
 
 #include "sc_object.hpp"
 
@@ -93,6 +94,8 @@ public:
   _SC_EXTERN ~ScKeynode() noexcept;
 
   _SC_EXTERN operator std::string() const noexcept;
+
+  friend std::ostream & operator<<(std::ostream & os, ScKeynode const & keynode);
 
 protected:
   std::string_view m_sysIdtf;
