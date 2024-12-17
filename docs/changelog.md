@@ -235,6 +235,8 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- Allow multiple instances of `ScLogger` class
+- Rename `ScLog` to `ScLogger`
 - Description of project in Readme
 - Working directory for each test has been changed to the test's source dir
 - `gtest` and `benchmark` are installed via Conan or OS package managers instead of using them as git submodules
