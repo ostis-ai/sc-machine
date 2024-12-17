@@ -1,4 +1,4 @@
-# Build system
+# Build System
 
 ## Implementation details
 

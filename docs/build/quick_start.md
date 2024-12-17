@@ -1,4 +1,4 @@
-# Quick start
+# Quick Start for Developers
 
 This guide provides short information for developers to start to work with sc-machine quickly. You can always learn more about the sc-machine's [build system](build_system.md).
 

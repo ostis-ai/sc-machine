@@ -1,4 +1,4 @@
-# **ScTemplate API**
+# **C++ ScTemplate API**
 
 !!! warning 
     This documentation is correct for only versions of sc-machine that >= 0.10.0.

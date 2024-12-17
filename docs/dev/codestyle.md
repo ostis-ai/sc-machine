@@ -1,11 +1,11 @@
+# Code Style Guide
+
 In general, [Google's coding standard](https://google.github.io/styleguide/cppguide.html) is used, and we strongly 
 encourage to read it.
 
-## Code Style Guide
-
 All code should conform to C++17 standard. Here's a summary of the key rules specified in the configuration:
 
-### Includes
+## Includes
 
 * We use `.cpp` and `.hpp` files, not `.cc` and `.h` (`.c` and `.h` are used for C code), in UTF-8 encoding.
 * File names are lowercase with underscores, like `sc_memory.cpp`.
@@ -37,7 +37,7 @@ libraries. External libraries have the highest priority.
 !!! note
     Unfortunately, sources of `sc-kpm` does not comply these rules. But you must comply these rules!
 
-### Indentation and Spacing
+## Indentation and Spacing
 
 * The code should use spaces for indentation. The indentation width is set to 2 spaces. The code should not use tabs.
 
@@ -162,7 +162,7 @@ sc_uint32& ref = x;
 ScAddr const & addr; // reference to the const `ScAddr`.
 ```
 
-### Whitespace
+## Whitespace
 
 * Remove extra whitespaces at the end of lines.
 * Spaces in empty blocks and parentheses should be omitted.
@@ -177,7 +177,7 @@ std::vector<sc_uint32> numbers = {
 };
 ```
 
-### Brace Style
+## Brace Style
 
 * Braces for functions, classes, namespaces, etc., should be on a new line.
 
@@ -277,7 +277,7 @@ sc_uint32 ExampleFunction(
     sc_uint32 * result, sc_uint32 * delta)
 ```
 
-### Line Length and Wrapping
+## Line Length and Wrapping
 
 * The maximum column limit is set to 120 characters.
 
@@ -346,14 +346,14 @@ for (ScAddr const & addr : addrList)
 }
 ```
 
-### Naming
+## Naming
 
-#### C Naming
+### C Naming
 
 * Macros and C-style enums must be named in UPPER_CASE, and enum values must be prefixed with a capitalized enum name.
 * All other objects must be named in snake_case.
 
-#### C++ Naming
+### C++ Naming
 
 * Underscores are allowed only in prefixes for member variables and namespace names, like `int m_keynodeAddr; namespace sc_utils`.
 * We use `using` keyword instead of `typedef`.
@@ -361,7 +361,7 @@ for (ScAddr const & addr : addrList)
 and marked as `constexpr` when possible.
 * Values of enum classes must be named in CamelCase, e.g. `enum class Color { Red, Green, LightBlue };`.
 
-### Comments
+## Comments
 
 * Doxygen-style comments can be used.
 

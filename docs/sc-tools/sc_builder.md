@@ -1,4 +1,4 @@
-# sc-builder
+# **Knowledge Base Builder**
 
 Sc-builder tool allows to translate knowledge base sources into binaries. You can find it in a `/build/<Release|Debug>/bin` directory.
 
