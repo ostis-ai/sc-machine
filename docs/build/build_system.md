@@ -11,6 +11,9 @@ The project uses CMake as the build system generator. CMake allows for cross-pla
 !!! warning
     Our build system settings require using CMake 3.24 or newer. Make sure your version is compatible by running `cmake --version` and use the [CMake installation guide](https://cliutils.gitlab.io/modern-cmake/chapters/intro/installing.html) to upgrade to latest version if yours is older than 3.24. The universal method is to use `pipx install cmake` (don't forget to run `pipx ensurepath` and relaunching your shell after installation), but you may choose reconfiguring your OS's package manager instead.
 
+!!! warning
+    By default, our build system use the Ninja generator for building (see CMakePresets.json). Ensure that Ninja is installed and properly configured in your environment. To upgrade it, use `pipx install ninja`. Don't forget to run `pipx ensurepath` and relaunching your shell after installation.
+
 Typical configurations of the project are provided in the `CMakePresets.json` file – this means that if you use a modern IDE, **no additional configuration is needed**. Just pick one of the configurations provided by this file and use controls in your IDE to recompile and run tests (should work with VSCode + CMake Tools extension, JetBrains CLion and probably many others).
 
 If you wish to use CLI instead, you can list all the available configurations in the `CMakePresets.json` file and pick one of the presets:
