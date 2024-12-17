@@ -307,7 +307,7 @@ main rules:
 * Set alias of this sc-element in a first occurrence of this sc-element in sc-template triples. You need to use `>>` operator to
   do this (see code below, last sc-element of first triple).
 * When you need to use aliased sc-element in next triples, then just use it alias instead of `ScType` or `ScAddr` (see code
-  below, first sc-element if second triple).
+  below, first sc-element of second triple).
 
 There is the example code with naming.
 
