@@ -8,46 +8,46 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Quick start: quick_start.md
+  - Quick Start: quick_start.md
   - Docker: docker.md
-  - User guides:
+  - User Guides:
       - C++ Guides:
-          - C++ Simple guide for implementing agent: sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md
-      - Migrate to new agent API: sc-tools/migrate_to_new_agent_api.md
+          - C++ Simple Guide for Implementing Agent: sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md
+      - Migrate to New Agent API: sc-tools/migrate_to_new_agent_api.md
   - API:
       - C++ API:
           - C++ Core API: sc-memory/api/cpp/core/api.md
           - C++ Extended API:
-              - C++ System identifier API: sc-memory/api/cpp/extended/helper_api.md
+              - C++ System Identifier API: sc-memory/api/cpp/extended/helper_api.md
               - C++ ScTemplate API: sc-memory/api/cpp/extended/template_api.md
               - C++ Agents API:
                   - C++ Events API: sc-memory/api/cpp/extended/agents/events.md
-                  - C++ Event subscriptions API: sc-memory/api/cpp/extended/agents/event_subscriptions.md
+                  - C++ Event Subscriptions API: sc-memory/api/cpp/extended/agents/event_subscriptions.md
                   - C++ Waiters API: sc-memory/api/cpp/extended/agents/waiters.md
                   - C++ Agents API: sc-memory/api/cpp/extended/agents/agents.md
                   - C++ Keynodes API: sc-memory/api/cpp/extended/agents/keynodes.md
                   - C++ Actions API: sc-memory/api/cpp/extended/agents/actions.md
-                  - C++ Agent context API: sc-memory/api/cpp/extended/agents/agent_context.md
+                  - C++ Agent Context API: sc-memory/api/cpp/extended/agents/agent_context.md
                   - C++ Modules API: sc-memory/api/cpp/extended/agents/modules.md
       - Python API:
           - Python Core API: https://github.com/ostis-ai/py-sc-client
           - Python Extended API: https://github.com/ostis-ai/py-sc-kpm
       - TypeScript API:
           - TypeScript Core API: https://github.com/ostis-ai/ts-sc-client
-      - sc-element types: scs/sc_element_types.md
+      - sc-element Types: scs/sc_element_types.md
       - SCs-code: scs/scs.md
   - Tools:
       - Knowledge Base Builder: sc-tools/sc_builder.md
-      - Knowledge Base repo file: sc-tools/kb_repo_file.md
+      - Knowledge Base Repo File: sc-tools/kb_repo_file.md
       - sc-machine Runner: sc-tools/sc_machine.md
-  - Build instructions:
-      - Quick start: build/quick_start.md
-      - Build system: build/build_system.md
-      - CMake flags: build/cmake_flags.md
-      - Configuration file: build/config.md
+  - Build Instructions:
+      - Quick Start for Developers: build/quick_start.md
+      - Build System: build/build_system.md
+      - CMake Flags: build/cmake_flags.md
+      - Configuration File: build/config.md
   - Development:
       - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
-      - Codestyle Guide: dev/codestyle.md
+      - Code Style Guide: dev/codestyle.md
       - Dev Container: dev/devcontainer.md
   - License: https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT
   - Changelog: changelog.md

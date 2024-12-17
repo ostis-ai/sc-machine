@@ -1,4 +1,4 @@
-# Migrate to new agent api
+# **Migrate to New Agent API**
 
 This is a program that translates sc-machine usage from old API into new API.
 

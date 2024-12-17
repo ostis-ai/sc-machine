@@ -1,4 +1,4 @@
-# **ScEventSubscription API**
+# **C++ Event Subscriptions API**
 
 !!! note
     This is correct for only versions of sc-machine that >= 0.10.0.

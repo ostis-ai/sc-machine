@@ -1,4 +1,4 @@
-# Quick start
+# Quick Start
 
 ## Use sc-machine as a C++ library in your project
 

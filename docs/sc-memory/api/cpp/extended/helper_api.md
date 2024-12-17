@@ -1,4 +1,4 @@
-# **ScHelper API**
+# **C++ System Identifier API**
 
 !!! note
     This is correct for only versions of sc-machine that >= 0.10.0.
@@ -173,7 +173,8 @@ If you want to resolve quintuple sc-element with its system identifier you can p
 ...
 ScSystemIdentifierQuintuple quintuple;
 bool const & isSystemIdentifierResolved 
-    = context.ResolveElementSystemIdentifier("my_node", ScType::ConstNode, quintuple);
+    = context.ResolveElementSystemIdentifier(
+        "my_node", ScType::ConstNode, quintuple);
 ScAddr const & myNodeAddr = quintuple.addr1;
 // The sc-address of resolved sc-node by provided system identifier.
 ScAddr const & arcToSystemIdtfLinkAddr = quintuple.addr2;
