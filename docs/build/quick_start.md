@@ -16,6 +16,17 @@ To upgrade CMake, follow the installation guide appropriate for your OS or use:
 # Use pipx to install cmake if not already installed
 # Install pipx first using guide: https://pipx.pypa.io/stable/installation/
 pipx install cmake
+pipx ensurepath
+# relaunch your shell after installation
+```
+
+Install Ninja generator for CMake, to use sc-machine CMake presets:
+
+```sh
+# Use pipx to install ninja if not already installed
+pipx install ninja
+pipx ensurepath
+# relaunch your shell after installation
 ```
 
 ## Start develop sc-machine with Conan
@@ -27,6 +38,8 @@ Install Conan, to build sc-machine dependencies with Conan-provided dependencies
 ```sh
 # Use pipx to install conan if not already installed
 pipx install conan
+pipx ensurepath
+# relaunch your shell after installation
 ```
 
 ### Use sc-machine in Debug
