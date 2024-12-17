@@ -30,7 +30,7 @@ public:
   /*!
    * @brief Checks if the iterator is valid.
    *
-   * @return True if the iterator is valid, false otherwise.
+   * @return true if the iterator is valid, false otherwise.
    */
   inline _SC_EXTERN bool IsValid() const
   {
@@ -40,7 +40,7 @@ public:
   /*!
    * @brief Advances the iterator to the next construction.
    *
-   * @return True if there is the next construction in sc-memory, false otherwise.
+   * @return true if there is the next construction in sc-memory, false otherwise.
    */
   _SC_EXTERN virtual bool Next() const = 0;
 
@@ -138,7 +138,7 @@ public:
   /*!
    * @brief Moves the iterator to the next triple.
    *
-   * @return True if there is the next triple in sc-memory, false otherwise.
+   * @return true if there is the next triple in sc-memory, false otherwise.
    */
   _SC_EXTERN bool Next() const override;
 
@@ -204,7 +204,7 @@ public:
   /*!
    * @brief Moves the iterator to the next quintuple.
    *
-   * @return True if there is the next quintuple in sc-memory, false otherwise.
+   * @return true if there is the next quintuple in sc-memory, false otherwise.
    */
   _SC_EXTERN bool Next() const override;
 

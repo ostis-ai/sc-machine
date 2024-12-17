@@ -11,6 +11,7 @@
 
 #include "sc_memory.hpp"
 
+#include "sc_link_filter.hpp"
 #include "sc_iterator.hpp"
 #include "sc_template.hpp"
 

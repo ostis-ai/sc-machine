@@ -13,6 +13,7 @@
 
 #include "sc-core/sc_types.h"
 #include "sc-core/sc_defines.h"
+#include "sc-core/sc_link_filter.h"
 #include "sc-core/sc_stream.h"
 
 #include "sc-core/sc-container/sc_dictionary.h"
@@ -99,9 +100,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_string_by_link_hash(
  * @param memory Pointer to the file memory.
  * @param string Pointer to the full string term.
  * @param string_size Size of the full string term.
- * @param data Pointer to user-specific data.
- * @param callback Callback function to be invoked for each matching sc-link sc-address found.
- *                The callback function must have the signature: void callback(void * data, sc_addr const link_addr).
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for sc_dictionary_fs_memory_get_link_hashes_by_string_ext with is_substring set to
  * SC_FALSE.
@@ -110,17 +109,14 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_string
     sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link hashes by a substring term extension from the file memory.
  * @param memory Pointer to the memory memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
  * @param max_length_to_search_as_prefix Maximum length to consider the search as a prefix search.
- * @param data Pointer to user-specific data.
- * @param callback Callback function to be invoked for each matching sc-link sc-address found.
- *                The callback function must have the signature: void callback(void * data, sc_addr const link_addr).
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for sc_dictionary_fs_memory_get_link_hashes_by_string_ext with is_substring set to
  * SC_TRUE.
@@ -130,16 +126,13 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link hashes by a substring term from the file memory.
  * @param memory Pointer to the file memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
- * @param data Pointer to user-specific data.
- * @param callback Callback function to be invoked for each matching sc-link sc-address found.
- *                The callback function must have the signature: void callback(void * data, sc_addr const link_addr).
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for sc_dictionary_fs_memory_get_link_hashes_by_substring_ext with
  * max_length_to_search_as_prefix set to 0.
@@ -148,40 +141,32 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_link_hashes_by_substr
     sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr));
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link strings by a substring term extension from the file memory.
  * @param memory Pointer to the file memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
  * @param max_length_to_search_as_prefix Maximum length to consider the search as a prefix search.
- * @param data Pointer to user-specific data.
- * @param callback Callback function to be invoked for each matching sc-link sc-address and link content found.
- *                The callback function must have the signature: void callback(void * data, sc_addr const link_addr,
- *                sc_char const * link_content).
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for _sc_dictionary_fs_memory_get_strings_by_substring_ext with
  * to_search_as_prefix set based on the max_length_to_search_as_prefix parameter. It uses the appropriate function to
  * get string offsets based on the to_search_as_prefix flag. For each matching sc-link sc-address and link content
- * found, the provided callback function is invoked with the user-specific data, sc-link sc-address, and link content.
+ * found, the provided callback function is invoked with the user-specific filter, sc-link sc-address, and link content.
  */
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring_ext(
     sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
     sc_uint32 max_length_to_search_as_prefix,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content));
+    sc_link_handler * link_handler);
 
 /*! Function that retrieves sc-link strings by a substring term from the file memory.
  * @param memory Pointer to the file memory.
  * @param string Pointer to the substring term.
  * @param string_size Size of the substring term.
- * @param data Pointer to user-specific data.
- * @param callback Callback function to be invoked for each matching sc-link sc-address and link content found.
- *                The callback function must have the signature: void callback(void * data, sc_addr const link_addr,
- *                sc_char const * link_content).
+ * @param link_handler Pointer to object with callbacks for handling sc-links.
  * @returns Returns the memory status indicating the success or failure of the operation.
  * @note This function is a wrapper for _sc_dictionary_fs_memory_get_strings_by_substring_ext with to_search_as_prefix
  * set to SC_FALSE.
@@ -190,8 +175,7 @@ sc_dictionary_fs_memory_status sc_dictionary_fs_memory_get_strings_by_substring(
     sc_dictionary_fs_memory * memory,
     sc_char const * string,
     sc_uint64 string_size,
-    void * data,
-    void (*callback)(void * data, sc_addr const link_addr, sc_char const * link_content));
+    sc_link_handler * link_handler);
 
 sc_dictionary_fs_memory_status sc_dictionary_fs_memory_intersect_link_hashes_by_terms(
     sc_dictionary_fs_memory const * memory,
