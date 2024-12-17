@@ -24,7 +24,7 @@ To generate object of this class, you should call `CreateEventWaiter` method fro
 
 ```cpp
 ...
-// Generate of find some sc-node and generate waiter to wait until 
+// Generate or find some sc-node and generate waiter to wait until 
 // a sc-connector of the specified type is generated from or to this sc-node.
 auto waiter = context.CreateEventWaiter<
   ScEventAfterGenerateConnector<ScType::ConstPermPosArc>>(
@@ -94,7 +94,7 @@ This class represents waiter for condition to occur. To generate object of this 
 
 ```cpp
 ...
-// Generate of find some sc-node and generate waiter to wait until 
+// Generate or find some sc-node and generate waiter to wait until 
 // a sc-connector of the specified type is generated from or to this sc-node.
 auto waiter = context.GenerateConditionWaiter<
   ScEventAfterGenerateConnector<ScType::ConstPermPosArc>>(
