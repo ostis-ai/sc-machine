@@ -633,3 +633,111 @@ TEST_F(ScLoopTest, FFF)
   EXPECT_EQ(iter3->Get(1), ScAddr::Empty);
   EXPECT_EQ(iter3->Get(2), ScAddr::Empty);
 }
+
+TEST_F(ScLoopTest, CheckConnectorsGeneratedAfterEdgeLoop)
+{
+  ScAddr const & otherNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
+
+  ScAddr const & arcAddr1 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, m_source, otherNodeAddr);
+  ScAddr const & arcAddr2 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, otherNodeAddr, m_source);
+
+  {
+    ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstCommonEdge, m_target);
+    EXPECT_TRUE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), m_source);
+    EXPECT_EQ(iter3->Get(1), m_connector);
+    EXPECT_EQ(iter3->Get(2), m_target);
+
+    EXPECT_FALSE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(1), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(2), ScAddr::Empty);
+  }
+
+  {
+    ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstPermPosArc, otherNodeAddr);
+    EXPECT_TRUE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), m_source);
+    EXPECT_EQ(iter3->Get(1), arcAddr1);
+    EXPECT_EQ(iter3->Get(2), otherNodeAddr);
+
+    EXPECT_FALSE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(1), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(2), ScAddr::Empty);
+  }
+
+  {
+    ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(otherNodeAddr, ScType::ConstPermPosArc, m_source);
+    EXPECT_TRUE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), otherNodeAddr);
+    EXPECT_EQ(iter3->Get(1), arcAddr2);
+    EXPECT_EQ(iter3->Get(2), m_source);
+
+    EXPECT_FALSE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(1), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(2), ScAddr::Empty);
+  }
+}
+
+TEST_F(ScLoopTest, CheckConnectorsGeneratedBeforeEdgeLoop)
+{
+  ScAddr const & otherNodeAddr = m_ctx->GenerateNode(ScType::ConstNode);
+
+  ScAddr const & arcAddr1 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, m_source, otherNodeAddr);
+  ScAddr const & arcAddr2 = m_ctx->GenerateConnector(ScType::ConstPermPosArc, otherNodeAddr, m_source);
+
+  ScAddr const & edgeAddr2 = m_ctx->GenerateConnector(ScType::ConstCommonEdge, m_target, m_source);
+
+  {
+    ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstCommonEdge, m_target);
+    EXPECT_TRUE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), m_source);
+    EXPECT_EQ(iter3->Get(1), edgeAddr2);
+    EXPECT_EQ(iter3->Get(2), m_target);
+
+    EXPECT_TRUE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), m_source);
+    EXPECT_EQ(iter3->Get(1), m_connector);
+    EXPECT_EQ(iter3->Get(2), m_target);
+  }
+
+  {
+    ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(m_source, ScType::ConstPermPosArc, otherNodeAddr);
+    EXPECT_TRUE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), m_source);
+    EXPECT_EQ(iter3->Get(1), arcAddr1);
+    EXPECT_EQ(iter3->Get(2), otherNodeAddr);
+
+    EXPECT_FALSE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(1), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(2), ScAddr::Empty);
+  }
+
+  {
+    ScIterator3Ptr const iter3 = m_ctx->CreateIterator3(otherNodeAddr, ScType::ConstPermPosArc, m_source);
+    EXPECT_TRUE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), otherNodeAddr);
+    EXPECT_EQ(iter3->Get(1), arcAddr2);
+    EXPECT_EQ(iter3->Get(2), m_source);
+
+    EXPECT_FALSE(iter3->Next());
+
+    EXPECT_EQ(iter3->Get(0), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(1), ScAddr::Empty);
+    EXPECT_EQ(iter3->Get(2), ScAddr::Empty);
+  }
+}
