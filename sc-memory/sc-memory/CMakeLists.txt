@@ -58,6 +58,7 @@ add_dependencies(sc-memory
 )
 
 if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(SCsParser)
     target_clangformat_setup(sc-memory)
 endif()
 

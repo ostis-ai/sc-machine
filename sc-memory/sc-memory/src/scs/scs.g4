@@ -232,11 +232,7 @@ idtf_set_elements [std::string setType]
   locals [ElementHandle prevArc]
   : {
       std::string const setIdtf = "..set_" + std::to_string($ctx->start->getLine()) + "_" + std::to_string($ctx->start->getCharPositionInLine());
-      $ctx->handle = m_parser->ProcessIdentifier(setIdtf);
-      ElementHandle const typeArc = m_parser->ProcessConnector("->");
-      ElementHandle const typeClass = m_parser->ProcessIdentifier("sc_node_tuple");
-
-      m_parser->ProcessTriple(typeClass, typeArc, $ctx->handle);
+      $ctx->handle = m_parser->ProcessIdentifierLevel1("sc_node_tuple", setIdtf);
     }
   a1=attr_list? i1=idtf_common
     {

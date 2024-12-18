@@ -189,9 +189,317 @@ TEST_F(SCsHelperTest, GenerateBySCs_SingleNode)
 
   EXPECT_TRUE(helper.GenerateBySCsText(scsData));
 
-  ScAddr const node = m_ctx->SearchElementBySystemIdentifier("node");
-  EXPECT_TRUE(node.IsValid());
-  EXPECT_EQ(m_ctx->GetElementType(node), ScType::ConstNodeClass);
+  ScAddr const nodeAddr = m_ctx->SearchElementBySystemIdentifier("node");
+  EXPECT_TRUE(nodeAddr.IsValid());
+  EXPECT_EQ(m_ctx->GetElementType(nodeAddr), ScType::ConstNodeClass);
+
+  ScAddr const nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  EXPECT_FALSE(m_ctx->CheckConnector(nodeClassAddr, nodeAddr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ElementWithType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "sc_node_class -> class1;;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ElementTypeArcWithRole)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "sc_node_class -> rrel_1: class1;;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_NotConstPermPosArcFromElementType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "sc_node_class => ..relation: class1;;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ArcToElementType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "set -> sc_node_class;;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ElementWithTypeWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_node_class -> class1;; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const nodeAddr = m_ctx->SearchElementBySystemIdentifier("class1");
+  EXPECT_TRUE(nodeAddr.IsValid());
+  EXPECT_EQ(m_ctx->GetElementType(nodeAddr), ScType::ConstNodeClass);
+
+  ScAddr const nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  EXPECT_FALSE(m_ctx->CheckConnector(nodeClassAddr, nodeAddr, ScType::ConstPermPosArc));
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 2u);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, nodeAddr, ScType::ConstPermPosArc));
+  EXPECT_FALSE(m_ctx->CheckConnector(structureAddr, nodeClassAddr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ElementTypeArcWithRoleWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_node_class -> rrel_1: class1;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_NotConstPermPosArcFromElementTypeWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = 
+    "structure = [* sc_node_class => ..relation: class;; *];;"
+    "..relation <- sc_node_non_role_relation;;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const & nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  EXPECT_TRUE(nodeClassAddr.IsValid());
+
+  ScAddr const & nodeAddr = m_ctx->SearchElementBySystemIdentifier("class");
+  EXPECT_TRUE(nodeAddr.IsValid());
+
+  ScTemplate templ;
+  templ.Quintuple(
+    nodeClassAddr,
+    ScType::VarCommonArc,
+    nodeAddr,
+    ScType::VarPermPosArc,
+    ScType::VarNodeNonRole
+  );
+  ScTemplateSearchResult result;
+  EXPECT_TRUE(m_ctx->SearchByTemplate(templ, result));
+  EXPECT_EQ(result.Size(), 1u);
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  ScTemplateSearchResultItem const & item = result[0];
+  for (ScAddr addr : item)
+    EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, addr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ArcToElementTypeWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* set -> sc_node_class;; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const setAddr = m_ctx->SearchElementBySystemIdentifier("set");
+  EXPECT_TRUE(setAddr.IsValid());
+  EXPECT_EQ(m_ctx->GetElementType(setAddr), ScType::ConstNode);
+
+  ScAddr const nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  ScIterator3Ptr const it3 = m_ctx->CreateIterator3(setAddr, ScType::ConstPermPosArc, nodeClassAddr);
+  EXPECT_TRUE(it3->Next());
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 4u);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, setAddr, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, it3->Get(1), ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, nodeClassAddr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_BaseArcBetweenElementTypesWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_node -> sc_node_class;; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const nodeTupleAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_tuple");
+  ScAddr const nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  EXPECT_FALSE(m_ctx->CheckConnector(nodeTupleAddr, nodeClassAddr, ScType::ConstPermPosArc));
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 2u);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, nodeClassAddr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ArcToElementTypeFromIncomtableElementTypesWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_node_tuple -> sc_node_class;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ContourWithImplicitlySpecifiedElementTypeSystemIdentifier)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "sc_node_class = [* sc_node -> sc_node_class;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, DISABLED_GenerateBySCs_ContourWithExplicitlySpecifiedElementTypeSystemIdentifier)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = 
+    "..contour = [* sc_node -> sc_node_class;; *];;"
+    "..contour => nrel_system_identifier: [sc_node_class];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ConnectorBelongsToNodeType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_node_tuple -> (sc_node_class => sc_node_tuple);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_NodeBelongsToConnectorsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_main_arc -> ..node;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_NodeBelongsToTwoIncompatibleType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_node_class -> ..node;; sc_node_tuple -> ..node;; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_MembershipArcBelongsToCommonArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_common_arc -> (... -> ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_MembershipArcBelongsToCommonEdgesType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_common_edge -> (... -> ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_CommonArcBelongsToMembershipArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_main_arc -> (... => ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_CommonEdgeBelongsToMembershipArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "..contour = [* sc_main_arc -> (... <=> ...);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_VarPermPosArcBelongsToMembershipArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_membership_arc -> (node1 _-> node2);; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const membershipArcAddr = m_ctx->SearchElementBySystemIdentifier("sc_membership_arc");
+  ScAddr const node1Addr = m_ctx->SearchElementBySystemIdentifier("node1");
+  ScAddr const node2Addr = m_ctx->SearchElementBySystemIdentifier("node2");
+  ScIterator3Ptr it3 = m_ctx->CreateIterator3(node1Addr, ScType::VarPermPosArc, node2Addr);
+  EXPECT_TRUE(it3->Next());
+  ScAddr const arcAddr = it3->Get(1);
+  it3 = m_ctx->CreateIterator3(membershipArcAddr, ScType::ConstPermPosArc, arcAddr);
+  EXPECT_FALSE(it3->Next());
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 4);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, node1Addr, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, arcAddr, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, node2Addr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_NotBaseArcBetweenElementTypesWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_node_tuple -|> sc_node_class;; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const nodeTupleAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_tuple");
+  ScAddr const nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  ScIterator3Ptr const it3 = m_ctx->CreateIterator3(nodeTupleAddr, ScType::ConstPermNegArc, nodeClassAddr);
+  EXPECT_TRUE(it3->Next());
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 4u);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, nodeTupleAddr, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, it3->Get(1), ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, nodeClassAddr, ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ElementTypeWithTwoIncomingArcsWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* set1 -> sc_node_class;; set2 -> sc_node_class;; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const setAddr1 = m_ctx->SearchElementBySystemIdentifier("set1");
+  EXPECT_TRUE(setAddr1.IsValid());
+  EXPECT_EQ(m_ctx->GetElementType(setAddr1), ScType::ConstNode);
+
+  ScAddr const nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  ScIterator3Ptr const it3_1 = m_ctx->CreateIterator3(setAddr1, ScType::ConstPermPosArc, nodeClassAddr);
+  EXPECT_TRUE(it3_1->Next());
+
+  ScAddr const setAddr2 = m_ctx->SearchElementBySystemIdentifier("set2");
+  EXPECT_TRUE(setAddr2.IsValid());
+  EXPECT_EQ(m_ctx->GetElementType(setAddr2), ScType::ConstNode);
+
+  ScIterator3Ptr const it3_2 = m_ctx->CreateIterator3(setAddr2, ScType::ConstPermPosArc, nodeClassAddr);
+  EXPECT_TRUE(it3_2->Next());
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 6u);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, setAddr1, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, it3_1->Get(1), ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, nodeClassAddr, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, setAddr2, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, it3_2->Get(1), ScType::ConstPermPosArc));
+}
+
+TEST_F(SCsHelperTest, GenerateBySCs_ElementTypeWithTwoOutgoingBaseArcsWithinStructure)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* set1 <- sc_node_class;; set2 <- sc_node_class;; *];;";
+  EXPECT_TRUE(helper.GenerateBySCsText(scsData));
+
+  ScAddr const setAddr1 = m_ctx->SearchElementBySystemIdentifier("set1");
+  EXPECT_TRUE(setAddr1.IsValid());
+  EXPECT_EQ(m_ctx->GetElementType(setAddr1), ScType::ConstNodeClass);
+
+  ScAddr const nodeClassAddr = m_ctx->SearchElementBySystemIdentifier("sc_node_class");
+  EXPECT_FALSE(m_ctx->CheckConnector(nodeClassAddr, setAddr1, ScType::ConstPermPosArc));
+
+  ScAddr const setAddr2 = m_ctx->SearchElementBySystemIdentifier("set2");
+  EXPECT_TRUE(setAddr2.IsValid());
+  EXPECT_EQ(m_ctx->GetElementType(setAddr2), ScType::ConstNodeClass);
+
+  EXPECT_FALSE(m_ctx->CheckConnector(nodeClassAddr, setAddr1, ScType::ConstPermPosArc));
+
+  ScAddr const & structureAddr = m_ctx->SearchElementBySystemIdentifier("structure");
+  EXPECT_TRUE(structureAddr.IsValid());
+
+  EXPECT_EQ(m_ctx->GetElementEdgesAndOutgoingArcsCount(structureAddr), 3u);
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, setAddr1, ScType::ConstPermPosArc));
+  EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, setAddr2, ScType::ConstPermPosArc));
 }
 
 TEST_F(SCsHelperTest, GenerateBySCs_Visibility_System)

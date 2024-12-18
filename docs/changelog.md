@@ -235,6 +235,7 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- SCsParser no longer generates sc-arcs from types of sc-elements to sc-elements
 - Description of project in Readme
 - Working directory for each test has been changed to the test's source dir
 - `gtest` and `benchmark` are installed via Conan or OS package managers instead of using them as git submodules
