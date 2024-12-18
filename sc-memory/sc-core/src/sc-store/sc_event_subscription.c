@@ -4,6 +4,7 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+#include <stdio.h>
 #include "sc-core/sc_event_subscription.h"
 
 #include "sc-core/sc-base/sc_allocator.h"
@@ -92,14 +93,13 @@ sc_result _sc_event_subscription_manager_remove(
   if (manager == null_ptr)
     return SC_RESULT_NO;
 
-  sc_monitor_acquire_write(&manager->events_table_monitor);
   element_events_list =
       (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event_subscription->subscription_addr));
   if (element_events_list == null_ptr)
-    goto error;
+    return SC_RESULT_ERROR_INVALID_PARAMS;
 
   if (manager->events_table == null_ptr)
-    goto error;
+    return SC_RESULT_ERROR_INVALID_PARAMS;
 
   // remove event_subscription from list of events for specified sc-element
   element_events_list = sc_hash_table_list_remove(element_events_list, (sc_const_pointer)event_subscription);
@@ -109,11 +109,7 @@ sc_result _sc_event_subscription_manager_remove(
     sc_hash_table_insert(
         manager->events_table, TABLE_KEY(event_subscription->subscription_addr), (sc_pointer)element_events_list);
 
-  sc_monitor_release_write(&manager->events_table_monitor);
   return SC_RESULT_OK;
-error:
-  sc_monitor_release_write(&manager->events_table_monitor);
-  return SC_RESULT_ERROR_INVALID_PARAMS;
 }
 
 void sc_event_subscription_manager_initialize(sc_event_subscription_manager ** manager)
@@ -203,14 +199,17 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
 {
   if (event_subscription == null_ptr)
     return SC_RESULT_NO;
+  printf("destroying event for %d/%d\n", event_subscription->subscription_addr.seg, event_subscription->subscription_addr.offset);
 
   sc_event_subscription_manager * subscription_manager = sc_storage_get_event_subscription_manager();
   sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
 
+  sc_monitor_acquire_write(&subscription_manager->events_table_monitor);
   sc_monitor_acquire_write(&event_subscription->monitor);
   if (_sc_event_subscription_manager_remove(subscription_manager, event_subscription) != SC_RESULT_OK)
   {
     sc_monitor_release_write(&event_subscription->monitor);
+    sc_monitor_release_write(&subscription_manager->events_table_monitor);
     return SC_RESULT_ERROR;
   }
 
@@ -234,6 +233,7 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
     sc_monitor_release_write(&emission_manager->pool_monitor);
   }
   sc_monitor_release_write(&event_subscription->monitor);
+  sc_monitor_release_write(&subscription_manager->events_table_monitor);
 
   return SC_RESULT_OK;
 }
@@ -304,7 +304,7 @@ sc_result sc_event_emit(
 
   if (_sc_memory_context_are_events_pending(ctx))
   {
-    _sc_memory_context_pend_event(ctx, event_type_addr, subscription_addr, connector_addr, connector_type, other_addr);
+    _sc_memory_context_pend_event(ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr);
     return SC_RESULT_OK;
   }
 

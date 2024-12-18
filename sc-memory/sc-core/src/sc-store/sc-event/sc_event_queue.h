@@ -32,6 +32,8 @@ typedef struct
   sc_monitor destroy_monitor;               ///< Monitor for synchronizing access to the destruction process.
   GThreadPool * thread_pool;                ///< Thread pool used for worker threads processing events.
   sc_monitor pool_monitor;                  ///< Monitor for synchronizing access to the thread pool.
+  sc_hash_table * emitted_erase_events;  ///< Table that stores amount of active event subscriptions that were initiated
+                                         ///< due to erasure of sc-element which sc-addr is stored as a key
 } sc_event_emission_manager;
 
 /*! Function that initializes an sc-event emission manager.
