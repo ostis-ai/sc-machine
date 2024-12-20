@@ -35,7 +35,7 @@ private:
      * @brief Waits for condition to be resolved or a timeout.
      * @param timeout_ms Timeout in milliseconds.
      * @param startDelegate Delegate function to call at the start of the wait.
-     * @return True if resolved, false if timeout.
+     * @return true if resolved, false if timeout.
      */
     bool Wait(sc_uint32 timeout_ms, DelegateFunc const & startDelegate) noexcept;
 
@@ -65,7 +65,7 @@ public:
    * @param timeout_ms Timeout in milliseconds.
    * @param onWaitSuccess Function to call on successful wait.
    * @param onWaitUnsuccess Function to call on unsuccessful wait.
-   * @return True if resolved, false if timeout.
+   * @return true if resolved, false if timeout.
    */
   _SC_EXTERN bool Wait(
       sc_uint32 timeout_ms = 5000,

@@ -92,7 +92,7 @@ public:
    *
    * @param key A key for which to retrieve the boolean value.
    * @param defaultValue A default boolean value to return if the key is not found.
-   * @return True or false based on the associated string value or defaultValue if not found.
+   * @return true or false based on the associated string value or defaultValue if not found.
    */
   bool GetBoolByKey(std::string const & key, bool const defaultValue = false);
 
@@ -102,7 +102,7 @@ public:
    * This method checks whether a given key is present in the stored memory parameters.
    *
    * @param key A key to check for existence in memory parameters.
-   * @return True if the key exists; otherwise, false.
+   * @return true if the key exists; otherwise, false.
    */
   bool HasKey(std::string const & key);
 

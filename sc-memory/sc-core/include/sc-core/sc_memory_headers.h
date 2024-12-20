@@ -12,6 +12,7 @@
 #include "sc-core/sc_helper.h"
 #include "sc-core/sc_event_subscription.h"
 #include "sc-core/sc_iterator.h"
+#include "sc-core/sc_link_filter.h"
 #include "sc-core/sc_stream.h"
 #include "sc-core/sc_stream_file.h"
 #include "sc-core/sc_stream_memory.h"
