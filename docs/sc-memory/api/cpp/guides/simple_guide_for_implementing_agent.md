@@ -169,7 +169,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // argument for the action. So we need to check that the action has argument. 
   if (!m_context.IsElement(setAddr))
   {
-    SC_AGENT_LOG_ERROR("Action does not have argument."); 
+    m_logger.Error("Action does not have argument."); 
     // output: "ScAgentCalculateSetPower: Action does not have argument."
     return action.FinishWithError();
   }
@@ -203,7 +203,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
   action.FormResult(
     setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
-  SC_AGENT_LOG_DEBUG("Set power was counted: " << setPower << ".");
+  m_logger.Debug("Set power was counted: " << setPower << ".");
 
   // At the end of the agent's program, you must call one of three methods 
   // (`FinishSuccessfully`, `FinishUnsuccessfully`, `FinishWithError`) 

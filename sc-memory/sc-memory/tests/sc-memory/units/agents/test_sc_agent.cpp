@@ -492,3 +492,23 @@ ScResult ATestActionDeactivated::DoProgram(ScActionInitiatedEvent const &, ScAct
   msWaiter.Unlock();
   return action.FinishSuccessfully();
 }
+
+/// --------------------------------------
+
+ATestLogger::ATestLogger()
+{
+  m_logger = utils::ScLogger(utils::ScLogger::ScLogType::Console, "", utils::ScLogLevel::Level::Info);
+}
+
+ScAddr ATestLogger::GetActionClass() const
+{
+  m_logger.Info(ATestGenerateOutgoingArc::generate_outgoing_arc_action, " gotten");
+  return ATestGenerateOutgoingArc::generate_outgoing_arc_action;
+}
+
+ScResult ATestLogger::DoProgram(ScActionInitiatedEvent const &, ScAction & action)
+{
+  msWaiter.Unlock();
+  m_logger.Info("Completing...");
+  return action.FinishSuccessfully();
+}

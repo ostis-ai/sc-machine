@@ -403,3 +403,15 @@ public:
 
   ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
+
+class ATestLogger : public ScActionInitiatedAgent
+{
+public:
+  ATestLogger();
+
+  static inline TestWaiter msWaiter;
+
+  ScAddr GetActionClass() const override;
+
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
+};
