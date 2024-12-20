@@ -423,6 +423,13 @@ TEST_F(SCsHelperTest, GenerateBySCs_VarPermPosArcBelongsToMembershipArcsType)
   EXPECT_TRUE(m_ctx->CheckConnector(structureAddr, node2Addr, ScType::ConstPermPosArc));
 }
 
+TEST_F(SCsHelperTest, GenerateBySCs_VarPermPosArcBelongsToMainArcsType)
+{
+  SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());
+  std::string const scsData = "structure = [* sc_main_arc -> (node1 _-> node2);; *];;";
+  EXPECT_FALSE(helper.GenerateBySCsText(scsData));
+}
+
 TEST_F(SCsHelperTest, GenerateBySCs_NotBaseArcBetweenElementTypesWithinStructure)
 {
   SCsHelper helper(*m_ctx, std::make_shared<DummyFileInterface>());

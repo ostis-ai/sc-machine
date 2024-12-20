@@ -490,7 +490,8 @@ void Parser::ProcessTriple(
             "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
                                   << "` for specified sc-element, because sc-element `" << target.GetIdtf()
                                   << "` is sc-element denoting type of sc-elements.");
-      else if (ScType(targetType.BitAnd(~(ScType::Const | ScType::Var))).CanExtendTo(sourceType))
+      else if (ScType(targetType.BitAnd(~(ScType::Const | ScType::Var))).CanExtendTo(sourceType) 
+          && ScType(sourceType.BitAnd((ScType::Const | ScType::Var))).CanExtendTo(targetType.BitAnd((ScType::Const | ScType::Var))))
         target.m_type = newTargetType;
       else if (!sourceType.CanExtendTo(targetType))
         SC_THROW_EXCEPTION(
