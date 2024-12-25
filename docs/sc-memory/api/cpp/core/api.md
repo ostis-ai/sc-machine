@@ -351,6 +351,7 @@ public:
   // You can specify custom fields and methods.
   ScMemoryContext * m_context;
   ScAddr m_linkClassAddr;
+  size_t m_foundLinksCount = 0u;
 
   bool CheckLink(ScAddr const & linkAddr) override
   {
@@ -362,7 +363,12 @@ public:
 
   ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
   {
-    // Iterate over all sc-links.
+    // Iterate over only the first 5 sc-links.
+    ++m_foundLinksCount;
+
+    if (m_foundLinksCount == 5u)
+      return ScLinkFilterRequest::STOP;
+
     return ScLinkFilterRequest::CONTINUE;
   }
 };
@@ -386,8 +392,9 @@ m_ctx->GenerateConnector(ScType::ConstPermPosArc, linkClassAddr, linkAddr1);
 ...
 // Create object of custom sc-link filter class and search sc-links 
 // with this filter.
+ScMemoryContext context;
 CustomScLinkFilter filter;
-filter.m_context = &*m_ctx;
+filter.m_context = &context;
 filter.m_linkClassAddr = linkClassAddr;
 
 ScAddrSet const & links 
