@@ -8,6 +8,8 @@
 
 #include "sc-memory/sc_addr.hpp"
 
+#include <sc-core/sc_link_filter.h>
+
 /*!
  * @class ScLinkFilter
  * @brief An abstract base class for filtering links in a graph.
@@ -26,8 +28,8 @@ public:
    */
   enum class ScLinkFilterRequest : sc_uint8
   {
-    CONTINUE,  ///< Continue processing links.
-    STOP       ///< Stop processing links.
+    CONTINUE = SC_LINK_FILTER_REQUEST_CONTINUE,  ///< Continue processing links.
+    STOP = SC_LINK_FILTER_REQUEST_STOP           ///< Stop processing links.
   };
 
   /*!
