@@ -108,6 +108,37 @@ TEST_F(ScKeynodesTest, CoreKeynodes)
   EXPECT_TRUE(ScKeynodes::sc_event_before_change_link_content.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::sc_event_before_change_link_content) == ScType::ConstNodeNonRole);
 
+  EXPECT_TRUE(ScKeynodes::concept_guest_user.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::concept_guest_user) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::nrel_identified_user.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_identified_user) == ScType::ConstNodeNonRole);
+  EXPECT_TRUE(ScKeynodes::concept_authentication_request_user.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::concept_authentication_request_user) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::concept_authenticated_user.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::concept_authenticated_user) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::nrel_user_action_class.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_user_action_class) == ScType::ConstNodeNonRole);
+  EXPECT_TRUE(ScKeynodes::nrel_users_set_action_class.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::nrel_users_set_action_class) == ScType::ConstNodeNonRole);
+  EXPECT_TRUE(ScKeynodes::nrel_user_action_class_within_sc_structure.IsValid());
+  EXPECT_TRUE(
+      m_ctx->GetElementType(ScKeynodes::nrel_user_action_class_within_sc_structure) == ScType::ConstNodeNonRole);
+  EXPECT_TRUE(ScKeynodes::nrel_users_set_action_class_within_sc_structure.IsValid());
+  EXPECT_TRUE(
+      m_ctx->GetElementType(ScKeynodes::nrel_users_set_action_class_within_sc_structure) == ScType::ConstNodeNonRole);
+  EXPECT_TRUE(ScKeynodes::action_read_from_sc_memory.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_read_from_sc_memory) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::action_generate_in_sc_memory.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_generate_in_sc_memory) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::action_erase_from_sc_memory.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_erase_from_sc_memory) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::action_read_permissions_from_sc_memory.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_read_permissions_from_sc_memory) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::action_generate_permissions_in_sc_memory.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_generate_permissions_in_sc_memory) == ScType::ConstNodeClass);
+  EXPECT_TRUE(ScKeynodes::action_erase_permissions_from_sc_memory.IsValid());
+  EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::action_erase_permissions_from_sc_memory) == ScType::ConstNodeClass);
+
   EXPECT_TRUE(ScKeynodes::binary_type.IsValid());
   EXPECT_TRUE(m_ctx->GetElementType(ScKeynodes::binary_type) == ScType::ConstNodeClass);
   EXPECT_TRUE(ScKeynodes::binary_float.IsValid());

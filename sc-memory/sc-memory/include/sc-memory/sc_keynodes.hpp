@@ -295,6 +295,43 @@ public:
       "sc_event_before_change_link_content",
       ScType::ConstNodeNonRole};
 
+  _SC_EXTERN static inline ScKeynode const concept_guest_user{"concept_guest_user", ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const nrel_identified_user{"nrel_identified_user", ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const concept_authentication_request_user{
+      "concept_authentication_request_user",
+      ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const concept_authenticated_user{
+      "concept_authenticated_user",
+      ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const nrel_user_action_class{"nrel_user_action_class", ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const nrel_users_set_action_class{
+      "nrel_users_set_action_class",
+      ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const nrel_user_action_class_within_sc_structure{
+      "nrel_user_action_class_within_sc_structure",
+      ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const nrel_users_set_action_class_within_sc_structure{
+      "nrel_users_set_action_class_within_sc_structure",
+      ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const action_read_from_sc_memory{
+      "action_read_from_sc_memory",
+      ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const action_generate_in_sc_memory{
+      "action_generate_in_sc_memory",
+      ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const action_erase_from_sc_memory{
+      "action_erase_from_sc_memory",
+      ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const action_read_permissions_from_sc_memory{
+      "action_read_permissions_from_sc_memory",
+      ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const action_generate_permissions_in_sc_memory{
+      "action_generate_permissions_in_sc_memory",
+      ScType::ConstNodeClass};
+  _SC_EXTERN static inline ScKeynode const action_erase_permissions_from_sc_memory{
+      "action_erase_permissions_from_sc_memory",
+      ScType::ConstNodeClass};
+
   _SC_EXTERN static inline ScKeynode const binary_type{"binary_type", ScType::ConstNodeClass};
   _SC_EXTERN static inline ScKeynode const binary_float{"binary_float", ScType::ConstNodeClass};
   _SC_EXTERN static inline ScKeynode const binary_double{"binary_double", ScType::ConstNodeClass};
