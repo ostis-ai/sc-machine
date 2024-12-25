@@ -426,6 +426,17 @@ logger.Mute();   // Mute logging
 logger.Unmute(); // Unmute logging
 ```
 
+#### **SetPrefix**
+
+Customize prefix for logs:
+
+```cpp
+logger.SetPrefix("MyAgent: ");
+
+logger.Info("It is info message");
+// Output: MyAgent: Is info message 
+```
+
 #### **Clear**
 
 Clear any open file streams or flush logs if necessary:
