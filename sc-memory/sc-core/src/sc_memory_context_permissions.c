@@ -263,6 +263,16 @@ sc_result _sc_memory_context_manager_on_identified_user(
 
   sc_monitor_release_write(&ctx->monitor);
 
+  // Remove all negative sc-arcs
+  sc_iterator3 * it3 = sc_iterator3_f_a_f_new(
+      s_memory_default_ctx,
+      manager->nrel_identified_user_addr,
+      sc_type_const_temp_neg_arc,
+      arc_to_identified_user_addr);
+  while (sc_iterator3_next(it3))
+    sc_memory_element_free(s_memory_default_ctx, sc_iterator3_value(it3, 1));
+  sc_iterator3_free(it3);
+
   return SC_RESULT_OK;
 }
 

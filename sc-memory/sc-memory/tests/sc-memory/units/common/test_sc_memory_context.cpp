@@ -412,8 +412,22 @@ void TestSetIdentifiedUser(
     ScType const & arcType = ScType::ConstTempPosArc)
 {
   ScAddr const & nrelIdentifiedUserAddr{nrel_identified_user_addr};
+
   ScAddr const & arcAddr = context->GenerateConnector(ScType::ConstCommonArc, guestUserAddr, userAddr);
-  context->GenerateConnector(arcType, nrelIdentifiedUserAddr, arcAddr);
+  context->GenerateConnector(ScType::ConstTempNegArc, nrelIdentifiedUserAddr, arcAddr);
+
+  auto eventWaiter = context->CreateConditionWaiter<ScEventBeforeEraseIncomingArc<ScType::ConstTempNegArc>>(
+      arcAddr,
+      [&]() -> void
+      {
+        context->GenerateConnector(arcType, nrelIdentifiedUserAddr, arcAddr);
+      },
+      [&](ScEventBeforeEraseIncomingArc<ScType::ConstTempNegArc> const & event) -> bool
+      {
+        return event.GetArcSourceElement() == nrelIdentifiedUserAddr;
+      });
+
+  eventWaiter->Wait(200);
 }
 
 TEST_F(ScMemoryTestWithUserMode, HandleElementsByIdentifiedUser)
