@@ -119,7 +119,7 @@ ScMemory::ms_globalContext->GenerateConnector(
 // sc-arc between guest user and user to be identified.
 auto eventWaiter 
   = ScMemory::ms_globalContext->CreateConditionWaiter<
-    ScEventEraseIncomingArc<ScType::ConstTempNegArc>>(
+    ScEventBeforeEraseIncomingArc<ScType::ConstTempNegArc>>(
   arcAddr,
   [&]() -> void
   {
@@ -128,7 +128,7 @@ auto eventWaiter
       ScType::ConstTempPosArc, ScKeynodes::nrel_identified_user, arcAddr);
     // Only `ScMemory::ms_globalContext` can identify users.
   },
-  [&](ScEventEraseIncomingArc<ScType::ConstTempNegArc> const & event) 
+  [&](ScEventBeforeEraseIncomingArc<ScType::ConstTempNegArc> const & event) 
     -> bool
   {
     // Check that sc-arc from `nrel_identified_user` is erased.
@@ -169,7 +169,7 @@ ScMemory::ms_globalContext->GenerateConnector(
 // user.
 auto eventWaiter 
   = ScMemory::ms_globalContext->CreateConditionWaiter<
-    ScEventEraseIncomingArc<ScType::ConstTempNegArc>>(
+    ScEventBeforeEraseIncomingArc<ScType::ConstTempNegArc>>(
   userAddr1,
   [&]() -> void
   {
@@ -180,7 +180,7 @@ auto eventWaiter
 
     // Only `ScMemory::ms_globalContext` can authenticate users.
   },
-  [&](ScEventAfterGenerateIncomingArc<ScType::ConstTempNegArc> const & event) 
+  [&](ScEventBeforeEraseIncomingArc<ScType::ConstTempNegArc> const & event) 
     -> bool
   {
     // Check that sc-arc from `concept_authenticated_user` is erased.
