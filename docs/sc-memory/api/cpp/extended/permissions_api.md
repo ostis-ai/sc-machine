@@ -39,7 +39,8 @@ ScMemoryContext context;
 ScAddr const & guestUserAddr = context.GetUser();
 // This user should belongs `concept_guest_user` class.
 
-// After you can use `context` to generate, search or erase sc-elements in sc-memory.
+// After you can use `context` to generate, search or erase sc-elements 
+// in sc-memory.
 ```
 
 You can get user from object of context, if you need to handle this user.
@@ -93,19 +94,53 @@ If you remove this sc-arc between `concept_authenticated_user` and the user, the
 You should identify guest user as user that should be authenticated. 
 
 ```cpp
-ScMemoryContext context; // Some context with guest user.
+// Create context with guest user.
+ScMemoryContext context;
+// Get guest user from created context.
 ScAddr const & guestUserAddr = context.GetUser();
 
-// Identify guest user.
-// Find a user, which was identified. You can provide your own logic of user
-// identification before.
+// Find a user, which should be identified. You can provide your own logic 
+// of user identification before.
 ScAddr const & userAddr1 = context.SearchElementBySystemIdentifier("user_1");
 
+// Before user identification, specify that user isn't identified. 
+// This way, you can subscribe to sc-event of erasing negative sc-arc, 
+// because when you identify user, all existing negative sc-arcs 
+// between `nrel_identified_user` and sc-arc between guest user and user 
+// to be identified are erased. This logic will help you to wait for user 
+// to be identified.
 ScAddr const & arcAddr = ScMemory::ms_globalContext->GenerateConnector(
   ScType::ConstCommonArc, guestUserAddr, userAddr1);
 ScMemory::ms_globalContext->GenerateConnector(
-  ScType::ConstPermPosArc, ScKeynodes::nrel_identified_user, arcAddr);
-// Only `ScMemory::ms_globalContext` can identify users.
+  ScType::ConstTempNegArc, ScKeynodes::nrel_identified_user, arcAddr);
+
+// Create sc-event waiter to wait user to be identified.
+// You should subscribe to sc-event of erasing negative sc-arc incoming to
+// sc-arc between guest user and user to be identified.
+auto eventWaiter 
+  = ScMemory::ms_globalContext->CreateConditionWaiter<
+    ScEventEraseIncomingArc<ScType::ConstTempNegArc>>(
+  arcAddr,
+  [&]() -> void
+  {
+    // Identify guest user.
+    ScMemory::ms_globalContext->GenerateConnector(
+      ScType::ConstTempPosArc, ScKeynodes::nrel_identified_user, arcAddr);
+    // Only `ScMemory::ms_globalContext` can identify users.
+  },
+  [&](ScEventEraseIncomingArc<ScType::ConstTempNegArc> const & event) 
+    -> bool
+  {
+    // Check that sc-arc from `nrel_identified_user` is erased.
+    return event.GetArcSourceElement() 
+      == ScKeynodes::nrel_identified_user;
+  });
+
+// After creation, call method `Wait` and specify time while you 
+// will wait sc-event for specified subscription sc-element.
+eventWaiter->Wait(200); // milliseconds
+// By default, this wait time equals to 5000 milliseconds.
+// You will wait until sc-event occurs or until specified time expires.
 ```
 
 After, you can authenticate identified user.
