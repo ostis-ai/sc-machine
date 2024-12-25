@@ -617,10 +617,10 @@ Both global and local permissions can be described for the same user. It is impo
   <thead>
     <tr>
       <th>Case</th>
-      <th>Does specified sc-construction belong to any permitted sc-structure?</th>
-      <th>Does user have global permissions?</th>
-      <th>Does user have local permissions?</th>
-      <th>Can user handle the specified sc-construction?</th>
+      <th>Criterion 1. Does specified sc-construction belong to any permitted sc-structure?</th>
+      <th>Criterion 2. Does user have global permissions?</th>
+      <th>Criterion 3. Does user have local permissions?</th>
+      <th>Result. Can user handle the specified sc-construction?</th>
     </tr>
   </thead>
   <tbody>
@@ -737,7 +737,7 @@ auto eventWaiter
     // permissions for user of `context` or use `ScMemory::ms_globalContext` 
     // that has all permissions, by default.
   },
-  [&](ScEventAfterGenerateOutgoingArc<ScType::ConstTempNegArc> const & event)
+  [&](ScEventEraseOutgoingArc<ScType::ConstTempNegArc> const & event)
     -> bool
   {
     // Check that permissions for specified are updated.
