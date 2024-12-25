@@ -17,7 +17,7 @@ Users interact with ostis-systems. Users can be other systems, agents or people.
 * action_generate_permissions_in_sc_memory;
 * action_erase_permissions_from_sc_memory.
 
-Before a user action is  performed, it is checked whether the user has permissions to perform actions of the specified class.
+Before a user action is performed, it is checked whether the user has permissions to perform actions of the specified class.
 
 By default, user permissions are not handled by sc-machine. This is configured via the sc-machine config (`<config-name>.ini`). To enable user permissions handling in the sc-machine, go to the group `[sc-memory]` and set `user_mode` as `true`.
 
@@ -30,9 +30,17 @@ user_mode = true
 
 ## **How are users managed?**
 
-You can only work with memory through methods provided in `ScMemoryContext`. Each object of this class can be considered as an object that handles information about a user (including his permissions) when that user invokes methods through that object.
+You can only work with sc-memory through methods provided in `ScMemoryContext` class. Each object of this class can be considered as an object that handles information about a user (including his permissions) when that user invokes methods through that object.
 
-You can't create object of `ScMemoryContext` providing user. This happens automatically. When some user initiates a sc-event, an object of `ScMemoryContext` with this user is created for the agent that reacted to this sc-event. After this agent uses this context to call sc-memory methods.
+To work with sc-memory, you should create object of `ScMemoryContext` class or use existing one. If you create context via constructor, then this context will have guest user (user with `concept_guest_user` class). 
+
+```cpp
+ScMemoryContext context;
+ScAddr const & guestUserAddr = context.GetUser();
+// This user should belongs `concept_guest_user` class.
+
+// After you can use `context` to generate, search or erase sc-elements in sc-memory.
+```
 
 You can get user from object of context, if you need to handle this user.
 
@@ -40,13 +48,9 @@ You can get user from object of context, if you need to handle this user.
 ScAddr const & userAddr = context.GetUser();
 ```
 
-If you create context via constructor, i.e. you can't use provided context, then this context will have guest user (user with `concept_guest_user`). It is default class for all users in sc-memory. You can specify permissions for this class. See documentation below to learn how to do it.
+`concept_guest_user` class is default class for all users in sc-memory. By default, all guest users haven't permissions. You can specify permissions for their class. See documentation below to learn how to do it.
 
-```cpp
-ScMemoryContext context;
-ScAddr const & guestUserAddr = context.GetUser();
-// This user should belongs 
-```
+When some user initiates a sc-event, an object of `ScMemoryContext` with this user is created for the agent that reacted to this sc-event. After this agent uses this context to manipulate with sc-constructions within sc-memory. Each agent class has `m_context` field. You should use it to call methods in sc-memory.
 
 ## **How does the sc-machine identifies users?**
 
