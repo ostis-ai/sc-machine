@@ -435,21 +435,25 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     };
 
     TScAgent agent;
+    agent.m_logger.SetPrefix(agent.GetName() + ": ");
     agent.SetInitiator(event.GetUser());
     agent.SetImplementation(agentImplementationAddr);
 
     std::string const & agentName = GetAgentClassName(&agent.m_context, agent);
-    // SC_LOG_INFO("Agent `" << agentName << "` reacted to primary initiation condition.");
+    agent.m_logger.Info("Agent `", agentName, "` reacted to primary initiation condition.");
 
     if (agent.IsActionClassDeactivated())
     {
-      SC_LOG_WARNING(
-          "Agent `" << agentName << "` was finished because actions with class `" << agent.GetActionClass().Hash()
-                    << "` are deactivated.");
+      agent.m_logger.Warning(
+          "Agent `",
+          agentName,
+          "` was finished because actions with class `",
+          agent.GetActionClass().Hash(),
+          "` are deactivated.");
       return PostCallback();
     }
 
-    // SC_LOG_INFO("Agent `" << agentName << "` started checking initiation condition.");
+    agent.m_logger.Info("Agent `", agentName, "` started checking initiation condition.");
     bool isInitiationConditionCheckedSuccessfully = false;
     try
     {
@@ -458,24 +462,24 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     }
     catch (utils::ScException const & exception)
     {
-      SC_LOG_ERROR(
-          "Not able to check initiation condition template, because error was occurred. " << exception.Message());
+      agent.m_logger.Error(
+          "Not able to check initiation condition template, because error was occurred. ", exception.Message());
     }
 
     if (!isInitiationConditionCheckedSuccessfully)
     {
-      SC_LOG_WARNING(
-          "Agent `" << agentName << "` was finished because its initiation condition was checked unsuccessfully.");
+      agent.m_logger.Warning(
+          "Agent `", agentName, "` was finished because its initiation condition was checked unsuccessfully.");
       return PostCallback();
     }
-    // SC_LOG_INFO("Agent `" << agentName << "` finished checking initiation condition.");
+    agent.m_logger.Info("Agent `", agentName, "` finished checking initiation condition.");
 
     ScAction action = ResolveAction(event, agent);
     ScResult result;
 
     try
     {
-      SC_LOG_INFO("Agent `" << agentName << "` started performing action.");
+      agent.m_logger.Info("Agent `", agentName, "` started performing action.");
       if constexpr (HasOverride<TScAgent>::DoProgramWithEventArgument::value)
         result = agent.DoProgram(event, action);
       else
@@ -503,13 +507,13 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     }
 
     if (result == SC_RESULT_OK)
-      SC_LOG_INFO("Agent `" << agentName << "` finished performing action successfully.");
+      agent.m_logger.Info("Agent `", agentName, "` finished performing action successfully.");
     else if (result == SC_RESULT_NO)
-      SC_LOG_INFO("Agent `" << agentName << "` finished performing action unsuccessfully.");
+      agent.m_logger.Info("Agent `", agentName, "` finished performing action unsuccessfully.");
     else
-      SC_LOG_INFO("Agent `" << agentName << "` finished performing action with error.");
+      agent.m_logger.Info("Agent `", agentName, "` finished performing action with error.");
 
-    // SC_LOG_INFO("Agent `" << agentName << "` started checking result condition.");
+    agent.m_logger.Info("Agent `", agentName, "` started checking result condition.");
     bool isResultConditionCheckedSuccessfully = false;
     try
     {
@@ -518,15 +522,16 @@ std::function<void(typename TScAgent::TEventType const &)> ScAgentManager<TScAge
     }
     catch (utils::ScException const & exception)
     {
-      SC_LOG_ERROR("Not able to check result condition template, because error was occurred. " << exception.Message());
+      agent.m_logger.Error(
+          "Not able to check result condition template, because error was occurred. ", exception.Message());
     }
 
     if (!isResultConditionCheckedSuccessfully)
     {
-      SC_LOG_WARNING("Result condition of agent `" << agentName << "` checked unsuccessfully.");
+      agent.m_logger.Warning("Result condition of agent `", agentName, "` checked unsuccessfully.");
       return PostCallback();
     }
-    // SC_LOG_INFO("Agent `" << agentName << "` finished checking result condition.");
+    agent.m_logger.Info("Agent `", agentName, "` finished checking result condition.");
 
     return PostCallback();
   };

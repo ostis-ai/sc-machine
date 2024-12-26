@@ -185,7 +185,7 @@ std::string Message(T const & t)
 template <typename T, typename... ARGS>
 std::string Message(T const & t, ARGS const &... others)
 {
-  return DebugPrint(t) + " " + Message(others...);
+  return DebugPrint(t) + Message(others...);
 }
 }  // namespace impl
 }  // namespace utils

@@ -10,7 +10,7 @@
 
 #include "sc_object.hpp"
 
-#include "utils/sc_log.hpp"
+#include "utils/sc_logger.hpp"
 
 template <class TScEvent>
 class ScElementaryEventSubscription;

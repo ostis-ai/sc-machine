@@ -53,6 +53,11 @@ ScKeynode::operator std::string() const noexcept
   return std::string(m_sysIdtf);
 }
 
+std::ostream & operator<<(std::ostream & os, ScKeynode const & keynode)
+{
+  return os << std::string(keynode);
+}
+
 void ScKeynode::Initialize(ScMemoryContext * context)
 {
   ScAddr const & contextStructureAddr = context->GetContextStructure();

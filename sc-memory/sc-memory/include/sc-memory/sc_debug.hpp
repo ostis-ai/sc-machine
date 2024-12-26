@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "sc-memory/utils/sc_log.hpp"
+#include "sc-memory/utils/sc_logger.hpp"
 #include "sc-memory/utils/sc_message.hpp"
 #include "sc-memory/utils/sc_console.hpp"
 
