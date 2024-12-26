@@ -168,6 +168,7 @@ See documentation, to learn more about using new API.
 - Intro for documentation
 - Quick start section for developers in docs
 - Quick start section for users in docs
+- Documentation for user permissions
 - Allow multiple extension directories for sc-memory
 - CD for publishing sc-machine binaries as archive on Github 
 - CI for checking sc-machine tests build with Conan dependencies

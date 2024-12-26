@@ -20,6 +20,7 @@ nav:
           - C++ Extended API:
               - C++ System Identifier API: sc-memory/api/cpp/extended/helper_api.md
               - C++ ScTemplate API: sc-memory/api/cpp/extended/template_api.md
+              - C++ User Permissions API: sc-memory/api/cpp/extended/permissions_api.md
               - C++ Agents API:
                   - C++ Events API: sc-memory/api/cpp/extended/agents/events.md
                   - C++ Event Subscriptions API: sc-memory/api/cpp/extended/agents/event_subscriptions.md
