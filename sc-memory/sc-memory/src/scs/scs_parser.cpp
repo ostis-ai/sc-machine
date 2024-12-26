@@ -490,14 +490,30 @@ void Parser::ProcessTriple(
             "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
                                   << "` for specified sc-element, because sc-element `" << target.GetIdtf()
                                   << "` is sc-element denoting type of sc-elements.");
-      else if (ScType(targetType.BitAnd(~(ScType::Const | ScType::Var))).CanExtendTo(sourceType) 
-          && ScType(sourceType.BitAnd((ScType::Const | ScType::Var))).CanExtendTo(targetType.BitAnd((ScType::Const | ScType::Var))))
-        target.m_type = newTargetType;
-      else if (!sourceType.CanExtendTo(targetType))
-        SC_THROW_EXCEPTION(
-            utils::ExceptionParseError,
-            "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
-                                  << "` for specified sc-element.");
+      else
+      {
+        // Check that any type of target sc-element without constancy mask can be extended to type of sc-elements 
+        // represented by source sc-element.
+        ScType const & targetTypeWithoutConstancyMask = targetType.BitAnd(~(ScType::Const | ScType::Var));
+        bool canTargetTypeWithoutConstancyMaskExtendToSourceType 
+            = targetTypeWithoutConstancyMask.CanExtendTo(sourceType);
+
+        // Check that any type of source sc-element with constancy mask can be extended to type of sc-elements 
+        // represented by source sc-element with constancy mask.
+        ScType const & sourceTypeWithConstancyMask = sourceType.BitAnd(ScType::Const | ScType::Var);
+        ScType const & targetTypeWithConstancyMask = targetType.BitAnd(ScType::Const | ScType::Var);
+        bool canSourceTypeWithConstancyMaskExtendToTargetTypeWithConstancyMask =
+            sourceTypeWithConstancyMask.CanExtendTo(targetTypeWithConstancyMask);
+
+        if (canTargetTypeWithoutConstancyMaskExtendToSourceType
+            && canSourceTypeWithConstancyMaskExtendToTargetTypeWithConstancyMask)
+          target.m_type = newTargetType;
+        else if (!sourceType.CanExtendTo(targetType))
+          SC_THROW_EXCEPTION(
+              utils::ExceptionParseError,
+              "Can't extend type `" << std::string(targetType) << "` using type `" << std::string(sourceType)
+                                    << "` for specified sc-element.");
+      }
 
       // TODO(NikitaZotov): Unfortunately, parser collects all sc.s-elements, and only then forms sc.s-triples based on
       // the parsed sc.s-elements. Due to this, it is difficult to handle cases when it is necessary not to generate a
