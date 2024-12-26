@@ -20,7 +20,7 @@ Table of contents:
         * C++ Extended API - *documentation of C++ extended API for manipulating with system identifiers of sc-elements and sc-templates*
             * [C++ System Identifier API](sc-memory/api/cpp/extended/helper_api.md) - *documentation of C++ extended API for manipulating with system identifiers of sc-elements*
             * [C++ ScTemplate API](sc-memory/api/cpp/extended/template_api.md) - *documentation of C++ extended API for creating and retrieving graphs (it is very useful when you want to work big sc-constructions)*
-            * [C++ User Permissions API](sc-memory/api/cpp/extended/permissions_api.md)
+            * [C++ User Permissions API](sc-memory/api/cpp/extended/permissions_api.md) - *documentation of handling users and their permissions in knowledge base*
             * C++ Agents API - *documentation of C++ Agents API for creating agents*
                 * [C++ Events API](sc-memory/api/cpp/extended/agents/events.md) - *enables developers to create and manage events within the sc-machine, allowing agents to respond dynamically to various triggers*
                 * [C++ Event Subscriptions API](sc-memory/api/cpp/extended/agents/event_subscriptions.md) - *details how agents can subscribe to specific events and receive notifications when those events occur*
