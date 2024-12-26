@@ -342,6 +342,79 @@ ScAddrSet const & linkAddrs1
 // The set `linkAddrs1` must contain sc-address `linkAddr1`.
 ```
 
+Also, you can provide a filter to search sc-links to define criteria for which links should be included in the search results. This allows for customization of which links are considered based on user-defined conditions. The filter must be an instance of a class derived from `ScLinkFilter`, which implements the `CheckLink` and `RequestLink` methods.
+
+```cpp
+class TestScLinkFilter final : public ScLinkFilter
+{
+public:
+  // You can specify custom fields and methods.
+  ScMemoryContext * m_context;
+  ScAddr m_linkClassAddr;
+  size_t m_foundLinksCount = 0u;
+
+  bool CheckLink(ScAddr const & linkAddr) override
+  {
+    // Don't include sc-link in result if it doesn't belong 
+    // to `m_linkClassAddr`.
+    return m_context->CheckConnector(
+      m_linkClassAddr, linkAddr, ScType::ConstPermPosArc);
+  }
+
+  ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+  {
+    // Iterate over only the first 5 sc-links.
+    ++m_foundLinksCount;
+
+    if (m_foundLinksCount == 5u)
+      return ScLinkFilterRequest::STOP;
+
+    return ScLinkFilterRequest::CONTINUE;
+  }
+};
+
+
+// Some method A
+...
+// For example, generate sc-links, set contents for them and add only 
+// one of them to some set or class.
+ScAddr const & linkClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
+ScAddr const & linkAddr2 = m_ctx->CreateLink(ScType::ConstNodeLink);
+
+m_ctx->SetLinkContent(linkAddr1, "content 1");
+m_ctx->SetLinkContent(linkAddr2, "content 2");
+
+m_ctx->GenerateConnector(ScType::ConstPermPosArc, linkClassAddr, linkAddr1);
+...
+
+// Some method B
+...
+// Create object of custom sc-link filter class and search sc-links 
+// with this filter.
+ScMemoryContext context;
+CustomScLinkFilter filter;
+filter.m_context = &context;
+filter.m_linkClassAddr = linkClassAddr;
+
+ScAddrSet const & links 
+  = m_ctx->SearchLinksByContentSubstring("content", filter);
+// The `links` must have only one sc-link sc-address `linkAddr1`.
+...
+```
+
+### **SearchLinksContentsByContentSubstring**
+
+Also, you can find contents of sc-links by its content substring. For this use the method `SearchLinksContentsByContentSubstring`.
+
+```cpp
+...
+// Find contents of sc-links with specified string content substring.
+std::set<std::string> const & linkContents 
+  = context.SearchLinksContentsByContentSubstring("my cont");
+// The set `linkContents` must contain string `my content`.
+```
+
 ### **ScException**
 
 To declare your own exceptions inherit from class `ScException`.

@@ -432,3 +432,66 @@ TEST_F(ScLinkTest, empty_link_deletion)
 
   ctx.Destroy();
 }
+
+class TestScLinkFilter : public ScLinkFilter
+{
+public:
+  ScMemoryContext * m_context;
+  ScAddr m_linkClassAddr;
+
+  bool CheckLink(ScAddr const & linkAddr) override
+  {
+    return m_context->CheckConnector(m_linkClassAddr, linkAddr, ScType::ConstPermPosArc);
+  }
+
+  ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+
+  {
+    return ScLinkFilterRequest::CONTINUE;
+  }
+};
+
+TEST_F(ScLinkTest, FindLinksWithFilter)
+{
+  ScAddr const & linkClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
+  m_ctx->SetLinkContent(linkAddr1, "content 1");
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, linkClassAddr, linkAddr1);
+  ScAddr const & linkAddr2 = m_ctx->CreateLink(ScType::ConstNodeLink);
+  m_ctx->SetLinkContent(linkAddr2, "content 2");
+
+  TestScLinkFilter filter;
+  filter.m_context = &*m_ctx;
+  filter.m_linkClassAddr = linkClassAddr;
+  ScAddrSet const & links = m_ctx->SearchLinksByContentSubstring("content", filter);
+  EXPECT_EQ(links.size(), 1u);
+  EXPECT_EQ(*links.cbegin(), linkAddr1);
+}
+
+class TestScLinkFilterWithRequestStop : public ScLinkFilter
+{
+public:
+  bool CheckLink(ScAddr const & linkAddr) override
+  {
+    return true;
+  }
+
+  ScLinkFilterRequest RequestLink(ScAddr const & linkAddr) override
+  {
+    return ScLinkFilterRequest::STOP;
+  }
+};
+
+TEST_F(ScLinkTest, FindLinksWithFilterRequestStop)
+{
+  ScAddr const & linkClassAddr = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr const & linkAddr1 = m_ctx->GenerateLink(ScType::ConstNodeLink);
+  m_ctx->SetLinkContent(linkAddr1, "example 1");
+  ScAddr const & linkAddr2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
+  m_ctx->SetLinkContent(linkAddr2, "example 2");
+
+  TestScLinkFilterWithRequestStop filter;
+  ScAddrSet const & links = m_ctx->SearchLinksByContentSubstring("example", filter);
+  EXPECT_EQ(links.size(), 1u);
+  EXPECT_TRUE(links.count(linkAddr1) || links.count(linkAddr2));
+}

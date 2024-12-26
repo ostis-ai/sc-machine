@@ -137,7 +137,7 @@ public:
    *
    * This method returns true if the configuration was successfully initialized; otherwise, false.
    *
-   * @return True if valid, false otherwise.
+   * @return true if valid, false otherwise.
    */
   sc_bool IsValid() const;
 

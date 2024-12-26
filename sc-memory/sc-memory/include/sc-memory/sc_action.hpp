@@ -120,7 +120,7 @@ public:
 
   /*!
    * @brief Checks if the action is initiated.
-   * @return True if the action is initiated, false otherwise.
+   * @return true if the action is initiated, false otherwise.
    */
   _SC_EXTERN bool IsInitiated() const noexcept;
 
@@ -158,13 +158,13 @@ public:
 
   /*!
    * @brief Checks if the action is finished.
-   * @return True if the action is finished, false otherwise.
+   * @return true if the action is finished, false otherwise.
    */
   _SC_EXTERN bool IsFinished() const noexcept;
 
   /*!
    * @brief Checks if the action is finished successfully.
-   * @return True if the action is finished successfully, false otherwise.
+   * @return true if the action is finished successfully, false otherwise.
    */
   _SC_EXTERN bool IsFinishedSuccessfully() const noexcept;
 
@@ -178,7 +178,7 @@ public:
 
   /*!
    * @brief Checks if the action is finished unsuccessfully.
-   * @return True if the action is finished unsuccessfully, false otherwise.
+   * @return true if the action is finished unsuccessfully, false otherwise.
    */
   _SC_EXTERN bool IsFinishedUnsuccessfully() const noexcept;
 
@@ -192,7 +192,7 @@ public:
 
   /*!
    * @brief Checks if the action is finished with an error.
-   * @return True if the action is finished with an error, false otherwise.
+   * @return true if the action is finished with an error, false otherwise.
    */
   _SC_EXTERN bool IsFinishedWithError() const noexcept;
 

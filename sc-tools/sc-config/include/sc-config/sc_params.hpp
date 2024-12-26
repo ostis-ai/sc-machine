@@ -95,7 +95,7 @@ public:
    * This method returns true if the specified key is present in the stored parameters; otherwise, false.
    *
    * @param key A key to check for existence.
-   * @return True if the key exists; otherwise, false.
+   * @return true if the key exists; otherwise, false.
    */
   sc_bool Has(std::string const & key) const;
 
