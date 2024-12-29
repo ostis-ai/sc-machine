@@ -492,21 +492,22 @@ void Parser::ProcessTriple(
                                   << "` is sc-element denoting type of sc-elements.");
       else
       {
-        // Check that any type of target sc-element without constancy mask can be extended to type of sc-elements 
-        // represented by source sc-element.
-        ScType const & targetTypeWithoutConstancyMask = targetType.BitAnd(~(ScType::Const | ScType::Var));
-        bool canTargetTypeWithoutConstancyMaskExtendToSourceType 
-            = targetTypeWithoutConstancyMask.CanExtendTo(sourceType);
+        // Removes constancy subtype from type of target sc-element and check that type of target sc-element 
+        // without constancy subtype can be extended to type of sc-elements represented by source sc-element.
+        // It is necessary to remove the constancy subtype because all existing sc-elements denoting types of 
+        // sc-elements haven't constancy subtypes.
+        ScType const & targetTypeWithoutConstancySubtype = targetType.BitAnd(~(ScType::Const | ScType::Var));
+        bool canTargetTypeWithoutConstancySubtypeExtendToSourceType 
+            = targetTypeWithoutConstancySubtype.CanExtendTo(sourceType);
 
-        // Check that any type of source sc-element with constancy mask can be extended to type of sc-elements 
-        // represented by source sc-element with constancy mask.
-        ScType const & sourceTypeWithConstancyMask = sourceType.BitAnd(ScType::Const | ScType::Var);
-        ScType const & targetTypeWithConstancyMask = targetType.BitAnd(ScType::Const | ScType::Var);
-        bool canSourceTypeWithConstancyMaskExtendToTargetTypeWithConstancyMask =
-            sourceTypeWithConstancyMask.CanExtendTo(targetTypeWithConstancyMask);
+        // After check that constancy subtypes of source and target types are compatible for extension.
+        ScType const & sourceTypeWithConstancySubtype = sourceType.BitAnd(ScType::Const | ScType::Var);
+        ScType const & targetTypeWithConstancySubtype = targetType.BitAnd(ScType::Const | ScType::Var);
+        bool doSourceAndTargetHaveCompatibleConstancySubtypes =
+            sourceTypeWithConstancySubtype.CanExtendTo(targetTypeWithConstancySubtype) 
+            || targetTypeWithConstancySubtype.CanExtendTo(sourceTypeWithConstancySubtype);
 
-        if (canTargetTypeWithoutConstancyMaskExtendToSourceType
-            && canSourceTypeWithConstancyMaskExtendToTargetTypeWithConstancyMask)
+        if (canTargetTypeWithoutConstancySubtypeExtendToSourceType && doSourceAndTargetHaveCompatibleConstancySubtypes)
           target.m_type = newTargetType;
         else if (!sourceType.CanExtendTo(targetType))
           SC_THROW_EXCEPTION(

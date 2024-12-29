@@ -221,6 +221,54 @@ TEST(scs_common, SCsNodeKeynodes)
   }
 }
 
+TEST(scs_common, SCsMembershipArcKeynodes)
+{
+  std::vector<ScType> const & connectorTypes = {
+    ScType::ConstPermPosArc,
+    ScType::MembershipArc,
+    ScType::CommonArc,
+    ScType::CommonEdge
+  };
+
+  std::stringstream stream;
+  for (ScType const & connectorType : connectorTypes)
+  {
+    ScType connectorTypeToExtend;
+    if (connectorType.IsMembershipArc())
+      connectorTypeToExtend = ScType::MembershipArc;
+    else if (connectorType.IsCommonArc())
+      connectorTypeToExtend = ScType::CommonArc;
+    else if (connectorType.IsCommonEdge())
+      connectorTypeToExtend = ScType::CommonEdge;
+
+    stream << connectorType.GetSCsElementKeynode() << " -> " 
+      << "(... " << connectorTypeToExtend.GetDirectSCsConnector() << " ...);;" << std::endl;
+    stream << connectorType.GetSCsElementKeynode() << " -> "
+      << "(... " << TestScType(connectorTypeToExtend).BitOr(ScType::Const).GetDirectSCsConnector() << " ...);;" << std::endl;
+    stream << connectorType.GetSCsElementKeynode() << " -> "
+      << "(... " << TestScType(connectorTypeToExtend).BitOr(ScType::Var).GetDirectSCsConnector() << " ...);;" << std::endl;
+  }
+
+  scs::Parser parser;
+  EXPECT_TRUE(parser.Parse(stream.str()));
+
+  auto const & triples = parser.GetParsedTriples();
+  EXPECT_EQ(triples.size(), connectorTypes.size() * 6);
+
+  auto const GetConnectorType = [&triples, &parser](size_t index) -> ScType
+  {
+    EXPECT_TRUE(index < triples.size());
+    return parser.GetParsedElement(triples[index].m_connector).GetType();
+  };
+
+  for (size_t i = 0, j = 0; j < connectorTypes.size(); i += 6, ++j)
+  {
+    EXPECT_EQ(GetConnectorType(i), TestScType(connectorTypes[j]));
+    EXPECT_EQ(GetConnectorType(i + 2), TestScType(connectorTypes[j]).BitOr(ScType::Const));
+    EXPECT_EQ(GetConnectorType(i + 4), TestScType(connectorTypes[j]).BitOr(ScType::Var));
+  }
+}
+
 TEST(scs_common, Links)
 {
   std::string const data =
