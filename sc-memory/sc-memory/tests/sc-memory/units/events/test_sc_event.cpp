@@ -1628,8 +1628,13 @@ TEST_F(ScEventTest, SubscriptionForNodeAndTwoConnectorsErasureWithNodeFinishEarl
   bool isShortExecutedSubscriptionForArc1Called = false;
   auto shortExecutedSubscriptionForArc1 = m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseElement>(
       nodeAddr1,
-      [&isShortExecutedSubscriptionForArc1Called](auto const &)
+      [&](auto const &)
       {
+        EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
+        EXPECT_TRUE(m_ctx->IsElement(arc1));
+        EXPECT_TRUE(m_ctx->IsElement(nodeAddr2));
+        EXPECT_TRUE(m_ctx->IsElement(arc3));
+
         EXPECT_FALSE(isShortExecutedSubscriptionForArc1Called);
         isShortExecutedSubscriptionForArc1Called = true;
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -1638,8 +1643,13 @@ TEST_F(ScEventTest, SubscriptionForNodeAndTwoConnectorsErasureWithNodeFinishEarl
   auto mediumExecutedSubscriptionForArc4 =
       m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
           nodeAddr5,
-          [&isMediumExecutedSubscriptionForArc4Called, &sleepTime](auto const &)
+          [&](auto const &)
           {
+            EXPECT_TRUE(m_ctx->IsElement(arc2));
+            EXPECT_TRUE(m_ctx->IsElement(arc4));
+            EXPECT_TRUE(m_ctx->IsElement(nodeAddr4));
+            EXPECT_TRUE(m_ctx->IsElement(nodeAddr5));
+
             EXPECT_FALSE(isMediumExecutedSubscriptionForArc4Called);
             isMediumExecutedSubscriptionForArc4Called = true;
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 2));
@@ -1648,8 +1658,13 @@ TEST_F(ScEventTest, SubscriptionForNodeAndTwoConnectorsErasureWithNodeFinishEarl
   auto longExecutedSubscription =
       m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::ConstPermPosArc>>(
           nodeAddr1,
-          [&isLongExecutedSubscriptionCalled, &sleepTime](auto const & event)
+          [&](auto const &)
           {
+            EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
+            EXPECT_TRUE(m_ctx->IsElement(arc1));
+            EXPECT_TRUE(m_ctx->IsElement(nodeAddr2));
+            EXPECT_TRUE(m_ctx->IsElement(arc3));
+
             EXPECT_FALSE(isLongExecutedSubscriptionCalled);
             isLongExecutedSubscriptionCalled = true;
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
@@ -1658,6 +1673,7 @@ TEST_F(ScEventTest, SubscriptionForNodeAndTwoConnectorsErasureWithNodeFinishEarl
   m_ctx->EraseElement(nodeAddr1);
   m_ctx->EraseElement(nodeAddr2);
   m_ctx->EraseElement(nodeAddr4);
+
   std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 4));
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr2));
@@ -1668,7 +1684,8 @@ TEST_F(ScEventTest, SubscriptionForNodeAndTwoConnectorsErasureWithNodeFinishEarl
   EXPECT_TRUE(m_ctx->IsElement(arc2));
   EXPECT_FALSE(m_ctx->IsElement(arc3));
   EXPECT_TRUE(m_ctx->IsElement(arc4));
-  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 3));
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime / 2));
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr1));
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr2));
   EXPECT_TRUE(m_ctx->IsElement(nodeAddr3));
@@ -1678,6 +1695,7 @@ TEST_F(ScEventTest, SubscriptionForNodeAndTwoConnectorsErasureWithNodeFinishEarl
   EXPECT_FALSE(m_ctx->IsElement(arc2));
   EXPECT_FALSE(m_ctx->IsElement(arc3));
   EXPECT_FALSE(m_ctx->IsElement(arc4));
+
   std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
   EXPECT_FALSE(m_ctx->IsElement(nodeAddr1));
   EXPECT_FALSE(m_ctx->IsElement(nodeAddr2));
