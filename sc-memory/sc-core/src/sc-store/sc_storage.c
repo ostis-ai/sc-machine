@@ -898,6 +898,11 @@ sc_result _sc_storage_element_erase_with_incoming_outgoing_connectors(
   // then cache source/target to try to erase them with their incoming/outgoing connectors
   if (sc_type_is_connector(type) && !*does_branch_have_emitted_events)
   {
+    // TODO(NikitaZotov): Provide causal consistency for agents responding to sc-events of erasing sc-elements occurring
+    // within the same semantic neighbourhood. It should be that 1) agents, reacted to sc-event of erasing sc-elements,
+    // know about this sc-element until the end of their existence, 2) the agent, that reacted to sc-event of erasing
+    // sc-element, can view the entire semantic neighbourhood of this sc-element, even if some of sc-connectors in this
+    // neighbourhood is erased by another agent.
     if (SC_ADDR_IS_NOT_EQUAL(connector_chain_begin_addr, begin_addr))
       _sc_storage_cache_elements_under_erasure_without_erase_events(
           begin_addr, incident_nodes_under_erasure, processed_connectors);
