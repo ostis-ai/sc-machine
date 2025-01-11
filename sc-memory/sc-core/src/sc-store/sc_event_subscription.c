@@ -51,6 +51,7 @@ sc_result _sc_event_subscription_manager_add(
     sc_event_subscription_manager * manager,
     sc_event_subscription * event_subscription)
 {
+  sc_result result = SC_RESULT_OK;
   sc_hash_table_list * element_events_list = null_ptr;
 
   // the first, if table doesn't exist, then return error
@@ -58,23 +59,22 @@ sc_result _sc_event_subscription_manager_add(
     return SC_RESULT_NO;
 
   sc_monitor_acquire_write(&manager->events_table_monitor);
-
   if (manager->events_table == null_ptr)
   {
-    sc_monitor_release_write(&manager->events_table_monitor);
-    return SC_RESULT_NO;
+    result = SC_RESULT_OK;
+    goto result;
   }
 
-  // if there are no events for specified sc-element, then generate new events list
+  // if there are no events for specified sc-element, then create new events list
   element_events_list =
       (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event_subscription->subscription_addr));
   element_events_list = sc_hash_table_list_append(element_events_list, (sc_pointer)event_subscription);
   sc_hash_table_insert(
       manager->events_table, TABLE_KEY(event_subscription->subscription_addr), (sc_pointer)element_events_list);
 
+result:
   sc_monitor_release_write(&manager->events_table_monitor);
-
-  return SC_RESULT_OK;
+  return result;
 }
 
 /*! Removes the specified sc-event_subscription from the registration manager's events table.
@@ -86,19 +86,21 @@ sc_result _sc_event_subscription_manager_remove(
     sc_event_subscription_manager * manager,
     sc_event_subscription * event_subscription)
 {
+  sc_result result = SC_RESULT_OK;
   sc_hash_table_list * element_events_list = null_ptr;
 
   // the first, if table doesn't exist, then return error
   if (manager == null_ptr)
     return SC_RESULT_NO;
 
+  sc_monitor_acquire_write(&manager->events_table_monitor);
   element_events_list =
       (sc_hash_table_list *)sc_hash_table_get(manager->events_table, TABLE_KEY(event_subscription->subscription_addr));
   if (element_events_list == null_ptr)
-    return SC_RESULT_ERROR_INVALID_PARAMS;
-
-  if (manager->events_table == null_ptr)
-    return SC_RESULT_ERROR_INVALID_PARAMS;
+  {
+    result = SC_RESULT_ERROR_INVALID_PARAMS;
+    goto result;
+  }
 
   // remove event_subscription from list of events for specified sc-element
   element_events_list = sc_hash_table_list_remove(element_events_list, (sc_const_pointer)event_subscription);
@@ -108,7 +110,9 @@ sc_result _sc_event_subscription_manager_remove(
     sc_hash_table_insert(
         manager->events_table, TABLE_KEY(event_subscription->subscription_addr), (sc_pointer)element_events_list);
 
-  return SC_RESULT_OK;
+result:
+  sc_monitor_release_write(&manager->events_table_monitor);
+  return result;
 }
 
 void sc_event_subscription_manager_initialize(sc_event_subscription_manager ** manager)
@@ -200,14 +204,17 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
     return SC_RESULT_NO;
 
   sc_event_subscription_manager * subscription_manager = sc_storage_get_event_subscription_manager();
-  sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
+  if (subscription_manager == null_ptr)
+    return SC_RESULT_NO;
 
-  sc_monitor_acquire_write(&subscription_manager->events_table_monitor);
+  sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
+  if (subscription_manager == null_ptr)
+    return SC_RESULT_NO;
+
   sc_monitor_acquire_write(&event_subscription->monitor);
   if (_sc_event_subscription_manager_remove(subscription_manager, event_subscription) != SC_RESULT_OK)
   {
     sc_monitor_release_write(&event_subscription->monitor);
-    sc_monitor_release_write(&subscription_manager->events_table_monitor);
     return SC_RESULT_ERROR;
   }
 
@@ -231,7 +238,6 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
     sc_monitor_release_write(&emission_manager->pool_monitor);
   }
   sc_monitor_release_write(&event_subscription->monitor);
-  sc_monitor_release_write(&subscription_manager->events_table_monitor);
 
   return SC_RESULT_OK;
 }
@@ -248,16 +254,11 @@ sc_result sc_event_notify_element_deleted(sc_addr element)
   if (subscription_manager == null_ptr || subscription_manager->events_table == null_ptr)
     goto result;
 
-  // TODO(NikitaZotov): Implement monitor for `subscription_manager` to synchronize its freeing.
   // lookup for all registered to specified sc-element events
   sc_monitor_acquire_write(&subscription_manager->events_table_monitor);
-  if (subscription_manager != null_ptr)
-  {
-    element_events_list =
-        (sc_hash_table_list *)sc_hash_table_get(subscription_manager->events_table, TABLE_KEY(element));
-    if (element_events_list != null_ptr)
-      sc_hash_table_remove(subscription_manager->events_table, TABLE_KEY(element));
-  }
+  element_events_list = (sc_hash_table_list *)sc_hash_table_get(subscription_manager->events_table, TABLE_KEY(element));
+  if (element_events_list != null_ptr)
+    sc_hash_table_remove(subscription_manager->events_table, TABLE_KEY(element));
 
   if (element_events_list != null_ptr)
   {
@@ -331,12 +332,10 @@ sc_result sc_event_emit_impl(
   if (subscription_manager == null_ptr || subscription_manager->events_table == null_ptr)
     goto result;
 
-  // TODO(NikitaZotov): Implement monitor for `subscription_manager` to synchronize its freeing.
   // lookup for all registered to specified sc-element events
   sc_monitor_acquire_read(&subscription_manager->events_table_monitor);
-  if (subscription_manager != null_ptr)
-    element_events_list =
-        (sc_hash_table_list *)sc_hash_table_get(subscription_manager->events_table, TABLE_KEY(subscription_addr));
+  element_events_list =
+      (sc_hash_table_list *)sc_hash_table_get(subscription_manager->events_table, TABLE_KEY(subscription_addr));
 
   while (element_events_list != null_ptr)
   {
