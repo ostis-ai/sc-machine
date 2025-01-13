@@ -23,6 +23,7 @@ services:
       - "BINARY_PATH=/sc-machine/build/Release/bin"
       - "EXTENSIONS_PATH=/sc-machine/build/Release/lib/extensions"
       - "CONFIG_PATH=/sc-machine/sc-machine.ini"
+      - "SC_SERVER_HOST=0.0.0.0"
     command:
       - "run"
 
