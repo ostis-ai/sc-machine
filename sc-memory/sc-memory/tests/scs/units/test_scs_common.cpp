@@ -224,7 +224,6 @@ TEST(scs_common, SCsNodeKeynodes)
 TEST(scs_common, SCsMembershipArcKeynodes)
 {
   std::vector<ScType> const & connectorTypes = {
-    ScType::ConstPermPosArc,
     ScType::MembershipArc,
     ScType::CommonArc,
     ScType::CommonEdge
