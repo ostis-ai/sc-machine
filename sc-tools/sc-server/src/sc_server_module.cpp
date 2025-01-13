@@ -6,6 +6,8 @@
 
 #include "sc_server_module.hpp"
 
+#include <cstdlib>
+
 #include "sc_server_setup.hpp"
 
 SC_MODULE_REGISTER(ScServerModule);
@@ -15,8 +17,16 @@ ScParams ScServerModule::ms_serverParams;
 
 void ScServerModule::Initialize(ScMemoryContext *)
 {
-  // It is backward compatible logic. When all platform-dependent components will be configured from kb it will be
-  // removed.
+  // TODO(NikitaZotov): Configure all platform-dependent components from kb.
+
+  sc_char const * host = std::getenv("SC_SERVER_HOST");
+  if (host != null_ptr)
+    ms_serverParams.Insert({"host", host});
+
+  sc_char const * port = std::getenv("SC_SERVER_PORT");
+  if (port != null_ptr)
+    ms_serverParams.Insert({"port", port});
+
   ScConfig config{ScMemory::ms_configPath, {{"log_file"}}};
   ScConfigGroup serverConfig = config["sc-server"];
   for (auto const & key : *serverConfig)

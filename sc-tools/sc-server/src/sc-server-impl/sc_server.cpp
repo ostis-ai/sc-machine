@@ -21,7 +21,7 @@ ScServer::ScServer(std::string hostName, size_t port)
 
   {
     LogMessage(ScServerErrorLevel::info, "Socket data:");
-    LogMessage(ScServerErrorLevel::info, "\tHost name: " + m_hostName);
+    LogMessage(ScServerErrorLevel::info, "\tHost: " + m_hostName);
     LogMessage(ScServerErrorLevel::info, "\tPort: " + std::to_string(m_port));
   }
 
