@@ -50,7 +50,14 @@ void PrintHelpMessage(std::string const & binaryName)
       << "  --test|-t                               Test sc-memory state. "
       << "If this flag is specified, sc-memory will be initialized and shutdown immediately.\n"
       << "  --version                               Display version of " << binaryName << ".\n"
-      << "  --help                                  Display this help message.\n";
+      << "  --help                                  Display this help message.\n\n"
+      << "Environment variables:\n"
+      << "  SC_SERVER_HOST                          Specifies a host for sc-server extension. If not set, the value "
+         "defaults to the `host` option in the `[sc-server]` group of the configuration file.\n"
+         "                                          If neither is specified, the default host is 127.0.0.1.\n"
+      << "  SC_SERVER_PORT                          Specifies a port for sc-server extension. If not set, the value "
+         "defaults to the `port` option in the `[sc-server]` group of the configuration file.\n"
+         "                                          If neither is specified, the default port is 8090.\n";
 }
 
 sc_int RunMachine(sc_int argc, sc_char * argv[])
