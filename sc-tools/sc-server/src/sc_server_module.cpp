@@ -20,11 +20,11 @@ void ScServerModule::Initialize(ScMemoryContext *)
   // TODO(NikitaZotov): Configure all platform-dependent components from kb.
 
   sc_char const * host = std::getenv("SC_SERVER_HOST");
-  if (host != null_ptr)
+  if (host != nullptr)
     ms_serverParams.Insert({"host", host});
 
   sc_char const * port = std::getenv("SC_SERVER_PORT");
-  if (port != null_ptr)
+  if (port != nullptr)
     ms_serverParams.Insert({"port", port});
 
   ScConfig config{ScMemory::ms_configPath, {{"log_file"}}};
