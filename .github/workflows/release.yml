@@ -86,7 +86,7 @@ jobs:
 
       - name: Create Conan package
         run: |
-          conan create . sc-machine/${{ github.ref_name }}
+          conan export-pkg .
     
       - name: Upload to Conan remote
         run: |
