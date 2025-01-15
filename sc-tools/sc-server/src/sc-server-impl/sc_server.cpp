@@ -11,7 +11,7 @@
 #include <sc-memory/sc_keynodes.hpp>
 
 ScServer::ScServer(std::string hostName, size_t port)
-  : m_hostName(std::move(hostName))
+  : m_host(std::move(hostName))
   , m_port(port)
   , m_logger(nullptr)
 {
@@ -21,7 +21,7 @@ ScServer::ScServer(std::string hostName, size_t port)
 
   {
     LogMessage(ScServerErrorLevel::info, "Socket data:");
-    LogMessage(ScServerErrorLevel::info, "\tHost: " + m_hostName);
+    LogMessage(ScServerErrorLevel::info, "\tHost: " + m_host);
     LogMessage(ScServerErrorLevel::info, "\tPort: " + std::to_string(m_port));
   }
 
@@ -38,7 +38,7 @@ void ScServer::Run()
 
   Initialize();
 
-  m_instance->listen({asio::ip::address::from_string(m_hostName), sc_uint16(m_port)});
+  m_instance->listen({asio::ip::address::from_string(m_host), sc_uint16(m_port)});
   m_instance->start_accept();
 
   LogMessage(ScServerErrorLevel::info, "Start actions processing");
@@ -108,7 +108,7 @@ void ScServer::Shutdown()
 
 std::string ScServer::GetUri()
 {
-  return "ws://" + m_hostName + ":" + std::to_string(m_port);
+  return "ws://" + m_host + ":" + std::to_string(m_port);
 }
 
 bool ScServer::IsSessionValid(ScServerSessionId const & sessionId)
