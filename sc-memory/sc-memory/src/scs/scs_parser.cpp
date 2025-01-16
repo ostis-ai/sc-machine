@@ -487,26 +487,26 @@ void Parser::ProcessTriple(
       if (target.IsElementType() && !newTargetType.CanExtendTo(ScType::ConstNodeClass))
         SC_THROW_EXCEPTION(
             utils::ExceptionParseError,
-            "Can't extend type `" << std::string(targetType) << "` using type `" 
+            "Can't extend type `" << std::string(targetType) << "` using type `"
                                   << std::string(typeProvidedBySourceKeynode)
                                   << "` for specified sc-element, because sc-element `" << target.GetIdtf()
                                   << "` is sc-element denoting type of sc-elements.");
       else
       {
-        // Removes constancy subtype from type of target sc-element and check that type of target sc-element 
+        // Removes constancy subtype from type of target sc-element and check that type of target sc-element
         // without constancy subtype can be extended to type of sc-elements represented by source sc-element.
-        // It is necessary to remove the constancy subtype because some existing sc-elements denoting types of 
+        // It is necessary to remove the constancy subtype because some existing sc-elements denoting types of
         // sc-elements don't have constancy subtypes.
         ScType const & targetTypeWithoutConstancySubtype = targetType.BitAnd(~(ScType::Const | ScType::Var));
-        bool canTargetTypeWithoutConstancySubtypeExtendToSourceType
-            = targetTypeWithoutConstancySubtype.CanExtendTo(typeProvidedBySourceKeynode);
+        bool canTargetTypeWithoutConstancySubtypeExtendToSourceType =
+            targetTypeWithoutConstancySubtype.CanExtendTo(typeProvidedBySourceKeynode);
 
         // After check that constancy subtypes of source and target types are compatible for extension.
-        ScType const & constancyOfTypeProvidedBySourceKeynode 
-            = typeProvidedBySourceKeynode.BitAnd(ScType::Const | ScType::Var);
+        ScType const & constancyOfTypeProvidedBySourceKeynode =
+            typeProvidedBySourceKeynode.BitAnd(ScType::Const | ScType::Var);
         ScType const & targetTypeConstancy = targetType.BitAnd(ScType::Const | ScType::Var);
         bool doSourceAndTargetHaveCompatibleConstancySubtypes =
-            constancyOfTypeProvidedBySourceKeynode.CanExtendTo(targetTypeConstancy) 
+            constancyOfTypeProvidedBySourceKeynode.CanExtendTo(targetTypeConstancy)
             || targetTypeConstancy.CanExtendTo(constancyOfTypeProvidedBySourceKeynode);
 
         if (canTargetTypeWithoutConstancySubtypeExtendToSourceType && doSourceAndTargetHaveCompatibleConstancySubtypes)
@@ -514,7 +514,7 @@ void Parser::ProcessTriple(
         else if (!typeProvidedBySourceKeynode.CanExtendTo(targetType))
           SC_THROW_EXCEPTION(
               utils::ExceptionParseError,
-              "Can't extend type `" << std::string(targetType) << "` using type `" 
+              "Can't extend type `" << std::string(targetType) << "` using type `"
                                     << std::string(typeProvidedBySourceKeynode) << "` for specified sc-element.");
       }
 
@@ -686,7 +686,7 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
   {
     auto const & element = GetParsedElement(elementHandle);
 
-    // Add sc-arc from structure to element type if element type has not only outgoing base sc-arcs 
+    // Add sc-arc from structure to element type if element type has not only outgoing base sc-arcs
     auto const & range = m_elementTypeNotOutgoingBaseArcsToElementTypes.equal_range(element.GetIdtf());
     for (auto it = range.first; it != range.second; ++it)
     {

@@ -1,8 +1,8 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include <gtest/gtest.h>
 
@@ -17,28 +17,15 @@ TEST(scs_level_5, simple)
   EXPECT_TRUE(parser.Parse(data));
 
   TripleTester tester(parser);
-  tester({
-           {
-             { ScType::ConstNode, "item" },
-             { ScType::ConstFuzArc, scs::Visibility::Local },
-             { ScType::ConstNode, "subitem" }
-           },
-           {
-             { ScType::ConstNode, "subitem2" },
-             { ScType::ConstCommonArc, scs::Visibility::Local },
-             { ScType::ConstNode, "item" }
-           },
-           {
-             { ScType::ConstNode, "set" },
-             { ScType::ConstActualTempPosArc, scs::Visibility::Local },
-             { ScType::ConstNode, "item" }
-           },
-           {
-             { ScType::ConstNode, "attr" },
-             { ScType::VarPermPosArc, scs::Visibility::Local },
-             { ScType::ConstActualTempPosArc, scs::Visibility::Local }
-           }
-         });
+  tester(
+      {{{ScType::ConstNode, "item"}, {ScType::ConstFuzArc, scs::Visibility::Local}, {ScType::ConstNode, "subitem"}},
+       {{ScType::ConstNode, "subitem2"}, {ScType::ConstCommonArc, scs::Visibility::Local}, {ScType::ConstNode, "item"}},
+       {{ScType::ConstNode, "set"},
+        {ScType::ConstActualTempPosArc, scs::Visibility::Local},
+        {ScType::ConstNode, "item"}},
+       {{ScType::ConstNode, "attr"},
+        {ScType::VarPermPosArc, scs::Visibility::Local},
+        {ScType::ConstActualTempPosArc, scs::Visibility::Local}}});
 
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 4u);

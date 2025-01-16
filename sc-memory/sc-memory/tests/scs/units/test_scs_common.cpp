@@ -1,15 +1,14 @@
 /*
-* This source file is part of an OSTIS project. For the latest info, see http://ostis.net
-* Distributed under the MIT License
-* (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
-*/
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
 
 #include <gtest/gtest.h>
 
 #include <sstream>
 
 #include "test_scs_utils.hpp"
-
 
 TEST(scs_common, ElementHandle)
 {
@@ -177,23 +176,29 @@ public:
 TEST(scs_common, SCsNodeKeynodes)
 {
   std::vector<ScType> const & nodeTypes = {
-    ScType::Node,
-    ScType::NodeClass,
-    ScType::NodeRole,
-    ScType::NodeNonRole,
-    ScType::NodeTuple,
-    ScType::NodeStructure,
-    ScType::NodeSuperclass,
-    ScType::NodeLink,
-    ScType::NodeLinkClass,
+      ScType::Node,
+      ScType::NodeClass,
+      ScType::NodeRole,
+      ScType::NodeNonRole,
+      ScType::NodeTuple,
+      ScType::NodeStructure,
+      ScType::NodeSuperclass,
+      ScType::NodeLink,
+      ScType::NodeLinkClass,
   };
 
   std::stringstream stream;
   for (ScType const & nodeType : nodeTypes)
   {
-    stream << ".._node_" << std::string(nodeType) << " -> " << "..node_" << std::string(nodeType) << ";;\n" << std::endl;
-    stream << nodeType.GetSCsElementKeynode() << " -> " << "..node_" << std::string(nodeType) << ";;\n" << std::endl;
-    stream << nodeType.GetSCsElementKeynode() << " -> " << ".._node_" << std::string(nodeType) << ";;\n" << std::endl;
+    stream << ".._node_" << std::string(nodeType) << " -> "
+           << "..node_" << std::string(nodeType) << ";;\n"
+           << std::endl;
+    stream << nodeType.GetSCsElementKeynode() << " -> "
+           << "..node_" << std::string(nodeType) << ";;\n"
+           << std::endl;
+    stream << nodeType.GetSCsElementKeynode() << " -> "
+           << ".._node_" << std::string(nodeType) << ";;\n"
+           << std::endl;
   }
 
   scs::Parser parser;
@@ -223,11 +228,7 @@ TEST(scs_common, SCsNodeKeynodes)
 
 TEST(scs_common, SCsMembershipArcKeynodes)
 {
-  std::vector<ScType> const & connectorTypes = {
-    ScType::MembershipArc,
-    ScType::CommonArc,
-    ScType::CommonEdge
-  };
+  std::vector<ScType> const & connectorTypes = {ScType::MembershipArc, ScType::CommonArc, ScType::CommonEdge};
 
   std::stringstream stream;
   for (ScType const & connectorType : connectorTypes)
@@ -240,12 +241,14 @@ TEST(scs_common, SCsMembershipArcKeynodes)
     else if (connectorType.IsCommonEdge())
       connectorTypeToExtend = ScType::CommonEdge;
 
-    stream << connectorType.GetSCsElementKeynode() << " -> " 
-      << "(... " << connectorTypeToExtend.GetDirectSCsConnector() << " ...);;" << std::endl;
     stream << connectorType.GetSCsElementKeynode() << " -> "
-      << "(... " << TestScType(connectorTypeToExtend).BitOr(ScType::Const).GetDirectSCsConnector() << " ...);;" << std::endl;
+           << "(... " << connectorTypeToExtend.GetDirectSCsConnector() << " ...);;" << std::endl;
     stream << connectorType.GetSCsElementKeynode() << " -> "
-      << "(... " << TestScType(connectorTypeToExtend).BitOr(ScType::Var).GetDirectSCsConnector() << " ...);;" << std::endl;
+           << "(... " << TestScType(connectorTypeToExtend).BitOr(ScType::Const).GetDirectSCsConnector() << " ...);;"
+           << std::endl;
+    stream << connectorType.GetSCsElementKeynode() << " -> "
+           << "(... " << TestScType(connectorTypeToExtend).BitOr(ScType::Var).GetDirectSCsConnector() << " ...);;"
+           << std::endl;
   }
 
   scs::Parser parser;
@@ -314,9 +317,11 @@ TEST(scs_common, LinkAssigns)
 
   EXPECT_TRUE(parser.Parse(data));
 
-  parser.ForEachParsedElement([](scs::ParsedElement const & element) -> void {
-    EXPECT_EQ(element.GetType() & ScType::VarNodeLink, ScType::VarNodeLink);
-  });
+  parser.ForEachParsedElement(
+      [](scs::ParsedElement const & element) -> void
+      {
+        EXPECT_EQ(element.GetType() & ScType::VarNodeLink, ScType::VarNodeLink);
+      });
 
   EXPECT_EQ(parser.GetParsedElement(scs::ElementHandle(0)).GetValue(), "file://data.txt");
   EXPECT_TRUE(parser.GetParsedElement(scs::ElementHandle(0)).IsURL());
@@ -337,7 +342,9 @@ TEST(scs_common, LinkAssigns)
 
 TEST(scs_common, DeprecatedSCsKeynodes)
 {
-  std::string const data = "a <- c;; a <- sc_node_not_relation;; b <- c;; b <- sc_node_not_binary_tuple;; c <- sc_node_struct;; a <- d;; d <- sc_node_norole_relation;;";
+  std::string const data =
+      "a <- c;; a <- sc_node_not_relation;; b <- c;; b <- sc_node_not_binary_tuple;; c <- sc_node_struct;; a <- d;; d "
+      "<- sc_node_norole_relation;;";
   scs::Parser parser;
 
   EXPECT_TRUE(parser.Parse(data));
@@ -417,7 +424,8 @@ TEST(scs_common, ReversedConnectors)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 8u);
   {
-    auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool {
+    auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool
+    {
       EXPECT_TRUE(index < triples.size());
       return (parser.GetParsedElement(triples[index].m_connector).GetType() == type);
     };
@@ -439,8 +447,7 @@ TEST(scs_common, VarConnectorsAndNodes)
       "x"
       "<-_y; <-_ y1; <- _y2; <-_ _y3;;";
 
-  std::string const errorData =
-      "x <- _ y3;;";
+  std::string const errorData = "x <- _ y3;;";
 
   scs::Parser parser;
 
@@ -450,7 +457,8 @@ TEST(scs_common, VarConnectorsAndNodes)
   auto const & triples = parser.GetParsedTriples();
   EXPECT_EQ(triples.size(), 4u);
   {
-    auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool {
+    auto const CheckEdgeType = [&triples, &parser](size_t index, ScType type) -> bool
+    {
       EXPECT_TRUE(index < triples.size());
       return (parser.GetParsedElement(triples[index].m_connector).GetType() == type);
     };

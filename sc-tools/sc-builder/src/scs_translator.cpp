@@ -61,7 +61,7 @@ private:
   std::string m_parentPath;
 };
 
-} // namespace impl
+}  // namespace impl
 
 SCsTranslator::SCsTranslator(ScMemoryContext & context)
   : Translator(context)
