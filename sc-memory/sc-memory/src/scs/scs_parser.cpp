@@ -502,12 +502,12 @@ void Parser::ProcessTriple(
             = targetTypeWithoutConstancySubtype.CanExtendTo(typeProvidedBySourceKeynode);
 
         // After check that constancy subtypes of source and target types are compatible for extension.
-        ScType const & sourceTypeWithConstancySubtype 
+        ScType const & constancyOfTypeProvidedBySourceKeynode 
             = typeProvidedBySourceKeynode.BitAnd(ScType::Const | ScType::Var);
-        ScType const & targetTypeWithConstancySubtype = targetType.BitAnd(ScType::Const | ScType::Var);
+        ScType const & targetTypeConstancy = targetType.BitAnd(ScType::Const | ScType::Var);
         bool doSourceAndTargetHaveCompatibleConstancySubtypes =
-            sourceTypeWithConstancySubtype.CanExtendTo(targetTypeWithConstancySubtype) 
-            || targetTypeWithConstancySubtype.CanExtendTo(sourceTypeWithConstancySubtype);
+            constancyOfTypeProvidedBySourceKeynode.CanExtendTo(targetTypeConstancy) 
+            || targetTypeConstancy.CanExtendTo(constancyOfTypeProvidedBySourceKeynode);
 
         if (canTargetTypeWithoutConstancySubtypeExtendToSourceType && doSourceAndTargetHaveCompatibleConstancySubtypes)
           target.m_type = newTargetType;
