@@ -140,7 +140,7 @@ list(APPEND CMAKE_PREFIX_PATH ${<proj_name>_SC_MACHINE_PATH})
   # Add remote repository to your Conan client configuration
   conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
 
-  conan install .
+  conan install . --build=missing
   cmake --preset conan-release
   cmake --build --preset conan-release
   ```
