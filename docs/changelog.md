@@ -238,6 +238,7 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- SCsParser no longer generates sc-arcs from types of sc-elements to sc-elements
 - Allow multiple instances of `ScLogger` class
 - Rename `ScLog` to `ScLogger`
 - Description of project in Readme

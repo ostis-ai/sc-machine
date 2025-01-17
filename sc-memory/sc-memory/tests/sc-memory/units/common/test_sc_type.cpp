@@ -337,6 +337,9 @@ TEST(ScTypeTest, ExtendTypes)
   EXPECT_TRUE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstFuzArc));
   EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::ConstPermNegArc));
   EXPECT_FALSE(ScType::ConstFuzArc.CanExtendTo(ScType::VarFuzArc));
+
+  EXPECT_FALSE(ScType::ConstPermPosArc.CanExtendTo(ScType::VarPermPosArc));
+  EXPECT_FALSE(ScType::VarPermPosArc.CanExtendTo(ScType::ConstPermPosArc));
 }
 
 TEST(ScTypeTest, CheckReverseSCsConnectors)

@@ -10,7 +10,7 @@
 
 #include "scs_translator.hpp"
 
-bool ScsLoader::loadScsFile(ScMemoryContext &context, const std::string &filename)
+bool ScsLoader::loadScsFile(ScMemoryContext & context, std::string const & filename)
 {
   SCsTranslator translator = SCsTranslator(context);
 

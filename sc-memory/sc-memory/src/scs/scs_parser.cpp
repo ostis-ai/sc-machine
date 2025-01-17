@@ -124,17 +124,15 @@ ParsedElement::ParsedElement(
   , m_value(value)
   , m_isURL(isURL)
 {
+  m_isElementType = scs::TypeResolver::IsElementType(m_idtf);
+
   if (!m_value.empty())
-  {
-    SC_ASSERT(m_type.IsNode() || m_type.IsLink(), ("This constructor should be used for contour/link elements"));
     m_visibility = Visibility::Local;
-  }
   else
   {
-    SC_ASSERT(!isReversed || (isReversed && type.IsConnector()), ("Trying to set isReversed flag for non connector element"));
     ResolveVisibility();
 
-    // all connectors has a local visibility
+    // all connectors have a local visibility
     if (type.IsConnector())
       m_visibility = Visibility::Local;
   }
@@ -148,6 +146,11 @@ std::string const & ParsedElement::GetIdtf() const
 Visibility ParsedElement::GetVisibility() const
 {
   return m_visibility;
+}
+
+bool ParsedElement::IsElementType() const
+{
+  return m_isElementType;
 }
 
 ScType const & ParsedElement::GetType() const
@@ -187,35 +190,28 @@ void ParsedElement::ResolveVisibility()
   if (m_idtf[0] == '.')
   {
     if (m_idtf.size() > 1 && m_idtf[1] == '.')
-    {
       m_visibility = Visibility::Local;
-    }
     else
-    {
       m_visibility = Visibility::Global;
-    }
   }
   else
-  {
     m_visibility = Visibility::System;
-  }
 }
 
 ElementHandle::ElementHandle(ElementID id)
-  : m_id(id)
-  , m_isLocal(false)
+  : ElementHandle(id, Visibility::Global)
 {
 }
 
 ElementHandle::ElementHandle()
-  : m_id(INVALID_ID)
-  , m_isLocal(false)
+  : ElementHandle(INVALID_ID)
 {
 }
 
-ElementHandle::ElementHandle(ElementID id, bool isLocal)
+ElementHandle::ElementHandle(ElementID id, Visibility visibility, bool IsElementType)
   : m_id(id)
-  , m_isLocal(isLocal)
+  , m_visibility(visibility)
+  , m_isElementType(IsElementType)
 {
 }
 
@@ -224,9 +220,19 @@ ElementID ElementHandle::operator*() const
   return m_id;
 }
 
+Visibility ElementHandle::GetVisibility() const
+{
+  return m_visibility;
+}
+
 bool ElementHandle::IsLocal() const
 {
-  return m_isLocal;
+  return m_visibility == Visibility::Local;
+}
+
+bool ElementHandle::IsElementType() const
+{
+  return m_isElementType;
 }
 
 bool ElementHandle::IsValid() const
@@ -236,7 +242,7 @@ bool ElementHandle::IsValid() const
 
 bool ElementHandle::operator==(ElementHandle const & other) const
 {
-  return (m_id == other.m_id) && (m_isLocal == other.m_isLocal);
+  return (m_id == other.m_id) && (m_visibility == other.m_visibility);
 }
 
 bool ElementHandle::operator!=(ElementHandle const & other) const
@@ -247,14 +253,15 @@ bool ElementHandle::operator!=(ElementHandle const & other) const
 ElementHandle & ElementHandle::operator=(ElementHandle const & other)
 {
   m_id = other.m_id;
-  m_isLocal = other.m_isLocal;
+  m_visibility = other.m_visibility;
+  m_isElementType = other.m_isElementType;
   return *this;
 }
 
 bool ElementHandle::operator<(ElementHandle const & other) const
 {
   if (m_id == other.m_id)
-    return m_isLocal < other.m_isLocal;
+    return m_visibility < other.m_visibility;
 
   return m_id < other.m_id;
 }
@@ -302,37 +309,55 @@ bool Parser::Parse(std::string const & str)
   return result;
 }
 
-ParsedElement & Parser::GetParsedElementRef(ElementHandle const & elID)
+ParsedElement & Parser::GetParsedElementRef(ElementHandle const & handle)
 {
-  auto & container = (elID.IsLocal() ? m_parsedElementsLocal : m_parsedElements);
+  ParsedElementVector & container = GetContainerByElementVisibilityRef(handle.GetVisibility());
 
-  if (*elID >= container.size())
-  {
+  if (*handle >= container.size())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
-  }
+        "Error: Parsed element reference not found. "
+        "ElementId: {"
+            << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}. Valid range: [0, "
+            << container.size() - 1 << "].");
 
-  return container[*elID];
+  return container[*handle];
 }
 
-ParsedElement const & Parser::GetParsedElement(ElementHandle const & elID) const
+ParsedElement const & Parser::GetParsedElement(ElementHandle const & handle) const
 {
-  auto & container = (elID.IsLocal() ? m_parsedElementsLocal : m_parsedElements);
+  ParsedElementVector const & container = GetContainerByElementVisibility(handle.GetVisibility());
 
-  if (*elID >= container.size())
-  {
+  if (*handle >= container.size())
     SC_THROW_EXCEPTION(
         utils::ExceptionItemNotFound,
-        std::string("ElementId{") + std::to_string(*elID) + ", " + std::to_string(elID.IsLocal()) + "}");
-  }
+        "Error: Parsed element not found. "
+        "ElementId: {"
+            << std::to_string(*handle) << ", " << (size_t)handle.GetVisibility() << "}. Valid range: [0, "
+            << container.size() - 1 << "].");
 
-  return container[*elID];
+  return container[*handle];
 }
 
 Parser::TripleVector const & Parser::GetParsedTriples() const
 {
   return m_parsedTriples;
+}
+
+void Parser::ForEachTripleForGeneration(
+    std::function<void(ParsedElement const &, ParsedElement const &, ParsedElement const &)> const & callback) const
+{
+  for (auto const & triple : m_parsedTriples)
+  {
+    auto const & source = GetParsedElement(triple.m_source);
+    auto const & connector = GetParsedElement(triple.m_connector);
+    auto const & target = GetParsedElement(triple.m_target);
+
+    if (IsElementTypeOutgoingBaseArc(connector))
+      continue;
+
+    callback(source, connector, target);
+  }
 }
 
 std::string const & Parser::GetParseError() const
@@ -365,6 +390,22 @@ std::string Parser::GenerateContourIdtf()
   return std::string("..contour_") + std::to_string(m_idtfCounter++);
 }
 
+Parser::ParsedElementVector & Parser::GetContainerByElementVisibilityRef(Visibility visibility)
+{
+  if (visibility == Visibility::Local)
+    return m_parsedElementsLocal;
+
+  return m_parsedElements;
+}
+
+Parser::ParsedElementVector const & Parser::GetContainerByElementVisibility(Visibility visibility) const
+{
+  if (visibility == Visibility::Local)
+    return m_parsedElementsLocal;
+
+  return m_parsedElements;
+}
+
 ElementHandle Parser::AppendElement(
     std::string idtf,
     ScType const & type,
@@ -372,32 +413,34 @@ ElementHandle Parser::AppendElement(
     std::string const & value /* = "" */,
     bool isURL /* = false */)
 {
-  SC_CHECK_GREAT(idtf.size(), 0, "Element identifier is empty");
   if (TypeResolver::IsUnnamed(idtf))
     idtf = GenerateNodeIdtf();
 
-  ElementHandle elId;
+  ElementHandle elementHandle;
 
   // try to find element
   auto const it = m_idtfToParsedElement.find(idtf);
-  if (it != m_idtfToParsedElement.end())
-  {
-    elId = it->second;
-  }
+  if (it != m_idtfToParsedElement.cend())
+    elementHandle = it->second;
   else
   {
     // append element
-    ParsedElement el(idtf, type, isConnectorReversed, value, isURL);
+    ParsedElement element(idtf, type, isConnectorReversed, value, isURL);
+    Visibility elementVisibility = element.GetVisibility();
 
-    bool const isLocal = (el.GetVisibility() == Visibility::Local);
-    auto & container = isLocal ? m_parsedElementsLocal : m_parsedElements;
+    ParsedElementVector & container = GetContainerByElementVisibilityRef(elementVisibility);
+    elementHandle = ElementHandle(ElementID(container.size()), elementVisibility, element.IsElementType());
+    container.emplace_back(std::move(element));
 
-    elId = ElementHandle(ElementID(container.size()), isLocal);
-    container.emplace_back(std::move(el));
-    m_idtfToParsedElement[idtf] = elId;
+    m_idtfToParsedElement[idtf] = elementHandle;
   }
 
-  return elId;
+  return elementHandle;
+}
+
+bool Parser::IsElementTypeOutgoingBaseArc(ParsedElement const & element) const
+{
+  return m_elementTypeOutgoingBaseArcs.count(element.GetIdtf());
 }
 
 ElementHandle Parser::ResolveAlias(std::string const & name)
@@ -413,44 +456,128 @@ ElementHandle Parser::ProcessIdentifier(std::string const & name)
   return AppendElement(name, type);
 }
 
-ElementHandle Parser::ProcessIdentifierLevel1(std::string const & type, std::string const & name)
+ElementHandle Parser::ProcessIdentifierLevel1(std::string const & scsType, std::string const & name)
 {
-  ScType elType = scs::TypeResolver::GetKeynodeType(type);
-  elType |= scs::TypeResolver::IsConst(name) ? ScType::Const : ScType::Var;
-
-  return AppendElement(name, elType);
+  ScType type = scs::TypeResolver::GetElementType(scsType);
+  type |= scs::TypeResolver::IsConst(name) ? ScType::Const : ScType::Var;
+  return AppendElement(name, type);
 }
 
-void Parser::ProcessTriple(ElementHandle const & source, ElementHandle const & connector, ElementHandle const & target)
+void Parser::ProcessTriple(
+    ElementHandle const & sourceHandle,
+    ElementHandle const & connectorHandle,
+    ElementHandle const & targetHandle)
 {
-  ParsedElement const & connectorEl = GetParsedElement(connector);
+  ParsedElement & connector = GetParsedElementRef(connectorHandle);
 
-  auto AddConnector = [this, &connectorEl](ElementHandle const & src, ElementHandle const & e, ElementHandle const & trg) {
-    ParsedElement const & srcEl = GetParsedElement(src);
-    std::string const & idtf = srcEl.GetIdtf();
-    if (connectorEl.GetType() == ScType::ConstPermPosArc && scs::TypeResolver::IsKeynodeType(idtf))
+  auto AddConnector =
+      [this, &connector](
+          ElementHandle const & sourceHdl, ElementHandle const & connectorHdl, ElementHandle const & targetHdl)
+  {
+    ParsedElement const & source = GetParsedElement(sourceHdl);
+    ParsedElement & target = GetParsedElementRef(targetHdl);
+
+    if (source.IsElementType() && (connector.GetType() == ScType::ConstPermPosArc))
     {
-      ParsedElement & targetEl = GetParsedElementRef(trg);
-      ScType const newType = targetEl.m_type | scs::TypeResolver::GetKeynodeType(idtf);
+      std::string const & sourceIdtf = source.GetIdtf();
+      ScType const typeProvidedBySourceKeynode = scs::TypeResolver::GetElementType(sourceIdtf);
+      ScType const targetType = target.m_type;
+      ScType const newTargetType = targetType | typeProvidedBySourceKeynode;
 
-      if (targetEl.m_type.CanExtendTo(newType))
-        targetEl.m_type = newType;
+      if (target.IsElementType() && !newTargetType.CanExtendTo(ScType::ConstNodeClass))
+        SC_THROW_EXCEPTION(
+            utils::ExceptionParseError,
+            "Can't extend type `" << std::string(targetType) << "` using type `"
+                                  << std::string(typeProvidedBySourceKeynode)
+                                  << "` for specified sc-element, because sc-element `" << target.GetIdtf()
+                                  << "` is sc-element denoting type of sc-elements.");
       else
-        SC_THROW_EXCEPTION(utils::ExceptionParseError, "Can't merge types for element " + targetEl.GetIdtf());
+      {
+        // Removes constancy subtype from type of target sc-element and check that type of target sc-element
+        // without constancy subtype can be extended to type of sc-elements represented by source sc-element.
+        // It is necessary to remove the constancy subtype because some existing sc-elements denoting types of
+        // sc-elements don't have constancy subtypes.
+        ScType const & targetTypeWithoutConstancySubtype = targetType.BitAnd(~(ScType::Const | ScType::Var));
+        bool canTargetTypeWithoutConstancySubtypeExtendToSourceType =
+            targetTypeWithoutConstancySubtype.CanExtendTo(typeProvidedBySourceKeynode);
 
-      if (!m_contourTriplesStack.empty())
-        m_parsedTriples.emplace_back(src, e, trg);
+        // After check that constancy subtypes of source and target types are compatible for extension.
+        ScType const & constancyOfTypeProvidedBySourceKeynode =
+            typeProvidedBySourceKeynode.BitAnd(ScType::Const | ScType::Var);
+        ScType const & targetTypeConstancy = targetType.BitAnd(ScType::Const | ScType::Var);
+        bool doSourceAndTargetHaveCompatibleConstancySubtypes =
+            constancyOfTypeProvidedBySourceKeynode.CanExtendTo(targetTypeConstancy)
+            || targetTypeConstancy.CanExtendTo(constancyOfTypeProvidedBySourceKeynode);
+
+        if (canTargetTypeWithoutConstancySubtypeExtendToSourceType && doSourceAndTargetHaveCompatibleConstancySubtypes)
+          target.m_type = newTargetType;
+        else if (!typeProvidedBySourceKeynode.CanExtendTo(targetType))
+          SC_THROW_EXCEPTION(
+              utils::ExceptionParseError,
+              "Can't extend type `" << std::string(targetType) << "` using type `"
+                                    << std::string(typeProvidedBySourceKeynode) << "` for specified sc-element.");
+      }
+
+      // TODO(NikitaZotov): Unfortunately, parser collects all sc.s-elements, and only then forms sc.s-triples based on
+      // the parsed sc.s-elements. Due to this, it is difficult to handle cases when it is necessary not to generate a
+      // sc-arc from a type of sc-elements to sc-element. Therefore, now the parser memorizes these arcs after they were
+      // parsed.
+      m_elementTypeOutgoingBaseArcs.insert(connector.GetIdtf());
+
+      if (target.IsElementType())
+        m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), targetHdl});
+    }
+    else if (source.IsElementType() || target.IsElementType())
+    {
+      if (source.IsElementType())
+        m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), sourceHdl});
+
+      if (target.IsElementType())
+        m_elementTypeNotOutgoingBaseArcsToElementTypes.insert({connector.GetIdtf(), targetHdl});
     }
     else
     {
-      m_parsedTriples.emplace_back(src, e, trg);
+      bool const isSourceMembershipArcFromElementsType = IsElementTypeOutgoingBaseArc(source);
+      bool const isTargetMembershipArcFromElementsType = IsElementTypeOutgoingBaseArc(target);
+
+      if (isSourceMembershipArcFromElementsType || isTargetMembershipArcFromElementsType)
+      {
+        std::stringstream elementInfo;
+        if (isSourceMembershipArcFromElementsType && target.GetType().BitAnd(ScType::Node))
+          elementInfo << "with target element `" << target.GetIdtf() << "` ";
+        else if (isTargetMembershipArcFromElementsType && source.GetType().BitAnd(ScType::Node))
+          elementInfo << "with source element `" << source.GetIdtf() << "` ";
+
+        SC_THROW_EXCEPTION(
+            utils::ExceptionParseError,
+            "Some sc.s-triple "
+                << elementInfo.str()
+                << "can't be generated. Outgoing constant permanent positive membership arcs denoting "
+                   "the belonging of elements to sc-elements type cannot have outgoing and incoming sc-arcs.\n\n"
+                   "There are several of these sc-elements types:\n"
+                   "`sc_common_edge`, `sc_common_arc`, `sc_membership_arc`, `sc_main_arc`, `sc_node`, `sc_link`, "
+                   "`sc_link_class`, `sc_node_tuple`, `sc_node_structure`, `sc_node_class`, `sc_node_role_relation`, "
+                   "`sc_node_non_role_relation`, `sc_node_superclass`, `sc_node_material`, `sc_edge`, \n"
+                   "`sc_edge_ucommon`, `sc_arc_common`, `sc_edge_dcommon`, `sc_edge_dcommon`, `sc_arc_main`, "
+                   "`sc_edge_main`, `sc_arc_access`, `sc_edge_access`, `sc_node_not_binary_tuple`, `sc_node_struct`, "
+                   "`sc_node_not_relation`, `sc_node_norole_relation`.\n\n"
+                   "Correct usage examples:\n"
+                   "\tsc_node_class -> ..set;;\n"
+                   "\tsc_node_class => ..relation: ..set;;\n"
+                   "\t..set => ..relation: sc_node_class;;\n"
+                   "\t..node -> sc_node_class;;\n"
+                   "Incorrect usage example:\n"
+                   "\tsc_node_class -> rrel_1: ..set;;\n");
+      }
     }
+
+    m_parsedTriples.emplace_back(sourceHdl, connectorHdl, targetHdl);
   };
 
-  if (connectorEl.IsReversed())
-    AddConnector(target, connector, source);
+  if (connector.IsReversed())
+    AddConnector(targetHandle, connectorHandle, sourceHandle);
   else
-    AddConnector(source, connector, target);
+    AddConnector(sourceHandle, connectorHandle, targetHandle);
 }
 
 void Parser::ProcessAssign(std::string const & alias, ElementHandle const & value)
@@ -480,7 +607,6 @@ ElementHandle Parser::ProcessContent(std::string content, bool isVar)
 {
   ScType const type = DefineLinkType(content, isVar);
   ParseLinkContent(content, type);
-
   return AppendElement(GenerateLinkIdtf(), type, false, content);
 }
 
@@ -501,7 +627,6 @@ ElementHandle Parser::ProcessFileURL(std::string fileURL)
 {
   ScType const type = DefineLinkType(fileURL, false);
   ParseLinkContent(fileURL, type);
-
   return AppendElement(GenerateLinkIdtf(), type, false, fileURL, true);
 }
 
@@ -518,6 +643,14 @@ void Parser::ProcessContourBegin()
 
 void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 {
+  ParsedElement & contour = GetParsedElementRef(contourHandle);
+  if (contour.IsElementType())
+    SC_THROW_EXCEPTION(
+        utils::ExceptionParseError,
+        "Element denoting sc-elements type `" << contour.GetIdtf() << "` can't be sc.s-contour.");
+
+  contour.m_type = ScType::ConstNodeStructure;
+
   size_t const last = m_parsedElements.size();
   size_t const lastLocal = m_parsedElementsLocal.size();
   size_t const lastTriple = m_parsedTriples.size();
@@ -529,10 +662,12 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
 
   // append all new elements into contour
   for (size_t i = ind.first; i < last; ++i)
-    newElements.insert(ElementHandle(ElementID(i), false));
+    newElements.insert(
+        ElementHandle(ElementID(i), m_parsedElements[i].GetVisibility(), m_parsedElements[i].IsElementType()));
 
   for (size_t i = ind.second; i < lastLocal; ++i)
-    newElements.insert(ElementHandle(ElementID(i), true));
+    newElements.insert(ElementHandle(
+        ElementID(i), m_parsedElementsLocal[i].GetVisibility(), m_parsedElementsLocal[i].IsElementType()));
 
   size_t const tripleFirst = m_contourTriplesStack.top();
   m_contourTriplesStack.pop();
@@ -546,14 +681,29 @@ void Parser::ProcessContourEnd(ElementHandle const & contourHandle)
     newElements.insert(t.m_target);
   }
 
-  for (auto const & el : newElements)
+  std::unordered_set<ElementID> addedElementTypesIntoStructure;
+  for (auto const & elementHandle : newElements)
   {
-    ElementHandle const connector = ProcessConnector("->");
-    ProcessTriple(contourHandle, connector, el);
-  }
+    auto const & element = GetParsedElement(elementHandle);
 
-  ParsedElement & srcEl = GetParsedElementRef(contourHandle);
-  srcEl.m_type = ScType::ConstNodeStructure;
+    // Add sc-arc from structure to element type if element type has not only outgoing base sc-arcs
+    auto const & range = m_elementTypeNotOutgoingBaseArcsToElementTypes.equal_range(element.GetIdtf());
+    for (auto it = range.first; it != range.second; ++it)
+    {
+      if (addedElementTypesIntoStructure.count(*it->second))
+        continue;
+
+      ElementHandle const connectorHandle = ProcessConnector("->");
+      ProcessTriple(contourHandle, connectorHandle, it->second);
+      addedElementTypesIntoStructure.insert(*it->second);
+    }
+
+    if (elementHandle.IsElementType() || IsElementTypeOutgoingBaseArc(element))
+      continue;
+
+    ElementHandle const connectorHandle = ProcessConnector("->");
+    ProcessTriple(contourHandle, connectorHandle, elementHandle);
+  }
 }
 
 }  // namespace scs

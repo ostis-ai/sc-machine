@@ -22,12 +22,12 @@ public:
   static std::string GetSCsElementKeynode(ScType const & type);
 
   static ScType const & GetConnectorType(std::string const & connectorAlias);
-  static ScType const & GetKeynodeType(std::string const & keynodeAlias);
+  static ScType const & GetElementType(std::string const & keynodeAlias);
 
   static bool IsConnectorReversed(std::string const & connectorAlias);
   static bool IsConst(std::string const & idtf);
   static bool IsConnectorAttrConst(std::string const & attr);
-  static bool IsKeynodeType(std::string const & alias);
+  static bool IsElementType(std::string const & alias);
   static bool IsUnnamed(std::string const & alias);
 
 protected:

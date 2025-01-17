@@ -11,5 +11,5 @@
 class ScsLoader
 {
 public:
-  bool loadScsFile(ScMemoryContext & context, const std::string & filename);
+  bool loadScsFile(ScMemoryContext & context, std::string const & filename);
 };
