@@ -137,7 +137,10 @@ list(APPEND CMAKE_PREFIX_PATH ${<proj_name>_SC_MACHINE_PATH})
   ```
 
   ```sh
-  conan install .
+  # Add remote repository to your Conan client configuration
+  conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
+
+  conan install . --build=missing
   cmake --preset conan-release
   cmake --build --preset conan-release
   ```
@@ -256,8 +259,8 @@ It is possible to write tests for the Conan packaging using [local package devel
 
 ## Troubleshooting
 
-- If you encounter issues with Conan, try clearing the Conan cache: `conan cache clean`
-- For CMake configuration issues, check the CMakeCache.txt file in your build directory
-- Ensure that your CMake version is compatible with the project requirements
+- If you encounter issues with Conan, try clearing the Conan cache: `conan cache clean`.
+- For CMake configuration issues, check the CMakeCache.txt file in your build directory.
+- Ensure that your CMake version is compatible with the project requirements.
 
 For further assistance, please consult the [project's issue tracker](https://github.com/ostis-ai/sc-machine/issues) or contact the maintainers.

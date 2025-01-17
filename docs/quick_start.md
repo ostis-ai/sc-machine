@@ -11,10 +11,16 @@ You can use Conan to install sc-machine. To do this you need to create `conanfil
 sc-machine/<version>
 ```
 
+Add remote repository to your Conan client configuration:
+
+```sh
+conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
+```
+
 Then run the following command in the project root:
 
 ```sh
-conan install .
+conan install . --build=missing
 ```
 
 Import sc-machine targets into your CMake project by using:
