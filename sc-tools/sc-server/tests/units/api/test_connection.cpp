@@ -6,6 +6,8 @@
 
 #include "sc_server_test.hpp"
 
+#include <cstdlib>
+
 #include <sc-config/sc_options.hpp>
 #include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
@@ -52,6 +54,21 @@ TEST_F(ScServerModuleTest, RunStopServerModule)
 
   ScServerModule serverModule;
   serverModule.Initialize(m_ctx.get());
+  serverModule.Shutdown(m_ctx.get());
+}
+
+TEST_F(ScServerModuleTest, RunStopServerModuleWithHostAndPortFromEnvs)
+{
+  ScMemory::ms_configPath = ScServerTest::SC_SERVER_INI;
+
+  setenv("SC_SERVER_HOST", "0.0.0.0", true);
+  setenv("SC_SERVER_PORT", "8099", true);
+
+  ScServerModule serverModule;
+  serverModule.Initialize(m_ctx.get());
+
+  EXPECT_EQ(ScServerModule::m_server->GetUri(), "ws://0.0.0.0:8099");
+
   serverModule.Shutdown(m_ctx.get());
 }
 
