@@ -33,7 +33,7 @@ pipx ensurepath
 
 ### Install Conan
 
-Install Conan, to build sc-machine dependencies with Conan-provided dependencies:
+Install Conan, to build sc-machine with Conan-provided dependencies:
 
 ```sh
 # Use pipx to install conan if not already installed
