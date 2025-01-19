@@ -11,6 +11,16 @@ You can use Conan to install sc-machine. To do this you need to create `conanfil
 sc-machine/<version>
 ```
 
+Install Conan, to install sc-machine and Conan-provided dependencies:
+
+```sh
+# Use pipx to install conan if not already installed
+# Install pipx first using guide: https://pipx.pypa.io/stable/installation/
+pipx install conan
+pipx ensurepath
+# relaunch your shell after installation
+```
+
 Add remote repository to your Conan client configuration:
 
 ```sh
