@@ -163,6 +163,7 @@ See documentation, to learn more about using new API.
 
 ### Added
 
+- RU documentation for core and extended API
 - `SearchLinksByContentSubstring` method with `ScLinkFilter` parameter
 - `ScLinkFilter` class to specify search criteria for sc-links
 - Intro for documentation
