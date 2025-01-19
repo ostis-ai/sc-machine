@@ -3,6 +3,13 @@ dev_addr: 127.0.0.1:8002
 repo_url: https://github.com/ostis-ai/sc-machine
 edit_uri: edit/main/docs/
 
+extra_css:
+  - _assets/main.css
+
+extra_javascript:
+  - _assets/scg.min.js
+  - _assets/main.js
+
 nav:
   - Home: index.md
   - Quick Start: quick_start.md
@@ -95,10 +102,3 @@ markdown_extensions:
   - pymdownx.inlinehilite      # Enables inline code highlighting
   - pymdownx.details           # Allows creating collapsible elements
   - pymdownx.superfences       # Enables advanced fenced code blocks
-
-extra_css:
-  - _assets/main.css
-
-extra_javascript:
-  - _assets/scg.min.js
-  - _assets/main.js
