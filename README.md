@@ -46,7 +46,7 @@ To get started, check out our [quick start guide](https://ostis-ai.github.io/sc-
 
     ```sh
     # make sure you're using python 3.12
-    pip3 install mkdocs mkdocs-material
+    pip3 install mkdocs mkdocs-material mkdocs-i18n
     mkdocs serve
     # and open http://127.0.0.1:8000/ in your browser
     ```

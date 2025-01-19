@@ -1,10 +1,33 @@
 site_name: sc-machine
+dev_addr: 127.0.0.1:8002
 
 extra_css:
   - _assets/main.css
 extra_javascript:
   - _assets/scg.min.js
   - _assets/main.js
+
+plugins:
+  - search
+  - i18n:
+      default_language: en
+      languages:
+        en: English
+        ru: Русский
+      no_translation:
+        ru: "Эта страница не переведена на русский язык."
+        en: "This page isn't translated to English."
+      translate_nav:
+        ru:
+          Home: "Главная"
+          Quick Start: "Быстрый старт"
+          User Guides: "Гайды для пользователей"
+          Tools: "Средства"
+          Build Instructions: "Инструкции сборки"
+          Quick Start for Developers: "Быстрый старт для разработчиков"
+          Development: "Разработка"
+          License: "Лицензия"
+          Changelog: "Список изменений"
 
 nav:
   - Home: index.md
@@ -53,7 +76,23 @@ nav:
   - License: https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT
   - Changelog: changelog.md
 
-theme: material
+theme: 
+    name: material
+    language: en
+
+extra:
+  # Default mkdocs-material alternate links for untranslated pages
+  # https://squidfunk.github.io/mkdocs-material/setup/changing-the-language/#site-language-selector
+  # For translated pages the language name is replaced by the string configured in i18n plugin
+  # section and link is replaced by the link to the translated page
+  alternate:
+    - name: "Home"
+      link: index.md
+      lang: en
+
+    - name: "Главная"
+      link: index.ru.md
+      lang: ru
 
 markdown_extensions:
   - admonition
