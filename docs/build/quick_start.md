@@ -1,8 +1,13 @@
 # Quick Start for Developers
 
+!!! note
+    The sc-machine can't be built on Windows.
+
 This guide provides short information for developers to start to work with sc-machine quickly. You can always learn more about the sc-machine's [build system](build_system.md).
 
 ## Check CMake
+
+Install pipx first using [**pipx installation guide**](https://pipx.pypa.io/stable/installation/) if not already installed.
 
 Ensure you are using **CMake version 3.24** or newer. Verify your version with:
 
@@ -10,14 +15,14 @@ Ensure you are using **CMake version 3.24** or newer. Verify your version with:
 cmake --version
 ```
 
-To upgrade CMake, follow the installation guide appropriate for your OS or use:
+To upgrade CMake, run:
   
 ```sh
 # Use pipx to install cmake if not already installed
-# Install pipx first using guide: https://pipx.pypa.io/stable/installation/
 pipx install cmake
 pipx ensurepath
 # relaunch your shell after installation
+exec $SHELL
 ```
 
 Install Ninja generator for CMake, to use sc-machine CMake presets:
@@ -27,19 +32,21 @@ Install Ninja generator for CMake, to use sc-machine CMake presets:
 pipx install ninja
 pipx ensurepath
 # relaunch your shell after installation
+exec $SHELL
 ```
 
 ## Start develop sc-machine with Conan
 
 ### Install Conan
 
-Install Conan, to build sc-machine dependencies with Conan-provided dependencies:
+Install Conan, to build sc-machine with Conan-provided dependencies:
 
 ```sh
 # Use pipx to install conan if not already installed
 pipx install conan
 pipx ensurepath
 # relaunch your shell after installation
+exec $SHELL
 ```
 
 ### Use sc-machine in Debug

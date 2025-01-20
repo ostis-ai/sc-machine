@@ -1,37 +1,58 @@
 # Quick Start
 
+!!! note
+    The sc-machine can't be used on Windows.
+
 ## Use sc-machine as a C++ library in your project
 
 ### Conan
 
-You can use Conan to install sc-machine. To do this you need to create `conanfile.txt` in the root of the project and add to it:
+You can use Conan to install sc-machine. To integrate sc-machine into your project using Conan, follow these steps:
 
-```ini
-[requires]
-sc-machine/<version>
-```
+1. Create a `conanfile.txt` in your project root with the following content:
 
-Add remote repository to your Conan client configuration:
+    ```ini
+    [requires]
+    sc-machine/<version>
+    ```
 
-```sh
-conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
-```
+2. Install pipx first using guide: https://pipx.pypa.io/stable/installation/.
 
-Then run the following command in the project root:
+3. Install Conan if not already installed:
 
-```sh
-conan install . --build=missing
-```
+    ```sh
+    pipx install conan
+    pipx ensurepath
+    ```
 
-Import sc-machine targets into your CMake project by using:
+4. Relaunch your shell after installation.
 
-```cmake
-find_package(sc-machine REQUIRED)
-```
+    ```sh
+    exec $SHELL
+    ```
 
-Start building! Refer to our [C++ Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md) on how to quickly develop an sc-machine agent in C++ from scratch.
+5. Add the OSTIS-AI remote Conan repository:
+
+    ```sh
+    conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
+    ```
+
+6. Install sc-machine and its dependencies:
+
+    ```sh
+    conan install . --build=missing
+    ```
+
+7. Import sc-machine targets into your CMake project by using:
+
+    ```cmake
+    find_package(sc-machine REQUIRED)
+    ```
+
+8. Start building! Refer to our [C++ Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md) on how to quickly develop an sc-machine agent in C++ from scratch.
 
 ### GitHub Releases
+
 You can download pre-built artifacts from [GitHub Releases](https://github.com/ostis-ai/sc-machine/releases). Extract it to any location, then make it available to CMake by appending folder path to `CMAKE_PREFIX_PATH`:
 
 ```cmake
