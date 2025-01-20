@@ -1,7 +1,11 @@
 site_name: sc-machine
+dev_addr: 127.0.0.1:8002
+repo_url: https://github.com/ostis-ai/sc-machine
+edit_uri: edit/main/docs/
 
 extra_css:
   - _assets/main.css
+
 extra_javascript:
   - _assets/scg.min.js
   - _assets/main.js
@@ -53,14 +57,49 @@ nav:
   - License: https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT
   - Changelog: changelog.md
 
-theme: material
+plugins:
+   - search:
+      lang: en
+      separator: '[\s\-\.]+'
+
+theme: 
+  name: material
+  favicon: ostis-logo.png
+  logo: ostis-logo.png
+  palette:  # Defines color schemes for light and dark modes
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant       # Enables instant loading of pages
+    - navigation.tracking      # Automatically focuses active section in sidebar
+    - navigation.tabs          # Adds top-level sections as tabs
+    - navigation.sections      # Renders top-level sections as groups in sidebar
+    - navigation.expand        # Expands all collapsible sections by default
+    - navigation.top           # Adds a "back to top" button
+    - search.suggest           # Displays search suggestions 
+    - search.highlight         # Highlights search terms on result page
+    - content.action.edit      # Adds links to edit doc files
+    - content.tabs.link        # Shares link when clicking on a tab
+    - content.code.copy        # Adds a copy button to code blocks
 
 markdown_extensions:
-  - admonition
+  - admonition                 # Allows creation of call-out boxes (e.g., notes, warnings)
   - codehilite
-  - md_in_html
-  - pymdownx.highlight:
+  - md_in_html                 # Allows Markdown syntax inside HTML blocks
+  - pymdownx.highlight:        # Enhances code block highlighting
       anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.inlinehilite      # Enables inline code highlighting
+  - pymdownx.details           # Allows creating collapsible elements
+  - pymdownx.superfences       # Enables advanced fenced code blocks

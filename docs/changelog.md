@@ -239,6 +239,7 @@ See documentation, to learn more about using new API.
 
 ### Changed
 
+- Improve docs usability: add search, edit links, coping code blocks, logo, text justifying, move sections to header and other 
 - SCsParser no longer generates sc-arcs from types of sc-elements to sc-elements
 - Allow multiple instances of `ScLogger` class
 - Rename `ScLog` to `ScLogger`
