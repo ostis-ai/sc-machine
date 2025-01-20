@@ -1,5 +1,8 @@
 # Quick Start
 
+!!! note
+    The sc-machine can't be used on Windows.
+
 ## Use sc-machine as a C++ library in your project
 
 ### Conan
@@ -15,7 +18,7 @@ You can use Conan to install sc-machine. To integrate sc-machine into your proje
 
 2. Install pipx first using guide: https://pipx.pypa.io/stable/installation/.
 
-3. Install Conan if not already install:
+3. Install Conan if not already installed:
 
     ```sh
     pipx install conan
@@ -23,6 +26,10 @@ You can use Conan to install sc-machine. To integrate sc-machine into your proje
     ```
 
 4. Relaunch your shell after installation.
+
+    ```sh
+    exec $SHELL
+    ```
 
 5. Add the OSTIS-AI remote Conan repository:
 

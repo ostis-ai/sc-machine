@@ -1,5 +1,8 @@
 # Quick Start for Developers
 
+!!! note
+    The sc-machine can't be built on Windows.
+
 This guide provides short information for developers to start to work with sc-machine quickly. You can always learn more about the sc-machine's [build system](build_system.md).
 
 ## Check CMake
@@ -19,6 +22,7 @@ To upgrade CMake, run:
 pipx install cmake
 pipx ensurepath
 # relaunch your shell after installation
+exec $SHELL
 ```
 
 Install Ninja generator for CMake, to use sc-machine CMake presets:
@@ -28,6 +32,7 @@ Install Ninja generator for CMake, to use sc-machine CMake presets:
 pipx install ninja
 pipx ensurepath
 # relaunch your shell after installation
+exec $SHELL
 ```
 
 ## Start develop sc-machine with Conan
@@ -41,6 +46,7 @@ Install Conan, to build sc-machine with Conan-provided dependencies:
 pipx install conan
 pipx ensurepath
 # relaunch your shell after installation
+exec $SHELL
 ```
 
 ### Use sc-machine in Debug
