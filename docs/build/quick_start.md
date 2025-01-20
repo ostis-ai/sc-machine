@@ -4,17 +4,18 @@ This guide provides short information for developers to start to work with sc-ma
 
 ## Check CMake
 
+Install pipx first using [**pipx installation guide**](https://pipx.pypa.io/stable/installation/) if not already installed.
+
 Ensure you are using **CMake version 3.24** or newer. Verify your version with:
 
 ```sh
 cmake --version
 ```
 
-To upgrade CMake, follow the installation guide appropriate for your OS or use:
+To upgrade CMake, run:
   
 ```sh
 # Use pipx to install cmake if not already installed
-# Install pipx first using guide: https://pipx.pypa.io/stable/installation/
 pipx install cmake
 pipx ensurepath
 # relaunch your shell after installation
