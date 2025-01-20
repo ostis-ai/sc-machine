@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Using sc-machine as a library is much more optimized: adding it to the CMake tree is no longer necessary. You can install sc-machine packages and import sc-machine targets into your cmake using `find_package(sc-machine REQUIRED)`. See how to do it -- [Build System](build/build_system.md)
     - Each release sc-machine binaries are being compiled for supported OS and formed as an archives on Github. Minimum required version of macOS is macOS-14 (arm), of ubuntu is ubuntu-22.04. The sc-machine doesn't support ubuntu-20.04 anymore. You can use sc-machine binaries to work with sc-memory or you can use `RunMachine` method from `sc-machine-runner.so` to create your own entry point to initialize sc-memory instead of using compiled `sc-machine` binary.
     - Script for the project build (`build_sc_machine.sh`), scripts for running binaries (`run_sc_server.sh`, `build_kb.sh`) were removed from the sc-machine repository scripts. You should use sc-machine binaries directly.
-    - sc-server is no longer entry point of the sc-machine, it is an extension (`sc-server-lib.so`), that is loaded dynamically when the machine is started. So, `sc-server` binary was removed, `sc-machine` binary was added instead.
+    - sc-server is no longer entry point of the sc-machine, it is an extension (`sc-server-lib.so`), that is loaded dynamically when the machine is started. So, `sc-server` binary was removed, `sc-machine` binary was added instead. To specify host and port for sc-server without using config, use environment variables `SC_SERVER_HOST` and `SC_SERVER_PORT` accordingly.
 - Config was changed:
     - `repo_path` option in `[sc-memory]` group was deprecated, `storage` option was added instead;
     - `extensions_path` option in `[sc-memory]` group was deprecated, `extensions` option was added instead.
@@ -163,6 +163,7 @@ See documentation, to learn more about using new API.
 
 ### Added
 
+- Environment variables `SC_SERVER_HOST` and `SC_SERVER_PORT` for sc-server
 - `SearchLinksByContentSubstring` method with `ScLinkFilter` parameter
 - `ScLinkFilter` class to specify search criteria for sc-links
 - Intro for documentation

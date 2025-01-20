@@ -61,7 +61,7 @@ public:
 
 protected:
   std::atomic<sc_bool> m_isServerRun = SC_FALSE;
-  std::string m_hostName;
+  std::string m_host;
   ScServerPort m_port;
 
   ScServerLogger * m_logger;

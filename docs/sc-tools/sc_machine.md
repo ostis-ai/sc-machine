@@ -26,6 +26,12 @@ Options:
   --test|-t                               Test sc-memory state. If this flag is specified, sc-memory will be initialized and shutdown immediately.
   --version                               Display version of ./build/<Release|Debug>/bin/sc-machine.
   --help                                  Display this help message.
+
+Environment variables:
+  SC_SERVER_HOST                          Specifies a host for sc-server extension. If not set, the value defaults to the `host` option in the `[sc-server]` group of the configuration file.
+                                          If neither is specified, the default host is 127.0.0.1.
+  SC_SERVER_PORT                          Specifies a port for sc-server extension. If not set, the value defaults to the `port` option in the `[sc-server]` group of the configuration file.
+                                          If neither is specified, the default port is 8090.
 ```
 
 Example of usage:
