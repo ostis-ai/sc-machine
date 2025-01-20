@@ -64,6 +64,7 @@ plugins:
 
 theme: 
   name: material
+  favicon: ostis-logo.png
   logo: ostis-logo.png
   palette:  # Defines color schemes for light and dark modes
     - media: "(prefers-color-scheme: light)"
