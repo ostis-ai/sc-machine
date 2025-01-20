@@ -4,44 +4,48 @@
 
 ### Conan
 
-You can use Conan to install sc-machine. To do this you need to create `conanfile.txt` in the root of the project and add to it:
+You can use Conan to install sc-machine. To integrate sc-machine into your project using Conan, follow these steps:
 
-```ini
-[requires]
-sc-machine/<version>
-```
+1. Create a `conanfile.txt` in your project root with the following content:
 
-Install Conan, to install sc-machine and Conan-provided dependencies:
+    ```ini
+    [requires]
+    sc-machine/<version>
+    ```
 
-```sh
-# Use pipx to install conan if not already installed
-# Install pipx first using guide: https://pipx.pypa.io/stable/installation/
-pipx install conan
-pipx ensurepath
-# relaunch your shell after installation
-```
+2. Install pipx first using guide: https://pipx.pypa.io/stable/installation/.
 
-Add remote repository to your Conan client configuration:
+3. Install Conan if not already install:
 
-```sh
-conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
-```
+    ```sh
+    pipx install conan
+    pipx ensurepath
+    ```
 
-Then run the following command in the project root:
+4. Relaunch your shell after installation.
 
-```sh
-conan install . --build=missing
-```
+5. Add the OSTIS-AI remote Conan repository:
 
-Import sc-machine targets into your CMake project by using:
+    ```sh
+    conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
+    ```
 
-```cmake
-find_package(sc-machine REQUIRED)
-```
+6. Install sc-machine and its dependencies:
 
-Start building! Refer to our [C++ Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md) on how to quickly develop an sc-machine agent in C++ from scratch.
+    ```sh
+    conan install . --build=missing
+    ```
+
+7. Import sc-machine targets into your CMake project by using:
+
+    ```cmake
+    find_package(sc-machine REQUIRED)
+    ```
+
+8. Start building! Refer to our [C++ Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md) on how to quickly develop an sc-machine agent in C++ from scratch.
 
 ### GitHub Releases
+
 You can download pre-built artifacts from [GitHub Releases](https://github.com/ostis-ai/sc-machine/releases). Extract it to any location, then make it available to CMake by appending folder path to `CMAKE_PREFIX_PATH`:
 
 ```cmake
