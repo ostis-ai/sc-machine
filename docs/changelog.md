@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 21.01.2025
+
 ### Breaking changes
 
 - Python dependencies are set up locally in `.venv` environment. Therefore, you should make the following changes: 
