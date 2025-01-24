@@ -19,8 +19,12 @@ Changed files include:
 
 Example of usage:
 ```shell
-./scripts/migration/migrate_to_new_agent_api.sh path/to/folder/with/project
+./scripts/migration/migrate_to_new_agent_api.sh path/to/folder/with/source/files
 ```
+
+!!! note
+    Pass path to source files that does not contain other projects as subfolders.
+    If path contains other projects as subfolders then those projects may be reformatted as well.
 
 There may be a situation when this program won't be able to replace code correctly, these places in code are marked with `//todo(codegen-removal):`
 
