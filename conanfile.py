@@ -32,11 +32,11 @@ class sc_machineRecipe(ConanFile):
         self.requires("websocketpp/0.8.2", options={"asio": "standalone"})
         self.requires("nlohmann_json/3.11.3")
         self.requires("glib/2.76.3")
+        self.requires("libxml2/2.13.4", options={"zlib": False, "iconv": False})
         # TODO(FallenChromium): use this instead of thirdparty/antlr4 
         # self.requires("antlr4-cppruntime/4.9.3")
 
     def build_requirements(self):
-        self.build_requires("libxml2/2.13.4")
         self.test_requires("gtest/1.14.0")
         self.test_requires("benchmark/1.9.0")
 

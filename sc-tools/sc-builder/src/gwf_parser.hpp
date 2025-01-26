@@ -12,8 +12,8 @@
 #include <memory>
 #include <list>
 
-#include <libxml2/libxml/parser.h>
-#include <libxml2/libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 #include "gwf_translator_constants.hpp"
 #include "sc_scg_element.hpp"
