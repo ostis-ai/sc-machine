@@ -24,7 +24,7 @@ Example of usage:
 
 !!! note
     Provide path to source files that does not contain subfolders with other projects.
-    All files located at that path may be reformatted, even if they are from another project or don't have sc-machine usages.
+    All files located at that path may be modified by this tool, even if they are from another project or don't have sc-machine usages.
 There may be a situation when this program won't be able to replace code correctly, these places in code are marked with `//todo(codegen-removal):`
 
 ### **_If you want to run this program you will need Java with version 8 or higher installed_**
