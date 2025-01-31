@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Migration script does not affect agent logs.
+- Fix typos in C++ Simple Guide for Implementing Agent and User permissions API
+- Migration script does not affect agent logs
 
 ## [0.10.0] - 21.01.2025
 

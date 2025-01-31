@@ -182,7 +182,7 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   // positive permanents arcs from the set and count number of these arcs. 
   // But, in any problem, the presence of NON-factors must be considered, 
   // but this is omitted here.
-  size_t setPower = 0;
+  uint32_t setPower = 0;
   ScIterator3Ptr const it3 = m_context.CreateIterator3( 
     setAddr,
     ScType::ConstPermPosArc,
@@ -198,12 +198,12 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
   ScAddr const & nrelSetPowerAddr 
     = m_context.SearchElementBySystemIdentifier("nrel_set_power");
   // You have to make sure that this non-role relation is in the knowledge base.
-  ScAddr const & arcAccessAddr = m_context.GenerateConnector(
+  ScAddr const & membershipArcAddr = m_context.GenerateConnector(
     ScType::ConstPermPosArc, nrelSetPowerAddr, arcCommonAddr);
 
   action.FormResult(
-    setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
-  m_logger.Debug("Set power was counted: " << setPower << ".");
+    setAddr, arcCommonAddr, setPowerAddr, membershipArcAddr, nrelSetPowerAddr);
+  m_logger.Debug("Set power was counted: ", setPower, ".");
 
   // At the end of the agent's program, you must call one of three methods 
   // (`FinishSuccessfully`, `FinishUnsuccessfully`, `FinishWithError`) 
@@ -302,19 +302,19 @@ ScResult ScAgentCalculateSetPower::DoProgram(ScAction & action)
 
 - ScAddr const & nrelSetPowerAddr 
 -   = m_context.SearchElementBySystemIdentifier("nrel_set_power");
-- ScAddr const & arcAccessAddr = m_context.GenerateConnector(
+- ScAddr const & membershipArcAddr = m_context.GenerateConnector(
 -   ScType::ConstPermPosArc, nrelSetPowerAddr, arcCommonAddr);
-+ ScAddr const & arcAccessAddr = m_context.GenerateConnector(
++ ScAddr const & membershipArcAddr = m_context.GenerateConnector(
 +   ScType::ConstPermPosArc, 
 +   ScSetKeynodes::nrel_set_power, 
 +   arcCommonAddr);
 - action.FormResult(
--   setAddr, arcCommonAddr, setPowerAddr, arcAccessAddr, nrelSetPowerAddr);
+-   setAddr, arcCommonAddr, setPowerAddr, membershipArcAddr, nrelSetPowerAddr);
 + action.FormResult(
 +   setAddr, 
 +   arcCommonAddr,
 +   setPowerAddr,
-+   arcAccessAddr, 
++   membershipArcAddr, 
 +   ScSetKeynodes::nrel_set_power);
   ...
 }
@@ -364,7 +364,7 @@ SC_MODULE_REGISTER(ScSetModule)
   ->Agent<ScAgentCalculateSetPower>();
   // This method pointers to module that agent class `ScAgentCalculateSetPower`
   // should be subscribed to sc-event of adding outgoing sc-arc from sc-element
-  // `action_initiated`. It is default parameter in these method if you want to
+  // `action_initiated`. It is default parameter in this method if you want to
   // subscribe agent class inherited from `ScActionInitiatedAgent`.
 
 // This way of subscribing agents makes it easier to write code. 
@@ -434,7 +434,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 add_library(set-agents SHARED ${SOURCES})
 target_link_libraries(set-agents LINK_PUBLIC sc-machine::sc-memory)
 target_include_directories(set-agents PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-set_target_properties(set-agents 
+set_target_properties(set-agents
     PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${SC_EXTENSIONS_DIRECTORY}
 )
 
@@ -444,8 +444,11 @@ set_target_properties(set-agents
 
 # Generate executable for tests.
 +add_executable(set-agents-tests ${TEST_SOURCES})
-+target_link_libraries(set-agents-tests LINK_PRIVATE set-agents)
-+target_include_directories(set-agents-tests 
++target_link_libraries(set-agents-tests
++    LINK_PRIVATE GTest::gtest_main
++    LINK_PRIVATE set-agents
++)
++target_include_directories(set-agents-tests
 +    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 +)
 
@@ -500,14 +503,13 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr = it3->Get(2);
 
-  ScAddr beginAddr;
-  ScAddr linkAddr;
-  m_ctx->GetConnectorIncidentElements(arcAddr, beginAddr, linkAddr);
+  auto [beginAddr, linkAddr]
+    = m_ctx->GetConnectorIncidentElements(arcAddr);
   EXPECT_EQ(beginAddr, set);
   EXPECT_TRUE(m_ctx->GetElementType(linkAddr).IsLink());
 
   // Check that link content is 2.
-  size_t setPower;
+  uint32_t setPower;
   EXPECT_TRUE(m_ctx->GetLinkContent(linkAddr, setPower));
   EXPECT_EQ(setPower, 2u);
 
@@ -517,9 +519,8 @@ TEST_F(AgentTest, AgentCalculateSetPowerFinishedSuccessfully)
   EXPECT_TRUE(it3->Next());
   ScAddr arcAddr2 = it3->Get(2);
 
-  ScAddr relationAddr;
-  ScAddr targetArcAddr;
-  m_ctx->GetConnectorIncidentElements(arcAddr2, relationAddr, targetArcAddr);
+  auto [relationAddr, targetArcAddr]
+    = m_ctx->GetConnectorIncidentElements(arcAddr2);
   EXPECT_EQ(relationAddr, ScSetKeynodes::nrel_set_power);
   EXPECT_EQ(targetArcAddr, arcAddr);
 }
