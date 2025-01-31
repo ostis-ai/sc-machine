@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Developer tool to review PRs -- Ellipsis
+
 ### Fixed
 
 - Fix typos in C++ Simple Guide for Implementing Agent and User permissions API
