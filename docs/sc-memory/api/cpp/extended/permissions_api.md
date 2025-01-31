@@ -73,10 +73,10 @@ To unidentify identified user, you can create reverse connection between specifi
 
 Users can be known in advance and then guest users and their identification is unnecessary, but all users should be authenticated in sc-memory. User authentication involves the process of verifying the authenticity of identified user and storing information about that user in sc-memory.
 
-To authenticate user in sc-memory, you should create connection between `concept_authentication_request` and user:
+To authenticate user in sc-memory, you should create connection between `concept_authentication_request_user` and user:
 
 ```scs
-concept_authentication_request -> ..some_user;;
+concept_authentication_request_user -> ..some_user;;
 ```
 
 You should do it once, no more. After the sc-machine authenticates this user, it means that connection between `concept_authenticated_user` and user has been created and all contexts with this user have been authenticated.
@@ -147,7 +147,7 @@ After, you can authenticate identified user.
 
 ### **Example of user authentication**
 
-To do this programly you can create waiter to wait sc-event of adding outgoing sc-arc from `concept_authenticated_user` and request user to be authenticated, i.e. create sc-arc between `concept_authentication_request` and user. After waiting this sc-event, your user will be authenticated.
+To do this programly you can create waiter to wait sc-event of adding outgoing sc-arc from `concept_authenticated_user` and request user to be authenticated, i.e. create sc-arc between `concept_authentication_request_user` and user. After waiting this sc-event, your user will be authenticated.
 
 ```cpp
 ...
@@ -175,7 +175,7 @@ auto eventWaiter
   {
     ScMemory::ms_globalContext->GenerateConnector(
       ScType::ConstPermPosArc, 
-      ScKeynodes::concept_authentication_request, 
+      ScKeynodes::concept_authentication_request_user, 
       userAddr1);
 
     // Only `ScMemory::ms_globalContext` can authenticate users.
