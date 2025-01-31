@@ -61,7 +61,7 @@ set-agents-module/
 ├── CMakeLists.txt
 ├── agent/
 │   ├── sc_agent_calculate_set_power.hpp
-│   └── sc_agent_calculate_set_power.сpp
+│   └── sc_agent_calculate_set_power.cpp
 ```
 
 ---
@@ -234,7 +234,7 @@ set-agents-module/
  ├── CMakeLists.txt
  ├── agent/
  │   ├── sc_agent_calculate_set_power.hpp
- │   └── sc_agent_calculate_set_power.сpp
+ │   └── sc_agent_calculate_set_power.cpp
 +├── keynodes/
 +│   └── sc_set_keynodes.hpp
 ```
@@ -331,7 +331,7 @@ Someone should subscribe your agent to event. It can be other agent, or any code
  ├── CMakeLists.txt
  ├── agent/
  │   ├── sc_agent_calculate_set_power.hpp
- │   └── sc_agent_calculate_set_power.сpp
+ │   └── sc_agent_calculate_set_power.cpp
  ├── keynodes/
  │   └── sc_set_keynodes.hpp
 +├── sc_set_module.hpp
@@ -413,7 +413,7 @@ To make sure how your agent works it is best to generate tests and cover in them
  ├── CMakeLists.txt
  ├── agent/
  │   ├── sc_agent_calculate_set_power.hpp
- │   └── sc_agent_calculate_set_power.сpp
+ │   └── sc_agent_calculate_set_power.cpp
  ├── keynodes/
  │   └── sc_set_keynodes.hpp
 +├── tests/
