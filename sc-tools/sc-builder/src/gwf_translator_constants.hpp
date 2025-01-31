@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <libxml2/libxml/xmlstring.h>
+#include <libxml/xmlstring.h>
 
 namespace Constants
 {
