@@ -7,8 +7,8 @@ about:
 
 pr_review:
   rules:
-    - "Code should be DRY (Dont Repeat Yourself)"
-    - "There should no secrets or credentials in the code"
+    - "Code should be DRY (Don't Repeat Yourself)"
+    - "There should be no secrets or credentials in the code"
     - "Extremely Complicated Code Needs Comments"
     - "Use Descriptive Variable and Constant Names"
     - "Don't log sensitive data"
@@ -16,7 +16,7 @@ pr_review:
     - "Function and Method Naming Should Follow Consistent Patterns"
   summary_rules:
     - "Don't mention changes if the change is only whitespace"
-    - "When a rename occurs, mention the old and new file names, but don't mention every single spot where the file renamed occured"
+    - "When a rename occurs, mention the old and new file names, but don't mention every single spot where the file renamed occurred"
   auto_review_enabled: true
   enable_approve_prs: true
 
