@@ -51,7 +51,7 @@ nav:
       - CMake Flags: build/cmake_flags.md
       - Configuration File: build/config.md
   - Development:
-      - Contributing Guide: https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md
+      - Contributing Guide: CONTRIBUTING.md
       - Code Style Guide: dev/codestyle.md
       - Dev Container: dev/devcontainer.md
   - License: https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT
