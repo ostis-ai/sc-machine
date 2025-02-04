@@ -4,7 +4,7 @@ This page describes rules to contribute changes and features by Pull Requests cr
 
 To initialize your repo do:
 
-* Make fork from `https://github.com/ostis-ai/sc-machine`.
+* Fork `https://github.com/ostis-ai/sc-machine`.
 * Clone your fork to your machine and prepare (see [Readme](https://github.com/ostis-ai/sc-machine)).
 
 ```sh
@@ -20,8 +20,7 @@ git fetch upstream
 git checkout upstream/main
 ```
 
-* Use `git rebase` instead of `merge`. [More documentation about this command](https://git-scm.com/docs/git-rebase)
-just try to apply your commits (from current branch to commits in specified branch). To rebase your branch to main use:
+* Use `git rebase` instead of `merge`. See [documentation about this command](https://git-scm.com/docs/git-rebase). To rebase your branch against main use:
 
 ```sh
 git checkout <yourbranch>
@@ -40,8 +39,7 @@ git rebase --abort
 
 Each commit message should be formed as: `[tag1]...[tagN] Message text (#issue)`.
 
-Message text should start from an upper case letter. If commit doesn't fix or implement any #issue, then it shouldn't 
-be pointed in commit message.
+Message text should start from an upper case letter. If commit doesn't fix or implement any #issue, then it shouldn't be pointed in commit message.
 
 Examples:
 <pre>
@@ -64,13 +62,13 @@ Possible tags:
   * `[refactor]` - commits with some code refactoring;
   * `[changelog]` - use when you update changelog;
   * `[docs]` or `[doc]` - use when you update documentation;
-  * `[docker]` - changes in Dockerfile, .dockerignore or Docker image build pipeline
-  * `[scripts]` - updates in the `sc-machine/scripts` files
+  * `[docker]` - changes in Dockerfile, .dockerignore or Docker image build pipeline;
+  * `[scripts]` - updates in the `sc-machine/scripts` files;
   * `[ci]` - changes in `ci` configuration or scripts;
   * `[git]` - changes in `git` configuration;
   * `[cmake]` - changes in `cmake` build system.
 
-Each commit in Pull Request should be an atomic. Another word implement or fix one feature. For example:
+Each commit in Pull Request should be an atomic. In other words, it should implement or fix one feature. For example:
 <pre>
 Last commit
 ...
@@ -80,8 +78,7 @@ Last commit
 Init commit
 </pre>
 
-In this example we add class to work with console (where implemented colored output), then in another commit we had 
-implementation of colored log output.
+In this example we add class to work with console (where implemented colored output), then in another commit we add implementation of colored log output.
 
 ***
 Each commit should have not much differences excluding cases, with:
@@ -98,12 +95,11 @@ Each commit should have not much differences excluding cases, with:
 
 **Do not mix codestyle changes and any logical fixes in one commit.**
 
-All commit, that not applies to this rules, should be split by this rules. Another way they will be rejected with Pull request.
+All commits that not follow these rules should be split according to these rules. Otherwise they will be rejected with Pull Request.
 
 ***
-## Pull request
 
-Each pull request with many changes, that not possible to review (excluding codestyle, rename changes), will be rejected.
+## Pull request
 
 _**All commit, that not applies to these rules, should be split by these rules. Another way they will be rejected with Pull request.**_
 
