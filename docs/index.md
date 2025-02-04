@@ -47,7 +47,7 @@ Table of contents:
     * [CMake Flags](build/cmake_flags.md) - *description of CMake flags used to configure sc-machine*
     * [Configuration File](build/config.md) - *description of a configuration file of sc-machine*
 - **Development** - *guidelines for contributing to development*
-    * [Contributing Guide](https://github.com/ostis-ai/sc-machine/blob/main/CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
+    * [Contributing Guide](CONTRIBUTING.md) - *guide for those who wants to make contribution into sc-machine*
     * [Code Style Guide](dev/codestyle.md) - *guide for those who wants to write code for sc-machine*
     * [Dev Container](dev/devcontainer.md) - *guide for those who wants to develop sc-machine via docker*
 - [License](https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT)
