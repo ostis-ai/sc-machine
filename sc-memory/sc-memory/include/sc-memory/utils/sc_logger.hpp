@@ -294,4 +294,4 @@ static utils::ScLogger ms_globalLogger;
  *
  * Usage: SC_LOG_INFO_COLOR("Custom info", customColor);
  */
-#define SC_LOG_INFO_COLOR(__message, __color) ({SC_LOG_COLOR(::utils::ScLogType::Info, __message, __color)})
+#define SC_LOG_INFO_COLOR(__message, __color) ({SC_LOG_COLOR(utils::ScLogLevel::Level::Info, __message, __color)})
