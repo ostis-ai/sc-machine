@@ -310,7 +310,10 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
   {
     sc_addr const element = sc_iterator3_value(it1, 2);
 
-    appendIntoResult(s_default_ctx, result, element);
+    sc_addr arc = sc_memory_arc_new(s_default_ctx, sc_type_const_perm_pos_arc, result, element);
+    SYSTEM_ELEMENT(s_default_ctx, arc);
+    arc = sc_memory_arc_new(s_default_ctx, sc_type_const_perm_pos_arc, keynode_rrel_main_key_sc_element, arc);
+    SYSTEM_ELEMENT(s_default_ctx, arc);
 
     search_translation(element, result, sys_off);
     search_arc_components(element, result, sys_off);

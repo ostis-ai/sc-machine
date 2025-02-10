@@ -36,6 +36,7 @@ extern sc_addr keynode_nrel_main_idtf;
 extern sc_addr keynode_nrel_inclusion;
 extern sc_addr keynode_nrel_strict_inclusion;
 extern sc_addr keynode_rrel_key_sc_element;
+extern sc_addr keynode_rrel_main_key_sc_element;
 extern sc_addr keynode_nrel_key_sc_element_base_order;
 extern sc_addr keynode_languages;
 
