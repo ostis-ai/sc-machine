@@ -70,4 +70,5 @@ input = kb
 # Path to folder with compiled knowledge base binaries. By default, it is empty.
 output = kb.bin
 ```
-**Note: If you use relative paths they will be resolved based on config file location.**
+!!! Note
+    If you use relative paths they will be resolved based on config file location.

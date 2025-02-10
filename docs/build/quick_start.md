@@ -5,6 +5,16 @@
 
 This guide provides short information for developers to start to work with sc-machine quickly. You can always learn more about the sc-machine's [build system](build_system.md).
 
+## Install project
+
+Install sc-machine via git:
+
+```sh
+git clone https://github.com/ostis-ai/sc-machine
+git submodule update --init --recursive
+cd sc-machine
+```
+
 ## Check CMake
 
 Install pipx first using [**pipx installation guide**](https://pipx.pypa.io/stable/installation/) if not already installed.
@@ -61,7 +71,8 @@ cmake --preset debug-conan
 cmake --build --preset debug
 ```
 
-Note: By default, configure preset `debug` enables building sc-machine tests.
+!!! Note
+    By default, configure preset `debug` enables building sc-machine tests.
 
 #### Run sc-machine tests in Debug
 
@@ -133,7 +144,8 @@ You can also check code formatting, build sc-machine with sanitizers and other. 
 
 ### Install sc-machine dependencies
 
-Note: sc-machine build system supports installation of dependencies for Ubuntu and macOS only.
+!!! Note
+    sc-machine build system supports installation of dependencies for Ubuntu and macOS only.
 
 #### Install sc-machine dependencies for Ubuntu
 
@@ -174,7 +186,8 @@ cmake --preset debug
 cmake --build --preset debug
 ```
 
-Note: By default, configure preset `debug` enables building sc-machine tests.
+!!! Note
+    By default, configure preset `debug` enables building sc-machine tests.
 
 #### Run sc-machine tests in Debug
 
