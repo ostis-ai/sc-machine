@@ -5,6 +5,16 @@
 
 This guide provides short information for developers to start to work with sc-machine quickly. You can always learn more about the sc-machine's [build system](build_system.md).
 
+## Install project
+
+Install sc-machine via git:
+
+```sh
+git clone https://github.com/ostis-ai/sc-machine
+git submodule update --init --recursive
+cd sc-machine
+```
+
 ## Check CMake
 
 Install pipx first using [**pipx installation guide**](https://pipx.pypa.io/stable/installation/) if not already installed.

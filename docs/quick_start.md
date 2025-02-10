@@ -16,40 +16,47 @@ You can use Conan to install sc-machine. To integrate sc-machine into your proje
     sc-machine/<version>
     ```
 
-2. Install pipx first using guide: https://pipx.pypa.io/stable/installation/.
+2. Install pipx first using guide: [https://pipx.pypa.io/stable/installation/](https://pipx.pypa.io/stable/installation/).
 
-3. Install Conan if not already installed:
+3. Update CMake to 3.24:
+
+    ```sh
+    pipx install cmake
+    pipx ensurepath
+    ```
+
+4. Install Conan if not already installed:
 
     ```sh
     pipx install conan
     pipx ensurepath
     ```
 
-4. Relaunch your shell after installation.
+5. Relaunch your shell after installation.
 
     ```sh
     exec $SHELL
     ```
 
-5. Add the OSTIS-AI remote Conan repository:
+6. Add the OSTIS-AI remote Conan repository:
 
     ```sh
     conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
     ```
 
-6. Install sc-machine and its dependencies:
+7. Install sc-machine and its dependencies:
 
     ```sh
     conan install . --build=missing
     ```
 
-7. Import sc-machine targets into your CMake project by using:
+8. Import sc-machine targets into your CMake project by using:
 
     ```cmake
     find_package(sc-machine REQUIRED)
     ```
 
-8. Start building! Refer to our [C++ Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md) on how to quickly develop an sc-machine agent in C++ from scratch.
+9. Start building! Refer to our [C++ Guide](sc-memory/api/cpp/guides/simple_guide_for_implementing_agent.md) on how to quickly develop an sc-machine agent in C++ from scratch.
 
 ### GitHub Releases
 
@@ -91,7 +98,8 @@ Head to [Installing with Docker](https://ostis-ai.github.io/sc-machine/docker) t
 
 ### Native
 
-Note: currently, running sc-machine natively on Windows isn't supported.
+!!! Note
+    Currently, running sc-machine natively on Windows isn't supported.
 
 Download the [sc-machine release](https://github.com/ostis-ai/sc-machine/releases) for your platform and run it on your system:
 
