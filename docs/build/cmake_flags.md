@@ -15,7 +15,8 @@ Additionally you can use `-DSC_BUILD_BENCH=ON` flag to build performance tests
 
 Use `cmake` with `-DSC_USE_SANITIZER=memory` or `-DSC_USE_SANITIZER=address` option to run build with memory or address sanitizer. 
 
-**Note: sanitizers are only supported by `clang` compiler** 
+!!! Note
+    Sanitizers are only supported by `clang` compiler.
 
 ### Example
 
