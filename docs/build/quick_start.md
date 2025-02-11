@@ -11,8 +11,8 @@ Install sc-machine via git:
 
 ```sh
 git clone https://github.com/ostis-ai/sc-machine
-git submodule update --init --recursive
 cd sc-machine
+git submodule update --init --recursive
 ```
 
 ## Check CMake
