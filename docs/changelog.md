@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SC_LOG_INFO_COLOR uses correct enum value
 - Move CONTRIBUTING.md to docs folder
 - Don't install transitive dependencies of libxml2: zlib and iconv
 - Fix typos in C++ Simple Guide for Implementing Agent and User permissions API
