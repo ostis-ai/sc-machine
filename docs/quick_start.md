@@ -41,7 +41,7 @@ You can use Conan to install sc-machine. To integrate sc-machine into your proje
 6. Add the OSTIS-AI remote Conan repository:
 
     ```sh
-    conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine
+    conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library
     ```
 
 7. Install sc-machine and its dependencies:

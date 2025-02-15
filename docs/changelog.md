@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Developer tool to review PRs -- Ellipsis
 
+### Changed
+
+- Rename Conan remote repository url to https://conan.ostis.net/artifactory/api/conan/ostis-ai-library
+
 ### Fixed
 
 - SC_LOG_INFO_COLOR uses correct enum value

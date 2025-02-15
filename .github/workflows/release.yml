@@ -81,7 +81,7 @@ jobs:
 
       - name: Set Conan remote
         run: |
-          conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-sc-machine/
+          conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library/
           conan remote login ostis-ai ${{ secrets.CONAN_USERNAME }} -p ${{ secrets.CONAN_API_KEY }}
 
       - name: Create Conan package
