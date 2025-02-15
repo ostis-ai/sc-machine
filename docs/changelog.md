@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Conan remote url renamed to https://conan.ostis.net/artifactory/api/conan/ostis-ai-library
+- Rename Conan remote repository url to https://conan.ostis.net/artifactory/api/conan/ostis-ai-library
 
 ### Fixed
 

@@ -9,7 +9,7 @@ on:
 
 jobs:
   run_tests:
-    name: ${{ matrix.os }}, ${{ matrix.build_type }}, ${{ matrix.config.cxx }}
+    name: ${{ matrix.os }}, ${{ matrix.build_type.name }}, ${{ matrix.config.cxx }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -63,4 +63,3 @@ jobs:
           mkdir kb
           build/${{ matrix.build_type.name }}/bin/sc-builder -i kb -o kb.bin --clear
           build/${{ matrix.build_type.name }}/bin/sc-machine -c sc-machine.ini -e build/${{ matrix.build_type.name }}/lib/extensions -s kb.bin -t
-
