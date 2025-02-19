@@ -116,9 +116,8 @@ All commits that not follow these rules should be split according to these rules
 
 ### Pull Request Review
 
- - Reviewer should test code from PR if CI doesn't do it;
- - Reviewer submit review as set of conversations;
- - Author make review fixes at `Review fixes` commits;
- - Author re-request review;
- - Reviewer resolve conversations if they were fixed and approve PR.
-
+ - Reviewer tests code from PR if CI doesn't do it;
+ - Reviewer submits review as set of conversations;
+ - Author makes review fixes at `Review fixes` commits;
+ - Author re-requests review;
+ - Reviewer resolves conversations and approves PR if conversations were fixed.
