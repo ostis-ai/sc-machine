@@ -453,7 +453,6 @@ set_target_properties(set-agents
 +)
 
 +gtest_discover_tests(set-agents-tests
-+    TEST_LIST ${TEST_SOURCES}
 +    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests
 +)
 ```
