@@ -105,5 +105,8 @@
                 }
             }
         },
-    ]
+    ],
+    "files.associations": {
+        "map": "cpp"
+    }
 }
