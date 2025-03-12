@@ -330,12 +330,12 @@ void uiSc2SCnJsonTranslator::ParseScnJsonSentence(
     ParseScnJsonSentence(elInfo->structKeyword, 0, true, result[ScnTranslatorConstants::STRUCT.data()]);
   }
   // if node is arc
-  if (elInfo->type & sc_type_arc_mask)
+  if (sc_type_is_connector(elInfo->type))
   {
     ParseScnJsonArc(elInfo, result);
   }
   // if node is link
-  if (elInfo->type & sc_type_node_link)
+  if (sc_type_is_node_link(elInfo->type))
   {
     isFullLinkedNodes = false;
     ParseScnJsonLink(elInfo, result);
@@ -368,7 +368,69 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByDirection(
     bool isStruct,
     ScJson & children)
 {
-  for (auto const & arc : arcs)
+  ScAddr const & nrelBasicSequence = ScMemory::ms_globalContext->SearchElementBySystemIdentifier("nrel_basic_sequence");
+
+  std::list<ScStructureElementInfo *> orderedArcs;
+  bool isTupleNotOriented = true;
+  if (arcs.size() > 0)
+  {
+    ScStructureElementInfo * someArc = *arcs.cbegin();
+    orderedArcs.push_back(someArc);
+
+    ScIterator5Ptr it5 = ScMemory::ms_globalContext->CreateIterator5(
+        ScType::Unknown, ScType::ConstCommonArc, ScAddr(someArc->addr), ScType::ConstPermPosArc, nrelBasicSequence);
+    while (it5->Next())
+    {
+      isTupleNotOriented = false;
+      ScAddr const & prevArcAddr = it5->Get(0);
+
+      auto it = std::find_if(
+          arcs.cbegin(),
+          arcs.cend(),
+          [&](ScStructureElementInfo * someArc) -> bool
+          {
+            return ScAddr(someArc->addr) == prevArcAddr;
+          });
+      if (it == arcs.cend())
+        break;
+
+      orderedArcs.push_front(*it);
+
+      it5 = ScMemory::ms_globalContext->CreateIterator5(
+          ScType::Unknown, ScType::ConstCommonArc, ScAddr((*it)->addr), ScType::ConstPermPosArc, nrelBasicSequence);
+    }
+
+    it5 = ScMemory::ms_globalContext->CreateIterator5(
+        ScAddr(someArc->addr), ScType::ConstCommonArc, ScType::Unknown, ScType::ConstPermPosArc, nrelBasicSequence);
+    while (it5->Next())
+    {
+      isTupleNotOriented = false;
+      ScAddr const & nextArcAddr = it5->Get(2);
+
+      auto it = std::find_if(
+          arcs.cbegin(),
+          arcs.cend(),
+          [&](ScStructureElementInfo * someArc) -> bool
+          {
+            return ScAddr(someArc->addr) == nextArcAddr;
+          });
+      if (it == arcs.cend())
+        break;
+
+      orderedArcs.push_back(*it);
+
+      it5 = ScMemory::ms_globalContext->CreateIterator5(
+          ScAddr((*it)->addr), ScType::ConstCommonArc, ScType::Unknown, ScType::ConstPermPosArc, nrelBasicSequence);
+    }
+  }
+
+  if (orderedArcs.empty() || isTupleNotOriented)
+  {
+    orderedArcs.clear();
+    orderedArcs.assign(arcs.cbegin(), arcs.cend());
+  }
+
+  for (auto const & arc : orderedArcs)
   {
     ScJson child;
     ParseScnJsonChild(arc, direction, isStruct, child);
@@ -442,7 +504,7 @@ void uiSc2SCnJsonTranslator::ParseLinkedNodesScnJson(ScJson & children, int leve
           SC_ADDR_LOCAL_SEG_FROM_INT(addr_hash), SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_hash)};
 
       ScStructureElementInfo * linkedNodeInfo = mStructureElementsInfo[linkedNodeAddr];
-      if (!(linkedNodeInfo->type & sc_type_node_structure))
+      if ((linkedNodeInfo->type & sc_type_node_structure) != sc_type_node_structure)
       {
         ParseScnJsonSentence(linkedNodeInfo, level, isStruct, linkedNode);
       }
