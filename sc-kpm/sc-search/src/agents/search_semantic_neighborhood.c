@@ -521,6 +521,8 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 0));
         appendIntoResult(s_default_ctx, result, sc_iterator3_value(it3, 1));
 
+        search_arc_components(sc_iterator3_value(it3, 0), result, sys_off);
+
         // search of key sc-elements order
         if (SC_ADDR_IS_EQUAL(sc_iterator3_value(it3, 0), keynode_rrel_key_sc_element))
         {
@@ -547,6 +549,88 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
             }
           }
           sc_iterator5_free(it_order2);
+        }
+
+        // search typical sc-neighborhood if necessary
+        if (SC_ADDR_IS_EQUAL(keynode_rrel_key_sc_element, sc_iterator3_value(it3, 0)))
+        {
+          search_typical_sc_neighborhood(sc_iterator3_value(it2, 2), result, sys_off);
+          search_translation(sc_iterator3_value(it2, 2), result, sys_off);
+        }
+
+        // check if it's a quasy binary relation
+        if (sc_helper_check_arc(
+                s_default_ctx, keynode_quasybinary_relation, sc_iterator3_value(it3, 0), sc_type_const_perm_pos_arc)
+            == SC_TRUE)
+        {
+          // iterate elements of relation
+          it4 = sc_iterator3_f_a_a_new(s_default_ctx, sc_iterator3_value(it2, 2), sc_type_const_perm_pos_arc, 0);
+          while (sc_iterator3_next(it4) == SC_TRUE)
+          {
+            if (sys_off == SC_TRUE
+                && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 1))
+                    || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it4, 2))))
+              continue;
+
+            appendIntoResult(s_default_ctx, result, sc_iterator3_value(it4, 1));
+            appendIntoResult(s_default_ctx, result, sc_iterator3_value(it4, 2));
+
+            search_arc_components(sc_iterator3_value(it4, 2), result, sys_off);
+
+            // iterate order relations between elements
+            it_order = sc_iterator5_f_a_a_a_a_new(
+                s_default_ctx,
+                sc_iterator3_value(it4, 1),
+                sc_type_const_common_arc,
+                sc_type_connector,
+                sc_type_const_perm_pos_arc,
+                sc_type_node | sc_type_const);
+            while (sc_iterator5_next(it_order) == SC_TRUE)
+            {
+              if (sys_off == SC_TRUE
+                  && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 1))
+                      || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 2))
+                      || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 3))
+                      || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator5_value(it_order, 4))))
+                continue;
+
+              if (SC_FALSE
+                  == sc_helper_check_arc(
+                      s_default_ctx,
+                      keynode_order_relation,
+                      sc_iterator5_value(it_order, 4),
+                      sc_type_const_perm_pos_arc))
+                continue;
+
+              appendIntoResult(s_default_ctx, result, sc_iterator5_value(it_order, 1));
+              appendIntoResult(s_default_ctx, result, sc_iterator5_value(it_order, 2));
+              appendIntoResult(s_default_ctx, result, sc_iterator5_value(it_order, 3));
+              appendIntoResult(s_default_ctx, result, sc_iterator5_value(it_order, 4));
+            }
+            sc_iterator5_free(it_order);
+
+            // iterate roles of element in link
+            it6 = sc_iterator3_a_a_f_new(
+                s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it4, 1));
+            while (sc_iterator3_next(it6) == SC_TRUE)
+            {
+              sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it6, 0), &el_type);
+              if (!(el_type & sc_type_node_role))
+                continue;
+
+              if (sys_off == SC_TRUE
+                  && (IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 0))
+                      || IS_SYSTEM_ELEMENT(s_default_ctx, sc_iterator3_value(it6, 1))))
+                continue;
+
+              appendIntoResult(s_default_ctx, result, sc_iterator3_value(it6, 0));
+              appendIntoResult(s_default_ctx, result, sc_iterator3_value(it6, 1));
+
+              search_arc_components(sc_iterator3_value(it6, 0), result, sys_off);
+            }
+            sc_iterator3_free(it6);
+          }
+          sc_iterator3_free(it4);
         }
       }
       sc_iterator3_free(it3);

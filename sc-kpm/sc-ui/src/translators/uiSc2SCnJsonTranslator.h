@@ -117,7 +117,7 @@ private:
   //! Store structure elements if keyword is struct to remove them from keyword childrens
   ScStructureElementInfo::ScStructureElementInfoList structureElements;
   //! Max level of full discripted node
-  int const maxLevel = 2;
+  int const maxLevel = 10;
 };
 
 #endif  // _uiSc2SCnJsonTranslator_h_
