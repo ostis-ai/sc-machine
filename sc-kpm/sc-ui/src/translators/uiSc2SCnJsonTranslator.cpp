@@ -11,6 +11,7 @@
 
 #include <sc-memory/sc_memory.hpp>
 #include <sc-memory/sc_stream.hpp>
+#include <sc-memory/sc_keynodes.hpp>
 
 extern "C"
 {
@@ -368,8 +369,6 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByDirection(
     bool isStruct,
     ScJson & children)
 {
-  ScAddr const & nrelBasicSequence = ScMemory::ms_globalContext->SearchElementBySystemIdentifier("nrel_basic_sequence");
-
   std::list<ScStructureElementInfo *> orderedArcs;
   bool isTupleNotOriented = true;
   if (arcs.size() > 0)
@@ -378,7 +377,11 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByDirection(
     orderedArcs.push_back(someArc);
 
     ScIterator5Ptr it5 = ScMemory::ms_globalContext->CreateIterator5(
-        ScType::Unknown, ScType::ConstCommonArc, ScAddr(someArc->addr), ScType::ConstPermPosArc, nrelBasicSequence);
+        ScType::Unknown,
+        ScType::ConstCommonArc,
+        ScAddr(someArc->addr),
+        ScType::ConstPermPosArc,
+        ScKeynodes::nrel_basic_sequence);
     while (it5->Next())
     {
       isTupleNotOriented = false;
@@ -397,11 +400,19 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByDirection(
       orderedArcs.push_front(*it);
 
       it5 = ScMemory::ms_globalContext->CreateIterator5(
-          ScType::Unknown, ScType::ConstCommonArc, ScAddr((*it)->addr), ScType::ConstPermPosArc, nrelBasicSequence);
+          ScType::Unknown,
+          ScType::ConstCommonArc,
+          ScAddr((*it)->addr),
+          ScType::ConstPermPosArc,
+          ScKeynodes::nrel_basic_sequence);
     }
 
     it5 = ScMemory::ms_globalContext->CreateIterator5(
-        ScAddr(someArc->addr), ScType::ConstCommonArc, ScType::Unknown, ScType::ConstPermPosArc, nrelBasicSequence);
+        ScAddr(someArc->addr),
+        ScType::ConstCommonArc,
+        ScType::Unknown,
+        ScType::ConstPermPosArc,
+        ScKeynodes::nrel_basic_sequence);
     while (it5->Next())
     {
       isTupleNotOriented = false;
@@ -420,7 +431,11 @@ void uiSc2SCnJsonTranslator::ParseChildrenScnJsonByDirection(
       orderedArcs.push_back(*it);
 
       it5 = ScMemory::ms_globalContext->CreateIterator5(
-          ScAddr((*it)->addr), ScType::ConstCommonArc, ScType::Unknown, ScType::ConstPermPosArc, nrelBasicSequence);
+          ScAddr((*it)->addr),
+          ScType::ConstCommonArc,
+          ScType::Unknown,
+          ScType::ConstPermPosArc,
+          ScKeynodes::nrel_basic_sequence);
     }
   }
 
