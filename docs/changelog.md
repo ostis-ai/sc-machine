@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.1] - 15.03.2025
+
 ### Added
 
 - Support direct quasibinary relations in semantic neighborhood agent
