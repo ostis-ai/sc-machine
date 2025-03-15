@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Take into account order relations between sc-elements in quasibinary tuples in scn2json-translator
+- Translating sc-structures to json in sc2scn-json-translator
+- Take into account order relations between sc-elements in quasibinary tuples in sc2scn-json-translator
 - SC_LOG_INFO_COLOR uses correct enum value
 - Move CONTRIBUTING.md to docs folder
 - Don't install transitive dependencies of libxml2: zlib and iconv
