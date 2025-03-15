@@ -232,8 +232,8 @@ sc_bool _sc_memory_context_are_events_pending(sc_memory_context const * ctx)
 
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
-    sc_event_type event_type_addr,
     sc_addr subscription_addr,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type connector_type,
     sc_addr other_addr)
