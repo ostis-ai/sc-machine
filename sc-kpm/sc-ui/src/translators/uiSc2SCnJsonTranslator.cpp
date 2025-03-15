@@ -167,7 +167,7 @@ void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
   for (auto const & keyword : mKeywordsList)
   {
     elInfo = ResolveStructureElementInfo(keyword);
-    if (elInfo->type & sc_type_node_structure)
+    if ((elInfo->type & sc_type_node_structure) == sc_type_node_structure)
     {
       // get the key elements of the structure
       ScStructureElementInfo::ScStructureElementInfoList keynodes;
@@ -195,8 +195,9 @@ void uiSc2SCnJsonTranslator::CollectScStructureElementsInfo()
       ScStructureElementInfo::ScStructureElementInfoList removableArcs;
       for (auto const & elInfoOutputArc : elInfo->outputArcs)
       {
-        // find structure elements by arc_pos_const_perm without modifiers
-        if (!(elInfoOutputArc->type & sc_type_const_perm_pos_arc && elInfoOutputArc->inputArcs.empty()))
+        // find structure elements by const_perm_pos_arc without modifiers
+        if (!((elInfoOutputArc->type & sc_type_const_perm_pos_arc) == sc_type_const_perm_pos_arc
+              && elInfoOutputArc->inputArcs.empty()))
           continue;
 
         structureElementIt = elInfoOutputArc->targetInfo->inputArcs.find(elInfoOutputArc);
@@ -248,7 +249,7 @@ ScStructureElementInfo * uiSc2SCnJsonTranslator::FindStructureKeyword(
       structureElements.cend(),
       [&structures](ScStructureElementInfo * el)
       {
-        if (el->type & sc_type_node_structure)
+        if ((el->type & sc_type_node_structure) == sc_type_node_structure)
           structures.insert(el);
       });
   if (!structures.empty())
@@ -295,7 +296,7 @@ void uiSc2SCnJsonTranslator::ParseScnJsonLink(ScStructureElementInfo * elInfo, S
       for (std::string_view const & formatStr : ScnTranslatorConstants::formats)
       {
         sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format);
-        if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_common_arc | sc_type_const) == SC_TRUE)
+        if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_const_common_arc) == SC_TRUE)
         {
           contentType = formatStr.data();
           break;
@@ -342,7 +343,7 @@ void uiSc2SCnJsonTranslator::ParseScnJsonSentence(
     ParseScnJsonLink(elInfo, result);
   }
   // if the nesting level is not greater than the maximum or the element is not a tuple, get children
-  if (level < maxLevel || (elInfo->type & sc_type_node & sc_type_node_tuple))
+  if (level < maxLevel || ((elInfo->type & sc_type_node_tuple) == sc_type_node_tuple))
   {
     auto & resultChildren = result[ScnTranslatorConstants::CHILDREN.data()];
     // first get children from ordered list of modifiers
@@ -687,7 +688,8 @@ void uiSc2SCnJsonTranslator::ParseScnJsonChild(
 
   auto modifierIt = modifiersList.begin();
   ScJson modifier = ScJson();
-  if (modifierIt != modifiersList.end() && !((*modifierIt)->isInTree))
+  if (modifierIt != modifiersList.end() && !((*modifierIt)->isInTree)
+      && ((*modifierIt)->sourceInfo->type & sc_type_node_structure) != sc_type_node_structure)
   {
     ParseScElementInfo((*modifierIt)->sourceInfo, modifier);
     ScJson modifierEl;
