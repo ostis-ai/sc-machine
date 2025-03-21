@@ -16,6 +16,8 @@ You can use Conan to install sc-machine. To integrate sc-machine into your proje
     sc-machine/<version>
     ```
 
+    The latest version of the sc-machine is 0.10.1.
+
 2. Install pipx first using guide: [https://pipx.pypa.io/stable/installation/](https://pipx.pypa.io/stable/installation/).
 
 3. Update CMake to 3.24:
