@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Add using --dev flag during launching install_deps_ubuntu.sh in quick_start for users
+
 ## [0.10.1] - 15.03.2025
 
 ### Added
