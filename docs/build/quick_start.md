@@ -151,7 +151,7 @@ You can also check code formatting, build sc-machine with sanitizers and other. 
 
 ```sh
 cd scripts
-./install_deps_ubuntu.sh
+./install_deps_ubuntu.sh --dev
 ```
 
 #### Install sc-machine dependencies for macOS
