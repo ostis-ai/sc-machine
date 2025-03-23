@@ -1,19 +1,18 @@
 #ifndef SC_TRANSACTION_MANAGER_H
 #define SC_TRANSACTION_MANAGER_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "sc_transaction.h"
+#include "sc-store/sc-base/sc_monitor_private.h"
 
-#include "epoch_manager.h"
+#include <sc-core/sc-base/sc_monitor.h>
 
-typedef struct transaction_manager {
-  uint64_t current_transaction_id;
-  epoch_manager* epoch_mgr;
-} transaction_manager;
+typedef struct sc_transaction_manager
+{
+  sc_transaction * current_sc_transaction;
+  sc_monitor sc_monitor;
+  sc_queue sc_transaction_queue;
+} sc_transaction_manager;
 
-void initialize_transaction_manager(transaction_manager* manager);
-uint64_t start_transaction(transaction_manager* manager);
-void commit_transaction(transaction_manager* manager, uint64_t transaction_id);
-void rollback_transaction(transaction_manager* manager, uint64_t transaction_id);
+sc_transaction_manager* sc_transaction_manager_initialize(void);
 
 #endif

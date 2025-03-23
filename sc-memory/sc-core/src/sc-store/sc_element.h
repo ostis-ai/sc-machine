@@ -8,6 +8,7 @@
 #define _sc_element_h_
 
 #include "sc-core/sc_types.h"
+#include "sc-transaction/sc_element_version.h"
 
 struct _sc_arc_info
 {
@@ -65,6 +66,8 @@ struct _sc_element
 
   sc_uint32 incoming_arcs_count;
   sc_uint32 outgoing_arcs_count;
+
+  sc_element_version* current_version;
 };
 
 #endif

@@ -1,19 +1,15 @@
 #ifndef SC_ELEMENT_VERSION_H
 #define SC_ELEMENT_VERSION_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
-typedef struct element_version {
+typedef struct sc_element_version {
   void* data;
   uint64_t version_id;
-  element_version * prev_version;
-  uint64_t epoch;
-  uint64_t transaction_id;
-  int is_committed;
-} element_version;
-
-element_version* create_new_version(void* data, uint64_t version_id, uint64_t transaction_id, uint64_t epoch);
-void commit_version(element_version* version);
-void rollback_version(element_version* version);
+  struct sc_element_version* prev_version;
+  struct sc_element_version* next_version;
+  bool is_committed;
+} sc_element_version;
 
 #endif
