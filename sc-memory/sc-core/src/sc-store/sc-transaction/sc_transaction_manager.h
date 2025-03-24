@@ -5,9 +5,10 @@
 #include "sc-store/sc-base/sc_monitor_private.h"
 
 typedef struct sc_transaction_manager {
-  sc_transaction *current_sc_transaction;
-  sc_queue sc_transaction_queue;
-  sc_monitor sc_monitor;
+  sc_transaction*current_sc_transaction;
+  sc_queue* sc_transaction_queue;
+  sc_monitor* sc_monitor;
+  sc_uint64 transaction_counter;
 } sc_transaction_manager;
 
 sc_transaction_manager* sc_transaction_manager_initialize();

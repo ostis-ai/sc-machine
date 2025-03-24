@@ -5,13 +5,12 @@
 
 typedef struct sc_transaction {
   sc_uint64 transaction_id;
-  sc_uint64 timestamp;
   sc_bool is_committed;
-  sc_list elements;
+  sc_list* elements;
   sc_uint32 element_count;
 } sc_transaction;
 
-sc_transaction* sc_transaction_create();
+sc_transaction* sc_transaction_create(const sc_uint64* txn_id);
 // create a new transaction
 void sc_transaction_destroy(sc_transaction* txn);
 // destroy the given transaction
