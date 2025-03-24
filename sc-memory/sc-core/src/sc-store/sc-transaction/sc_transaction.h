@@ -29,5 +29,7 @@ void sc_transaction_merge(sc_transaction* txn);
 // check versions of all elements in the transaction and try to merge them
 void sc_transaction_apply(sc_transaction* txn);
 // apply all operations (merged versions, allocated spaces) to sc-memory
+void sc_transaction_clear(sc_transaction* txn);
+// deletes all transaction items and clears them without performing a commit
 
 #endif
