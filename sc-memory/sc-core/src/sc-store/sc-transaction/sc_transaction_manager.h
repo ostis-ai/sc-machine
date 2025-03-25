@@ -6,8 +6,8 @@
 
 typedef struct sc_transaction_manager {
   sc_transaction*current_sc_transaction;
-  sc_queue* sc_transaction_queue;
-  sc_monitor* sc_monitor;
+  sc_queue* transaction_queue;
+  sc_monitor* monitor;
   sc_uint64 transaction_counter;
 } sc_transaction_manager;
 

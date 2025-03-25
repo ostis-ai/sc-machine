@@ -22,3 +22,25 @@ void sc_transaction_destroy(sc_transaction* txn) {
     sc_mem_free(txn);
   }
 }
+
+void sc_transaction_add_element(sc_transaction* txn, sc_element* element) {
+}
+
+void sc_transaction_commit(sc_transaction* txn) {
+}
+
+void sc_transaction_rollback(sc_transaction* txn) {
+}
+
+sc_bool sc_transaction_validate(sc_transaction* txn) {
+  return SC_FALSE;
+}
+
+void sc_transaction_merge(sc_transaction* txn) {
+}
+
+void sc_transaction_apply(sc_transaction* txn) {
+}
+
+void sc_transaction_clear(sc_transaction* txn) {
+}
