@@ -6,6 +6,7 @@ generated
 cmake-build-debug
 cmake-build-release
 cmake-build-debug-coverage
+cmake-build-*
 /CMakeUserPresets.json
 /ConanPresets.json
 
@@ -43,3 +44,14 @@ __pycache__
 *.log
 *.pdf
 *.run.xml
+
+CMakeCache.txt
+CMakeFiles/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+DartConfiguration.tcl
+Makefile
+cmake_install.cmake
+*.cmake
+*.tcl
