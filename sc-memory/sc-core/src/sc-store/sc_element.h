@@ -67,7 +67,7 @@ struct _sc_element
   sc_uint32 incoming_arcs_count;
   sc_uint32 outgoing_arcs_count;
 
-  sc_element_version* current_version;
+  sc_version_chain versions;
 };
 
 #endif

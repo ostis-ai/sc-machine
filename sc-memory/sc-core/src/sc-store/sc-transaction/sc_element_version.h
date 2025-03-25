@@ -11,4 +11,9 @@ typedef struct sc_element_version {
   sc_bool is_committed;
 } sc_element_version;
 
+typedef struct sc_version_chain {
+  sc_element_version* head;
+  sc_element_version* tail;
+} sc_version_chain;
+
 #endif
