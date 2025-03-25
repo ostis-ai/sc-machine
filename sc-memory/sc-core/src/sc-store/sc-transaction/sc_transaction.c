@@ -2,16 +2,36 @@
 
 #include <sc-core/sc-base/sc_allocator.h>
 
-sc_transaction* sc_transaction_create(const sc_uint64* txn_id) {
-  sc_transaction *txn = sc_mem_new(sc_transaction, 1);
-  if (txn == NULL) {
+sc_transaction* sc_transaction_new(const sc_uint64* txn_id)
+{
+  if (txn_id == NULL)
     return NULL;
-  }
+
+  sc_transaction *txn = sc_mem_new(sc_transaction, 1);
+  if (txn == NULL)
+    return NULL;
 
   txn->transaction_id = *txn_id;
   txn->is_committed = SC_FALSE;
-  txn->element_count = 0;
+
+  txn->elements = sc_mem_new(sc_list, 1);
+  if (txn->elements == NULL)
+  {
+    sc_mem_free(txn);
+    return NULL;
+  }
+
+  txn->transaction_buffer = sc_mem_new(sc_transaction_buffer, 1);
+  if (txn->transaction_buffer == NULL)
+  {
+    sc_mem_free(txn->elements);
+    sc_mem_free(txn);
+    return NULL;
+  }
+
+  sc_transaction_buffer_initialize(txn->transaction_buffer);
   sc_list_init(&txn->elements);
+
   return txn;
 }
 

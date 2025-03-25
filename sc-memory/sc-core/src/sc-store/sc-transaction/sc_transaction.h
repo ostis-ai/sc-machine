@@ -2,15 +2,16 @@
 #define SC_TRANSACTION_H
 
 #include <sc-core/sc-container/sc_list.h>
+#include <sc-store/sc-transaction/sc_transaction_buffer.h>
 
 typedef struct sc_transaction {
   sc_uint64 transaction_id;
   sc_bool is_committed;
   sc_list* elements;
-  sc_uint32 element_count;
+  sc_transaction_buffer* transaction_buffer;
 } sc_transaction;
 
-sc_transaction* sc_transaction_create(const sc_uint64* txn_id);
+sc_transaction* sc_transaction_new(const sc_uint64* txn_id);
 // create a new transaction
 void sc_transaction_destroy(sc_transaction* txn);
 // destroy the given transaction

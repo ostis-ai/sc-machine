@@ -63,7 +63,7 @@ sc_transaction* sc_transaction_manager_transaction_new() {
   const sc_uint64 txn_id = transaction_manager->transaction_counter++;
   sc_monitor_release_write(transaction_manager->monitor);
 
-  return sc_transaction_create(&txn_id);
+  return sc_transaction_new(&txn_id);
 }
 
 void sc_transaction_manager_transaction_add(sc_transaction* txn) {
