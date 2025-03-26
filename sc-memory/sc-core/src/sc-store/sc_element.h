@@ -7,8 +7,7 @@
 #ifndef _sc_element_h_
 #define _sc_element_h_
 
-#include "sc-core/sc_types.h"
-#include "sc-transaction/sc_element_version.h"
+#include <sc-store/sc-transaction/sc_element_version.h>
 
 struct _sc_arc_info
 {
