@@ -5,7 +5,7 @@
 
 typedef struct sc_element_version
 {
-  sc_element * data;
+  sc_element* data;
   sc_uint64 version_id;
   struct sc_element_version * prev_version;
   struct sc_element_version * next_version;
@@ -26,5 +26,7 @@ typedef enum
   SC_ELEMENT_CONTENT_MODIFIED = 1 << 2,
   SC_ELEMENT_LINKS_MODIFIED = 1 << 3
 } SC_ELEMENT_MODIFIED_FLAGS;
+
+sc_element_version * sc_element_create_new_version(sc_element * element, sc_uint64 version_id, sc_type modified_fields);
 
 #endif
