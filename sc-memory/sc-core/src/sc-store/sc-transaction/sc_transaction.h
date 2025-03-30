@@ -15,7 +15,7 @@ typedef struct sc_transaction
   sc_transaction_buffer * transaction_buffer;
 } sc_transaction;
 
-sc_transaction * sc_transaction_new(sc_uint64 const * txn_id);
+sc_transaction * sc_transaction_new(sc_uint64 txn_id);
 // create a new transaction
 void sc_transaction_destroy(sc_transaction * txn);
 // destroy the given transaction

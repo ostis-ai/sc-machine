@@ -4,12 +4,14 @@
 #include <sc-store/sc-transaction/sc_element_version.h>
 #include <sc-core/sc-container/sc_list.h>
 #include <sc-core/sc_stream.h>
+#include <sc-core/sc-base/sc_monitor.h>
 
 typedef struct sc_transaction_buffer
 {
   sc_list * new_elements;
   sc_list * modified_elements;
   sc_list * deleted_elements;
+  sc_monitor_table * monitor_table;
 } sc_transaction_buffer;
 
 sc_bool sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer);

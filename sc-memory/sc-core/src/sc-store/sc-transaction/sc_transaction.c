@@ -2,44 +2,36 @@
 
 #include <sc-core/sc-base/sc_allocator.h>
 
-sc_transaction * sc_transaction_new(sc_uint64 const * txn_id)
+sc_transaction * sc_transaction_new(const sc_uint64 txn_id)
 {
-  if (txn_id == NULL)
-    return NULL;
-
   sc_transaction * txn = sc_mem_new(sc_transaction, 1);
-  if (txn == NULL)
-    return NULL;
+  if (txn == null_ptr)
+    return null_ptr;
 
-  txn->transaction_id = *txn_id;
+  txn->transaction_id = txn_id;
   txn->is_committed = SC_FALSE;
 
-  txn->elements = sc_mem_new(sc_list, 1);
-  if (txn->elements == NULL)
-  {
-    sc_mem_free(txn);
-    return NULL;
-  }
-
   txn->transaction_buffer = sc_mem_new(sc_transaction_buffer, 1);
-  if (txn->transaction_buffer == NULL)
+  if (txn->transaction_buffer == null_ptr)
   {
-    sc_mem_free(txn->elements);
     sc_mem_free(txn);
-    return NULL;
+    return null_ptr;
   }
-
   sc_transaction_buffer_initialize(txn->transaction_buffer);
-  sc_list_init(&txn->elements);
+
+  if(!sc_list_init(&txn->elements))
+  {
+    return null_ptr;
+  }
 
   return txn;
 }
 
 void sc_transaction_destroy(sc_transaction * txn)
 {
-  if (txn != NULL)
+  if (txn != null_ptr)
   {
-    sc_list_clear(txn->elements);
+    sc_list_destroy(txn->elements);
 
     sc_mem_free(txn);
   }

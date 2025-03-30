@@ -1,6 +1,8 @@
 #include "sc_transaction_buffer.h"
 
 #include "sc-store/sc-base/sc_monitor_private.h"
+#include "sc-store/sc-base/sc_monitor_table.h"
+#include "sc-store/sc-base/sc_monitor_table_private.h"
 
 #include <sc-store/sc-transaction/sc_element_version.h>
 #include <sc-core/sc-base/sc_allocator.h>
@@ -35,9 +37,19 @@ sc_bool sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buf
     return SC_FALSE;
   }
 
+  transaction_buffer->monitor_table = sc_mem_new(sc_monitor_table, 1);
+  if (transaction_buffer->monitor_table == null_ptr)
+  {
+    sc_list_destroy(transaction_buffer->new_elements);
+    sc_list_destroy(transaction_buffer->modified_elements);
+    sc_list_destroy(transaction_buffer->deleted_elements);
+    return SC_FALSE;
+  }
+
+  _sc_monitor_table_init(transaction_buffer->monitor_table);
+
   return SC_TRUE;
 }
-
 
 sc_bool sc_transaction_buffer_created_add(const sc_transaction_buffer * buffer, const sc_addr addr)
 {
@@ -72,13 +84,17 @@ sc_bool sc_transaction_buffer_modified_add(
 
   const sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
 
+  sc_monitor* monitor = sc_monitor_table_get_monitor_for_addr(buffer->monitor_table, addr);
+  if (monitor == NULL)
+    return SC_FALSE;
+
   sc_iterator * it = sc_list_iterator(buffer->modified_elements);
   while (sc_iterator_next(it))
   {
     sc_modified_element * mod = sc_iterator_get(it);
     if (SC_ADDR_LOCAL_TO_INT(mod->addr) == addr_hash)
     {
-      sc_element_version * new_version = sc_element_create_new_version(element, mod->version->version_id + 1, flags);
+      sc_element_version * new_version = sc_element_create_new_version(element, monitor->id, flags);
       if (new_version == NULL)
       {
         sc_iterator_destroy(it);
@@ -92,6 +108,9 @@ sc_bool sc_transaction_buffer_modified_add(
       mod->content = content;
       mod->flags |= flags; // merge field edit flags
       sc_iterator_destroy(it);
+
+      monitor->id++;
+
       return SC_TRUE;
     }
   }
@@ -102,7 +121,8 @@ sc_bool sc_transaction_buffer_modified_add(
     return SC_FALSE;
 
   new_mod->addr = addr;
-  new_mod->version = sc_element_create_new_version(element, 0, flags);
+
+  new_mod->version = sc_element_create_new_version(element, monitor->id, flags);
   if (new_mod->version == NULL)
   {
     sc_mem_free(new_mod);
@@ -119,8 +139,11 @@ sc_bool sc_transaction_buffer_modified_add(
     return SC_FALSE;
   }
 
+  monitor->id++;
+
   return SC_TRUE;
 }
+
 
 sc_bool sc_transaction_buffer_removed_add(const sc_transaction_buffer * buffer, const sc_addr addr)
 {
