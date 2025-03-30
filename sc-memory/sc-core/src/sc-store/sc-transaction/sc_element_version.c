@@ -12,7 +12,7 @@ sc_element_version * sc_element_create_new_version(sc_element * element, sc_uint
   if (new_version == NULL)
     return NULL;
 
-  new_version->data = element;
+  new_version->data =  element;
   new_version->version_id = version_id;
   new_version->prev_version = element->versions.tail;
   new_version->next_version = NULL;

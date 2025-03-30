@@ -13,10 +13,6 @@ extern "C"
 #include <sc_memory_context_private.h>
 }
 
-#ifndef null_ptr
-#  define null_ptr NULL
-#endif
-
 class ScTransactionManagerTest : public ScMemoryTest
 {
 protected:

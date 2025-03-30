@@ -12,7 +12,7 @@ sc_transaction_manager * sc_transaction_manager_initialize()
   }
 
   transaction_manager = sc_mem_new(sc_transaction_manager, 1);
-  if (!sc_transaction_manager_is_initialized())
+  if (transaction_manager == null_ptr)
   {
     return null_ptr;
   }
@@ -20,20 +20,27 @@ sc_transaction_manager * sc_transaction_manager_initialize()
   transaction_manager->current_sc_transaction = null_ptr;
 
   transaction_manager->transaction_queue = sc_mem_new(sc_queue, 1);
-  transaction_manager->monitor = sc_mem_new(sc_monitor, 1);
-
-  if (transaction_manager->transaction_queue == NULL || transaction_manager->monitor == NULL)
+  if (transaction_manager->transaction_queue == null_ptr)
   {
     sc_mem_free(transaction_manager);
-    return NULL;
+    return null_ptr;
   }
-
   sc_queue_init(transaction_manager->transaction_queue);
+
+  transaction_manager->monitor = sc_mem_new(sc_monitor, 1);
+  if (transaction_manager->monitor == null_ptr)
+  {
+    sc_mem_free(transaction_manager->transaction_queue);
+    sc_mem_free(transaction_manager);
+    return null_ptr;
+  }
   sc_monitor_init(transaction_manager->monitor);
+
   transaction_manager->transaction_counter = 0;
 
   return transaction_manager;
 }
+
 
 sc_bool sc_transaction_manager_is_initialized()
 {
@@ -71,10 +78,10 @@ sc_transaction * sc_transaction_manager_transaction_new()
   }
 
   sc_monitor_acquire_write(transaction_manager->monitor);
-  sc_uint64 const txn_id = transaction_manager->transaction_counter++;
+  const sc_uint64 txn_id = transaction_manager->transaction_counter++;
   sc_monitor_release_write(transaction_manager->monitor);
 
-  return sc_transaction_new(&txn_id);
+  return sc_transaction_new(txn_id);
 }
 
 void sc_transaction_manager_transaction_add(sc_transaction * txn) {}
