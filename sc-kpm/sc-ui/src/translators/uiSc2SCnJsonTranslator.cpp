@@ -41,6 +41,7 @@ static std::string_view const IDTF{"idtf"};
 static std::string_view const TYPE{"type"};
 static std::string_view const DIRECTION{"direction"};
 static std::string_view const FORMAT_TXT{"format_txt"};
+static std::string_view const FORMAT_HTML{"format_html"};
 static std::string_view const FORMAT_LARGE_TXT{"format_large_txt"};
 static std::string_view const formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
 
@@ -288,7 +289,7 @@ void uiSc2SCnJsonTranslator::ParseScnJsonLink(ScStructureElementInfo * elInfo, S
     if (content.size() < ScnTranslatorConstants::FORMAT_LARGE_TXT_SIZE)
     {
       result[ScnTranslatorConstants::CONTENT.data()] = content;
-      contentType = ScnTranslatorConstants::FORMAT_TXT.data();
+      contentType = ScnTranslatorConstants::FORMAT_HTML.data();
     }
     else
     {
@@ -520,10 +521,7 @@ void uiSc2SCnJsonTranslator::ParseLinkedNodesScnJson(ScJson & children, int leve
           SC_ADDR_LOCAL_SEG_FROM_INT(addr_hash), SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_hash)};
 
       ScStructureElementInfo * linkedNodeInfo = mStructureElementsInfo[linkedNodeAddr];
-      if (sc_type_has_not_subtype(linkedNodeInfo->type, sc_type_node_structure))
-      {
-        ParseScnJsonSentence(linkedNodeInfo, level, isStruct, linkedNode);
-      }
+      ParseScnJsonSentence(linkedNodeInfo, level, isStruct, linkedNode);
 
       child[ScnTranslatorConstants::LINKED_NODES.data()][i] = linkedNode;
     }
