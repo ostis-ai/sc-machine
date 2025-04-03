@@ -117,9 +117,9 @@ private:
   //! Collection of objects information
   typedef std::map<sc_addr, ScStructureElementInfo *> tScElemetsInfoMap;
   tScElemetsInfoMap mStructureElementsInfo;
-  //! Store structure elements if keyword is struct to remove them from keyword childrens
+  //! Store structure elements if keyword is struct to remove them from keyword children
   ScStructureElementInfo::ScStructureElementInfoList structureElements;
-  //! Max level of full discripted node
+  //! Max level of fully discribed node
   int const maxLevel = 3;
 };
 
