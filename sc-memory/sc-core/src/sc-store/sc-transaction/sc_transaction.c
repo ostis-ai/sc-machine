@@ -1,5 +1,8 @@
 #include "sc_transaction.h"
 
+#include "sc-store/sc_element.h"
+#include "sc-store/sc_storage_private.h"
+
 #include <sc-core/sc-base/sc_allocator.h>
 
 sc_transaction * sc_transaction_new(const sc_uint64 txn_id)
@@ -17,7 +20,7 @@ sc_transaction * sc_transaction_new(const sc_uint64 txn_id)
     sc_mem_free(txn);
     return null_ptr;
   }
-  sc_transaction_buffer_initialize(txn->transaction_buffer);
+  sc_transaction_buffer_initialize(txn->transaction_buffer, txn_id);
 
   if(!sc_list_init(&txn->elements))
   {
@@ -54,16 +57,47 @@ void sc_transaction_apply(sc_transaction * txn) {}
 
 void sc_transaction_clear(sc_transaction * txn) {}
 
-sc_bool sc_transaction_element_new(sc_transaction * txn, sc_element * element) {}
-
-sc_bool sc_transaction_element_change(
-    sc_element * element,
-    sc_transaction * txn,
-    SC_ELEMENT_MODIFIED_FLAGS modified_flags,
-    sc_element const * new_data)
+sc_bool sc_transaction_element_new(const sc_transaction * txn, const sc_addr * addr)
 {
+  if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
+    return SC_FALSE;
+
+  return sc_transaction_buffer_created_add(txn->transaction_buffer, addr);
 }
 
-sc_bool sc_transaction_element_remove(sc_transaction * txn, sc_addr addr) {}
+sc_bool sc_transaction_element_change(
+    const sc_addr * addr,
+    const sc_transaction * txn,
+    const SC_ELEMENT_MODIFIED_FLAGS modified_flags,
+    const sc_element * new_data)
+{
+  if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
+    return SC_FALSE;
 
-sc_bool sc_transaction_element_content_set(sc_transaction * txn, sc_addr addr, sc_stream * content) {}
+  if (SC_ADDR_IS_EMPTY(*addr))
+    return SC_FALSE;
+
+  return sc_transaction_buffer_modified_add(txn->transaction_buffer, addr, new_data, modified_flags);
+}
+
+sc_bool sc_transaction_element_remove(const sc_transaction * txn, const sc_addr * addr)
+{
+  if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
+    return SC_FALSE;
+
+  if (SC_ADDR_IS_EMPTY(*addr))
+    return SC_FALSE;
+
+  return sc_transaction_buffer_removed_add(txn->transaction_buffer, addr);
+}
+
+sc_bool sc_transaction_element_content_set(const sc_transaction * txn, const sc_addr* addr, const sc_stream * content)
+{
+  if (txn == null_ptr || addr == null_ptr || content == null_ptr || txn->transaction_buffer == null_ptr)
+    return SC_FALSE;
+
+  if (SC_ADDR_IS_EMPTY(*addr))
+    return SC_FALSE;
+
+  return sc_transaction_buffer_content_set(txn->transaction_buffer, addr, content);
+}
