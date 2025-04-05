@@ -41,7 +41,6 @@ sc_transaction_manager * sc_transaction_manager_initialize()
   return transaction_manager;
 }
 
-
 sc_bool sc_transaction_manager_is_initialized()
 {
   return transaction_manager != null_ptr;
@@ -78,7 +77,7 @@ sc_transaction * sc_transaction_manager_transaction_new()
   }
 
   sc_monitor_acquire_write(transaction_manager->monitor);
-  const sc_uint64 txn_id = transaction_manager->transaction_counter++;
+  sc_uint64 const txn_id = transaction_manager->transaction_counter++;
   sc_monitor_release_write(transaction_manager->monitor);
 
   return sc_transaction_new(txn_id);

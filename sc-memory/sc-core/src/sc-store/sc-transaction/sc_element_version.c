@@ -2,19 +2,19 @@
 
 #include <sc-core/sc-base/sc_allocator.h>
 
-sc_element_version *sc_element_create_new_version(
-    sc_element_version *parent,
-    const sc_element *new_element_data,
-    const sc_uint64 version_id,
-    const sc_uint64 transaction_id,
+sc_element_version * sc_element_create_new_version(
+    sc_element_version * parent,
+    sc_element const * new_element_data,
+    sc_uint64 const version_id,
+    sc_uint64 const transaction_id,
     const SC_ELEMENT_MODIFIED_FLAGS modified_fields)
 {
-  if (new_element_data == NULL)
-    return NULL;
+  if (new_element_data == null_ptr)
+    return null_ptr;
 
-  sc_element_version *new_version = sc_mem_new(sc_element_version, 1);
-  if (new_version == NULL)
-    return NULL;
+  sc_element_version * new_version = sc_mem_new(sc_element_version, 1);
+  if (new_version == null_ptr)
+    return null_ptr;
 
   new_version->data = new_element_data;
   new_version->version_id = version_id;

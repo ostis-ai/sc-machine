@@ -5,7 +5,7 @@
 
 #include <sc-core/sc-base/sc_allocator.h>
 
-sc_transaction * sc_transaction_new(const sc_uint64 txn_id)
+sc_transaction * sc_transaction_new(sc_uint64 const txn_id)
 {
   sc_transaction * txn = sc_mem_new(sc_transaction, 1);
   if (txn == null_ptr)
@@ -22,7 +22,7 @@ sc_transaction * sc_transaction_new(const sc_uint64 txn_id)
   }
   sc_transaction_buffer_initialize(txn->transaction_buffer, txn_id);
 
-  if(!sc_list_init(&txn->elements))
+  if (!sc_list_init(&txn->elements))
   {
     return null_ptr;
   }
@@ -57,7 +57,7 @@ void sc_transaction_apply(sc_transaction * txn) {}
 
 void sc_transaction_clear(sc_transaction * txn) {}
 
-sc_bool sc_transaction_element_new(const sc_transaction * txn, const sc_addr * addr)
+sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_addr const * addr)
 {
   if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
     return SC_FALSE;
@@ -66,10 +66,10 @@ sc_bool sc_transaction_element_new(const sc_transaction * txn, const sc_addr * a
 }
 
 sc_bool sc_transaction_element_change(
-    const sc_addr * addr,
-    const sc_transaction * txn,
+    sc_addr const * addr,
+    sc_transaction const * txn,
     const SC_ELEMENT_MODIFIED_FLAGS modified_flags,
-    const sc_element * new_data)
+    sc_element const * new_data)
 {
   if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
     return SC_FALSE;
@@ -80,7 +80,7 @@ sc_bool sc_transaction_element_change(
   return sc_transaction_buffer_modified_add(txn->transaction_buffer, addr, new_data, modified_flags);
 }
 
-sc_bool sc_transaction_element_remove(const sc_transaction * txn, const sc_addr * addr)
+sc_bool sc_transaction_element_remove(sc_transaction const * txn, sc_addr const * addr)
 {
   if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
     return SC_FALSE;
@@ -91,7 +91,7 @@ sc_bool sc_transaction_element_remove(const sc_transaction * txn, const sc_addr 
   return sc_transaction_buffer_removed_add(txn->transaction_buffer, addr);
 }
 
-sc_bool sc_transaction_element_content_set(const sc_transaction * txn, const sc_addr* addr, const sc_stream * content)
+sc_bool sc_transaction_element_content_set(sc_transaction const * txn, sc_addr const * addr, sc_stream const * content)
 {
   if (txn == null_ptr || addr == null_ptr || content == null_ptr || txn->transaction_buffer == null_ptr)
     return SC_FALSE;

@@ -12,10 +12,11 @@
 #include <sc-core/sc-container/sc_list.h>
 #include <sc-core/sc_stream.h>
 
-typedef struct sc_content_version {
-    sc_addr addr;
-    sc_stream * content;
-    SC_ELEMENT_MODIFIED_FLAGS SC_ELEMENT_CONTENT_MODIFIED;
+typedef struct sc_content_version
+{
+  sc_addr addr;
+  sc_stream * content;
+  SC_ELEMENT_MODIFIED_FLAGS SC_ELEMENT_CONTENT_MODIFIED;
 } sc_content_version;
 
 sc_bool sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer, sc_uint64 txn_id)
@@ -63,7 +64,7 @@ sc_bool sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buf
   return SC_TRUE;
 }
 
-sc_bool sc_transaction_buffer_created_add(const sc_transaction_buffer * buffer, const sc_addr* addr)
+sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_addr const * addr)
 {
   if (buffer == null_ptr || buffer->new_elements == null_ptr)
     return SC_FALSE;
@@ -71,46 +72,46 @@ sc_bool sc_transaction_buffer_created_add(const sc_transaction_buffer * buffer, 
   if (SC_ADDR_IS_EMPTY(*addr))
     return SC_FALSE;
 
-  const sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
+  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
   if (sc_transaction_buffer_contains_created(buffer, addr))
     return SC_TRUE;
 
-  if (sc_list_push_back(buffer->new_elements, (void*)(uintptr_t)addr_hash) == null_ptr)
+  if (sc_list_push_back(buffer->new_elements, (void *)(uintptr_t)addr_hash) == null_ptr)
     return SC_FALSE;
 
   return SC_TRUE;
 }
 
 sc_bool sc_transaction_buffer_modified_add(
-    const sc_transaction_buffer *buffer,
-    const sc_addr *addr,
-    const sc_element *new_element_data,
+    sc_transaction_buffer const * buffer,
+    sc_addr const * addr,
+    sc_element const * new_element_data,
     const SC_ELEMENT_MODIFIED_FLAGS flags)
 {
-  if (buffer == NULL || buffer->modified_elements == NULL)
+  if (buffer == null_ptr || buffer->modified_elements == null_ptr)
     return SC_FALSE;
 
   if (SC_ADDR_IS_EMPTY(*addr))
     return SC_FALSE;
 
-  sc_element *element = NULL;
-  if (sc_storage_get_element_by_addr(*addr, &element) != SC_RESULT_OK || element == NULL)
+  sc_element * element = null_ptr;
+  if (sc_storage_get_element_by_addr(*addr, &element) != SC_RESULT_OK || element == null_ptr)
     return SC_FALSE;
 
-  sc_monitor *monitor = sc_monitor_table_get_monitor_for_addr(buffer->monitor_table, *addr);
-  if (monitor == NULL)
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(buffer->monitor_table, *addr);
+  if (monitor == null_ptr)
     return SC_FALSE;
 
   sc_monitor_acquire_write(monitor);
 
-  const sc_uint64 new_version_id = (element->version_history.latest_version != NULL)
-                                      ? (element->version_history.latest_version->version_id + 1)
-                                      : 0;
+  sc_uint64 const new_version_id = (element->version_history.latest_version != null_ptr)
+                                       ? (element->version_history.latest_version->version_id + 1)
+                                       : 0;
 
-  sc_element_version *new_version = sc_element_create_new_version(
+  sc_element_version * new_version = sc_element_create_new_version(
       element->version_history.latest_version, new_element_data, new_version_id, buffer->transaction_id, flags);
 
-  if (new_version == NULL)
+  if (new_version == null_ptr)
   {
     sc_monitor_release_write(monitor);
     return SC_FALSE;
@@ -120,8 +121,8 @@ sc_bool sc_transaction_buffer_modified_add(
 
   monitor->id++;
 
-  const sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
-  if (sc_list_push_back(buffer->modified_elements, (void *)(uintptr_t)addr_hash) == NULL)
+  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
+  if (sc_list_push_back(buffer->modified_elements, (void *)(uintptr_t)addr_hash) == null_ptr)
   {
     sc_monitor_release_write(monitor);
     return SC_FALSE;
@@ -132,7 +133,7 @@ sc_bool sc_transaction_buffer_modified_add(
   return SC_TRUE;
 }
 
-sc_bool sc_transaction_buffer_removed_add(const sc_transaction_buffer * buffer, const sc_addr* addr)
+sc_bool sc_transaction_buffer_removed_add(sc_transaction_buffer const * buffer, sc_addr const * addr)
 {
   if (buffer == null_ptr || buffer->deleted_elements == null_ptr)
     return SC_FALSE;
@@ -140,12 +141,12 @@ sc_bool sc_transaction_buffer_removed_add(const sc_transaction_buffer * buffer, 
   if (SC_ADDR_IS_EMPTY(*addr))
     return SC_FALSE;
 
-  const sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
+  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
 
   sc_iterator * it = sc_list_iterator(buffer->deleted_elements);
   while (sc_iterator_next(it))
   {
-    const sc_uint32 stored_hash = (uintptr_t)sc_iterator_get(it);
+    sc_uint32 const stored_hash = (uintptr_t)sc_iterator_get(it);
     if (stored_hash == addr_hash)
     {
       sc_iterator_destroy(it);
@@ -154,13 +155,16 @@ sc_bool sc_transaction_buffer_removed_add(const sc_transaction_buffer * buffer, 
   }
   sc_iterator_destroy(it);
 
-  if (sc_list_push_back(buffer->deleted_elements, (void*)(uintptr_t)addr_hash) == null_ptr)
+  if (sc_list_push_back(buffer->deleted_elements, (void *)(uintptr_t)addr_hash) == null_ptr)
     return SC_FALSE;
 
   return SC_TRUE;
 }
 
-sc_bool sc_transaction_buffer_content_set(const sc_transaction_buffer * buffer, const sc_addr* addr, const sc_stream * content)
+sc_bool sc_transaction_buffer_content_set(
+    sc_transaction_buffer const * buffer,
+    sc_addr const * addr,
+    sc_stream const * content)
 {
   if (buffer == null_ptr || buffer->new_elements == null_ptr)
     return SC_FALSE;
@@ -168,39 +172,39 @@ sc_bool sc_transaction_buffer_content_set(const sc_transaction_buffer * buffer, 
   if (SC_ADDR_IS_EMPTY(*addr))
     return SC_FALSE;
 
-  const sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
+  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
 
   sc_iterator * it = sc_list_iterator(buffer->content_changes);
   while (sc_iterator_next(it))
   {
-    sc_pair* pair = sc_iterator_get(it);
-    const sc_uint32 stored_hash = (uintptr_t)pair->first;
+    sc_pair * pair = sc_iterator_get(it);
+    sc_uint32 const stored_hash = (uintptr_t)pair->first;
     if (stored_hash == addr_hash)
     {
-      pair->second = (void*)content;
+      pair->second = (void *)content;
       sc_iterator_destroy(it);
       return SC_TRUE;
     }
   }
   sc_iterator_destroy(it);
 
-  const sc_pair* content_pair = sc_make_pair((void*)addr_hash, (void*)content);
+  sc_pair const * content_pair = sc_make_pair((void *)(uintptr_t)addr_hash, (void *)content);
   if (sc_list_push_back(buffer->content_changes, &content_pair) == null_ptr)
     return SC_FALSE;
 
   return SC_TRUE;
 }
 
-sc_bool sc_transaction_buffer_contains_created(sc_transaction_buffer const * buffer, const sc_addr* addr)
+sc_bool sc_transaction_buffer_contains_created(sc_transaction_buffer const * buffer, sc_addr const * addr)
 {
   if (buffer == null_ptr || buffer->new_elements == null_ptr)
     return SC_FALSE;
 
-  const sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
+  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
   sc_iterator * it = sc_list_iterator(buffer->new_elements);
   while (sc_iterator_next(it))
   {
-    const sc_uint32 stored_hash = (uintptr_t)sc_iterator_get(it);
+    sc_uint32 const stored_hash = (uintptr_t)sc_iterator_get(it);
     if (stored_hash == addr_hash)
     {
       sc_iterator_destroy(it);
@@ -211,5 +215,3 @@ sc_bool sc_transaction_buffer_contains_created(sc_transaction_buffer const * buf
 
   return SC_FALSE;
 }
-
-

@@ -20,14 +20,14 @@ sc_transaction * sc_transaction_new(sc_uint64 txn_id);
 void sc_transaction_destroy(sc_transaction * txn);
 // destroy the given transaction
 
-sc_bool sc_transaction_element_new(const sc_transaction * txn, const sc_addr* addr);
+sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_addr const * addr);
 sc_bool sc_transaction_element_change(
-    const sc_addr * addr,
-    const sc_transaction * txn,
+    sc_addr const * addr,
+    sc_transaction const * txn,
     SC_ELEMENT_MODIFIED_FLAGS modified_flags,
-    const sc_element * new_data);
-sc_bool sc_transaction_element_remove(const sc_transaction * txn, const sc_addr* addr);
-sc_bool sc_transaction_element_content_set(const sc_transaction * txn, const sc_addr* addr, const sc_stream * content);
+    sc_element const * new_data);
+sc_bool sc_transaction_element_remove(sc_transaction const * txn, sc_addr const * addr);
+sc_bool sc_transaction_element_content_set(sc_transaction const * txn, sc_addr const * addr, sc_stream const * content);
 
 void sc_transaction_commit(sc_transaction * txn);
 // apply all operations of the transaction on sc-memory
