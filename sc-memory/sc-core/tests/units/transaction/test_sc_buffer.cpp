@@ -4,6 +4,7 @@
 
 extern "C"
 {
+#include <sc-store/sc-container/sc_pair.h>
 #include <sc-store/sc_storage_private.h>
 #include <sc-store/sc-transaction/sc_transaction_buffer.h>
 #include <sc-store/sc_element.h>
@@ -43,12 +44,12 @@ TEST_F(ScTransactionBufferTest, InitializationTest)
 
 TEST_F(ScTransactionBufferTest, CreatedAddTest)
 {
-  sc_addr addr = {1, 1};
+  constexpr sc_addr addr = {1, 1};
 
   EXPECT_TRUE(sc_transaction_buffer_created_add(buffer, &addr));
   EXPECT_EQ(buffer->new_elements->size, 1u);
 
-  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
+  constexpr sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
   EXPECT_EQ(buffer->new_elements->begin->data, reinterpret_cast<void *>(addr_hash));
 
   EXPECT_TRUE(sc_transaction_buffer_contains_created(buffer, &addr));
@@ -85,12 +86,28 @@ TEST_F(ScTransactionBufferTest, ModifiedAddTest)
 
 TEST_F(ScTransactionBufferTest, ContentSetTest)
 {
-  sc_addr addr = {1, 4};
-  sc_stream * stream = sc_stream_memory_new("test", 4, SC_STREAM_FLAG_READ, SC_FALSE);
+  constexpr sc_addr addr = {1, 4};
+  sc_stream* stream = sc_stream_memory_new("test", 4, SC_STREAM_FLAG_READ, SC_FALSE);
   ASSERT_NE(stream, nullptr);
 
   EXPECT_TRUE(sc_transaction_buffer_content_set(buffer, &addr, stream));
   EXPECT_EQ(buffer->content_changes->size, 1u);
 
-  sc_stream_free(stream);
+  constexpr sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
+  sc_iterator* it = sc_list_iterator(buffer->content_changes);
+  sc_bool found = SC_FALSE;
+
+  while (sc_iterator_next(it))
+  {
+    sc_pair* pair = static_cast<sc_pair*>(sc_iterator_get(it));
+    if (reinterpret_cast<uintptr_t>(pair->first) == addr_hash)
+    {
+      EXPECT_EQ(pair->second, stream);
+      found = SC_TRUE;
+      break;
+    }
+  }
+  sc_iterator_destroy(it);
+
+  EXPECT_TRUE(found);
 }

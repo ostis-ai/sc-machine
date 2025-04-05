@@ -166,7 +166,7 @@ sc_bool sc_transaction_buffer_content_set(
     sc_addr const * addr,
     sc_stream const * content)
 {
-  if (buffer == null_ptr || buffer->new_elements == null_ptr)
+  if (buffer == null_ptr || buffer->content_changes == null_ptr)
     return SC_FALSE;
 
   if (SC_ADDR_IS_EMPTY(*addr))
@@ -189,7 +189,7 @@ sc_bool sc_transaction_buffer_content_set(
   sc_iterator_destroy(it);
 
   sc_pair const * content_pair = sc_make_pair((void *)(uintptr_t)addr_hash, (void *)content);
-  if (sc_list_push_back(buffer->content_changes, &content_pair) == null_ptr)
+  if (sc_list_push_back(buffer->content_changes, (void*)content_pair) == null_ptr)
     return SC_FALSE;
 
   return SC_TRUE;
