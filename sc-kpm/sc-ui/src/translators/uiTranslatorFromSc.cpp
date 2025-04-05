@@ -44,8 +44,9 @@ void uiTranslateFromSc::translate(sc_addr const & input_addr, sc_addr const & fo
 void uiTranslateFromSc::collectObjects()
 {
   sc_iterator3 * it = sc_iterator3_f_a_a_new(s_default_ctx, mInputConstructionAddr, sc_type_const_perm_pos_arc, 0);
-  sc_uint32 i = 0;
-  while (sc_iterator3_next(it) == SC_TRUE && i != MAX_TRIPLES_COUNT)
+  // sc_uint32 i = 0;
+  // while (sc_iterator3_next(it) == SC_TRUE && i != MAX_TRIPLES_COUNT)
+  while (sc_iterator3_next(it) == SC_TRUE)
   {
     sc_type el_type = 0;
     sc_addr addr = sc_iterator3_value(it, 2);
@@ -57,7 +58,7 @@ void uiTranslateFromSc::collectObjects()
     if (!(el_type & sc_type_arc_mask))
       continue;
 
-    ++i;
+    // ++i;
 
     mEdges[addr] = el_type;
   }
