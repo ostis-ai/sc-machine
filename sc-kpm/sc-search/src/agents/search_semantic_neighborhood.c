@@ -23,7 +23,7 @@ void search_translation(sc_addr elem, sc_addr result, sc_bool sys_off)
   // iterate translations of sc-element
   it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
-      sc_type_node | sc_type_const,
+      sc_type_const_node,
       sc_type_const_common_arc,
       elem,
       sc_type_const_perm_pos_arc,
@@ -121,7 +121,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr result, sc_bool sys_off)
   sc_type el_type;
 
   // iterate incoming sc-arcs for elem
-  it1 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, elem);
+  it1 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, elem);
   while (sc_iterator3_next(it1) == SC_TRUE)
   {
     // if elem is a link of non-binary relation
@@ -135,7 +135,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr result, sc_bool sys_off)
         continue;
 
       // iterate other elements of link
-      it2 = sc_iterator3_f_a_a_new(s_default_ctx, elem, sc_type_const_perm_pos_arc, sc_type_node | sc_type_const);
+      it2 = sc_iterator3_f_a_a_new(s_default_ctx, elem, sc_type_const_perm_pos_arc, sc_type_const_node);
       while (sc_iterator3_next(it2) == SC_TRUE)
       {
         if (sys_off == SC_TRUE
@@ -150,7 +150,7 @@ void search_nonbinary_relation(sc_addr elem, sc_addr result, sc_bool sys_off)
 
         // iterate attributes of link
         it3 = sc_iterator3_a_a_f_new(
-            s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it2, 1));
+            s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, sc_iterator3_value(it2, 1));
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
           if (sys_off == SC_TRUE
@@ -183,7 +183,7 @@ void search_typical_sc_neighborhood(sc_addr elem, sc_addr result, sc_bool sys_of
   sc_bool found = SC_FALSE;
 
   // search for keynode_typical_sc_neighborhood
-  it0 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, elem);
+  it0 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, elem);
   while (sc_iterator3_next(it0) == SC_TRUE)
   {
     if (SC_ADDR_IS_EQUAL(sc_iterator3_value(it0, 0), keynode_typical_sc_neighborhood))
@@ -253,7 +253,7 @@ void search_element_identifiers(sc_addr el, sc_addr result)
       sc_type_const_common_arc,
       sc_type_node_link,
       sc_type_const_perm_pos_arc,
-      sc_type_node | sc_type_const | sc_type_node_non_role);
+      sc_type_const_node | sc_type_node_non_role);
   while (sc_iterator5_next(it5) == SC_TRUE)
   {
     // check if this relation is an identification
@@ -263,7 +263,7 @@ void search_element_identifiers(sc_addr el, sc_addr result)
     {
       // iterate incoming sc-arcs for sc-link
       it2 = sc_iterator3_a_a_f_new(
-          s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator5_value(it5, 2));
+          s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, sc_iterator5_value(it5, 2));
       while (sc_iterator3_next(it2) == SC_TRUE)
       {
         if (sc_helper_check_arc(
@@ -395,9 +395,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
                 s_default_ctx,
                 sc_iterator3_value(it4, 2),
                 sc_type_const_common_arc,
-                sc_type_node | sc_type_const,
+                sc_type_const_node,
                 sc_type_const_perm_pos_arc,
-                sc_type_node | sc_type_const);
+                sc_type_const_node);
             while (sc_iterator5_next(it_order) == SC_TRUE)
             {
               if (sys_off == SC_TRUE
@@ -431,7 +431,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
 
             // iterate roles of element in link
             it6 = sc_iterator3_a_a_f_new(
-                s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it4, 1));
+                s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, sc_iterator3_value(it4, 1));
             while (sc_iterator3_next(it6) == SC_TRUE)
             {
               sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it6, 0), &el_type);
@@ -460,9 +460,9 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
           s_default_ctx,
           sc_iterator3_value(it2, 0),
           sc_type_const_common_arc,
-          sc_type_node | sc_type_const,
+          sc_type_const_node,
           sc_type_const_perm_pos_arc,
-          sc_type_node | sc_type_const);
+          sc_type_const_node);
       while (sc_iterator5_next(it5) == SC_TRUE)
       {
         // check if it's a quasy binary relation
@@ -553,13 +553,6 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
           sc_iterator5_free(it_order2);
         }
 
-        // // search typical sc-neighborhood if necessary
-        // if (SC_ADDR_IS_EQUAL(keynode_rrel_key_sc_element, sc_iterator3_value(it3, 0)))
-        // {
-        //   search_typical_sc_neighborhood(sc_iterator3_value(it2, 2), result, sys_off);
-        //   search_translation(sc_iterator3_value(it2, 2), result, sys_off);
-        // }
-
         sc_type element_type;
         if (SC_ADDR_IS_EQUAL(keynode_nrel_inclusion, sc_iterator3_value(it3, 0))
             && sc_memory_get_element_type(s_default_ctx, element, &element_type) == SC_RESULT_OK
@@ -611,7 +604,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
                 sc_type_const_common_arc,
                 sc_type_connector,
                 sc_type_const_perm_pos_arc,
-                sc_type_node | sc_type_const);
+                sc_type_const_node);
             while (sc_iterator5_next(it_order) == SC_TRUE)
             {
               if (sys_off == SC_TRUE
@@ -638,7 +631,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
 
             // iterate roles of element in link
             it6 = sc_iterator3_a_a_f_new(
-                s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it4, 1));
+                s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, sc_iterator3_value(it4, 1));
             while (sc_iterator3_next(it6) == SC_TRUE)
             {
               sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it6, 0), &el_type);
@@ -668,7 +661,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
       {
         // iterate incoming sc-arcs for link
         it3 = sc_iterator3_a_a_f_new(
-            s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it2, 2));
+            s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, sc_iterator3_value(it2, 2));
         while (sc_iterator3_next(it3) == SC_TRUE)
         {
           if (sc_helper_check_arc(
@@ -724,7 +717,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
 
   // get action arguments
   it5 = sc_iterator5_f_a_a_a_a_new(
-      s_default_ctx, action, sc_type_const_perm_pos_arc, 0, sc_type_const_perm_pos_arc, sc_type_node | sc_type_const);
+      s_default_ctx, action, sc_type_const_perm_pos_arc, 0, sc_type_const_perm_pos_arc, sc_type_const_node);
   while (sc_iterator5_next(it5) == SC_TRUE)
   {
     if (SC_ADDR_IS_EQUAL(sc_iterator5_value(it5, 4), keynode_rrel_1))
@@ -804,9 +797,9 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
             s_default_ctx,
             sc_iterator3_value(it1, 2),
             sc_type_const_common_arc,
-            sc_type_node | sc_type_const,
+            sc_type_const_node,
             sc_type_const_perm_pos_arc,
-            sc_type_node | sc_type_const);
+            sc_type_const_node);
         while (sc_iterator5_next(it_order) == SC_TRUE)
         {
           if (sys_off == SC_TRUE
@@ -837,7 +830,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
 
         // iterate roles of element in link
         it2 = sc_iterator3_a_a_f_new(
-            s_default_ctx, sc_type_node | sc_type_const, sc_type_const_perm_pos_arc, sc_iterator3_value(it1, 1));
+            s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, sc_iterator3_value(it1, 1));
         while (sc_iterator3_next(it2) == SC_TRUE)
         {
           sc_memory_get_element_type(s_default_ctx, sc_iterator3_value(it2, 0), &el_type);
@@ -859,7 +852,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
     sc_iterator5_free(it5);
 
     // Iterate incoming sc-arcs of quasybinary relation
-    it1 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_const | sc_type_node, sc_type_const_perm_pos_arc, param_elem);
+    it1 = sc_iterator3_a_a_f_new(s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, param_elem);
     while (sc_iterator3_next(it1) == SC_TRUE)
     {
       if (sys_off == SC_TRUE
@@ -872,7 +865,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
           s_default_ctx,
           sc_iterator3_value(it1, 0),
           sc_type_const_common_arc,
-          sc_type_node | sc_type_const,
+          sc_type_const_node,
           sc_type_const_perm_pos_arc,
           param_rel);
       if (sc_iterator5_next(it5) == SC_TRUE)
@@ -986,7 +979,7 @@ sc_result agent_search_links_of_relation_connected_with_element(sc_event_subscri
 
           // Iterate role relations
           it4 = sc_iterator3_a_a_f_new(
-              s_default_ctx, sc_type_const | sc_type_node, sc_type_const_perm_pos_arc, sc_iterator3_value(it3, 1));
+              s_default_ctx, sc_type_const_node, sc_type_const_perm_pos_arc, sc_iterator3_value(it3, 1));
           while (sc_iterator3_next(it4) == SC_TRUE)
           {
             if (sys_off == SC_TRUE
