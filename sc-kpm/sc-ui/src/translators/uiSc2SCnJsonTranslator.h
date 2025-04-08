@@ -45,6 +45,7 @@ protected:
   //! Collect information of translated sc-elements and store it
   void CollectScStructureElementsInfo();
 
+  //! Collect sc-structure elements and store it
   void ResolveStructure(sc_addr structure_addr);
 
   //! Generate json for specified element
