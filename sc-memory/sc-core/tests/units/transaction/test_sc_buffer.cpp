@@ -87,19 +87,19 @@ TEST_F(ScTransactionBufferTest, ModifiedAddTest)
 TEST_F(ScTransactionBufferTest, ContentSetTest)
 {
   constexpr sc_addr addr = {1, 4};
-  sc_stream* stream = sc_stream_memory_new("test", 4, SC_STREAM_FLAG_READ, SC_FALSE);
+  sc_stream * stream = sc_stream_memory_new("test", 4, SC_STREAM_FLAG_READ, SC_FALSE);
   ASSERT_NE(stream, nullptr);
 
   EXPECT_TRUE(sc_transaction_buffer_content_set(buffer, &addr, stream));
   EXPECT_EQ(buffer->content_changes->size, 1u);
 
   constexpr sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
-  sc_iterator* it = sc_list_iterator(buffer->content_changes);
+  sc_iterator * it = sc_list_iterator(buffer->content_changes);
   sc_bool found = SC_FALSE;
 
   while (sc_iterator_next(it))
   {
-    sc_pair* pair = static_cast<sc_pair*>(sc_iterator_get(it));
+    sc_pair * pair = static_cast<sc_pair *>(sc_iterator_get(it));
     if (reinterpret_cast<uintptr_t>(pair->first) == addr_hash)
     {
       EXPECT_EQ(pair->second, stream);
