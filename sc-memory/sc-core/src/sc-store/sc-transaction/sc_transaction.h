@@ -30,7 +30,7 @@ sc_bool sc_transaction_element_remove(sc_transaction const * txn, sc_addr const 
 sc_bool sc_transaction_element_content_set(sc_transaction const * txn, sc_addr const * addr, sc_stream const * content);
 
 void sc_transaction_commit(sc_transaction * txn);
-// apply all operations of the transaction on sc-memory
+// try to apply all operations of the transaction on sc-memory
 void sc_transaction_rollback(sc_transaction * txn);
 // rollback the transaction operations
 

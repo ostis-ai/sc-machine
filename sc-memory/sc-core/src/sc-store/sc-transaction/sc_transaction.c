@@ -1,5 +1,6 @@
 #include "sc_transaction.h"
 
+#include "sc_transaction_manager.h"
 #include "sc-store/sc_element.h"
 #include "sc-store/sc_storage_private.h"
 
@@ -42,7 +43,10 @@ void sc_transaction_destroy(sc_transaction * txn)
 
 void sc_transaction_add_element(sc_transaction * txn, sc_element * element) {}
 
-void sc_transaction_commit(sc_transaction * txn) {}
+void sc_transaction_commit(sc_transaction * txn)
+{
+  sc_transaction_manager_transaction_add(txn);
+}
 
 void sc_transaction_rollback(sc_transaction * txn) {}
 
