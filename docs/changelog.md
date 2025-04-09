@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Increase MAX_TRIPLES_COUNT for json-translators to 1.000.000
+- Support included structures translation in scn2json-translator
+- Iterate included structures in searching semantic neighborhood agent
+
 ### Fixed
 
 - Add using --dev flag during launching install_deps_ubuntu.sh in quick_start for users
