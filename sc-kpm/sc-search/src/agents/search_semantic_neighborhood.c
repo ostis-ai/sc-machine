@@ -553,6 +553,7 @@ sc_result agent_search_full_semantic_neighborhood(sc_event_subscription const * 
           sc_iterator5_free(it_order2);
         }
 
+        // iterate elements of included structures
         sc_type element_type;
         if (SC_ADDR_IS_EQUAL(keynode_nrel_inclusion, sc_iterator3_value(it3, 0))
             && sc_memory_get_element_type(s_default_ctx, element, &element_type) == SC_RESULT_OK
