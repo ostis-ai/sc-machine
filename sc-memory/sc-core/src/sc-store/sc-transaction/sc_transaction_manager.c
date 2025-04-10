@@ -49,7 +49,7 @@ sc_transaction_manager * sc_transaction_manager_initialize()
 
   for (int i = 0; i < SC_TRANSACTION_THREAD_COUNT; ++i)
   {
-    sc_thread * thread = g_thread_new("sc_transaction_handler", sc_transaction_handler, 0);
+    sc_thread * thread = sc_thread_new("sc_transaction_handler", sc_transaction_handler, 0);
     if (thread == null_ptr)
     {
       goto error_cleanup_threads;
@@ -64,7 +64,7 @@ error_cleanup_threads:
   {
     for (sc_struct_node const * it = transaction_manager->threads->begin; it != null_ptr; it = it->next)
     {
-      g_thread_unref(it->data);
+      sc_thread_unref(it->data);
     }
     sc_list_destroy(transaction_manager->threads);
     transaction_manager->threads = null_ptr;
@@ -118,8 +118,8 @@ void sc_transaction_manager_destroy()
   {
     for (sc_struct_node const * it = transaction_manager->threads->begin; it != null_ptr; it = it->next)
     {
-      g_thread_join(it->data);
-      g_thread_unref(it->data);
+      sc_thread_join(it->data);
+      sc_thread_unref(it->data);
     }
     sc_list_destroy(transaction_manager->threads);
     transaction_manager->threads = null_ptr;
