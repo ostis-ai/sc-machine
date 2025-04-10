@@ -19,8 +19,8 @@ typedef struct sc_transaction_manager
   sc_bool should_stop;
 } sc_transaction_manager;
 
-sc_transaction_manager * sc_transaction_manager_initialize(sc_transaction_manager* manager);
-// create and initialize the transaction manager
+sc_result sc_transaction_manager_initialize(sc_transaction_manager* manager);
+// initialize the transaction manager
 sc_bool sc_transaction_manager_is_initialized();
 // check if the transaction manager is initialized
 void sc_transaction_shutdown();

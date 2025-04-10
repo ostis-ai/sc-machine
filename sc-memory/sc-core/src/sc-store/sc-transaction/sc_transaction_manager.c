@@ -7,18 +7,18 @@
 
 sc_transaction_manager * transaction_manager = null_ptr;
 
-sc_transaction_manager * sc_transaction_manager_initialize(sc_transaction_manager* manager)
+sc_result sc_transaction_manager_initialize(sc_transaction_manager* manager)
 {
   if (sc_transaction_manager_is_initialized())
   {
-    return transaction_manager;
+    return SC_RESULT_OK;
   }
 
   transaction_manager = manager;
 
   if (transaction_manager == null_ptr)
   {
-    return null_ptr;
+    return SC_RESULT_ERROR_INVALID_PARAMS;
   }
 
   transaction_manager->should_stop = SC_FALSE;
@@ -27,7 +27,7 @@ sc_transaction_manager * sc_transaction_manager_initialize(sc_transaction_manage
   transaction_manager->transaction_queue = sc_mem_new(sc_queue, 1);
   if (transaction_manager->transaction_queue == null_ptr)
   {
-    goto error_cleanup_manager;
+    return SC_RESULT_ERROR_FULL_MEMORY;
   }
 
   sc_queue_init(transaction_manager->transaction_queue);
@@ -45,7 +45,7 @@ sc_transaction_manager * sc_transaction_manager_initialize(sc_transaction_manage
 
   if (sc_list_init(&transaction_manager->threads) != SC_RESULT_OK)
   {
-    goto error_cleanup_condition;
+    return SC_RESULT_ERROR_INVALID_STATE;
   }
 
   for (int i = 0; i < SC_TRANSACTION_THREAD_COUNT; ++i)
@@ -58,7 +58,7 @@ sc_transaction_manager * sc_transaction_manager_initialize(sc_transaction_manage
     sc_list_push_back(transaction_manager->threads, thread);
   }
 
-  return transaction_manager;
+  return SC_RESULT_OK;
 
 error_cleanup_threads:
   if (transaction_manager->threads != null_ptr)
@@ -89,7 +89,7 @@ error_cleanup_manager:
   sc_mem_free(transaction_manager);
   transaction_manager = null_ptr;
 
-  return null_ptr;
+  return SC_RESULT_ERROR;
 }
 
 sc_bool sc_transaction_manager_is_initialized()
