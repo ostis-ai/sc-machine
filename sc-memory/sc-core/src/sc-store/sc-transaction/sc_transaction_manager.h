@@ -13,7 +13,6 @@ typedef struct sc_transaction_manager
   sc_queue * transaction_queue;
   sc_monitor * monitor;
   sc_mutex * mutex;
-  sc_uint64 transaction_counter;
   sc_list * threads;
 
   sc_condition * queue_condition;
@@ -31,10 +30,10 @@ sc_transaction * sc_transaction_manager_transaction_new();
 // create a new empty sc-transaction
 void sc_transaction_manager_transaction_add(sc_transaction * txn);
 // add transaction to the queue and start operations when the thread is ready
-void sc_transaction_manager_transaction_execute();
+void sc_transaction_manager_transaction_execute(sc_transaction * txn);
 // execute the transaction and wait till it's finished
 
-void sc_transaction_handler(sc_transaction_manager * manager);
+void sc_transaction_handler();
 // method for transaction queue processing by threads
 
 void sc_transaction_manager_destroy();
