@@ -7,14 +7,15 @@
 
 sc_transaction_manager * transaction_manager = null_ptr;
 
-sc_transaction_manager * sc_transaction_manager_initialize()
+sc_transaction_manager * sc_transaction_manager_initialize(sc_transaction_manager* manager)
 {
   if (sc_transaction_manager_is_initialized())
   {
     return transaction_manager;
   }
 
-  transaction_manager = sc_mem_new(sc_transaction_manager, 1);
+  transaction_manager = manager;
+
   if (transaction_manager == null_ptr)
   {
     return null_ptr;
