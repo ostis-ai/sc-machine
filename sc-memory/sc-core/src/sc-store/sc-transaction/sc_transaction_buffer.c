@@ -19,49 +19,96 @@ typedef struct sc_content_version
   SC_ELEMENT_MODIFIED_FLAGS SC_ELEMENT_CONTENT_MODIFIED;
 } sc_content_version;
 
-sc_bool sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer, sc_uint64 txn_id)
+void sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer, sc_uint64 txn_id)
 {
   if (transaction_buffer == null_ptr)
-    return SC_FALSE;
+    return;
 
   transaction_buffer->transaction_id = txn_id;
 
   if (!sc_list_init(&transaction_buffer->new_elements))
-    return SC_FALSE;
+    goto error_nothing;
 
   if (!sc_list_init(&transaction_buffer->modified_elements))
-  {
-    sc_list_destroy(transaction_buffer->new_elements);
-    return SC_FALSE;
-  }
+    goto error_new_elements;
 
   if (!sc_list_init(&transaction_buffer->deleted_elements))
-  {
-    sc_list_destroy(transaction_buffer->new_elements);
-    sc_list_destroy(transaction_buffer->modified_elements);
-    return SC_FALSE;
-  }
+    goto error_modified_elements;
 
   if (!sc_list_init(&transaction_buffer->content_changes))
-  {
-    sc_list_destroy(transaction_buffer->new_elements);
-    sc_list_destroy(transaction_buffer->modified_elements);
-    sc_list_destroy(transaction_buffer->deleted_elements);
-    return SC_FALSE;
-  }
+    goto error_deleted_elements;
 
   transaction_buffer->monitor_table = sc_mem_new(sc_monitor_table, 1);
   if (transaction_buffer->monitor_table == null_ptr)
+    goto error_content_changes;
+
+  _sc_monitor_table_init(transaction_buffer->monitor_table);
+  return;
+
+  error_content_changes:
+    sc_list_destroy(transaction_buffer->content_changes);
+  error_deleted_elements:
+    sc_list_destroy(transaction_buffer->deleted_elements);
+  error_modified_elements:
+    sc_list_destroy(transaction_buffer->modified_elements);
+  error_new_elements:
+    sc_list_destroy(transaction_buffer->new_elements);
+  error_nothing:
+    return;
+}
+
+void sc_transaction_buffer_destroy(sc_transaction_buffer * transaction_buffer)
+{
+  if (transaction_buffer == null_ptr)
+    return;
+
+  if (transaction_buffer->new_elements != null_ptr)
   {
     sc_list_destroy(transaction_buffer->new_elements);
-    sc_list_destroy(transaction_buffer->modified_elements);
-    sc_list_destroy(transaction_buffer->deleted_elements);
-    sc_list_destroy(transaction_buffer->content_changes);
-    return SC_FALSE;
+    transaction_buffer->new_elements = null_ptr;
   }
-  _sc_monitor_table_init(transaction_buffer->monitor_table);
 
-  return SC_TRUE;
+  if (transaction_buffer->modified_elements != null_ptr)
+  {
+    sc_list_destroy(transaction_buffer->modified_elements);
+    transaction_buffer->modified_elements = null_ptr;
+  }
+
+  if (transaction_buffer->deleted_elements != null_ptr)
+  {
+    sc_list_destroy(transaction_buffer->deleted_elements);
+    transaction_buffer->deleted_elements = null_ptr;
+  }
+
+  if (transaction_buffer->content_changes != null_ptr)
+  {
+    sc_iterator * it = sc_list_iterator(transaction_buffer->content_changes);
+    while (sc_iterator_next(it))
+    {
+      sc_pair * pair = sc_iterator_get(it);
+      if (pair == null_ptr)
+        continue;
+
+      if (pair->second != null_ptr)
+      {
+        sc_stream_free(pair->second);
+        pair->second = null_ptr;
+      }
+
+      sc_mem_free(pair);
+    }
+    sc_iterator_destroy(it);
+
+    sc_list_destroy(transaction_buffer->content_changes);
+    transaction_buffer->content_changes = null_ptr;
+  }
+
+  if (transaction_buffer->monitor_table != null_ptr)
+  {
+    _sc_monitor_table_destroy(transaction_buffer->monitor_table);
+    sc_mem_free(transaction_buffer->monitor_table);
+    transaction_buffer->monitor_table = null_ptr;
+  }
 }
 
 sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_addr const * addr)

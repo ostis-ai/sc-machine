@@ -16,7 +16,8 @@ typedef struct sc_transaction_buffer
   sc_uint64 transaction_id;
 } sc_transaction_buffer;
 
-sc_bool sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer, sc_uint64 txn_id);
+void sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer, sc_uint64 txn_id);
+void sc_transaction_buffer_destroy(sc_transaction_buffer * transaction_buffer);
 
 sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_addr const * addr);
 sc_bool sc_transaction_buffer_modified_add(
