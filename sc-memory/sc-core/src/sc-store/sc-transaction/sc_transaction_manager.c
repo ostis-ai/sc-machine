@@ -1,5 +1,6 @@
 #include "sc_transaction_manager.h"
 
+#include "sc-store/sc-base/sc_condition_private.h"
 #include "sc-store/sc-base/sc_thread.h"
 #include "sc-store/sc-container/sc_struct_node.h"
 
@@ -40,7 +41,20 @@ sc_result sc_transaction_manager_initialize(sc_transaction_manager* manager)
 
   sc_monitor_init(transaction_manager->monitor);
 
+  transaction_manager->queue_condition = sc_mem_new(sc_condition, 1);
+  if (transaction_manager->queue_condition == null_ptr)
+  {
+    goto error_cleanup_monitor;
+  }
+
   sc_cond_init(transaction_manager->queue_condition);
+
+  transaction_manager->mutex = sc_mem_new(sc_mutex, 1);
+  if (transaction_manager->mutex == null_ptr)
+  {
+    goto error_cleanup_condition;
+  }
+
   sc_mutex_init(transaction_manager->mutex);
 
   if (sc_list_init(&transaction_manager->threads) != SC_RESULT_OK)
@@ -73,9 +87,11 @@ error_cleanup_threads:
 
 error_cleanup_mutex:
   sc_mutex_destroy(transaction_manager->mutex);
+  sc_mem_free(transaction_manager->mutex);
 
 error_cleanup_condition:
   sc_cond_destroy(transaction_manager->queue_condition);
+  sc_mem_free(transaction_manager->queue_condition);
 
 error_cleanup_monitor:
   sc_monitor_destroy(transaction_manager->monitor);
@@ -119,8 +135,11 @@ void sc_transaction_manager_destroy()
   {
     for (sc_struct_node const * it = transaction_manager->threads->begin; it != null_ptr; it = it->next)
     {
-      sc_thread_join(it->data);
-      sc_thread_unref(it->data);
+      if (it->data != null_ptr) {
+        sc_thread *thread = it->data;
+        sc_thread_join(thread);
+        sc_thread_unref(thread);
+      }
     }
     sc_list_destroy(transaction_manager->threads);
     transaction_manager->threads = null_ptr;
