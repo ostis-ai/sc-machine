@@ -173,7 +173,7 @@ void sc_transaction_manager_destroy()
 }
 
 
-sc_transaction * sc_memory_transaction_new()
+sc_transaction * sc_memory_transaction_new(sc_memory_context * ctx)
 {
   if (!sc_memory_transaction_manager_is_initialized())
   {
@@ -184,7 +184,7 @@ sc_transaction * sc_memory_transaction_new()
   sc_uint64 const txn_id = transaction_manager->txn_count++;
   sc_monitor_release_write(transaction_manager->monitor);
 
-  return sc_transaction_new(txn_id);
+  return sc_transaction_new(txn_id, ctx);
 }
 
 void sc_transaction_manager_transaction_add(sc_transaction * txn)

@@ -41,13 +41,13 @@ TEST_F(ScTransactionManagerTest, Shutdown)
 
 TEST_F(ScTransactionManagerTest, TransactionNew)
 {
-  sc_transaction *txn = sc_memory_transaction_new();
+  sc_transaction *txn = sc_memory_transaction_new(m_ctx->GetRealContext());
   EXPECT_NE(txn, nullptr);
 }
 
 TEST_F(ScTransactionManagerTest, TransactionAdd)
 {
-  sc_transaction *txn = sc_memory_transaction_new();
+  sc_transaction *txn = sc_memory_transaction_new(m_ctx->GetRealContext());
   EXPECT_NE(txn, nullptr);
   sc_transaction_manager_transaction_add(txn);
 

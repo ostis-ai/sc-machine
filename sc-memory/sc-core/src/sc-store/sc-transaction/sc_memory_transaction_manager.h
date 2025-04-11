@@ -30,7 +30,7 @@ void sc_memory_transaction_shutdown();
 sc_memory_transaction_manager * sc_memory_transaction_manager_get();
 // return transaction manager
 
-sc_transaction * sc_memory_transaction_new();
+sc_transaction * sc_memory_transaction_new(sc_memory_context * ctx);
 // create a new empty sc-transaction
 sc_result sc_memory_transaction_commit(sc_transaction * txn);
 // try to commit transaction (queue->execute->commit)

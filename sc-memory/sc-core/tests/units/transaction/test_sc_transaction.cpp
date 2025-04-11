@@ -19,7 +19,7 @@ protected:
   void SetUp() override
   {
     ScMemoryTest::SetUp();
-    transaction = sc_transaction_new(test_txn_id);
+    transaction = sc_transaction_new(test_txn_id, m_ctx->GetRealContext());
     ASSERT_NE(transaction, nullptr);
   }
 
@@ -144,6 +144,6 @@ TEST_F(ScTransactionTest, TransactionEdgeCases)
 {
   sc_transaction_destroy(nullptr);
 
-  sc_transaction * failed_txn = sc_transaction_new(0);
+  sc_transaction * failed_txn = sc_transaction_new(0, m_ctx->GetRealContext());
   EXPECT_NE(failed_txn, nullptr);
 }

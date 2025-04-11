@@ -13,21 +13,26 @@ typedef struct sc_transaction
   sc_bool is_committed;
   sc_list * elements;
   sc_transaction_buffer * transaction_buffer;
+  sc_memory_context * ctx;
 } sc_transaction;
 
-sc_transaction * sc_transaction_new(sc_uint64 txn_id);
+sc_transaction * sc_transaction_new(sc_uint64 txn_id, sc_memory_context * ctx);
 // create a new transaction
 void sc_transaction_destroy(sc_transaction * txn);
 // destroy the given transaction
 
 sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_addr const * addr);
+// Writes information about adding an item to the buffer
 sc_bool sc_transaction_element_change(
     sc_addr const * addr,
     sc_transaction const * txn,
     SC_ELEMENT_MODIFIED_FLAGS modified_flags,
     sc_element const * new_data);
+// Writes information about the element change to the buffer
 sc_bool sc_transaction_element_remove(sc_transaction const * txn, sc_addr const * addr);
+// Writes the deletion information to the buffer
 sc_bool sc_transaction_element_content_set(sc_transaction const * txn, sc_addr const * addr, sc_stream const * content);
+// Writes information about content changes to the buffer
 
 void sc_transaction_commit(sc_transaction * txn);
 // try to apply all operations of the transaction on sc-memory

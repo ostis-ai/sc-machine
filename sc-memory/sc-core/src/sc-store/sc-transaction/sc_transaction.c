@@ -6,7 +6,7 @@
 
 #include <sc-core/sc-base/sc_allocator.h>
 
-sc_transaction * sc_transaction_new(sc_uint64 const txn_id)
+sc_transaction * sc_transaction_new(sc_uint64 const txn_id, sc_memory_context * ctx)
 {
   sc_transaction * txn = sc_mem_new(sc_transaction, 1);
   if (txn == null_ptr)
@@ -14,6 +14,7 @@ sc_transaction * sc_transaction_new(sc_uint64 const txn_id)
 
   txn->transaction_id = txn_id;
   txn->is_committed = SC_FALSE;
+  txn->ctx = ctx;
 
   txn->transaction_buffer = sc_mem_new(sc_transaction_buffer, 1);
   if (txn->transaction_buffer == null_ptr)
