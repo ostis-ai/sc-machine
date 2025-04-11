@@ -1,4 +1,4 @@
-#include "sc_transaction_manager.h"
+#include "sc_memory_transaction_manager.h"
 
 #include "sc-store/sc-base/sc_condition_private.h"
 #include "sc-store/sc-base/sc_thread.h"
@@ -6,11 +6,11 @@
 
 #include <sc-core/sc-base/sc_allocator.h>
 
-sc_transaction_manager * transaction_manager = null_ptr;
+sc_memory_transaction_manager * transaction_manager = null_ptr;
 
-sc_result sc_transaction_manager_initialize(sc_transaction_manager* manager)
+sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager * manager)
 {
-  if (sc_transaction_manager_is_initialized())
+  if (sc_memory_transaction_manager_is_initialized())
   {
     return SC_RESULT_OK;
   }
@@ -24,6 +24,7 @@ sc_result sc_transaction_manager_initialize(sc_transaction_manager* manager)
 
   transaction_manager->should_stop = SC_FALSE;
   transaction_manager->threads = null_ptr;
+  transaction_manager->txn_count = 0;
 
   transaction_manager->transaction_queue = sc_mem_new(sc_queue, 1);
   if (transaction_manager->transaction_queue == null_ptr)
@@ -108,18 +109,23 @@ error_cleanup_manager:
   return SC_RESULT_ERROR;
 }
 
-sc_bool sc_transaction_manager_is_initialized()
+sc_bool sc_memory_transaction_manager_is_initialized()
 {
   return transaction_manager != null_ptr;
 }
 
-void sc_transaction_shutdown()
+void sc_memory_transaction_shutdown()
 {
   if (transaction_manager != null_ptr)
   {
     transaction_manager->should_stop = SC_TRUE;
     sc_transaction_manager_destroy();
   }
+}
+
+sc_memory_transaction_manager * sc_memory_transaction_manager_get()
+{
+  return transaction_manager;
 }
 
 void sc_transaction_manager_destroy()
@@ -167,15 +173,15 @@ void sc_transaction_manager_destroy()
 }
 
 
-sc_transaction * sc_transaction_manager_transaction_new()
+sc_transaction * sc_memory_transaction_new()
 {
-  if (!sc_transaction_manager_is_initialized())
+  if (!sc_memory_transaction_manager_is_initialized())
   {
     return null_ptr;
   }
 
   sc_monitor_acquire_write(transaction_manager->monitor);
-  sc_uint64 const txn_id = transaction_manager->transaction_queue->size++;
+  sc_uint64 const txn_id = transaction_manager->txn_count++;
   sc_monitor_release_write(transaction_manager->monitor);
 
   return sc_transaction_new(txn_id);

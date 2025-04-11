@@ -1,6 +1,6 @@
 #include "sc_transaction.h"
 
-#include "sc_transaction_manager.h"
+#include "sc_memory_transaction_manager.h"
 #include "sc-store/sc_element.h"
 #include "sc-store/sc_storage_private.h"
 

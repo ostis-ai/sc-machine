@@ -8,7 +8,7 @@
 #define SC_TRANSACTION_THREAD_COUNT 2
 #define SC_TRANSACTION_MANAGER_QUEUE_SIZE 10
 
-typedef struct sc_transaction_manager
+typedef struct sc_memory_transaction_manager
 {
   sc_queue * transaction_queue;
   sc_monitor * monitor;
@@ -16,18 +16,25 @@ typedef struct sc_transaction_manager
   sc_list * threads;
 
   sc_condition * queue_condition;
+  sc_uint32 txn_count;
   sc_bool should_stop;
-} sc_transaction_manager;
+} sc_memory_transaction_manager;
 
-sc_result sc_transaction_manager_initialize(sc_transaction_manager* manager);
+sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager* manager);
 // initialize the transaction manager
-sc_bool sc_transaction_manager_is_initialized();
+sc_bool sc_memory_transaction_manager_is_initialized();
 // check if the transaction manager is initialized
-void sc_transaction_shutdown();
+void sc_memory_transaction_shutdown();
 // shutdown the transaction manager
 
-sc_transaction * sc_transaction_manager_transaction_new();
+sc_memory_transaction_manager * sc_memory_transaction_manager_get();
+// return transaction manager
+
+sc_transaction * sc_memory_transaction_new();
 // create a new empty sc-transaction
+sc_result sc_memory_transaction_commit(sc_transaction * txn);
+// try to commit transaction (queue->execute->commit)
+
 void sc_transaction_manager_transaction_add(sc_transaction * txn);
 // add transaction to the queue and start operations when the thread is ready
 void sc_transaction_manager_transaction_execute(sc_transaction * txn);
