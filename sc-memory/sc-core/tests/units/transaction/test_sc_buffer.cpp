@@ -23,7 +23,8 @@ protected:
   void SetUp() override
   {
     ScMemoryTest::SetUp();
-    ASSERT_TRUE(sc_transaction_buffer_initialize(buffer, 1));
+    sc_transaction_buffer_initialize(buffer, 1);
+    ASSERT_NE(buffer, null_ptr);
   }
 
   void TearDown() override
