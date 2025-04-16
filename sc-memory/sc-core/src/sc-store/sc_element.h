@@ -67,6 +67,7 @@ struct _sc_element
   sc_uint32 outgoing_arcs_count;
 
   sc_version_history version_history;
+  sc_transaction_version_buffer transaction_buffer;
 };
 
 #endif
