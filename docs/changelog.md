@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support included structures translation in scn2json-translator
 - Iterate included structures in searching semantic neighborhood agent
 
+### Changed
+
+- Mark translated sc-element main in semantic neighborhood agent
+
 ### Fixed
 
 - Translating links with content size < 100
