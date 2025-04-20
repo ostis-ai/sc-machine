@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.2] - 22.04.2025
+
 ### Added
 
 - Increase MAX_TRIPLES_COUNT for json-translators to 1.000.000
