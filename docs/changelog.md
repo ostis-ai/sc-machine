@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.2] - 22.04.2025
+
 ### Added
 
 - Increase MAX_TRIPLES_COUNT for json-translators to 1.000.000
 - Support included structures translation in scn2json-translator
 - Iterate included structures in searching semantic neighborhood agent
+
+### Changed
+
+- Mark translated sc-element main in semantic neighborhood agent
 
 ### Fixed
 
