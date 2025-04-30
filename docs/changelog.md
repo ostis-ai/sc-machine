@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Manually check format of sc-links in uiSc2SCnJsonTranslator
+
 ## [0.10.2] - 22.04.2025
 
 ### Added
