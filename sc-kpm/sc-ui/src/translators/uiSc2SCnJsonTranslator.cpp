@@ -44,6 +44,7 @@ static std::string_view const FORMAT_TXT{"format_txt"};
 static std::string_view const FORMAT_HTML{"format_html"};
 static std::string_view const FORMAT_LARGE_TXT{"format_large_txt"};
 static std::string_view const formats[]{"format_html", "format_github_source_link", "format_pdf", "format_png"};
+static tScAddrToStringMap formats_keynodes;
 
 static size_t const FORMAT_LARGE_TXT_SIZE = 100;
 };  // namespace ScnTranslatorConstants
@@ -64,6 +65,16 @@ uiSc2SCnJsonTranslator::~uiSc2SCnJsonTranslator()
 
 void uiSc2SCnJsonTranslator::runImpl()
 {
+  if (ScnTranslatorConstants::formats_keynodes.empty())
+  {
+    for (std::string_view const & formatStr : ScnTranslatorConstants::formats)
+    {
+      sc_addr format_keynode;
+      sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format_keynode);
+      ScnTranslatorConstants::formats_keynodes.emplace(format_keynode, formatStr);
+    }
+  }
+
   // get command arguments
   sc_iterator5 * it5 = sc_iterator5_a_a_f_a_f_new(
       s_default_ctx,
@@ -277,16 +288,20 @@ void uiSc2SCnJsonTranslator::ParseScnJsonLink(ScStructureElementInfo * elInfo, S
     }
     else
     {
-      sc_addr format;
-      for (std::string_view const & formatStr : ScnTranslatorConstants::formats)
+      // TODO(kilativ-dotcom): replace with sc_helper_check_arc when it'll support both direction while checking
+      sc_iterator3 * iterator_for_format =
+          sc_iterator3_f_a_a_new(s_default_ctx, elInfo->addr, sc_type_const_common_arc, sc_type_const_node);
+      while (sc_iterator3_next(iterator_for_format) == SC_TRUE)
       {
-        sc_helper_resolve_system_identifier(s_default_ctx, formatStr.data(), &format);
-        if (sc_helper_check_arc(s_default_ctx, elInfo->addr, format, sc_type_const_common_arc) == SC_TRUE)
+        sc_addr const possible_format = sc_iterator3_value(iterator_for_format, 2);
+        auto const format_iterator = ScnTranslatorConstants::formats_keynodes.find(possible_format);
+        if (format_iterator != ScnTranslatorConstants::formats_keynodes.cend())
         {
-          contentType = formatStr.data();
+          contentType = format_iterator->second.data();
           break;
         }
       }
+      sc_iterator3_free(iterator_for_format);
 
       if (contentType.is_null())
       {
