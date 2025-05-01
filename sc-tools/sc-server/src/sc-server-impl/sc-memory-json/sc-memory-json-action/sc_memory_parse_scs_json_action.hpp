@@ -19,7 +19,9 @@ public:
   }
 
   ScMemoryJsonPayload Complete(
-      ScAgentContext * context, ScMemoryJsonPayload requestPayload, ScMemoryJsonPayload & errorsPayload) override
+      ScAgentContext * context,
+      ScMemoryJsonPayload requestPayload,
+      ScMemoryJsonPayload & errorsPayload) override
   {
     ScMemoryJsonPayload responsePayload = ScMemoryJsonPayload::array();
 

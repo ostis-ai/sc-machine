@@ -8,7 +8,7 @@
 
 #include "sc-memory/sc_debug.hpp"
 
-#include "sc-memory/scs/ASTJsonListener.hpp"
+#include "sc-memory/scs/scs_ast_json_listener.hpp"
 
 #if SC_PLATFORM_WIN32
 #endif
@@ -192,7 +192,6 @@ void ParsedElement::ResolveVisibility()
   if (m_idtf[0] == '.')
   {
     if (m_idtf.size() > 1 && m_idtf[1] == '.')
-    {
       m_visibility = Visibility::Local;
     else
       m_visibility = Visibility::Global;
@@ -321,12 +320,12 @@ std::string Parser::BuildAST(std::string const & str)
   antlr4::CommonTokenStream tokens(&lexer);
   scsParser parser(&tokens);
 
-  ASTJsonListener astListener(parser);
+  SCsASTJsonListener astListener(parser);
   parser.addParseListener(&astListener);
 
-  ASTErrorListener astErrorListener;
-  lexer.addErrorListener(&astErrorListener);
-  parser.addErrorListener(&astErrorListener);
+  SCsASTErrorListener SCsASTErrorListener;
+  lexer.addErrorListener(&SCsASTErrorListener);
+  parser.addErrorListener(&SCsASTErrorListener);
 
   parser.setParser(this);
 
@@ -340,12 +339,12 @@ std::string Parser::BuildAST(std::string const & str)
   }
 
   ScJson parseResult;
-  astListener.buildAST(parseResult["root"]);
-  parseResult["errors"] = astErrorListener.getErrors();
+  astListener.BuildAST(parseResult["root"]);
+  parseResult["errors"] = SCsASTErrorListener.GetErrors();
 
   parser.removeParseListener(&astListener);
-  lexer.removeErrorListener(&astErrorListener);
-  parser.removeErrorListener(&astErrorListener);
+  lexer.removeErrorListener(&SCsASTErrorListener);
+  parser.removeErrorListener(&SCsASTErrorListener);
 
   return parseResult.dump();
 }
