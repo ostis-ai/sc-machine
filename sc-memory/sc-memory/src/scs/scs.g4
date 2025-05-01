@@ -58,16 +58,24 @@ content[ElementHandle contentHandle = ElementHandle()]
     }
   ;
 
+contour_begin
+  : CONTOUR_BEGIN
+  ;
+
+contour_end
+  : CONTOUR_END
+  ;
+
 contour[ElementHandle contourHandle = ElementHandle()]
   returns [ElementHandle handle]
-  : CONTOUR_BEGIN
+  : contour_begin
     {
       $ctx->handle = $contourHandle.IsValid() ? $contourHandle : m_parser->ProcessEmptyContour();
       m_parser->ProcessContourBegin();
     }
     ( (sentence_wrap
 	| (sentence_lvl_4_list_item[$ctx->handle] (';' sentence_lvl_4_list_item[$ctx->handle])* ';;') )* )
-    CONTOUR_END
+    contour_end
     {
       m_parser->ProcessContourEnd($ctx->handle);
     }

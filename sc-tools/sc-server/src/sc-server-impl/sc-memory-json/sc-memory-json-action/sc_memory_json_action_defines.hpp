@@ -12,6 +12,7 @@
 #include "sc_memory_generate_elements_json_action.hpp"
 #include "sc_memory_generate_elements_by_scs_json_action.hpp"
 #include "sc_memory_erase_elements_json_action.hpp"
+#include "sc_memory_parse_scs_json_action.hpp"
 #include "sc_memory_handle_link_content_json_action.hpp"
 #include "sc_memory_handle_keynodes_json_action.hpp"
 #include "sc_memory_template_generate_json_action.hpp"
