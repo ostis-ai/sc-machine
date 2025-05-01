@@ -21,8 +21,7 @@ set(SOURCES_PARSER
     "${SC_MEMORY_SRC}/scs/scsLexer.h"
     "${SC_MEMORY_SRC}/scs/scsParser.cpp"
     "${SC_MEMORY_SRC}/scs/scsParser.h"
-    "${SC_MEMORY_SRC}/scs/ASTJsonListener.cpp"
-    "${SC_MEMORY_SRC}/scs/ASTJsonListener.hpp"
+    "${SC_MEMORY_SRC}/scs/scs_ast_json_listener.cpp"
 )
 
 file(GLOB SOURCES CONFIGURE_DEPENDS

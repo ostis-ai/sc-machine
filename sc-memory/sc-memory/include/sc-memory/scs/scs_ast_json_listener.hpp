@@ -1,6 +1,9 @@
 #pragma once
 
+#include <limits>
+
 #include <nlohmann/json.hpp>
+
 #include "antlr4-runtime.h"
 
 using ScJson = nlohmann::json;
@@ -8,13 +11,10 @@ using ScJson = nlohmann::json;
 namespace scs
 {
 
-class ASTErrorListener : public antlr4::ANTLRErrorListener
+class SCsASTErrorListener : public antlr4::ANTLRErrorListener
 {
 public:
-  ScJson getErrors()
-  {
-    return m_errors;
-  }
+  ScJson GetErrors() const;
 
 protected:
   ScJson m_errors = ScJson::array();
@@ -60,25 +60,24 @@ struct ASTNode
   ASTNode * parentNode;
 };
 
-/**
- * This class provides an empty implementation of ASTJsonListener,
+/*!
+ * This class provides an empty implementation of SCsASTJsonListener,
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
-class ASTJsonListener : public antlr4::tree::ParseTreeListener  {
+class SCsASTJsonListener : public antlr4::tree::ParseTreeListener 
+{
 public:
-  explicit ASTJsonListener(antlr4::Parser & parser)
-    : m_parser(parser), m_ruleNames(m_parser.getRuleNames())
-  {}
+  explicit SCsASTJsonListener(antlr4::Parser & parser);
 
   void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override;
   void exitEveryRule(antlr4::ParserRuleContext * /*ctx*/) override;
   void visitTerminal(antlr4::tree::TerminalNode * /*node*/) override;
   void visitErrorNode(antlr4::tree::ErrorNode * /*node*/) override;
 
-  void buildAST(ScJson & astJson);
+  void BuildAST(ScJson & astJson);
 
-  ~ASTJsonListener() override;
+  ~SCsASTJsonListener() override;
 
 protected:
   antlr4::Parser & m_parser;
@@ -88,9 +87,9 @@ protected:
   ASTNode * m_currentNode = nullptr;
   ASTNode * m_parentNode = nullptr;
 
-  void buildTokenStartInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo);
+  void BuildTokenStartInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo);
 
-  void buildTokenStopInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo);
+  void BuildTokenStopInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo);
 };
 
 }  // namespace scs

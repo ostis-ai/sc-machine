@@ -1,8 +1,19 @@
-#include "ASTJsonListener.hpp"
+/*
+ * This source file is part of an OSTIS project. For the latest info, see http://ostis.net
+ * Distributed under the MIT License
+ * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
+ */
+
+#include "sc-memory/scs/scs_ast_json_listener.hpp"
 
 using namespace scs;
 
-void ASTErrorListener::syntaxError(
+ScJson SCsASTErrorListener::GetErrors() const
+{
+  return m_errors;
+}
+
+void SCsASTErrorListener::syntaxError(
     antlr4::Recognizer *,
     antlr4::Token * token,
     size_t line,
@@ -26,7 +37,7 @@ void ASTErrorListener::syntaxError(
   m_errors.push_back(errorInfoJson);
 }
 
-void ASTErrorListener::reportAmbiguity(
+void SCsASTErrorListener::reportAmbiguity(
     antlr4::Parser *,
     antlr4::dfa::DFA const & dfa,
     size_t startIndex,
@@ -41,7 +52,7 @@ void ASTErrorListener::reportAmbiguity(
   m_errors.push_back(errorInfoJson);
 }
 
-void ASTErrorListener::reportAttemptingFullContext(
+void SCsASTErrorListener::reportAttemptingFullContext(
     antlr4::Parser *,
     antlr4::dfa::DFA const &,
     size_t,
@@ -55,7 +66,7 @@ void ASTErrorListener::reportAttemptingFullContext(
   m_errors.push_back(errorInfoJson);
 }
 
-void ASTErrorListener::reportContextSensitivity(
+void SCsASTErrorListener::reportContextSensitivity(
     antlr4::Parser *,
     antlr4::dfa::DFA const &,
     size_t,
@@ -69,7 +80,11 @@ void ASTErrorListener::reportContextSensitivity(
   m_errors.push_back(errorInfoJson);
 }
 
-void ASTJsonListener::buildTokenStartInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo)
+SCsASTJsonListener::SCsASTJsonListener(antlr4::Parser & parser)
+  : m_parser(parser), m_ruleNames(m_parser.getRuleNames())
+{}
+
+void SCsASTJsonListener::BuildTokenStartInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo)
 {
   ScJson positionJson;
   positionJson["beginLine"] = ctx->getStart()->getLine();
@@ -80,7 +95,7 @@ void ASTJsonListener::buildTokenStartInfo(antlr4::ParserRuleContext * ctx, ScJso
   nodeInfo["children"] = ScJson::array();
 }
 
-void ASTJsonListener::buildTokenStopInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo)
+void SCsASTJsonListener::BuildTokenStopInfo(antlr4::ParserRuleContext * ctx, ScJson & nodeInfo)
 {
   if (ctx->getStop() == nullptr)
     return;
@@ -89,7 +104,7 @@ void ASTJsonListener::buildTokenStopInfo(antlr4::ParserRuleContext * ctx, ScJson
   nodeInfo["position"]["endIndex"] = ctx->getStop()->getCharPositionInLine() + ctx->getStop()->getText().size();
 }
 
-void ASTJsonListener::enterEveryRule(antlr4::ParserRuleContext * ctx)
+void SCsASTJsonListener::enterEveryRule(antlr4::ParserRuleContext * ctx)
 {
   auto * node = new ASTNode();
 
@@ -107,24 +122,24 @@ void ASTJsonListener::enterEveryRule(antlr4::ParserRuleContext * ctx)
     m_currentNode->parentNode = m_parentNode;
   }
 
-  buildTokenStartInfo(ctx, m_currentNode->info);
+  BuildTokenStartInfo(ctx, m_currentNode->info);
 }
 
-void ASTJsonListener::exitEveryRule(antlr4::ParserRuleContext * ctx)
+void SCsASTJsonListener::exitEveryRule(antlr4::ParserRuleContext * ctx)
 {
-  buildTokenStopInfo(ctx, m_currentNode->info);
+  BuildTokenStopInfo(ctx, m_currentNode->info);
 
   m_currentNode = m_parentNode;
   if (m_parentNode != nullptr)
     m_parentNode = m_currentNode->parentNode;
 }
 
-void ASTJsonListener::visitTerminal(antlr4::tree::TerminalNode * node)
+void SCsASTJsonListener::visitTerminal(antlr4::tree::TerminalNode * node)
 {
   m_currentNode->info["token"] = node->getText();
 }
 
-void ASTJsonListener::visitErrorNode(antlr4::tree::ErrorNode * node)
+void SCsASTJsonListener::visitErrorNode(antlr4::tree::ErrorNode * node)
 {
 }
 
@@ -138,7 +153,7 @@ void visitAllASTNodes(ASTNode * node, ScJson & json)
   }
 }
 
-void ASTJsonListener::buildAST(ScJson & astJson)
+void SCsASTJsonListener::BuildAST(ScJson & astJson)
 {
   astJson = m_root->info;
   visitAllASTNodes(m_root, astJson["children"]);
@@ -153,7 +168,7 @@ void removeAllASTNodes(ASTNode * node)
   }
 }
 
-ASTJsonListener::~ASTJsonListener()
+SCsASTJsonListener::~SCsASTJsonListener()
 {
   removeAllASTNodes(m_root);
   delete m_root;

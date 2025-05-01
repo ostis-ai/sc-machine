@@ -376,19 +376,11 @@ sentence_lvl_common
 attr_list returns [std::vector<std::pair<ElementHandle, bool>> items]
   @init { $items = {}; }
   : (
-<<<<<<< HEAD:sc-memory/sc-memory/src/scs/scs.g4
       ID_SYSTEM
       CONNECTOR_ATTR
       {
         $ctx->items.emplace_back(m_parser->ProcessIdentifier($ID_SYSTEM->getText()),
                                  scs::TypeResolver::IsConnectorAttrConst($CONNECTOR_ATTR->getText()));
-=======
-      id=idtf_system
-      EDGE_ATTR
-      {
-        $ctx->items.emplace_back(m_parser->ProcessIdentifier($ctx->id->getText()),
-                                 scs::TypeResolver::IsEdgeAttrConst($EDGE_ATTR->getText()));
->>>>>>> ea8cd3b0 ([memory][scs] Fix grammar terminal rules):sc-memory/sc-memory/scs/scs.g4
       }
     )+
   ;
