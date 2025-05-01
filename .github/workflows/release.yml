@@ -73,16 +73,16 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install cmake ninja ccache
 
+      - name: Set Conan remote
+        run: |
+          conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library/
+          conan remote login ostis-ai ${{ secrets.CONAN_USERNAME }} -p ${{ secrets.CONAN_API_KEY }}
+
       - name: Build sc-machine
         id: run_cmake
         run: |
           cmake --preset release-conan
           cmake --build --preset release
-
-      - name: Set Conan remote
-        run: |
-          conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library/
-          conan remote login ostis-ai ${{ secrets.CONAN_USERNAME }} -p ${{ secrets.CONAN_API_KEY }}
 
       - name: Create Conan package
         run: |
