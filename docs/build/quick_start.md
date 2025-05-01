@@ -59,6 +59,12 @@ pipx ensurepath
 exec $SHELL
 ```
 
+Add the 'ostis-ai' remote, enabling Conan to find packages (libffi/3.4.8):
+
+```sh
+conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library/
+```
+
 ### Use sc-machine in Debug
 
 #### Build sc-machine in Debug
