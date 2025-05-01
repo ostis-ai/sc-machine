@@ -75,7 +75,7 @@ contour[ElementHandle contourHandle = ElementHandle()]
     }
     ( (sentence_wrap
 	| (sentence_lvl_4_list_item[$ctx->handle] (';' sentence_lvl_4_list_item[$ctx->handle])* ';;') )* )
-    CONTOUR_END
+    contour_end
     {
       m_parser->ProcessContourEnd($ctx->handle);
     }
