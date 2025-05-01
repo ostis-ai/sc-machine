@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Validate project version after parsing from CMakeLists.txt
 - Add step about installation of development tools in quick start for contributors
 - Make temporary override for libffi in ostis-ai until updated in conan-center-index
 - Pin asio version 3.10.2 for macOS native installation

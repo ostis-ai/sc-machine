@@ -1,14 +1,14 @@
 from conan import ConanFile, tools
 from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
-import re
-
+from conan.errors import ConanInvalidConfiguration
+import re, os
 
 class sc_machineRecipe(ConanFile):
     name = "sc-machine"
     package_type = "library"
     version = None
     author = "OSTIS AI"
-    license = "https://github.com/ostis-ai/sc-machine/blob/master/COPYING.MIT"
+    license = "MIT"
     url = "https://github.com/ostis-ai/sc-machine"
     description = "Software implementation of semantic memory and its APIs"
     exports = ["LICENSE.md"]
@@ -71,9 +71,11 @@ class sc_machineRecipe(ConanFile):
         self.version = self.parse_version()
 
     def parse_version(self):
-        content = tools.files.load(self, self.recipe_folder + "/CMakeLists.txt")
-        version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content).group(1)
-        return version.strip()
+        content = tools.files.load(self, os.path.join(self.recipe_folder, "CMakeLists.txt"))
+        version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content)
+        if not version:
+            raise ConanInvalidConfiguration("Could not detect version from CMakeLists.txt")
+        return version.group(1).strip()
 
     def package_info(self): 
         self.cpp_info.set_property("cmake_find_mode", "none") # Do NOT generate any files
