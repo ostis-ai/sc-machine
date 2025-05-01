@@ -15,6 +15,38 @@ cd sc-machine
 git submodule update --init --recursive
 ```
 
+## Install basic tools for development environment
+
+*   **Ubuntu/Debian (GCC):** 
+    
+    ```sh
+    sudo apt update
+    
+    sudo apt install --yes --no-install-recommends \
+        curl \
+        ccache \
+        build-essential
+    ```
+    
+*   **macOS (Clang):**
+
+    ```sh
+    brew update && brew upgrade
+    brew install \
+        curl \
+        ccache
+    ```
+
+*   **Other Linux distributions:**
+
+    If you're using a different Linux distribution that doesn't support apt, ensure you have equivalent packages installed:
+
+    * curl: A tool for transferring data with URLs;
+    * ccache: A compiler cache to speed up compilation processes;
+    * build-essential: Includes a C++ compiler, necessary for building C++ components.
+
+Compiler is required for building C++ components.
+
 ## Check CMake
 
 Install pipx first using [**pipx installation guide**](https://pipx.pypa.io/stable/installation/) if not already installed.
@@ -34,6 +66,8 @@ pipx ensurepath
 # relaunch your shell after installation
 exec $SHELL
 ```
+
+## Install Ninja generator
 
 Install Ninja generator for CMake, to use sc-machine CMake presets:
 
