@@ -8,7 +8,7 @@
 
 #include "sc_memory_json_action.hpp"
 
-#include "sc-memory/scs/scs_parser.hpp"
+#include <sc-memory/scs/scs_parser.hpp>
 
 class ScMemoryParseSCsJsonAction : public ScMemoryJsonAction
 {
