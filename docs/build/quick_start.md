@@ -15,6 +15,38 @@ cd sc-machine
 git submodule update --init --recursive
 ```
 
+## Install basic tools for development environment
+
+*   **Ubuntu/Debian (GCC):** 
+    
+    ```sh
+    sudo apt update
+    
+    sudo apt install --yes --no-install-recommends \
+        curl \
+        ccache \
+        build-essential
+    ```
+    
+*   **macOS (Clang):**
+
+    ```sh
+    brew update && brew upgrade
+    brew install \
+        curl \
+        ccache
+    ```
+
+*   **Other Linux distributions:**
+
+    If you're using a different Linux distribution that doesn't support apt, ensure you have equivalent packages installed:
+
+    * curl: A tool for transferring data with URLs;
+    * ccache: A compiler cache to speed up compilation processes;
+    * build-essential: Includes a C++ compiler, necessary for building C++ components.
+
+Compiler is required for building C++ components.
+
 ## Check CMake
 
 Install pipx first using [**pipx installation guide**](https://pipx.pypa.io/stable/installation/) if not already installed.
@@ -35,6 +67,8 @@ pipx ensurepath
 exec $SHELL
 ```
 
+## Install Ninja generator
+
 Install Ninja generator for CMake, to use sc-machine CMake presets:
 
 ```sh
@@ -44,45 +78,6 @@ pipx ensurepath
 # relaunch your shell after installation
 exec $SHELL
 ```
-
-## Install basic tools for development environment
-
-*   **Ubuntu/Debian (GCC):** 
-    
-    ```sh
-    sudo apt update
-    
-    sudo apt install --yes --no-install-recommends \
-        curl \
-        ccache \
-        python3 \
-        python3-pip \
-        build-essential \
-        ninja-build
-    ```
-    
-*   **macOS (Clang):**
-
-    ```sh
-    brew update && brew upgrade
-    brew install \
-        curl \
-        ccache \
-        cmake \
-        ninja
-    ```
-
-*   **Other Linux distributions:**
-
-    If you're using a different Linux distribution that doesn't support apt, ensure you have equivalent packages installed:
-
-    * curl: A tool for transferring data with URLs;
-    * ccache: A compiler cache to speed up compilation processes;
-    * python3 and python3-pip: Python 3 interpreter and package installer;
-    * build-essential: Includes a C++ compiler, necessary for building C++ components;
-    * ninja-build: An alternative build system designed to be faster than traditional ones.
-
-Compiler is required for building C++ components.
 
 ## Start develop sc-machine with Conan
 
