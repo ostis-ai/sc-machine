@@ -13,6 +13,7 @@
 #include "sc-core/sc-base/sc_monitor.h"
 
 #include "sc-store/sc-base/sc_message.h"
+#include "sc-store/sc-event/sc_event_queue.h"
 
 typedef struct _sc_memory_context_manager sc_memory_context_manager;
 typedef struct _sc_event_emit_params sc_event_emit_params;
@@ -104,8 +105,8 @@ void _sc_memory_context_pending_end(sc_memory_context * ctx);
 
 /*! Function that adds an event to the pending events list in a sc-memory context.
  * @param ctx Pointer to the sc-memory context to which the event is added.
- * @param type Type of the event to be added.
  * @param subscription_addr sc_addr representing the sc-element associated with the event.
+ * @param event_type_addr Type of the event to be added.
  * @param connector_addr sc-address representing the sc-connector associated with the event.
  * @param connector_type sc-type representing the sc-connector associated with the event.
  * @param other_addr sc-address representing the other sc-element associated with the event.
@@ -113,8 +114,8 @@ void _sc_memory_context_pending_end(sc_memory_context * ctx);
  */
 void _sc_memory_context_pend_event(
     sc_memory_context const * ctx,
-    sc_event_type event_type_addr,
     sc_addr subscription_addr,
+    sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type connector_type,
     sc_addr other_addr);
