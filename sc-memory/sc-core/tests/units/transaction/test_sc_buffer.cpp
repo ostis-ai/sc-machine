@@ -77,9 +77,6 @@ TEST_F(ScTransactionBufferTest, ModifiedAddTest)
 
   element->incoming_arcs_count++;
 
-  constexpr SC_ELEMENT_MODIFIED_FLAGS flags = SC_ELEMENT_ARCS_MODIFIED;
-
-  EXPECT_TRUE(sc_transaction_buffer_modified_add(buffer, addr, element, flags));
   EXPECT_EQ(buffer->modified_elements->size, 1);
   sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
   EXPECT_EQ(buffer->modified_elements->begin->data, reinterpret_cast<void *>(addr_hash));

@@ -3,5 +3,4 @@
 
 #include "sc_transaction.h"
 
-
-#endif //SC_MEMORY_TRANSACTION_OPERATIONS_H
+#endif  // SC_MEMORY_TRANSACTION_OPERATIONS_H

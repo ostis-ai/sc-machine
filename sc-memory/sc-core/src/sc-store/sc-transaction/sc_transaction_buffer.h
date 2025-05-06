@@ -23,8 +23,7 @@ sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, 
 sc_bool sc_transaction_buffer_modified_add(
     sc_transaction_buffer const * buffer,
     sc_addr const * addr,
-    sc_element const * element,
-    SC_ELEMENT_MODIFIED_FLAGS flags);
+    sc_element const * element);
 sc_bool sc_transaction_buffer_removed_add(sc_transaction_buffer const * buffer, sc_addr const * addr);
 sc_bool sc_transaction_buffer_content_set(
     sc_transaction_buffer const * buffer,

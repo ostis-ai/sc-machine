@@ -20,7 +20,7 @@ typedef struct sc_memory_transaction_manager
   sc_bool should_stop;
 } sc_memory_transaction_manager;
 
-sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager* manager);
+sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager * manager);
 // initialize the transaction manager
 sc_bool sc_memory_transaction_manager_is_initialized();
 // check if the transaction manager is initialized

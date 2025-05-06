@@ -12,7 +12,7 @@
 typedef GThread sc_thread;
 typedef gpointer sc_thread_data;
 typedef gpointer (*sc_thread_func)(sc_thread_data);
-typedef const gchar sc_thread_name;
+typedef gchar const sc_thread_name;
 
 #define sc_thread_self g_thread_self
 

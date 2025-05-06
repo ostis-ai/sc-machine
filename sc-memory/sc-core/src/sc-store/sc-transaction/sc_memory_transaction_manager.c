@@ -141,8 +141,9 @@ void sc_transaction_manager_destroy()
   {
     for (sc_struct_node const * it = transaction_manager->threads->begin; it != null_ptr; it = it->next)
     {
-      if (it->data != null_ptr) {
-        sc_thread *thread = it->data;
+      if (it->data != null_ptr)
+      {
+        sc_thread * thread = it->data;
         sc_thread_join(thread);
         sc_thread_unref(thread);
       }
@@ -172,7 +173,6 @@ void sc_transaction_manager_destroy()
   transaction_manager = null_ptr;
 }
 
-
 sc_transaction * sc_memory_transaction_new(sc_memory_context * ctx)
 {
   if (!sc_memory_transaction_manager_is_initialized())
@@ -198,10 +198,7 @@ void sc_transaction_manager_transaction_add(sc_transaction * txn)
   sc_cond_signal(transaction_manager->queue_condition);
 }
 
-void sc_transaction_manager_transaction_execute(sc_transaction * txn)
-{
-
-}
+void sc_transaction_manager_transaction_execute(sc_transaction * txn) {}
 
 void sc_transaction_handler()
 {
@@ -236,4 +233,3 @@ void sc_transaction_handler()
 
   sc_monitor_release_read(transaction_manager->monitor);
 }
-

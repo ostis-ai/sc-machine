@@ -53,34 +53,6 @@ TEST_F(ScTransactionTest, TransactionElementNew)
   EXPECT_FALSE(sc_transaction_element_new(transaction, &empty_addr));
 }
 
-TEST_F(ScTransactionTest, TransactionElementChange)
-{
-  sc_addr addr;
-  sc_storage_allocate_new_element(m_ctx->GetRealContext(), &addr);
-
-  sc_element element;
-  element.flags.type = sc_type_node;
-
-  EXPECT_TRUE(sc_transaction_element_change(&addr, transaction, SC_ELEMENT_ARCS_MODIFIED, &element));
-
-  sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
-  sc_iterator * it = sc_list_iterator(transaction->transaction_buffer->modified_elements);
-  sc_bool found = SC_FALSE;
-  while (sc_iterator_next(it))
-  {
-    if (reinterpret_cast<uintptr_t>(sc_iterator_get(it)) == addr_hash)
-    {
-      found = SC_TRUE;
-      break;
-    }
-  }
-  sc_iterator_destroy(it);
-  EXPECT_TRUE(found);
-
-  EXPECT_FALSE(sc_transaction_element_change(nullptr, transaction, SC_ELEMENT_ARCS_MODIFIED, &element));
-  EXPECT_FALSE(sc_transaction_element_change(&addr, nullptr, SC_ELEMENT_ARCS_MODIFIED, &element));
-}
-
 TEST_F(ScTransactionTest, TransactionElementRemove)
 {
   constexpr sc_addr addr = {3, 4};

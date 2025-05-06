@@ -2,7 +2,6 @@
 
 #include "sc-store/sc_element.h"
 #include "sc-store/sc_storage_private.h"
-#include "sc-store/sc-base/sc_monitor_private.h"
 #include "sc-store/sc-base/sc_monitor_table.h"
 #include "sc-store/sc-base/sc_monitor_table_private.h"
 #include "sc-store/sc-container/sc_pair.h"
@@ -16,7 +15,6 @@ typedef struct sc_content_version
 {
   sc_addr addr;
   sc_stream * content;
-  SC_ELEMENT_MODIFIED_FLAGS SC_ELEMENT_CONTENT_MODIFIED;
 } sc_content_version;
 
 void sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer, sc_uint64 txn_id)
@@ -45,16 +43,16 @@ void sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer
   _sc_monitor_table_init(transaction_buffer->monitor_table);
   return;
 
-  error_content_changes:
-    sc_list_destroy(transaction_buffer->content_changes);
-  error_deleted_elements:
-    sc_list_destroy(transaction_buffer->deleted_elements);
-  error_modified_elements:
-    sc_list_destroy(transaction_buffer->modified_elements);
-  error_new_elements:
-    sc_list_destroy(transaction_buffer->new_elements);
-  error_nothing:
-    return;
+error_content_changes:
+  sc_list_destroy(transaction_buffer->content_changes);
+error_deleted_elements:
+  sc_list_destroy(transaction_buffer->deleted_elements);
+error_modified_elements:
+  sc_list_destroy(transaction_buffer->modified_elements);
+error_new_elements:
+  sc_list_destroy(transaction_buffer->new_elements);
+error_nothing:
+  return;
 }
 
 void sc_transaction_buffer_destroy(sc_transaction_buffer * transaction_buffer)
@@ -132,8 +130,7 @@ sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, 
 sc_bool sc_transaction_buffer_modified_add(
     sc_transaction_buffer const * buffer,
     sc_addr const * addr,
-    sc_element const * new_element_data,
-    const SC_ELEMENT_MODIFIED_FLAGS flags)
+    sc_element const * new_element_data)
 {
   if (buffer == null_ptr || buffer->modified_elements == null_ptr)
     return SC_FALSE;
@@ -145,28 +142,32 @@ sc_bool sc_transaction_buffer_modified_add(
   if (sc_storage_get_element_by_addr(*addr, &element) != SC_RESULT_OK || element == null_ptr)
     return SC_FALSE;
 
+  if (element->version_history == null_ptr)
+  {
+    element->version_history = sc_version_segment_new();
+    if (element->version_history == null_ptr)
+      return SC_FALSE;
+  }
+
+  sc_version_segment * seg = element->version_history;
+
   sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(buffer->monitor_table, *addr);
   if (monitor == null_ptr)
     return SC_FALSE;
 
   sc_monitor_acquire_write(monitor);
 
-  sc_uint64 const new_version_id = (element->version_history.latest_version != null_ptr)
-                                       ? (element->version_history.latest_version->version_id + 1)
-                                       : 0;
+  sc_uint64 const new_version_id = seg->latest_version ? seg->latest_version->version_id + 1 : 0;
 
-  sc_element_version * new_version = sc_element_create_new_version(
-      element->version_history.latest_version, new_element_data, new_version_id, buffer->transaction_id, flags);
-
-  if (new_version == null_ptr)
+  sc_element_version * new_ver =
+      sc_version_segment_add(seg, new_element_data, new_version_id, buffer->transaction_id, seg->latest_version);
+  if (new_ver == null_ptr)
   {
     sc_monitor_release_write(monitor);
     return SC_FALSE;
   }
 
-  element->version_history.latest_version = new_version;
-
-  monitor->id++;
+  seg->latest_version = new_ver;
 
   sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
   if (sc_list_push_back(buffer->modified_elements, (void *)(uintptr_t)addr_hash) == null_ptr)
@@ -176,7 +177,6 @@ sc_bool sc_transaction_buffer_modified_add(
   }
 
   sc_monitor_release_write(monitor);
-
   return SC_TRUE;
 }
 

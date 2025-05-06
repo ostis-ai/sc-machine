@@ -7,6 +7,8 @@
 #ifndef _sc_element_h_
 #define _sc_element_h_
 
+#include "sc_version_segment.h"
+
 #include <sc-store/sc-transaction/sc_element_version.h>
 
 struct _sc_arc_info
@@ -66,8 +68,8 @@ struct _sc_element
   sc_uint32 incoming_arcs_count;
   sc_uint32 outgoing_arcs_count;
 
-  sc_version_history version_history;
-  sc_transaction_version_buffer transaction_buffer;
+  sc_version_segment * version_history;
+  sc_version_segment * transaction_buffer;
 };
 
 #endif
