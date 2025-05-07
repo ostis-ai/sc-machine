@@ -7,7 +7,7 @@
 #ifndef _sc_hash_table_h_
 #define _sc_hash_table_h_
 
-#include <glib.h>
+#include "/usr/include/glib-2.0/glib.h"
 
 typedef GHashTable sc_hash_table;
 

@@ -15,6 +15,9 @@
 #include "sc-core/sc_memory.h"
 
 #include "sc-core/sc-base/sc_allocator.h"
+#include "sc-store/sc-container/sc_struct_node.h"
+#include "sc-core/sc_event_subscription.h"
+
 
 /*! Structure representing elementary sc-event.
  * @note This structure holds information required for processing events in a worker thread.
@@ -94,7 +97,34 @@ void _sc_event_emission_pool_worker(sc_pointer data, sc_pointer user_data)
         event_subscription, event->user_addr, event->connector_addr, event->connector_type, event->other_addr);
 
   sc_storage_end_new_process();
+  
 
+	sc_monitor_acquire_write(&event_subscription->monitor);
+
+  if (!sc_event_subscription_is_complex(event_subscription) &&
+      event_subscription->events_list != null_ptr)
+  {
+      if (--event_subscription->execution_counter == 0)
+      {
+          sc_struct_node *list_node = event_subscription->events_list->begin;
+          
+          while (list_node != null_ptr && list_node != event_subscription->events_list->end)
+          {
+              sc_event_subscription *complex_event_subscription = 
+                  (sc_event_subscription *)list_node->data;
+              
+              if (complex_event_subscription != null_ptr)
+              {
+                  sc_monitor_acquire_write(&complex_event_subscription->monitor);
+                  sc_cond_broadcast(&complex_event_subscription->cond_decrease);
+                  sc_monitor_release_write(&complex_event_subscription->monitor);
+              }
+              
+              list_node = list_node->next;
+          }
+      }
+  }
+  sc_monitor_release_write(&event_subscription->monitor);
   sc_monitor_release_read(&event_subscription->monitor);
 
 end:
@@ -189,22 +219,35 @@ void sc_event_emission_manager_shutdown(sc_event_emission_manager * manager)
 }
 
 void _sc_event_emission_manager_add(
-    sc_event_emission_manager * manager,
-    sc_event_subscription * event_subscription,
-    sc_addr user_addr,
-    sc_addr connector_addr,
-    sc_type connector_type,
-    sc_addr other_addr,
-    sc_event_do_after_callback callback,
-    sc_addr event_addr)
+  sc_event_emission_manager * manager,
+  sc_event_subscription * event_subscription,
+  sc_addr user_addr,
+  sc_addr connector_addr,
+  sc_type connector_type,
+  sc_addr other_addr,
+  sc_event_do_after_callback callback,
+  sc_addr event_addr,
+  sc_memory_context const * ctx, // добавил параметр в эту функцию
+  sc_event_type event_type_addr) // добавил параметр в эту функцию
 {
-  if (manager == null_ptr)
-    return;
+    if (manager == null_ptr)
+      return;
 
-  sc_event * event =
-      _sc_event_new(event_subscription, user_addr, connector_addr, connector_type, other_addr, callback, event_addr);
+    sc_event * event =
+        _sc_event_new(event_subscription, user_addr, connector_addr, connector_type, other_addr, callback, event_addr);
 
-  sc_monitor_acquire_write(&manager->pool_monitor);
-  g_thread_pool_push(manager->thread_pool, event, null_ptr);
-  sc_monitor_release_write(&manager->pool_monitor);
-}
+    sc_monitor_acquire_write(&manager->pool_monitor);
+    g_thread_pool_push(manager->thread_pool, event, null_ptr);
+    sc_monitor_release_write(&manager->pool_monitor);
+    if (event_subscription->is_complex_event_subscription){
+      start_check_condition_to_activate_complex_event(event_subscription, 
+                                                      ctx,  // добавленный параметр
+                                                      event_subscription->subscription_addr, 
+                                                      event_type_addr, // добавленный параметр. Наверное плохо, что такая зависисмость, это надо пересмотреть
+                                                      connector_addr, 
+                                                      connector_type, 
+                                                      other_addr, 
+                                                      callback, 
+                                                      event_addr);
+                                                          }
+  }
