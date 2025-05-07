@@ -19,7 +19,7 @@ typedef struct sc_transaction_buffer
 void sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer, sc_uint64 txn_id);
 void sc_transaction_buffer_destroy(sc_transaction_buffer * transaction_buffer);
 
-sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_addr const * addr);
+sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_element_data const * data);
 sc_bool sc_transaction_buffer_modified_add(
     sc_transaction_buffer const * buffer,
     sc_addr const * addr,

@@ -21,7 +21,7 @@ sc_transaction * sc_transaction_new(sc_uint64 txn_id, sc_memory_context * ctx);
 void sc_transaction_destroy(sc_transaction * txn);
 // destroy the given transaction
 
-sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_addr const * addr);
+sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_element_data const * data);
 // Writes information about adding an item to the buffer
 sc_bool sc_transaction_element_change(sc_addr const * addr, sc_transaction const * txn, sc_element const * new_data);
 // Writes information about the element change to the buffer

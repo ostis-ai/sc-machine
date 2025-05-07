@@ -20,6 +20,8 @@ typedef struct sc_element_data
   sc_uint32 outgoing_arcs_count;
 } sc_element_data;
 
+sc_element_data * sc_element_data_new();
+
 typedef struct sc_element_version
 {
   sc_element_data const * data;

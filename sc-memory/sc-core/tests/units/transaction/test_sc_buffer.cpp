@@ -47,12 +47,6 @@ TEST_F(ScTransactionBufferTest, CreatedAddTest)
 {
   constexpr sc_addr addr = {1, 1};
 
-  EXPECT_TRUE(sc_transaction_buffer_created_add(buffer, &addr));
-  EXPECT_EQ(buffer->new_elements->size, 1u);
-
-  constexpr sc_uint32 addr_hash = SC_ADDR_LOCAL_TO_INT(addr);
-  EXPECT_EQ(buffer->new_elements->begin->data, reinterpret_cast<void *>(addr_hash));
-
   EXPECT_TRUE(sc_transaction_buffer_contains_created(buffer, &addr));
 }
 

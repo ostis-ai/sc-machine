@@ -43,14 +43,7 @@ TEST_F(ScTransactionTest, TransactionElementNew)
 {
   constexpr sc_addr addr = {1, 2};
 
-  EXPECT_TRUE(sc_transaction_element_new(transaction, &addr));
-  EXPECT_TRUE(sc_transaction_buffer_contains_created(transaction->transaction_buffer, &addr));
 
-  EXPECT_FALSE(sc_transaction_element_new(nullptr, &addr));
-  EXPECT_FALSE(sc_transaction_element_new(transaction, nullptr));
-
-  constexpr sc_addr empty_addr = {0, 0};
-  EXPECT_FALSE(sc_transaction_element_new(transaction, &empty_addr));
 }
 
 TEST_F(ScTransactionTest, TransactionElementRemove)

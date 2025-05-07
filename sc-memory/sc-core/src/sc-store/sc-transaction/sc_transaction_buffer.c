@@ -109,19 +109,12 @@ void sc_transaction_buffer_destroy(sc_transaction_buffer * transaction_buffer)
   }
 }
 
-sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_addr const * addr)
+sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_element_data const * data)
 {
   if (buffer == null_ptr || buffer->new_elements == null_ptr)
     return SC_FALSE;
 
-  if (SC_ADDR_IS_EMPTY(*addr))
-    return SC_FALSE;
-
-  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
-  if (sc_transaction_buffer_contains_created(buffer, addr))
-    return SC_TRUE;
-
-  if (sc_list_push_back(buffer->new_elements, (void *)(uintptr_t)addr_hash) == null_ptr)
+  if (sc_list_push_back(buffer->new_elements, (void*)data) == null_ptr)
     return SC_FALSE;
 
   return SC_TRUE;

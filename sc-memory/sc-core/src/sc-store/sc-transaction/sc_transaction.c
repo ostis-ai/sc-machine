@@ -1,7 +1,6 @@
 #include "sc_transaction.h"
 
 #include "sc_memory_transaction_manager.h"
-#include "sc-store/sc_element.h"
 #include "sc-store/sc_storage_private.h"
 
 #include <sc-core/sc-base/sc_allocator.h>
@@ -62,12 +61,12 @@ void sc_transaction_apply(sc_transaction * txn) {}
 
 void sc_transaction_clear(sc_transaction * txn) {}
 
-sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_addr const * addr)
+sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_element_data const * data)
 {
-  if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
+  if (txn == null_ptr || data == null_ptr || txn->transaction_buffer == null_ptr)
     return SC_FALSE;
 
-  return sc_transaction_buffer_created_add(txn->transaction_buffer, addr);
+  return sc_transaction_buffer_created_add(txn->transaction_buffer, data);
 }
 
 sc_bool sc_transaction_element_change(sc_addr const * addr, sc_transaction const * txn, sc_element const * new_data)
