@@ -22,6 +22,8 @@
 #include "sc_storage_private.h"
 #include "sc_memory_private.h"
 
+#include "sc-transaction/sc_element_version.h"
+
 sc_storage * storage = null_ptr;
 
 sc_result sc_storage_initialize(sc_memory_params const * params)
@@ -173,7 +175,7 @@ error:
   return result;
 }
 
-sc_result sc_storage_get_element_data_by_addr(sc_addr addr, sc_element_data * el_data)
+sc_result sc_storage_get_element_data_by_addr(sc_addr const addr, sc_element_data * el_data)
 {
   sc_element * el = null_ptr;
 

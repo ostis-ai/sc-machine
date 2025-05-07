@@ -7,9 +7,7 @@
 #ifndef _sc_element_h_
 #define _sc_element_h_
 
-#include "sc_version_segment.h"
-
-#include <sc-store/sc-transaction/sc_element_version.h>
+#include "sc-core/sc_types.h"
 
 struct _sc_arc_info
 {
@@ -52,6 +50,9 @@ struct _sc_element_flags
   sc_type type;
   sc_states states;
 };
+
+struct sc_version_segment;
+typedef struct sc_version_segment sc_version_segment;
 
 struct _sc_element
 {

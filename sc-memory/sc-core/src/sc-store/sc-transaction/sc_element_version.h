@@ -1,5 +1,6 @@
 #ifndef SC_ELEMENT_VERSION_H
 #define SC_ELEMENT_VERSION_H
+
 #include "sc-core/sc_types.h"
 #include "sc-store/sc_element.h"
 
@@ -25,7 +26,7 @@ typedef struct sc_element_version
   sc_uint64 version_id;
   sc_uint64 transaction_id;
   struct sc_element_version * parent_version;
-  sc_bool is_committed; // redundant?
+  sc_bool is_committed;  // redundant?
 } sc_element_version;
 
 sc_element_version * sc_element_create_new_version(

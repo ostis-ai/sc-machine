@@ -22,7 +22,7 @@ void sc_version_segment_free(sc_version_segment * segment);
 
 sc_element_version * sc_version_segment_add(
     sc_version_segment * segment,
-    sc_element_data const * data,
+    sc_element const * data,
     sc_uint64 version_id,
     sc_uint64 transaction_id,
     sc_element_version * parent);
