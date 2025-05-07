@@ -173,6 +173,26 @@ error:
   return result;
 }
 
+sc_result sc_storage_get_element_data_by_addr(sc_addr addr, sc_element_data * el_data)
+{
+  sc_element * el = null_ptr;
+
+  if (sc_storage_get_element_by_addr(addr, &el) != SC_RESULT_OK || el == null_ptr)
+    return SC_RESULT_ERROR;
+
+  el_data->flags = el->flags;
+  el_data->first_out_arc = el->first_out_arc;
+  el_data->first_in_arc = el->first_in_arc;
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
+  el_data->first_in_arc_from_structure = el->first_in_arc_from_structure;
+#endif
+  el_data->arc = el->arc;
+  el_data->incoming_arcs_count = el->incoming_arcs_count;
+  el_data->outgoing_arcs_count = el->outgoing_arcs_count;
+
+  return SC_RESULT_OK;
+}
+
 sc_result sc_storage_free_element(sc_addr addr)
 {
   sc_result result = SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
