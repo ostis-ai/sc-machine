@@ -24,16 +24,18 @@ sc_addr sc_memory_transaction_arc_new(
     sc_addr const beg,
     sc_addr const end)
 {
-  sc_element * beg_new_version;
-  sc_element * end_new_version;
+  sc_element_data * beg_new_version = null_ptr;
+  sc_storage_get_element_data_by_addr(beg, &beg_new_version);
+  sc_element_data * end_new_version = null_ptr;
+  sc_storage_get_element_data_by_addr(beg, &end_new_version);
 
-  sc_addr beg_new_version_addr = SC_ADDR_EMPTY;
-  beg_new_version = sc_storage_allocate_new_element(txn->ctx, &beg_new_version_addr);
-  sc_storage_get_element_by_addr(beg, &beg_new_version);
+  sc_element * beg_el = null_ptr;
+  sc_storage_get_element_by_addr(beg, &beg_el);
+  sc_segment * txn_buffer = beg_el->transaction_buffer;
 
-  sc_addr end_new_version_addr = SC_ADDR_EMPTY;
-  end_new_version = sc_storage_allocate_new_element(txn->ctx, &end_new_version_addr);
-  sc_storage_get_element_by_addr(beg, &end_new_version);
+  sc_element * end_el = null_ptr;
+  sc_storage_get_element_by_addr(beg, &end_el);
+  sc_segment * txn_buffer = end_el->transaction_buffer;
 
   sc_addr const allocated_addr = sc_memory_arc_new(txn->ctx, type, beg_new_version_addr, end_new_version_addr);
   sc_transaction_element_new(txn, &allocated_addr);

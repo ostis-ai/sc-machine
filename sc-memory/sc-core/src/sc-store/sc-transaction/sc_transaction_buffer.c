@@ -130,7 +130,7 @@ sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, 
 sc_bool sc_transaction_buffer_modified_add(
     sc_transaction_buffer const * buffer,
     sc_addr const * addr,
-    sc_element const * new_element_data)
+    sc_element_data const * new_element_data)
 {
   if (buffer == null_ptr || buffer->modified_elements == null_ptr)
     return SC_FALSE;
@@ -142,41 +142,25 @@ sc_bool sc_transaction_buffer_modified_add(
   if (sc_storage_get_element_by_addr(*addr, &element) != SC_RESULT_OK || element == null_ptr)
     return SC_FALSE;
 
-  if (element->version_history == null_ptr)
-  {
-    element->version_history = sc_version_segment_new();
-    if (element->version_history == null_ptr)
-      return SC_FALSE;
-  }
-
-  sc_version_segment * seg = element->version_history;
-
-  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(buffer->monitor_table, *addr);
-  if (monitor == null_ptr)
+  sc_element_data * snapshot = sc_mem_new(sc_element_data, 1);
+  if (snapshot == null_ptr)
     return SC_FALSE;
+  *snapshot = *new_element_data;
 
-  sc_monitor_acquire_write(monitor);
-
-  sc_uint64 const new_version_id = seg->latest_version ? seg->latest_version->version_id + 1 : 0;
-
-  sc_element_version * new_ver =
-      sc_version_segment_add(seg, new_element_data, new_version_id, buffer->transaction_id, seg->latest_version);
-  if (new_ver == null_ptr)
+  sc_pair * pair = sc_make_pair((void *)(uintptr_t)SC_ADDR_LOCAL_TO_INT(*addr), (void *)snapshot);
+  if (pair == null_ptr)
   {
-    sc_monitor_release_write(monitor);
+    sc_mem_free(snapshot);
     return SC_FALSE;
   }
 
-  seg->latest_version = new_ver;
-
-  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
-  if (sc_list_push_back(buffer->modified_elements, (void *)(uintptr_t)addr_hash) == null_ptr)
+  if (sc_list_push_back(buffer->modified_elements, pair) == null_ptr)
   {
-    sc_monitor_release_write(monitor);
+    sc_mem_free(snapshot);
+    sc_mem_free(pair);
     return SC_FALSE;
   }
 
-  sc_monitor_release_write(monitor);
   return SC_TRUE;
 }
 
