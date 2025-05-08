@@ -46,4 +46,21 @@ sc_result sc_storage_get_element_data_by_addr(sc_addr addr, sc_element_data * el
 
 sc_result sc_storage_free_element(sc_addr addr);
 
+void sc_storage_make_elements_incident_to_arc(
+    sc_addr connector_addr,
+    sc_element * arc_el,
+    sc_addr beg_addr,
+    sc_element * beg_el,
+    sc_addr end_addr,
+    sc_element * end_el,
+    sc_bool is_reverse,
+    sc_bool is_loop);
+
+void sc_storage_update_structure_arcs(
+    sc_addr connector_addr,
+    sc_element * arc_el,
+    sc_addr beg_addr,
+    sc_addr end_addr,
+    sc_element * end_el);
+
 #endif

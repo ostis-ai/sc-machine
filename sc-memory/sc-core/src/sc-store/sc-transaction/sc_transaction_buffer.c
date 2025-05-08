@@ -36,15 +36,8 @@ void sc_transaction_buffer_initialize(sc_transaction_buffer * transaction_buffer
   if (!sc_list_init(&transaction_buffer->content_changes))
     goto error_deleted_elements;
 
-  transaction_buffer->monitor_table = sc_mem_new(sc_monitor_table, 1);
-  if (transaction_buffer->monitor_table == null_ptr)
-    goto error_content_changes;
-
-  _sc_monitor_table_init(transaction_buffer->monitor_table);
   return;
 
-error_content_changes:
-  sc_list_destroy(transaction_buffer->content_changes);
 error_deleted_elements:
   sc_list_destroy(transaction_buffer->deleted_elements);
 error_modified_elements:
@@ -100,21 +93,21 @@ void sc_transaction_buffer_destroy(sc_transaction_buffer * transaction_buffer)
     sc_list_destroy(transaction_buffer->content_changes);
     transaction_buffer->content_changes = null_ptr;
   }
-
-  if (transaction_buffer->monitor_table != null_ptr)
-  {
-    _sc_monitor_table_destroy(transaction_buffer->monitor_table);
-    sc_mem_free(transaction_buffer->monitor_table);
-    transaction_buffer->monitor_table = null_ptr;
-  }
 }
 
-sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_element_data const * data)
+sc_bool sc_transaction_buffer_created_add(sc_transaction_buffer const * buffer, sc_addr const * addr)
 {
   if (buffer == null_ptr || buffer->new_elements == null_ptr)
     return SC_FALSE;
 
-  if (sc_list_push_back(buffer->new_elements, (void*)data) == null_ptr)
+  if (SC_ADDR_IS_EMPTY(*addr))
+    return SC_FALSE;
+
+  sc_uint32 const addr_hash = SC_ADDR_LOCAL_TO_INT(*addr);
+  if (sc_transaction_buffer_contains_created(buffer, addr))
+    return SC_TRUE;
+
+  if (sc_list_push_back(buffer->new_elements, (void *)(uintptr_t)addr_hash) == null_ptr)
     return SC_FALSE;
 
   return SC_TRUE;

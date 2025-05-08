@@ -942,7 +942,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
   return addr;
 }
 
-void _sc_storage_make_elements_incident_to_arc(
+void sc_storage_make_elements_incident_to_arc(
     sc_addr connector_addr,
     sc_element * arc_el,
     sc_addr beg_addr,
@@ -1012,7 +1012,7 @@ void _sc_storage_make_elements_incident_to_arc(
 }
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
-void _sc_storage_update_structure_arcs(
+void sc_storage_update_structure_arcs(
     sc_addr connector_addr,
     sc_element * arc_el,
     sc_addr beg_addr,
@@ -1101,15 +1101,15 @@ sc_addr sc_storage_arc_new_ext(
     goto error;
 
   // lock arcs to change output/input list
-  _sc_storage_make_elements_incident_to_arc(
+  sc_storage_make_elements_incident_to_arc(
       connector_addr, arc_el, beg_addr, beg_el, end_addr, end_el, SC_FALSE, !is_not_loop);
   if (is_edge && is_not_loop)
-    _sc_storage_make_elements_incident_to_arc(
+    sc_storage_make_elements_incident_to_arc(
         connector_addr, arc_el, end_addr, end_el, beg_addr, beg_el, SC_TRUE, SC_FALSE);
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   if (sc_type_is_structure_and_arc(beg_el->flags.type, type))
-    _sc_storage_update_structure_arcs(connector_addr, arc_el, beg_addr, end_addr, end_el);
+    sc_storage_update_structure_arcs(connector_addr, arc_el, beg_addr, end_addr, end_el);
 #endif
 
   // emit events

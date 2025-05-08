@@ -10,6 +10,7 @@
 
 typedef struct sc_memory_transaction_manager
 {
+  sc_monitor_table * monitor_table;
   sc_queue * transaction_queue;
   sc_monitor * monitor;
   sc_mutex * mutex;

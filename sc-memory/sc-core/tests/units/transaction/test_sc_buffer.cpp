@@ -39,7 +39,6 @@ TEST_F(ScTransactionBufferTest, InitializationTest)
   EXPECT_NE(buffer->modified_elements, nullptr);
   EXPECT_NE(buffer->deleted_elements, nullptr);
   EXPECT_NE(buffer->content_changes, nullptr);
-  EXPECT_NE(buffer->monitor_table, nullptr);
   EXPECT_EQ(buffer->transaction_id, 1u);
 }
 

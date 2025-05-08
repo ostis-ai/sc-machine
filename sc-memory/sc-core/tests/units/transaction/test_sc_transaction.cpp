@@ -42,8 +42,6 @@ TEST_F(ScTransactionTest, CreationAndDestruction)
 TEST_F(ScTransactionTest, TransactionElementNew)
 {
   constexpr sc_addr addr = {1, 2};
-
-
 }
 
 TEST_F(ScTransactionTest, TransactionElementRemove)
