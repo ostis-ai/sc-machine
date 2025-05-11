@@ -185,7 +185,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::GetResultConditionTemplate(TScEvent co
 template <class TScEvent, class TScContext>
 void ScAgent<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr) noexcept
 {
-  m_context = ScAgentContext(userAddr);
+  m_context = TScContext(userAddr);
 }
 
 template <class TScEvent, class TScContext>
