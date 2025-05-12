@@ -16,11 +16,11 @@ tokens
 
 #include "sc-memory/sc_debug.hpp"
 
-#define APPEND_ATTRS(__attrs, __connector) \
+#define APPEND_ATTRS(__attrs, __edge) \
 for (auto const & _a : __attrs) \
 { \
-  ElementHandle const attrConnector = m_parser->ProcessConnector(_a.second ? "->" : "_->"); \
-  m_parser->ProcessTriple(_a.first, attrConnector, __connector); \
+  ElementHandle const attrEdge = m_parser->ProcessConnector(_a.second ? "->" : "_->"); \
+  m_parser->ProcessTriple(_a.first, attrEdge, __edge); \
 }
 
 #define PARSE_ERROR(line, pos, msg) \
@@ -34,6 +34,7 @@ for (auto const & _a : __attrs) \
 public:
   void setParser(scs::Parser * parser)
   {
+    SC_ASSERT(parser, ());
     m_parser = parser;
   }
 
@@ -44,52 +45,52 @@ public:
 
 }
 
-content[ElementHandle contentHandle = ElementHandle()]
-  returns [ElementHandle handle]
+content returns [ElementHandle handle]
   locals [ bool isVar = false;]
   @init{ $ctx->isVar = false; }
   : ('_' { $ctx->isVar = true; } )?
       c=CONTENT_BODY
     {
-      std::string content = $ctx->c->getText();
-      $ctx->handle = $contentHandle.IsValid()
-        ? m_parser->ProcessLink($contentHandle, content)
-        : m_parser->ProcessContent(content, $ctx->isVar);
+      std::string v = $ctx->c->getText();
+      SC_ASSERT(v.size() > 1, ());
+      $ctx->handle = m_parser->ProcessContent(v, $ctx->isVar);
     }
+  ;
+
+contour_begin
+  : CONTOUR_BEGIN
+  ;
+
+contour_end
+  : CONTOUR_END
   ;
 
 contour[ElementHandle contourHandle = ElementHandle()]
   returns [ElementHandle handle]
-  : CONTOUR_BEGIN
+  : contour_begin
     {
       $ctx->handle = $contourHandle.IsValid() ? $contourHandle : m_parser->ProcessEmptyContour();
       m_parser->ProcessContourBegin();
     }
     ( (sentence_wrap
-	| (sentence_lvl_4_list_item[$ctx->handle] (';' sentence_lvl_4_list_item[$ctx->handle])* ';;') )* )
-    CONTOUR_END
+	| (sentence_lvl_4_list_item[$ctx->handle] ';;'))* )
+    contour_end
     {
       m_parser->ProcessContourEnd($ctx->handle);
     }
   ;
 
 connector returns [std::string text]
-  : c=('?<=>' | '?=>' | '<=?'
-  | '<=>' | '_<=>' | '=>' | '<=' | '_=>' | '<=_'
-  | '?.?>' | '<?.?' 
-  | '.?>' | '<?.' | '_.?>' | '<?._'
-  | '?.>' | '<.?' | '?.|>' | '<|.?' | '?/>' | '</?' 
-  | '.>' | '<.' | '.|>' | '<|.' | '/>' | '</' 
-  | '_.>' | '<._' | '_.|>' | '<|._' | '_/>' | '</_' 
-  | '?-?>' | '<?-?' | '?..?>' | '<?..?' | '?~?>' | '<?~?' | '?%?>' | '<?%?' 
-  | '?->' | '<-?' | '?-|>' | '<|-?' | '-?>' | '<?-' | '_-?>' | '<?-_' 
-  | '?..>' | '<..?' | '?~>' | '<~?' | '?%>' | '<%?' | '?..|>' | '<|..?' | '?~|>' | '<|~?' | '?%|>' | '<|%?'
-  | '..?>' | '<?..' | '~?>' | '<?~' | '%?>' | '<?%' | '_..?>' | '<?.._' | '_~?>' | '<?~_' | '_%?>' | '<?%_'
-  | '->' | '<-' | '_->' | '<-_' | '-|>' | '<|-' | '_-|>' | '<|-_'
-  | '..>' | '<..' | '_..>' | '<.._' | '~>' | '<~' | '_~>' | '<~_' | '%>' | '<%' | '_%>' | '<%_' 
-  | '..|>' | '<|..' | '_..|>' | '<|.._' | '~|>' | '<|~' | '_~|>' | '<|~_' | '%|>' | '<|%' | '_%|>' | '<|%_'
-  // deprecated
-  | '>' | '<' | '<>' | '_<=' | '_<-' | '_<|-' | '_<~' | '_<|~' )
+  : c=('<>' | '>' | '<' | '..>' | '<..'
+    | '->' | '<-' | '<=>' | '=>' | '<='
+    | '-|>' | '<|-' | '-/>' | '</-'
+    | '~>' | '<~' | '~|>' | '<|~'
+    | '~/>' | '</~' | '_<>' | '_>' | '_<'
+    | '_..>' | '_<..' | '<.._' | '_->' | '_<-'| '<-_'
+    | '_<=>' | '_=>' | '_<=' |'<=_' | '_-|>' | '_<|-' | '<|-_'
+    | '_-/>' | '_</-' | '</-_' | '_~>' | '_<~' | '<~_'
+    | '_~|>' | '_<|~' | '<|~_' | '_~/>' | '_</~' | '</~_')
+
     {
       $ctx->text = $c->getText();
     }
@@ -109,7 +110,6 @@ sentence_wrap
 sentence
   : sentence_lvl1
   | sentence_assign
-  | sentence_assign_link
   | sentence_assign_contour
   | sentence_lvl_common
   ;
@@ -132,8 +132,8 @@ idtf_system returns [ElementHandle handle]
     { $ctx->handle = m_parser->ProcessIdentifier($ID_SYSTEM->getText()); }
   | '...'
     { $ctx->handle = m_parser->ProcessIdentifier("..."); }
-  | name=idtf_lvl1_preffix
-    { $ctx->handle = m_parser->ProcessIdentifier($ctx->name->text); }
+  | type=idtf_lvl1_preffix
+    { $ctx->handle = m_parser->ProcessIdentifier($ctx->type->text); }
   ;
 
 
@@ -144,49 +144,27 @@ sentence_assign
     }
   ;
 
-sentence_assign_link
-  : a=idtf_system '='
-  (content[$ctx->a->handle] | idtf_url[$ctx->a->handle])
-  ;
-
 sentence_assign_contour
-  : a=idtf_system '=' contour[$ctx->a->handle] (';' internal_sentence[$ctx->a->handle])*
+  : a=idtf_system '=' contour[$ctx->a->handle]
   ;
     
 idtf_lvl1_preffix returns [std::string text]
-  : type=('sc_common_edge'
-  | 'sc_common_arc'
-  | 'sc_membership_arc'
-  | 'sc_main_arc'
-
-  | 'sc_node'
+  : type=('sc_node'
   | 'sc_link'
-  | 'sc_link_class'
-  | 'sc_node_tuple'
-  | 'sc_node_structure'
-  | 'sc_node_class'
-  | 'sc_node_role_relation'
-  | 'sc_node_non_role_relation'
-  | 'sc_node_superclass'
-  | 'sc_node_material'
-  
-  // deprecated
-  | 'sc_edge'
+  | 'sc_edge_dcommon'
   | 'sc_edge_ucommon'
-  | 'sc_arc_common'
-  | 'sc_edge_dcommon'
-  | 'sc_edge_dcommon'
-  | 'sc_arc_main'
   | 'sc_edge_main'
-  | 'sc_arc_access'
   | 'sc_edge_access'
-  | 'sc_node_not_binary_tuple'
-  | 'sc_node_struct'
-  | 'sc_node_not_relation'
-  | 'sc_node_norole_relation')
-    {
-      $ctx->text = $ctx->type->getText();
-    }
+  
+  // backward compatibility
+  | 'sc_arc_common'
+  | 'sc_edge'
+  | 'sc_arc_main'
+  | 'sc_arc_access')
+
+  {
+    $ctx->text = $ctx->type->getText();
+  }
   ;
     
 idtf_lvl1_value returns [ElementHandle handle]
@@ -197,28 +175,27 @@ idtf_lvl1_value returns [ElementHandle handle]
   ;
     
 idtf_lvl1 returns [ElementHandle handle]
-  : id=idtf_lvl1_value { $ctx->handle = $ctx->id->handle; }
-  | cn=content[] { $ctx->handle = $ctx->cn->handle; }
-  | u=idtf_url[] { $ctx->handle = $ctx->u->handle; }
+  : idtf_lvl1_value { $ctx->handle = $idtf_lvl1_value.handle; }
+  // | LINK
   ;
 
-idtf_connector returns [ElementHandle handle]
-  : '(' (src=idtf_atomic | se=idtf_connector)
+idtf_edge returns [ElementHandle handle]
+  : '(' src=idtf_atomic
         c=connector attrs=attr_list?
-        (trg=idtf_atomic | te=idtf_connector)
+        trg=idtf_atomic
     ')'
+
     {
-      ElementHandle const connector = m_parser->ProcessConnector($ctx->c->text);
-      m_parser->ProcessTriple(
-        $ctx->src ? $ctx->src->handle : $ctx->se->handle, connector, $ctx->trg ? $ctx->trg->handle : $ctx->te->handle);
+      ElementHandle const edge = m_parser->ProcessConnector($ctx->c->text);
+      m_parser->ProcessTriple($ctx->src->handle, edge, $ctx->trg->handle);
 
       // append attributes
       if ($ctx->attrs != nullptr)
       {
-        APPEND_ATTRS($attrs.items, connector);
+        APPEND_ATTRS($attrs.items, edge);
       }
 
-      $ctx->handle = connector;
+      $ctx->handle = edge;
     }
   ;
   
@@ -229,28 +206,32 @@ idtf_set returns [ElementHandle handle]
 
 idtf_set_elements [std::string setType]
   returns [ElementHandle handle]
-  locals [ElementHandle prevArc]
+  locals [ElementHandle prevEdge]
   : {
       std::string const setIdtf = "..set_" + std::to_string($ctx->start->getLine()) + "_" + std::to_string($ctx->start->getCharPositionInLine());
-      $ctx->handle = m_parser->ProcessIdentifierLevel1("sc_node_tuple", setIdtf);
+      $ctx->handle = m_parser->ProcessIdentifier(setIdtf);
+      ElementHandle const typeEdge = m_parser->ProcessConnector("->");
+      ElementHandle const typeClass = m_parser->ProcessIdentifier("sc_node_tuple");
+
+      m_parser->ProcessTriple(typeClass, typeEdge, $ctx->handle);
     }
   a1=attr_list? i1=idtf_common
     {
-      ElementHandle const arc = m_parser->ProcessConnector("->");
-      m_parser->ProcessTriple($ctx->handle, arc, $ctx->i1->handle);
+      ElementHandle const edge = m_parser->ProcessConnector("->");
+      m_parser->ProcessTriple($ctx->handle, edge, $ctx->i1->handle);
 
       if ($ctx->a1 != nullptr)
       {
-        APPEND_ATTRS($ctx->a1->items, arc);
+        APPEND_ATTRS($ctx->a1->items, edge);
       }
 
       if ($ctx->setType == "vector")
       {
-        ElementHandle const relArc = m_parser->ProcessConnector("->");
+        ElementHandle const relEdge = m_parser->ProcessConnector("->");
         ElementHandle const rel = m_parser->ProcessIdentifier("rrel_1");
-        m_parser->ProcessTriple(rel, relArc, arc);
+        m_parser->ProcessTriple(rel, relEdge, edge);
 
-        $ctx->prevArc = arc;
+        $ctx->prevEdge = edge;
       }
     }
     internal_sentence_list[$ctx->i1->handle]?
@@ -258,24 +239,24 @@ idtf_set_elements [std::string setType]
     (';'
     a2=attr_list? i2=idtf_common
       {
-        ElementHandle const arc = m_parser->ProcessConnector("->");
-        m_parser->ProcessTriple($ctx->handle, arc, $ctx->i2->handle);
+        ElementHandle const edge = m_parser->ProcessConnector("->");
+        m_parser->ProcessTriple($ctx->handle, edge, $ctx->i2->handle);
 
         if ($ctx->a2 != nullptr)
         {
-          APPEND_ATTRS($ctx->a2->items, arc);
+          APPEND_ATTRS($ctx->a2->items, edge);
         }
 
         if ($ctx->setType == "vector")
         {
-          ElementHandle const seqArc = m_parser->ProcessConnector("=>");
-          m_parser->ProcessTriple($ctx->prevArc, seqArc, arc);
+          ElementHandle const seqEdge = m_parser->ProcessConnector("=>");
+          m_parser->ProcessTriple($ctx->prevEdge, seqEdge, edge);
 
-          ElementHandle const relArc = m_parser->ProcessConnector("->");
+          ElementHandle const relEdge = m_parser->ProcessConnector("->");
           ElementHandle const rel = m_parser->ProcessIdentifier("nrel_basic_sequence");
-          m_parser->ProcessTriple(rel, relArc, seqArc);
+          m_parser->ProcessTriple(rel, relEdge, seqEdge);
 
-          $ctx->prevArc = arc;
+          $ctx->prevEdge = edge;
         }
       }
       internal_sentence_list[$ctx->i2->handle]?
@@ -287,24 +268,22 @@ idtf_atomic returns [ElementHandle handle]
   | is=idtf_system { $ctx->handle = $ctx->is->handle; }
   ;
 
-idtf_url[ElementHandle contentHandle = ElementHandle()]
-  returns [ElementHandle handle]
+idtf_url returns [ElementHandle handle]
   : LINK
     {
-      std::string const content = $LINK->getText();
-      $ctx->handle = $contentHandle.IsValid()
-          ? m_parser->ProcessLink($contentHandle, content, true)
-          : m_parser->ProcessFileURL(content);
+      std::string const value = $LINK->getText();
+      SC_ASSERT(value.size() > 1, ());
+      $ctx->handle = m_parser->ProcessFileURL(value.substr(1, value.size() - 2));
     }
   ;
 
 idtf_common returns [ElementHandle handle]
   : a=idtf_atomic { $ctx->handle = $ctx->a->handle; }
-  | ic=idtf_connector { $ctx->handle = $ctx->ic->handle; }
+  | ie=idtf_edge { $ctx->handle = $ctx->ie->handle; }
   | iset=idtf_set { $ctx->handle = $ctx->iset->handle; }
   | ct=contour[] { $ctx->handle = $ctx->ct->handle; }
-  | cn=content[] { $ctx->handle = $ctx->cn->handle; }
-  | u=idtf_url[] { $ctx->handle = $ctx->u->handle; }
+  | cn=content { $ctx->handle = $ctx->cn->handle; }
+  | u=idtf_url { $ctx->handle = $ctx->u->handle; }
   ;
 
 idtf_list returns [std::vector<ElementHandle> items]
@@ -321,12 +300,12 @@ internal_sentence [ElementHandle source]
     {
       for (auto const & trg : $ctx->targets->items)
       {
-        ElementHandle const connector = m_parser->ProcessConnector($c.text);
-        m_parser->ProcessTriple(source, connector, trg);
+        ElementHandle const edge = m_parser->ProcessConnector($c.text);
+        m_parser->ProcessTriple(source, edge, trg);
         
         if ($ctx->attrs != nullptr)
         {
-          APPEND_ATTRS($ctx->attrs->items, connector);
+          APPEND_ATTRS($ctx->attrs->items, edge);
         }
       }
     }
@@ -338,9 +317,9 @@ internal_sentence_list [ElementHandle source]
   ;
 
 sentence_lvl1
-   : src=idtf_lvl1 '|' connector_el=idtf_lvl1 '|' trg=idtf_lvl1
+   : src=idtf_lvl1 '|' edge=idtf_lvl1 '|' trg=idtf_lvl1
     {
-      m_parser->ProcessTriple($ctx->src->handle, $ctx->connector_el->handle, $ctx->trg->handle);
+      m_parser->ProcessTriple($ctx->src->handle, $ctx->edge->handle, $ctx->trg->handle);
     }
   ;
 
@@ -349,12 +328,12 @@ sentence_lvl_4_list_item [ElementHandle source]
     { 
       for (auto const & t : $ctx->targets->items)
       {
-          ElementHandle const connector = m_parser->ProcessConnector($c.text);
-          m_parser->ProcessTriple($source, connector, t);
+          ElementHandle const edge = m_parser->ProcessConnector($c.text);
+          m_parser->ProcessTriple($source, edge, t);
           
           if ($ctx->attrs != nullptr)
           {
-            APPEND_ATTRS($ctx->attrs->items, connector);
+            APPEND_ATTRS($ctx->attrs->items, edge);
           }
       }
     }
@@ -368,11 +347,11 @@ sentence_lvl_common
 attr_list returns [std::vector<std::pair<ElementHandle, bool>> items]
   @init { $items = {}; }
   : (
-      ID_SYSTEM
-      CONNECTOR_ATTR
+      id=idtf_system
+      EDGE_ATTR
       {
-        $ctx->items.emplace_back(m_parser->ProcessIdentifier($ID_SYSTEM->getText()),
-                                 scs::TypeResolver::IsConnectorAttrConst($CONNECTOR_ATTR->getText()));
+        $ctx->items.emplace_back(m_parser->ProcessIdentifier($ctx->id->getText()),
+                                 scs::TypeResolver::IsEdgeAttrConst($EDGE_ATTR->getText()));
       }
     )+
   ;
@@ -388,15 +367,15 @@ ALIAS_SYMBOLS
   ;
 
 fragment CONTENT_ESCAPED
-  : '\\' ('[' | ']' | '\\' | '*' )
+  : '\\' ('[' | ']' | '\\')
   ;
 
-fragment CONTENT_SYMBOL
+fragment CONTENT_SYBMOL
   : (CONTENT_ESCAPED | ~('[' | ']' | '\\'))
   ;
 
-fragment CONTENT_SYMBOL_FIRST_END
-  : (CONTENT_ESCAPED | ~('[' | ']' | '\\' | '*' ))
+fragment CONTENT_SYBMOL_FIRST_END
+  : (CONTENT_ESCAPED | ~('[' | ']' | '\\' | '*'))
   ;
 
 CONTOUR_BEGIN
@@ -410,15 +389,15 @@ CONTOUR_END
 CONTENT_BODY
   : '[]'
   | '![]!'
-  | '[' CONTENT_SYMBOL_FIRST_END CONTENT_SYMBOL* ']'
-  | '![' CONTENT_SYMBOL_FIRST_END CONTENT_SYMBOL* ']!'
+  | '[' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']'
+  | '![' CONTENT_SYBMOL_FIRST_END CONTENT_SYBMOL* ']!'
   ;
 
 LINK
   : '"' (~('"') | '\\"' )* '"'
   ;
   
-CONNECTOR_ATTR
+EDGE_ATTR
   : ':'
   | '::';
 
