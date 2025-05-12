@@ -70,7 +70,7 @@ sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_addr const * a
   return sc_transaction_buffer_created_add(txn->transaction_buffer, addr);
 }
 
-sc_bool sc_transaction_element_change(sc_addr const * addr, sc_transaction const * txn, sc_element const * new_data)
+sc_bool sc_transaction_element_change(sc_transaction const * txn, sc_addr const * addr, sc_element_data const * new_data)
 {
   if (txn == null_ptr || addr == null_ptr || txn->transaction_buffer == null_ptr)
     return SC_FALSE;

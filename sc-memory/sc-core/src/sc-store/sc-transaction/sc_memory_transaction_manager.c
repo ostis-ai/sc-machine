@@ -1,6 +1,8 @@
 #include "sc_memory_transaction_manager.h"
 
 #include "sc-store/sc-base/sc_condition_private.h"
+#include "sc-store/sc-base/sc_monitor_table.h"
+#include "sc-store/sc-base/sc_monitor_table_private.h"
 #include "sc-store/sc-base/sc_thread.h"
 #include "sc-store/sc-container/sc_struct_node.h"
 
@@ -31,7 +33,6 @@ sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager
   {
     return SC_RESULT_ERROR_FULL_MEMORY;
   }
-
   sc_queue_init(transaction_manager->transaction_queue);
 
   transaction_manager->monitor = sc_mem_new(sc_monitor, 1);
@@ -39,7 +40,6 @@ sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager
   {
     goto error_cleanup_queue;
   }
-
   sc_monitor_init(transaction_manager->monitor);
 
   transaction_manager->queue_condition = sc_mem_new(sc_condition, 1);
@@ -47,7 +47,6 @@ sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager
   {
     goto error_cleanup_monitor;
   }
-
   sc_cond_init(transaction_manager->queue_condition);
 
   transaction_manager->mutex = sc_mem_new(sc_mutex, 1);
@@ -55,8 +54,14 @@ sc_result sc_memory_transaction_manager_initialize(sc_memory_transaction_manager
   {
     goto error_cleanup_condition;
   }
-
   sc_mutex_init(transaction_manager->mutex);
+
+  transaction_manager->monitor_table = sc_mem_new(sc_monitor_table, 1);
+  if (transaction_manager->monitor_table == null_ptr)
+  {
+    goto error_cleanup_mutex;
+  }
+  _sc_monitor_table_init(transaction_manager->monitor_table);
 
   if (sc_list_init(&transaction_manager->threads) != SC_RESULT_OK)
   {
@@ -86,6 +91,9 @@ error_cleanup_threads:
     transaction_manager->threads = null_ptr;
   }
 
+  sc_mem_free(transaction_manager->monitor_table);
+  transaction_manager->monitor_table = null_ptr;
+
 error_cleanup_mutex:
   sc_mutex_destroy(transaction_manager->mutex);
   sc_mem_free(transaction_manager->mutex);
@@ -102,8 +110,6 @@ error_cleanup_queue:
   sc_queue_destroy(transaction_manager->transaction_queue);
   sc_mem_free(transaction_manager->transaction_queue);
 
-error_cleanup_manager:
-  sc_mem_free(transaction_manager);
   transaction_manager = null_ptr;
 
   return SC_RESULT_ERROR;

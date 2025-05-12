@@ -23,7 +23,7 @@ void sc_transaction_destroy(sc_transaction * txn);
 
 sc_bool sc_transaction_element_new(sc_transaction const * txn, sc_addr const * addr);
 // Writes information about adding an item to the buffer
-sc_bool sc_transaction_element_change(sc_addr const * addr, sc_transaction const * txn, sc_element const * new_data);
+sc_bool sc_transaction_element_change(sc_transaction const * txn, sc_addr const * addr, sc_element_data const * new_data);
 // Writes information about the element change to the buffer
 sc_bool sc_transaction_element_remove(sc_transaction const * txn, sc_addr const * addr);
 // Writes the deletion information to the buffer
