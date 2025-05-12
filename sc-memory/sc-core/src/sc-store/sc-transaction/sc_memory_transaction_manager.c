@@ -1,5 +1,6 @@
 #include "sc_memory_transaction_manager.h"
 
+#include "sc-store/sc_storage.h"
 #include "sc-store/sc-base/sc_condition_private.h"
 #include "sc-store/sc-base/sc_monitor_table.h"
 #include "sc-store/sc-base/sc_monitor_table_private.h"
@@ -204,7 +205,35 @@ void sc_transaction_manager_transaction_add(sc_transaction * txn)
   sc_cond_signal(transaction_manager->queue_condition);
 }
 
-void sc_transaction_manager_transaction_execute(sc_transaction * txn) {}
+void sc_transaction_manager_block_elements(sc_hash_table * elements)
+{
+  // block with monitor table
+}
+
+void sc_transaction_manager_unblock_elements(sc_hash_table * elements)
+{
+  // unlock
+}
+
+void sc_transaction_manager_transaction_execute(sc_transaction * txn)
+{
+  sc_monitor_acquire_read(transaction_manager->monitor);
+
+  if (!sc_transaction_elements_intersect(txn, transaction_manager->processed_elements))
+  {
+    sc_transaction_manager_block_elements(txn->elements);
+
+    if (sc_transaction_validate(txn))
+    {
+      sc_transaction_apply(txn);
+    }
+
+    sc_transaction_manager_unblock_elements(txn->elements);
+  }
+
+  sc_transaction_manager_transaction_add(txn);
+
+}
 
 void sc_transaction_handler()
 {
@@ -238,4 +267,36 @@ void sc_transaction_handler()
   }
 
   sc_monitor_release_read(transaction_manager->monitor);
+}
+
+sc_bool sc_transaction_elements_intersect(sc_transaction const * txn, sc_hash_table * processed_elements)
+{
+  if (txn == null_ptr || txn->elements == null_ptr || processed_elements == null_ptr)
+    return SC_FALSE;
+
+  sc_hash_table * smaller_table = sc_hash_table_size(txn->elements) <= sc_hash_table_size(processed_elements)
+                                     ? txn->elements
+                                     : processed_elements;
+  sc_hash_table * larger_table = smaller_table == txn->elements ? processed_elements : txn->elements;
+
+  sc_monitor * txn_monitor = txn->monitor;
+  sc_monitor * processed_monitor = sc_memory_transaction_manager_get()->monitor;
+
+  sc_monitor_acquire_read_n(2, txn_monitor, processed_monitor);
+
+  sc_hash_table_iterator iter;
+  sc_hash_table_iterator_init(&iter, smaller_table);
+  void *key, *value;
+
+  while (sc_hash_table_iterator_next(&iter, &key, &value))
+  {
+    if (sc_hash_table_get(larger_table, key) != null_ptr)
+    {
+      sc_monitor_release_read_n(2, txn_monitor, processed_monitor);
+      return SC_TRUE;
+    }
+  }
+
+  sc_monitor_release_read_n(2, txn_monitor, processed_monitor);
+  return SC_FALSE;
 }

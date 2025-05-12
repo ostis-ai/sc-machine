@@ -81,6 +81,11 @@ sc_result sc_memory_transaction_arc_new(
       sc_monitor_table_get_monitor_for_addr(sc_memory_transaction_manager_get()->monitor_table, *end_addr);
   sc_monitor_acquire_write_n(2, beg_monitor, end_monitor);
 
+  if (beg_monitor == null_ptr)
+    return SC_RESULT_ERROR;
+  if (end_monitor == null_ptr)
+    return SC_RESULT_ERROR;
+
   result = sc_storage_get_element_data_by_addr(*beg_addr, new_beg_ver);
   if (result != SC_RESULT_OK)
     goto error;

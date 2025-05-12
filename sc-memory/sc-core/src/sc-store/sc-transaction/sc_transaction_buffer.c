@@ -133,7 +133,7 @@ sc_bool sc_transaction_buffer_modified_add(
     return SC_FALSE;
   *snapshot = *new_element_data;
 
-  sc_pair * pair = sc_make_pair((void *)(uintptr_t)SC_ADDR_LOCAL_TO_INT(*addr), (void *)snapshot);
+  sc_pair * pair = sc_make_pair((void *)(uintptr_t)SC_ADDR_LOCAL_TO_INT(*addr), snapshot);
   if (pair == null_ptr)
   {
     sc_mem_free(snapshot);

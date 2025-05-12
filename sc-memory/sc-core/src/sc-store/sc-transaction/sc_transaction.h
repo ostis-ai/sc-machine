@@ -1,17 +1,17 @@
 #ifndef SC_TRANSACTION_H
 #define SC_TRANSACTION_H
 
+#include "sc-store/sc-container/sc_hash_table.h"
 #include <sc-store/sc-transaction/sc_element_version.h>
 #include <sc-store/sc-transaction/sc_transaction_buffer.h>
-
 #include <sc-core/sc_stream.h>
-#include <sc-core/sc-container/sc_list.h>
 
 typedef struct sc_transaction
 {
   sc_uint64 transaction_id;
   sc_bool is_committed;
-  sc_list * elements;
+  sc_hash_table * elements;
+  sc_monitor * monitor;
   sc_transaction_buffer * transaction_buffer;
   sc_memory_context * ctx;
 } sc_transaction;
