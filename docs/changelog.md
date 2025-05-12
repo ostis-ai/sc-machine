@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Operator for converting ScAddr to string
+- Stream output operator for ScAddr
+
 ### Fixed 
 
 - Context template argument initialization in ScAgent class 
