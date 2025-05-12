@@ -58,3 +58,35 @@ ScRealAddr const & ScAddr::GetRealAddr() const
 {
   return m_realAddr;
 }
+
+ScAddr::operator std::string() const
+{
+  return "`" + std::to_string(this->Hash()) + "`";
+}
+
+std::ostream & operator<<(std::ostream & os, ScAddr const & addr)
+{
+  os << std::string(addr);
+  return os;
+}
+
+bool RealAddrLessFunc::operator()(ScRealAddr const & a, ScRealAddr const & b) const
+{
+  if (a.seg < b.seg)
+    return true;
+
+  if (a.seg > b.seg)
+    return false;
+
+  return (a.offset < b.offset);
+}
+
+bool ScAddrLessFunc::operator()(ScAddr const & a, ScAddr const & b) const
+{
+  return RealAddrLessFunc()(*a, *b);
+}
+
+ScAddr::HashType ScAddrHashFunc::operator()(ScAddr const & addr) const
+{
+  return SC_ADDR_LOCAL_TO_INT(*addr);
+}
