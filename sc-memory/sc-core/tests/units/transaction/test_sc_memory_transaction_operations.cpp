@@ -6,7 +6,7 @@ extern "C" {
 #include "sc-store/sc-container/sc_pair.h"
 #include "sc-store/sc_storage_private.h"
 #include "sc-store/sc_version_segment.h"
-#include "sc-store/sc-container/sc_struct_node.h"
+#include "sc-store/sc-transaction/sc_memory_transaction_manager.h"
 #include <sc-store/sc-transaction/sc_memory_transaction_operations.h>
 }
 
@@ -142,3 +142,31 @@ TEST_F(ScMemoryTransactionArcNewTest, BufferCheck)
   EXPECT_EQ(end_diff, 1);
 }
 
+TEST_F(ScMemoryTransactionArcNewTest, FullTxnTest)
+{
+  EXPECT_EQ(sc_memory_transaction_arc_new(transaction, sc_type_pos_arc, &beg_addr, &end_addr), SC_RESULT_OK);
+
+  sc_element * beg_el_before = nullptr;
+  sc_storage_get_element_by_addr(beg_addr, &beg_el_before);
+  sc_element * end_el_before = nullptr;
+  sc_storage_get_element_by_addr(end_addr, &end_el_before);
+
+  EXPECT_EQ(sc_hash_table_size(transaction->elements), 3);
+  EXPECT_EQ(beg_el_before->version_history->count, 0);
+  EXPECT_EQ(end_el_before->version_history->count, 0);
+
+  EXPECT_EQ(sc_memory_transaction_commit(transaction), SC_RESULT_OK);
+
+  while (transaction->state != SC_TRANSACTION_EXECUTED)
+  {
+  }
+
+  sc_element * beg_el_after = nullptr;
+  sc_storage_get_element_by_addr(beg_addr, &beg_el_after);
+  sc_element * end_el_after = nullptr;
+  sc_storage_get_element_by_addr(end_addr, &end_el_after);
+
+
+  EXPECT_EQ(beg_el_before->version_history->count, 1);
+  EXPECT_EQ(end_el_before->version_history->count, 1);
+}

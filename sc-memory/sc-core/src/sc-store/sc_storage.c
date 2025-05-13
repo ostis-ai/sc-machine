@@ -21,6 +21,7 @@
 
 #include "sc_storage_private.h"
 #include "sc_memory_private.h"
+#include "sc_version_segment.h"
 
 #include "sc-transaction/sc_element_version.h"
 
@@ -433,7 +434,11 @@ sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_a
   }
 
   if (element != null_ptr)
+  {
     element->flags.states |= SC_STATE_ELEMENT_EXIST;
+    // Add param to select usage of version history?
+    element->version_history = sc_version_segment_new();
+  }
 
   return element;
 }

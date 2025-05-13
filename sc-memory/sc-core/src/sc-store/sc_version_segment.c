@@ -7,9 +7,15 @@ sc_version_segment * sc_version_segment_new(void)
 {
   sc_version_segment * segment = sc_mem_new(sc_version_segment, 1);
   if (!segment)
-    return NULL;
+    return null_ptr;
   sc_mem_set(segment, 0, sizeof(*segment));
-  sc_monitor_init(&segment->monitor);
+  segment->monitor = _sc_mem_new(sizeof(sc_monitor));
+  if (segment->monitor == null_ptr)
+  {
+    sc_mem_free(segment);
+    return null_ptr;
+  }
+  sc_monitor_init(segment->monitor);
   return segment;
 }
 
@@ -21,34 +27,35 @@ void sc_version_segment_free(sc_version_segment * segment)
   sc_mem_free(segment);
 }
 
-sc_element_version * sc_version_segment_add(
-    sc_version_segment * segment,
-    sc_element const * data,
-    sc_uint64 const version_id,
-    sc_uint64 const transaction_id,
-    sc_element_version * parent)
+sc_uint64 sc_version_segment_get_next_version_id(sc_element const * element)
 {
-  if (!segment)
-    return NULL;
+  sc_version_segment const * segment = element->version_history;
+  sc_monitor * monitor = segment->monitor;
 
-  sc_monitor_acquire_write(&segment->monitor);
+  sc_monitor_acquire_read(monitor);
+  sc_uint64 const next_version_id = segment->count;
+  sc_monitor_release_read(monitor);
+
+  return next_version_id;
+}
+
+void sc_version_segment_add(
+    sc_version_segment * segment,
+    sc_element_version const * new_version)
+{
+  if (segment == null_ptr || new_version == null_ptr)
+    return;
+
+  sc_monitor_acquire_write(segment->monitor);
 
   if (segment->count >= SC_VERSION_SEGMENT_SIZE)
   {
-    sc_monitor_release_write(&segment->monitor);
-    return NULL;
+    sc_monitor_release_write(segment->monitor);
+    return;
   }
 
-  sc_element_version * ver = &segment->versions[segment->count++];
+  segment->versions[segment->count++] = *new_version->data;
+  segment->current_version = new_version;
 
-  ver->data = data;
-  ver->version_id = version_id;
-  ver->transaction_id = transaction_id;
-  ver->parent_version = parent;
-  ver->is_committed = SC_FALSE;
-
-  segment->latest_version = ver;
-
-  sc_monitor_release_write(&segment->monitor);
-  return ver;
+  sc_monitor_release_write(segment->monitor);
 }

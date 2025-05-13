@@ -194,6 +194,16 @@ sc_transaction * sc_memory_transaction_new(sc_memory_context * ctx)
   return sc_transaction_new(txn_id, ctx);
 }
 
+sc_result sc_memory_transaction_commit(sc_transaction * txn)
+{
+  if (txn == null_ptr)
+    return SC_RESULT_ERROR_INVALID_PARAMS;
+
+  sc_transaction_manager_transaction_add(txn);
+  return SC_RESULT_OK;
+}
+
+
 void sc_transaction_manager_transaction_add(sc_transaction * txn)
 {
   sc_monitor_acquire_write(transaction_manager->monitor);
@@ -217,8 +227,6 @@ void sc_transaction_manager_unblock_elements(sc_hash_table * elements)
 
 void sc_transaction_manager_transaction_execute(sc_transaction * txn)
 {
-  sc_monitor_acquire_read(transaction_manager->monitor);
-
   if (!sc_transaction_elements_intersect(txn, transaction_manager->processed_elements))
   {
     sc_transaction_manager_block_elements(txn->elements);
@@ -230,9 +238,8 @@ void sc_transaction_manager_transaction_execute(sc_transaction * txn)
 
     sc_transaction_manager_unblock_elements(txn->elements);
   }
-
-  sc_transaction_manager_transaction_add(txn);
-
+  else
+    txn->state = SC_TRANSACTION_FAILED;
 }
 
 void sc_transaction_handler()
@@ -260,6 +267,8 @@ void sc_transaction_handler()
       sc_queue_pop(transaction_manager->transaction_queue);
 
       sc_transaction_manager_transaction_execute(txn);
+
+      txn->state = SC_TRANSACTION_EXECUTED;
     }
 
     sc_monitor_release_write(transaction_manager->monitor);
@@ -282,7 +291,8 @@ sc_bool sc_transaction_elements_intersect(sc_transaction const * txn, sc_hash_ta
   sc_monitor * txn_monitor = txn->monitor;
   sc_monitor * processed_monitor = sc_memory_transaction_manager_get()->monitor;
 
-  sc_monitor_acquire_read_n(2, txn_monitor, processed_monitor);
+  sc_monitor_acquire_read(processed_monitor);
+  sc_monitor_acquire_read(txn_monitor);
 
   sc_hash_table_iterator iter;
   sc_hash_table_iterator_init(&iter, smaller_table);
@@ -292,11 +302,13 @@ sc_bool sc_transaction_elements_intersect(sc_transaction const * txn, sc_hash_ta
   {
     if (sc_hash_table_get(larger_table, key) != null_ptr)
     {
-      sc_monitor_release_read_n(2, txn_monitor, processed_monitor);
+      sc_monitor_release_read(txn_monitor);
+      sc_monitor_release_read(processed_monitor);
       return SC_TRUE;
     }
   }
 
-  sc_monitor_release_read_n(2, txn_monitor, processed_monitor);
+  sc_monitor_release_read(txn_monitor);
+  sc_monitor_release_read(processed_monitor);
   return SC_FALSE;
 }

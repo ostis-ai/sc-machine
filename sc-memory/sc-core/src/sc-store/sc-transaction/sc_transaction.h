@@ -6,10 +6,18 @@
 #include <sc-store/sc-transaction/sc_transaction_buffer.h>
 #include <sc-core/sc_stream.h>
 
+typedef enum _sc_transaction_state
+{
+  SC_TRANSACTION_PENDING,
+  SC_TRANSACTION_EXECUTED,
+  SC_TRANSACTION_FAILED
+} sc_transaction_state;
+
 typedef struct sc_transaction
 {
   sc_uint64 transaction_id;
   sc_bool is_committed;
+  sc_transaction_state state;
   sc_hash_table * elements;
   sc_monitor * monitor;
   sc_transaction_buffer * transaction_buffer;
@@ -30,16 +38,9 @@ sc_bool sc_transaction_element_remove(sc_transaction const * txn, sc_addr const 
 sc_bool sc_transaction_element_content_set(sc_transaction const * txn, sc_addr const * addr, sc_stream const * content);
 // Writes information about content changes to the buffer
 
-void sc_transaction_commit(sc_transaction * txn);
-// try to apply all operations of the transaction on sc-memory
-void sc_transaction_rollback(sc_transaction * txn);
-// rollback the transaction operations
-
 sc_bool sc_transaction_validate(sc_transaction * txn);
 // check if the transaction can be applied based on element versions and free segments
-void sc_transaction_merge(sc_transaction * txn);
-// check versions of all elements in the transaction and try to merge them
-void sc_transaction_apply(sc_transaction * txn);
+void sc_transaction_apply(sc_transaction const * txn);
 // apply all operations (merged versions, allocated spaces) to sc-memory
 void sc_transaction_clear(sc_transaction * txn);
 // deletes all transaction items and clears them without performing a commit

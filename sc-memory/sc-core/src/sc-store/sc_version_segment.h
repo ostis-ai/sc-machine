@@ -10,21 +10,20 @@
 
 typedef struct sc_version_segment
 {
-  sc_element_version versions[SC_VERSION_SEGMENT_SIZE];
+  sc_element_data versions[SC_VERSION_SEGMENT_SIZE];
   sc_addr_offset count;
-  sc_monitor monitor;
-  sc_element_version * latest_version;
+  sc_monitor * monitor;
+  sc_element_version * current_version;
 } sc_version_segment;
 
 sc_version_segment * sc_version_segment_new(void);
 
 void sc_version_segment_free(sc_version_segment * segment);
 
-sc_element_version * sc_version_segment_add(
+sc_uint64 sc_version_segment_get_next_version_id(sc_element const * element);
+
+void sc_version_segment_add(
     sc_version_segment * segment,
-    sc_element const * data,
-    sc_uint64 version_id,
-    sc_uint64 transaction_id,
-    sc_element_version * parent);
+    sc_element_version const * new_version);
 
 #endif  // SC_VERSION_SEGMENT_H
