@@ -151,6 +151,8 @@ sc_bool _sc_transaction_validate_modify_elements(sc_list const * elements_list)
 
 sc_bool sc_transaction_validate(sc_transaction * txn)
 {
+  if (sc_hash_table_size(txn->elements) == 0)
+    return SC_FALSE;
   if (!_sc_transaction_validate_modify_elements(txn->transaction_buffer->modified_elements))
     return SC_FALSE;
 
@@ -172,7 +174,7 @@ void _sc_transaction_apply_modified_elements(sc_list const * elements_list, sc_u
 
     sc_element_data const * new_data = pair->second;
 
-    sc_element_version const * new_version = sc_element_create_new_version(element, new_data, txn_id);
+    sc_element_version * new_version = sc_element_create_new_version(element, new_data, txn_id);
 
     sc_version_segment_add(element->version_history, new_version);
   }
