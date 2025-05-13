@@ -203,7 +203,6 @@ sc_result sc_memory_transaction_commit(sc_transaction * txn)
   return SC_RESULT_OK;
 }
 
-
 void sc_transaction_manager_transaction_add(sc_transaction * txn)
 {
   sc_monitor_acquire_write(transaction_manager->monitor);
@@ -283,9 +282,8 @@ sc_bool sc_transaction_elements_intersect(sc_transaction const * txn, sc_hash_ta
   if (txn == null_ptr || txn->elements == null_ptr || processed_elements == null_ptr)
     return SC_FALSE;
 
-  sc_hash_table * smaller_table = sc_hash_table_size(txn->elements) <= sc_hash_table_size(processed_elements)
-                                     ? txn->elements
-                                     : processed_elements;
+  sc_hash_table * smaller_table =
+      sc_hash_table_size(txn->elements) <= sc_hash_table_size(processed_elements) ? txn->elements : processed_elements;
   sc_hash_table * larger_table = smaller_table == txn->elements ? processed_elements : txn->elements;
 
   sc_monitor * txn_monitor = txn->monitor;

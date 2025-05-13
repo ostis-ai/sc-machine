@@ -1,9 +1,7 @@
 #include "sc_transaction_buffer.h"
 
-#include "sc-store/sc_element.h"
 #include "sc-store/sc_storage_private.h"
 #include "sc-store/sc-base/sc_monitor_table.h"
-#include "sc-store/sc-base/sc_monitor_table_private.h"
 #include "sc-store/sc-container/sc_pair.h"
 
 #include <sc-store/sc-transaction/sc_element_version.h>

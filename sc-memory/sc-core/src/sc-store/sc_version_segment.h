@@ -22,8 +22,6 @@ void sc_version_segment_free(sc_version_segment * segment);
 
 sc_uint64 sc_version_segment_get_next_version_id(sc_element const * element);
 
-void sc_version_segment_add(
-    sc_version_segment * segment,
-    sc_element_version const * new_version);
+void sc_version_segment_add(sc_version_segment * segment, sc_element_version * new_version);
 
 #endif  // SC_VERSION_SEGMENT_H

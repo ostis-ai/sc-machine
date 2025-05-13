@@ -58,8 +58,8 @@ sc_result sc_memory_transaction_arc_new(
   sc_element_data new_beg_ver_val;
   sc_element_data new_end_ver_val;
 
-  sc_element_data *new_beg_ver = &new_beg_ver_val;
-  sc_element_data *new_end_ver = &new_end_ver_val;
+  sc_element_data * new_beg_ver = &new_beg_ver_val;
+  sc_element_data * new_end_ver = &new_end_ver_val;
 
   sc_element * arc_el = sc_storage_allocate_new_element(txn->ctx, &connector_addr);
   if (arc_el == null_ptr)
@@ -96,14 +96,28 @@ sc_result sc_memory_transaction_arc_new(
 
   // lock arcs to change output/input list
   sc_storage_make_elements_incident_to_arc(
-      connector_addr, arc_el, *beg_addr, (sc_element*)new_beg_ver, *end_addr, (sc_element*)new_end_ver, SC_FALSE, !is_not_loop);
+      connector_addr,
+      arc_el,
+      *beg_addr,
+      (sc_element *)new_beg_ver,
+      *end_addr,
+      (sc_element *)new_end_ver,
+      SC_FALSE,
+      !is_not_loop);
   if (is_edge && is_not_loop)
     sc_storage_make_elements_incident_to_arc(
-        connector_addr, arc_el, *end_addr, (sc_element*)new_end_ver, *beg_addr, (sc_element*)new_beg_ver, SC_TRUE, SC_FALSE);
+        connector_addr,
+        arc_el,
+        *end_addr,
+        (sc_element *)new_end_ver,
+        *beg_addr,
+        (sc_element *)new_beg_ver,
+        SC_TRUE,
+        SC_FALSE);
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   if (sc_type_is_structure_and_arc(new_beg_ver->flags.type, type))
-    sc_storage_update_structure_arcs(connector_addr, arc_el, *beg_addr, *end_addr, (sc_element*)new_end_ver);
+    sc_storage_update_structure_arcs(connector_addr, arc_el, *beg_addr, *end_addr, (sc_element *)new_end_ver);
 #endif
 
   sc_transaction_element_new(txn, &connector_addr);

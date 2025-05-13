@@ -10,7 +10,7 @@ sc_element_data * sc_element_data_new()
 }
 
 sc_element_version * sc_element_create_new_version(
-    sc_element * element,
+    sc_element const * element,
     sc_element_data const * new_element_data,
     sc_uint64 const transaction_id)
 {

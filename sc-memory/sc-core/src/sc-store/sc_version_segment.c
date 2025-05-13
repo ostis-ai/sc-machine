@@ -23,7 +23,7 @@ void sc_version_segment_free(sc_version_segment * segment)
 {
   if (!segment)
     return;
-  sc_monitor_destroy(&segment->monitor);
+  sc_monitor_destroy(segment->monitor);
   sc_mem_free(segment);
 }
 
@@ -39,9 +39,7 @@ sc_uint64 sc_version_segment_get_next_version_id(sc_element const * element)
   return next_version_id;
 }
 
-void sc_version_segment_add(
-    sc_version_segment * segment,
-    sc_element_version const * new_version)
+void sc_version_segment_add(sc_version_segment * segment, sc_element_version * new_version)
 {
   if (segment == null_ptr || new_version == null_ptr)
     return;
