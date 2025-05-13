@@ -7,42 +7,127 @@
 #pragma once
 
 #include "sc_addr.hpp"
+#include "sc_type.hpp"
+
+#include "sc_iterator.hpp"
 
 #include "sc_utils.hpp"
 
-class ScSet : public ScAddr
+/*!
+ * @class ScSet
+ * @brief Represents a set of sc-elements in the sc-memory.
+ *
+ * The ScSet class provides an abstraction for working with sets of sc-elements in the sc-memory.
+ * It allows appending and removing sc-elements, checking their presence, and performing set operations.
+ *
+ * @note All methods in this class assume that the set is valid and contains only sc-elements with the same sc-arc type.
+ */
+class _SC_EXTERN ScSet : public ScAddr
 {
   friend class ScAgentContext;
 
 public:
+  /*!
+   * @brief Destructor for ScSet.
+   */
   _SC_EXTERN ~ScSet();
 
-  /* Append element into sc-hash-map. If element already exist, then doesn't append it and return false; otherwise
-   * returns true. */
-  _SC_EXTERN bool Append(ScAddr const & elAddr);
-  _SC_EXTERN bool Append(ScAddr const & elAddr, ScAddr const & attrAddr);
+  /*!
+   * @brief Appends a sc-element to the set with a specified sc-arc type.
+   * @param elementAddr The sc-address of the element to append.
+   * @param arcType The sc-arc type to use for the connection (default: ConstPermPosArc).
+   * @return true if the element was successfully appended, false otherwise.
+   */
+  _SC_EXTERN bool Append(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPermPosArc);
 
-  /* Remove element from sc-structure and returns true, if element removed. */
-  _SC_EXTERN bool Remove(ScAddr const & elAddr);
+  /*!
+   * @brief Appends a sc-element to the set with a specified role relation and arc type.
+   * @param elementAddr The sc-address of the element to append.
+   * @param roleAddr The sc-address of the role relation.
+   * @param arcType The sc-arc type to use for the connection (default: ConstPermPosArc).
+   * @return true if the element was successfully appended, false otherwise.
+   */
+  _SC_EXTERN bool Append(
+      ScAddr const & elementAddr,
+      ScAddr const & roleAddr,
+      ScType const & arcType = ScType::ConstPermPosArc);
 
-  /* Operator equal to append */
-  _SC_EXTERN ScSet & operator<<(ScAddr const & elAddr);
-  _SC_EXTERN ScSet & operator<<(class ScTemplateResultItem const & res);
+  /*!
+   * @brief Removes a sc-element from the set with the specified sc-arc type.
+   * @param elementAddr The sc-address of the element to remove.
+   * @param arcType The sc-arc type to use for the connection (default: ConstMembershipArc).
+   * @return true if the element was successfully removed, false otherwise.
+   */
+  _SC_EXTERN bool Remove(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPosArc);
 
-  /* Operator equal to remove */
-  _SC_EXTERN ScSet & operator>>(ScAddr const & elAddr);
+  /*!
+   * @brief Adds a sc-element to the set using the << operator.
+   * @param elementAddr The sc-address of the element to add.
+   * @return Reference to the modified set.
+   */
+  _SC_EXTERN ScSet & operator<<(ScAddr const & elementAddr);
 
-  /* Check if specified element exist in set */
-  _SC_EXTERN bool HasElement(ScAddr const & elAddr) const;
+  /*!
+   * @brief Adds multiple sc-elements from a template search result using the << operator.
+   * @param searchResultItem The template search result item containing elements to add.
+   * @return Reference to the modified set.
+   */
+  _SC_EXTERN ScSet & operator<<(class ScTemplateResultItem const & searchResultItem);
 
-  /* Check if set has no elements */
+  /*!
+   * @brief Removes a sc-element from the set using the >> operator.
+   * @param elementAddr The sc-address of the element to remove.
+   * @return Reference to the modified set.
+   */
+  _SC_EXTERN ScSet & operator>>(ScAddr const & elementAddr);
+
+  /*!
+   * @brief Checks if a sc-element is present in the set with the specified arc type.
+   * @param elementAddr The sc-address of the element to check.
+   * @param arcType The sc-arc type to use for the check (default: ConstMembershipArc).
+   * @return true if the element is present, false otherwise.
+   */
+  _SC_EXTERN bool Has(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPosArc) const;
+
+  /*!
+   * @brief Checks if the set is empty.
+   * @return true if the set is empty, false otherwise.
+   */
   _SC_EXTERN bool IsEmpty() const;
 
-  /// TODO: implement +, -, == operators
+  /*!
+   * @brief Returns the number of sc-elements in the set.
+   * @return The size of the set.
+   */
+  _SC_EXTERN size_t GetPower() const;
+
+  /*!
+   * @brief Returns the next element in the set and fills the roles set with associated roles.
+   * @param roles Set to be filled with roles associated with the element.
+   * @return The sc-address of the next element, or ScAddr::Empty if no more elements.
+   */
+  _SC_EXTERN virtual ScAddr Next(ScAddrSet & roles) const;
+
+  /*!
+   * @brief Returns the next element in the set.
+   * @return The sc-address of the next element, or ScAddr::Empty if no more elements.
+   */
+  _SC_EXTERN virtual ScAddr Next() const;
+
+  /*!
+   * @brief Resets the internal iterator for traversing the set.
+   */
+  _SC_EXTERN virtual void Reset();
 
 protected:
+  /*!
+   * @brief Constructs a new ScSet instance.
+   * @param context The sc-memory context in which the set resides.
+   * @param setAddr The sc-address of the set in sc-memory.
+   */
   _SC_EXTERN ScSet(class ScMemoryContext * context, ScAddr const & setAddr);
 
 private:
-  ScMemoryContext * m_context;
+  ScMemoryContext * m_context;                          ///< Pointer to the sc-memory context.
+  mutable ScIterator3Ptr m_elementsIterator = nullptr;  ///< Iterator for traversing set elements.
 };
