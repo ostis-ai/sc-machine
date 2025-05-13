@@ -28,3 +28,8 @@ void sc_thread_unref(sc_thread * thread)
     g_thread_unref(thread);
   }
 }
+
+void sc_thread_sleep(sc_uint32 milliseconds)
+{
+  g_usleep((gulong)milliseconds * 1000);
+}
