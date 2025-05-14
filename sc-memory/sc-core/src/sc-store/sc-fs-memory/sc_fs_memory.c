@@ -208,7 +208,7 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage) 
     return SC_FS_MEMORY_OK;
   }
 
-  int fd = open(manager->segments_path, O_RDONLY);
+  int fd = open(manager->segments_path,O_DIRECT);
   if (fd < 0) {
     sc_fs_memory_error("Failed to open segments file: %s", manager->segments_path);
     return SC_FS_MEMORY_READ_ERROR;
@@ -391,7 +391,7 @@ sc_fs_memory_status sc_fs_memory_load(sc_storage * storage)
 sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage) {
   sc_fs_memory_info("Save sc-memory segments");
 
-  int fd = open(manager->segments_path, O_RDWR | O_CREAT, 0666);
+  int fd = open(manager->segments_path, O_RDWR | O_CREAT, O_DIRECT);
   if (fd < 0) {
     sc_fs_memory_error("Failed to open segments file: %s", manager->segments_path);
     return SC_FS_MEMORY_WRITE_ERROR;
