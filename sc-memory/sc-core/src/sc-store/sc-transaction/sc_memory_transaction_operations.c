@@ -124,6 +124,8 @@ sc_result sc_memory_transaction_arc_new(
   sc_transaction_element_change(txn, beg_addr, new_beg_ver);
   sc_transaction_element_change(txn, end_addr, new_end_ver);
 
+  sc_monitor_release_write_n(2, beg_monitor, end_monitor);
+
   return result;
 
 error:
