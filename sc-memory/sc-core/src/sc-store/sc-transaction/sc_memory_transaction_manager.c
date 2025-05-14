@@ -221,9 +221,9 @@ void sc_transaction_manager_transaction_add(sc_transaction * txn)
 
   sc_queue_push(transaction_manager->transaction_queue, txn);
 
-  sc_monitor_release_write(transaction_manager->monitor);
-
   sc_cond_signal(transaction_manager->queue_condition);
+
+  sc_monitor_release_write(transaction_manager->monitor);
 }
 
 void sc_transaction_manager_block_elements(sc_hash_table * elements)
@@ -255,24 +255,18 @@ void sc_transaction_manager_transaction_execute(sc_transaction * txn)
 
 void sc_transaction_handler()
 {
-  sc_monitor_acquire_read(transaction_manager->monitor);
-
   while (!transaction_manager->should_stop)
   {
+    sc_monitor_acquire_write(transaction_manager->monitor);
+
     if (transaction_manager->transaction_queue->size == 0)
     {
-      sc_monitor_release_read(transaction_manager->monitor);
+      sc_monitor_release_write(transaction_manager->monitor);
       sc_mutex_lock(transaction_manager->mutex);
       sc_cond_wait(transaction_manager->queue_condition, transaction_manager->mutex);
       sc_mutex_unlock(transaction_manager->mutex);
-      sc_monitor_acquire_read(transaction_manager->monitor);
       continue;
     }
-
-    // TODO fix deadlock here (txn_manager monitor) in test thread safety
-
-    sc_monitor_release_read(transaction_manager->monitor);
-    sc_monitor_acquire_write(transaction_manager->monitor);
 
     if (!transaction_manager->should_stop && transaction_manager->transaction_queue->size > 0)
     {
@@ -280,7 +274,6 @@ void sc_transaction_handler()
       sc_queue_pop(transaction_manager->transaction_queue);
 
       sc_monitor_release_write(transaction_manager->monitor);
-      sc_monitor_acquire_read(transaction_manager->monitor);
 
       sc_transaction_manager_transaction_execute(txn);
 
@@ -289,7 +282,6 @@ void sc_transaction_handler()
     else
     {
       sc_monitor_release_write(transaction_manager->monitor);
-      sc_monitor_acquire_read(transaction_manager->monitor);
     }
   }
 
@@ -309,6 +301,7 @@ sc_bool sc_transaction_elements_intersect(sc_transaction const * txn, sc_hash_ta
   sc_monitor * processed_monitor = sc_memory_transaction_manager_get()->monitor;
 
   sc_monitor_acquire_read(txn_monitor);
+  sc_monitor_acquire_read(processed_monitor);
 
   sc_hash_table_iterator iter;
   sc_hash_table_iterator_init(&iter, smaller_table);
