@@ -119,6 +119,21 @@ public:
    */
   _SC_EXTERN virtual void Reset();
 
+  /*!
+   * @brief Applies a function to each element-role quadruple in the set.
+   *
+   * Iterates over all elements in the set and, for each, calls the provided function with four arguments:
+   * - arcToElementAddr: address of the arc connecting the set to the element
+   * - elementAddr: address of the element in the set
+   * - arcFromRoleAddr: address of the arc connecting the role node to the arc (if any, otherwise ScAddr::Empty)
+   * - roleAddr: address of the role node (if any, otherwise ScAddr::Empty)
+   *
+   * @tparam Func Type of the function or lambda to apply.
+   * @param func Function to call for each quadruple (arcToElementAddr, elementAddr, arcFromRoleAddr, roleAddr).
+   */
+  template <typename Func>
+  _SC_EXTERN void ForEach(Func func) const;
+
 protected:
   /*!
    * @brief Constructs a new ScSet instance.
