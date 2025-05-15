@@ -51,6 +51,9 @@ struct _sc_element_flags
   sc_states states;
 };
 
+struct sc_version_segment;
+typedef struct sc_version_segment sc_version_segment;
+
 struct _sc_element
 {
   sc_element_flags flags;
@@ -65,6 +68,8 @@ struct _sc_element
 
   sc_uint32 incoming_arcs_count;
   sc_uint32 outgoing_arcs_count;
+
+  sc_version_segment * version_history;
 };
 
 #endif
