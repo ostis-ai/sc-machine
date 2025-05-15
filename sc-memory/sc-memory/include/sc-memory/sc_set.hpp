@@ -146,3 +146,5 @@ private:
   ScMemoryContext * m_context;                          ///< Pointer to the sc-memory context.
   mutable ScIterator3Ptr m_elementsIterator = nullptr;  ///< Iterator for traversing set elements.
 };
+
+#include "_template/sc_set.tpp"

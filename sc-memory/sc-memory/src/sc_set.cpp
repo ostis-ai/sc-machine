@@ -28,7 +28,14 @@ bool ScSet::Append(ScAddr const & elementAddr, ScType const & arcType)
 
 bool ScSet::Append(ScAddr const & elementAddr, ScAddr const & roleAddr, ScType const & arcType)
 {
-  if (Has(elementAddr, ScType::ConstPosArc))
+  ScIterator5Ptr const iterator = m_context->CreateIterator5(
+    *this,
+    ScType::ConstPosArc,
+    elementAddr,
+    ScType::ConstPosArc,
+    roleAddr
+  );
+  if (iterator->Next())
     return false;
 
   ScAddr const & arcAddr = m_context->GenerateConnector(arcType, *this, elementAddr);
@@ -118,30 +125,4 @@ ScAddr ScSet::Next() const
 void ScSet::Reset()
 {
   m_elementsIterator = nullptr;
-}
-
-template <typename Func>
-void ScSet::ForEach(Func func) const
-{
-  ScIterator3Ptr const iterator = m_context->CreateIterator3(*this, ScType::ConstPosArc, ScType::Unknown);
-  while (iterator->Next())
-  {
-    ScAddr const arcToElementAddr = iterator->Get(1);
-    ScAddr const elementAddr = iterator->Get(2);
-
-    bool roleFound = false;
-    ScIterator3Ptr const roleIterator =
-        m_context->CreateIterator3(ScType::ConstNode, ScType::ConstPosArc, arcToElementAddr);
-    while (roleIterator->Next())
-    {
-      ScAddr const arcFromRoleAddr = roleIterator->Get(1);
-      ScAddr const roleAddr = roleIterator->Get(0);
-
-      func(arcToElementAddr, elementAddr, arcFromRoleAddr, roleAddr);
-      roleFound = true;
-    }
-
-    if (!roleFound)
-      func(arcToElementAddr, elementAddr, ScAddr::Empty, ScAddr::Empty);
-  }
 }
