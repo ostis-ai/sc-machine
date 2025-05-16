@@ -28,13 +28,8 @@ bool ScSet::Append(ScAddr const & elementAddr, ScType const & arcType)
 
 bool ScSet::Append(ScAddr const & elementAddr, ScAddr const & roleAddr, ScType const & arcType)
 {
-  ScIterator5Ptr const iterator = m_context->CreateIterator5(
-    *this,
-    ScType::ConstPosArc,
-    elementAddr,
-    ScType::ConstPosArc,
-    roleAddr
-  );
+  ScIterator5Ptr const iterator =
+      m_context->CreateIterator5(*this, ScType::ConstPosArc, elementAddr, ScType::ConstPosArc, roleAddr);
   if (iterator->Next())
     return false;
 

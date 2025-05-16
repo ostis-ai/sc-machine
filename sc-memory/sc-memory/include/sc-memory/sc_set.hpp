@@ -38,7 +38,7 @@ public:
    * @param arcType The sc-arc type to use for the connection (default: ConstPermPosArc).
    * @return true if the element was successfully appended, false otherwise.
    */
-  _SC_EXTERN bool Append(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPermPosArc);
+  _SC_EXTERN virtual bool Append(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPermPosArc);
 
   /*!
    * @brief Appends a sc-element to the set with a specified role relation and arc type.
@@ -47,7 +47,7 @@ public:
    * @param arcType The sc-arc type to use for the connection (default: ConstPermPosArc).
    * @return true if the element was successfully appended, false otherwise.
    */
-  _SC_EXTERN bool Append(
+  _SC_EXTERN virtual bool Append(
       ScAddr const & elementAddr,
       ScAddr const & roleAddr,
       ScType const & arcType = ScType::ConstPermPosArc);
@@ -55,10 +55,10 @@ public:
   /*!
    * @brief Removes a sc-element from the set with the specified sc-arc type.
    * @param elementAddr The sc-address of the element to remove.
-   * @param arcType The sc-arc type to use for the connection (default: ConstMembershipArc).
+   * @param arcType The sc-arc type to use for the connection (default: ConstPosArc).
    * @return true if the element was successfully removed, false otherwise.
    */
-  _SC_EXTERN bool Remove(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPosArc);
+  _SC_EXTERN virtual bool Remove(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPosArc);
 
   /*!
    * @brief Adds a sc-element to the set using the << operator.
@@ -84,7 +84,7 @@ public:
   /*!
    * @brief Checks if a sc-element is present in the set with the specified arc type.
    * @param elementAddr The sc-address of the element to check.
-   * @param arcType The sc-arc type to use for the check (default: ConstMembershipArc).
+   * @param arcType The sc-arc type to use for the check (default: ConstPosArc).
    * @return true if the element is present, false otherwise.
    */
   _SC_EXTERN bool Has(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPosArc) const;
@@ -142,7 +142,6 @@ protected:
    */
   _SC_EXTERN ScSet(class ScMemoryContext * context, ScAddr const & setAddr);
 
-private:
   ScMemoryContext * m_context;                          ///< Pointer to the sc-memory context.
   mutable ScIterator3Ptr m_elementsIterator = nullptr;  ///< Iterator for traversing set elements.
 };
