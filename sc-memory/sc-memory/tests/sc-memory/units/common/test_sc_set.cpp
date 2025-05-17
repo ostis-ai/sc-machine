@@ -175,29 +175,29 @@ TEST_F(ScSetTest, ForEachSet)
 TEST_F(ScSetTest, RemoveNonexistentElement)
 {
   ScSet set = m_ctx->GenerateSet();
-  ScAddr elem = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr element = m_ctx->GenerateNode(ScType::ConstNodeClass);
 
   // Remove before append
-  EXPECT_FALSE(set.Remove(elem));
-  EXPECT_FALSE(set.Has(elem));
+  EXPECT_FALSE(set.Remove(element));
+  EXPECT_FALSE(set.Has(element));
 }
 
 TEST_F(ScSetTest, MultipleRolesForOneElement)
 {
   ScSet set = m_ctx->GenerateSet();
-  ScAddr elem = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr element = m_ctx->GenerateNode(ScType::ConstNodeClass);
   ScAddr role1 = m_ctx->GenerateNode(ScType::ConstNodeRole);
   ScAddr role2 = m_ctx->GenerateNode(ScType::ConstNodeRole);
 
-  EXPECT_TRUE(set.Append(elem, role1));
-  EXPECT_TRUE(set.Append(elem, role2, ScType::ConstPermPosArc));
+  EXPECT_TRUE(set.Append(element, role1));
+  EXPECT_TRUE(set.Append(element, role2, ScType::ConstPermPosArc));
 
   // Use ForEach to check both roles
   ScAddrSet foundRoles;
   set.ForEach(
       [&](ScAddr const &, ScAddr const & e, ScAddr const &, ScAddr const & r)
       {
-        if (e == elem && r.IsValid())
+        if (e == element && r.IsValid())
           foundRoles.insert(r);
       });
   EXPECT_EQ(foundRoles.size(), 2u);

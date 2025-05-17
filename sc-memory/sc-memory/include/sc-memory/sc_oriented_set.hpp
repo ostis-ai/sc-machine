@@ -52,6 +52,20 @@ public:
       ScType const & arcType = ScType::ConstPermPosArc) override;
 
   /*!
+   * @brief Removes an element from the oriented set, preserving the sequence order.
+   *
+   * Searches for the arc connecting the set to the specified element and removes it, along with any associated role
+   * arcs and sequence arcs (such as nrel_basic_sequence, rrel_1, rrel_last). If the removed element is not at the
+   * beginning or end of the sequence, the method restores the sequence by linking the previous and next elements.
+   * Updates first and last markers as necessary.
+   *
+   * @param elementAddr sc-address of the element to remove.
+   * @param arcType Arc type used for the connection (default: ScType::ConstPermPosArc).
+   * @return true if the element was found and removed, false otherwise.
+   */
+  _SC_EXTERN bool Remove(ScAddr const & elementAddr, ScType const & arcType = ScType::ConstPermPosArc) override;
+
+  /*!
    * @brief Returns the next element in the oriented set and fills the roles set with associated roles.
    *
    * Iterates through the set in order, starting from the first element or from the current position if called
@@ -124,4 +138,6 @@ protected:
 
   //! Internal address of the current arc used for ordered iteration.
   mutable ScAddr m_currentArcAddr;
-}
+};
+
+#include "_template/sc_oriented_set.tpp"

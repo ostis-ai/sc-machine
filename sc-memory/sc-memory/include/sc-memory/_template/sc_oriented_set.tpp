@@ -7,13 +7,23 @@
 #include "sc-memory/sc_oriented_set.hpp"
 
 #include "sc-memory/sc_memory.hpp"
+#include "sc-memory/sc_keynodes.hpp"
 
 template <typename Func>
 void ScOrientedSet::ForEach(Func func) const
 {
-  Reset();
+  ScAddr arcToElementAddr;
+  ScIterator3Ptr firstArcIterator = m_context->CreateIterator3(*this, ScType::ConstPosArc, ScType::Unknown);
+  while (firstArcIterator->Next())
+  {
+    ScAddr const & arcAddr = firstArcIterator->Get(1);
+    if (m_context->CheckConnector(ScKeynodes::rrel_1, arcAddr, ScType::ConstPermPosArc))
+    {
+      arcToElementAddr = arcAddr;
+      break;
+    }
+  }
 
-  ScAddr arcToElementAddr = m_currentArcAddr;
   while (arcToElementAddr.IsValid())
   {
     ScAddr const elementAddr = m_context->GetArcTargetElement(arcToElementAddr);
