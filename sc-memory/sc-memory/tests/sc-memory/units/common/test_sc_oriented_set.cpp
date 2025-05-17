@@ -192,7 +192,7 @@ TEST_F(ScOrientedSetTest, RemoveMiddleElement)
   ScAddr a = m_ctx->GenerateNode(ScType::ConstNodeClass);
   ScAddr b = m_ctx->GenerateNode(ScType::ConstNodeMaterial);
   ScAddr c = m_ctx->GenerateNode(ScType::ConstNode);
-`Ω
+
   set.Append(a);
   set.Append(b);
   set.Append(c);
