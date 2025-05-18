@@ -9,8 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ScOrientedSet class to work with sets of sc-elements ordered by nrel_basic_sequence relation
+- Methods for `ScSet` class: `Next`, `Reset`, `ForEach`
 - Operator for converting ScAddr to string
 - Stream output operator for ScAddr
+
+### Changed
+
+- Rename method `HasElement` in `ScSet` class to `Has`
 
 ### Fixed 
 
