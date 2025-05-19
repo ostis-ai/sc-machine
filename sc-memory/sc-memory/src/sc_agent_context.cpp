@@ -95,7 +95,7 @@ ScAction ScAgentContext::GenerateAction(ScAddr const & actionClassAddr) noexcept
   if (!IsElement(actionClassAddr))
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
-        "Not able to generate sc-action with action class `" << actionClassAddr.Hash()
+        "Not able to generate sc-action with action class `" << actionClassAddr
                                                              << "`, because action class is not valid.");
 
   ScAddr const & actionAddr = GenerateNode(ScType::ConstNode);
@@ -110,7 +110,7 @@ ScAction ScAgentContext::ConvertToAction(ScAddr const & actionAddr) noexcept(fal
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to convert sc-action sc-address `"
-            << actionAddr.Hash() << "` to object of `ScAction` class, because its sc-address is not valid.");
+            << actionAddr << "` to object of `ScAction` class, because its sc-address is not valid.");
 
   ScAction action{this, actionAddr};
   return action;
@@ -129,7 +129,7 @@ ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr) noexcept(false)
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to convert sc-set sc-address `"
-            << setAddr.Hash() << "` to object of `ScSet` class, because its sc-address is not valid.");
+            << setAddr << "` to object of `ScSet` class, because its sc-address is not valid.");
 
   ScSet set{this, setAddr};
   return set;
@@ -148,7 +148,7 @@ ScOrientedSet ScAgentContext::ConvertToOrientedSet(ScAddr const & setAddr) noexc
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to convert sc-oriented-set sc-address `"
-            << setAddr.Hash() << "` to object of `ScOrientedSet` class, because its sc-address is not valid.");
+            << setAddr << "` to object of `ScOrientedSet` class, because its sc-address is not valid.");
 
   ScOrientedSet set{this, setAddr};
   return set;
@@ -167,7 +167,7 @@ ScStructure ScAgentContext::ConvertToStructure(ScAddr const & structureAddr) noe
     SC_THROW_EXCEPTION(
         utils::ExceptionInvalidParams,
         "Not able to convert sc-structure sc-address `"
-            << structureAddr.Hash() << "` to object of `ScStructure` class, because its sc-address is not valid.");
+            << structureAddr << "` to object of `ScStructure` class, because its sc-address is not valid.");
 
   ScStructure structure{this, structureAddr};
   return structure;
