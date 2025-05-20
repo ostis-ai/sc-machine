@@ -5,7 +5,6 @@
 extern "C"
 {
 #include <sc-store/sc-container/sc_pair.h>
-#include <sc-store/sc_element.h>
 #include <sc-store/sc-transaction/sc_transaction.h>
 #include <sc-store/sc_storage_private.h>
 }

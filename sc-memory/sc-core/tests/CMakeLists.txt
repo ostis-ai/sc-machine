@@ -39,3 +39,13 @@ make_tests_from_folder(${CMAKE_CURRENT_SOURCE_DIR}/units/transaction
 if(${SC_CLANG_FORMAT_CODE})
     target_clangformat_setup(sc-core-transaction-tests)
 endif()
+
+make_tests_from_folder(${CMAKE_CURRENT_SOURCE_DIR}/benchmark
+        NAME sc-core-transaction-benchmark-tests
+        DEPENDS ${glib_LIBRARIES} sc-memory
+        INCLUDES ${glib_INCLUDE_DIRS} ${SC_CORE_SRC}
+)
+
+if(${SC_CLANG_FORMAT_CODE})
+    target_clangformat_setup(sc-core-transaction-benchmark-tests)
+endif()

@@ -4,55 +4,55 @@
 #include "sc-core/sc_memory.h"
 #include "sc-store/sc_storage_private.h"
 
-sc_result sc_memory_transaction_node_new(sc_transaction const * txn, sc_type const type)
+sc_addr sc_memory_transaction_node_new(sc_transaction const * txn, sc_type const type)
 {
   if (txn == null_ptr)
-    return SC_RESULT_ERROR_INVALID_PARAMS;
+    return SC_ADDR_EMPTY;
 
   sc_result result;
   sc_addr const allocated_addr = sc_memory_node_new_ext(txn->ctx, type, &result);
   sc_transaction_element_new(txn, &allocated_addr);
 
-  return result;
+  return allocated_addr;
 }
 
-sc_result sc_memory_transaction_link_new(sc_transaction const * txn)
+sc_addr sc_memory_transaction_link_new(sc_transaction const * txn)
 {
   if (txn == null_ptr)
-    return SC_RESULT_ERROR_INVALID_PARAMS;
+    return SC_ADDR_EMPTY;
 
   sc_result result;
   sc_addr const allocated_addr = sc_memory_link_new_ext(txn->ctx, sc_type_const_node_link, &result);
   sc_transaction_element_new(txn, &allocated_addr);
 
-  return result;
+  return allocated_addr;
 }
 
-sc_result sc_memory_transaction_arc_new(
+sc_addr sc_memory_transaction_arc_new(
     sc_transaction const * txn,
     sc_type const type,
     sc_addr * const beg_addr,
     sc_addr * const end_addr)
 {
   if (txn == null_ptr)
-    return SC_RESULT_ERROR_INVALID_PARAMS;
+    return SC_ADDR_EMPTY;
 
   sc_result result;
   sc_addr connector_addr = SC_ADDR_EMPTY;
 
   if (sc_type_is_not_connector(type))
   {
-    return SC_RESULT_ERROR_ELEMENT_IS_NOT_CONNECTOR;
+    return SC_ADDR_EMPTY;
   }
 
   if (beg_addr == null_ptr || end_addr == null_ptr)
   {
-    return SC_RESULT_ERROR_INVALID_PARAMS;
+    return SC_ADDR_EMPTY;
   }
 
   if (SC_ADDR_IS_EMPTY(*beg_addr) || SC_ADDR_IS_EMPTY(*end_addr))
   {
-    return SC_RESULT_ERROR_ADDR_IS_NOT_VALID;
+    return SC_ADDR_EMPTY;
   }
 
   sc_element_data new_beg_ver_val;
@@ -64,7 +64,7 @@ sc_result sc_memory_transaction_arc_new(
   sc_element * arc_el = sc_storage_allocate_new_element(txn->ctx, &connector_addr);
   if (arc_el == null_ptr)
   {
-    return SC_RESULT_ERROR_FULL_MEMORY;
+    return SC_ADDR_EMPTY;
   }
 
   arc_el->flags.type = type;
@@ -82,9 +82,9 @@ sc_result sc_memory_transaction_arc_new(
   sc_monitor_acquire_write_n(2, beg_monitor, end_monitor);
 
   if (beg_monitor == null_ptr)
-    return SC_RESULT_ERROR;
+    return SC_ADDR_EMPTY;
   if (end_monitor == null_ptr)
-    return SC_RESULT_ERROR;
+    return SC_ADDR_EMPTY;
 
   result = sc_storage_get_element_data_by_addr(*beg_addr, new_beg_ver);
   if (result != SC_RESULT_OK)
@@ -126,12 +126,12 @@ sc_result sc_memory_transaction_arc_new(
 
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
 
-  return result;
+  return connector_addr;
 
 error:
   sc_storage_free_element(connector_addr);
   sc_monitor_release_write_n(2, beg_monitor, end_monitor);
-  return result;
+  return connector_addr;
 }
 
 sc_addr sc_memory_transaction_element_free(sc_transaction const * txn, sc_addr const addr)
