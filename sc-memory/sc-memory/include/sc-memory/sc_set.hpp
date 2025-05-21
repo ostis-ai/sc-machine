@@ -106,7 +106,7 @@ public:
    * @param roles Set to be filled with roles associated with the element.
    * @return The sc-address of the next element, or ScAddr::Empty if no more elements.
    */
-  _SC_EXTERN virtual ScAddr Next(ScAddrSet & roles) const;
+  _SC_EXTERN virtual ScAddr Next(ScAddrUnorderedSet & roles) const;
 
   /*!
    * @brief Returns the next element in the set.
@@ -133,6 +133,39 @@ public:
    */
   template <typename Func>
   _SC_EXTERN void ForEach(Func func) const;
+
+  /*!
+   * @brief Retrieves elements from the set that are associated with the specified roles.
+   *
+   * Iterates over the elements in the set and, for each element whose role address is present
+   * in the provided `roles` set, adds an entry to the `elements` map. The map is populated with
+   * the role address as the key and the corresponding element address as the value.
+   *
+   * @param roles A set of role addresses to filter elements by. Only elements associated with these roles will be
+   * included in the result.
+   *
+   * @param elements An output map that will be populated with role addresses as keys and their corresponding element
+   * addresses as values. Only elements whose roles are found in the `roles` set are included.
+   *
+   * @return Returns `true` if all roles in the set are found among the elements; returns `false` if there are any roles
+   * in the input set that are not associated with any element in the set.
+   */
+  _SC_EXTERN bool GetElementsByRoles(ScAddrUnorderedSet const & roles, ScAddrToValueUnorderedMap<ScAddr> & elements)
+      const;
+
+  /*!
+   * @brief Retrieves all element addresses from the set.
+   *
+   * Clears the provided `elements` set and then populates it with the addresses of all elements contained
+   * in this set. After this method is called, `elements` will contain only the element addresses from this set.
+   *
+   * @param elements
+   *   An output set that will be cleared and then filled with the addresses of all elements in the set.
+   *
+   * @note
+   *   Any previous contents of `elements` will be removed.
+   */
+  _SC_EXTERN void GetElements(ScAddrUnorderedSet & elements) const;
 
 protected:
   /*!
