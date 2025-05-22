@@ -107,6 +107,12 @@
         },
     ],
     "files.associations": {
-        "map": "cpp"
+        "map": "cpp",
+        "sc_event_subscription.h": "c",
+        "sc_monitor_private.h": "c",
+        "sc_types.h": "c",
+        "sc_list.h": "c",
+        "sc_memory_params.h": "c",
+        "sc_mutex.h": "c"
     }
 }

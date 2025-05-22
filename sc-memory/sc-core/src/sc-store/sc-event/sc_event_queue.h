@@ -13,8 +13,8 @@
 #include "sc-core/sc-base/sc_mutex.h"
 #include "sc-core/sc-base/sc_monitor.h"
 
-#include "sc-store/sc-container/sc_hash_table.h"
-#include "sc-store/sc-base/sc_monitor_private.h"
+#include "sc_hash_table.h"
+#include "sc-core/sc-base/sc_monitor_private.h"
 
 typedef sc_result (*sc_event_do_after_callback)(sc_memory_context const * ctx, sc_addr addr);
 
@@ -73,6 +73,8 @@ void _sc_event_emission_manager_add(
     sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
-    sc_addr event_addr);
+    sc_addr event_addr,
+    sc_memory_context const * ctx, // добавил параметр в эту функцию
+    sc_event_type event_type_addr);
 
 #endif

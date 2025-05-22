@@ -11,7 +11,7 @@
 
 #include "sc-core/sc-container/sc_queue.h"
 
-#include "sc_mutex_private.h"
+#include "sc-core/sc-base/sc_mutex_private.h"
 
 struct _sc_monitor
 {
