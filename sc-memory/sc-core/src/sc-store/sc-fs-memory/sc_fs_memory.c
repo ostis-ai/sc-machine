@@ -126,10 +126,6 @@ sc_fs_memory_status sc_fs_memory_unlink_string(sc_addr_hash link_hash)
  return manager->unlink_string(manager->fs_memory, link_hash);
 }
 
-
-
-
-// Асинхронная запись сегмента
 void write_segment_async(int fd, sc_segment* segment, off_t offset) {
   io_context_t ctx = 0;
   struct iocb cb;
@@ -208,7 +204,7 @@ sc_fs_memory_status _sc_fs_memory_load_sc_memory_segments(sc_storage * storage) 
     return SC_FS_MEMORY_OK;
   }
 
-  int fd = open(manager->segments_path,O_DIRECT);
+  int fd = open(manager->segments_path, O_RDONLY);
   if (fd < 0) {
     sc_fs_memory_error("Failed to open segments file: %s", manager->segments_path);
     return SC_FS_MEMORY_READ_ERROR;
@@ -391,7 +387,7 @@ sc_fs_memory_status sc_fs_memory_load(sc_storage * storage)
 sc_fs_memory_status _sc_fs_memory_save_sc_memory_segments(sc_storage * storage) {
   sc_fs_memory_info("Save sc-memory segments");
 
-  int fd = open(manager->segments_path, O_RDWR | O_CREAT, O_DIRECT);
+  int fd = open(manager->segments_path, O_RDWR | O_CREAT, 0666);
   if (fd < 0) {
     sc_fs_memory_error("Failed to open segments file: %s", manager->segments_path);
     return SC_FS_MEMORY_WRITE_ERROR;
