@@ -28,6 +28,7 @@ struct _sc_segment
   sc_addr_offset last_engaged_offset;  // number of sc-element in the segment
   sc_addr_offset last_released_offset;
   sc_monitor monitor;
+  sc_bool is_modified; // Indicates if segment was modified
 };
 
 /*! Create new segment with specified size.

@@ -4,11 +4,25 @@
  * (See accompanying file COPYING.MIT or copy at http://opensource.org/licenses/MIT)
  */
 
+
+
 #ifndef _sc_fs_memory_h_
 #define _sc_fs_memory_h_
 
 #include "sc_fs_memory_status.h"
 #include "sc_fs_memory_header.h"
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+#include <libaio.h>
+#include <pthread.h>
+
+
 
 #include "sc-core/sc_types.h"
 #include "sc-core/sc_defines.h"
@@ -20,6 +34,16 @@
 #ifdef SC_DICTIONARY_FS_MEMORY
 typedef struct _sc_dictionary_fs_memory sc_fs_memory;
 #endif
+
+#define PAGE_SIZE 4096
+#define NUM_THREADS 4
+
+typedef struct {
+  int fd;
+  sc_segment* segment;
+  off_t offset;
+} thread_args;
+
 
 typedef struct _sc_fs_memory_manager
 {
