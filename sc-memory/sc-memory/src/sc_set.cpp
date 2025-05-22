@@ -125,14 +125,15 @@ void ScSet::Reset()
 bool ScSet::GetElementsByRoles(ScAddrUnorderedSet const & roles, ScAddrToValueUnorderedMap<ScAddr> & elements) const
 {
   elements.clear();
-  ScAddrUnorderedSet notFoundRoles;
+  ScAddrUnorderedSet notFoundRoles{roles};
   ForEach(
       [&](ScAddr const &, ScAddr const & elementAddr, ScAddr const &, ScAddr const & roleAddr)
       {
         if (roles.count(roleAddr))
+        {
           elements[roleAddr] = elementAddr;
-        else
-          notFoundRoles.insert(roleAddr);
+          notFoundRoles.erase(roleAddr);
+        }
       });
 
   return notFoundRoles.empty();
