@@ -8,21 +8,24 @@
 
 #include <vector>
 #include <unordered_map>
+#include <set>
 #include <iostream>
+#include <sstream>
 
 #include "sc-memory/sc_memory.hpp"
 
 namespace
 {
-class ObjectInfo
+
+class TemplateObjectInfo
 {
 public:
-  ObjectInfo(ScAddr const & addr, ScType const & type, std::string idtf)
+  TemplateObjectInfo(ScAddr const & addr, ScType const & type, std::string idtf)
     : m_addr(addr)
     , m_type(type)
     , m_idtf(std::move(idtf))
-    , m_srcHash(0)
-    , m_trgHash(0)
+    , m_sourceHash(0)
+    , m_targetHash(0)
   {
   }
 
@@ -36,7 +39,7 @@ public:
     return m_addr;
   }
 
-  [[nodiscard]] inline std::string const & GetIdtf() const
+  [[nodiscard]] inline std::string const & GetIdentifier() const
   {
     return m_idtf;
   }
@@ -51,24 +54,24 @@ public:
     return m_addr.Hash();
   }
 
-  inline void SetSourceHash(ScAddr::HashType const & srcHash)
+  inline void SetSourceHash(ScAddr::HashType const & sourceHash)
   {
-    m_srcHash = srcHash;
+    m_sourceHash = sourceHash;
   }
 
-  inline void SetTargetHash(ScAddr::HashType const & trgHash)
+  inline void SetTargetHash(ScAddr::HashType const & targetHash)
   {
-    m_trgHash = trgHash;
+    m_targetHash = targetHash;
   }
 
-  [[nodiscard]] inline ScAddr::HashType const & GetSourceHash() const
+  [[nodiscard]] inline ScAddr::HashType GetSourceHash() const
   {
-    return m_srcHash;
+    return m_sourceHash;
   }
 
-  [[nodiscard]] inline ScAddr::HashType const & GetTargetHash() const
+  [[nodiscard]] inline ScAddr::HashType GetTargetHash() const
   {
-    return m_trgHash;
+    return m_targetHash;
   }
 
 private:
@@ -76,8 +79,8 @@ private:
   ScType m_type;
   std::string m_idtf;
 
-  ScAddr::HashType m_srcHash;
-  ScAddr::HashType m_trgHash;
+  ScAddr::HashType m_sourceHash;
+  ScAddr::HashType m_targetHash;
 };
 
 }  // namespace
@@ -85,14 +88,15 @@ private:
 class ScTemplateBuilder
 {
   friend class ScTemplate;
-  using ConnectorDependenceMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
-  using ObjectToIdtfMap = std::unordered_map<ScAddr::HashType, ObjectInfo>;
-  using ScAddrHashSet = std::set<ScAddr::HashType>;
+  using ConnectorDependencyMap = std::unordered_multimap<ScAddr::HashType, ScAddr::HashType>;
+  using ObjectHashToInfoMap = std::unordered_map<ScAddr::HashType, TemplateObjectInfo>;
+  using HashSet = std::set<ScAddr::HashType>;
+  using LevelCache = std::unordered_map<ScAddr::HashType, size_t>;
 
 protected:
-  ScTemplateBuilder(ScAddr const & translatableTemplateAddr, ScMemoryContext & ctx, ScTemplateParams const & params)
-    : m_templateAddr(translatableTemplateAddr)
-    , m_context(ctx)
+  ScTemplateBuilder(ScAddr const & templateAddr, ScMemoryContext & context, ScTemplateParams const & params)
+    : m_templateAddr(templateAddr)
+    , m_context(context)
   {
     auto const & replacements = params.GetAll();
     for (auto const & item : replacements)
@@ -100,75 +104,76 @@ protected:
       ScAddr const & addr = m_context.SearchElementBySystemIdentifier(item.first);
       if (m_context.IsElement(addr))
       {
-        ObjectInfo obj = CollectObjectInfo(item.second, addr);
-        m_elements.insert({addr.Hash(), obj});
+        TemplateObjectInfo objInfo = CollectObjectInfo(item.second, addr);
+        m_objectInfos.insert({addr.Hash(), objInfo});
       }
       else
       {
-        ObjectInfo obj = CollectObjectInfo(item.second, item.second);
+        TemplateObjectInfo objInfo = CollectObjectInfo(item.second, item.second);
         std::stringstream ss(item.first);
-        sc_addr_hash hash;
+        ScAddr::HashType hash;
         ss >> hash;
-        ScAddr const & varNode = ScAddr(hash);
-        m_elements.insert({varNode.Hash(), obj});
+        ScAddr varNode(hash);
+        m_objectInfos.insert({varNode.Hash(), objInfo});
       }
     }
   }
 
-  void operator()(ScTemplate * inTemplate)
+  void operator()(ScTemplate * targetTemplate)
   {
-    // TODO: Add blocking sc-structure
-    ScAddrHashSet independentConnectors;
+    if (!targetTemplate)
+      return;
 
-    // define connectors set and independent connectors set
-    ScIterator3Ptr iter = m_context.CreateIterator3(m_templateAddr, ScType::ConstPermPosArc, ScType::Unknown);
-    while (iter->Next())
+    HashSet independentConnectorHashes;
+
+    ScIterator3Ptr iterator = m_context.CreateIterator3(m_templateAddr, ScType::ConstPermPosArc, ScType::Unknown);
+    while (iterator->Next())
     {
-      ScAddr const & objAddr = iter->Get(2);
+      ScAddr const & objectAddr = iterator->Get(2);
 
-      auto const & it = m_elements.find(objAddr.Hash());
-      ObjectInfo obj = it == m_elements.cend() ? CollectObjectInfo(objAddr) : it->second;
+      auto const & it = m_objectInfos.find(objectAddr.Hash());
+      TemplateObjectInfo objInfo = it == m_objectInfos.cend() ? CollectObjectInfo(objectAddr) : it->second;
 
-      if (obj.IsConnector())
+      if (objInfo.IsConnector())
       {
-        auto [objSrcAddr, objTrgAddr] = m_context.GetConnectorIncidentElements(objAddr);
-        obj.SetSourceHash(objSrcAddr.Hash());
-        obj.SetTargetHash(objTrgAddr.Hash());
+        auto [sourceAddr, targetAddr] = m_context.GetConnectorIncidentElements(objectAddr);
+        objInfo.SetSourceHash(sourceAddr.Hash());
+        objInfo.SetTargetHash(targetAddr.Hash());
 
-        ScType const srcType = m_context.GetElementType(objSrcAddr);
-        ScType const trgType = m_context.GetElementType(objTrgAddr);
-        if (!srcType.IsConnector() && !trgType.IsConnector())
-          independentConnectors.insert(obj.GetHash());
-        if (srcType.IsConnector())
-          m_connectorDependenceMap.insert({obj.GetHash(), objSrcAddr.Hash()});
-        if (trgType.IsConnector())
-          m_connectorDependenceMap.insert({obj.GetHash(), objTrgAddr.Hash()});
+        ScType const sourceType = m_context.GetElementType(sourceAddr);
+        ScType const targetType = m_context.GetElementType(targetAddr);
+        if (!sourceType.IsConnector() && !targetType.IsConnector())
+          independentConnectorHashes.insert(objInfo.GetHash());
+        if (sourceType.IsConnector())
+          m_connectorDependencyMap.insert({objInfo.GetHash(), sourceAddr.Hash()});
+        if (targetType.IsConnector())
+          m_connectorDependencyMap.insert({objInfo.GetHash(), targetAddr.Hash()});
       }
 
-      m_elements.insert({obj.GetHash(), obj});
+      m_objectInfos.try_emplace(objInfo.GetHash(), std::move(objInfo));
     }
 
-    // split connectors set by their power
-    std::vector<ScAddrHashSet> powerDependentConnectors;
-    powerDependentConnectors.emplace_back(independentConnectors);
-    SplitConnectorsByDependencePower(powerDependentConnectors);
+    std::vector<HashSet> connectorsByDependencyLevel;
+    connectorsByDependencyLevel.emplace_back(independentConnectorHashes);
+    GroupConnectorsByDependencyLevel(connectorsByDependencyLevel);
 
-    for (auto const & equalDependentConnectors : powerDependentConnectors)
+    for (auto const & connectorsWithSameLevel : connectorsByDependencyLevel)
     {
-      for (ScAddr::HashType const & connectorHash : equalDependentConnectors)
+      for (ScAddr::HashType const & connectorHash : connectorsWithSameLevel)
       {
-        ObjectInfo const & connector = m_elements.at(connectorHash);
-        ObjectInfo const & src = m_elements.at(connector.GetSourceHash());
-        ObjectInfo const & trg = m_elements.at(connector.GetTargetHash());
+        TemplateObjectInfo const & connectorInfo = m_objectInfos.at(connectorHash);
+        TemplateObjectInfo const & sourceInfo = m_objectInfos.at(connectorInfo.GetSourceHash());
+        TemplateObjectInfo const & targetInfo = m_objectInfos.at(connectorInfo.GetTargetHash());
 
-        auto const & param = [&inTemplate](ObjectInfo const & obj) -> ScTemplateItem
+        auto const & param = [targetTemplate](TemplateObjectInfo const & objInfo) -> ScTemplateItem
         {
-          return obj.GetType().IsConst()
-                     ? obj.GetAddr() >> obj.GetIdtf()
-                     : (inTemplate->HasReplacement(obj.GetIdtf()) ? obj.GetIdtf() : obj.GetType() >> obj.GetIdtf());
+          return objInfo.GetType().IsConst() ? objInfo.GetAddr() >> objInfo.GetIdentifier()
+                                             : (targetTemplate->HasReplacement(objInfo.GetIdentifier())
+                                                    ? objInfo.GetIdentifier()
+                                                    : objInfo.GetType() >> objInfo.GetIdentifier());
         };
 
-        inTemplate->Triple(param(src), param(connector), param(trg));
+        targetTemplate->Triple(param(sourceInfo), param(connectorInfo), param(targetInfo));
       }
     }
   }
@@ -178,66 +183,64 @@ protected:
   ScMemoryContext & m_context;
   ScTemplateParams m_params;
 
-  // all objects in template
-  ObjectToIdtfMap m_elements;
-  ConnectorDependenceMap m_connectorDependenceMap;
+  ObjectHashToInfoMap m_objectInfos;
+  ConnectorDependencyMap m_connectorDependencyMap;
 
 private:
-  ObjectInfo CollectObjectInfo(ScAddr const & objAddr, std::string objIdtf = "") const
+  TemplateObjectInfo CollectObjectInfo(ScAddr const & objAddr, std::string objIdtf = "") const
   {
     ScType const objType = m_context.GetElementType(objAddr);
     if (objIdtf.empty())
-      objIdtf = objAddr;
-
+      objIdtf = std::string(objAddr);
     return {objAddr, objType, objIdtf};
   }
 
-  void SplitConnectorsByDependencePower(std::vector<ScAddrHashSet> & powerDependentConnectors)
+  void GroupConnectorsByDependencyLevel(std::vector<HashSet> & connectorsByDependencyLevel)
   {
-    for (auto const & hPair : m_connectorDependenceMap)
+    LevelCache dependencyLevelCache;
+
+    for (auto const & dependencyPair : m_connectorDependencyMap)
     {
-      size_t const power = GetConnectorDependencePower(hPair.first, hPair.second);
-      size_t size = powerDependentConnectors.size();
+      size_t level = GetConnectorDependencyLevel(dependencyPair.first, dependencyPair.second, dependencyLevelCache);
+      if (level >= connectorsByDependencyLevel.size())
+        connectorsByDependencyLevel.resize(level + 1);
 
-      if (power >= size)
-      {
-        while (size <= power)
-        {
-          powerDependentConnectors.emplace_back();
-          ++size;
-        }
-      }
-
-      powerDependentConnectors.at(power).insert(hPair.first);
+      connectorsByDependencyLevel.at(level).insert(dependencyPair.first);
     }
   }
 
-  // get connector dependence power from other connector
-  inline size_t GetConnectorDependencePower(
+  size_t GetConnectorDependencyLevel(
       ScAddr::HashType const & connectorHash,
-      ScAddr::HashType const & otherConnectorHash) const
+      ScAddr::HashType const & dependentConnectorHash,
+      LevelCache & levelCache) const
   {
-    size_t max = 0;
-    DefineConnectorDependencePower(connectorHash, otherConnectorHash, max, 1);
-    return max;
+    auto it = levelCache.find(connectorHash);
+    if (it != levelCache.end())
+      return it->second;
+
+    size_t maxLevel = 0;
+    UpdateConnectorDependencyLevel(connectorHash, dependentConnectorHash, maxLevel, 1, levelCache);
+    levelCache[connectorHash] = maxLevel;
+    return maxLevel;
   }
 
-  // count connector dependence power from other connector
-  inline size_t DefineConnectorDependencePower(
+  size_t UpdateConnectorDependencyLevel(
       ScAddr::HashType const & connectorHash,
-      ScAddr::HashType const & otherConnectorHash,
-      size_t & max,
-      size_t power) const
+      ScAddr::HashType const & dependentConnectorHash,
+      size_t & maxLevel,
+      size_t currentLevel,
+      LevelCache & levelCache) const
   {
-    auto const range = m_connectorDependenceMap.equal_range(connectorHash);
+    auto const range = m_connectorDependencyMap.equal_range(connectorHash);
     for (auto it = range.first; it != range.second; ++it)
     {
-      size_t incPower = power + 1;
+      size_t nextLevel = currentLevel + 1;
+      size_t subLevel = GetConnectorDependencyLevel(it->second, dependentConnectorHash, levelCache);
 
-      if (DefineConnectorDependencePower(it->second, otherConnectorHash, max, incPower) == incPower && power > max)
-        max = power;
+      if (subLevel == nextLevel && currentLevel > maxLevel)
+        maxLevel = currentLevel;
     }
-    return power;
+    return currentLevel;
   }
 };
 
