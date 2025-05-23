@@ -17,6 +17,7 @@
 namespace
 {
 
+/// Holds information about an object (node or connector) in the template
 class TemplateObjectInfo
 {
 public:
@@ -131,6 +132,7 @@ protected:
     {
       ScAddr const & objectAddr = iterator->Get(2);
 
+      // Try to find object info in the map, otherwise collect it from memory
       auto const & it = m_objectInfos.find(objectAddr.Hash());
       TemplateObjectInfo objInfo = it == m_objectInfos.cend() ? CollectObjectInfo(objectAddr) : it->second;
 
@@ -142,6 +144,7 @@ protected:
 
         ScType const sourceType = m_context.GetElementType(sourceAddr);
         ScType const targetType = m_context.GetElementType(targetAddr);
+        // If both source and target are not connectors, this is an independent connector
         if (!sourceType.IsConnector() && !targetType.IsConnector())
           independentConnectorHashes.insert(objInfo.GetHash());
         if (sourceType.IsConnector())
@@ -150,13 +153,17 @@ protected:
           m_connectorDependencyMap.insert({objInfo.GetHash(), targetAddr.Hash()});
       }
 
+      // Store or update object info in the map
       m_objectInfos.insert_or_assign(objInfo.GetHash(), std::move(objInfo));
     }
 
+    // Group connectors by their dependency level
     std::vector<HashSet> connectorsByDependencyLevel;
     connectorsByDependencyLevel.emplace_back(independentConnectorHashes);
     GroupConnectorsByDependencyLevel(connectorsByDependencyLevel);
 
+    // For each group of connectors with the same dependency level,
+    // add the corresponding triples to the template
     for (auto const & connectorsWithSameLevel : connectorsByDependencyLevel)
     {
       for (ScAddr::HashType const & connectorHash : connectorsWithSameLevel)
@@ -167,12 +174,15 @@ protected:
 
         auto const & param = [targetTemplate](TemplateObjectInfo const & objInfo) -> ScTemplateItem
         {
+          // If the object is constant, use its address and identifier
+          // Otherwise, use its identifier or type + identifier depending on replacements
           return objInfo.GetType().IsConst() ? objInfo.GetAddr() >> objInfo.GetIdentifier()
                                              : (targetTemplate->HasReplacement(objInfo.GetIdentifier())
                                                     ? objInfo.GetIdentifier()
                                                     : objInfo.GetType() >> objInfo.GetIdentifier());
         };
 
+        // Add the triple (source, connector, target) to the template
         targetTemplate->Triple(param(sourceInfo), param(connectorInfo), param(targetInfo));
       }
     }
@@ -195,8 +205,12 @@ private:
     return {objAddr, objType, objIdtf};
   }
 
+  // Groups connectors into sets by their dependency level.
+  // The result is a vector where each index corresponds to a dependency level,
+  // and each set contains all connectors at that level
   void GroupConnectorsByDependencyLevel(std::vector<HashSet> & connectorsByDependencyLevel)
   {
+    // Cache for already computed dependency levels
     LevelCache dependencyLevelCache;
 
     for (auto const & dependencyPair : m_connectorDependencyMap)
@@ -209,6 +223,7 @@ private:
     }
   }
 
+  // Computes the maximum dependency level for a connector, using memoization
   size_t GetConnectorDependencyLevel(
       ScAddr::HashType const & connectorHash,
       ScAddr::HashType const & dependentConnectorHash,
@@ -224,6 +239,7 @@ private:
     return maxLevel;
   }
 
+  // Recursively updates the maximum dependency level for the given connector
   size_t UpdateConnectorDependencyLevel(
       ScAddr::HashType const & connectorHash,
       ScAddr::HashType const & dependentConnectorHash,
@@ -231,12 +247,17 @@ private:
       size_t currentLevel,
       LevelCache & levelCache) const
   {
+    // Iterate over all connectors that the current connector depends on
     auto const range = m_connectorDependencyMap.equal_range(connectorHash);
     for (auto it = range.first; it != range.second; ++it)
     {
       size_t nextLevel = currentLevel + 1;
+      // Recursively compute the dependency level for the dependent connector
       size_t subLevel = GetConnectorDependencyLevel(it->second, dependentConnectorHash, levelCache);
 
+      // If the dependency level of the child connector equals the expected next level,
+      // and the current level is greater than the previously recorded maximum,
+      // then update maxLevel.
       if (subLevel == nextLevel && currentLevel > maxLevel)
         maxLevel = currentLevel;
     }
