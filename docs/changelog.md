@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Optimize grouping connectors by level in `ScTemplateBuilder`
 - Rename method `HasElement` in `ScSet` class to `Has`
 
 ### Fixed 
