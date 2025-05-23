@@ -259,7 +259,7 @@ private:
       // and the current level is greater than the previously recorded maximum,
       // then update maxLevel.
       if (subLevel == nextLevel && currentLevel > maxLevel)
-        maxLevel = currentLevel;
+        maxLevel = std::max(maxLevel, subLevel + 1);
     }
     return currentLevel;
   }
