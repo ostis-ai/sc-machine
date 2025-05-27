@@ -7,10 +7,10 @@
 #ifndef _ui_h_
 #define _ui_h_
 
-//extern "C"
-//{
+extern "C"
+{
 #include <sc-core/sc_memory_headers.h>
-//}
+}
 
 extern "C"
 {
