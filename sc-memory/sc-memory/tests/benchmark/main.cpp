@@ -20,6 +20,7 @@
 
 #include "units/template_search_complex.hpp"
 #include "units/template_search_smoke.hpp"
+#include "units/complex_event.hpp"
 
 #include <atomic>
 #include <chrono>
@@ -544,6 +545,16 @@ BENCHMARK_TEMPLATE(BM_Template, TestScCodeBase)
 BENCHMARK_TEMPLATE(BM_Template, TestScCodeExtended)
 ->Unit(benchmark::TimeUnit::kMicrosecond)
 ->Arg(5)->Arg(50)->Arg(500);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, ComplexEventTest)
+->Threads(1)
+->Iterations(kNodeIters)
+->Unit(benchmark::TimeUnit::kMicrosecond);
+
+BENCHMARK_TEMPLATE(BM_MemoryThreaded, ComplexEventTest)
+->Threads(2)
+->Iterations(kNodeIters / 2)
+->Unit(benchmark::TimeUnit::kMicrosecond);
 
 
 BENCHMARK_MAIN();
