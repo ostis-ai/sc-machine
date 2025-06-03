@@ -94,8 +94,13 @@ public:
    * @param logType A type of logging (Console or File).
    * @param logFile A filename to log messages if logType is File.
    * @param logLevel An initial logging level.
+   * @param appendMode A flag indicating whether to append to the file or overwrite it.
    */
-  explicit ScLogger(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel);
+  explicit ScLogger(
+      ScLogType const & logType,
+      std::string const & logFile,
+      ScLogLevel const & logLevel,
+      bool appendMode = false);
 
   /*!
    * @brief Copy constructor for the ScLogger class.
@@ -220,10 +225,11 @@ public:
   void Debug(T const & t, ARGS const &... others);
 
 protected:
-  bool m_isMuted;        //< Indicates whether logging is muted.
-  std::string m_prefix;  //< Prefix added to each logged message.
-  ScLogType m_logType;   //< Current type of logging (Console or File).
-  std::string m_logFile;
+  bool m_isMuted;         //< Indicates whether logging is muted.
+  std::string m_prefix;   //< Prefix added to each logged message.
+  ScLogType m_logType;    //< Current type of logging (Console or File).
+  std::string m_logFile;  //< Name of the file where logs should be written.
+  bool m_appendMode;      //< Flag indicating whether to append to the file or overwrite it.
 
 private:
   std::ofstream m_logFileStream;  //< Stream for writing logs to file if applicable.
