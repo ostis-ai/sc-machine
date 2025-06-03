@@ -73,14 +73,15 @@ ScLogger::ScLogger(
     ScLogType const & logType,
     std::string const & logFile,
     ScLogLevel const & logLevel,
-    bool append /*= false*/)
+    bool appendMode /*= false*/)
   : m_isMuted(false)
   , m_logType(logType)
   , m_logFile(logFile)
   , m_logLevel(logLevel)
+  , m_appendMode(appendMode)
 {
   if (m_logType == ScLogType::File)
-    SetLogFile(m_logFile, append);
+    SetLogFile(m_logFile);
 }
 
 ScLogger::~ScLogger()
@@ -99,9 +100,10 @@ ScLogger & ScLogger::operator=(ScLogger const & other)
   {
     m_isMuted = other.m_isMuted;
     m_logType = other.m_logType;
+    m_logLevel = other.m_logLevel;
+    m_appendMode = other.m_appendMode;
     if (m_logType == ScLogType::File)
       SetLogFile(other.m_logFile);
-    m_logLevel = other.m_logLevel;
   }
   return *this;
 }
@@ -130,11 +132,11 @@ void ScLogger::SetPrefix(std::string const & prefix)
   m_prefix = prefix;
 }
 
-void ScLogger::SetLogFile(std::string const & logFile, bool append /*= false*/)
+void ScLogger::SetLogFile(std::string const & logFile)
 {
   Clear();
   m_logType = ScLogger::ScLogType::File;
-  m_logFileStream.open(logFile, std::ofstream::out | (append ? std::ofstream::app : std::ofstream::trunc));
+  m_logFileStream.open(logFile, std::ofstream::out | (m_appendMode ? std::ofstream::app : std::ofstream::trunc));
 }
 
 void ScLogger::SetLogLevel(ScLogLevel const & logLevel)
