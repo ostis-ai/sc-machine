@@ -18,6 +18,9 @@
 
 #include "sc_memory_context_manager.h"
 #include "sc_memory_context_private.h"
+#include "sc-store/sc-base/sc_condition_private.h"
+#include "sc-core/sc-container/sc_list.h"
+#include "sc-store/sc-container/sc_struct_node.h"
 
 /*! Structure representing an sc-event_subscription registration manager.
  * @note This structure manages the registration and removal of sc-events associated with sc-elements.
@@ -130,6 +133,112 @@ void sc_event_subscription_manager_shutdown(sc_event_subscription_manager * mana
   sc_mem_free(manager);
 }
 
+sc_event_subscription * sc_complex_event_subscription_new(
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type event_type_addr,
+    sc_pointer data,
+    sc_event_callback callback,
+    sc_event_subscription_delete_function delete_callback,
+    sc_bool is_complex_event_subscription,
+    sc_list * events_list)
+{
+  sc_unused(ctx);
+
+  if (!sc_storage_is_element(ctx, subscription_addr))
+    return null_ptr;
+
+  if (!sc_storage_is_element(ctx, event_type_addr))
+    return null_ptr;
+
+  sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
+  event_subscription->subscription_addr = subscription_addr;
+  event_subscription->event_type_addr = event_type_addr;
+  event_subscription->event_element_type = 0;
+  event_subscription->callback = callback;
+  event_subscription->callback_with_user = null_ptr;
+  event_subscription->delete_callback = delete_callback;
+  event_subscription->data = data;
+  event_subscription->ref_count = 1;
+  sc_monitor_init(&event_subscription->monitor);
+  event_subscription->is_complex_event_subscription = is_complex_event_subscription;
+  event_subscription->counter_of_activated_events = 0;
+  if (events_list == null_ptr)
+    event_subscription->max_value_of_activated_events = 0;
+  else
+    event_subscription->max_value_of_activated_events = events_list->size;  //
+  event_subscription->execution_counter = 0;
+  if (is_complex_event_subscription)
+  {
+    event_subscription->events_list = null_ptr;
+  }
+  else
+  {
+    event_subscription->events_list = events_list;
+  }
+  sc_cond_init(&event_subscription->cond_increase);
+  sc_cond_init(&event_subscription->cond_decrease);
+  // register generated event_subscription
+  sc_event_subscription_manager * manager = sc_storage_get_event_subscription_manager();
+  _sc_event_subscription_manager_add(manager, event_subscription);
+
+  return event_subscription;
+}
+
+sc_event_subscription * sc_complex_event_subscription_with_user_new(
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type event_type_addr,
+    sc_type event_element_type,
+    sc_pointer data,
+    sc_event_callback_with_user callback,
+    sc_event_subscription_delete_function delete_callback,
+    sc_bool is_complex_event_subscription,
+    sc_list * events_list)
+{
+  sc_unused(ctx);
+
+  if (!sc_storage_is_element(ctx, subscription_addr))
+    return null_ptr;
+
+  if (!sc_storage_is_element(ctx, event_type_addr))
+    return null_ptr;
+
+  sc_event_subscription * event_subscription = sc_mem_new(sc_event_subscription, 1);
+  event_subscription->subscription_addr = subscription_addr;
+  event_subscription->event_type_addr = event_type_addr;
+  event_subscription->event_element_type = event_element_type;
+  event_subscription->callback = null_ptr;
+  event_subscription->callback_with_user = callback;
+  event_subscription->delete_callback = delete_callback;
+  event_subscription->data = data;
+  event_subscription->ref_count = 1;
+  sc_monitor_init(&event_subscription->monitor);
+  event_subscription->is_complex_event_subscription = is_complex_event_subscription;
+  event_subscription->counter_of_activated_events = 0;
+  if (events_list == null_ptr)
+  {
+    event_subscription->max_value_of_activated_events = 0;
+    event_subscription->events_list = null_ptr;
+  }
+  else
+  {
+    event_subscription->events_list = events_list;
+    event_subscription->max_value_of_activated_events = events_list->size;  //
+  }
+
+  event_subscription->execution_counter = 0;
+
+  sc_cond_init(&event_subscription->cond_increase);
+  sc_cond_init(&event_subscription->cond_decrease);
+
+  // register generated event_subscription
+  sc_event_subscription_manager * manager = sc_storage_get_event_subscription_manager();
+  _sc_event_subscription_manager_add(manager, event_subscription);
+
+  return event_subscription;
+}
+
 sc_event_subscription * sc_event_subscription_new(
     sc_memory_context const * ctx,
     sc_addr subscription_addr,
@@ -225,6 +334,19 @@ sc_result sc_event_subscription_destroy(sc_event_subscription * event_subscripti
   event_subscription->callback_with_user = null_ptr;
   event_subscription->delete_callback = null_ptr;
   event_subscription->data = null_ptr;
+  sc_cond_destroy(&event_subscription->cond_increase);
+  sc_cond_destroy(&event_subscription->cond_decrease);
+
+  if (event_subscription->is_complex_event_subscription)
+  {
+    if (!sc_list_destroy(event_subscription->events_list))
+      return SC_RESULT_ERROR;
+    event_subscription->is_complex_event_subscription = SC_FALSE;
+  }
+
+  event_subscription->counter_of_activated_events = 0;
+  event_subscription->max_value_of_activated_events = 0;
+  event_subscription->execution_counter = 0;
 
   sc_storage * storage = sc_storage_get();
   if (storage != null_ptr)
@@ -355,11 +477,37 @@ sc_result sc_event_emit_impl(
           connector_type,
           other_addr,
           callback,
-          event_addr);
+          event_addr,
+          ctx,               // добавил в функцию параметр
+          event_type_addr);  // добавил в функцию параметр
 
       result = SC_RESULT_OK;
     }
 
+    sc_monitor_acquire_write(&event_subscription->monitor);
+
+    if (!sc_event_subscription_is_complex(event_subscription) && event_subscription->events_list != null_ptr)
+    {
+      if (++event_subscription->execution_counter == 1)
+      {
+        sc_struct_node * list_node = event_subscription->events_list->begin;
+
+        while (list_node != null_ptr && list_node != event_subscription->events_list->end)
+        {
+          sc_event_subscription * complex_event_subscription = (sc_event_subscription *)list_node->data;
+
+          if (complex_event_subscription != null_ptr)
+          {
+            sc_monitor_acquire_write(&complex_event_subscription->monitor);
+            sc_cond_broadcast(&complex_event_subscription->cond_increase);
+            sc_monitor_release_write(&complex_event_subscription->monitor);
+          }
+
+          list_node = list_node->next;
+        }
+      }
+    }
+    sc_monitor_release_write(&event_subscription->monitor);
     element_events_list = element_events_list->next;
   }
   sc_monitor_release_read(&subscription_manager->events_table_monitor);
@@ -386,4 +534,111 @@ sc_addr sc_event_subscription_get_event_type(sc_event_subscription const * event
 sc_addr sc_event_subscription_get_element(sc_event_subscription const * event_subscription)
 {
   return event_subscription->subscription_addr;
+}
+
+sc_bool sc_event_subscription_is_complex(sc_event_subscription const * event_subscription)
+{
+  return event_subscription->is_complex_event_subscription;
+}
+
+sc_result sc_event_subscription_add_complex_events_list(
+    sc_event_subscription * event_subscription,
+    sc_list * events_list)
+{
+  if (event_subscription == null_ptr)
+    return SC_RESULT_NO;
+
+  if (event_subscription->events_list != null_ptr)  //????? type_error with !=
+    sc_list_clear(event_subscription->events_list);
+
+  event_subscription->events_list = events_list;
+
+  return SC_RESULT_OK;
+}
+
+sc_result sc_event_subscription_add_one_complex_event(
+    sc_event_subscription * complex_event_subscription,
+    sc_event_subscription const * event_subscription)
+{
+  if (event_subscription == null_ptr)
+    return SC_RESULT_NO;
+
+  sc_list_push_back(event_subscription->events_list, complex_event_subscription);
+
+  return SC_RESULT_OK;
+}
+
+sc_bool list_subscription_equal(void * node1, void * node2)
+{  ///??? interesting equal function. does it look good?
+  return node1 == node2;
+}
+
+sc_result sc_event_subscription_delete_one_complex_event(
+    sc_event_subscription * complex_event_subscription,
+    sc_event_subscription const * event_subscription)
+{
+  if (event_subscription == null_ptr)
+    return SC_RESULT_NO;
+
+  if (event_subscription->events_list == null_ptr)  //????? type_error with !=
+    return SC_RESULT_ERROR;
+
+  sc_list_remove_if(event_subscription->events_list, (void *)&complex_event_subscription, list_subscription_equal);
+
+  return SC_RESULT_OK;
+}
+
+gpointer increase_thread(sc_event_subscription * complex_event_subscription)
+{
+  sc_monitor_acquire_write(&complex_event_subscription->monitor);
+  while (complex_event_subscription->counter_of_activated_events
+         < complex_event_subscription->max_value_of_activated_events)
+  {
+    sc_cond_wait(&complex_event_subscription->cond_increase, &complex_event_subscription->monitor.rw_mutex);
+    ++complex_event_subscription->counter_of_activated_events;
+  }
+  sc_monitor_release_write(&complex_event_subscription->monitor);
+
+  return null_ptr;
+}
+
+gpointer decrease_thread(sc_event_subscription * complex_event_subscription)
+{
+  sc_monitor_acquire_write(&complex_event_subscription->monitor);
+  while (complex_event_subscription->counter_of_activated_events
+         < complex_event_subscription->max_value_of_activated_events)
+  {
+    sc_cond_wait(&complex_event_subscription->cond_decrease, &complex_event_subscription->monitor.rw_mutex);
+    if (complex_event_subscription->counter_of_activated_events
+        < complex_event_subscription->max_value_of_activated_events)
+      break;
+    --complex_event_subscription->counter_of_activated_events;
+  }
+  sc_monitor_release_write(&complex_event_subscription->monitor);
+
+  return null_ptr;
+}
+
+sc_result start_check_condition_to_activate_complex_event(
+    sc_event_subscription * complex_event_subscription,
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type event_type_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    sc_addr event_addr)
+{
+  if (complex_event_subscription == null_ptr)
+    return SC_RESULT_NO;
+
+  sc_thread * t1 = g_thread_new("increase_thread", (GThreadFunc)increase_thread, complex_event_subscription);
+  sc_thread * t2 = g_thread_new("decrease_thread", (GThreadFunc)decrease_thread, complex_event_subscription);
+
+  g_thread_join(t1);
+  g_thread_join(t2);
+
+  return sc_event_emit(
+      ctx, subscription_addr, event_type_addr, connector_addr, connector_type, other_addr, callback, event_addr);
 }

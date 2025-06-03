@@ -8,6 +8,7 @@
 #define _sc_event_subscription_h_
 
 #include "sc-core/sc_types.h"
+#include "sc-core/sc-container/sc_list.h"
 
 typedef struct _sc_event_subscription_manager sc_event_subscription_manager;
 
@@ -67,6 +68,16 @@ _SC_EXTERN sc_event_subscription * sc_event_subscription_new(
     sc_event_callback callback,
     sc_event_subscription_delete_function delete_callback);
 
+_SC_EXTERN sc_event_subscription * sc_complex_event_subscription_new(
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type event_type_addr,
+    sc_pointer data,
+    sc_event_callback callback,
+    sc_event_subscription_delete_function delete_callback,
+    sc_bool is_complex_event_subscription,
+    sc_list * events_list);
+
 /*! Subscribe for events from specified sc-element.
  * @param ctx A sc-memory context used to create sc-event subscription.
  * @param subscription_addr sc-address of subscribed sc-element events.
@@ -86,6 +97,17 @@ _SC_EXTERN sc_event_subscription * sc_event_subscription_with_user_new(
     sc_pointer data,
     sc_event_callback_with_user callback,
     sc_event_subscription_delete_function delete_callback);
+
+_SC_EXTERN sc_event_subscription * sc_complex_event_subscription_with_user_new(
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type event_type_addr,
+    sc_type event_element_type,
+    sc_pointer data,
+    sc_event_callback_with_user callback,
+    sc_event_subscription_delete_function delete_callback,
+    sc_bool is_complex_event_subscription,
+    sc_list * events_list);
 
 /*! Destroys the specified sc-event subscription.
  * @param event_subscription Pointer to the sc-event subscription to be destroyed.
@@ -117,4 +139,5 @@ _SC_EXTERN sc_addr sc_event_subscription_get_event_type(sc_event_subscription co
  */
 _SC_EXTERN sc_addr sc_event_subscription_get_element(sc_event_subscription const * event_subscription);
 
+_SC_EXTERN sc_bool sc_event_subscription_is_complex(sc_event_subscription const * event_subscription);
 #endif

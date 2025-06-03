@@ -73,6 +73,8 @@ void _sc_event_emission_manager_add(
     sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
-    sc_addr event_addr);
+    sc_addr event_addr,
+    sc_memory_context const * ctx,  // добавил параметр в эту функцию
+    sc_event_type event_type_addr);
 
 #endif

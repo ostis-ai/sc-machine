@@ -11,6 +11,8 @@
 
 #include "sc-core/sc_event_subscription.h"
 #include "sc-core/sc_types.h"
+#include "sc-store/sc-base/sc_condition_private.h"
+#include "sc-core/sc-container/sc_list.h"
 
 #define SC_EVENT_REQUEST_DESTROY (sc_uint32)(1 << 31)
 
@@ -35,6 +37,22 @@ struct _sc_event_subscription
   sc_monitor monitor;
   //! Count of references (users) of this sc-event subscription
   sc_uint32 ref_count;
+
+  //! flag: whether the event is complex
+  sc_bool is_complex_event_subscription;
+  //! flag for activation regulation
+  int counter_of_activated_events;
+  //! value of max activated events to activate complex event
+  int max_value_of_activated_events;
+  // counter of functions sc_event_emit and _sc_event_emission_pool_worker execution
+  int execution_counter;
+  //! condition for increasing the counter
+  sc_condition cond_increase;
+  //! condition for decreasing the counter
+  sc_condition cond_decrease;
+
+  //! Events list
+  sc_list * events_list;
 };
 
 /*! Notify about sc-element deletion.
@@ -76,6 +94,17 @@ sc_result sc_event_emit_impl(
     sc_event_type event_type_addr,
     sc_addr connector_addr,
     sc_type edge_type,
+    sc_addr other_addr,
+    sc_event_do_after_callback callback,
+    sc_addr event_addr);
+
+sc_result start_check_condition_to_activate_complex_event(
+    sc_event_subscription * complex_event_subscription,
+    sc_memory_context const * ctx,
+    sc_addr subscription_addr,
+    sc_event_type event_type_addr,
+    sc_addr connector_addr,
+    sc_type connector_type,
     sc_addr other_addr,
     sc_event_do_after_callback callback,
     sc_addr event_addr);
