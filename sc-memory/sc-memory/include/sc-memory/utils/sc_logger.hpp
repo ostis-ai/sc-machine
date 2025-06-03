@@ -94,6 +94,7 @@ public:
    * @param logType A type of logging (Console or File).
    * @param logFile A filename to log messages if logType is File.
    * @param logLevel An initial logging level.
+   * @param append A flag indicating whether to append to the file or overwrite it.
    */
   explicit ScLogger(
       ScLogType const & logType,
