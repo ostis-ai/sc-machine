@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 17)
-project(sc-machine VERSION 0.10.3 LANGUAGES C CXX)
+project(sc-machine VERSION 0.10.4 LANGUAGES C CXX)
 message(STATUS "Current project version: ${CMAKE_PROJECT_VERSION}")
 site_name(www.ostis.net)
 cmake_policy(SET CMP0048 NEW)
