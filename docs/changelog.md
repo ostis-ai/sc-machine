@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.4] - 03.06.2025
+
 ### Added
 
 - Flag for ScLogger to enable appending logs to existing log file
