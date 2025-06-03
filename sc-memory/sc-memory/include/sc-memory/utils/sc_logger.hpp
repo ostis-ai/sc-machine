@@ -95,7 +95,11 @@ public:
    * @param logFile A filename to log messages if logType is File.
    * @param logLevel An initial logging level.
    */
-  explicit ScLogger(ScLogType const & logType, std::string const & logFile, ScLogLevel const & logLevel);
+  explicit ScLogger(
+      ScLogType const & logType,
+      std::string const & logFile,
+      ScLogLevel const & logLevel,
+      bool append = false);
 
   /*!
    * @brief Copy constructor for the ScLogger class.
@@ -139,8 +143,9 @@ public:
    * @brief Opens a specified file for logging and sets it as the current log file.
    *
    * @param logFile A name of the file where logs should be written.
+   * @param append A flag indicating whether to append to the file or overwrite it.
    */
-  void SetLogFile(std::string const & logFile);
+  void SetLogFile(std::string const & logFile, bool append = false);
 
   /*!
    * @brief Changes severity level of the message being logged.
