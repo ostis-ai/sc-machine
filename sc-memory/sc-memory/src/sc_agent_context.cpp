@@ -12,6 +12,7 @@
 
 #include "sc-memory/sc_action.hpp"
 #include "sc-memory/sc_keynodes.hpp"
+#include "sc-memory/sc_oriented_set.hpp"
 
 ScAgentContext::ScAgentContext() noexcept
   : ScAgentContext(ScAddr::Empty)
@@ -131,6 +132,25 @@ ScSet ScAgentContext::ConvertToSet(ScAddr const & setAddr) noexcept(false)
             << setAddr.Hash() << "` to object of `ScSet` class, because its sc-address is not valid.");
 
   ScSet set{this, setAddr};
+  return set;
+}
+
+ScOrientedSet ScAgentContext::GenerateOrientedSet()
+{
+  ScAddr const & setAddr = GenerateNode(ScType::ConstNode);
+  ScOrientedSet set{this, setAddr};
+  return set;
+}
+
+ScOrientedSet ScAgentContext::ConvertToOrientedSet(ScAddr const & setAddr) noexcept(false)
+{
+  if (!IsElement(setAddr))
+    SC_THROW_EXCEPTION(
+        utils::ExceptionInvalidParams,
+        "Not able to convert sc-oriented-set sc-address `"
+            << setAddr.Hash() << "` to object of `ScOrientedSet` class, because its sc-address is not valid.");
+
+  ScOrientedSet set{this, setAddr};
   return set;
 }
 

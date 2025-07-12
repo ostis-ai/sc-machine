@@ -10,6 +10,7 @@
 
 class ScAction;
 class ScSet;
+class ScOrientedSet;
 class ScStructure;
 class ScKeynode;
 class ScElementaryEvent;
@@ -290,6 +291,19 @@ public:
    * @return ScSet object.
    */
   _SC_EXTERN ScSet ConvertToSet(ScAddr const & setAddr) noexcept(false);
+
+  /*!
+   * @brief Generates a set.
+   * @return ScOrientedSet object.
+   */
+  _SC_EXTERN ScOrientedSet GenerateOrientedSet();
+
+  /*!
+   * @brief Generates ScOrientedSet object for provided set.
+   * @param setAddr An address of the set.
+   * @return ScOrientedSet object.
+   */
+  _SC_EXTERN ScOrientedSet ConvertToOrientedSet(ScAddr const & setAddr) noexcept(false);
 
   /*!
    * @brief Generates a structure.
