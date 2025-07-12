@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed 
+
+- Context template argument initialization in ScAgent class 
+
 ## [0.10.4] - 03.06.2025
 
 ### Added
