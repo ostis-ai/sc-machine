@@ -222,9 +222,9 @@ void ScAction::Finish(ScAddr const & actionStateAddr) noexcept(false)
     if (m_context->IsElement(m_resultAddr) && foundResultAddr != m_resultAddr)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidState,
-          "Not able to set result `" << m_resultAddr.Hash() << "` for action " << GetActionPrettyString()
+          "Not able to set result `" << m_resultAddr << "` for action " << GetActionPrettyString()
                                      << GetActionClassPrettyString() << " because it already has result `"
-                                     << foundResultAddr.Hash() << "`.");
+                                     << foundResultAddr << "`.");
   }
   else
   {
@@ -296,7 +296,7 @@ std::string ScAction::GetActionClassPrettyString() const
   {
     actionClassName = m_context->GetElementSystemIdentifier(actionClassAddr);
     if (actionClassName.empty())
-      actionClassName = std::to_string(actionClassAddr.Hash());
+      actionClassName = actionClassAddr;
   }
 
   if (!actionClassName.empty())

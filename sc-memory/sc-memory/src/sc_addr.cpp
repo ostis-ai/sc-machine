@@ -10,7 +10,7 @@ ScAddr const ScAddr::Empty;
 
 ScAddr::ScAddr()
 {
-  SC_ADDR_MAKE_EMPTY(m_realAddr);
+  Reset();
 }
 
 ScAddr::ScAddr(sc_addr const & addr)
@@ -20,8 +20,8 @@ ScAddr::ScAddr(sc_addr const & addr)
 
 ScAddr::ScAddr(ScAddr::HashType const & hash)
 {
-  m_realAddr.offset = hash & 0xffff;
-  m_realAddr.seg = (hash >> 16) & 0xffff;
+  m_realAddr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(hash);
+  m_realAddr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(hash);
 }
 
 bool ScAddr::IsValid() const
@@ -36,7 +36,7 @@ void ScAddr::Reset()
 
 ScAddr::HashType ScAddr::Hash() const
 {
-  return ((m_realAddr.seg << 16) | m_realAddr.offset);
+  return SC_ADDR_LOCAL_TO_INT(m_realAddr);
 }
 
 bool ScAddr::operator==(ScAddr const & other) const
@@ -61,7 +61,7 @@ ScRealAddr const & ScAddr::GetRealAddr() const
 
 ScAddr::operator std::string() const
 {
-  return "`" + std::to_string(this->Hash()) + "`";
+  return std::to_string(this->Hash());
 }
 
 std::ostream & operator<<(std::ostream & os, ScAddr const & addr)
@@ -88,5 +88,5 @@ bool ScAddrLessFunc::operator()(ScAddr const & a, ScAddr const & b) const
 
 ScAddr::HashType ScAddrHashFunc::operator()(ScAddr const & addr) const
 {
-  return SC_ADDR_LOCAL_TO_INT(*addr);
+  return addr.Hash();
 }

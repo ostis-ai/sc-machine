@@ -100,12 +100,12 @@ protected:
       ScAddr const & addr = m_context.SearchElementBySystemIdentifier(item.first);
       if (m_context.IsElement(addr))
       {
-        ObjectInfo obj = CollectObjectInfo(item.second, std::to_string(addr.Hash()));
+        ObjectInfo obj = CollectObjectInfo(item.second, addr);
         m_elements.insert({addr.Hash(), obj});
       }
       else
       {
-        ObjectInfo obj = CollectObjectInfo(item.second, std::to_string(item.second.Hash()));
+        ObjectInfo obj = CollectObjectInfo(item.second, item.second);
         std::stringstream ss(item.first);
         sc_addr_hash hash;
         ss >> hash;
@@ -187,7 +187,7 @@ private:
   {
     ScType const objType = m_context.GetElementType(objAddr);
     if (objIdtf.empty())
-      objIdtf = std::to_string(objAddr.Hash());
+      objIdtf = objAddr;
 
     return {objAddr, objType, objIdtf};
   }
