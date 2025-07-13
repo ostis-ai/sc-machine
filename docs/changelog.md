@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `GetElementsByRoles` method for `ScSet` class to get all elements of set by their roles
+- `GetElements` method for `ScSet` class to get all elements of set
 - ScOrientedSet class to work with sets of sc-elements ordered by nrel_basic_sequence relation
 - Methods for `ScSet` class: `Next`, `Reset`, `ForEach`
 - Operator for converting ScAddr to string
@@ -20,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed 
 
-- Context template argument initialization in ScAgent class 
+- Constructor call for context template argument class provided in ScAgent class 
 
 ## [0.10.4] - 03.06.2025
 

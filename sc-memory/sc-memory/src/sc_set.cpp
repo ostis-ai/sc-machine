@@ -93,7 +93,7 @@ size_t ScSet::GetPower() const
   return power;
 }
 
-ScAddr ScSet::Next(ScAddrSet & roles) const
+ScAddr ScSet::Next(ScAddrUnorderedSet & roles) const
 {
   if (!m_elementsIterator || !m_elementsIterator->IsValid())
     m_elementsIterator = m_context->CreateIterator3(*this, ScType::ConstPosArc, ScType::Unknown);
@@ -113,11 +113,38 @@ ScAddr ScSet::Next(ScAddrSet & roles) const
 
 ScAddr ScSet::Next() const
 {
-  ScAddrSet roles;
+  ScAddrUnorderedSet roles;
   return Next(roles);
 }
 
 void ScSet::Reset()
 {
   m_elementsIterator = nullptr;
+}
+
+bool ScSet::GetElementsByRoles(ScAddrUnorderedSet const & roles, ScAddrToValueUnorderedMap<ScAddr> & elements) const
+{
+  elements.clear();
+  ScAddrUnorderedSet notFoundRoles{roles};
+  ForEach(
+      [&](ScAddr const &, ScAddr const & elementAddr, ScAddr const &, ScAddr const & roleAddr)
+      {
+        if (roles.count(roleAddr))
+        {
+          elements[roleAddr] = elementAddr;
+          notFoundRoles.erase(roleAddr);
+        }
+      });
+
+  return notFoundRoles.empty();
+}
+
+_SC_EXTERN void ScSet::GetElements(ScAddrUnorderedSet & elements) const
+{
+  elements.clear();
+  ForEach(
+      [&](ScAddr const &, ScAddr const & elementAddr, ScAddr const &, ScAddr const &)
+      {
+        elements.insert(elementAddr);
+      });
 }

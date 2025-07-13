@@ -46,7 +46,7 @@ TEST_F(ScOrientedSetTest, AppendWithRole)
   EXPECT_TRUE(set.Append(element, role));
 
   set.Reset();
-  ScAddrSet roles;
+  ScAddrUnorderedSet roles;
   ScAddr Next = set.Next(roles);
   EXPECT_EQ(Next, element);
   EXPECT_EQ(roles.size(), 3u);

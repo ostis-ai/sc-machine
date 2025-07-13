@@ -121,8 +121,8 @@ TEST_F(ScSetTest, NextAndReset)
   set.Append(addr2);
 
   set.Reset();
-  ScAddrSet roles;
-  ScAddrSet foundElements;
+  ScAddrUnorderedSet roles;
+  ScAddrUnorderedSet foundElements;
   for (int i = 0; i < 2; ++i)
   {
     ScAddr const nextElement = set.Next(roles);
@@ -158,8 +158,8 @@ TEST_F(ScSetTest, ForEachSet)
   set.Append(addr2);
 
   // Collect all elements and roles
-  ScAddrSet elements;
-  ScAddrSet roles;
+  ScAddrUnorderedSet elements;
+  ScAddrUnorderedSet roles;
   set.ForEach(
       [&](ScAddr const & arcToelement, ScAddr const & element, ScAddr const &, ScAddr const & roleAddr)
       {
@@ -193,7 +193,7 @@ TEST_F(ScSetTest, MultipleRolesForOneElement)
   EXPECT_TRUE(set.Append(element, role2, ScType::ConstPermPosArc));
 
   // Use ForEach to check both roles
-  ScAddrSet foundRoles;
+  ScAddrUnorderedSet foundRoles;
   set.ForEach(
       [&](ScAddr const &, ScAddr const & e, ScAddr const &, ScAddr const & r)
       {
@@ -252,4 +252,62 @@ TEST_F(ScSetTest, ResetNextRobustness)
 
   set.Reset();
   EXPECT_EQ(set.Next(), a);
+}
+
+TEST_F(ScSetTest, GetElements_ReturnsAllElements)
+{
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr addr1 = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr addr2 = m_ctx->GenerateNode(ScType::ConstNodeMaterial);
+
+  set.Append(addr1);
+  set.Append(addr2);
+
+  ScAddrUnorderedSet elements;
+  set.GetElements(elements);
+
+  EXPECT_EQ(elements.size(), 2u);
+  EXPECT_TRUE(elements.count(addr1));
+  EXPECT_TRUE(elements.count(addr2));
+}
+
+TEST_F(ScSetTest, GetElementsByRoles_FindsElementsByRole)
+{
+  ScSet set = m_ctx->GenerateSet();
+  ScAddr addr1 = m_ctx->GenerateNode(ScType::ConstNodeClass);
+  ScAddr addr2 = m_ctx->GenerateNode(ScType::ConstNodeMaterial);
+  ScAddr role1 = m_ctx->GenerateNode(ScType::ConstNodeRole);
+  ScAddr role2 = m_ctx->GenerateNode(ScType::ConstNodeRole);
+
+  set.Append(addr1, role1);
+  set.Append(addr2, role2);
+
+  // Test for role1
+  ScAddrUnorderedSet roles = {role1};
+  ScAddrToValueUnorderedMap<ScAddr> elements;
+  bool allFound = set.GetElementsByRoles(roles, elements);
+
+  EXPECT_TRUE(allFound);
+  EXPECT_EQ(elements.size(), 1u);
+  EXPECT_EQ(elements[role1], addr1);
+
+  // Test for both roles
+  roles = {role1, role2};
+  elements.clear();
+  allFound = set.GetElementsByRoles(roles, elements);
+
+  EXPECT_TRUE(allFound);
+  EXPECT_EQ(elements.size(), 2u);
+  EXPECT_EQ(elements[role1], addr1);
+  EXPECT_EQ(elements[role2], addr2);
+
+  // Test for a role that does not exist
+  ScAddr role3 = m_ctx->GenerateNode(ScType::ConstNodeRole);
+  roles = {role1, role3};
+  elements.clear();
+  allFound = set.GetElementsByRoles(roles, elements);
+
+  EXPECT_FALSE(allFound);
+  EXPECT_EQ(elements.size(), 1u);
+  EXPECT_EQ(elements[role1], addr1);
 }

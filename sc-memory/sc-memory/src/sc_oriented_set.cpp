@@ -134,7 +134,7 @@ bool ScOrientedSet::Remove(ScAddr const & elementAddr, ScType const & arcType)
   return removed;
 }
 
-ScAddr ScOrientedSet::Next(ScAddrSet & roles) const
+ScAddr ScOrientedSet::Next(ScAddrUnorderedSet & roles) const
 {
   if (!m_currentArcAddr.IsValid())
     return ScAddr::Empty;
@@ -160,7 +160,7 @@ ScAddr ScOrientedSet::Next(ScAddrSet & roles) const
 
 ScAddr ScOrientedSet::Next() const
 {
-  ScAddrSet roles;
+  ScAddrUnorderedSet roles;
   return Next(roles);
 }
 

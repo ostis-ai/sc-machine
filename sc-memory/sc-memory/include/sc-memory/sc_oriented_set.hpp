@@ -74,7 +74,7 @@ public:
    * @param roles Set to be filled with role addresses associated with the current element.
    * @return sc-address of the next element, or ScAddr::Empty if at the end.
    */
-  _SC_EXTERN ScAddr Next(ScAddrSet & roles) const override;
+  _SC_EXTERN ScAddr Next(ScAddrUnorderedSet & roles) const override;
 
   /*!
    * @brief Returns the next element in the oriented set.
