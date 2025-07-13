@@ -139,7 +139,8 @@ public:
    *
    * Iterates over the elements in the set and, for each element whose role address is present
    * in the provided `roles` set, adds an entry to the `elements` map. The map is populated with
-   * the role address as the key and the corresponding element address as the value.
+   * the role address as the key and the corresponding element address as the value. If multiple elements share the same
+   * role, only one will be stored per role.
    *
    * @param roles A set of role addresses to filter elements by. Only elements associated with these roles will be
    * included in the result.
