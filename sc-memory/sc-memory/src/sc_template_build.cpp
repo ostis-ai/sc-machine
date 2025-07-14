@@ -150,7 +150,7 @@ protected:
           m_connectorDependencyMap.insert({objInfo.GetHash(), targetAddr.Hash()});
       }
 
-      m_objectInfos.try_emplace(objInfo.GetHash(), std::move(objInfo));
+      m_objectInfos.insert_or_assign(objInfo.GetHash(), std::move(objInfo));
     }
 
     std::vector<HashSet> connectorsByDependencyLevel;
