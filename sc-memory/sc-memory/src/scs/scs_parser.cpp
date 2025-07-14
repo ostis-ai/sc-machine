@@ -336,11 +336,11 @@ std::string Parser::BuildAST(std::string const & str)
 
   ScJson parseResult;
   astListener.BuildAST(parseResult["root"]);
-  parseResult["errors"] = SCsASTErrorListener.GetErrors();
+  parseResult["errors"] = errorListener.GetErrors();
 
   parser.removeParseListener(&astListener);
-  lexer.removeErrorListener(&SCsASTErrorListener);
-  parser.removeErrorListener(&SCsASTErrorListener);
+  lexer.removeErrorListener(&errorListener);
+  parser.removeErrorListener(&errorListener);
 
   return parseResult.dump();
 }
