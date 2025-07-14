@@ -282,8 +282,6 @@ bool Parser::Parse(std::string const & str)
 {
   bool result = true;
 
-  std::string fName;
-
   antlr4::ANTLRInputStream input(str);
   scsLexer lexer(&input);
   antlr4::CommonTokenStream tokens(&lexer);
@@ -313,8 +311,6 @@ bool Parser::Parse(std::string const & str)
 
 std::string Parser::BuildAST(std::string const & str)
 {
-  std::string fName;
-
   antlr4::ANTLRInputStream input(str);
   scsLexer lexer(&input);
   antlr4::CommonTokenStream tokens(&lexer);
@@ -323,9 +319,9 @@ std::string Parser::BuildAST(std::string const & str)
   SCsASTJsonListener astListener(parser);
   parser.addParseListener(&astListener);
 
-  SCsASTErrorListener SCsASTErrorListener;
-  lexer.addErrorListener(&SCsASTErrorListener);
-  parser.addErrorListener(&SCsASTErrorListener);
+  SCsASTErrorListener errorListener;
+  lexer.addErrorListener(&errorListener);
+  parser.addErrorListener(&errorListener);
 
   parser.setParser(this);
 
