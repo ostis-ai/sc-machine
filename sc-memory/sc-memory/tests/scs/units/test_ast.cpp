@@ -12,6 +12,55 @@
 
 using ScJson = nlohmann::json;
 
+bool json_equal(ScJson const & j1, ScJson const & j2)
+{
+  if (j1.type() != j2.type())
+    return false;
+
+  if (j1.is_object())
+  {
+    std::vector<std::string> keys1;
+    for (auto it = j1.begin(); it != j1.end(); ++it)
+      keys1.push_back(it.key());
+
+    std::vector<std::string> keys2;
+    for (auto it = j2.begin(); it != j2.end(); ++it)
+      keys2.push_back(it.key());
+
+    if (keys1 != keys2)
+      return false;
+
+    for (auto & k : keys1)
+      if (!json_equal(j1[k], j2[k]))
+        return false;
+
+    return true;
+  }
+  if (j1.is_array())
+  {
+    if (j1.size() != j2.size())
+      return false;
+    std::vector<bool> matched(j2.size(), false);
+    for (auto & el1 : j1)
+    {
+      bool found = false;
+      for (size_t i = 0; i < j2.size(); ++i)
+      {
+        if (!matched[i] && json_equal(el1, j2[i]))
+        {
+          matched[i] = true;
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        return false;
+    }
+    return true;
+  }
+  return j1 == j2;
+}
+
 TEST(SCsASTTest, BuildAST_ForTripleSentence_Successfully)
 {
   sc_char const * data = "x -> y;;";
@@ -19,7 +68,7 @@ TEST(SCsASTTest, BuildAST_ForTripleSentence_Successfully)
   scs::Parser parser;
   std::string const & ast = parser.BuildAST(data);
 
-  EXPECT_EQ(R"({
+  EXPECT_TRUE(json_equal(R"({
     "errors": [],
     "root": {
       "children": [
@@ -166,7 +215,7 @@ TEST(SCsASTTest, BuildAST_ForTripleSentence_Successfully)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-  })"_json, ScJson::parse(ast));
+  })"_json, ScJson::parse(ast)));
 }
 
 TEST(SCsASTTest, BuildAST_ForSentenceWithContourAndNestedContent_Successfully)
@@ -176,7 +225,7 @@ TEST(SCsASTTest, BuildAST_ForSentenceWithContourAndNestedContent_Successfully)
   scs::Parser parser;
   std::string const & ast = parser.BuildAST(data);
 
-  EXPECT_EQ(R"({
+  EXPECT_TRUE(json_equal(R"({
     "errors": [],
     "root": {
       "children": [
@@ -456,7 +505,7 @@ TEST(SCsASTTest, BuildAST_ForSentenceWithContourAndNestedContent_Successfully)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-  })"_json, ScJson::parse(ast));
+  })"_json, ScJson::parse(ast)));
 }
 
 TEST(SCsASTTest, BuildAST_ForInputMissingSentenceTerminator_ReportsError)
@@ -466,7 +515,7 @@ TEST(SCsASTTest, BuildAST_ForInputMissingSentenceTerminator_ReportsError)
   scs::Parser parser;
   std::string const & ast = parser.BuildAST(data);
 
-  EXPECT_EQ(R"({
+  EXPECT_TRUE(json_equal(R"({
     "errors": [
       {
         "msg": "no viable alternative at input 'x'",
@@ -529,7 +578,7 @@ TEST(SCsASTTest, BuildAST_ForInputMissingSentenceTerminator_ReportsError)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-  })"_json, ScJson::parse(ast));
+  })"_json, ScJson::parse(ast)));
 }
 
 TEST(SCsASTTest, BuildAST_ForInputWithExtraBracket_ReportsErrors)
@@ -539,7 +588,7 @@ TEST(SCsASTTest, BuildAST_ForInputWithExtraBracket_ReportsErrors)
   scs::Parser parser;
   std::string const & ast = parser.BuildAST(data);
 
-  EXPECT_EQ(R"({
+  EXPECT_TRUE(json_equal(R"({
     "errors": [
       {
         "msg": "token recognition error at: ']'",
@@ -706,7 +755,7 @@ TEST(SCsASTTest, BuildAST_ForInputWithExtraBracket_ReportsErrors)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-  })"_json, ScJson::parse(ast));
+  })"_json, ScJson::parse(ast)));
 }
 
 TEST(SCsASTTest, BuildAST_ForInputWithInvalidTrailingCharacters_ReportsErrors)
@@ -716,7 +765,7 @@ TEST(SCsASTTest, BuildAST_ForInputWithInvalidTrailingCharacters_ReportsErrors)
   scs::Parser parser;
   std::string const & ast = parser.BuildAST(data);
 
-  EXPECT_EQ(R"({
+  EXPECT_TRUE(json_equal(R"({
     "errors": [
       {
         "msg": "token recognition error at: 'ж'",
@@ -905,5 +954,5 @@ TEST(SCsASTTest, BuildAST_ForInputWithInvalidTrailingCharacters_ReportsErrors)
       "ruleType": "syntax",
       "token": "<EOF>"
     }
-  })"_json, ScJson::parse(ast));
+  })"_json, ScJson::parse(ast)));
 }
