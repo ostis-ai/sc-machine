@@ -47,8 +47,10 @@ void PrintHelpMessage(std::string const & binaryName)
          "binaries.\n"
       << "  --version                                Display the version of " << binaryName << ".\n"
       << "  --help                                   Display this help message.\n"
-      << "  --gwf-to-scs <file>                      Translate a GWF file to SCs and save the result to a specified file.\n"
-      << "  --gwf-output <file>                      Specify the output file for the GWF-to-SCs translation (default: <input>.scs).\n"
+      << "  --gwf-to-scs <file>                      Translate a GWF file to SCs and save the result to a specified "
+         "file.\n"
+      << "  --gwf-output <file>                      Specify the output file for the GWF-to-SCs translation (default: "
+         "<input>.scs).\n"
       << "  --verbose|-v                             Enable verbose logging.\n";
 }
 
@@ -190,7 +192,6 @@ try
                  "[sc-builder] group.\n"
               << "Make sure this path is a valid directory where you have write permissions and that it exists.\n"
               << "For more information, run with --help.\n";
-   
 
     return EXIT_FAILURE;
   }
