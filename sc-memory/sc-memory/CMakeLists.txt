@@ -21,6 +21,7 @@ set(SOURCES_PARSER
     "${SC_MEMORY_SRC}/scs/scsLexer.h"
     "${SC_MEMORY_SRC}/scs/scsParser.cpp"
     "${SC_MEMORY_SRC}/scs/scsParser.h"
+    "${SC_MEMORY_SRC}/scs/scs_ast_json_listener.cpp"
 )
 
 file(GLOB SOURCES CONFIGURE_DEPENDS
@@ -33,10 +34,12 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 find_glib()
+find_package(nlohmann_json REQUIRED)
 
 add_library(sc-memory SHARED ${SOURCES} ${SOURCES_PARSER})
 target_link_libraries(sc-memory
     LINK_PRIVATE ${glib_LIBRARIES}
+    LINK_PRIVATE nlohmann_json::nlohmann_json
     LINK_PUBLIC sc-core
     LINK_PRIVATE antlr4_static
 )

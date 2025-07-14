@@ -1,14 +1,13 @@
-
 #pragma once
 
 #include <gtest/gtest.h>
 
-#include "sc-memory/sc_addr.hpp"
-#include "sc-memory/sc_type.hpp"
+#include <sc-memory/sc_addr.hpp>
+#include <sc-memory/sc_type.hpp>
 
-#include "sc-memory/sc_debug.hpp"
+#include <sc-memory/sc_debug.hpp>
 
-#include "sc-memory/scs/scs_parser.hpp"
+#include <sc-memory/scs/scs_parser.hpp>
 
 #define SPLIT_TRIPLE(t) \
   auto const & src = parser.GetParsedElement(t.m_source); \

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- sc-server endpoint to parse SCs text into JSON ASTs
+- `SCsASTErrorListener` to collect SCs parsing errors into a JSON array
+- `SCsASTJsonListener` to construct AST from SCs input and serialize it to JSON
 - `GetElementsByRoles` method for `ScSet` class to get all elements of set by their roles
 - `GetElements` method for `ScSet` class to get all elements of set
 - ScOrientedSet class to work with sets of sc-elements ordered by nrel_basic_sequence relation
