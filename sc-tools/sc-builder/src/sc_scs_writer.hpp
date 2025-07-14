@@ -24,6 +24,15 @@ public:
       size_t depth,
       std::unordered_set<SCgElementPtr> & writtenElements);
 
+  static void WriteMainIdentifier(
+      Buffer & buffer,
+      size_t depth,
+      std::string const & systemIdentifier,
+      std::string const & mainIdentifier);
+
+  static std::string MakeAlias(std::string const & prefix, std::string const & elementId);
+  static bool IsVariable(std::string const & elementType);
+
   class SCgIdentifierCorrector
   {
   public:
@@ -44,11 +53,9 @@ public:
     static std::string GenerateSCsIdentifierForVariable(std::string & systemIdentifier);
   };
 
-  static void WriteMainIdentifier(
-      Buffer & buffer,
-      size_t depth,
-      std::string const & systemIdentifier,
-      std::string const & mainIdentifier);
-  static std::string MakeAlias(std::string const & prefix, std::string const & elementId);
-  static bool IsVariable(std::string const & elementType);
+private:
+  static void CollectNodes(
+      SCgElements const & elements,
+      std::unordered_set<SCgElementPtr> & nodes,
+      std::unordered_set<SCgElementPtr> & visitedContours);
 };
