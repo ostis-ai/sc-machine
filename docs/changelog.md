@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.5] - 08.09.2025
+
 ### Added
 
 - sc-server endpoint to parse SCs text into JSON ASTs
