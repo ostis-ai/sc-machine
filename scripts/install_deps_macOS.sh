@@ -3,7 +3,7 @@ set -eo pipefail
 
 SCRIPTS_PATH="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 
-brew install glib temurin pkgconfig cmake ninja ccache websocketpp nlohmann-json libxml2 googletest google-benchmark
+brew install glib temurin pkgconfig ninja ccache websocketpp nlohmann-json libxml2 googletest google-benchmark
 
 # TODO(NikitaZotov): Remove asio version 1.30.2 pinning below.
 # Required because websocketpp 0.8.2 is incompatible with newer asio.
