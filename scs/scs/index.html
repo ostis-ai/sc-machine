@@ -1,0 +1,3297 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../sc_element_types/">
+      
+      
+        <link rel="next" href="../../sc-tools/sc_builder/">
+      
+      
+      <link rel="icon" href="../../ostis-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
+    
+    
+      
+        <title>SCs-code - sc-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#common" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="sc-machine" class="md-header__button md-logo" aria-label="sc-machine" data-md-component="logo">
+      
+  <img src="../../ostis-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            sc-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SCs-code
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ostis-ai/sc-machine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../quick_start/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Quick Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../docker/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Docker
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sc-memory/api/cpp/guides/simple_guide_for_implementing_agent/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../sc-memory/api/cpp/core/api/" class="md-tabs__link">
+          
+  
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sc-tools/sc_builder/" class="md-tabs__link">
+          
+  
+  
+  Tools
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../build/quick_start/" class="md-tabs__link">
+          
+  
+  
+  Build Instructions
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT" class="md-tabs__link">
+        
+  
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="sc-machine" class="md-nav__button md-logo" aria-label="sc-machine" data-md-component="logo">
+      
+  <img src="../../ostis-logo.png" alt="logo">
+
+    </a>
+    sc-machine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ostis-ai/sc-machine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            User Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/guides/simple_guide_for_implementing_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Simple Guide for Implementing Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-tools/migrate_to_new_agent_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrate to New Agent API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            C++ API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/core/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Extended API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Extended API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/helper_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ System Identifier API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/template_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ ScTemplate API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/permissions_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ User Permissions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2_4" id="__nav_5_1_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Agents API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_1_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Agents API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Events API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/event_subscriptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Event Subscriptions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/waiters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Waiters API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Agents API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/keynodes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Keynodes API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Actions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/agent_context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Agent Context API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-memory/api/cpp/extended/agents/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Modules API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Python API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Python API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/py-sc-client" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/py-sc-kpm" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python Extended API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    TypeScript API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            TypeScript API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/ts-sc-client" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    TypeScript Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sc_element_types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sc-element Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    SCs-code
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    SCs-code
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#link-to-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Link to files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aliases
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 4
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 5
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 6
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keynodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keynodes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frequently Asked Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequently Asked Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-scs-code-level-is-recommended-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      What SCs-code level is recommended to use?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#can-i-combine-different-levels-in-one-scs-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Can I combine different levels in one SCs file?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-difference-between-set-a-b-c-and-set-a-b-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is the difference between set -&gt; a; -&gt; b; -&gt; c;; and set -&gt; a; b; c;;?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-tools/sc_builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Knowledge Base Builder
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-tools/kb_repo_file/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Knowledge Base Repo File
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sc-tools/sc_machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sc-machine Runner
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Build Instructions
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Build Instructions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start for Developers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/build_system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Build System
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/cmake_flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CMake Flags
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration File
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/codestyle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Style Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/devcontainer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev Container
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#link-to-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Link to files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aliases
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 4
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 5
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scs-code-level-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCs-code level 6
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keynodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keynodes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frequently Asked Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequently Asked Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-scs-code-level-is-recommended-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      What SCs-code level is recommended to use?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#can-i-combine-different-levels-in-one-scs-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Can I combine different levels in one SCs file?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-difference-between-set-a-b-c-and-set-a-b-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is the difference between set -&gt; a; -&gt; b; -&gt; c;; and set -&gt; a; b; c;;?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ostis-ai/sc-machine/edit/main/docs/scs/scs.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+  <h1>SCs-code</h1>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is correct for only versions of sc-machine that &gt;= 0.9.0.</p>
+</div>
+<hr />
+<h3 id="common"><strong>Common</strong></h3>
+<p>SCs-code - is a text representation of SC-code. Whole text consist of sentences, that
+separated by <code>;;</code> symbols.</p>
+<h4 id="comments"><strong>Comments</strong></h4>
+<p>You can use C-style comments in sc.s-text:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>// one line comment
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>fruit -&gt; apple;
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>/* Multiline
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a> * comment
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a> */
+</code></pre></div></p>
+<h4 id="link-to-files"><strong>Link to files</strong></h4>
+<p>To make an <code>sc-link</code> into specified file you can use special type identifier:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&quot;file://&lt;file name&gt;&quot;
+</code></pre></div></p>
+<ul>
+<li><code>"file://&lt;file name&gt;"</code> - is a relative path to a file. According to a file, where it used;</li>
+<li><code>"file:///&lt;file_name&gt;"</code> - is an absolute path to a file.</li>
+</ul>
+<h4 id="names"><strong>Names</strong></h4>
+<p>There are some tricks with sc-node names:</p>
+<ul>
+<li><code>...</code> - is an unnamed sc-node;</li>
+<li><code>_&lt;node name&gt;</code> - all sc-node names, that starts with symbol <code>_</code> represents a variable type of sc-nodes.</li>
+</ul>
+<p>Objects identifier visibility. By default, all objects with name <code>x</code> are visible anywhere. After translating it into memory this object will have a <strong>system identifier</strong> equal to <code>x</code>. So if you use <code>x</code> in different <em>scs</em> files, then you designate the same object in them (would be the same element in a knowledge base).</p>
+<p>Sometimes you need to designate the same objects in different files, but do not generate a <strong>system identifier</strong> in memory for it. In this case you should to prefix it name with a <code>.</code> symbol. For example: <code>.x</code>.</p>
+<p>In case, when you need to make a named object just local for an <em>scs</em> file, then you should to use <code>..</code> prefix (example: <code>..x</code>).</p>
+<p>So a rule to build identifier is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[visibility][variable]&lt;identifier&gt;
+</code></pre></div>
+<p>For example identifier <code>.._x</code> locally visible variable identifier.</p>
+<h4 id="aliases">Aliases</h4>
+<p>You can use alias for any sc-element by using <code>=</code> operator. There are some examples:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>@file_alias = &quot;file://...&quot;;;
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>@link_alias = [];;
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>@element_alias = element_idtf;;
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>@arc_alias = (c -&gt; b);;
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>@alias_to_alias = @element_alias;;
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Aliases visible just in a file scope. 
+You should define alias before usage.</p>
+</div>
+<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SCs-code is split into levels. Each level allows to minimize number of string symbols to represent the same structures.</p>
+</div>
+<h3 id="scs-code-level-1"><strong>SCs-code level 1</strong></h3>
+<p>SCs-code level 1 is a simple representation of SC-code. It represents SC-texts
+with just simple triples. Each triple contains <code>subject</code>, <code>predicate</code>, <code>object</code>
+that are split by <code>|</code> symbol. Line <code>sc_node#subject_identifier | sc_membership_arc#predicate_identifier | sc_node#object_identifier;;</code> is a sentence.</p>
+<p>Identifier of <code>subject</code>, <code>predicate</code>, <code>object</code> build with rule:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&lt;type&gt;#&lt;identifier&gt;
+</code></pre></div>
+<p>If object or subject is sc-link, then you should use the next one:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&quot;file://&lt;file name&gt;&quot;
+</code></pre></div>
+<p>Where <code>type</code> is an element type specification. It can be one of possible values:</p>
+<ul>
+<li><code>sc_node</code> - equal to <img alt="SCg-node" src="../images/scg/scg_const_node.png" />;</li>
+<li><code>sc_link</code> - equal to <img alt="SCg-link" src="../images/scg/scg_const_node_link.png" />;</li>
+<li><code>sc_common_edge</code> - equal to <img alt="SCg-node" src="../images/scg/scg_common_edge.png" />;</li>
+<li><code>sc_common_arc</code> - equal to <img alt="SCg-node" src="../images/scg/scg_common_arc.png" />;</li>
+<li><code>sc_membership_arc</code> - equal to <img alt="SCg-node" src="../images/scg/scg_membership_arc.png" />;</li>
+<li><code>sc_main_arc</code> - equal to <img alt="SCg-node" src="../images/scg/scg_const_perm_pos_arc.png" />.</li>
+</ul>
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-code level 1 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+// append set of apples into fruit set
+sc_node#fruit
+  | sc_main_arc#..arc 
+  | sc_node#apple;;
+// append set of bananas into fruit set
+sc_node#fruit
+  | sc_main_arc#..arc
+  | sc_node#banana;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td width="50%"><scg src="../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+sc_node#apple 
+  | sc_common_arc#..common_arc 
+  | "file://apple.png";;
+/*append sc-arc from nrel_image relation into
+  sc-arc between apple set and it's image*/
+sc_node_non_role_relation#nrel_image 
+  | sc_main_arc#..membership_arc 
+  | sc_common_arc#..common_arc;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+<p>SCs-code level 1 allows you to represent any kind of SC-code construction. It's a low-level representation and commonly used as a transport format, that is very simple for parsing.</p>
+<h3 id="scs-code-level-2"><strong>SCs-code level 2</strong></h3>
+<p>This level of SCs-code add two new features:</p>
+<ul>
+<li>using of extended alphabet of sc-connectors;</li>
+<li>using of compound identifiers of sc-connectors.</li>
+</ul>
+<p>On this level you can make sentences by rule:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&lt;element&gt; &lt;connector&gt; &lt;element&gt;;;
+</code></pre></div></p>
+<p>Where <code>&lt;connector&gt;</code> can be on of values:</p>
+<!-- This table is generated by test `PrintSCsToSCgConnectors` in sc-memory/tests/sc-memory/common/test_sc_type.cpp -->
+<table>
+<thead>
+<tr>
+<th>SCs-code</th>
+<th>SCg-code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>?&lt;=&gt;</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?=&gt; or &lt;=?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?.?&gt; or &lt;?.?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>&lt;=&gt;</code></td>
+<td><img src="../images/scg/scg_const_common_edge.png"></img></td>
+</tr>
+<tr>
+<td><code>_&lt;=&gt;</code></td>
+<td><img src="../images/scg/scg_var_common_edge.png"></img></td>
+</tr>
+<tr>
+<td><code>=&gt; or &lt;=</code></td>
+<td><img src="../images/scg/scg_const_common_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>_=&gt; or &lt;=_</code></td>
+<td><img src="../images/scg/scg_var_common_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>??&gt; or &lt;??</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_??&gt; or &lt;??_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?-?&gt; or &lt;?-?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?..?&gt; or &lt;?..?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>-?&gt; or &lt;?-</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_-?&gt; or &lt;?-_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>..?&gt; or &lt;?..</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_..?&gt; or &lt;?.._</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?~?&gt; or &lt;?~?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?%?&gt; or &lt;?%?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>~?&gt; or &lt;?~</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_~?&gt; or &lt;?~_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>%?&gt; or &lt;?%</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_%?&gt; or &lt;?%_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>??&gt; or &lt;??</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>??|&gt; or &lt;|??</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?/&gt; or &lt;/?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>.&gt; or &lt;.</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_.&gt; or &lt;._</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?-&gt; or &lt;-?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?..&gt; or &lt;..?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?~&gt; or &lt;~?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?%&gt; or &lt;%?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>-&gt; or &lt;-</code></td>
+<td><img src="../images/scg/scg_const_perm_pos_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>..&gt; or &lt;..</code></td>
+<td><img src="../images/scg/scg_const_temp_pos_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>~&gt; or &lt;~</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>%&gt; or &lt;%</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_-&gt; or &lt;-_</code></td>
+<td><img src="../images/scg/scg_var_perm_pos_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>_..&gt; or &lt;.._</code></td>
+<td><img src="../images/scg/scg_var_temp_pos_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>_~&gt; or &lt;~_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_%&gt; or &lt;%_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?|&gt; or &lt;|?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_?|&gt; or &lt;|?_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?-|&gt; or &lt;|-?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?..|&gt; or &lt;|..?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?~|&gt; or &lt;|~?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>?%|&gt; or &lt;|%?</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>-|&gt; or &lt;|-</code></td>
+<td><img src="../images/scg/scg_const_perm_neg_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>..|&gt; or &lt;|..</code></td>
+<td><img src="../images/scg/scg_const_temp_neg_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>~|&gt; or &lt;|~</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>%|&gt; or &lt;|%</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_-|&gt; or &lt;|-_</code></td>
+<td><img src="../images/scg/scg_var_perm_neg_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>_..|&gt; or &lt;|.._</code></td>
+<td><img src="../images/scg/scg_var_temp_neg_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>_~|&gt; or &lt;|~_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>_%|&gt; or &lt;|%_</code></td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td><code>/&gt; or &lt;/</code></td>
+<td><img src="../images/scg/scg_const_fuz_arc.png"></img></td>
+</tr>
+<tr>
+<td><code>_/&gt; or &lt;/_</code></td>
+<td><img src="../images/scg/scg_var_fuz_arc.png"></img></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-code level 2 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+fruit -> apple;;
+// backward direction
+banana <- fruit;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+<hr/>
+<p>Compound identifier of a sc-connector builds as a sentence in SCs-code level 2, but without
+<code>;;</code> separator and inside brackets <code>()</code>: <code>(&lt;element&gt; &lt;connector&gt; &lt;element&gt;)</code>.
+So that allows to simplify usage of a sc-connector as a source or target of another one.</p>
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-code level 2 text</th>
+  </tr>
+
+  <tr>
+    <td width="50%"><scg src="../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+nrel_image -> (fruit => "file://apple.png");;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+d -> (c -> (a -> b));;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_2_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+(a -> b) -> (c <- d);;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+</table>
+
+<h3 id="scs-code-level-3">SCs-code level 3</h3>
+<p>This level of SCs-code allows to minimize symbols to represent constructions like this one:
+<scg src="../images/scs/scs_example_level_3.gwf"></scg></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>c -&gt; (a -&gt; b);;
+</code></pre></div>
+<p>To do that you should use sentence like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&lt;object&gt; &lt;connector&gt; &lt;attribute&gt;: &lt;object&gt;
+</code></pre></div>
+<p>For this example it would be like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>a -&gt; c: b;;
+</code></pre></div>
+<p>In case, when outgoing sc-arc from <code>c</code> is a variable, then use <code>::</code> splitter instead of <code>:</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>a -&gt; c:: b;;
+</code></pre></div>
+<p>equal to:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>c _-&gt; (a -&gt; b);;
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can use <code>:</code>, <code>::</code> just to replace <code>-&gt;</code> or <code>_-&gt;</code> sc-arcs.</p>
+</div>
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg construction</th>
+    <th>Equal SCs-code level 3 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_1_2.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+apple => nrel_image: "file://apple.png";;
+        </code>
+      </pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_3_2.gwf"></scg></td>
+    <td>
+      <div class="note">
+        <b>Note</b>: it is possible to use any number of <code>:</code>, <code>::</code> in one sentence.
+      </div>
+      <pre>
+        <code class="js hljs javascript">
+a <=> c: d:: b;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+<h3 id="scs-code-level-4"><strong>SCs-code level 4</strong></h3>
+<p>This level of SCs-code allows to combine many sentences with one element into one.
+For that purposes used ';' symbol. So if we have some sentences like:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>x -&gt; y;;
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>x &lt;- z;;
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>x =&gt; h: r;;
+</code></pre></div>
+<p>Then using SCs level 4 we can write them like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>x 
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>-&gt; y;
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>&lt;- z;
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>=&gt; h: r;;
+</code></pre></div>
+<p>In other words, this level of SCs-code allows to use source element one time.</p>
+<hr/>
+
+<p><strong>Examples</strong></p>
+<table>
+  <tr>
+    <th>SCg-code</th>
+    <th>Equal SCs-code level 4 text</th>
+  </tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_1.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+fruit 
+-> apple;
+-> banana;;
+        </code>
+      </pre>
+    </td>
+  <tr>
+
+  <tr>
+    <td><scg src="../images/scs/scs_example_level_4.gwf"></scg></td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+a
+-> c: d: b;
+-> e;
+-> g: f;;
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+<h3 id="scs-code-level-5"><strong>SCs-code level 5</strong></h3>
+<p>Internal sentences added to SCs-code on this level. They are wrapped by <code>(* ... *)</code> brackets.
+This type of sentences allow to describe connections of an element inplace.
+You can place these internal sentences after <code>object</code> element in triple (<code>subject -&gt; object (* ... *);;</code>), but before <code>;;</code> separator.
+You can use level <code>2-4</code> sentences inside this one. But there is a just one rule: </p>
+<div class="admonition note">
+<p>You doesn't need to specify start element for each sentence. Because object (for which internal sentence builds) 
+is going to be a subject for all internal sentences </p>
+</div>
+<p>Look at the examples, to understand how it works:</p>
+<table>
+  <tr>
+    <th>SCs-code level 2-4</th>
+    <th>SCs-code level 5</th>
+    <th>Description</th>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set -> attr: item;;
+item -> subitem;;
+          </code>
+        </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set
+-> attr: item 
+(*
+  -> subitem;;
+*);;
+        </code>
+      </pre>
+    </td>
+    <td>
+    This is a simple example, that allow to make an sc.s-text more readable and useful. In this case text has a sublevels, that allows
+    to read it faster.
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set -> attr: item;;
+item -> subitem;;
+item -> attr2: subitem2;;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set 
+-> attr: item
+(* 
+  -> subitem;;
+  -> attr2: subitem2;;
+*);;
+        </code>
+      </pre>
+    </td>
+    <td>
+    You can use as much as you need sentences in <code>(* *)</code>, but all of them should be separated by <code>;;</code>.
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+@en_idtf = [sc-element];;
+@ru_idtf = [sc-элемент];;
+@en_idtf <- lang_en;;
+@ru_idtf <- lang_ru;;
+sc_element 
+=> nrel_main_idtf: 
+  @en_idtf;
+  @ru_idtf;;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+sc_element
+=> nrel_main_idtf:
+  [sc-element]
+  (* <- lang_en;; *);
+=> nrel_main_idtf:
+  [sc-элемент]
+  (* <- lang_ru;; *);;
+        </code>
+      </pre>
+    </td>
+    <td>
+    This type of syntax is very useful, when you need to specify some meta information on <code>sc-link</code>'s.
+    In this example we specify two main identifiers for a <code>sc_element</code>. One is an english (<code>lang_en</code>) identifier,
+    another one is a russian (<code>lang_ru</code>).
+    </td>
+  </tr>
+
+</table>
+
+<h3 id="scs-code-level-6"><strong>SCs-code level 6</strong></h3>
+<p>There are some new complex aliases, that adds by this level of SCs-code:</p>
+<ul>
+<li><code>[...]</code> - this is a short representation of <code>sc-link</code> with a content. You can create <code>sc-link</code> with a specified content
+by using this feature. There are all possible cases:</li>
+</ul>
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Example</th>
+  </tr>
+    <tr>
+      <td>`string`</td>
+      <td>You can write any string that you wish inside <code>[ ... ]</code> alias</td>
+      <td>
+        <pre>
+          <code class="js hljs javascript">
+x -> [any string];;
+x -> [this is a 
+ multiline text];;
+          </code>
+        </pre>
+      </td>
+    </tr>
+    <tr>
+      <td>`number`</td>
+      <td>You can specify a number as a binary data. To do that, just use syntax:
+        <code>[^"type: value"]</code>. Where <code>type</code> is a one of possible types:
+        <ul> 
+          <li><code>int</code> - signed integer value (32 bit). You can also use such types for an integer:
+            <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>
+          </li>
+          <li><code>uint</code> - unsigned integer value (32 bit). You can also use such type for an unsigned integer:
+            <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>
+          </li>
+          <li><code>float</code> - 32-bit float value</li>
+          <li><code>double</code> - 64-bit float value</li>
+        </ul>
+      </td>
+      <td>
+        <pre><code class="js hljs javascript">
+x -> [^"float: 435.2346"];;
+x -> [^"int8: 7"];;
+x -> [^"uint: 781236"];;
+        </code></pre>
+      </td>
+    </tr>
+</table>
+
+<ul>
+<li><code>[* ... *]</code> this is a short representation of <code>sc-structure</code>. You can use just sc.s-text inside these brackets.
+  So these brackets will designate an <code>sc-structure</code> (<code>sc-node</code> with a type <code>sc_node_structure</code>). All elements inside
+  brackets will have incoming sc-arc (type <code>sc_main_arc</code>) from that <code>sc-node</code>.
+<br />
+<table>
+    <tr>
+      <th>SCs-code level 2-5</th>
+      <th>SCs-code level 6</th>
+    </tr>
+
+    <tr>
+      <td>
+        <pre><code class="js hljs javascript">
+@arc_alias = (set -> item);;
+structure -> set; item; @arc_alias;;
+        </code></pre>
+      </td>
+      <td>
+        <pre>
+          <code class="js hljs javascript">
+@structure = [* set -> item;; *];;
+          </code>
+        </pre>
+      </td>
+    </tr>
+  </table>
+</li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">That's important</p>
+<p>Sс.s-text inside <code>[* ... *]</code> has the same rules and semantic, like it will be in a separated file</p>
+</div>
+<ul>
+<li><code>{ ... }</code> is a short representation of non-oriented set. This feature allow to make sets in very fast way.
+  Syntax looks like:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>@non_oriented_set = {
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>  element1;
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>  attr2: element2;
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>  ...
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>  last_element // no semicolon after last element
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>};;
+</code></pre></div>
+<ul>
+<li><code>&lt; ... &gt;</code> is a short representation of oriented set. This feature allow to make sets in very fast way.
+  Syntax looks like:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>@oriented_set = &lt;
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>  element1;
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>  attr2: element2;
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>  ...
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>  last_element // no semicolon after last element
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>&gt;;;
+</code></pre></div>
+<table>
+  <tr>
+    <th>SCs-code level 2-5</th>
+    <th>SCs-code level 6</th>
+    <th>Comments</th>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set
+<- sc_node_tuple;
+-> element1;
+-> attr2: element2;
+-> element3;;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+@set = {
+  element1;
+  attr2: element2;
+  element3 // no semicolon
+};;
+        </code>
+      </pre>
+    </td>
+    <td>Using set looks much cleaner. You can use even attributes on it.</td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+meta_set 
+<- sc_node_tuple;
+-> set1;
+-> set2;;
+
+set1
+<- sc_node_tuple;
+-> element1;
+-> attr2: element2;
+-> element3;;
+
+set2
+<- sc_node_tuple;
+-> element5;
+-> element6;;
+
+set3
+<- sc_node_tuple;
+-> element10;;
+
+element 
+=> nrel_relation: set3;;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+@meta_set = {
+  {
+    element1;
+    attr2: element2;
+    element3
+  };
+  {
+    element5;
+    element6
+  }
+};;
+
+element 
+=> nrel_relation:
+{
+  element10
+};;
+        </code>
+      </pre>
+    </td>
+    <td>You can use set alias inside any other complex aliases and triples.</td>
+  </tr>
+
+  <tr>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+set
+<- sc_node_tuple;;
+
+@first_arc = (set -> rrel_1: element1);;
+@second_arc = (set -> element2);;
+
+nrel_basic_sequence
+-> (@first_arc => @second_arc);;
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code class="js hljs javascript">
+@set = <
+  element1;
+  element2 // no semicolon
+>;;
+        </code>
+      </pre>
+    </td>
+    <td>Using set looks much cleaner. You can use even attributes on it.</td>
+  </tr>
+</table>
+
+<h3 id="keynodes"><strong>Keynodes</strong></h3>
+<p>There are a list of element type keynodes, that can be used to specify type of sc-element:</p>
+<table>
+<thead>
+<tr>
+<th>Keynode</th>
+<th>Equal sc-type</th>
+<th>Possible sc.g-elements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sc_node</td>
+<td>ScType::Node</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node.png" /></td>
+</tr>
+<tr>
+<td>sc_link</td>
+<td>ScType::ConstNodeLink</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node_link.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node_link.png" /></td>
+</tr>
+<tr>
+<td>sc_common_edge</td>
+<td>ScType::ConstCommonEdge</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_common_edge.png" /></td>
+</tr>
+<tr>
+<td>sc_common_arc</td>
+<td>ScType::ConstCommonArc</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_common_arc.png" /></td>
+</tr>
+<tr>
+<td>sc_membership_arc</td>
+<td>ScType::MembershipArc</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_membership_arc.png" /></td>
+</tr>
+<tr>
+<td>sc_main_arc</td>
+<td>ScType::ConstPermPosArc</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_perm_pos_arc.png" /></td>
+</tr>
+<tr>
+<td>sc_node_tuple</td>
+<td>ScType::NodeTuple</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node_tuple.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node_tuple.png" /></td>
+</tr>
+<tr>
+<td>sc_node_structure</td>
+<td>ScType::NodeStructure</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node_structure.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node_structure.png" /></td>
+</tr>
+<tr>
+<td>sc_node_role_relation</td>
+<td>ScType::NodeRole</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node_role.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node_role.png" /></td>
+</tr>
+<tr>
+<td>sc_node_non_role_relation</td>
+<td>ScType::NodeNonRole</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node_non_role.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node_non_role.png" /></td>
+</tr>
+<tr>
+<td>sc_node_class</td>
+<td>ScType::NodeClass</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node_class.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node_class.png" /></td>
+</tr>
+<tr>
+<td>sc_node_superclass</td>
+<td>ScType::NodeSuperclass</td>
+<td>Not specified</td>
+</tr>
+<tr>
+<td>sc_node_material</td>
+<td>ScType::NodeMaterial</td>
+<td><img alt="sc.g-element" src="../images/scg/scg_const_node_material.png" /> <img alt="sc.g-element" src="../images/scg/scg_var_node_material.png" /></td>
+</tr>
+</tbody>
+</table>
+<p>There is an example of usage:</p>
+<table>
+  <tr>
+    <th>SCs-code</th>
+    <th>Equal SCg-code</th>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+a <- sc_node_class;;
+a _-> _b;;
+_b <- sc_node_material;;
+      </pre>
+    </td>
+    <td><scg src="../images/scs_keynodes_old_example_1.gwf"></scg></td>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+_x => nrel_y: t;;
+nrel_y <- sc_node_non_role_relation;;
+      </pre>
+    </td>
+    <td><scg src="../images/scs_keynodes_old_example_2.gwf"></scg></td>
+  </tr>
+</table>
+
+<h2 id="frequently-asked-questions"><strong>Frequently Asked Questions</strong></h2>
+<!-- no toc -->
+<ul>
+<li><a href="#what-scs-code-level-is-recommended-to-use"><strong>What SCs-code level is recommended to use?</strong></a></li>
+<li><a href="#can-i-combine-different-levels-in-one-scs-file"><strong>Can I combine different levels in one SCs file?</strong></a></li>
+<li><a href="#what-is-the-difference-between-set-a-b-c-and-set-a-b-c"><strong>What is the difference between <code>set -&gt; a; -&gt; b; -&gt; c;;</code> and <code>set -&gt; a; b; c;;</code>?</strong></a></li>
+</ul>
+<h3 id="what-scs-code-level-is-recommended-to-use"><strong>What SCs-code level is recommended to use?</strong></h3>
+<p>The first levels of SCs-code have minimal syntax, so it is simple to handle sc.s-text of these levels. But the last levels of
+SCs-code allow you to make sc.s-text more compact, but these levels of SCs-code have more complicated syntax.</p>
+<h3 id="can-i-combine-different-levels-in-one-scs-file"><strong>Can I combine different levels in one SCs file?</strong></h3>
+<p>All levels of SCs-code can be combined. Usually it is useful to use 4-6 levels if you use 2-3 levels.</p>
+<h3 id="what-is-the-difference-between-set-a-b-c-and-set-a-b-c"><strong>What is the difference between <code>set -&gt; a; -&gt; b; -&gt; c;;</code> and <code>set -&gt; a; b; c;;</code>?</strong></h3>
+<p>These sc.s-texts are identical. The second sc.s-text is just short version of the first sc.s-text, it allows to not duplicate sc.s-connectors between sc.s-elements.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.action.edit", "content.tabs.link", "content.code.copy"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../_assets/scg.min.js"></script>
+      
+        <script src="../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>

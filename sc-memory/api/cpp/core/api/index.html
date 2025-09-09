@@ -1,0 +1,3063 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../../../../sc-tools/migrate_to_new_agent_api/">
+      
+      
+        <link rel="next" href="../../extended/helper_api/">
+      
+      
+      <link rel="icon" href="../../../../../ostis-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
+    
+    
+      
+        <title>C++ Core API - sc-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#c-core-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="sc-machine" class="md-header__button md-logo" aria-label="sc-machine" data-md-component="logo">
+      
+  <img src="../../../../../ostis-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            sc-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              C++ Core API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ostis-ai/sc-machine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../quick_start/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Quick Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../docker/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Docker
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/simple_guide_for_implementing_agent/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../sc-tools/sc_builder/" class="md-tabs__link">
+          
+  
+  
+  Tools
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../build/quick_start/" class="md-tabs__link">
+          
+  
+  
+  Build Instructions
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../CONTRIBUTING/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT" class="md-tabs__link">
+        
+  
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="sc-machine" class="md-nav__button md-logo" aria-label="sc-machine" data-md-component="logo">
+      
+  <img src="../../../../../ostis-logo.png" alt="logo">
+
+    </a>
+    sc-machine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ostis-ai/sc-machine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            User Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/simple_guide_for_implementing_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Simple Guide for Implementing Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../sc-tools/migrate_to_new_agent_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrate to New Agent API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            C++ API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    C++ Core API
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Core API
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scaddr" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScAddr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scmemorycontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScMemoryContext
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ScMemoryContext">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generatenode" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateNode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generatelink" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateLink
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generateconnector" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateConnector
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iselement" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsElement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getelementtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetElementType
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setelementsubtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetElementSubtype
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getconnectorincidentelements" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetConnectorIncidentElements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sciterator3" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScIterator3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sciterator5" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScIterator5
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreach" class="md-nav__link">
+    <span class="md-ellipsis">
+      ForEach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eraseelement" class="md-nav__link">
+    <span class="md-ellipsis">
+      EraseElement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setlinkcontent" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetLinkContent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getlinkcontent" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetLinkContent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchlinksbycontent" class="md-nav__link">
+    <span class="md-ellipsis">
+      SearchLinksByContent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchlinksbycontentsubstring" class="md-nav__link">
+    <span class="md-ellipsis">
+      SearchLinksByContentSubstring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchlinkscontentsbycontentsubstring" class="md-nav__link">
+    <span class="md-ellipsis">
+      SearchLinksContentsByContentSubstring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scexception" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScException
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sclogger" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScLogger
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ScLogger">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#message-error-warning-info-debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      Message (Error, Warning, Info, Debug)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setloglevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetLogLevel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mute-and-unmute" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mute and Unmute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setprefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetPrefix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clear
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log levels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extended-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extended API
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frequently Asked Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequently Asked Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-difference-between-sctypeconstcommonarc-and-sctypeconstpermposarc" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-can-i-specify-empty-scaddr" class="md-nav__link">
+    <span class="md-ellipsis">
+      How can I specify empty ScAddr?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Extended API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Extended API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/helper_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ System Identifier API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/template_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ ScTemplate API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/permissions_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ User Permissions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2_4" id="__nav_5_1_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Agents API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_1_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Agents API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Events API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/event_subscriptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Event Subscriptions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/waiters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Waiters API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Agents API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/keynodes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Keynodes API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Actions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/agent_context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Agent Context API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extended/agents/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Modules API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Python API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Python API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/py-sc-client" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/py-sc-kpm" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python Extended API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    TypeScript API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            TypeScript API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/ts-sc-client" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    TypeScript Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../scs/sc_element_types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sc-element Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../scs/scs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SCs-code
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../sc-tools/sc_builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Knowledge Base Builder
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../sc-tools/kb_repo_file/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Knowledge Base Repo File
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../sc-tools/sc_machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sc-machine Runner
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Build Instructions
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Build Instructions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../build/quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start for Developers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../build/build_system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Build System
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../build/cmake_flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CMake Flags
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../build/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration File
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../dev/codestyle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Style Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../dev/devcontainer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev Container
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scaddr" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScAddr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scmemorycontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScMemoryContext
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ScMemoryContext">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generatenode" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateNode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generatelink" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateLink
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generateconnector" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateConnector
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iselement" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsElement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getelementtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetElementType
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setelementsubtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetElementSubtype
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getconnectorincidentelements" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetConnectorIncidentElements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sciterator3" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScIterator3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sciterator5" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScIterator5
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreach" class="md-nav__link">
+    <span class="md-ellipsis">
+      ForEach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eraseelement" class="md-nav__link">
+    <span class="md-ellipsis">
+      EraseElement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setlinkcontent" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetLinkContent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getlinkcontent" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetLinkContent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchlinksbycontent" class="md-nav__link">
+    <span class="md-ellipsis">
+      SearchLinksByContent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchlinksbycontentsubstring" class="md-nav__link">
+    <span class="md-ellipsis">
+      SearchLinksByContentSubstring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchlinkscontentsbycontentsubstring" class="md-nav__link">
+    <span class="md-ellipsis">
+      SearchLinksContentsByContentSubstring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scexception" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScException
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sclogger" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScLogger
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ScLogger">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#message-error-warning-info-debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      Message (Error, Warning, Info, Debug)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setloglevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetLogLevel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mute-and-unmute" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mute and Unmute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setprefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetPrefix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clear
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log levels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extended-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extended API
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frequently Asked Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequently Asked Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-difference-between-sctypeconstcommonarc-and-sctypeconstpermposarc" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-can-i-specify-empty-scaddr" class="md-nav__link">
+    <span class="md-ellipsis">
+      How can I specify empty ScAddr?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ostis-ai/sc-machine/edit/main/docs/sc-memory/api/cpp/core/api.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="c-core-api"><strong>C++ Core API</strong></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is correct for only versions of sc-machine that &gt;= 0.10.0.</p>
+</div>
+<hr />
+<p>The API provides core functionality for creating, retrieving and erasing sc-elements in sc-memory.
+This sc-memory is designed to represent knowledge in a structured and graph-based manner.</p>
+<p>A sc-memory consists of sc-elements. Sc-elements can be grouped into sc-constructions (semantic graphs or knowledge graphs). Among sc-elements there are sc-nodes, sc-links and sc-connectors between them. All sc-elements have syntactic and semantic sc-types. Sc-connectors are divided into non-oriented sc-connectors (sc-edges) and oriented sc-connectors (sc-arcs). Each sc-connector have source and target sc-elements. These sc-elements can be sc-nodes, sc-links or sc-connectors. All these attributes of sc-elements and sc-element structures are hidden from user, but you can get these features using this API.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All API methods are thread-safe.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To include this API provide <code>#include &lt;sc-memory/sc_memory.hpp&gt;</code> in your hpp source.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Objects of <code>ScMemoryContext</code> class are movable, but not copyable.</p>
+</div>
+<h2 id="scaddr"><strong>ScAddr</strong></h2>
+<p>Each sc-element has a sc-address with which you can obtain information about this sc-element.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">...</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">ScAddr</span><span class="w"> </span><span class="n">elementAddr1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">// some call of the API method 1</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">ScAddr</span><span class="w"> </span><span class="n">elementAddr2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">// some call of the API method 2</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">// Compare sc-addresses.</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">isAddrsEqual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">elementAddr1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">elementAddr2</span><span class="p">;</span>
+</code></pre></div>
+<h2 id="scmemorycontext"><strong>ScMemoryContext</strong></h2>
+<p>It is a class provided all API methods for creating, manipulating, retrieving and erasing sc-elements in sc-memory.
+It refers to set of attributes and rights of some subject of action in sc-memory (user or agent) that are used in 
+during API methods completion.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">...</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">// To create such context use constructor of ScMemoryContext.</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">ScMemoryContext</span><span class="w"> </span><span class="n">context</span><span class="p">;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// After you can use this object to call any API methods.</span>
+</code></pre></div>
+<h3 id="generatenode"><strong>GenerateNode</strong></h3>
+<p>To create sc-nodes you can use the method <code>GenerateNode</code>, to create sc-links - the method <code>GenerateLink</code>, to create
+sc-connectors between them - the method <code>GenerateConnector</code>. All these methods check passed sc-types. If specified sc-type is
+not valid, then a method throws the exception <code>utils::ExceptionInvalidParams</code> with description of this error.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">...</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">// Generate sc-node and get sc-address in sc-memory of it.</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">nodeAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GenerateNode</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNode</span><span class="p">);</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">// Specified sc-type must be one of ScType::...Node... type.</span>
+</code></pre></div>
+<h3 id="generatelink"><strong>GenerateLink</strong></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">...</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1">// Generate sc-link and get sc-address in sc-memory of it.</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GenerateLink</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNodeLink</span><span class="p">);</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1">// Specified sc-type must be one of ScType::...NodeLink... type.</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Now all sc-links are not sc-nodes. It can be fixed in the further versions of sc-machine. But you can use 
+the method <code>GenerateNode</code> to create sc-links.</p>
+</div>
+<h3 id="generateconnector"><strong>GenerateConnector</strong></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">...</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1">// Generate sc-arc between sc-node and sc-link and get sc-address in </span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1">// sc-memory of it.</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">arcAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GenerateConnector</span><span class="p">(</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span><span class="w"> </span><span class="n">nodeAddr</span><span class="p">,</span><span class="w"> </span><span class="n">linkAddr</span><span class="p">);</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1">// Specified sc-type must be one of ScType::Edge... type.</span>
+</code></pre></div>
+<p>If specified sc-addresses of source and target sc-elements are not valid, then the method throws exception
+<code>utils::ExceptionInvalidParams</code> with description that some of specified sc-addresses is not valid.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although this method is called incorrectly and may be misleading, but you can create any sc-connectors using it.</p>
+</div>
+<h3 id="iselement"><strong>IsElement</strong></h3>
+<p>To check if specified sc-address is valid in sc-memory you can use the method <code>IsElement</code>. Valid sc-address refers to
+sc-address that exists in sc-memory and that corresponds some sc-element in it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">...</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">// Check if all created sc-elements are valid.</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">isNodeValid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">IsElement</span><span class="p">(</span><span class="n">nodeAddr</span><span class="p">);</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">isLinkValid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">IsElement</span><span class="p">(</span><span class="n">linkAddr</span><span class="p">);</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">isArcValid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">IsElement</span><span class="p">(</span><span class="n">arcAddr</span><span class="p">);</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can check if specified sc-address is not empty calling from this sc-address object method <code>IsValid</code>.
+But it is preferable to use <code>IsElement</code>, it checks if provided sc-address exists and valid in sc-memory. </p>
+</div>
+<h3 id="getelementtype"><strong>GetElementType</strong></h3>
+<p>If it needs you can get sc-element types by its sc-addresses. If specified sc-address is not valid, then the method 
+throws exception <code>utils::ExceptionInvalidParams</code> with description that specified sc-address is not valid.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">...</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">// Get created sc-elements sc-types.</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">ScType</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">nodeType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetElementType</span><span class="p">(</span><span class="n">nodeAddr</span><span class="p">);</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">ScType</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetElementType</span><span class="p">(</span><span class="n">linkAddr</span><span class="p">);</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">ScType</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">arcType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetElementType</span><span class="p">(</span><span class="n">arcAddr</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="setelementsubtype"><strong>SetElementSubtype</strong></h3>
+<p>You can change semantic sc-type of sc-element. Use the method <code>SetElementSubtype</code> and provide semantic sc-type for
+syntactic sc-type for sc-element.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">...</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1">// Generate sc-node and get sc-address in sc-memory of it.</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">nodeAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GenerateNode</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">Node</span><span class="p">);</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">isSubtypeElementChanged</span><span class="w"> </span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">SetElementSubtype</span><span class="p">(</span><span class="n">nodeAddr</span><span class="p">,</span><span class="w"> </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNode</span><span class="p">);</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1">// The value of `isSubtypeElementChanged` must be equal to `true`.</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don't use this method to change syntactic sc-type for sc-element. It is misleading.</p>
+</div>
+<h3 id="getconnectorincidentelements"><strong>GetConnectorIncidentElements</strong></h3>
+<p>To get incident (source and target) sc-elements you can use methods <code>GetConnectorIncidentElements</code>, <code>GetArcSourceElement</code> and <code>GetArcTargetElement</code>.
+If specified sc-address is not valid, then this methods throw exception <code>utils::ExceptionInvalidParams</code> with description 
+that specified sc-address of sc-connector is not valid.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">...</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">// Get sc-arc incident sc-elements.</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">[</span><span class="n">sourceAddr</span><span class="p">,</span><span class="w"> </span><span class="n">targetAddr</span><span class="p">]</span><span class="w"> </span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetConnectorIncidentElements</span><span class="p">(</span><span class="n">arcAddr</span><span class="p">);</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1">// The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr` </span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="c1">// and the sc-address `targetAddr` must be equal to the sc-address `linkAddr`.</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="p">...</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="c1">// Or get sc-arc incident source and target sc-elements separately.</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">sourceAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetArcSourceElement</span><span class="p">(</span><span class="n">arcAddr</span><span class="p">);</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="c1">// The sc-address `sourceAddr` must be equal to the sc-address `nodeAddr`.</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">targetAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetArcTargetElement</span><span class="p">(</span><span class="n">arcAddr</span><span class="p">);</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="c1">// The sc-address `targetAddr` must be equal to the sc-address `linkAddr`.</span>
+</code></pre></div>
+<p>To find previously created sc-constructions you can use 3-element sc-iterators and 5-element sc-iterators from C++ API.
+The image below shows numeration of sc-elements in 3-element (left) and 5-element (right) sc-iterators.</p>
+<p><scg src="../images/iterators_scheme.gwf"><strong>Iterators element numeration</strong></scg></p>
+<p>For both of them you have two approaches.
+First approach is to use simple while loop. It is suitable, when you need to break this loop depending on logic:</p>
+<h3 id="sciterator3"><strong>ScIterator3</strong></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">...</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1">// Create sc-iterator for searching all sc-element sc-addresses </span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="c1">// with unknown sc-type belonging to sc-set with sc-address `setAddr`.</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">ScIterator3Ptr</span><span class="w"> </span><span class="n">it3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">CreateIterator3</span><span class="p">(</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="n">setAddr</span><span class="p">,</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">Unknown</span><span class="p">);</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="c1">// Use it3-Next() to go to the next appropriate by condition sc-construction.</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">it3</span><span class="o">-&gt;</span><span class="n">Next</span><span class="p">())</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">{</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">  </span><span class="c1">// To get values use `it3-&gt;Get(index)`, where index in range [0; 2]. </span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">  </span><span class="c1">// It returns `true`, if the next appropriate construction is found, </span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">  </span><span class="c1">// otherwise `false`.</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// Write your code to handle found sc-construction.</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="sciterator5"><strong>ScIterator5</strong></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">...</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">// Create sc-iterator for searching all sc-node sc-addresses, </span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1">// which pairs with sc-element with address `setAddr` belong to the relation </span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1">// with sc-address `nrelDecompositionAddr`.</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">ScIterator5Ptr</span><span class="w"> </span><span class="n">it5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">CreateIterator5</span><span class="p">(</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="n">setAddr</span><span class="p">,</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstCommonArc</span><span class="p">,</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNode</span><span class="p">,</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">    </span><span class="n">nrelDecompositionAddr</span><span class="p">);</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="c1">// Use `it5-Next()` to go to the next appropriate by condition sc-construction. </span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="c1">// It returns `true`, if the next appropriate construction is found, </span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="c1">// otherwise `false`.</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">it5</span><span class="o">-&gt;</span><span class="n">Next</span><span class="p">())</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="p">{</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">  </span><span class="c1">// To get values use `it5-&gt;Get(index)`, where index in range [0; 4].</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// Write your code to handle found sc-construction.</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="p">}</span>
+</code></pre></div>
+<p>Second approach allows you to iterate 3-element and 5-element constructions with less code, and it is suitable when
+you need to iterate all results.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use next methods if you need to iterate all results. Because it more clearly.</p>
+</div>
+<h3 id="foreach"><strong>ForEach</strong></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">...</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1">// Create callback-based sc-iterator for searching all sc-element sc-addresses </span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="c1">// with unknown sc-type belonging to sc-set with sc-address `setAddr`.</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">context</span><span class="p">.</span><span class="n">ForEach</span><span class="p">(</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="n">setAddr</span><span class="p">,</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">Unknown</span><span class="p">,</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="p">[]</span><span class="w"> </span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">srcAddr</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">edgeAddr</span><span class="p">,</span><span class="w"> </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">trgAddr</span><span class="p">)</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="p">{</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">  </span><span class="c1">// srcAddr equal to the 0th value of iterator</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">  </span><span class="c1">// edgeAddr equal to the 1st value of iterator</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">  </span><span class="c1">// trgAddr equal to the 2d value of iterator</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// Write your code to handle found sc-construction.</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="p">});</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">...</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1">// Create callback-based sc-iterator for searching all sc-node sc-addresses, </span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="c1">// which pairs with sc-element with address `setAddr` belong to the relation </span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1">// with sc-address `nrelDecompositionAddr`.</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="n">context</span><span class="p">.</span><span class="n">ForEach</span><span class="p">(</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span><span class="n">setAddr</span><span class="p">,</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstCommonArc</span><span class="p">,</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNode</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">  </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">  </span><span class="n">nrelDecompositionAddr</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">  </span><span class="p">[]</span><span class="w"> </span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">srcAddr</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">      </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">connectorAddr</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">      </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">trgAddr</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">      </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">connectorAttrAddr</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">      </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">attrAddr</span><span class="p">)</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="p">{</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">  </span><span class="c1">// srcAddr equal to the 0th value of sc-iterator</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w">  </span><span class="c1">// connectorAddr equal to the 1st value of sc-iterator</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">  </span><span class="c1">// trgAddr equal to the 2d value of sc-iterator</span>
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="w">  </span><span class="c1">// connectorAttrAddr equal to the 3rd value of sc-iterator</span>
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">  </span><span class="c1">// attrAddr equal to the 4th value of sc-iterator</span>
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// Write your code to handle found sc-construction.</span>
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="p">});</span>
+</code></pre></div>
+<h3 id="eraseelement"><strong>EraseElement</strong></h3>
+<p>All sc-elements can be erasing from sc-memory. For this you can use the method <code>EraseElement</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">...</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1">// Erase all created sc-elements.</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">isNodeErased</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">EraseElement</span><span class="p">(</span><span class="n">nodeAddr</span><span class="p">);</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1">// The sc-elements with sc-addresses `nodeAddr` and `arcAddr` must be deleted.</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">isArcErased</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">EraseElement</span><span class="p">(</span><span class="n">arcAddr</span><span class="p">);</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1">// The sc-element with sc-address `targetAddr` must be deleted.</span>
+</code></pre></div>
+<h3 id="setlinkcontent"><strong>SetLinkContent</strong></h3>
+<p>Besides creating and checking elements, the API also supports updating and removing content of sc-links.
+If specified sc-element is a sc-link, you can set content into it. Re-installing new content into a sc-link removes
+the previous content from this sc-link. If specified sc-address is not valid, then the method throws exception 
+<code>utils::ExceptionInvalidParams</code> with description that specified sc-address is not valid.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">...</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddr1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GenerateLink</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNodeLink</span><span class="p">);</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="c1">// Set string content into created sc-link.</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">context</span><span class="p">.</span><span class="n">SetLinkContent</span><span class="p">(</span><span class="n">linkAddr1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;my content&quot;</span><span class="p">);</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddr2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GenerateLink</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNodeLink</span><span class="p">);</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1">// Set numeric content into created sc-link.</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="n">context</span><span class="p">.</span><span class="n">SetLinkContent</span><span class="p">(</span><span class="n">linkAddr2</span><span class="p">,</span><span class="w"> </span><span class="mf">10f</span><span class="p">);</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="p">...</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don't use result value, it doesn't mean anything.</p>
+</div>
+<h3 id="getlinkcontent"><strong>GetLinkContent</strong></h3>
+<p>To get existed content from sc-link you can use the method <code>GetLinkContent</code>. A content can be represented as numeric or 
+string. If content doesn't exist in sc-link, then the method <code>GetLinkContent</code> will return <code>false</code> and result content
+will be empty.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">...</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1">// Get string content from sc-link.</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">stringContent</span><span class="p">;</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">stringContentExist</span><span class="w"> </span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetLinkContent</span><span class="p">(</span><span class="n">linkAddr1</span><span class="p">,</span><span class="w"> </span><span class="n">stringContent</span><span class="p">);</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="c1">// Get numeric content from sc-link.</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="kt">float</span><span class="w"> </span><span class="n">numericContent</span><span class="p">;</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="kt">bool</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">numericContentExist</span><span class="w"> </span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GetLinkContent</span><span class="p">(</span><span class="n">linkAddr1</span><span class="p">,</span><span class="w"> </span><span class="n">numericContent</span><span class="p">);</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="p">...</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can set empty content into sc-link, but it means that this sc-link has content and this method for this 
+sc-link returns <code>true</code>.</p>
+</div>
+<h3 id="searchlinksbycontent"><strong>SearchLinksByContent</strong></h3>
+<p>You can find sc-links by its content. For this use the method <code>SearchLinksByContent</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p">...</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="c1">// Find sc-links with specified string content.</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">ScAddrSet</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddrs1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">SearchLinksByContent</span><span class="p">(</span><span class="s">&quot;my content&quot;</span><span class="p">);</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1">// The set `linkAddrs1` must contain sc-address `linkAddr1`.</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="c1">// Find sc-links with specified numeric content.</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="n">ScAddrSet</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddrs2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">SearchLinksByContent</span><span class="p">(</span><span class="mf">10f</span><span class="p">);</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="c1">// The set `linkAddrs2` must contain sc-address `linkAddr2`.</span>
+</code></pre></div>
+<h3 id="searchlinksbycontentsubstring"><strong>SearchLinksByContentSubstring</strong></h3>
+<p>And you can find sc-links by its content substring. For this use the method <code>SearchLinksByContentSubstring</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">...</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="c1">// Find sc-links with specified string content substring.</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">ScAddrSet</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddrs1</span><span class="w"> </span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">SearchLinksByContentSubstring</span><span class="p">(</span><span class="s">&quot;my cont&quot;</span><span class="p">);</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="c1">// The set `linkAddrs1` must contain sc-address `linkAddr1`.</span>
+</code></pre></div>
+<p>Also, you can provide a filter to search sc-links to define criteria for which links should be included in the search results. This allows for customization of which links are considered based on user-defined conditions. The filter must be an instance of a class derived from <code>ScLinkFilter</code>, which implements the <code>CheckLink</code> and <code>RequestLink</code> methods.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">TestScLinkFilter</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScLinkFilter</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="p">{</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="c1">// You can specify custom fields and methods.</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="n">ScMemoryContext</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m_context</span><span class="p">;</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="n">m_linkClassAddr</span><span class="p">;</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">m_foundLinksCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0u</span><span class="p">;</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">CheckLink</span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddr</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">  </span><span class="p">{</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">    </span><span class="c1">// Don&#39;t include sc-link in result if it doesn&#39;t belong </span>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="w">    </span><span class="c1">// to `m_linkClassAddr`.</span>
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">m_context</span><span class="o">-&gt;</span><span class="n">CheckConnector</span><span class="p">(</span>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="w">      </span><span class="n">m_linkClassAddr</span><span class="p">,</span><span class="w"> </span><span class="n">linkAddr</span><span class="p">,</span><span class="w"> </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">);</span>
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>
+<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="w">  </span><span class="n">ScLinkFilterRequest</span><span class="w"> </span><span class="nf">RequestLink</span><span class="p">(</span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddr</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
+<a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="w">  </span><span class="p">{</span>
+<a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a><span class="w">    </span><span class="c1">// Iterate over only the first 5 sc-links.</span>
+<a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a><span class="w">    </span><span class="o">++</span><span class="n">m_foundLinksCount</span><span class="p">;</span>
+<a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a>
+<a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_foundLinksCount</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">5u</span><span class="p">)</span>
+<a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">ScLinkFilterRequest</span><span class="o">::</span><span class="n">STOP</span><span class="p">;</span>
+<a id="__codelineno-18-24" name="__codelineno-18-24" href="#__codelineno-18-24"></a>
+<a id="__codelineno-18-25" name="__codelineno-18-25" href="#__codelineno-18-25"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ScLinkFilterRequest</span><span class="o">::</span><span class="n">CONTINUE</span><span class="p">;</span>
+<a id="__codelineno-18-26" name="__codelineno-18-26" href="#__codelineno-18-26"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-18-27" name="__codelineno-18-27" href="#__codelineno-18-27"></a><span class="p">};</span>
+<a id="__codelineno-18-28" name="__codelineno-18-28" href="#__codelineno-18-28"></a>
+<a id="__codelineno-18-29" name="__codelineno-18-29" href="#__codelineno-18-29"></a>
+<a id="__codelineno-18-30" name="__codelineno-18-30" href="#__codelineno-18-30"></a><span class="c1">// Some method A</span>
+<a id="__codelineno-18-31" name="__codelineno-18-31" href="#__codelineno-18-31"></a><span class="p">...</span>
+<a id="__codelineno-18-32" name="__codelineno-18-32" href="#__codelineno-18-32"></a><span class="c1">// For example, generate sc-links, set contents for them and add only </span>
+<a id="__codelineno-18-33" name="__codelineno-18-33" href="#__codelineno-18-33"></a><span class="c1">// one of them to some set or class.</span>
+<a id="__codelineno-18-34" name="__codelineno-18-34" href="#__codelineno-18-34"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkClassAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_ctx</span><span class="o">-&gt;</span><span class="n">GenerateNode</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNodeClass</span><span class="p">);</span>
+<a id="__codelineno-18-35" name="__codelineno-18-35" href="#__codelineno-18-35"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddr1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_ctx</span><span class="o">-&gt;</span><span class="n">GenerateLink</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNodeLink</span><span class="p">);</span>
+<a id="__codelineno-18-36" name="__codelineno-18-36" href="#__codelineno-18-36"></a><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkAddr2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_ctx</span><span class="o">-&gt;</span><span class="n">CreateLink</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNodeLink</span><span class="p">);</span>
+<a id="__codelineno-18-37" name="__codelineno-18-37" href="#__codelineno-18-37"></a>
+<a id="__codelineno-18-38" name="__codelineno-18-38" href="#__codelineno-18-38"></a><span class="n">m_ctx</span><span class="o">-&gt;</span><span class="n">SetLinkContent</span><span class="p">(</span><span class="n">linkAddr1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;content 1&quot;</span><span class="p">);</span>
+<a id="__codelineno-18-39" name="__codelineno-18-39" href="#__codelineno-18-39"></a><span class="n">m_ctx</span><span class="o">-&gt;</span><span class="n">SetLinkContent</span><span class="p">(</span><span class="n">linkAddr2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;content 2&quot;</span><span class="p">);</span>
+<a id="__codelineno-18-40" name="__codelineno-18-40" href="#__codelineno-18-40"></a>
+<a id="__codelineno-18-41" name="__codelineno-18-41" href="#__codelineno-18-41"></a><span class="n">m_ctx</span><span class="o">-&gt;</span><span class="n">GenerateConnector</span><span class="p">(</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span><span class="w"> </span><span class="n">linkClassAddr</span><span class="p">,</span><span class="w"> </span><span class="n">linkAddr1</span><span class="p">);</span>
+<a id="__codelineno-18-42" name="__codelineno-18-42" href="#__codelineno-18-42"></a><span class="p">...</span>
+<a id="__codelineno-18-43" name="__codelineno-18-43" href="#__codelineno-18-43"></a>
+<a id="__codelineno-18-44" name="__codelineno-18-44" href="#__codelineno-18-44"></a><span class="c1">// Some method B</span>
+<a id="__codelineno-18-45" name="__codelineno-18-45" href="#__codelineno-18-45"></a><span class="p">...</span>
+<a id="__codelineno-18-46" name="__codelineno-18-46" href="#__codelineno-18-46"></a><span class="c1">// Create object of custom sc-link filter class and search sc-links </span>
+<a id="__codelineno-18-47" name="__codelineno-18-47" href="#__codelineno-18-47"></a><span class="c1">// with this filter.</span>
+<a id="__codelineno-18-48" name="__codelineno-18-48" href="#__codelineno-18-48"></a><span class="n">ScMemoryContext</span><span class="w"> </span><span class="n">context</span><span class="p">;</span>
+<a id="__codelineno-18-49" name="__codelineno-18-49" href="#__codelineno-18-49"></a><span class="n">CustomScLinkFilter</span><span class="w"> </span><span class="n">filter</span><span class="p">;</span>
+<a id="__codelineno-18-50" name="__codelineno-18-50" href="#__codelineno-18-50"></a><span class="n">filter</span><span class="p">.</span><span class="n">m_context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">context</span><span class="p">;</span>
+<a id="__codelineno-18-51" name="__codelineno-18-51" href="#__codelineno-18-51"></a><span class="n">filter</span><span class="p">.</span><span class="n">m_linkClassAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linkClassAddr</span><span class="p">;</span>
+<a id="__codelineno-18-52" name="__codelineno-18-52" href="#__codelineno-18-52"></a>
+<a id="__codelineno-18-53" name="__codelineno-18-53" href="#__codelineno-18-53"></a><span class="n">ScAddrSet</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">links</span><span class="w"> </span>
+<a id="__codelineno-18-54" name="__codelineno-18-54" href="#__codelineno-18-54"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">m_ctx</span><span class="o">-&gt;</span><span class="n">SearchLinksByContentSubstring</span><span class="p">(</span><span class="s">&quot;content&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">);</span>
+<a id="__codelineno-18-55" name="__codelineno-18-55" href="#__codelineno-18-55"></a><span class="c1">// The `links` must have only one sc-link sc-address `linkAddr1`.</span>
+<a id="__codelineno-18-56" name="__codelineno-18-56" href="#__codelineno-18-56"></a><span class="p">...</span>
+</code></pre></div>
+<h3 id="searchlinkscontentsbycontentsubstring"><strong>SearchLinksContentsByContentSubstring</strong></h3>
+<p>Also, you can find contents of sc-links by its content substring. For this use the method <code>SearchLinksContentsByContentSubstring</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="p">...</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="c1">// Find contents of sc-links with specified string content substring.</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">linkContents</span><span class="w"> </span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">SearchLinksContentsByContentSubstring</span><span class="p">(</span><span class="s">&quot;my cont&quot;</span><span class="p">);</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="c1">// The set `linkContents` must contain string `my content`.</span>
+</code></pre></div>
+<h3 id="scexception"><strong>ScException</strong></h3>
+<p>To declare your own exceptions inherit from class <code>ScException</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyException</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScException</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="p">{</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">MyException</span><span class="p">(</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">description</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">ScException</span><span class="p">(</span><span class="s">&quot;MyException: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">description</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">)</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">  </span><span class="p">{}</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="p">};</span>
+</code></pre></div>
+<p>To throw exceptions use <code>SC_THROW_EXCEPTION(exceptionName, message);</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">SC_THROW_EXCEPTION</span><span class="p">(</span><span class="n">MyException</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;It is my exception.&quot;</span><span class="p">);</span>
+</code></pre></div>
+<p>Throw exception for a non-implemented part of code.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">SC_NOT_IMPLEMENTED</span><span class="p">(</span><span class="s">&quot;This code is not implemented.&quot;</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="sclogger"><strong>ScLogger</strong></h3>
+<p>The <code>ScLogger</code> class provides a robust logging mechanism for your code.</p>
+<p>To create an instance of ScLogger, you can use the constructor that specifies the logging type (console or file), the log file name (if applicable), and the initial log level. Here’s how to do it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1">// Create a logger that logs to the console with Info level</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">utils</span><span class="o">::</span><span class="n">ScLogger</span><span class="w"> </span><span class="n">logger</span><span class="p">(</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">  </span><span class="n">utils</span><span class="o">::</span><span class="n">ScLogger</span><span class="o">::</span><span class="n">ScLogType</span><span class="o">::</span><span class="n">Console</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">ScLogLevel</span><span class="o">::</span><span class="n">Info</span><span class="p">);</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="c1">// Create a logger that logs to a file with Debug level</span>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="n">utils</span><span class="o">::</span><span class="n">ScLogger</span><span class="w"> </span><span class="n">fileLogger</span><span class="p">(</span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">  </span><span class="n">utils</span><span class="o">::</span><span class="n">ScLogger</span><span class="o">::</span><span class="n">ScLogType</span><span class="o">::</span><span class="n">File</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;log_file.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">ScLogLevel</span><span class="o">::</span><span class="n">Debug</span><span class="p">);</span>
+</code></pre></div>
+<p>Once you have created an instance of ScLogger, you can call its various methods to manage logging.</p>
+<h4 id="message-error-warning-info-debug"><strong>Message</strong> (<strong>Error</strong>, <strong>Warning</strong>, <strong>Info</strong>, <strong>Debug</strong>)</h4>
+<p>Use the <code>Message</code> method to log messages at different severity levels:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="n">logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;This is an informational message.&quot;</span><span class="p">);</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="c1">// or </span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="c1">// logger.Message(</span>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="c1">//   utils::ScLogLevel::Info, </span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="c1">//   &quot;This is an informational message.&quot;,</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="c1">//   ScConsole::Color::Grey);</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="n">fileLogger</span><span class="p">.</span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;An error occurred while processing.&quot;</span><span class="p">);</span>
+<a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="c1">// or</span>
+<a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="c1">// fileLogger.Message(</span>
+<a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="c1">//    utils::ScLogLevel::Error,</span>
+<a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="c1">//    &quot;An error occurred while processing.&quot;,</span>
+<a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="c1">//    ScConsole::Color::Red);</span>
+</code></pre></div>
+<p>It prints colored info message. Look color constants in <code>ScConsole::Color</code>.</p>
+<h4 id="setloglevel"><strong>SetLogLevel</strong></h4>
+<p>You can change the log level dynamically:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="n">logger</span><span class="p">.</span><span class="n">SetLogLevel</span><span class="p">(</span><span class="n">utils</span><span class="o">::</span><span class="n">ScLogLevel</span><span class="o">::</span><span class="n">Warning</span><span class="p">);</span>
+</code></pre></div>
+<h4 id="mute-and-unmute"><strong>Mute</strong> and <strong>Unmute</strong></h4>
+<p>Control whether logs are outputted:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="n">logger</span><span class="p">.</span><span class="n">Mute</span><span class="p">();</span><span class="w">   </span><span class="c1">// Mute logging</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="n">logger</span><span class="p">.</span><span class="n">Unmute</span><span class="p">();</span><span class="w"> </span><span class="c1">// Unmute logging</span>
+</code></pre></div>
+<h4 id="setprefix"><strong>SetPrefix</strong></h4>
+<p>Customize prefix for logs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="n">logger</span><span class="p">.</span><span class="n">SetPrefix</span><span class="p">(</span><span class="s">&quot;MyAgent: &quot;</span><span class="p">);</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="n">logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;It is info message&quot;</span><span class="p">);</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="c1">// Output: MyAgent: Is info message </span>
+</code></pre></div>
+<h4 id="clear"><strong>Clear</strong></h4>
+<p>Clear any open file streams or flush logs if necessary:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="n">logger</span><span class="p">.</span><span class="n">Clear</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="log-levels"><strong>Log levels</strong></h4>
+<p>The following macros are available for logging messages at different severity levels:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Message prefix</th>
+<th>Message color</th>
+<th>Log levels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Debug</code></td>
+<td><code>[Debug]</code></td>
+<td><code>ScConsole::Color::Grey</code></td>
+<td>Debug</td>
+</tr>
+<tr>
+<td><code>Info</code></td>
+<td><code>[Info]</code></td>
+<td><code>ScConsole::Color::LightBlue</code></td>
+<td>Debug, Info</td>
+</tr>
+<tr>
+<td><code>Warning</code></td>
+<td><code>[Warning]</code></td>
+<td><code>ScConsole::Color::Yellow</code></td>
+<td>Debug, Info, Warning</td>
+</tr>
+<tr>
+<td><code>Error</code></td>
+<td><code>[Error]</code></td>
+<td><code>ScConsole::Color::Red</code></td>
+<td>Debug, Info, Warning, Error</td>
+</tr>
+</tbody>
+</table>
+<p>These macros simplify the process of logging messages by automatically formatting them with appropriate prefixes and colors based on their severity levels.</p>
+<h2 id="extended-api"><strong>Extended API</strong></h2>
+<p>Described methods are part of Core C++ API of sc-memory. You can see and use Extended C++ API of sc-memory:</p>
+<ul>
+<li><a href="../../extended/helper_api/">ScHelper C++ API</a> to manipulate with system identifiers of sc-elements; </li>
+<li><a href="../../extended/template_api/">ScTemplate C++ API</a>, providing functionality for creating, manipulating and retrieving 
+large graph structures.</li>
+</ul>
+<h2 id="frequently-asked-questions"><strong>Frequently Asked Questions</strong></h2>
+<ul>
+<li><a href="#what-is-the-difference-between-sctypeconstcommonarc-and-sctypeconstpermposarc">What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?</a></li>
+<li><a href="#how-can-i-specify-empty-scaddr">How can I specify empty ScAddr?</a></li>
+</ul>
+<h3 id="what-is-the-difference-between-sctypeconstcommonarc-and-sctypeconstpermposarc"><strong>What is the difference between ScType::ConstCommonArc and ScType::ConstPermPosArc?</strong></h3>
+<p><code>ScType::ConstCommonArc</code> is a sc-type of sc-arc that connects two sc-elements in some relation.
+<code>ScType::ConstPermPosArc</code> is a sc-type of sc-arc that denotes membership of target sc-element to source sc-element.
+The sc-arc with sc-type <code>ScType::ConstCommonArc</code> between some two sc-elements can be transformed to sc-node to which 
+this two sc-elements belong.</p>
+<h3 id="how-can-i-specify-empty-scaddr"><strong>How can I specify empty ScAddr?</strong></h3>
+<p>Empty <code>ScAddr</code> is the sc-address that has hash that equals to <code>0</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="p">...</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="n">ScAddr</span><span class="w"> </span><span class="n">addr</span><span class="p">;</span>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="c1">// Here `addr` is empty.</span>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="n">myFunc</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="c1">// or</span>
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="n">myFunc</span><span class="p">(</span><span class="n">ScAddr</span><span class="o">::</span><span class="n">Empty</span><span class="p">);</span>
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="p">...</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.action.edit", "content.tabs.link", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../../../../_assets/scg.min.js"></script>
+      
+        <script src="../../../../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>

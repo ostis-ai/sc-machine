@@ -1,0 +1,3236 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../waiters/">
+      
+      
+        <link rel="next" href="../keynodes/">
+      
+      
+      <link rel="icon" href="../../../../../../ostis-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
+    
+    
+      
+        <title>C++ Agents API - sc-machine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../_assets/main.css">
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#c-agents-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../.." title="sc-machine" class="md-header__button md-logo" aria-label="sc-machine" data-md-component="logo">
+      
+  <img src="../../../../../../ostis-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            sc-machine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              C++ Agents API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ostis-ai/sc-machine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../../quick_start/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Quick Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../../docker/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Docker
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../guides/simple_guide_for_implementing_agent/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../core/api/" class="md-tabs__link">
+          
+  
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../../sc-tools/sc_builder/" class="md-tabs__link">
+          
+  
+  
+  Tools
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../../build/quick_start/" class="md-tabs__link">
+          
+  
+  
+  Build Instructions
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../../CONTRIBUTING/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT" class="md-tabs__link">
+        
+  
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="sc-machine" class="md-nav__button md-logo" aria-label="sc-machine" data-md-component="logo">
+      
+  <img src="../../../../../../ostis-logo.png" alt="logo">
+
+    </a>
+    sc-machine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ostis-ai/sc-machine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            User Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/simple_guide_for_implementing_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Simple Guide for Implementing Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../sc-tools/migrate_to_new_agent_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrate to New Agent API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            C++ API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../core/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Extended API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Extended API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helper_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ System Identifier API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ ScTemplate API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../permissions_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ User Permissions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_2_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2_4" id="__nav_5_1_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    C++ Agents API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_1_2_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            C++ Agents API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Events API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../event_subscriptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Event Subscriptions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waiters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Waiters API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    C++ Agents API
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Agents API
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick start
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-agent-driven-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is the agent-driven model?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-agent-specification-represent" class="md-nav__link">
+    <span class="md-ellipsis">
+      What does agent specification represent?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-ways-of-providing-the-agents-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are ways of providing the agent's specification?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#static-agent-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Static agent specification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Static agent specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScAgent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scactioninitiatedagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScActionInitiatedAgent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Required methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getactionclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetActionClass
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doprogram" class="md-nav__link">
+    <span class="md-ellipsis">
+      DoProgram
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DoProgram">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handling-action-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling action arguments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-action-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling action result
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-action-finish-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling action finish state
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-required-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Not required methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Not required methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getabstractagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetAbstractAgent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geteventclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetEventClass
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geteventsubscriptionelement" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetEventSubscriptionElement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getinitiationcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetInitiationCondition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getinitiationconditiontemplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetInitiationConditionTemplate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkinitiationcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      CheckInitiationCondition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getresultcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetResultCondition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getresultconditiontemplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetResultConditionTemplate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkresultcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      CheckResultCondition
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frequently Asked Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequently Asked Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#is-it-possible-to-subscribe-an-agent-for-more-than-one-sc-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      Is it possible to subscribe an agent for more than one sc-event?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-if-i-dont-specify-full-initiation-condition-in-agent-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      What happens if I don't specify full initiation condition in agent class?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#can-there-be-an-agent-without-primary-initiation-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Can there be an agent without primary initiation condition?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-it-possible-to-generate-object-of-scagent-class-and-call-any-of-class-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Is it possible to generate object of ScAgent class and call any of class methods?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-agents-call-protocol-preserved" class="md-nav__link">
+    <span class="md-ellipsis">
+      Is agent's call protocol preserved?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-advisable-to-do-as-an-agent-and-what-is-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is advisable to do as an agent and what is not?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whats-the-purpose-of-result-condition-what-is-it-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's the purpose of result condition? What is it used for?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keynodes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Keynodes API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Actions API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent_context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Agent Context API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C++ Modules API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Python API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Python API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/py-sc-client" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/py-sc-kpm" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python Extended API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    TypeScript API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            TypeScript API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/ts-sc-client" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    TypeScript Core API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../scs/sc_element_types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sc-element Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../scs/scs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SCs-code
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../sc-tools/sc_builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Knowledge Base Builder
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../sc-tools/kb_repo_file/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Knowledge Base Repo File
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../sc-tools/sc_machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sc-machine Runner
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Build Instructions
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Build Instructions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../build/quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start for Developers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../build/build_system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Build System
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../build/cmake_flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CMake Flags
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../build/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration File
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../dev/codestyle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Style Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../dev/devcontainer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev Container
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/ostis-ai/sc-machine/blob/main/COPYING.MIT" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick start
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-agent-driven-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is the agent-driven model?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-agent-specification-represent" class="md-nav__link">
+    <span class="md-ellipsis">
+      What does agent specification represent?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-ways-of-providing-the-agents-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are ways of providing the agent's specification?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#static-agent-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Static agent specification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Static agent specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScAgent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scactioninitiatedagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScActionInitiatedAgent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Required methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getactionclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetActionClass
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doprogram" class="md-nav__link">
+    <span class="md-ellipsis">
+      DoProgram
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DoProgram">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handling-action-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling action arguments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-action-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling action result
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-action-finish-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling action finish state
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-required-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Not required methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Not required methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getabstractagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetAbstractAgent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geteventclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetEventClass
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geteventsubscriptionelement" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetEventSubscriptionElement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getinitiationcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetInitiationCondition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getinitiationconditiontemplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetInitiationConditionTemplate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkinitiationcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      CheckInitiationCondition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getresultcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetResultCondition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getresultconditiontemplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetResultConditionTemplate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkresultcondition" class="md-nav__link">
+    <span class="md-ellipsis">
+      CheckResultCondition
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frequently Asked Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequently Asked Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#is-it-possible-to-subscribe-an-agent-for-more-than-one-sc-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      Is it possible to subscribe an agent for more than one sc-event?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-if-i-dont-specify-full-initiation-condition-in-agent-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      What happens if I don't specify full initiation condition in agent class?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#can-there-be-an-agent-without-primary-initiation-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Can there be an agent without primary initiation condition?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-it-possible-to-generate-object-of-scagent-class-and-call-any-of-class-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Is it possible to generate object of ScAgent class and call any of class methods?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-agents-call-protocol-preserved" class="md-nav__link">
+    <span class="md-ellipsis">
+      Is agent's call protocol preserved?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-advisable-to-do-as-an-agent-and-what-is-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is advisable to do as an agent and what is not?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whats-the-purpose-of-result-condition-what-is-it-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's the purpose of result condition? What is it used for?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ostis-ai/sc-machine/edit/main/docs/sc-memory/api/cpp/extended/agents/agents.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="c-agents-api"><strong>C++ Agents API</strong></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is correct for only versions of sc-machine that &gt;= 0.10.0.</p>
+</div>
+<hr />
+<p>This section contains detailed documentation on the core functionalities of the <strong>C++ Agents API</strong>, which encompasses agent creation and management. It covers how to specify and instantiate agents and integrate them into systems.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To include this API provide <code>#include &lt;sc-memory/sc_agent.hpp&gt;</code> in your hpp source.</p>
+</div>
+<h2 id="quick-start"><strong>Quick start</strong></h2>
+<p>Go to our <a href="../../../guides/simple_guide_for_implementing_agent/"><strong>Simple guide</strong></a> on how to quickly develop an agent in C++ from scratch.</p>
+<h2 id="what-is-the-agent-driven-model"><strong>What is the agent-driven model?</strong></h2>
+<p>The sc-machine implements the <strong>agent-driven model</strong> to manage processing knowledge. In the agent-based model, agents exchange messages only through shared memory, adding a new agent or eliminating one or more existing agents does not result in changes to other agents, agent initiation is decentralized and most often independent of each other. </p>
+<p>All agents within the OSTIS Technology are divided into two classes: platform-independent, i.e. implemented only by means of SC-code, and platform-dependent, implemented by means of sc-machine API. Platform-independent agents can be implemented with help of SCP language which is interpreted by <a href="https://github.com/ostis-ai/scp-machine"><strong>scp-machine</strong></a>. The sc-machine presents a powerful, but simple API for developing and maintaining platform-dependent agents in C++.</p>
+<p>All agents react to the occurrence of events in sc-memory (sc-events). That is, an agent is called implicitly when an sc-event occurs, for which type this agent is already subscribed. Knowledge about which sc-event will cause this agent to be called (awakening of this agent) is called primary initiation condition. Upon awakening, the agent checks for the presence of its full initiation condition. If the full initiation condition is successfully checked, the agent initiates an action of some class and starts performing it with a agent program (see <a href="../actions/"><strong>C++ Actions API</strong></a> to learn more about actions). After executing its program, the agent can check if there is a result.</p>
+<h2 id="what-does-agent-specification-represent"><strong>What does agent specification represent?</strong></h2>
+<p>All knowledge about an agent: <em>primary initiation condition</em>, <em>class of actions</em> it can perform, <em>initiation condition</em>, and <em>result condition</em>, are part of <strong>agent's specification</strong>. This specification can be represented either in a knowledge base, using SC-code, or programably, using sc-machine API.</p>
+<p>Let's describe specification for abstract sc-agent of counting power of specified set in SCs-code (SCg-code). An abstract sc-agent is a class of functionally equivalent agents, different instances of which can be implemented in different ways. Each abstract sc-agent has a specification corresponding to it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>// Abstract sc-agent
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>agent_calculate_set_power
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>&lt;- abstract_sc_agent;
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>=&gt; nrel_primary_initiation_condition: 
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    // Class of sc-event and listen (subscription) sc-element
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    (sc_event_after_generate_outgoing_arc =&gt; action_initiated); 
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>=&gt; nrel_sc_agent_action_class:
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    // Class of actions to be performed by agent
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    action_calculate_set_power; 
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>=&gt; nrel_initiation_condition_and_result: 
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    (..agent_calculate_set_power_initiation_condition 
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        =&gt; ..agent_calculate_set_power_result_condition);
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>&lt;= nrel_sc_agent_key_sc_elements:
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>// Set of key sc-elements used by this agent
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>{
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    action_initiated;
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    action_calculate_set_power;
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    concept_set;
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    nrel_set_power
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>};
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>=&gt; nrel_inclusion: 
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    // Instance of abstract sc-agent; concrete implementation of agent in C++
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    agent_calculate_set_power_implementation 
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    (*
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        &lt;- platform_dependent_abstract_sc_agent;;
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        // Set of links with paths to sources of agent programs
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>        &lt;= nrel_sc_agent_program: 
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>        {
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>            [github.com/path/to/agent/sources] 
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>            (* =&gt; nrel_format: format_github_source_link;; *)
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>        };; 
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    *);;
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>// Full initiation condition of agent
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>..agent_calculate_set_power_initiation_condition
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>= [*
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>    action_calculate_set_power _-&gt; .._action;;
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>    action_initiated _-&gt; .._action;;
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>    .._action _-&gt; rrel_1:: .._set;;
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    concept_set _-&gt; .._set;;
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>*];; 
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>// Agent should check by this template that initiated action is instance of 
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>// class `action_calculate_set_power` and that it has argument.
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>// Full result condition of agent
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>..agent_calculate_set_power_result_condition
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>= [*
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>    .._set _=&gt; nrel_set_power:: _[];;
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>*];;
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>// Agent should check by this template that action result contains 
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>// sc-construction generated after performing action.
+</code></pre></div>
+<p><image src="../images/agents/agent_calculate_set_power_specification.png"></image></p>
+<h2 id="what-are-ways-of-providing-the-agents-specification"><strong>What are ways of providing the agent's specification?</strong></h2>
+<p>The sc-machine API provides two types of functionalities to implement an agent in C++:</p>
+<ul>
+<li>when the agent's specification is represented in the knowledge base and used by the agent;</li>
+<li>when the agent's specification is represented in C++ code and also used by the agent.</li>
+</ul>
+<p>In both cases, the agent's specification can be static, dynamic, or semi-dynamic.</p>
+<ol>
+<li><strong>Static agent specification</strong> is a specification provided externally in the agent's class (via overriding public getters). This specification isn't saved in the knowledge base because changes in the knowledge base can't automatically alter user-specified code. To provide this type of agent specification, you can use overriding public getters in your agent's class (see documentation below).</li>
+<li><strong>Dynamic agent specification</strong> is a specification provided in the knowledge base or initially in the code but automatically saved into the knowledge base. After that, the first agent changes the specification of the second agent, and the second agent uses the changed specification. To implement this type of specification, use the API of <code>ScModule</code> class and the API of <code>ScAgentBuilder</code> class (see <a href="../modules/"><strong>C++ Modules</strong></a>).</li>
+<li><strong>Semi-dynamic agent specification</strong> can be obtained when the specification is provided in the knowledge base or initially in the code and appended externally (via overriding public getters).</li>
+</ol>
+<p>Static agent specification can be useful if you are implementing an agent in C++ for the first time or if you want to minimize the number of searches in the knowledge base. Dynamic agent specification provides the opportunity to analyze and change this specification by other agents. Semi-dynamic specification can be useful if you want to change some parts of this specification but still want the agent's calls to be quick.</p>
+<hr />
+<h2 id="static-agent-specification"><strong>Static agent specification</strong></h2>
+<p>Here, the API for implementing an agent with a static specification will be discussed. This is the easiest implementation variant to understand for you. To learn about dynamic agent specification, see <a href="../modules/"><strong>C++ Modules API</strong></a>.</p>
+<p>There are two main classes that you can use to implement an agent: <code>ScAgent</code> and <code>ScActionInitiatedAgent</code>.</p>
+<h3 id="scagent"><strong>ScAgent</strong></h3>
+<p>There is a base class for agents in C++. This class provides implemented methods to retrieve elements of the agent's specification from the knowledge base. All these methods can be overridden in your agent class.</p>
+<p>You should distinguish between an abstract sc-agent as some class of functional equivalent sc-agents described in the knowledge base and <code>ScAgent</code> as a C++ class that implements an API to work with abstract sc-agents in the knowledge base.</p>
+<p>This class can be used for all types of platform-dependent agents. Agents of this class react for events in the knowledge base, check the full initiation condition. If the check is successful, generate, initiate and execute the action. After that, they check full result condition. The example using this class is represented below.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// File my_agent.hpp</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="cp">#pragma once</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sc-memory/sc_agent.hpp&gt;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1">// Inherit your agent class from `ScAgent` class and specify template argument </span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">// as sc-event class. Here `ScEventAfterGenerateIncomingArc&lt;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1">// ScType::ConstPermPosArc&gt;` is type of event to which the given </span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1">// agent reacts.</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyAgent</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScAgent</span><span class="o">&lt;</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="n">ScEventAfterGenerateIncomingArc</span><span class="o">&lt;</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="o">&gt;&gt;</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">{</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="c1">// Here you should specify class of actions which the given agent performs. </span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="c1">// Here `GetActionClass` overrides `GetActionClass` </span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">  </span><span class="c1">// in `ScAgent` class. This overriding is required.</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="n">GetActionClass</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="c1">// Here you should implement program of the given agent. </span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">  </span><span class="c1">// This overriding is required.</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">  </span><span class="n">ScResult</span><span class="w"> </span><span class="nf">DoProgram</span><span class="p">(</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="n">ScEventAfterGenerateIncomingArc</span><span class="o">&lt;</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="o">&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">  </span><span class="c1">// Other user-defined methods.</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="p">};</span>
+</code></pre></div>
+<p>You can't override <code>DoProgram</code> without sc-event argument. There can be override one of these methods. </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// File my_agent.hpp</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="cp">#pragma once</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sc-memory/sc_agent.hpp&gt;</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyAgent</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScAgent</span><span class="o">&lt;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="n">ScEventAfterGenerateIncomingArc</span><span class="o">&lt;</span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="o">&gt;&gt;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">{</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="n">GetActionClass</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="n">ScResult</span><span class="w"> </span><span class="nf">DoProgram</span><span class="p">(</span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span><span class="c1">// Other user-defined methods.</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="p">};</span>
+</code></pre></div>
+<p>See <a href="../events/"><strong>C++ Events API</strong></a> and <a href="../event_subscriptions/"><strong>C++ Event subscriptions API</strong></a> to learn how to use and handle sc-events.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Define action class as keynode in agent class or keynodes class.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You should override methods <code>GetActionClass</code> and <code>DoProgram</code>. But if you provide specification of your agent in knowledge base, then you don't need to override <code>GetActionClass</code>. See <a href="../modules/"><strong>C++ Modules API</strong></a> to learn how to implement agents with specification in the knowledge base.</p>
+</div>
+<p>You can specify any existing event types as a template argument to the <code>ScAgent</code> class. For example, you can generate agent that will be triggered to sc-event of removing sc-element.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// File my_agent.hpp</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="cp">#pragma once</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sc-memory/sc_agent.hpp&gt;</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyAgent</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScAgent</span><span class="o">&lt;</span><span class="n">ScEventBeforeEraseElement</span><span class="o">&gt;</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">{</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="n">GetActionClass</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span><span class="n">ScResult</span><span class="w"> </span><span class="nf">DoProgram</span><span class="p">(</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="n">ScEventBeforeEraseElement</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">  </span><span class="c1">// Other user-defined methods.</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="p">};</span>
+</code></pre></div>
+<p>If you want to change specification of this agent in knowledge base, then write like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// File my_agent.hpp</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="cp">#pragma once</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sc-memory/sc_agent.hpp&gt;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyAgent</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScElementaryEventAgent</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">{</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="n">GetActionClass</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="n">ScResult</span><span class="w"> </span><span class="nf">DoProgram</span><span class="p">(</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="n">ScElementaryEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">  </span><span class="c1">// Other user-defined methods.</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="p">};</span>
+</code></pre></div>
+<p>This implementation allows to provide any sc-event type to <code>DoProgram</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>ScElementaryEventAgent</code> is alias for <code>ScAgent&lt;ScElementaryEvent&gt;</code>.</p>
+</div>
+<h3 id="scactioninitiatedagent"><strong>ScActionInitiatedAgent</strong></h3>
+<p>In multi-agent systems most of the agents are implemented to execute actions initiated by other agents. While <code>ScAgent</code> is useful to generate broad event handling logic, using it to handle action initiations requires some boilerplate. We've implemented another agent class to make it easier for our users to implement action-executing agents. Implementing these agents requires passing action class node rather than checking initiation condition manually.</p>
+<p>This class can be only used for agents that should be triggered by generating an outgoing sc-arc from <code>action_initiated</code> class node.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// File my_agent.hpp</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="cp">#pragma once</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sc-memory/sc_agent.hpp&gt;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1">// Inherit your agent class from `ScActionInitiatedAgent` class.</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyAgent</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ScActionInitiatedAgent</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="p">{</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="c1">// Here you should specify class of actions which the given agent performs. </span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="c1">// This overriding is required.</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="n">GetActionClass</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">  </span><span class="c1">// Here you should implement program of the given agent. </span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">  </span><span class="c1">// This overriding is required.</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">  </span><span class="n">ScResult</span><span class="w"> </span><span class="nf">DoProgram</span><span class="p">(</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">  </span><span class="c1">// Here `ScActionInitiatedEvent` is type of event to which </span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">  </span><span class="c1">// the given agent reacts.</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">  </span><span class="c1">// Other user-defined methods.</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="p">};</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>ScActionInitiatedAgent</code> has default <code>GetInitiationConditionTemplate</code> that returns template that can be used to check that initiated action is action with class of specified agent.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>ScActionInitiatedEvent</code> is alias for <code>ScEventAfterGenerateOutgoingArc&lt;ScType::ConstPermPosArc&gt;</code> with subscription sc-element <code>action_initiated</code>.</p>
+</div>
+<hr />
+<h3 id="required-methods"><strong>Required methods</strong></h3>
+<h4 id="getactionclass"><strong>GetActionClass</strong></h4>
+<p>It gets action class that the agent of specified class performs. If the abstract sc-agent for this agent class does not have an action class, then method will throw <code>utils::ExceptionItemNotFound</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// File my_agent.cpp</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;my_agent.hpp&quot;</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;keynodes/my_keynodes.hpp&quot;</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">ScAddr</span><span class="w"> </span><span class="nf">MyAgent::GetActionClass</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">{</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="c1">// You must specify valid sc-address of action class and you should </span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="c1">// provide action class that is include to the one of types: </span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">  </span><span class="c1">// `receptor_action`, `effector_action`, `behavioral_action` or </span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">  </span><span class="c1">// `information_action`.</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">  </span><span class="c1">// In other case, the given sc-agent can’t be subscribed to sc-event.</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_action</span><span class="p">;</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">}</span>
+</code></pre></div>
+<p>See <a href="../keynodes/"><strong>C++ Keynodes API</strong></a> and learn how to define keynodes and use them for your agent.</p>
+<h4 id="doprogram"><strong>DoProgram</strong></h4>
+<p>This method is executed when agent checked initiation condition successfully. Using program, the agent processes an input construction and generates an output construction.
+Each agent performs action with the help of its program.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="p">{</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="c1">// Class `ScAction` encapsulates information about sc-action. The provided </span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="c1">// action is action that the given agent performs right now. </span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="c1">// It belongs to `MyKeynodes::my_action` class.</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="c1">// If your agent inherits `ScActionInitiatedAgent` class then this agent</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="c1">// performs action initiated externally. If your agent inherits `ScAgent`</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">  </span><span class="c1">// then this agent generates action, initiates and performs new action, not</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">  </span><span class="c1">// provided externally.</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">  </span><span class="c1">// Actions are copyable and movable. `ScAction` is inherited from `ScAddr`.</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">  </span><span class="c1">// `ScActionInitiatedEvent` class is event type on which the given agent </span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">  </span><span class="c1">// is triggered. It is encapsulate information about sc-event. </span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">  </span><span class="c1">// The provided event is event on which the agent is triggered right now. </span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">  </span><span class="c1">// It has methods to get information about initiated sc-event: `GetUser`, </span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">  </span><span class="c1">// `GetArc`, `GetSubscriptionElement`, `GetArcSourceElement`.</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">  </span><span class="c1">// Implement logic of your agent...</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="w">  </span><span class="c1">// You must specify action state in all ends of your agent program. </span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">  </span><span class="c1">// `FinishSuccessfully` sets action as `action_finished_successfully`.</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">  </span><span class="c1">// You can’t generate object of `ScResult` via constructor, because it is </span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">  </span><span class="c1">// private.</span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span><span class="w"> </span>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>ScAgent</code> class has field <code>m_context</code>. It is an object of <code>ScAgentContext</code> class. You can use to complete operations in sc-memory. See <a href="../agent_context/"><strong>C++ Agent context API</strong></a> to learn more about accessible methods.</p>
+<p><code>ScAgent</code> class has field <code>m_logger</code>. It is an object of <code>ScLogger</code> class. Use it to logging your code. See <a href="../../../core/api/"><strong>C++ Core API</strong></a> to learn how to use it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you don't catch sc-exceptions in <code>DoProgram</code> then sc-machine will catch them and will finish action with error and will warn you about it.</p>
+</div>
+<h5 id="handling-action-arguments">Handling action arguments</h5>
+<p>There are many ways of methods that get action arguments. Use them, they can help you to simplify code.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="p">{</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">argAddr1</span><span class="p">,</span><span class="w"> </span><span class="n">argAddr</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">GetArguments</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">();</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span><span class="w"> </span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="p">{</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">argAddr1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">GetArgument</span><span class="p">(</span><span class="n">ScKeynodes</span><span class="o">::</span><span class="n">rrel_1</span><span class="p">);</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span><span class="c1">// Parameter has ScAddr type.</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="p">{</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">argAddr1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">GetArgument</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// size_t</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="c1">// It would be the same if we pass ScKeynodes::rrel_1 instead of 1.</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="p">{</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="n">ScAddr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">argAddr1</span><span class="w"> </span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">GetArgument</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">default_text_link</span><span class="p">);</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span><span class="c1">// If action hasn’t the first argument, then MyKeynodes::default_text_link </span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span><span class="c1">// will return.</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="p">{</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="c1">// You can use object of ScAction as object of ScAddr.</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span><span class="n">ScIterator3Ptr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">it3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_context</span><span class="p">.</span><span class="n">CreateIterator3</span><span class="p">(</span><span class="n">action</span><span class="p">,</span><span class="w"> </span><span class="p">...,</span><span class="w"> </span><span class="p">...);</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="p">}</span>
+</code></pre></div>
+<h5 id="handling-action-result">Handling action result</h5>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="p">{</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">  </span><span class="n">action</span><span class="p">.</span><span class="n">FormResult</span><span class="p">(</span><span class="n">foundAddr1</span><span class="p">,</span><span class="w"> </span><span class="n">generatedAddr1</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span><span class="w"> </span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="c1">// Or you can use `UpdateResult` method.</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="p">}</span>
+</code></pre></div>
+<p>To learn more about methods of <code>ScAction</code> class, see <a href="../actions/"><strong>C++ Actions API</strong></a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="p">{</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="n">action</span><span class="p">.</span><span class="n">SetResult</span><span class="p">(</span><span class="n">structureAddr</span><span class="p">);</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="p">}</span>
+</code></pre></div>
+<h5 id="handling-action-finish-state">Handling action finish state</h5>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="p">{</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="cm">/* case 1 */</span><span class="p">)</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="cm">/* case 2 */</span><span class="p">)</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishUnsuccessfully</span><span class="p">();</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">  </span><span class="k">else</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishWithError</span><span class="p">();</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">ScResult</span><span class="w"> </span><span class="nf">MyAgent::DoProgram</span><span class="p">(</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="p">{</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">  </span><span class="n">action</span><span class="p">.</span><span class="n">IsInitiated</span><span class="p">();</span><span class="w"> </span><span class="c1">// result: true</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">  </span><span class="n">action</span><span class="p">.</span><span class="n">IsFinished</span><span class="p">();</span><span class="w"> </span><span class="c1">// result: false</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">  </span><span class="n">action</span><span class="p">.</span><span class="n">IsFinishedSuccessfully</span><span class="p">();</span><span class="w"> </span><span class="c1">// result: false</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">  </span><span class="c1">// Some logic...</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">FinishSuccessfully</span><span class="p">();</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The API of <code>ScAction</code> provides other methods. Don't use <code>GetResult</code> for initiated but not finished action and <code>Initiate</code> for initiated or finished action.</p>
+</div>
+<hr />
+<h3 id="not-required-methods"><strong>Not required methods</strong></h3>
+<h4 id="getabstractagent"><strong>GetAbstractAgent</strong></h4>
+<p>It searches abstract agent for agent of specified class. If the agent implementation for this agent class is not included in any abstract sc-agent, then <code>GetAbstractAgent</code> will throw <code>utils::ExceptionItemNotFound</code>.</p>
+<p>You can override this method in your agent class.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">ScAddr</span><span class="w"> </span><span class="nf">MyAgent::GetAbstractAgent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="p">{</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">  </span><span class="c1">// You must specify valid sc-address of abstract agent. </span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">  </span><span class="c1">// In other case, the given sc-agent can’t be subscribed to sc-event.</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_abstract_agent</span><span class="p">;</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Remember, if you override only this method and required methods, then other getters will return elements of specification for specified abstract agent. All not override getters call <code>GetAbstractAgent</code>. </p>
+</div>
+<h4 id="geteventclass"><strong>GetEventClass</strong></h4>
+<p>It searches the sc-event class to which the agent class is subscribed. It will throw <code>utils::ExceptionItemNotFound</code> if the abstract sc-agent for this agent class does not have primary initiation condition.</p>
+<p>You can override this method in your agent class.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">ScAddr</span><span class="w"> </span><span class="nf">MyAgent::GetEventClass</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="p">{</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="c1">// You must specify valid sc-address of event class. </span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="c1">// In other case, the given sc-agent can’t be subscribed to sc-event.</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">ScKeynodes</span><span class="o">::</span><span class="n">sc_event_after_generate_outgoing_arc</span><span class="p">;</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="geteventsubscriptionelement"><strong>GetEventSubscriptionElement</strong></h4>
+<p>This method searches sc-event subscription sc-element for which sc-event initiates. It will throw <code>utils::ExceptionItemNotFound</code> if the abstract sc-agent for this agent class does not have primary initiation condition.</p>
+<p>You can override this method in your agent class.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="n">ScAddr</span><span class="w"> </span><span class="nf">MyAgent::GetEventSubscriptionElement</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="p">{</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">  </span><span class="c1">// You must specify valid sc-address of sc-event subscription sc-element. </span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">  </span><span class="c1">// In other case, the given sc-agent can’t be subscribed to sc-event.</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">ScKeynodes</span><span class="o">::</span><span class="n">action_initiated</span><span class="p">;</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Don't override <code>GetEventClass</code> and <code>GetEventSubscriptionElement</code> for agent with statically specified sc-event type. Your code can't be compiled. Override them, if your agent class inherit <code>ScAgent&lt;ScElementaryEvent&gt;</code> (<code>ScElementaryEventAgent</code>).</p>
+</div>
+<h4 id="getinitiationcondition"><strong>GetInitiationCondition</strong></h4>
+<p>It gets initiation condition for agent of this class. Initiation condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base before the agent performs an action. This method will throw <code>utils::ExceptionItemNotFound</code> if the abstract sc-agent for this agent class does not have initiation condition.</p>
+<p>You can override this method in your agent class.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">ScAddr</span><span class="w"> </span><span class="nf">MyAgent::GetInitiationCondition</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="p">{</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">  </span><span class="c1">// You must specify valid sc-address or sc-template of initiation condition. </span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span><span class="c1">// In other case, the given sc-agent can’t be called.</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">ScKeynodes</span><span class="o">::</span><span class="n">my_initiation_condition</span><span class="p">;</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1">// sc_keynodes.hpp</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="p">...</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="c1">// Here you should specify template to check initiation condition before </span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1">// starting agent.</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="n">ScTemplateKeynode</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">my_initiation_condition</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">ScTemplateKeynode</span><span class="p">(</span><span class="n">my_initiation_condition</span><span class="p">)</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">    </span><span class="c1">// You must specify valid sc-address of initiation condition. Otherwise, </span>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">    </span><span class="c1">// the given sc-agent can’t be called. For sc-event of generating (erasing) </span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">    </span><span class="c1">// sc-connector (sc-arc or sc-edge), you must specify in template of </span>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="w">    </span><span class="c1">// initiation condition a triple in place of which agent have to substitute </span>
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="w">    </span><span class="c1">// sc-elements involved in initiated event. These elements will be the </span>
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">    </span><span class="c1">// sc-connector (sc-arc or sc-edge) and its incident sc-elements. </span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">    </span><span class="c1">// For sc-event of changing sc-link content (or erasing sc-element), you </span>
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="w">    </span><span class="c1">// should use sc-link (sc-element) in template of initiation condition </span>
+<a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="w">    </span><span class="c1">// explicitly. Otherwise your agent will not be called because its </span>
+<a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a><span class="w">    </span><span class="c1">// initiation condition is fulfilled for the action of another agent.</span>
+<a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="w">    </span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span>
+<a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a><span class="w">      </span><span class="n">ScKeynodes</span><span class="o">::</span><span class="n">action_initiated</span><span class="p">,</span>
+<a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarNode</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="s">&quot;_action&quot;</span>
+<a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a><span class="w">    </span><span class="c1">// After you should specify triples that only apply to your agent.</span>
+<a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a><span class="w">    </span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span>
+<a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a><span class="w">      </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_action</span><span class="p">,</span>
+<a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a><span class="w">      </span><span class="s">&quot;_action&quot;</span>
+<a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a><span class="w">    </span><span class="p">.</span><span class="n">Quintuple</span><span class="p">(</span>
+<a id="__codelineno-21-29" name="__codelineno-21-29" href="#__codelineno-21-29"></a><span class="w">      </span><span class="s">&quot;_action&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-30" name="__codelineno-21-30" href="#__codelineno-21-30"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-21-31" name="__codelineno-21-31" href="#__codelineno-21-31"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarNode</span><span class="p">,</span>
+<a id="__codelineno-21-32" name="__codelineno-21-32" href="#__codelineno-21-32"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-21-33" name="__codelineno-21-33" href="#__codelineno-21-33"></a><span class="w">      </span><span class="n">ScKeynodes</span><span class="o">::</span><span class="n">rrel_1</span>
+<a id="__codelineno-21-34" name="__codelineno-21-34" href="#__codelineno-21-34"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-21-35" name="__codelineno-21-35" href="#__codelineno-21-35"></a><span class="p">...</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Agent must have initiation condition template with only one triple that can be used to substitute sc-elements involved in initiated event, otherwise agent will not started performing sc-action.</p>
+</div>
+<h4 id="getinitiationconditiontemplate"><strong>GetInitiationConditionTemplate</strong></h4>
+<p>You can specify the initiation condition template in code rather than in the knowledge base. It can be useful if you want to quickly check agent initiation condition without loading the template into the knowledge base.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">ScTemplate</span><span class="w"> </span><span class="nf">MyAgent::GetInitiationConditionTemplate</span><span class="p">(</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="p">{</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">  </span><span class="c1">// In this method, you shouldn&#39;t specify triple for sc-event sc-elements.</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="w">  </span><span class="c1">// You should specify triples that only apply to your agent.</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">  </span><span class="n">initiationCondition</span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">    </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_action</span><span class="p">,</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="w">    </span><span class="n">event</span><span class="p">.</span><span class="n">GetOtherElement</span><span class="p">()</span><span class="w"> </span><span class="c1">// It returns sc-action.</span>
+<a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="w">  </span><span class="p">);</span>
+<a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">initiationCondition</span><span class="p">;</span>
+<a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="checkinitiationcondition"><strong>CheckInitiationCondition</strong></h4>
+<p>For speed, you can implement the agent initiation condition in the form of checks on iterators.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kt">bool</span><span class="w"> </span><span class="nf">MyAgent::CheckInitiationCondition</span><span class="p">(</span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">)</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="p">{</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w"> </span><span class="c1">// ScActionInitiatedEvent is event type on which the given agent triggered. </span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w"> </span><span class="c1">// It is encapsulate information about sc-event. The provided event is event </span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w"> </span><span class="c1">// on which the agent is triggered right now. It has methods to get </span>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w"> </span><span class="c1">// information about initiated sc-event: GetUser, GetArc, </span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w"> </span><span class="c1">// GetSubscriptionElement, GetArcSourceElement, GetArcTargetElement.</span>
+<a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="w"> </span><span class="c1">// All events are not copyable and movable.</span>
+<a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m_context</span><span class="p">.</span><span class="n">CheckConnector</span><span class="p">(</span>
+<a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="w">   </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="w">   </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_action</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="w">   </span><span class="n">event</span><span class="p">.</span><span class="n">GetArcTargetElement</span><span class="p">());</span>
+<a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="p">}</span>
+<a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="c1">// You can use all opportunities of sc-memory API to check initiation </span>
+<a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="c1">// condition of your agent.</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each of these methods will be called before <code>DoProgram</code> call.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You can specify only one of methods: <code>GetInitiationCondition</code>, <code>GetInitiationConditionTemplate</code> and <code>CheckInitiationCondition</code>. Otherwise, your code can't be compiled.</p>
+</div>
+<h4 id="getresultcondition"><strong>GetResultCondition</strong></h4>
+<p>It gets result condition for agent of this class. Result condition is a sc-template (sc-structure) that is used by the agent to check necessary connections between sc-elements of sc-event triple and sc-elements in the knowledge base after the agent has performed an action. This method will throw <code>utils::ExceptionItemNotFound</code> if the abstract sc-agent for this agent class does not have result condition.</p>
+<p>You can override this method in your agent class.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="n">ScAddr</span><span class="w"> </span><span class="nf">MyAgent::GetResultCondition</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="p">{</span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w">  </span><span class="c1">// Here you should specify template to check action result content.</span>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w">  </span><span class="c1">// You must specify valid sc-address or sc-template of result condition. </span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w">  </span><span class="c1">// In other case, the given sc-agent can’t be finished successfully.</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">ScKeynodes</span><span class="o">::</span><span class="n">my_result_condition</span><span class="p">;</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1">// sc_keynodes.hpp</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="p">...</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="c1">// Here you should specify template to check action result content.</span>
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="n">ScTemplateKeynode</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">my_result_condition</span>
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">ScTemplateKeynode</span><span class="p">(</span><span class="n">my_result_condition</span><span class="p">)</span>
+<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="w">    </span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span>
+<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="w">      </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_class</span><span class="p">,</span>
+<a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a><span class="w">      </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarNode</span>
+<a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a><span class="w">    </span><span class="c1">// This template is used to check that agent generated sc-arc</span>
+<a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="w">    </span><span class="c1">// between `MyKeynodes::my_class` and some sc-node.</span>
+<a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a><span class="p">...</span>
+</code></pre></div>
+<h4 id="getresultconditiontemplate"><strong>GetResultConditionTemplate</strong></h4>
+<p>You can specify the result condition template in code rather than in the knowledge base.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="n">ScTemplate</span><span class="w"> </span><span class="nf">MyAgent::GetResultConditionTemplate</span><span class="p">(</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="p">{</span>
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="w">  </span><span class="c1">// Here you should specify template to check action result content.</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="w">  </span><span class="n">ScTemplate</span><span class="w"> </span><span class="n">resultCondition</span><span class="p">;</span>
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="w">  </span><span class="n">resultCondition</span><span class="p">.</span><span class="n">Triple</span><span class="p">(</span>
+<a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="w">    </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_class</span><span class="p">,</span>
+<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">VarNode</span>
+<a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a><span class="w">  </span><span class="p">);</span>
+<a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">resultCondition</span><span class="p">;</span>
+<a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>GetResultCondition</code> and <code>GetResultConditionTemplate</code> are used to search sc-constructions in action result only.</p>
+</div>
+<h4 id="checkresultcondition"><strong>CheckResultCondition</strong></h4>
+<p>For speed, you can implement the agent result condition in the form of checks on iterators.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kt">bool</span><span class="w"> </span><span class="nf">MyAgent::CheckResult</span><span class="p">(</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="w">  </span><span class="n">ScActionInitiatedEvent</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">ScAction</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="p">{</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="w">  </span><span class="n">ScStructure</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">actionResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="n">GetResult</span><span class="p">();</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="w">  </span><span class="n">ScIterator3Ptr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">it3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_context</span><span class="p">.</span><span class="n">CreateIterator3</span><span class="p">(</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="w">    </span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_class</span><span class="p">,</span>
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstNode</span><span class="p">,</span>
+<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="w">    </span><span class="n">ScType</span><span class="o">::</span><span class="n">ConstPermPosArc</span><span class="p">,</span>
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="w">    </span><span class="n">actionResult</span>
+<a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="w">  </span><span class="p">);</span>
+<a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">it3</span><span class="o">-&gt;</span><span class="n">Next</span><span class="p">()</span><span class="w"> </span>
+<a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a><span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">actionResult</span><span class="p">.</span><span class="n">Has</span><span class="p">(</span><span class="n">MyKeynodes</span><span class="o">::</span><span class="n">my_class</span><span class="p">)</span><span class="w"> </span>
+<a id="__codelineno-27-14" name="__codelineno-27-14" href="#__codelineno-27-14"></a><span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">actionResult</span><span class="p">.</span><span class="n">Has</span><span class="p">(</span><span class="n">it3</span><span class="o">-&gt;</span><span class="n">Get</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<a id="__codelineno-27-15" name="__codelineno-27-15" href="#__codelineno-27-15"></a><span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">it3</span><span class="o">-&gt;</span><span class="n">Next</span><span class="p">()</span><span class="w"> </span><span class="c1">// Check that action result has no more triples.</span>
+<a id="__codelineno-27-16" name="__codelineno-27-16" href="#__codelineno-27-16"></a><span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">m_context</span><span class="p">.</span><span class="n">GetOutputArcsCount</span><span class="p">(</span><span class="n">actionResult</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<a id="__codelineno-27-17" name="__codelineno-27-17" href="#__codelineno-27-17"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each of these methods will be called after <code>DoProgram</code> call.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You can specify only one of methods: <code>GetResultCondition</code>, <code>GetResultConditionTemplate</code> and <code>CheckResultCondition</code>. Otherwise, your code can't be compiled.</p>
+</div>
+<hr />
+<h2 id="frequently-asked-questions"><strong>Frequently Asked Questions</strong></h2>
+<!-- no toc -->
+<ul>
+<li><a href="#is-it-possible-to-subscribe-an-agent-for-more-than-one-sc-event">Is it possible to subscribe an agent for more than one sc-event?</a></li>
+<li><a href="#what-happens-if-i-dont-specify-full-initiation-condition-in-agent-class">What happens if I don't specify full initiation condition in agent class?</a></li>
+<li><a href="#can-there-be-an-agent-without-primary-initiation-condition">Can there be an agent without primary initiation condition?</a></li>
+<li><a href="#is-it-possible-to-generate-object-of-scagent-class-and-call-any-of-class-methods">Is it possible to generate object of <code>ScAgent</code> class and call any of class methods?</a></li>
+<li><a href="#is-agents-call-protocol-preserved">Is agent's call protocol preserved?</a></li>
+<li><a href="#what-is-advisable-to-do-as-an-agent-and-what-is-not">What is advisable to do as an agent and what is not?</a></li>
+<li><a href="#whats-the-purpose-of-result-condition-what-is-it-used-for">What's the purpose of result condition? What is it used for?</a></li>
+</ul>
+<h3 id="is-it-possible-to-subscribe-an-agent-for-more-than-one-sc-event"><strong>Is it possible to subscribe an agent for more than one sc-event?</strong></h3>
+<p>Future versions of the sc-machine will implement complex sc-events. Complex sc-events will be a set of elementary events. It will be possible to subscribe agents to such sc-events.</p>
+<p>If it is a question of whether it is possible to subscribe the one and the same agent to two different elementary sc-events, it is better not to do it. Each agent should be subscribed to only one type of sc-event. If you need to subscribe an agent to multiple types of sc-events, you're probably doing something wrong.</p>
+<p>Consider an example. Suppose you want to implement an agent to recalculate power of a set, which will react when a sc-arc is removed from the set and when a sc-arc is added from it. You should not do such an agent. It is better to split these two logics into two independent objects: an agent that will react when a sc-arc is erased from the specified set and an agent that will react when a sc-arc is generated from this set.</p>
+<h3 id="what-happens-if-i-dont-specify-full-initiation-condition-in-agent-class"><strong>What happens if I don't specify full initiation condition in agent class?</strong></h3>
+<p>We allow not specifying full initiation condition for agents. However, remember, your agents will be executed every time an event occurs over the listen sc-element your agent is subscribed to.</p>
+<h3 id="can-there-be-an-agent-without-primary-initiation-condition"><strong>Can there be an agent without primary initiation condition?</strong></h3>
+<p>No, agents can't be without primary initiation condition. Agents react to events in sc-memory. A primary initiation condition indicates which sc-event agent is subscribed to, i.e. when agent will be called.</p>
+<h3 id="is-it-possible-to-generate-object-of-scagent-class-and-call-any-of-class-methods"><strong>Is it possible to generate object of <code>ScAgent</code> class and call any of class methods?</strong></h3>
+<p>Yes, you can call a method of agent class through object of that class. But remember that you can't generate necessary arguments for all methods.</p>
+<h3 id="is-agents-call-protocol-preserved"><strong>Is agent's call protocol preserved?</strong></h3>
+<p>Until the sc-machine implements functionality for logging processes in sc-memory. It will be added in the next versions. However, the sc-machine does not remove anything by itself.</p>
+<h3 id="what-is-advisable-to-do-as-an-agent-and-what-is-not"><strong>What is advisable to do as an agent and what is not?</strong></h3>
+<p>It depends on your goal. If you want to make an ostis-system, then the whole functionality of your system should be a collective of agents. If you want to use a machine as a database to store and process information in a convenient and simple way, not everything should be agents. To improve performance, use agents with static specification or without specification, combine multiple agents into one, optimize sc-memory requests and etc.</p>
+<h3 id="whats-the-purpose-of-result-condition-what-is-it-used-for"><strong>What's the purpose of result condition? What is it used for?</strong></h3>
+<p>Now, it has no effect on agent finishing. But in the future it can be used for verification and debugging of agents' work.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.action.edit", "content.tabs.link", "content.code.copy"], "search": "../../../../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../../../../../_assets/scg.min.js"></script>
+      
+        <script src="../../../../../../_assets/main.js"></script>
+      
+    
+  </body>
+</html>
