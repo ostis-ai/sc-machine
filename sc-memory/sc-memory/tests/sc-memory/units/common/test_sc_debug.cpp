@@ -281,6 +281,32 @@ TEST_F(ScLoggerTest, FileLoggingWritesCorrectMessage)
   std::remove(testFile.c_str());
 }
 
+TEST_F(ScLoggerTest, AppendLogsToFile)
+{
+  std::string const testFile = "test_log.txt";
+
+  std::ofstream ofs(testFile);
+  ofs.close();
+
+  m_logger.SetLogFile(testFile);
+  m_logger.Info("This is the first log message.");
+
+  m_logger = utils::ScLogger(utils::ScLogger::ScLogType::File, testFile, utils::ScLogLevel::Level::Debug, true);
+  m_logger.Info("This is the second log message.");
+
+  std::ifstream ifs(testFile);
+  std::string line;
+
+  std::getline(ifs, line);
+  EXPECT_NE(line.find("This is the first log message."), std::string::npos);
+
+  std::getline(ifs, line);
+  EXPECT_NE(line.find("This is the second log message."), std::string::npos);
+
+  ifs.close();
+  std::remove(testFile.c_str());
+}
+
 TEST_F(ScLoggerTest, InvalidLogFilePath)
 {
   std::string const testFile = "/invalid/path/to/log.txt";

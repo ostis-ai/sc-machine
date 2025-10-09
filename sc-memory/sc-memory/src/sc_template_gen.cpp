@@ -195,14 +195,11 @@ private:
     if (sourceItem.IsAddr() && sourceItem.m_addrValue != foundSourceAddr)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
-                                     << "` as parameter for the second item in sc-template "
+          "Specified sc-connector `" << connectorAddr << "` as parameter for the second item in sc-template "
                                      << (connectorItem.HasName() ? (connectorItem.GetPrettyName() + " ") : "")
-                                     << "is not incident to specified source sc-element `"
-                                     << std::to_string(sourceItem.m_addrValue.Hash())
+                                     << "is not incident to specified source sc-element `" << sourceItem.m_addrValue
                                      << "` as fixed first item in sc-template " << sourceItem.GetPrettyName()
-                                     << ". This sc-connector is incident to sc-element `"
-                                     << std::to_string(foundSourceAddr.Hash()) << "`.");
+                                     << ". This sc-connector is incident to sc-element `" << foundSourceAddr << "`.");
 
     if (sourceItem.HasName())
     {
@@ -210,25 +207,22 @@ private:
       if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundSourceAddr)
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "Specified sc-connector `"
-                << std::to_string(connectorAddr.Hash()) << "` as parameter for the second item in sc-template "
-                << (connectorItem.HasName() ? (connectorItem.GetPrettyName() + " ") : "")
-                << "is not incident to specified source sc-element `" << std::to_string(itemIt->second.Hash())
-                << "` as parameter for the first item in sc-template " << sourceItem.GetPrettyName()
-                << ". This sc-connector is incident to sc-element `" << std::to_string(foundSourceAddr.Hash()) << "`.");
+            "Specified sc-connector `" << connectorAddr << "` as parameter for the second item in sc-template "
+                                       << (connectorItem.HasName() ? (connectorItem.GetPrettyName() + " ") : "")
+                                       << "is not incident to specified source sc-element `" << itemIt->second
+                                       << "` as parameter for the first item in sc-template "
+                                       << sourceItem.GetPrettyName()
+                                       << ". This sc-connector is incident to sc-element `" << foundSourceAddr << "`.");
     }
 
     if (targetItem.IsAddr() && targetItem.m_addrValue != foundTargetAddr)
       SC_THROW_EXCEPTION(
           utils::ExceptionInvalidParams,
-          "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
-                                     << "` as parameter for the second item in sc-template "
+          "Specified sc-connector `" << connectorAddr << "` as parameter for the second item in sc-template "
                                      << (connectorItem.HasName() ? (connectorItem.GetPrettyName() + " ") : "")
-                                     << "is not incident to specified target sc-element `"
-                                     << std::to_string(targetItem.m_addrValue.Hash())
+                                     << "is not incident to specified target sc-element `" << targetItem.m_addrValue
                                      << "` as fixed third item in sc-template " << targetItem.GetPrettyName()
-                                     << ". This sc-connector is incident to sc-element `"
-                                     << std::to_string(foundTargetAddr.Hash()) << "`.");
+                                     << ". This sc-connector is incident to sc-element `" << foundTargetAddr << "`.");
 
     if (targetItem.HasName())
     {
@@ -236,14 +230,11 @@ private:
       if (itemIt != m_params.m_templateItemsToParams.cend() && itemIt->second != foundTargetAddr)
         SC_THROW_EXCEPTION(
             utils::ExceptionInvalidParams,
-            "Specified sc-connector `" << std::to_string(connectorAddr.Hash())
-                                       << "` as parameter for the second item in sc-template "
+            "Specified sc-connector `" << connectorAddr << "` as parameter for the second item in sc-template "
                                        << (connectorItem.HasName() ? (connectorItem.GetPrettyName() + " ") : "")
-                                       << "is not incident to specified target sc-element `"
-                                       << std::to_string(itemIt->second.Hash())
+                                       << "is not incident to specified target sc-element `" << itemIt->second
                                        << "` as fixed third item in sc-template " << targetItem.GetPrettyName()
-                                       << ". This sc-connector is incident to sc-element `"
-                                       << std::to_string(foundTargetAddr.Hash()) << "`.");
+                                       << ". This sc-connector is incident to sc-element `" << foundTargetAddr << "`.");
     }
   };
 
@@ -267,7 +258,7 @@ private:
                 << templateParamReplacementName
                 << "` given in parameters, for which you want to perform substitution from these parameters.");
 
-      addrHashStr = std::to_string(varAddr.Hash());
+      addrHashStr = varAddr;
       replacementIt = m_replacements.find(addrHashStr);
       if (replacementIt == m_replacements.cend())
         SC_THROW_EXCEPTION(
@@ -293,9 +284,8 @@ private:
             utils::ExceptionInvalidParams,
             "Template item " << (templateItem.HasName() ? (templateItem.GetPrettyName() + " ") : "") << "has type `"
                              << std::string(templateItemType)
-                             << "`. This item can't be replaced by template parameter `"
-                             << std::to_string(templateParamAddr.Hash()) << "`, because it has type `"
-                             << std::string(templateParamType)
+                             << "`. This item can't be replaced by template parameter `" << templateParamAddr
+                             << "`, because it has type `" << std::string(templateParamType)
                              << "` and up-constant template item type can't be extended to template parameter type.");
     };
 

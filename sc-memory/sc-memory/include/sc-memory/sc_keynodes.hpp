@@ -214,6 +214,7 @@ public:
   _SC_EXTERN static inline ScKeynode const rrel_2{"rrel_2", ScType::ConstNodeRole};
   _SC_EXTERN static inline ScKeynode const rrel_3{"rrel_3", ScType::ConstNodeRole};
   _SC_EXTERN static inline ScKeynode const nrel_basic_sequence{"nrel_basic_sequence", ScType::ConstNodeNonRole};
+  _SC_EXTERN static inline ScKeynode const rrel_last{"rrel_last", ScType::ConstNodeRole};
 
   _SC_EXTERN static inline ScKeynode const rrel_key_sc_element{"rrel_key_sc_element", ScType::ConstNodeRole};
   _SC_EXTERN static inline ScKeynode const rrel_main_key_sc_element{"rrel_main_key_sc_element", ScType::ConstNodeRole};

@@ -8,6 +8,7 @@
 
 #include <sc-memory/sc_agent_context.hpp>
 #include <sc-memory/sc_structure.hpp>
+#include <sc-memory/sc_oriented_set.hpp>
 
 using ScAgentContextTest = ScMemoryTest;
 
@@ -24,6 +25,20 @@ TEST_F(ScAgentContextTest, MoveAgentContext)
 
   ScAgentContext context3 = std::move(context2);
   EXPECT_FALSE(context3.IsValid());
+}
+
+TEST_F(ScAgentContextTest, GenerateOrientedSet)
+{
+  ScOrientedSet set = m_ctx->GenerateOrientedSet();
+  EXPECT_EQ(m_ctx->GetElementType(set), ScType::ConstNode);
+
+  ScOrientedSet set2 = m_ctx->ConvertToOrientedSet(set);
+  EXPECT_EQ(set, set2);
+}
+
+TEST_F(ScAgentContextTest, ConvertInvalidOrientedSet)
+{
+  EXPECT_THROW(m_ctx->ConvertToOrientedSet(ScAddr::Empty), utils::ExceptionInvalidParams);
 }
 
 TEST_F(ScAgentContextTest, GenerateSet)

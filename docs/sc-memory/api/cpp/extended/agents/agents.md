@@ -678,8 +678,8 @@ bool MyAgent::CheckResult(
     actionResult
   );
   return it3->Next() 
-    && actionResult.HasElement(MyKeynodes::my_class) 
-    && actionResult.HasElement(it3->Get(2))
+    && actionResult.Has(MyKeynodes::my_class) 
+    && actionResult.Has(it3->Get(2))
     && !it3->Next() // Check that action result has no more triples.
     && m_context.GetOutputArcsCount(actionResult) == 3;
 }

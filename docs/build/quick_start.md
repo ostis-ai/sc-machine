@@ -15,6 +15,38 @@ cd sc-machine
 git submodule update --init --recursive
 ```
 
+## Install basic tools for development environment
+
+*   **Ubuntu/Debian (GCC):** 
+    
+    ```sh
+    sudo apt update
+    
+    sudo apt install --yes --no-install-recommends \
+        curl \
+        ccache \
+        build-essential
+    ```
+    
+*   **macOS (Clang):**
+
+    ```sh
+    brew update && brew upgrade
+    brew install \
+        curl \
+        ccache
+    ```
+
+*   **Other Linux distributions:**
+
+    If you're using a different Linux distribution that doesn't support apt, ensure you have equivalent packages installed:
+
+    * curl: A tool for transferring data with URLs;
+    * ccache: A compiler cache to speed up compilation processes;
+    * build-essential: Includes a C++ compiler, necessary for building C++ components.
+
+Compiler is required for building C++ components.
+
 ## Check CMake
 
 Install pipx first using [**pipx installation guide**](https://pipx.pypa.io/stable/installation/) if not already installed.
@@ -34,6 +66,8 @@ pipx ensurepath
 # relaunch your shell after installation
 exec $SHELL
 ```
+
+## Install Ninja generator
 
 Install Ninja generator for CMake, to use sc-machine CMake presets:
 
@@ -57,6 +91,12 @@ pipx install conan
 pipx ensurepath
 # relaunch your shell after installation
 exec $SHELL
+```
+
+Add the 'ostis-ai' remote, enabling Conan to find packages (libffi/3.4.8):
+
+```sh
+conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library/
 ```
 
 ### Use sc-machine in Debug
@@ -151,7 +191,7 @@ You can also check code formatting, build sc-machine with sanitizers and other. 
 
 ```sh
 cd scripts
-./install_deps_ubuntu.sh
+./install_deps_ubuntu.sh --dev
 ```
 
 #### Install sc-machine dependencies for macOS

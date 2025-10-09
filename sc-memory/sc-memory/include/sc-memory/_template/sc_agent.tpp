@@ -185,7 +185,7 @@ ScTemplate ScAgent<TScEvent, TScContext>::GetResultConditionTemplate(TScEvent co
 template <class TScEvent, class TScContext>
 void ScAgent<TScEvent, TScContext>::SetInitiator(ScAddr const & userAddr) noexcept
 {
-  m_context = ScAgentContext(userAddr);
+  m_context = TScContext(userAddr);
 }
 
 template <class TScEvent, class TScContext>
@@ -293,7 +293,7 @@ bool ScAgent<TScEvent, TScContext>::ValidateResultCondition(TScEvent const & eve
         },
         [&](ScAddr const & elementAddr) -> bool
         {
-          bool isBelong = result.HasElement(elementAddr);
+          bool isBelong = result.Has(elementAddr);
           return isBelong;
         });
   }

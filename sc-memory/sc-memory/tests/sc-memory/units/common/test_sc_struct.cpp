@@ -22,19 +22,19 @@ TEST_F(ScStructTest, AppendIterateElements)
   EXPECT_TRUE(addr2.IsValid());
 
   structure << addr1 << addr2;
-  EXPECT_TRUE(structure.HasElement(addr1));
+  EXPECT_TRUE(structure.Has(addr1));
   EXPECT_FALSE(structure.Append(addr1));
-  EXPECT_TRUE(structure.HasElement(addr2));
+  EXPECT_TRUE(structure.Has(addr2));
 
   structure >> addr1;
 
-  EXPECT_FALSE(structure.HasElement(addr1));
-  EXPECT_TRUE(structure.HasElement(addr2));
+  EXPECT_FALSE(structure.Has(addr1));
+  EXPECT_TRUE(structure.Has(addr2));
 
   structure >> addr2;
 
-  EXPECT_FALSE(structure.HasElement(addr1));
-  EXPECT_FALSE(structure.HasElement(addr2));
+  EXPECT_FALSE(structure.Has(addr1));
+  EXPECT_FALSE(structure.Has(addr2));
   EXPECT_TRUE(structure.IsEmpty());
 
   // attributes
@@ -89,5 +89,5 @@ TEST_F(ScStructTest, AppendItSelf)
         setCopy << item;
       });
 
-  EXPECT_TRUE(setCopy.HasElement(setCopy));
+  EXPECT_TRUE(setCopy.Has(setCopy));
 }

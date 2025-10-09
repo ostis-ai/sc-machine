@@ -87,7 +87,7 @@ void ScTemplateItem::SetAddr(ScAddr const & addr, sc_char const * replName)
   if (replName)
     m_name = replName;
   else if (m_name.empty())
-    m_name = std::to_string(addr.Hash());
+    m_name = addr;
 }
 
 void ScTemplateItem::SetType(ScType const & type, sc_char const * replName)
@@ -169,7 +169,7 @@ ScTemplateParams & ScTemplateParams::Add(std::string const & varIdtf, ScAddr con
 
 ScTemplateParams & ScTemplateParams::Add(ScAddr const & varAddr, ScAddr const & value) noexcept(false)
 {
-  std::string const & varAddrHashStr = std::to_string(varAddr.Hash());
+  std::string const & varAddrHashStr = varAddr;
   if (m_templateItemsToParams.find(varAddrHashStr) == m_templateItemsToParams.cend())
   {
     m_templateItemsToParams[varAddrHashStr] = value;
@@ -194,7 +194,7 @@ bool ScTemplateParams::Get(std::string const & varIdtf, ScAddr & outAddr) const 
 
 bool ScTemplateParams::Get(ScAddr const & varAddr, ScAddr & outAddr) const noexcept
 {
-  std::string const & varAddrHashStr = std::to_string(varAddr.Hash());
+  std::string const & varAddrHashStr = varAddr;
   auto const it = m_templateItemsToParams.find(varAddrHashStr);
   if (it != m_templateItemsToParams.cend())
   {
@@ -322,7 +322,7 @@ bool ScTemplate::HasReplacement(std::string const & repl) const
 
 bool ScTemplate::HasReplacement(ScAddr const & replAddr) const
 {
-  return m_templateItemsNamesToReplacementItemsPositions.find(std::to_string(replAddr.Hash()))
+  return m_templateItemsNamesToReplacementItemsPositions.find(replAddr)
          != m_templateItemsNamesToReplacementItemsPositions.cend();
 }
 
@@ -526,7 +526,7 @@ ScAddr ScTemplateResultItem::operator[](ScAddr const & varAddr) const noexcept(f
   if (addr.IsValid())
     return addr;
 
-  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Var=" << varAddr.Hash() << " not found in replacements");
+  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Variable `" << varAddr << "` not found in replacements");
 }
 
 bool ScTemplateResultItem::Get(std::string const & name, ScAddr & outAddr) const noexcept
@@ -548,7 +548,7 @@ ScAddr ScTemplateResultItem::operator[](std::string const & name) const noexcept
   if (addr.IsValid())
     return addr;
 
-  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias=`" << name << "` not found in replacements");
+  SC_THROW_EXCEPTION(utils::ExceptionInvalidParams, "Alias `" << name << "` not found in replacements");
 }
 
 bool ScTemplateResultItem::Get(size_t index, ScAddr & outAddr) const noexcept
@@ -612,7 +612,7 @@ ScAddr ScTemplateResultItem::GetAddrByName(std::string const & name) const
   ScAddr const & addr = m_context->SearchElementBySystemIdentifier(name);
   if (addr.IsValid())
   {
-    it = m_templateItemsNamesToReplacementItemPositions.find(std::to_string(addr.Hash()));
+    it = m_templateItemsNamesToReplacementItemPositions.find(addr);
     if (it != m_templateItemsNamesToReplacementItemPositions.cend())
       return m_replacementConstruction[it->second];
   }
@@ -625,7 +625,7 @@ ScAddr ScTemplateResultItem::GetAddrByVarAddr(ScAddr const & varAddr) const
   if (!varAddr.IsValid())
     return ScAddr::Empty;
 
-  auto it = m_templateItemsNamesToReplacementItemPositions.find(std::to_string(varAddr.Hash()));
+  auto it = m_templateItemsNamesToReplacementItemPositions.find(varAddr);
   if (it != m_templateItemsNamesToReplacementItemPositions.cend())
     return m_replacementConstruction[it->second];
 

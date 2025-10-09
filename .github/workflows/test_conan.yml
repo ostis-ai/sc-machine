@@ -63,6 +63,8 @@ jobs:
       - name: Build sc-machine with tests
         id: run_cmake
         run: |
+          # ostis-ai hosts libffi 3.4.8
+          conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library/
           cmake --preset release-with-tests-conan
           cmake --build --preset release
 

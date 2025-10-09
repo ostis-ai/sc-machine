@@ -73,6 +73,10 @@ pipx install conan
 ```
 
 ```sh
+conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/ostis-ai-library/
+```
+
+```sh
 # Use preset with Conan-provided dependencies and debug build type
 cmake --preset debug-conan
 # Use debug build preset since we've used a debug configure preset

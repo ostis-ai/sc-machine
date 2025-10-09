@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.5] - 08.09.2025
+
+### Added
+
+- sc-server endpoint to parse SCs text into JSON ASTs
+- `SCsASTErrorListener` to collect SCs parsing errors into a JSON array
+- `SCsASTJsonListener` to construct AST from SCs input and serialize it to JSON
+- `GetElementsByRoles` method for `ScSet` class to get all elements of set by their roles
+- `GetElements` method for `ScSet` class to get all elements of set
+- ScOrientedSet class to work with sets of sc-elements ordered by nrel_basic_sequence relation
+- Methods for `ScSet` class: `Next`, `Reset`, `ForEach`
+- Operator for converting ScAddr to string
+- Stream output operator for ScAddr
+
+### Changed
+
+- Optimize grouping connectors by level in `ScTemplateBuilder`
+- Rename method `HasElement` in `ScSet` class to `Has`
+
+### Fixed 
+
+- Constructor call for context template argument class provided in ScAgent class 
+
+## [0.10.4] - 03.06.2025
+
+### Added
+
+- Flag for ScLogger to enable appending logs to existing log file
+
+## [0.10.3] - 01.05.2025
+
+### Fixed
+
+- Validate project version after parsing from CMakeLists.txt
+- Add step about installation of development tools in quick start for contributors
+- Make temporary override for libffi in ostis-ai until updated in conan-center-index
+- Pin asio version 3.10.2 for macOS native installation
+
+## [0.10.2] - 22.04.2025
+
+### Added
+
+- Increase MAX_TRIPLES_COUNT for json-translators to 1.000.000
+- Support included structures translation in scn2json-translator
+- Iterate included structures in searching semantic neighborhood agent
+
+### Changed
+
+- Mark translated sc-element main in semantic neighborhood agent
+
+### Fixed
+
+- Translating links with content size < 100
+- Add using --dev flag during launching install_deps_ubuntu.sh in quick_start for users
+
 ## [0.10.1] - 15.03.2025
 
 ### Added

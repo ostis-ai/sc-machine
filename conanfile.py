@@ -1,14 +1,14 @@
 from conan import ConanFile, tools
 from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
-import re
-
+from conan.errors import ConanInvalidConfiguration
+import re, os
 
 class sc_machineRecipe(ConanFile):
     name = "sc-machine"
     package_type = "library"
     version = None
     author = "OSTIS AI"
-    license = "https://github.com/ostis-ai/sc-machine/blob/master/COPYING.MIT"
+    license = "MIT"
     url = "https://github.com/ostis-ai/sc-machine"
     description = "Software implementation of semantic memory and its APIs"
     exports = ["LICENSE.md"]
@@ -33,6 +33,9 @@ class sc_machineRecipe(ConanFile):
         self.requires("nlohmann_json/3.11.3")
         self.requires("glib/2.76.3")
         self.requires("libxml2/2.13.4", options={"zlib": False, "iconv": False})
+        # TODO(NikitaZotov): Temporary override for libffi until updated in conan-center-index.
+        # This ensures consistent version usage across glib.
+        self.requires("libffi/3.4.8", override=True) 
         # TODO(FallenChromium): use this instead of thirdparty/antlr4 
         # self.requires("antlr4-cppruntime/4.9.3")
 
@@ -68,9 +71,11 @@ class sc_machineRecipe(ConanFile):
         self.version = self.parse_version()
 
     def parse_version(self):
-        content = tools.files.load(self, self.recipe_folder + "/CMakeLists.txt")
-        version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content).group(1)
-        return version.strip()
+        content = tools.files.load(self, os.path.join(self.recipe_folder, "CMakeLists.txt"))
+        version = re.search(r"project\([^\)]+VERSION (\d+\.\d+\.\d+)[^\)]*\)", content)
+        if not version:
+            raise ConanInvalidConfiguration("Could not detect version from CMakeLists.txt")
+        return version.group(1).strip()
 
     def package_info(self): 
         self.cpp_info.set_property("cmake_find_mode", "none") # Do NOT generate any files

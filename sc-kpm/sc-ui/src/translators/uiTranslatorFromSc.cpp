@@ -7,7 +7,7 @@
 #include "uiTranslatorFromSc.h"
 #include "uiKeynodes.h"
 
-constexpr size_t MAX_TRIPLES_COUNT = 1000;
+constexpr size_t MAX_TRIPLES_COUNT = 1000000;
 
 uiTranslateFromSc::uiTranslateFromSc() {}
 

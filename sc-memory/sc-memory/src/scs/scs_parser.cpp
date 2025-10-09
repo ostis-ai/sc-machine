@@ -8,6 +8,8 @@
 
 #include "sc-memory/sc_debug.hpp"
 
+#include "sc-memory/scs/scs_ast_json_listener.hpp"
+
 #if SC_PLATFORM_WIN32
 #endif
 
@@ -280,8 +282,6 @@ bool Parser::Parse(std::string const & str)
 {
   bool result = true;
 
-  std::string fName;
-
   antlr4::ANTLRInputStream input(str);
   scsLexer lexer(&input);
   antlr4::CommonTokenStream tokens(&lexer);
@@ -307,6 +307,42 @@ bool Parser::Parse(std::string const & str)
   lexer.removeErrorListener(&errListener);
 
   return result;
+}
+
+std::string Parser::BuildAST(std::string const & str)
+{
+  antlr4::ANTLRInputStream input(str);
+  scsLexer lexer(&input);
+  antlr4::CommonTokenStream tokens(&lexer);
+  scsParser parser(&tokens);
+
+  SCsASTJsonListener astListener(parser);
+  parser.addParseListener(&astListener);
+
+  SCsASTErrorListener errorListener;
+  lexer.addErrorListener(&errorListener);
+  parser.addErrorListener(&errorListener);
+
+  parser.setParser(this);
+
+  try
+  {
+    parser.syntax();
+  }
+  catch (utils::ExceptionParseError const & e)
+  {
+    m_lastError = e.Message();
+  }
+
+  ScJson parseResult;
+  astListener.BuildAST(parseResult["root"]);
+  parseResult["errors"] = errorListener.GetErrors();
+
+  parser.removeParseListener(&astListener);
+  lexer.removeErrorListener(&errorListener);
+  parser.removeErrorListener(&errorListener);
+
+  return parseResult.dump();
 }
 
 ParsedElement & Parser::GetParsedElementRef(ElementHandle const & handle)
