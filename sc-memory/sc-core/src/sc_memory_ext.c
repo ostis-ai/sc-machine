@@ -68,7 +68,7 @@ sc_result _sc_ext_collect_extensions_from_directory(sc_char const * extension_di
   GDir * extension_directory = null_ptr;
   sc_char const * file_name = null_ptr;
   fModuleInitializeFunc initialize_func = null_ptr;
-  fModuleInitializeFunc shutdown_func = null_ptr;
+  fModuleShutdownFunc shutdown_func = null_ptr;
 
   sc_message("Collect extensions from %s", extension_directory_path);
 
