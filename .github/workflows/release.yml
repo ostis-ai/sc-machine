@@ -71,7 +71,7 @@ jobs:
 
       - name: Install compilers (macOS)
         if: runner.os == 'macOS'
-        run: brew install cmake ninja ccache
+        run: brew install ninja ccache
 
       - name: Set Conan remote
         run: |
