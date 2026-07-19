@@ -9,7 +9,7 @@ brew install glib temurin pkgconfig ninja ccache websocketpp nlohmann-json libxm
 # Required because websocketpp 0.8.2 is incompatible with newer asio.
 # Remove after updating websocketpp to a version including the fix from PR https://github.com/zaphoyd/websocketpp/pull/1164 or later.
 brew uninstall --ignore-dependencies asio || true
-curl -O https://raw.githubusercontent.com/Homebrew/homebrew-core/502489d3a4c1ca0a3854830eb5da2327b6feb54d/Formula/a/asio.rb
+curl -fsSL -O https://raw.githubusercontent.com/Homebrew/homebrew-core/502489d3a4c1ca0a3854830eb5da2327b6feb54d/Formula/a/asio.rb
 export HOMEBREW_DEVELOPER=1
 brew install asio.rb
 brew pin asio
