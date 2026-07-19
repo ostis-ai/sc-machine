@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Developer tool to review PRs -- Ellipsis
+
 ### Fixed
 
 - Type of shutdown_func variable in _sc_ext_collect_extensions_from_directory function
