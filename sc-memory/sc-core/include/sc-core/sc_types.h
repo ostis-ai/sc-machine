@@ -231,7 +231,7 @@ typedef sc_uint16 sc_type;
 typedef sc_uint16 sc_states;
 
 #  define SC_STATE_REQUEST_ERASURE 0x1
-#  define SC_STATE_IS_ERASABLE 0x200
+#  define SC_STATE_IS_UNDER_ERASURE 0x200
 #  define SC_STATE_ELEMENT_EXIST 0x2
 
 // results

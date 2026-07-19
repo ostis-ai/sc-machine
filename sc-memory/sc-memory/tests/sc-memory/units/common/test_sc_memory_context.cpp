@@ -541,7 +541,7 @@ TEST_F(
   ScAddr arcAddr;
   std::atomic_bool isChecked = false;
   {
-    auto eventSubscription =
+    auto eventSubscriptionForErasure =
         m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::MembershipArc>>(
             usersSetAddr,
             [this, &userContext, &isChecked](ScEventBeforeEraseOutgoingArc<ScType::MembershipArc> const &)
@@ -1629,7 +1629,7 @@ TEST_F(
   ScAddr usersSetEdgeAddr;
   std::atomic_bool isChecked = false;
   {
-    auto eventSubscription =
+    auto eventSubscriptionForErasure =
         m_ctx->CreateElementaryEventSubscription<ScEventBeforeEraseOutgoingArc<ScType::MembershipArc>>(
             usersSetAddr,
             [&](ScEventBeforeEraseOutgoingArc<ScType::MembershipArc> const &)
