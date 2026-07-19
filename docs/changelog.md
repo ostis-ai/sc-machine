@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update `scripts/install_deps_macOS.sh` to install `asio` via `brew install asio`
+- Update `scripts/install_deps_macOS.sh` with setting HOMEBREW_DEVELOPER mode to install `asio`
 
 ### Removed
 
