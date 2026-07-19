@@ -21,6 +21,9 @@
 
 #include "sc_storage_private.h"
 #include "sc_memory_private.h"
+#include "sc_version_segment.h"
+
+#include "sc-transaction/sc_element_version.h"
 
 sc_storage * storage = null_ptr;
 
@@ -171,6 +174,26 @@ sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el)
   result = SC_RESULT_OK;
 error:
   return result;
+}
+
+sc_result sc_storage_get_element_data_by_addr(sc_addr const addr, sc_element_data * el_data)
+{
+  sc_element * el = null_ptr;
+
+  if (sc_storage_get_element_by_addr(addr, &el) != SC_RESULT_OK || el == null_ptr)
+    return SC_RESULT_ERROR;
+
+  el_data->flags = el->flags;
+  el_data->first_out_arc = el->first_out_arc;
+  el_data->first_in_arc = el->first_in_arc;
+#ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
+  el_data->first_in_arc_from_structure = el->first_in_arc_from_structure;
+#endif
+  el_data->arc = el->arc;
+  el_data->incoming_arcs_count = el->incoming_arcs_count;
+  el_data->outgoing_arcs_count = el->outgoing_arcs_count;
+
+  return SC_RESULT_OK;
 }
 
 sc_result sc_storage_free_element(sc_addr addr)
@@ -411,7 +434,11 @@ sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_a
   }
 
   if (element != null_ptr)
+  {
     element->flags.states |= SC_STATE_ELEMENT_EXIST;
+    // Add param to select usage of version history?
+    element->version_history = sc_version_segment_new();
+  }
 
   return element;
 }
@@ -920,7 +947,7 @@ sc_addr sc_storage_link_new_ext(sc_memory_context const * ctx, sc_type type, sc_
   return addr;
 }
 
-void _sc_storage_make_elements_incident_to_arc(
+void sc_storage_make_elements_incident_to_arc(
     sc_addr connector_addr,
     sc_element * arc_el,
     sc_addr beg_addr,
@@ -990,7 +1017,7 @@ void _sc_storage_make_elements_incident_to_arc(
 }
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
-void _sc_storage_update_structure_arcs(
+void sc_storage_update_structure_arcs(
     sc_addr connector_addr,
     sc_element * arc_el,
     sc_addr beg_addr,
@@ -1079,15 +1106,15 @@ sc_addr sc_storage_arc_new_ext(
     goto error;
 
   // lock arcs to change output/input list
-  _sc_storage_make_elements_incident_to_arc(
+  sc_storage_make_elements_incident_to_arc(
       connector_addr, arc_el, beg_addr, beg_el, end_addr, end_el, SC_FALSE, !is_not_loop);
   if (is_edge && is_not_loop)
-    _sc_storage_make_elements_incident_to_arc(
+    sc_storage_make_elements_incident_to_arc(
         connector_addr, arc_el, end_addr, end_el, beg_addr, beg_el, SC_TRUE, SC_FALSE);
 
 #ifdef SC_OPTIMIZE_SEARCHING_INCOMING_CONNECTORS_FROM_STRUCTURES
   if (sc_type_is_structure_and_arc(beg_el->flags.type, type))
-    _sc_storage_update_structure_arcs(connector_addr, arc_el, beg_addr, end_addr, end_el);
+    sc_storage_update_structure_arcs(connector_addr, arc_el, beg_addr, end_addr, end_el);
 #endif
 
   // emit events
