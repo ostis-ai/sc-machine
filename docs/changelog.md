@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update `scripts/install_deps_macOS.sh` with setting HOMEBREW_DEVELOPER mode to install `asio`
+
 ### Removed
 
 - Developer tool to review PRs -- Ellipsis
