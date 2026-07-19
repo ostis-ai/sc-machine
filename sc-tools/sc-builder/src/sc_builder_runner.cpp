@@ -7,12 +7,14 @@
 #include "sc_builder_runner.hpp"
 
 #include <iostream>
+#include <fstream>
 
 #include <sc-config/sc_options.hpp>
 #include <sc-config/sc_config.hpp>
 #include <sc-config/sc_memory_config.hpp>
 
 #include "sc-builder/builder.hpp"
+#include "gwf_translator.hpp"
 
 void PrintHelpMessage(std::string const & binaryName)
 {
@@ -44,7 +46,12 @@ void PrintHelpMessage(std::string const & binaryName)
       << "  --clear                                  Run sc-builder in a mode that overwrites existing knowledge base "
          "binaries.\n"
       << "  --version                                Display the version of " << binaryName << ".\n"
-      << "  --help                                   Display this help message.\n";
+      << "  --help                                   Display this help message.\n"
+      << "  --gwf-to-scs <file>                      Translate a GWF file to SCs and save the result to a specified "
+         "file.\n"
+      << "  --gwf-output <file>                      Specify the output file for the GWF-to-SCs translation (default: "
+         "<input>.scs).\n"
+      << "  --verbose|-v                             Enable verbose logging.\n";
 }
 
 sc_int RunBuilder(sc_int argc, sc_char * argv[])
@@ -62,6 +69,36 @@ try
   if (options.Has({"version"}))
   {
     std::cout << ScMemoryConfig::GetVersion() << std::endl;
+    return EXIT_SUCCESS;
+  }
+
+  if (options.Has({"gwf-to-scs"}))
+  {
+    std::string gwfFile = options[{"gwf-to-scs"}].second;
+    std::string outputFile = options.Has({"gwf-output"}) ? options[{"gwf-output"}].second : gwfFile + ".scs";
+
+    // Инициализация контекста для транслятора
+    ScMemoryContext ctx;
+    GWFTranslator translator(ctx);
+    std::string scsText = translator.TranslateXMLFileContentToSCs(gwfFile);
+
+    // Сохранение результата в файл
+    std::ofstream output(outputFile, std::ios::binary);
+    if (!output.is_open())
+    {
+      std::cout << "Error: Cannot open output file `" << outputFile << "`.\n";
+      return EXIT_FAILURE;
+    }
+    output << scsText;
+    output.close();
+
+    if (output.fail())
+    {
+      std::cout << "Error: Failed to write to output file `" << outputFile << "`.\n";
+      return EXIT_FAILURE;
+    }
+
+    std::cout << "GWF file `" << gwfFile << "` successfully translated to SCs and saved as `" << outputFile << "`.\n";
     return EXIT_SUCCESS;
   }
 
@@ -155,8 +192,10 @@ try
                  "[sc-builder] group.\n"
               << "Make sure this path is a valid directory where you have write permissions and that it exists.\n"
               << "For more information, run with --help.\n";
+
     return EXIT_FAILURE;
   }
+
   params.m_resultStructureUpload = formedMemoryParams.init_memory_generated_upload;
   if (formedMemoryParams.init_memory_generated_structure != nullptr)
     params.m_resultStructureSystemIdtf = formedMemoryParams.init_memory_generated_structure;
