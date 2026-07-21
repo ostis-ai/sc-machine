@@ -8,7 +8,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 find_glib()
 
 add_library(sc-core SHARED ${SOURCES})
-target_link_libraries(sc-core LINK_PRIVATE ${glib_LIBRARIES})
+target_link_libraries(sc-core LINK_PRIVATE ${glib_LIBRARIES}  aio )
 target_include_directories(sc-core
     PRIVATE ${glib_INCLUDE_DIRS}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src

@@ -26,8 +26,14 @@
 #include "sc-core/sc_link_filter.h"
 #include "sc-core/sc_stream.h"
 #include "sc-core/sc-container/sc_list.h"
+#include "sc_segment.h"
+#include "sc_element.h"
 
-typedef struct _sc_storage sc_storage;
+
+
+typedef struct _sc_storage  sc_storage;
+
+
 
 /*!
  * @brief Initializes the sc-storage with the provided parameters.
