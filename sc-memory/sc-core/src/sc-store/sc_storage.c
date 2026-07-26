@@ -669,198 +669,314 @@ sc_result _sc_storage_element_erase(sc_addr addr)
   return result;
 }
 
-sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
+void _sc_storage_cache_elements_under_erasure_without_erase_events(
+    sc_addr addr,
+    sc_hash_table * incident_elements_under_erasure,
+    sc_hash_table * processed_elements)
+{
+  sc_pointer key = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr));
+  if (sc_hash_table_get(incident_elements_under_erasure, key) != null_ptr)
+    return;
+  if (sc_hash_table_get(processed_elements, key) != null_ptr)
+    return;
+
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_acquire_read(monitor);
+  sc_element * element;
+  sc_result result = sc_storage_get_element_by_addr(addr, &element);
+  if (result == SC_RESULT_OK && (element->flags.states & SC_STATE_IS_UNDER_ERASURE) == SC_STATE_IS_UNDER_ERASURE
+      && (element->flags.states & SC_STATE_REQUEST_ERASURE) != SC_STATE_REQUEST_ERASURE)
+  {
+    sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
+    if (emission_manager != null_ptr)
+    {
+      sc_monitor_acquire_read(&emission_manager->pool_monitor);
+      sc_uint32 count = (sc_uint32)(sc_uint64)sc_hash_table_get(
+          emission_manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
+      if (count == 0)
+        sc_hash_table_insert(incident_elements_under_erasure, key, element);
+      sc_monitor_release_read(&emission_manager->pool_monitor);
+    }
+  }
+  sc_monitor_release_read(monitor);
+}
+
+sc_result _sc_storage_element_erase_with_incoming_outgoing_connectors(
+    sc_memory_context const * ctx,
+    sc_addr connector_chain_begin_addr,
+    sc_addr addr,
+    sc_hash_table * processed_connectors,
+    sc_bool * does_branch_have_emitted_events,
+    sc_list * elements_that_can_be_erased,
+    sc_hash_table * incident_nodes_under_erasure)
 {
   sc_result result;
-
   sc_element * el = null_ptr;
+  sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, addr);
+  sc_monitor_acquire_write(monitor);
   result = sc_storage_get_element_by_addr(addr, &el);
   if (result != SC_RESULT_OK)
-    goto error;
-
-  sc_hash_table * cache_table = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
-
-  sc_queue iter_queue;
-  sc_queue_init(&iter_queue);
-  sc_pointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr));
-  sc_queue_push(&iter_queue, p_addr);
-
-  sc_queue addrs_with_not_emitted_erase_events;
-  sc_queue_init(&addrs_with_not_emitted_erase_events);
-  while (!sc_queue_empty(&iter_queue))
   {
-    p_addr = sc_queue_pop(&iter_queue);
+    sc_monitor_release_write(monitor);
+    return result;
+  }
+  // if element wasn't erased before then erase events should be emitted, otherwise there should be a check for started
+  // and not finished erase events callbacks
+  sc_bool const was_element_erased_before = (el->flags.states & SC_STATE_IS_UNDER_ERASURE) == SC_STATE_IS_UNDER_ERASURE;
+  if (!was_element_erased_before)
+    el->flags.states |= SC_STATE_IS_UNDER_ERASURE;
+  sc_monitor_release_write(monitor);
 
-    sc_addr element_addr;
-    element_addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT((sc_pointer_to_sc_addr_hash)p_addr);
-    element_addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT((sc_pointer_to_sc_addr_hash)p_addr);
-
-    sc_monitor * monitor = sc_monitor_table_get_monitor_for_addr(&storage->addr_monitors_table, element_addr);
-    sc_monitor_acquire_read(monitor);
-    result = sc_storage_get_element_by_addr(element_addr, &el);
-    if (result != SC_RESULT_OK)
-    {
-      sc_monitor_release_read(monitor);
-      continue;
-    }
-
-    sc_type const type = el->flags.type;
-    sc_addr const begin_addr = el->arc.begin;
-    sc_addr const end_addr = el->arc.end;
-
-    sc_result erase_incoming_connector_result = SC_RESULT_NO;
-    sc_result erase_outgoing_connector_result = SC_RESULT_NO;
-    sc_result erase_incoming_arc_result = SC_RESULT_NO;
-    sc_result erase_outgoing_arc_result = SC_RESULT_NO;
-    sc_result erase_element_result = SC_RESULT_NO;
-
-    if ((el->flags.states & SC_STATE_IS_ERASABLE) != SC_STATE_IS_ERASABLE)
-    {
-      if ((type & sc_type_connector_mask) != 0)
-      {
-        erase_incoming_connector_result = sc_event_emit(
-            ctx,
-            begin_addr,
-            sc_event_before_erase_connector_addr,
-            element_addr,
-            type,
-            end_addr,
-            sc_storage_element_erase,
-            element_addr);
-        erase_outgoing_connector_result = sc_event_emit(
-            ctx,
-            end_addr,
-            sc_event_before_erase_connector_addr,
-            element_addr,
-            type,
-            begin_addr,
-            sc_storage_element_erase,
-            element_addr);
-      }
-
-      if (sc_type_has_subtype(type, sc_type_common_edge))
-      {
-        erase_incoming_arc_result = sc_event_emit(
-            ctx,
-            begin_addr,
-            sc_event_before_erase_edge_addr,
-            element_addr,
-            type,
-            end_addr,
-            sc_storage_element_erase,
-            element_addr);
-        erase_outgoing_arc_result = sc_event_emit(
-            ctx,
-            end_addr,
-            sc_event_before_erase_edge_addr,
-            element_addr,
-            type,
-            begin_addr,
-            sc_storage_element_erase,
-            element_addr);
-      }
-      else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
-      {
-        erase_outgoing_arc_result = sc_event_emit(
-            ctx,
-            begin_addr,
-            sc_event_before_erase_outgoing_arc_addr,
-            element_addr,
-            type,
-            end_addr,
-            sc_storage_element_erase,
-            element_addr);
-        erase_incoming_arc_result = sc_event_emit(
-            ctx,
-            end_addr,
-            sc_event_before_erase_incoming_arc_addr,
-            element_addr,
-            type,
-            begin_addr,
-            sc_storage_element_erase,
-            element_addr);
-      }
-
-      erase_element_result = sc_event_emit(
-          ctx,
-          element_addr,
-          sc_event_before_erase_element_addr,
-          SC_ADDR_EMPTY,
-          0,
-          SC_ADDR_EMPTY,
-          sc_storage_element_erase,
-          element_addr);
-
-      el->flags.states |= SC_STATE_IS_ERASABLE;
-    }
-
-    if (erase_incoming_connector_result == SC_RESULT_OK || erase_outgoing_connector_result == SC_RESULT_OK
-        || erase_incoming_arc_result == SC_RESULT_OK || erase_outgoing_arc_result == SC_RESULT_OK
-        || erase_element_result == SC_RESULT_OK)
-    {
-      sc_monitor_release_read(monitor);
-      continue;
-    }
-
-    sc_queue_push(&addrs_with_not_emitted_erase_events, p_addr);
-
-    sc_addr connector_addr = el->first_out_arc;
-    while (SC_ADDR_IS_NOT_EMPTY(connector_addr))
-    {
-      p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(connector_addr));
-
-      sc_element * connector = sc_hash_table_get(cache_table, p_addr);
-      if (connector == null_ptr)
-      {
-        result = sc_storage_get_element_by_addr(connector_addr, &connector);
-        if (result != SC_RESULT_OK)
-          break;
-
-        sc_hash_table_insert(cache_table, p_addr, connector);
-        sc_queue_push(&iter_queue, p_addr);
-      }
-
-      connector_addr = connector->arc.next_begin_out_arc;
-    }
-
-    connector_addr = el->first_in_arc;
-    while (SC_ADDR_IS_NOT_EMPTY(connector_addr))
-    {
-      p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(connector_addr));
-
-      sc_element * connector = sc_hash_table_get(cache_table, p_addr);
-      if (connector == null_ptr)
-      {
-        result = sc_storage_get_element_by_addr(connector_addr, &connector);
-        if (result != SC_RESULT_OK)
-          break;
-
-        sc_hash_table_insert(cache_table, p_addr, connector);
-        sc_queue_push(&iter_queue, p_addr);
-      }
-
-      connector_addr = connector->arc.next_end_in_arc;
-    }
-
+  sc_monitor_acquire_read(monitor);
+  if ((el->flags.states & SC_STATE_REQUEST_ERASURE) == SC_STATE_REQUEST_ERASURE)
+  {
     sc_monitor_release_read(monitor);
+    return SC_RESULT_OK;
   }
 
-  sc_queue_destroy(&iter_queue);
-  sc_hash_table_destroy(cache_table);
+  sc_type const type = el->flags.type;
+  sc_addr const begin_addr = el->arc.begin;
+  sc_addr const end_addr = el->arc.end;
 
-  while (!sc_queue_empty(&addrs_with_not_emitted_erase_events))
+  sc_result erase_incoming_connector_result = SC_RESULT_NO;
+  sc_result erase_outgoing_connector_result = SC_RESULT_NO;
+  sc_result erase_incoming_arc_result = SC_RESULT_NO;
+  sc_result erase_outgoing_arc_result = SC_RESULT_NO;
+  sc_result erase_element_result = SC_RESULT_NO;
+  sc_bool there_are_active_erase_events_with_addr = SC_FALSE;
+
+  if (!was_element_erased_before)
   {
-    sc_addr_hash addr_int = (sc_pointer_to_sc_addr_hash)sc_queue_pop(&addrs_with_not_emitted_erase_events);
-    addr.seg = SC_ADDR_LOCAL_SEG_FROM_INT(addr_int);
-    addr.offset = SC_ADDR_LOCAL_OFFSET_FROM_INT(addr_int);
+    if (sc_type_is_connector(type))
+    {
+      erase_incoming_connector_result = sc_event_emit(
+          ctx,
+          begin_addr,
+          sc_event_before_erase_connector_addr,
+          addr,
+          type,
+          end_addr,
+          sc_storage_element_erase,
+          connector_chain_begin_addr);
+      erase_outgoing_connector_result = sc_event_emit(
+          ctx,
+          end_addr,
+          sc_event_before_erase_connector_addr,
+          addr,
+          type,
+          begin_addr,
+          sc_storage_element_erase,
+          connector_chain_begin_addr);
+    }
 
-    _sc_storage_element_erase(addr);
+    if (sc_type_has_subtype(type, sc_type_common_edge))
+    {
+      erase_incoming_arc_result = sc_event_emit(
+          ctx,
+          begin_addr,
+          sc_event_before_erase_edge_addr,
+          addr,
+          type,
+          end_addr,
+          sc_storage_element_erase,
+          connector_chain_begin_addr);
+      erase_outgoing_arc_result = sc_event_emit(
+          ctx,
+          end_addr,
+          sc_event_before_erase_edge_addr,
+          addr,
+          type,
+          begin_addr,
+          sc_storage_element_erase,
+          connector_chain_begin_addr);
+    }
+    else if (sc_type_has_subtype_in_mask(type, sc_type_arc_mask))
+    {
+      erase_outgoing_arc_result = sc_event_emit(
+          ctx,
+          begin_addr,
+          sc_event_before_erase_outgoing_arc_addr,
+          addr,
+          type,
+          end_addr,
+          sc_storage_element_erase,
+          connector_chain_begin_addr);
+      erase_incoming_arc_result = sc_event_emit(
+          ctx,
+          end_addr,
+          sc_event_before_erase_incoming_arc_addr,
+          addr,
+          type,
+          begin_addr,
+          sc_storage_element_erase,
+          connector_chain_begin_addr);
+    }
+
+    erase_element_result = sc_event_emit(
+        ctx,
+        addr,
+        sc_event_before_erase_element_addr,
+        SC_ADDR_EMPTY,
+        0,
+        SC_ADDR_EMPTY,
+        sc_storage_element_erase,
+        connector_chain_begin_addr);
+  }
+  else
+  {
+    sc_event_emission_manager * emission_manager = sc_storage_get_event_emission_manager();
+    if (emission_manager != null_ptr)
+    {
+      sc_monitor_acquire_read(&emission_manager->pool_monitor);
+      sc_uint32 count = (sc_uint32)(sc_uint64)sc_hash_table_get(
+          emission_manager->emitted_erase_events, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(addr)));
+      if (count != 0)
+        there_are_active_erase_events_with_addr = SC_TRUE;
+      sc_monitor_release_read(&emission_manager->pool_monitor);
+    }
   }
 
-  sc_queue_destroy(&addrs_with_not_emitted_erase_events);
+  if (erase_incoming_connector_result == SC_RESULT_OK || erase_outgoing_connector_result == SC_RESULT_OK
+      || erase_incoming_arc_result == SC_RESULT_OK || erase_outgoing_arc_result == SC_RESULT_OK
+      || erase_element_result == SC_RESULT_OK || there_are_active_erase_events_with_addr)
+    *does_branch_have_emitted_events = SC_TRUE;
 
-  result = SC_RESULT_OK;
-error:
+  sc_addr connector_addr = el->first_out_arc;
+  while (SC_ADDR_IS_NOT_EMPTY(connector_addr))
+  {
+    sc_pointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(connector_addr));
+
+    sc_element * connector = sc_hash_table_get(processed_connectors, p_addr);
+    if (connector == null_ptr)
+    {
+      result = sc_storage_get_element_by_addr(connector_addr, &connector);
+      if (result != SC_RESULT_OK)
+        break;
+
+      sc_hash_table_insert(processed_connectors, p_addr, connector);
+      _sc_storage_element_erase_with_incoming_outgoing_connectors(
+          ctx,
+          connector_chain_begin_addr,
+          connector_addr,
+          processed_connectors,
+          does_branch_have_emitted_events,
+          elements_that_can_be_erased,
+          incident_nodes_under_erasure);
+    }
+
+    connector_addr = connector->arc.next_begin_out_arc;
+  }
+
+  connector_addr = el->first_in_arc;
+  while (SC_ADDR_IS_NOT_EMPTY(connector_addr))
+  {
+    sc_pointer p_addr = GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(connector_addr));
+
+    sc_element * connector = sc_hash_table_get(processed_connectors, p_addr);
+    if (connector == null_ptr)
+    {
+      result = sc_storage_get_element_by_addr(connector_addr, &connector);
+      if (result != SC_RESULT_OK)
+        break;
+
+      sc_hash_table_insert(processed_connectors, p_addr, connector);
+      _sc_storage_element_erase_with_incoming_outgoing_connectors(
+          ctx,
+          connector_chain_begin_addr,
+          connector_addr,
+          processed_connectors,
+          does_branch_have_emitted_events,
+          elements_that_can_be_erased,
+          incident_nodes_under_erasure);
+    }
+
+    connector_addr = connector->arc.next_end_in_arc;
+  }
+  sc_monitor_release_read(monitor);
+
+  // if addr is connector and its source/target is node that is under erasure and does not have emitted erase events
+  // then cache source/target to try to erase them with their incoming/outgoing connectors
+  if (sc_type_is_connector(type) && !*does_branch_have_emitted_events)
+  {
+    // TODO(NikitaZotov): Provide causal consistency for agents responding to sc-events of erasing sc-elements occurring
+    // within the same semantic neighbourhood. It should be that 1) agents, reacted to sc-event of erasing sc-elements,
+    // know about this sc-element until the end of their existence, 2) the agent, that reacted to sc-event of erasing
+    // sc-element, can view the entire semantic neighbourhood of this sc-element, even if some of sc-connectors in this
+    // neighbourhood is erased by another agent.
+    if (SC_ADDR_IS_NOT_EQUAL(connector_chain_begin_addr, begin_addr))
+      _sc_storage_cache_elements_under_erasure_without_erase_events(
+          begin_addr, incident_nodes_under_erasure, processed_connectors);
+    if (SC_ADDR_IS_NOT_EQUAL(connector_chain_begin_addr, end_addr))
+      _sc_storage_cache_elements_under_erasure_without_erase_events(
+          end_addr, incident_nodes_under_erasure, processed_connectors);
+  }
+
+  if (!*does_branch_have_emitted_events)
+    sc_list_push_back(elements_that_can_be_erased, (sc_addr_hash_to_sc_pointer)SC_ADDR_LOCAL_TO_INT(addr));
+  return SC_RESULT_OK;
+}
+
+sc_result _sc_storage_element_erase_with_incoming_outgoing_connectors_and_hanging_nodes(
+    sc_memory_context const * ctx,
+    sc_addr erased_element_addr,
+    sc_addr reason_of_erasure_addr,
+    sc_hash_table * connectors_added_to_queue)
+{
+  sc_element * element;
+  sc_storage_get_element_by_addr(erased_element_addr, &element);
+  sc_hash_table_insert(connectors_added_to_queue, GUINT_TO_POINTER(SC_ADDR_LOCAL_TO_INT(erased_element_addr)), element);
+
+  sc_hash_table * incident_nodes_under_erasure = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  sc_bool does_branch_have_emitted_events = SC_FALSE;
+  sc_list * elements_that_can_be_erased;
+  sc_list_init(&elements_that_can_be_erased);
+
+  sc_result result = _sc_storage_element_erase_with_incoming_outgoing_connectors(
+      ctx,
+      reason_of_erasure_addr,
+      erased_element_addr,
+      connectors_added_to_queue,
+      &does_branch_have_emitted_events,
+      elements_that_can_be_erased,
+      incident_nodes_under_erasure);
+
+  sc_iterator * elements_it = sc_list_iterator(elements_that_can_be_erased);
+  sc_addr from_hash_addr;
+  while (sc_iterator_next(elements_it))
+  {
+    sc_addr_hash addr_hash = (sc_pointer_to_sc_addr_hash)sc_iterator_get(elements_it);
+    SC_ADDR_LOCAL_FROM_INT(addr_hash, from_hash_addr);
+    _sc_storage_element_erase(from_hash_addr);
+  }
+  sc_iterator_destroy(elements_it);
+  sc_list_destroy(elements_that_can_be_erased);
+  if (!does_branch_have_emitted_events)
+  {
+    sc_hash_table_iterator nodes_to_erase_iterator;
+    sc_hash_table_iterator_init(&nodes_to_erase_iterator, incident_nodes_under_erasure);
+    sc_pointer key, value;
+    while (sc_hash_table_iterator_next(&nodes_to_erase_iterator, &key, &value))
+    {
+      if (sc_hash_table_get(connectors_added_to_queue, key) == null_ptr)
+      {
+        sc_addr node_that_was_erased_addr;
+        SC_ADDR_LOCAL_FROM_INT((sc_pointer_to_sc_addr_hash)key, node_that_was_erased_addr);
+        _sc_storage_element_erase_with_incoming_outgoing_connectors_and_hanging_nodes(
+            ctx, node_that_was_erased_addr, reason_of_erasure_addr, connectors_added_to_queue);
+      }
+    }
+  }
+
+  sc_hash_table_destroy(incident_nodes_under_erasure);
+  return result;
+}
+
+sc_result sc_storage_element_erase(sc_memory_context const * ctx, sc_addr addr)
+{
+  sc_hash_table * connectors_added_to_queue = sc_hash_table_init(g_direct_hash, g_direct_equal, null_ptr, null_ptr);
+  sc_result result = _sc_storage_element_erase_with_incoming_outgoing_connectors_and_hanging_nodes(
+      ctx, addr, addr, connectors_added_to_queue);
+  sc_hash_table_destroy(connectors_added_to_queue);
   return result;
 }
 
