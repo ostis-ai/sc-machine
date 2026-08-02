@@ -20,11 +20,13 @@
 #include "sc-core/sc_types.h"
 #include "sc-core/sc-base/sc_allocator.h"
 #include "sc-core/sc-container/sc_string.h"
+#include "sc-store/sc-transaction/sc_memory_transaction_manager.h"
 
 struct _sc_memory
 {
   sc_addr myself_addr;
   sc_memory_context_manager * context_manager;
+  sc_memory_transaction_manager * transaction_manager;
 };
 
 sc_memory * memory = null_ptr;
@@ -47,6 +49,14 @@ sc_memory_context * sc_memory_initialize(sc_memory_params const * params, sc_mem
   {
     s_memory_default_ctx = null_ptr;
     sc_memory_error("Error while initialize sc-storage");
+    goto error;
+  }
+
+  sc_memory_transaction_manager * transaction_manager = sc_mem_new(sc_memory_transaction_manager, 1);
+  if (sc_memory_transaction_manager_initialize(transaction_manager) != SC_RESULT_OK)
+  {
+    s_memory_default_ctx = null_ptr;
+    sc_memory_error("Error while initialize sc-transaction manager");
     goto error;
   }
 

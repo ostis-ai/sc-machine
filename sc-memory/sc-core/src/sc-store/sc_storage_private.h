@@ -14,6 +14,7 @@
 #include "sc-store/sc_storage_dump_manager.h"
 
 #include "sc-store/sc-base/sc_monitor_table_private.h"
+#include "sc-transaction/sc_element_version.h"
 
 struct _sc_storage
 {
@@ -41,6 +42,25 @@ sc_element * sc_storage_allocate_new_element(sc_memory_context const * ctx, sc_a
 
 sc_result sc_storage_get_element_by_addr(sc_addr addr, sc_element ** el);
 
+sc_result sc_storage_get_element_data_by_addr(sc_addr addr, sc_element_data * el_data);
+
 sc_result sc_storage_free_element(sc_addr addr);
+
+void sc_storage_make_elements_incident_to_arc(
+    sc_addr connector_addr,
+    sc_element * arc_el,
+    sc_addr beg_addr,
+    sc_element * beg_el,
+    sc_addr end_addr,
+    sc_element * end_el,
+    sc_bool is_reverse,
+    sc_bool is_loop);
+
+void sc_storage_update_structure_arcs(
+    sc_addr connector_addr,
+    sc_element * arc_el,
+    sc_addr beg_addr,
+    sc_addr end_addr,
+    sc_element * end_el);
 
 #endif
